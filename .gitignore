@@ -6,6 +6,7 @@
 /out-tsc  
   
 # dependencies  
+.angular
 /node_modules  
   
 # IDEs and editors  
@@ -18,7 +19,8 @@
 *.sublime-workspace  
   
 # IDE - VSCode  
-.vscode/*  
+.editorconfig
+.vscode
 !.vscode/settings.json  
 !.vscode/tasks.json  
 !.vscode/launch.json  
