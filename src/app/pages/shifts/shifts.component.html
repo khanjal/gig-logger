@@ -1,1 +1,12 @@
 <p>shifts works!</p>
+
+<mat-form-field appearance="fill">
+    <mat-label>Shift</mat-label>
+    <input matInput [formControl]="shiftControl">
+</mat-form-field>
+
+Shift: <input type="text" [formControl]="shiftControl">
+Time: <input type="text" [formControl]="timeControl">
+Service: <input type="text" [formControl]="serviceControl">
+Place: <input type="text" [formControl]="placeControl">
+Amount: <input type="text" [formControl]="amountControl">
