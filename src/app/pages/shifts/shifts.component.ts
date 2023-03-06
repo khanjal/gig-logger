@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-shifts',
@@ -6,6 +7,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./shifts.component.scss']
 })
 export class ShiftsComponent implements OnInit {
+
+  shiftControl = new FormControl('');
+  timeControl = new FormControl('');
+  serviceControl = new FormControl('');
+  placeControl = new FormControl('');
+  amountControl = new FormControl('');
 
   constructor() { }
 
