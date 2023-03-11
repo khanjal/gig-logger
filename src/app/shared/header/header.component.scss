@@ -1,13 +1,12 @@
 .filler {
     flex: 1 1 auto;
- }
- 
- .gap {
+}
+
+.gap {
     margin-right: 10px;
- }
+}
 
 a {
-    color: white;
     text-decoration: none ;
 
     &:hover {
@@ -16,5 +15,5 @@ a {
 }
 
 mat-icon {
-    color: white;
+    color: black;
 }
