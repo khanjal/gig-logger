@@ -18,8 +18,9 @@ export class ShiftsComponent implements OnInit {
   constructor(private _googleSheetService: GoogleDriveService) { }
 
   async ngOnInit(): Promise<void> {
-      let testData = this._googleSheetService.getGoogleData();
+      let testData = await this._googleSheetService.loadAddresses();
 
+      console.log('Test');
       //console.log(testData);
   }
 
