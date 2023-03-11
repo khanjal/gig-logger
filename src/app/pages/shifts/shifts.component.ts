@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
 
 @Component({
   selector: 'app-shifts',
@@ -14,9 +15,12 @@ export class ShiftsComponent implements OnInit {
   placeControl = new FormControl('');
   amountControl = new FormControl('');
 
-  constructor() { }
+  constructor(private _googleSheetService: GoogleDriveService) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+      let testData = this._googleSheetService.getGoogleData();
+
+      //console.log(testData);
   }
 
 }
