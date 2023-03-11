@@ -1,10 +1,32 @@
 <p>shifts works!</p>
 
-<mat-form-field appearance="fill">
-    <mat-label>Shift</mat-label>
-    <input matInput [formControl]="shiftControl">
-</mat-form-field>
+<form class="example-form">
+    <mat-form-field appearance="fill" class="example-full-width">
+        <mat-label>Shift</mat-label>
+        <mat-select>
+            <mat-option value="one">First option</mat-option>
+            <mat-option value="two">Second option</mat-option>
+        </mat-select>
+    </mat-form-field>
 
+    <mat-form-field class="example-full-width">
+        <mat-label>Date</mat-label>
+        <input matInput placeholder="Ex. DoorDash" value="Uber">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="example-full-width">
+        <mat-label>Service</mat-label>
+        <mat-select>
+            <mat-option value="one">First option</mat-option>
+            <mat-option value="two">Second option</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>Leave a comment</mat-label>
+        <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+    </mat-form-field>
+</form>
 Shift: <input type="text" [formControl]="shiftControl">
 Time: <input type="text" [formControl]="timeControl">
 Service: <input type="text" [formControl]="serviceControl">

@@ -8,6 +8,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { PagesModule } from './pages/pages.module';
 import { HeaderComponent } from './shared/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
+import { GoogleDriveService } from './shared/services/googleSheet.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,11 +20,14 @@ import { MatIconModule } from '@angular/material/icon';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     MatToolbarModule,
     MatIconModule,
     PagesModule
   ],
-  providers: [],
+  providers: [
+    GoogleDriveService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
