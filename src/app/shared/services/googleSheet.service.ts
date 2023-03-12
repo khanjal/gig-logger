@@ -17,22 +17,11 @@ export class GoogleDriveService {
 
     constructor(public http: HttpClient) { }
 
-    // public async getGoogleData() {
-    //     const client = new JWT({
-    //         email: keys.client_email,
-    //         key: keys.private_key,
-    //         scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-    //     });
-    //     const url = `https://dns.googleapis.com/dns/v1/projects/${keys.project_id}`;
-    //     const res = await client.request({url});
-    //     console.log(res.data);
-    // }
-
     private async getSheetData(sheetId: number): Promise<GoogleSpreadsheetWorksheet> {
         await doc.useServiceAccountAuth(keys);
         await doc.loadInfo();
 
-        const sheet = doc.sheetsById[670153803];
+        const sheet = doc.sheetsById[sheetId];
 
         return sheet;
     }
@@ -60,76 +49,44 @@ export class GoogleDriveService {
         });
         // console.log(addresses);
         console.log(addresses.length);
-        console.log(addresses);
+        // console.log(addresses);
 
         // Load addresses into storage
+        localStorage.setItem('addresses', JSON.stringify(addresses));
     }
 
-    public async getGoogleData() {
-        const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4');
-        // Initialize Auth - see https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
-        
-        await doc.useServiceAccountAuth(keys);
+    public async loadShifts() {
+        // Read Shifts sheet
+        let sheet = await this.getSheetData(279895837);
 
-        await doc.loadInfo(); // loads document properties and worksheets
-        console.log(doc.title);
+        console.log(sheet.title);
+        console.log(sheet.rowCount);
 
-        const tripsSheet = doc.sheetsById[199523902]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-        console.log(tripsSheet.title);
-        console.log(tripsSheet.rowCount);
+        let rows = await sheet.getRows();
+        let shifts: string[] = [];
 
-        let tripsRows = await tripsSheet.getRows()
-        console.log(tripsRows);
+        rows.forEach(row => {
+            // console.log(row);
+            // console.log(row.rowIndex);
+            let key = row['Key'];
+            let date = row['Date'];
+            // console.log(shift);
 
-        const shiftsSheet = doc.sheetsById[279895837]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-        console.log(shiftsSheet.title);
-        console.log(shiftsSheet.rowCount);
+            //console.log(new Date());
+            var today  = new Date();
+            var datestring = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear().toString().substr(-2)}`;
+            console.log(datestring);
 
-        let shiftsRows = await shiftsSheet.getRows()
-        console.log(shiftsRows);
+            if (key && date == datestring) {
+                shifts.push(key);
+            }
+            
+        });
+        // console.log(shifts);
+        console.log(shifts.length);
+        // console.log(shifts);
+
+        // Load shifts into storage
+        localStorage.setItem('shifts', JSON.stringify(shifts));
     }
-
-    // public getGoogleData() {
-    //     //const sheetId = '2PACX-1vT4hWkgwve_E3c_LYCrPhIsVRNnlVnaZiKvn_zZTtfgZodikyJ_GVvchAtu17akW9zj3BFfJ4E9TOEx';
-    //     const sheetId = '15Kndr-OcyCUAkBUcq6X3BMqKa_y2fMAXfPFLiSACiys';
-    //     const url = `https://spreadsheets.google.com/feeds/list/${sheetId}/od6/public/values?alt=json`;
-
-    //     this.http.get<any>(url).subscribe({
-    //     next: data => {
-    //         console.log(data);
-    //     },
-    //     error: error => {
-    //         let errorMessage = error.message;
-    //         console.error('There was an error!', error);
-    //     }
-    // })
-    // }
-
-    // public getSheetData(): Observable<any> {
-    //     const sheetId = '2PACX-1vT4hWkgwve_E3c_LYCrPhIsVRNnlVnaZiKvn_zZTtfgZodikyJ_GVvchAtu17akW9zj3BFfJ4E9TOEx';
-    //     const url = `https://spreadsheets.google.com/feeds/list/${sheetId}/od6/public/values?alt=json`;
-
-    //     return this.http.get(url)
-    //     .pipe(
-    //         map((res: any) => {
-    //             const data = res.feed.entry;
-
-    //             const returnArray: Array<any> = [];
-    //             if (data && data.length > 0) {
-    //                 data.forEach((entry: any) => {
-    //                     console.log(entry);
-    //                     const obj = {};
-    //                     for (const x in entry) {
-    //                         if (x.includes('gsx$') && entry[x].$t) {
-    //                             //obj[x.split('$')[1]] = entry[x]['$t'];
-    //                         }
-    //                     }
-                    
-    //                     returnArray.push(obj);
-    //             });
-    //         }
-    //         return returnArray;
-    //         })
-    //     );
-    // }
 }
