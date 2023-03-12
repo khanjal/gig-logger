@@ -1,32 +1,41 @@
-<p>shifts works!</p>
+<div class="div-form">
+    <form class="example-form">
+        <mat-form-field appearance="fill" class="example-full-width">
+            <mat-label>Shift</mat-label>
+            <mat-select #shiftSelect [formControl]="shiftControl" (selectionChange)='onShiftSelected(shiftSelect.value)'>
+                <mat-option value="new">New</mat-option>
+                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift }}</mat-option>
+            </mat-select>
+        </mat-form-field>
 
-<form class="example-form">
-    <mat-form-field appearance="fill" class="example-full-width">
-        <mat-label>Shift</mat-label>
-        <mat-select>
-            <mat-option value="one">First option</mat-option>
-            <mat-option value="two">Second option</mat-option>
-        </mat-select>
-    </mat-form-field>
+        <div *ngIf="isNewShift">
+        <mat-form-field class="example-full-width">
+            <mat-label>Service</mat-label>
+            <input matInput placeholder="Ex. DoorDash" value="Uber">
+        </mat-form-field>
+        </div>
 
-    <mat-form-field class="example-full-width">
-        <mat-label>Date</mat-label>
-        <input matInput placeholder="Ex. DoorDash" value="Uber">
-    </mat-form-field>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Address</mat-label>
+            <input type="text"
+                placeholder="Pick one"
+                aria-label="Number"
+                matInput
+                [formControl]="addressControl"
+                [matAutocomplete]="auto">
+            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address">
+                {{address}}
+            </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
 
-    <mat-form-field appearance="fill" class="example-full-width">
-        <mat-label>Service</mat-label>
-        <mat-select>
-            <mat-option value="one">First option</mat-option>
-            <mat-option value="two">Second option</mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="example-full-width">
-        <mat-label>Leave a comment</mat-label>
-        <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
-    </mat-form-field>
-</form>
+        <mat-form-field class="example-full-width">
+            <mat-label>Leave a comment</mat-label>
+            <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+        </mat-form-field>
+    </form>
+</div>
 Shift: <input type="text" [formControl]="shiftControl">
 Time: <input type="text" [formControl]="timeControl">
 Service: <input type="text" [formControl]="serviceControl">
