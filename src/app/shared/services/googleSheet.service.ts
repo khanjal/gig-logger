@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 
 import keys from '../data/jwt.keys.json';
+import { NameModel } from 'src/app/models/name.model';
 
 
 const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4');
@@ -53,6 +54,37 @@ export class GoogleDriveService {
 
         // Load addresses into storage
         localStorage.setItem('addresses', JSON.stringify(addresses));
+    }
+
+    public async loadNames() {
+        let sheet = await this.getSheetData(1952572215);
+
+        console.log(sheet.title);
+        console.log(sheet.rowCount);
+
+        let rows = await sheet.getRows();
+        let names: NameModel[] = [];
+
+        rows.forEach(row => {
+            // console.log(row);
+            // console.log(row.rowIndex);
+            let nameModel: NameModel = new NameModel;
+            nameModel.name = row['Name'];
+            nameModel.addresses =  row['Addresses']?.split("; ");
+            nameModel.visits = row['Visits'];
+            // console.log(name);
+
+            if (nameModel) {
+                names.push(nameModel);
+            }
+            
+        });
+        // console.log(names);
+        console.log(names.length);
+        // console.log(names);
+
+        // Load addresses into storage
+        localStorage.setItem('names', JSON.stringify(names));
     }
 
     public async loadShifts() {
