@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { map, Observable, startWith } from 'rxjs';
 import { AddressModel } from 'src/app/models/address.model';
 import { NameModel } from 'src/app/models/name.model';
@@ -17,13 +17,15 @@ import { ShiftService } from 'src/app/shared/services/shift.service';
   styleUrls: ['./quick.component.scss']
 })
 export class QuickComponent implements OnInit {
-  addressControl = new FormControl('');
-  nameControl = new FormControl('');
-  shiftControl = new FormControl('');
-  timeControl = new FormControl('');
-  serviceControl = new FormControl('');
-  placeControl = new FormControl('');
-  amountControl = new FormControl('');
+
+  quickForm = new FormGroup({
+    address: new FormControl(''),
+    amount: new FormControl(''),
+    name: new FormControl(''),
+    place: new FormControl(''),
+    service: new FormControl(''),
+    shift: new FormControl('')
+  });
 
   isNewShift: boolean = false;
 
@@ -58,17 +60,17 @@ export class QuickComponent implements OnInit {
     
     //console.log(testData);
 
-    this.filteredAddresses = this.addressControl.valueChanges.pipe(
+    this.filteredAddresses = this.quickForm.controls.address.valueChanges.pipe(
       startWith(''),
       map(value => this._filterAddress(value || '')),
     );
 
-    this.filteredNames = this.nameControl.valueChanges.pipe(
+    this.filteredNames = this.quickForm.controls.name.valueChanges.pipe(
       startWith(''),
       map(value => this._filterName(value || '')),
     );
 
-    this.filteredPlaces = this.placeControl.valueChanges.pipe(
+    this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
       startWith(''),
       map(value => this._filterPlace(value || '')),
     );
@@ -112,5 +114,9 @@ export class QuickComponent implements OnInit {
     {
       this.selectedName = new NameModel;
     }
+  }
+
+  addTrip() {
+    console.warn(this.quickForm.value);
   }
 }

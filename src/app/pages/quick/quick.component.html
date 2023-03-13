@@ -1,9 +1,9 @@
 <p></p>
 <div class="div-form">
-    <form class="example-form">
+    <form class="example-form" [formGroup]="quickForm" (ngSubmit)="addTrip()">
         <mat-form-field appearance="fill" class="example-full-width">
             <mat-label>Shift</mat-label>
-            <mat-select #shiftSelect [formControl]="shiftControl" (selectionChange)='onShiftSelected(shiftSelect.value)'>
+            <mat-select #shiftSelect formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)'>
                 <mat-option value="new">New</mat-option>
                 <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift }}</mat-option>
             </mat-select>
@@ -12,7 +12,7 @@
         <div *ngIf="isNewShift">
             <mat-form-field class="example-full-width">
                 <mat-label>Service</mat-label>
-                <mat-select #serviceSelect [formControl]="serviceControl">
+                <mat-select #serviceSelect formControlName="service">
                     <mat-option *ngFor="let service of services" [value]="service.service">{{ service.service }} ({{ service.visits }})</mat-option>
                 </mat-select>
             </mat-form-field>
@@ -24,7 +24,7 @@
                 placeholder="Pick one"
                 aria-label="Number"
                 matInput
-                [formControl]="placeControl"
+                formControlName="place"
                 [matAutocomplete]="autoPlace">
             <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
             <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
@@ -35,7 +35,7 @@
 
         <mat-form-field class="quarter-width">
             <mat-label>Amount</mat-label>
-            <input matInput placeholder="10" value="">
+            <input matInput placeholder="10" formControlName="amount" value="">
         </mat-form-field>
 
         <mat-form-field class="half-width" appearance="fill">
@@ -44,7 +44,7 @@
                 placeholder="Pick one"
                 aria-label="Number"
                 matInput
-                [formControl]="nameControl"
+                formControlName="name"
                 [matAutocomplete]="autoName"
                 (blur)="showNameAddresses($event)">
             <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
@@ -64,7 +64,7 @@
                 placeholder="Pick one"
                 aria-label="Number"
                 matInput
-                [formControl]="addressControl"
+                formControlName="address"
                 [matAutocomplete]="autoAddress">
             <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address">
@@ -73,5 +73,6 @@
             </mat-autocomplete>
         </mat-form-field>
 
+        <button type="submit" [disabled]="!quickForm.valid">Submit</button>
     </form>
 </div>
