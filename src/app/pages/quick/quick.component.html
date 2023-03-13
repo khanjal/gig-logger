@@ -12,11 +12,28 @@
         <div *ngIf="isNewShift">
             <mat-form-field class="example-full-width">
                 <mat-label>Service</mat-label>
-                <input matInput placeholder="Ex. DoorDash" value="Uber">
+                <mat-select #serviceSelect [formControl]="serviceControl">
+                    <mat-option *ngFor="let service of services" [value]="service.service">{{ service.service }} ({{ service.visits }})</mat-option>
+                </mat-select>
             </mat-form-field>
         </div>
 
-        <mat-form-field class="half-width">
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Place</mat-label>
+            <input type="text"
+                placeholder="Pick one"
+                aria-label="Number"
+                matInput
+                [formControl]="placeControl"
+                [matAutocomplete]="autoPlace">
+            <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
+            <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
+                {{place.place}} ({{ place.visits }})
+            </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="quarter-width">
             <mat-label>Amount</mat-label>
             <input matInput placeholder="10" value="">
         </mat-form-field>
