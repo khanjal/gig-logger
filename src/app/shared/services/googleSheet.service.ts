@@ -4,6 +4,7 @@ import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadshee
 
 import keys from '../data/jwt.keys.json';
 import { NameModel } from 'src/app/models/name.model';
+import { AddressModel } from 'src/app/models/address.model';
 
 
 const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4');
@@ -35,16 +36,22 @@ export class GoogleDriveService {
         console.log(sheet.rowCount);
 
         let rows = await sheet.getRows();
-        let addresses: string[] = [];
+        let addresses: AddressModel[] = [];
 
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let address = row['Address'];
-            // console.log(address);
+            let address: string[] = row['Address'].split(", ");
+            let addressModel: AddressModel = new AddressModel;
+            addressModel.id = row.rowIndex;
+            addressModel.address = row['Address'];
+            addressModel.names =  row['Names']?.split("; ");
+            addressModel.short = `${ address[0] }, ${ address[1] }`;
+            addressModel.visits = row['Visits'];
+            // console.log(addressModel);
 
-            if (address) {
-                addresses.push(address);
+            if (addressModel) {
+                addresses.push(addressModel);
             }
             
         });
@@ -69,6 +76,7 @@ export class GoogleDriveService {
             // console.log(row);
             // console.log(row.rowIndex);
             let nameModel: NameModel = new NameModel;
+            nameModel.id = row.rowIndex;
             nameModel.name = row['Name'];
             nameModel.addresses =  row['Addresses']?.split("; ");
             nameModel.visits = row['Visits'];

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
 import {map, startWith} from 'rxjs/operators';
 import { NameModel } from 'src/app/models/name.model';
+import { AddressModel } from 'src/app/models/address.model';
 
 @Component({
   selector: 'app-shifts',
@@ -22,8 +23,9 @@ export class ShiftsComponent implements OnInit {
 
   isNewShift: boolean = false;
 
-  addresses: string[] = [];
-  filteredAddresses: Observable<string[]> | undefined;
+  addresses: AddressModel[] = [];
+  filteredAddresses: Observable<AddressModel[]> | undefined;
+  selectedAddress: AddressModel | undefined;
 
   names: NameModel[] = [];
   filteredNames: Observable<NameModel[]> | undefined;
@@ -60,10 +62,10 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
-  private _filterAddress(value: string): string[] {
+  private _filterAddress(value: string): AddressModel[] {
     const filterValue = value.toLowerCase();
 
-    return this.addresses.filter(option => option.toLowerCase().includes(filterValue));
+    return this.addresses.filter(option => option.address.toLowerCase().includes(filterValue));
   }
 
   private _filterName(value: string): NameModel[] {
@@ -73,7 +75,7 @@ export class ShiftsComponent implements OnInit {
   }
 
   private async _loadAddresses() {
-    let addresses: string[] = [];
+    let addresses: AddressModel[] = [];
     let addressData = localStorage.getItem('addresses') ?? '""';
     this.addresses = JSON.parse(addressData);
 
@@ -83,7 +85,7 @@ export class ShiftsComponent implements OnInit {
       this.addresses = JSON.parse(addressData);
     }
 
-    console.log(addresses);
+    // console.log(addresses);
   }
 
   private async _loadNames() {
@@ -97,7 +99,7 @@ export class ShiftsComponent implements OnInit {
       this.names = JSON.parse(nameData);
     }
 
-    console.log(names);
+    // console.log(names);
   }
 
   private async _loadShifts() {
@@ -115,7 +117,15 @@ export class ShiftsComponent implements OnInit {
   }
 
   showNameAddresses(event: any) {
-    console.log(this._filterName(event.target.value));
-    this.selectedName = this.names.find(option => option.name.toLowerCase().includes(event.target.value.toLowerCase()));
+    let name = event.target.value.toLowerCase();
+    // console.log(this._filterName(name));
+
+    if (name) {
+      this.selectedName = this.names.find(option => option.name.toLowerCase().includes(name));
+    }
+    else
+    {
+      this.selectedName = new NameModel;
+    }
   }
 }
