@@ -1,3 +1,4 @@
+<p></p>
 <div class="div-form">
     <form class="example-form">
         <mat-form-field appearance="fill" class="example-full-width">
@@ -16,14 +17,34 @@
         </div>
 
         <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Name</mat-label>
+            <input type="text"
+                placeholder="Pick one"
+                aria-label="Number"
+                matInput
+                [formControl]="nameControl"
+                [matAutocomplete]="autoName"
+                (blur)="showNameAddresses($event)">
+            <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
+            <mat-option *ngFor="let name of filteredNames | async" [value]="name.name">
+                {{ name.name }}
+            </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <div *ngIf="selectedName">
+            <p *ngFor="let address of selectedName.addresses">{{ address }}</p>
+        </div>
+
+        <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>Address</mat-label>
             <input type="text"
                 placeholder="Pick one"
                 aria-label="Number"
                 matInput
                 [formControl]="addressControl"
-                [matAutocomplete]="auto">
-            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                [matAutocomplete]="autoAddress">
+            <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <mat-option *ngFor="let address of filteredAddresses | async" [value]="address">
                 {{address}}
             </mat-option>
@@ -36,8 +57,3 @@
         </mat-form-field>
     </form>
 </div>
-Shift: <input type="text" [formControl]="shiftControl">
-Time: <input type="text" [formControl]="timeControl">
-Service: <input type="text" [formControl]="serviceControl">
-Place: <input type="text" [formControl]="placeControl">
-Amount: <input type="text" [formControl]="amountControl">
