@@ -8,10 +8,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { CommonModule } from '@angular/common';
+import { QuickComponent } from './quick/quick.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
+    QuickComponent,
     ShiftsComponent
   ],
   imports: [
