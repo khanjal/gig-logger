@@ -3,7 +3,13 @@ import { FormControl } from '@angular/forms';
 import { map, Observable, startWith } from 'rxjs';
 import { AddressModel } from 'src/app/models/address.model';
 import { NameModel } from 'src/app/models/name.model';
-import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
+import { PlaceModel } from 'src/app/models/place.model';
+import { ServiceModel } from 'src/app/models/service.model';
+import { AddressService } from 'src/app/shared/services/address.service';
+import { NameService } from 'src/app/shared/services/name.service';
+import { PlaceService } from 'src/app/shared/services/place.service';
+import { ServiceService } from 'src/app/shared/services/service.service';
+import { ShiftService } from 'src/app/shared/services/shift.service';
 
 @Component({
   selector: 'app-quick',
@@ -29,14 +35,26 @@ export class QuickComponent implements OnInit {
   filteredNames: Observable<NameModel[]> | undefined;
   selectedName: NameModel | undefined;
 
+  places: PlaceModel[] = [];
+  filteredPlaces: Observable<PlaceModel[]> | undefined;
+
+  services: ServiceModel[] = [];
   shifts: string[] = [];
 
-  constructor(private _googleSheetService: GoogleDriveService) { }
+  constructor(
+      private _addressService: AddressService, 
+      private _nameService: NameService,
+      private _placeService: PlaceService,
+      private _serviceService: ServiceService,
+      private _shiftService: ShiftService
+    ) { }
 
   async ngOnInit(): Promise<void> {
-    await this._loadAddresses();
-    await this._loadNames();
-    await this._loadShifts();
+    this.addresses = await this._addressService.getAddresses();
+    this.names = await this._nameService.getNames();
+    this.places = await this._placeService.getPlaces();
+    this.services = await this._serviceService.getServices();
+    this.shifts = await this._shiftService.getShifts();
     
     //console.log(testData);
 
@@ -48,6 +66,11 @@ export class QuickComponent implements OnInit {
     this.filteredNames = this.nameControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filterName(value || '')),
+    );
+
+    this.filteredPlaces = this.placeControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterPlace(value || '')),
     );
   }
 
@@ -72,46 +95,10 @@ export class QuickComponent implements OnInit {
     return this.names.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  private async _loadAddresses() {
-    let addresses: AddressModel[] = [];
-    let addressData = localStorage.getItem('addresses') ?? '""';
-    this.addresses = JSON.parse(addressData);
+  private _filterPlace(value: string): PlaceModel[] {
+    const filterValue = value.toLowerCase();
 
-    if (!this.addresses) {
-      await this._googleSheetService.loadAddresses();
-      addressData = localStorage.getItem('addresses') ?? "''";
-      this.addresses = JSON.parse(addressData);
-    }
-
-    // console.log(addresses);
-  }
-
-  private async _loadNames() {
-    let names: NameModel[] = [];
-    let nameData = localStorage.getItem('names') ?? '""';
-    this.names = JSON.parse(nameData);
-
-    if (!this.names) {
-      await this._googleSheetService.loadNames();
-      nameData = localStorage.getItem('names') ?? "''";
-      this.names = JSON.parse(nameData);
-    }
-
-    // console.log(names);
-  }
-
-  private async _loadShifts() {
-    let shifts: string[] = [];
-    let shiftData = localStorage.getItem('shifts') ?? '""';
-    this.shifts = JSON.parse(shiftData);
-
-    if (!this.shifts) {
-      await this._googleSheetService.loadShifts();
-      shiftData = localStorage.getItem('shifts') ?? "''";
-      this.shifts = JSON.parse(shiftData);
-    }
-
-    console.log(shifts);
+    return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
   }
 
   showNameAddresses(event: any) {
