@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
 import {map, startWith} from 'rxjs/operators';
+import { NameModel } from 'src/app/models/name.model';
 
 @Component({
   selector: 'app-shifts',
@@ -12,6 +13,7 @@ import {map, startWith} from 'rxjs/operators';
 export class ShiftsComponent implements OnInit {
 
   addressControl = new FormControl('');
+  nameControl = new FormControl('');
   shiftControl = new FormControl('');
   timeControl = new FormControl('');
   serviceControl = new FormControl('');
@@ -22,12 +24,18 @@ export class ShiftsComponent implements OnInit {
 
   addresses: string[] = [];
   filteredAddresses: Observable<string[]> | undefined;
+
+  names: NameModel[] = [];
+  filteredNames: Observable<NameModel[]> | undefined;
+  selectedName: NameModel | undefined;
+
   shifts: string[] = [];
 
   constructor(private _googleSheetService: GoogleDriveService) { }
 
   async ngOnInit(): Promise<void> {
     await this._loadAddresses();
+    await this._loadNames();
     await this._loadShifts();
     
     //console.log(testData);
@@ -35,6 +43,11 @@ export class ShiftsComponent implements OnInit {
     this.filteredAddresses = this.addressControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filterAddress(value || '')),
+    );
+
+    this.filteredNames = this.nameControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterName(value || '')),
     );
   }
 
@@ -53,6 +66,12 @@ export class ShiftsComponent implements OnInit {
     return this.addresses.filter(option => option.toLowerCase().includes(filterValue));
   }
 
+  private _filterName(value: string): NameModel[] {
+    const filterValue = value.toLowerCase();
+
+    return this.names.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
   private async _loadAddresses() {
     let addresses: string[] = [];
     let addressData = localStorage.getItem('addresses') ?? '""';
@@ -67,6 +86,20 @@ export class ShiftsComponent implements OnInit {
     console.log(addresses);
   }
 
+  private async _loadNames() {
+    let names: NameModel[] = [];
+    let nameData = localStorage.getItem('names') ?? '""';
+    this.names = JSON.parse(nameData);
+
+    if (!this.names) {
+      await this._googleSheetService.loadNames();
+      nameData = localStorage.getItem('names') ?? "''";
+      this.names = JSON.parse(nameData);
+    }
+
+    console.log(names);
+  }
+
   private async _loadShifts() {
     let shifts: string[] = [];
     let shiftData = localStorage.getItem('shifts') ?? '""';
@@ -79,5 +112,10 @@ export class ShiftsComponent implements OnInit {
     }
 
     console.log(shifts);
+  }
+
+  showNameAddresses(event: any) {
+    console.log(this._filterName(event.target.value));
+    this.selectedName = this.names.find(option => option.name.toLowerCase().includes(event.target.value.toLowerCase()));
   }
 }
