@@ -1,11 +1,10 @@
-<p></p>
 <div class="div-form">
     <form class="example-form" [formGroup]="quickForm" (ngSubmit)="addTrip()">
         <mat-form-field appearance="fill" class="example-full-width">
             <mat-label>Shift</mat-label>
             <mat-select #shiftSelect formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)'>
                 <mat-option value="new">New</mat-option>
-                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift }}</mat-option>
+                <mat-option *ngFor="let shift of shifts" [value]="shift">#{{ shift.shiftNumber }} {{ shift.date }} {{ shift.service }} </mat-option>
             </mat-select>
         </mat-form-field>
 
@@ -74,5 +73,6 @@
         </mat-form-field>
 
         <button type="submit" [disabled]="!quickForm.valid">Submit</button>
+        <button type="button" (click)="reload()">Reload</button>
     </form>
 </div>
