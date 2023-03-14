@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { map, Observable, startWith } from 'rxjs';
 import { AddressModel } from 'src/app/models/address.model';
 import { NameModel } from 'src/app/models/name.model';
@@ -45,6 +46,7 @@ export class QuickComponent implements OnInit {
   shifts: ShiftModel[] = [];
 
   constructor(
+      private _router: Router, 
       private _addressService: AddressService, 
       private _nameService: NameService,
       private _placeService: PlaceService,
@@ -119,6 +121,16 @@ export class QuickComponent implements OnInit {
 
   addTrip() {
     console.warn(this.quickForm.value);
+
+    if (this.quickForm.value.shift == "new") {
+      console.log("New Shift!");
+    }
+    else {
+      console.log("Existing shift");
+    }
+
+    // this._router.navigate(['/quick']);
+    window.location.reload();
   }
 
   async reload() {
