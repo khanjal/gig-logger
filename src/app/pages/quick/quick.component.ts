@@ -5,6 +5,7 @@ import { AddressModel } from 'src/app/models/address.model';
 import { NameModel } from 'src/app/models/name.model';
 import { PlaceModel } from 'src/app/models/place.model';
 import { ServiceModel } from 'src/app/models/service.model';
+import { ShiftModel } from 'src/app/models/shift.model';
 import { AddressService } from 'src/app/shared/services/address.service';
 import { NameService } from 'src/app/shared/services/name.service';
 import { PlaceService } from 'src/app/shared/services/place.service';
@@ -41,7 +42,7 @@ export class QuickComponent implements OnInit {
   filteredPlaces: Observable<PlaceModel[]> | undefined;
 
   services: ServiceModel[] = [];
-  shifts: string[] = [];
+  shifts: ShiftModel[] = [];
 
   constructor(
       private _addressService: AddressService, 
@@ -118,5 +119,22 @@ export class QuickComponent implements OnInit {
 
   addTrip() {
     console.warn(this.quickForm.value);
+  }
+
+  async reload() {
+    await this._addressService.loadAddresses()
+    this.addresses = await this._addressService.getAddresses();
+
+    await this._nameService.loadNames()
+    this.names = await this._nameService.getNames();
+
+    await this._placeService.loadPlaces();
+    this.places = await this._placeService.getPlaces();
+
+    await this._serviceService.loadServices();
+    this.services = await this._serviceService.getServices();
+
+    await this._shiftService.loadShifts();
+    this.shifts = await this._shiftService.getShifts();
   }
 }
