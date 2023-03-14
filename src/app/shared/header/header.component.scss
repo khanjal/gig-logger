@@ -7,7 +7,7 @@
 }
 
 a {
-    color: black;
+    color: white;
     text-decoration: none ;
 
     &:hover {
@@ -18,3 +18,7 @@ a {
 mat-icon {
     color: black;
 }
+
+mat-toolbar {
+    margin-bottom: 20px;
+  }

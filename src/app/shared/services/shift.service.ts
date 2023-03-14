@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { ShiftModel } from "src/app/models/shift.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
 const sheetId = 279895837;
@@ -8,8 +9,8 @@ export class ShiftService {
 
     constructor(private _googleSheetService: GoogleDriveService) { }
         
-    public async getShifts(): Promise<string[]> {
-        let shifts: string[] = [];
+    public async getShifts(): Promise<ShiftModel[]> {
+        let shifts: ShiftModel[] = [];
         let shiftData = localStorage.getItem('shifts') ?? '""';
         shifts = JSON.parse(shiftData);
 
@@ -32,22 +33,25 @@ export class ShiftService {
         console.log(sheet.rowCount);
 
         let rows = await sheet.getRows();
-        let shifts: string[] = [];
+        let shifts: ShiftModel[] = [];
 
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let key = row['Key'];
-            let date = row['Date'];
+            let shiftModel: ShiftModel = new ShiftModel;
+            shiftModel.id = row.rowIndex;
+            shiftModel.key = row['Key'];
+            shiftModel.date = row['Date'];
+            shiftModel.service = row['Service'];
             // console.log(shift);
 
-            //console.log(new Date());
+            // console.log(new Date());
             var today  = new Date();
             var datestring = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear().toString().substr(-2)}`;
-            console.log(datestring);
+            // console.log(datestring);
 
-            if (key && date == datestring) {
-                shifts.push(key);
+            if (shiftModel.id && shiftModel.date == datestring) {
+                shifts.push(shiftModel);
             }
             
         });
