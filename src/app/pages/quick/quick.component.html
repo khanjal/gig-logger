@@ -82,3 +82,8 @@
         <button type="button" (click)="reload()">Reload</button>
     </form>
 </div>
+
+<span>Trips</span>
+<div>
+    <p *ngFor="let trip of trips">{{ trip.id }} | {{ trip.date }} | {{ trip.service }} | {{ trip.shiftNumber }} | {{ trip.place }} | {{ trip.name }} | {{ trip.address }}</p>
+</div>
