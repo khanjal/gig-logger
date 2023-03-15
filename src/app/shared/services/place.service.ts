@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { PlaceModel } from "src/app/models/place.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
-const sheetId = 1173380981;
+const sheetName = "Places";
 
 @Injectable()
 export class PlaceService {
@@ -26,7 +26,7 @@ export class PlaceService {
     }
 
     public async loadPlaces() {
-        let sheet = await this._googleSheetService.getSheetData(sheetId);
+        let sheet = await this._googleSheetService.getSheetDataByName(sheetName);
 
         console.log(sheet.title);
         console.log(sheet.rowCount);

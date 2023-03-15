@@ -3,7 +3,7 @@ import { ShiftModel } from "src/app/models/shift.model";
 import { DateHelper } from "../helpers/date.helper";
 import { GoogleDriveService } from "./googleSheet.service";
 
-const sheetId = 279895837;
+const sheetName = "Shifts";
 
 @Injectable()
 export class ShiftService {
@@ -70,7 +70,7 @@ export class ShiftService {
 
     public async loadShifts() {
         // Read Shifts sheet
-        let sheet = await this._googleSheetService.getSheetData(sheetId);
+        let sheet = await this._googleSheetService.getSheetDataByName(sheetName);
 
         console.log(sheet.title);
         console.log(sheet.rowCount);

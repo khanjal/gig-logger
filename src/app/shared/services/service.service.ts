@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ServiceModel } from "src/app/models/service.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
-const sheetId = 726436446;
+const sheetName = "Services";
 
 @Injectable()
 export class ServiceService {
@@ -26,7 +26,7 @@ export class ServiceService {
     }
 
     public async loadServices() {
-        let sheet = await this._googleSheetService.getSheetData(sheetId);
+        let sheet = await this._googleSheetService.getSheetDataByName(sheetName);
 
         console.log(sheet.title);
         console.log(sheet.rowCount);
