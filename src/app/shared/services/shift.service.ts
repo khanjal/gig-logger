@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ShiftModel } from "src/app/models/shift.model";
+import { DateHelper } from "../helpers/date.helper";
 import { GoogleDriveService } from "./googleSheet.service";
 
 const sheetId = 279895837;
@@ -25,6 +26,48 @@ export class ShiftService {
         return shifts
     }
 
+    public async getTodaysShifts():  Promise<ShiftModel[]> {
+        let shifts: ShiftModel[] = [];
+        let shiftData = localStorage.getItem('shifts') ?? '""';
+        shifts = JSON.parse(shiftData);
+
+        if (!shifts) {
+            await this.loadShifts();
+            shiftData = localStorage.getItem('shifts') ?? "''";
+            shifts = JSON.parse(shiftData);
+        }
+
+        let datestring = DateHelper.getDateString(new Date());
+
+        let todaysShifts: ShiftModel[] = [];
+
+        shifts.forEach(shift => {
+            if (shift.date == datestring) {
+                todaysShifts.push(shift);
+            }
+        });
+
+        // console.log(shifts);
+
+        return todaysShifts;
+    }
+
+    public async getNextShiftNumber(service: string): Promise<number> {
+        let shifts: ShiftModel[] = await this.getTodaysShifts();
+
+        let serviceShifts = shifts.filter(shift => shift.service == service);
+
+        return serviceShifts.length;
+    }
+
+    public async addShift(shift: ShiftModel) {
+        let shifts = await this.getShifts();
+
+        shifts.push(shift);
+
+        localStorage.setItem('shifts', JSON.stringify(shifts));
+    }
+
     public async loadShifts() {
         // Read Shifts sheet
         let sheet = await this._googleSheetService.getSheetData(sheetId);
@@ -43,14 +86,10 @@ export class ShiftService {
             shiftModel.key = row['Key'];
             shiftModel.date = row['Date'];
             shiftModel.service = row['Service'];
+            shiftModel.shiftNumber = row['#'];
             // console.log(shift);
 
-            // console.log(new Date());
-            var today  = new Date();
-            var datestring = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear().toString().substr(-2)}`;
-            // console.log(datestring);
-
-            if (shiftModel.id && shiftModel.date == datestring) {
+            if (shiftModel.date) {
                 shifts.push(shiftModel);
             }
             

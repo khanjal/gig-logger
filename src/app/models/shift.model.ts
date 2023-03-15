@@ -3,5 +3,5 @@ export class ShiftModel {
     date: string = "";
     key: string = "";
     service: string = "";
-    shiftNumber: number = 0;
+    shiftNumber: string = "";
 }
