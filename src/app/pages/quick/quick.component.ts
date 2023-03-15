@@ -94,6 +94,7 @@ export class QuickComponent implements OnInit {
     }
     else {
       this.isNewShift = false;
+      // Mark form untouched so that service isn't in error anymore
     }
   }
 
