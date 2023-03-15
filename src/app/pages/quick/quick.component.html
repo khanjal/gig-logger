@@ -85,11 +85,13 @@
             <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
         </div>
 
-        <button type="submit" [disabled]="!quickForm.valid">Add Trip</button>
-        <button type="button" (click)="save()">Save to Spreadsheet</button>
-        <button type="button" (click)="reload()">Reload Data</button>
+        <button mat-button type="submit" [disabled]="!quickForm.valid">Add Trip</button>
+        <button mat-button color="primary" type="button" (click)="save()">Save to Spreadsheet</button>
+        <button mat-button color="warn" type="button" (click)="reload()">Reload Data</button>
     </form>
 </div>
+
+<mat-divider></mat-divider>
 
 <h3>Trips</h3>
 <div class='table-responsive'>
