@@ -15,6 +15,7 @@ import { NameService } from './shared/services/name.service';
 import { PlaceService } from './shared/services/place.service';
 import { ShiftService } from './shared/services/shift.service';
 import { ServiceService } from './shared/services/service.service';
+import { TripService } from './shared/services/trip.service';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { ServiceService } from './shared/services/service.service';
     NameService,
     PlaceService,
     ServiceService,
-    ShiftService
+    ShiftService,
+    TripService
   ],
   bootstrap: [AppComponent]
 })

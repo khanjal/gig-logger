@@ -14,6 +14,7 @@ import { NameService } from 'src/app/shared/services/name.service';
 import { PlaceService } from 'src/app/shared/services/place.service';
 import { ServiceService } from 'src/app/shared/services/service.service';
 import { ShiftService } from 'src/app/shared/services/shift.service';
+import { TripService } from 'src/app/shared/services/trip.service';
 
 @Component({
   selector: 'app-quick',
@@ -46,6 +47,7 @@ export class QuickComponent implements OnInit {
 
   services: ServiceModel[] = [];
   shifts: ShiftModel[] = [];
+  trips: TripModel[] = [];
 
   constructor(
       private _router: Router, 
@@ -53,7 +55,8 @@ export class QuickComponent implements OnInit {
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _serviceService: ServiceService,
-      private _shiftService: ShiftService
+      private _shiftService: ShiftService,
+      private _tripService: TripService
     ) { }
 
   async ngOnInit(): Promise<void> {
@@ -62,6 +65,7 @@ export class QuickComponent implements OnInit {
     this.places = await this._placeService.getPlaces();
     this.services = await this._serviceService.getServices();
     this.shifts = await this._shiftService.getTodaysShifts();
+    this.trips = await this._tripService.getTodaysTrips();
     
     //console.log(testData);
 
