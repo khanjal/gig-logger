@@ -49,6 +49,14 @@ mat-header-row {
     display: table-row;
 }
 
+mat-row:nth-child(even){
+    background-color: lightcyan;
+}
+
+mat-row:nth-child(odd){
+    background-color: lightyellow;
+}
+
 mat-cell,
 mat-header-cell {
     word-wrap: initial;
