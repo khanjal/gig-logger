@@ -16,11 +16,20 @@ export class GoogleDriveService {
 
     constructor(public http: HttpClient) { }
 
-    public async getSheetData(sheetId: number): Promise<GoogleSpreadsheetWorksheet> {
+    public async getSheetDataById(id: number): Promise<GoogleSpreadsheetWorksheet> {
         await doc.useServiceAccountAuth(keys);
         await doc.loadInfo();
 
-        const sheet = doc.sheetsById[sheetId];
+        const sheet = doc.sheetsById[id];
+
+        return sheet;
+    }
+
+    public async getSheetDataByName(name: string): Promise<GoogleSpreadsheetWorksheet> {
+        await doc.useServiceAccountAuth(keys);
+        await doc.loadInfo();
+
+        const sheet = doc.sheetsByTitle[name];
 
         return sheet;
     }
