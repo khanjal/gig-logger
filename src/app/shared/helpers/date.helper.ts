@@ -1,7 +1,12 @@
 export class DateHelper {
     static getDateString(date: Date): string {
-        var datestring = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().substr(-2)}`;
+        var dateString = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().substr(-2)}`;
 
-        return datestring;
+        return dateString;
+    }
+
+    static getTimeString(date: Date): string {
+        var timeString = date.toLocaleTimeString();
+        return timeString;
     }
 }
