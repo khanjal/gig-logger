@@ -48,10 +48,11 @@
                 matInput
                 formControlName="name"
                 [matAutocomplete]="autoName"
-                (blur)="showNameAddresses($event)"
+                (blur)="showNameAddressesEvent($event)"
+                (keypress)="showNameAddressesEvent($event)"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-            <mat-option *ngFor="let name of filteredNames | async" [value]="name.name">
+            <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (onSelectionChange)="showNameAddresses(name.name)">
                 {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
             </mat-option>
             </mat-autocomplete>
@@ -70,25 +71,32 @@
                 matInput
                 formControlName="address"
                 [matAutocomplete]="autoAddress"
+                (blur)="showAddressNamesEvent($event)"
+                (keypress)="showAddressNamesEvent($event)"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address">
+            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (onSelectionChange)="showAddressNames(address.address)">
                 {{address.short}} ({{ address.visits }})
             </mat-option>
             </mat-autocomplete>
         </mat-form-field>
 
-        <button type="submit" [disabled]="!quickForm.valid">Submit</button>
-        <button type="button" (click)="reload()">Reload</button>
+        <div *ngIf="selectedAddress">
+            <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
+        </div>
+
+        <button type="submit" [disabled]="!quickForm.valid">Add Trip</button>
+        <button type="button" (click)="save()">Save to Spreadsheet</button>
+        <button type="button" (click)="reload()">Reload Data</button>
     </form>
 </div>
 
-<span>Trips</span>
+<h3>Trips</h3>
 <div class='table-responsive'>
     <mat-table [dataSource]="trips">
         <ng-container matColumnDef="saved">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
-            <mat-cell *matCellDef="let trip"><mat-icon>{{trip.saved ? 'check' : 'no'}}</mat-icon>  </mat-cell>
+            <mat-cell *matCellDef="let trip"><mat-icon>{{trip.saved ? 'check' : 'close'}}</mat-icon>  </mat-cell>
         </ng-container>
         <ng-container matColumnDef="date">
             <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
@@ -108,7 +116,7 @@
         </ng-container>
         <ng-container matColumnDef="amount">
             <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-            <mat-cell *matCellDef="let trip"> {{trip.amount}} </mat-cell>
+            <mat-cell *matCellDef="let trip"> {{trip.amount | currency}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>

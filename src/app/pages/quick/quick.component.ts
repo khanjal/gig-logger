@@ -67,12 +67,10 @@ export class QuickComponent implements OnInit {
     this.places = await this._placeService.getPlaces();
     this.services = await this._serviceService.getServices();
     this.shifts = await this._shiftService.getTodaysShifts();
-    // this.trips = await this._tripService.getTodaysTrips();
-    this.trips = await this._tripService.getTrips();
+    this.trips = await this._tripService.getTodaysTrips();
+    // this.trips = await this._tripService.getTrips();
 
     this.displayedColumns = ['saved', 'date', 'service', 'place', 'time', 'amount', 'name', 'address'];
-    
-    //console.log(testData);
 
     this.filteredAddresses = this.quickForm.controls.address.valueChanges.pipe(
       startWith(''),
@@ -117,12 +115,34 @@ export class QuickComponent implements OnInit {
     return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
   }
 
-  showNameAddresses(event: any) {
+  showAddressNamesEvent(event: any) {
+    let address = event.target.value.toLowerCase();
+    this.showAddressNames(address);
+  }
+
+  showAddressNames(address: string) {
+    // console.log(address);
+
+    if (address) {
+      this.selectedAddress = this.addresses.find(option => option.address.toLowerCase().includes(address.toLowerCase()));
+    }
+    else
+    {
+      this.selectedAddress = new AddressModel;
+    }
+  }
+
+  showNameAddressesEvent(event: any) {
     let name = event.target.value.toLowerCase();
+    this.showNameAddresses(name);
+  }
+
+  showNameAddresses(name: string) {
+    // console.log(name);
     // console.log(this._filterName(name));
 
     if (name) {
-      this.selectedName = this.names.find(option => option.name.toLowerCase().includes(name));
+      this.selectedName = this.names.find(option => option.name.toLowerCase().includes(name.toLowerCase()));
     }
     else
     {
@@ -169,11 +189,21 @@ export class QuickComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
     trip.shiftNumber = shift.shiftNumber;
+    trip.time = DateHelper.getTimeString(new Date);
+
+    await this._tripService.addTrip(trip);
 
     console.log(trip);
 
+    this.trips = await this._tripService.getTodaysTrips();
+
     // this._router.navigate(['/quick']);
-    // window.location.reload();
+    window.location.reload();
+  }
+
+  async save() {
+    console.log('Saving...');
+    console.log('Saved!');
   }
 
   async reload() {
