@@ -1,12 +1,13 @@
 export class TripModel {
     id: number = 0;
     address: string = "";
-    amount: number = 0;
+    amount: string = "";
     date: string = "";
     key: string = "";
+    name: string = "";
     note: string = "";
     place: string = "";
     service: string = "";
-    shiftNumber: number = 0;
+    shiftNumber: string = "";
     time: string = "";
 }

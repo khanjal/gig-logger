@@ -4,14 +4,14 @@
             <mat-label>Shift</mat-label>
             <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
                 <mat-option value="new">New</mat-option>
-                <mat-option *ngFor="let shift of shifts" [value]="shift">#{{ shift.shiftNumber }} {{ shift.date }} {{ shift.service }} </mat-option>
+                <mat-option *ngFor="let shift of shifts" [value]="shift">#{{ shift.shiftNumber == "" ? 0 : shift.shiftNumber }} {{ shift.date }} {{ shift.service }} </mat-option>
             </mat-select>
         </mat-form-field>
 
         <div *ngIf="isNewShift">
             <mat-form-field class="example-full-width">
                 <mat-label>Service</mat-label>
-                <mat-select #serviceSelect name="service" formControlName="service" required="">
+                <mat-select #serviceSelect name="service" formControlName="service" required>
                     <mat-option *ngFor="let service of services" [value]="service.service">{{ service.service }} ({{ service.visits }})</mat-option>
                 </mat-select>
             </mat-form-field>
