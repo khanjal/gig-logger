@@ -85,6 +85,7 @@ export class ShiftService {
             shiftModel.id = row.rowIndex;
             shiftModel.key = row['Key'];
             shiftModel.date = row['Date'];
+            shiftModel.saved = true;
             shiftModel.service = row['Service'];
             shiftModel.shiftNumber = row['#'];
             // console.log(shift);

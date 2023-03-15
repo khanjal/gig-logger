@@ -49,6 +49,8 @@ export class QuickComponent implements OnInit {
   shifts: ShiftModel[] = [];
   trips: TripModel[] = [];
 
+  displayedColumns: string[] = [];
+
   constructor(
       private _router: Router, 
       private _addressService: AddressService, 
@@ -65,7 +67,10 @@ export class QuickComponent implements OnInit {
     this.places = await this._placeService.getPlaces();
     this.services = await this._serviceService.getServices();
     this.shifts = await this._shiftService.getTodaysShifts();
-    this.trips = await this._tripService.getTodaysTrips();
+    // this.trips = await this._tripService.getTodaysTrips();
+    this.trips = await this._tripService.getTrips();
+
+    this.displayedColumns = ['saved', 'date', 'service', 'place', 'time', 'amount', 'name', 'address'];
     
     //console.log(testData);
 
@@ -186,5 +191,10 @@ export class QuickComponent implements OnInit {
 
     await this._shiftService.loadShifts();
     this.shifts = await this._shiftService.getTodaysShifts();
+
+    await this._tripService.loadTrips();
+    this.trips = await this._tripService.getTodaysTrips();
+
+    window.location.reload();
   }
 }
