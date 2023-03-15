@@ -7,6 +7,7 @@ export class TripModel {
     name: string = "";
     note: string = "";
     place: string = "";
+    saved: boolean = false;
     service: string = "";
     shiftNumber: string = "";
     time: string = "";

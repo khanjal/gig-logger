@@ -80,7 +80,9 @@ export class TripService {
             tripModel.key = row['Key'];
             tripModel.name = row['Name'];
             tripModel.amount = row['Pay'];
+            tripModel.time = row['Pickup'];
             tripModel.place = row['Place'];
+            tripModel.saved = true;
             tripModel.service = row['Service'];
             tripModel.shiftNumber = row['#'];
             // console.log(trip);
