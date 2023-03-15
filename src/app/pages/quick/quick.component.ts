@@ -7,6 +7,8 @@ import { NameModel } from 'src/app/models/name.model';
 import { PlaceModel } from 'src/app/models/place.model';
 import { ServiceModel } from 'src/app/models/service.model';
 import { ShiftModel } from 'src/app/models/shift.model';
+import { TripModel } from 'src/app/models/trip.model';
+import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { AddressService } from 'src/app/shared/services/address.service';
 import { NameService } from 'src/app/shared/services/name.service';
 import { PlaceService } from 'src/app/shared/services/place.service';
@@ -59,7 +61,7 @@ export class QuickComponent implements OnInit {
     this.names = await this._nameService.getNames();
     this.places = await this._placeService.getPlaces();
     this.services = await this._serviceService.getServices();
-    this.shifts = await this._shiftService.getShifts();
+    this.shifts = await this._shiftService.getTodaysShifts();
     
     //console.log(testData);
 
@@ -119,18 +121,50 @@ export class QuickComponent implements OnInit {
     }
   }
 
-  addTrip() {
-    console.warn(this.quickForm.value);
+  async addTrip() {
+    // console.log(this.quickForm.value);
 
+    let shift: ShiftModel = new ShiftModel;
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
+
+      let datestring = DateHelper.getDateString(new Date());
+      
+      shift.date = datestring;
+      shift.service = this.quickForm.value.service ?? "";
+
+      // Count number of shifts with same date and service type. Only add number if > 0.
+      let shiftNumber = await this._shiftService.getNextShiftNumber(this.quickForm.value.service ?? "");
+
+      if (shiftNumber > 0) {
+        shift.shiftNumber = (shiftNumber+1).toString();
+      }
+
+      await this._shiftService.addShift(shift);
     }
     else {
-      console.log("Existing shift");
+      // console.log(this.quickForm.value.shift);
+      if (this.quickForm.value.shift) {
+        shift = <ShiftModel><unknown>this.quickForm.value.shift;
+      }
     }
 
+    console.log(shift);
+    
+    let trip: TripModel = new TripModel;
+
+    trip.address = this.quickForm.value.address ?? "";
+    trip.amount = this.quickForm.value.amount ?? "";
+    trip.date = shift.date;
+    trip.name = this.quickForm.value.name ?? "";
+    trip.place = this.quickForm.value.place ?? "";
+    trip.service = shift.service;
+    trip.shiftNumber = shift.shiftNumber;
+
+    console.log(trip);
+
     // this._router.navigate(['/quick']);
-    window.location.reload();
+    // window.location.reload();
   }
 
   async reload() {
@@ -147,6 +181,6 @@ export class QuickComponent implements OnInit {
     this.services = await this._serviceService.getServices();
 
     await this._shiftService.loadShifts();
-    this.shifts = await this._shiftService.getShifts();
+    this.shifts = await this._shiftService.getTodaysShifts();
   }
 }
