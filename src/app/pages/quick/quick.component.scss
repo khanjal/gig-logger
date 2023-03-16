@@ -5,7 +5,7 @@
 }
 
 .address-link {
-    overflow: hidden;
+    overflow: auto;
     white-space: nowrap;
     text-overflow: ellipsis;
     margin-bottom: 10px;
@@ -23,22 +23,22 @@
     }
 }
 
-.example-form {
+.quick-form {
     background-color: white;
     min-width: 150px;
     max-width: 500px;
-    width: 100%;
+    width: 95%;
 }
 
-.example-full-width {
-    width: 100%;
+.field-full-width {
+    width: 95%;
 }
 
-.half-width {
-    width: 50%;
+.field-halfish-width {
+    width: 65%;
 }
 
-.quarter-width {
+.field-quarter-width {
     width: 25%;
     margin-right: 25px;
 }
