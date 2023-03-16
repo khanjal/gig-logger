@@ -1,6 +1,6 @@
 <div class="container">
-    <form class="example-form" [formGroup]="quickForm" (ngSubmit)="addTrip()">
-        <mat-form-field appearance="fill" class="example-full-width">
+    <form class="quick-form" [formGroup]="quickForm" (ngSubmit)="addTrip()">
+        <mat-form-field appearance="fill" class="field-full-width">
             <mat-label>Shift</mat-label>
             <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
                 <mat-option value="new">New</mat-option>
@@ -9,15 +9,25 @@
         </mat-form-field>
 
         <div *ngIf="isNewShift">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="field-full-width" appearance="fill">
                 <mat-label>Service</mat-label>
-                <mat-select #serviceSelect name="service" formControlName="service" required>
-                    <mat-option *ngFor="let service of services" [value]="service.service">{{ service.service }} ({{ service.visits }})</mat-option>
-                </mat-select>
+                <input type="text"
+                    name="service"
+                    placeholder="Pick one"
+                    aria-label="Number"
+                    matInput
+                    formControlName="service"
+                    [matAutocomplete]="autoService"
+                    required>
+                <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
+                <mat-option *ngFor="let service of filteredServices | async" [value]="service.service">
+                    {{ service.service }} ({{ service.visits }})
+                </mat-option>
+                </mat-autocomplete>
             </mat-form-field>
         </div>
 
-        <mat-form-field class="example-full-width" appearance="fill">
+        <mat-form-field class="field-full-width" appearance="fill">
             <mat-label>Place</mat-label>
             <input type="text"
                 name="place"
@@ -34,12 +44,12 @@
             </mat-autocomplete>
         </mat-form-field>
 
-        <mat-form-field class="quarter-width">
+        <mat-form-field class="field-quarter-width">
             <mat-label>Pay</mat-label>
             <input matInput name="amount" placeholder="4.5" formControlName="amount" value="" required>
         </mat-form-field>
 
-        <mat-form-field class="half-width" appearance="fill">
+        <mat-form-field class="field-halfish-width" appearance="fill">
             <mat-label>Name</mat-label>
             <input type="text"
                 name="name"
@@ -62,7 +72,7 @@
             <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ address }}</a>
         </div>
 
-        <mat-form-field class="example-full-width" appearance="fill">
+        <mat-form-field class="field-full-width" appearance="fill">
             <mat-label>Address</mat-label>
             <input type="text"
                 name="address"
@@ -118,7 +128,7 @@
         </ng-container>
         <ng-container matColumnDef="amount">
             <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-            <mat-cell *matCellDef="let trip"> {{trip.amount}} </mat-cell>
+            <mat-cell *matCellDef="let trip"> {{trip.saved ? trip.amount : trip.amount | currency}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>

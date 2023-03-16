@@ -46,6 +46,8 @@ export class QuickComponent implements OnInit {
   filteredPlaces: Observable<PlaceModel[]> | undefined;
 
   services: ServiceModel[] = [];
+  filteredServices: Observable<ServiceModel[]> | undefined;
+
   shifts: ShiftModel[] = [];
   trips: TripModel[] = [];
 
@@ -86,6 +88,11 @@ export class QuickComponent implements OnInit {
       startWith(''),
       map(value => this._filterPlace(value || '')),
     );
+
+    this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterService(value || '')),
+    );
   }
 
   public onShiftSelected(value:string) {
@@ -96,24 +103,6 @@ export class QuickComponent implements OnInit {
       this.isNewShift = false;
       // Mark form untouched so that service isn't in error anymore
     }
-  }
-
-  private _filterAddress(value: string): AddressModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.addresses.filter(option => option.address.toLowerCase().includes(filterValue));
-  }
-
-  private _filterName(value: string): NameModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.names.filter(option => option.name.toLowerCase().includes(filterValue));
-  }
-
-  private _filterPlace(value: string): PlaceModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
   }
 
   selectAddress(address: string) {
@@ -232,5 +221,29 @@ export class QuickComponent implements OnInit {
     this.trips = await this._tripService.getTodaysTrips();
 
     window.location.reload();
+  }
+
+  private _filterAddress(value: string): AddressModel[] {
+    const filterValue = value.toLowerCase();
+
+    return this.addresses.filter(option => option.address.toLowerCase().includes(filterValue));
+  }
+
+  private _filterName(value: string): NameModel[] {
+    const filterValue = value.toLowerCase();
+
+    return this.names.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  private _filterPlace(value: string): PlaceModel[] {
+    const filterValue = value.toLowerCase();
+
+    return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
+  }
+
+  private _filterService(value: string): ServiceModel[] {
+    const filterValue = value.toLowerCase();
+
+    return this.services.filter(option => option.service.toLowerCase().includes(filterValue));
   }
 }
