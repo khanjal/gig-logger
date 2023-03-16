@@ -4,6 +4,13 @@
     align-items: flex-start;
 }
 
+.address-link {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: 10px;
+}
+
 .div-form {
     margin: 0px auto;
     width: 50%;
