@@ -116,6 +116,11 @@ export class QuickComponent implements OnInit {
     return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
   }
 
+  selectAddress(address: string) {
+    this.quickForm.controls.address.setValue(address);
+    this.showAddressNames(address);
+  }
+
   showAddressNamesEvent(event: any) {
     let address = event.target.value.toLowerCase();
     this.showAddressNames(address);
