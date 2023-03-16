@@ -4,7 +4,7 @@
             <mat-label>Shift</mat-label>
             <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
                 <mat-option value="new">New</mat-option>
-                <mat-option *ngFor="let shift of shifts" [value]="shift">#{{ shift.shiftNumber == "" ? "-" : shift.shiftNumber }} {{ shift.date }} {{ shift.service }} </mat-option>
+                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.service }} {{ shift.shiftNumber == "" ? "" : '#' + shift.shiftNumber }} - {{ shift.date }}</mat-option>
             </mat-select>
         </mat-form-field>
 
@@ -58,8 +58,8 @@
             </mat-autocomplete>
         </mat-form-field>
 
-        <div *ngIf="selectedName">
-            <p *ngFor="let address of selectedName.addresses">{{ address }}</p>
+        <div *ngFor="let address of selectedName?.addresses">
+            <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ address }}</a>
         </div>
 
         <mat-form-field class="example-full-width" appearance="fill">
@@ -118,7 +118,7 @@
         </ng-container>
         <ng-container matColumnDef="amount">
             <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-            <mat-cell *matCellDef="let trip"> {{trip.amount | currency}} </mat-cell>
+            <mat-cell *matCellDef="let trip"> {{trip.amount}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
