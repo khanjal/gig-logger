@@ -11,9 +11,16 @@
     margin-bottom: 10px;
 }
 
-.div-form {
-    margin: 0px auto;
-    width: 50%;
+.container {
+    max-width: 100%;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .container {
+        margin: 0 auto;
+        max-width: 768px;
+    }
 }
 
 .example-form {
