@@ -15,6 +15,7 @@ import { PlaceService } from 'src/app/shared/services/place.service';
 import { ServiceService } from 'src/app/shared/services/service.service';
 import { ShiftService } from 'src/app/shared/services/shift.service';
 import { TripService } from 'src/app/shared/services/trip.service';
+import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 
 @Component({
   selector: 'app-quick',
@@ -224,6 +225,10 @@ export class QuickComponent implements OnInit {
     window.location.reload();
   }
 
+  public getShortAddress(address: string): string {
+    return AddressHelper.getShortAddress(address);
+  }
+
   private _filterAddress(value: string): AddressModel[] {
     const filterValue = value.toLowerCase();
 
@@ -247,4 +252,5 @@ export class QuickComponent implements OnInit {
 
     return this.services.filter(option => option.service.toLowerCase().includes(filterValue));
   }
+
 }
