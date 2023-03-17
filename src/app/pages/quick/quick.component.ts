@@ -50,6 +50,7 @@ export class QuickComponent implements OnInit {
 
   shifts: ShiftModel[] = [];
   trips: TripModel[] = [];
+  yesterdayTrips: TripModel[] = [];
 
   displayedColumns: string[] = [];
 
@@ -69,7 +70,7 @@ export class QuickComponent implements OnInit {
     this.places = await this._placeService.getPlaces();
     this.services = await this._serviceService.getServices();
     this.shifts = await this._shiftService.getTodaysShifts();
-    this.trips = await this._tripService.getTodaysTrips();
+    this.trips = await this._tripService.getPastTrips(1);
     // this.trips = await this._tripService.getTrips();
 
     this.displayedColumns = ['saved', 'date', 'service', 'place', 'time', 'amount', 'name', 'address'];
@@ -152,7 +153,7 @@ export class QuickComponent implements OnInit {
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
 
-      let datestring = DateHelper.getDateString(new Date());
+      let datestring = DateHelper.getDateString();
       
       shift.date = datestring;
       shift.service = this.quickForm.value.service ?? "";
@@ -190,7 +191,7 @@ export class QuickComponent implements OnInit {
 
     console.log(trip);
 
-    this.trips = await this._tripService.getTodaysTrips();
+    this.trips = await this._tripService.getPastTrips();
 
     // this._router.navigate(['/quick']);
     window.location.reload();
@@ -218,7 +219,7 @@ export class QuickComponent implements OnInit {
     this.shifts = await this._shiftService.getTodaysShifts();
 
     await this._tripService.loadTrips();
-    this.trips = await this._tripService.getTodaysTrips();
+    this.trips = await this._tripService.getPastTrips();
 
     window.location.reload();
   }

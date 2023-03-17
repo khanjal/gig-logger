@@ -1,12 +1,13 @@
 export class DateHelper {
-    static getDateString(date: Date): string {
-        var dateString = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().substr(-2)}`;
+    static getDateString(days: number = 0): string {
+        let date = new Date;
+        let dateString = `${date.getMonth() + 1}/${date.getDate()-days}/${date.getFullYear().toString().substr(-2)}`;
 
         return dateString;
     }
 
     static getTimeString(date: Date): string {
-        var timeString = date.toLocaleTimeString();
+        let timeString = date.toLocaleTimeString();
         return timeString;
     }
 }
