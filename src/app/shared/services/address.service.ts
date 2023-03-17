@@ -43,7 +43,6 @@ export class AddressService {
             addressModel.id = row.rowIndex;
             addressModel.address = row['Address'];
             addressModel.names =  row['Names']?.split("; ");
-            addressModel.short = `${ address[0] }, ${ address[1] }`;
             addressModel.visits = row['Visits'];
             // console.log(addressModel);
 
