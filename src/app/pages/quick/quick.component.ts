@@ -53,8 +53,6 @@ export class QuickComponent implements OnInit {
   trips: TripModel[] = [];
   yesterdayTrips: TripModel[] = [];
 
-  displayedColumns: string[] = [];
-
   constructor(
       private _router: Router, 
       private _addressService: AddressService, 
@@ -73,8 +71,6 @@ export class QuickComponent implements OnInit {
     this.shifts = await this._shiftService.getTodaysShifts();
     this.trips = await this._tripService.getPastTrips(1);
     // this.trips = await this._tripService.getTrips();
-
-    this.displayedColumns = ['saved', 'date', 'service', 'place', 'time', 'amount', 'name', 'address'];
 
     this.filteredAddresses = this.quickForm.controls.address.valueChanges.pipe(
       startWith(''),
