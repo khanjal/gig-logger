@@ -8,6 +8,10 @@
     "net": false,
     "tls": false
   },
+  "files": [
+    "./src",
+    "./dist"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
