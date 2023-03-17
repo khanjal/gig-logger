@@ -5,10 +5,10 @@
 }
 
 .address-link {
-    overflow: auto;
+    overflow: visible;
     white-space: nowrap;
     text-overflow: ellipsis;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
 }
 
 .container {
@@ -40,7 +40,14 @@
 
 .field-quarter-width {
     width: 25%;
-    margin-right: 25px;
+    margin-right: 1rem;
+}
+
+.trips-container {
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
+    padding-left: 1rem;
 }
 
 .table-responsive {

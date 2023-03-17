@@ -37,7 +37,7 @@ export class ShiftService {
             shifts = JSON.parse(shiftData);
         }
 
-        let datestring = DateHelper.getDateString(new Date());
+        let datestring = DateHelper.getDateString();
 
         let todaysShifts: ShiftModel[] = [];
 
