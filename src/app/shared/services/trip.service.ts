@@ -26,7 +26,7 @@ export class TripService {
         return trips
     }
 
-    public async getTodaysTrips():  Promise<TripModel[]> {
+    public async getPastTrips(days: number = 0):  Promise<TripModel[]> {
         let trips: TripModel[] = [];
         let tripData = localStorage.getItem('trips') ?? '""';
         trips = JSON.parse(tripData);
@@ -37,12 +37,12 @@ export class TripService {
             trips = JSON.parse(tripData);
         }
 
-        let datestring = DateHelper.getDateString(new Date());
+        let datestring = DateHelper.getDateString(days);
 
         let todaysTrips: TripModel[] = [];
 
         trips.forEach(trip => {
-            if (trip.date == datestring) {
+            if (new Date(trip.date) >= new Date(datestring)) {
                 todaysTrips.push(trip);
             }
         });
