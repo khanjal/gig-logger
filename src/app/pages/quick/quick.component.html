@@ -20,9 +20,9 @@
                     [matAutocomplete]="autoService"
                     required>
                 <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
-                <mat-option *ngFor="let service of filteredServices | async" [value]="service.service">
-                    {{ service.service }} ({{ service.visits }})
-                </mat-option>
+                    <mat-option *ngFor="let service of filteredServices | async" [value]="service.service">
+                        {{ service.service }} ({{ service.visits }})
+                    </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
         </div>
@@ -38,9 +38,9 @@
                 [matAutocomplete]="autoPlace"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
-            <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
-                {{place.place}} ({{ place.visits }})
-            </mat-option>
+                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
+                    {{place.place}} ({{ place.visits }})
+                </mat-option>
             </mat-autocomplete>
         </mat-form-field>
 
@@ -62,14 +62,14 @@
                 (keypress)="showNameAddressesEvent($event)"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-            <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (onSelectionChange)="showNameAddresses(name.name)">
-                {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
-            </mat-option>
+                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (onSelectionChange)="showNameAddresses(name.name)">
+                    {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
+                </mat-option>
             </mat-autocomplete>
         </mat-form-field>
 
         <div *ngFor="let address of selectedName?.addresses">
-            <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ address }}</a>
+            <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ getShortAddress(address) }}</a>
         </div>
 
         <mat-form-field class="field-full-width" appearance="fill">
@@ -85,9 +85,9 @@
                 (keypress)="showAddressNamesEvent($event)"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (onSelectionChange)="showAddressNames(address.address)">
-                {{address.short}} ({{ address.visits }})
-            </mat-option>
+                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (onSelectionChange)="showAddressNames(address.address)">
+                    {{ getShortAddress(address.address) }} ({{ address.visits }})
+                </mat-option>
             </mat-autocomplete>
         </mat-form-field>
 
