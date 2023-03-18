@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { PlaceModel } from "src/app/models/place.model";
+import { PlaceModel } from "src/app/shared/models/place.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
 const sheetName = "Places";

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ShiftModel } from "src/app/models/shift.model";
+import { ShiftModel } from "src/app/shared/models/shift.model";
 import { DateHelper } from "../helpers/date.helper";
 import { GoogleDriveService } from "./googleSheet.service";
 
