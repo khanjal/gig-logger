@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ServiceModel } from "src/app/models/service.model";
+import { ServiceModel } from "src/app/shared/models/service.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
 const sheetName = "Services";
