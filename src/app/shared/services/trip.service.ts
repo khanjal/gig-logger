@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { TripModel } from "src/app/models/trip.model";
+import { TripModel } from "src/app/shared/models/trip.model";
 import { DateHelper } from "../helpers/date.helper";
 import { GoogleDriveService } from "./googleSheet.service";
 

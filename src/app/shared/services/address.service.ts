@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { AddressModel } from "src/app/models/address.model";
+import { AddressModel } from "src/app/shared/models/address.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
 const sheetName = "Addresses";

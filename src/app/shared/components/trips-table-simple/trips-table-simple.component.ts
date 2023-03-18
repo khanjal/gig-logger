@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TripModel } from 'src/app/models/trip.model';
+import { TripModel } from 'src/app/shared/models/trip.model';
 
 @Component({
   selector: 'trips-table-simple',
