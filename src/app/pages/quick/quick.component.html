@@ -95,9 +95,9 @@
             <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
         </div>
 
-        <button mat-button type="submit" [disabled]="!quickForm.valid">Add Trip</button>
-        <button mat-button color="primary" type="button" (click)="save()">Save to Spreadsheet</button>
-        <button mat-button color="warn" type="button" (click)="reload()">Reload Data</button>
+        <button mat-stroked-button type="submit" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Add</button>
+        <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save</button>
+        <button mat-stroked-button color="warn" type="button" (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
     </form>
 </div>
 
