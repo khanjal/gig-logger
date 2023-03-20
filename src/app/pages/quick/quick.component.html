@@ -59,10 +59,9 @@
                 formControlName="name"
                 [matAutocomplete]="autoName"
                 (blur)="showNameAddressesEvent($event)"
-                (keypress)="showNameAddressesEvent($event)"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (onSelectionChange)="showNameAddresses(name.name)">
+                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)">
                     {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
                 </mat-option>
             </mat-autocomplete>
@@ -82,10 +81,9 @@
                 formControlName="address"
                 [matAutocomplete]="autoAddress"
                 (blur)="showAddressNamesEvent($event)"
-                (keypress)="showAddressNamesEvent($event)"
                 required>
             <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (onSelectionChange)="showAddressNames(address.address)">
+                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
                     {{ getShortAddress(address.address) }} ({{ address.visits }})
                 </mat-option>
             </mat-autocomplete>
