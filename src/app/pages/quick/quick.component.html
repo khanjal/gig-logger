@@ -46,7 +46,7 @@
 
         <mat-form-field class="field-quarter-width">
             <mat-label>Pay</mat-label>
-            <input matInput name="amount" placeholder="4.75" formControlName="amount" value="" required>
+            <input matInput name="amount" placeholder="4.75" formControlName="amount" value="">
         </mat-form-field>
 
         <mat-form-field class="field-halfish-width" appearance="fill">
@@ -80,8 +80,7 @@
                 matInput
                 formControlName="address"
                 [matAutocomplete]="autoAddress"
-                (blur)="showAddressNamesEvent($event)"
-                required>
+                (blur)="showAddressNamesEvent($event)" >
             <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
                 <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
                     {{ getShortAddress(address.address) }} ({{ address.visits }})
