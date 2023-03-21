@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { TripModel } from "src/app/shared/models/trip.model";
 import { DateHelper } from "../helpers/date.helper";
+import { NumberHelper } from "../helpers/number.helper";
 import { GoogleDriveService } from "./googleSheet.service";
 
 const sheetName = "Trips";
@@ -79,7 +80,7 @@ export class TripService {
             tripModel.date = row['Date'];
             tripModel.key = row['Key'];
             tripModel.name = row['Name'];
-            tripModel.amount = row['Pay'];
+            tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
             tripModel.time = row['Pickup'];
             tripModel.place = row['Place'];
             tripModel.saved = true;

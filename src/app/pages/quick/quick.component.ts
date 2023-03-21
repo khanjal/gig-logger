@@ -26,7 +26,7 @@ export class QuickComponent implements OnInit {
 
   quickForm = new FormGroup({
     address: new FormControl(''),
-    amount: new FormControl(''),
+    amount: new FormControl(),
     name: new FormControl(''),
     place: new FormControl(''),
     service: new FormControl(''),
@@ -152,7 +152,7 @@ export class QuickComponent implements OnInit {
       // Count number of shifts with same date and service type. Only add number if > 0.
       let shiftNumber = await this._shiftService.getNextShiftNumber(this.quickForm.value.service ?? "");
 
-      shift.shiftNumber = (shiftNumber+1).toString();
+      shift.shiftNumber = shiftNumber++;
 
       await this._shiftService.addShift(shift);
     }
@@ -168,12 +168,12 @@ export class QuickComponent implements OnInit {
     let trip: TripModel = new TripModel;
 
     trip.address = this.quickForm.value.address ?? "";
-    trip.amount = this.quickForm.value.amount ?? "";
+    trip.pay = +this.quickForm.value.amount ?? 0;
     trip.date = shift.date;
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
-    trip.shiftNumber = shift.shiftNumber;
+    trip.shiftNumber = shift.shiftNumber ?? 0;
     trip.time = DateHelper.getTimeString(new Date);
 
     await this._tripService.addTrip(trip);

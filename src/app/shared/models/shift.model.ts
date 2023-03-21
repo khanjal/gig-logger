@@ -4,5 +4,5 @@ export class ShiftModel {
     key: string = "";
     saved: boolean = false;
     service: string = "";
-    shiftNumber: string = "";
+    shiftNumber: number = 0;
 }
