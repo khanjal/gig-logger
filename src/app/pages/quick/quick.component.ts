@@ -152,9 +152,7 @@ export class QuickComponent implements OnInit {
       // Count number of shifts with same date and service type. Only add number if > 0.
       let shiftNumber = await this._shiftService.getNextShiftNumber(this.quickForm.value.service ?? "");
 
-      if (shiftNumber > 0) {
-        shift.shiftNumber = (shiftNumber+1).toString();
-      }
+      shift.shiftNumber = (shiftNumber+1).toString();
 
       await this._shiftService.addShift(shift);
     }
