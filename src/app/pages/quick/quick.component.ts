@@ -64,13 +64,7 @@ export class QuickComponent implements OnInit {
     ) { }
 
   async ngOnInit(): Promise<void> {
-    this.addresses = await this._addressService.getAddresses();
-    this.names = await this._nameService.getNames();
-    this.places = await this._placeService.getPlaces();
-    this.services = await this._serviceService.getServices();
-    this.shifts = await this._shiftService.getTodaysShifts();
-    this.trips = await this._tripService.getPastTrips(1);
-    // this.trips = await this._tripService.getTrips();
+    await this.load();
 
     this.filteredAddresses = this.quickForm.controls.address.valueChanges.pipe(
       startWith(''),
@@ -199,26 +193,27 @@ export class QuickComponent implements OnInit {
     console.log('Saved!');
   }
 
+  async load() {
+    this.addresses = await this._addressService.getAddresses();
+    this.names = await this._nameService.getNames();
+    this.places = await this._placeService.getPlaces();
+    this.services = await this._serviceService.getServices();
+    this.shifts = await this._shiftService.getTodaysShifts();
+    this.trips = await this._tripService.getPastTrips(1);
+    // this.trips = await this._tripService.getTrips();
+  }
+
   async reload() {
     await this._addressService.loadAddresses()
-    this.addresses = await this._addressService.getAddresses();
-
     await this._nameService.loadNames()
-    this.names = await this._nameService.getNames();
-
     await this._placeService.loadPlaces();
-    this.places = await this._placeService.getPlaces();
-
     await this._serviceService.loadServices();
-    this.services = await this._serviceService.getServices();
-
     await this._shiftService.loadShifts();
-    this.shifts = await this._shiftService.getTodaysShifts();
-
     await this._tripService.loadTrips();
-    this.trips = await this._tripService.getPastTrips();
 
-    window.location.reload();
+    await this.load();
+
+    // window.location.reload();
   }
 
   public getShortAddress(address: string): string {
