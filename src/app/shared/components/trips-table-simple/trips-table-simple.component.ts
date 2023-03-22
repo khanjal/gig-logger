@@ -15,6 +15,6 @@ export class TripsTableSimpleComponent implements OnInit {
   displayedColumns: string[] = [];
 
   ngOnInit() { 
-    this.displayedColumns = ['saved', 'date', 'service', 'place', 'time', 'amount', 'name', 'address'];
+    this.displayedColumns = ['date', 'service', 'place', 'time', 'amount', 'name', 'address'];
   }
 }

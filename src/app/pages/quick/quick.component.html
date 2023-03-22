@@ -93,11 +93,18 @@
         </div>
 
         <button mat-stroked-button type="submit" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Add</button>
-        <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save</button>
-        <button mat-stroked-button color="warn" type="button" (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
+        
     </form>
 </div>
 
 <mat-divider></mat-divider>
 
-<trips-table-simple title="Saved Trips" [trips]="trips"></trips-table-simple>
+<div class="container" *ngIf="unsavedTrips.length > 0">
+    <trips-table-simple title="Unsaved Trips" [trips]="unsavedTrips"></trips-table-simple>
+    <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save</button>
+</div>
+
+<div class="container">
+    <trips-table-simple title="Saved Trips" [trips]="savedTrips" *ngIf="savedTrips.length > 0"></trips-table-simple>
+    <button mat-stroked-button color="warn" type="button" (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
+</div>
