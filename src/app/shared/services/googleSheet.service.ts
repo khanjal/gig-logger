@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { SiteModel } from '../models/site.model';
-
-import keys from '../data/keys/jwt.keys.json';
 import { AddressHelper } from '../helpers/address.helper';
 import { NameHelper } from '../helpers/name.helper';
 import { PlaceHelper } from '../helpers/place.helper';
@@ -12,10 +10,10 @@ import { ShiftHelper } from '../helpers/shift.helper';
 import { TripHelper } from '../helpers/trip.helper';
 import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
+import keys from '../data/keys/jwt.keys.json';
 
-
-const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
-//const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
+//const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
+const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -26,13 +24,7 @@ export class GoogleDriveService {
     data: any = null;
 
     constructor(
-            public http: HttpClient, 
-            // private _addressService: AddressService,
-            // private _nameService: NameService,
-            // private _placeService: PlaceService,
-            // private _serviceService: ServiceService,
-            // private _shiftService: ShiftService,
-            // private _tripService: TripService,
+            public http: HttpClient
         ) { }
 
     public async addSheet() {
@@ -103,5 +95,33 @@ export class GoogleDriveService {
         console.log(site.remote.trips);
 
         LocalStorageHelper.updateRemoteData(site);
+    }
+
+    public async SaveLocalData() {
+        await doc.useServiceAccountAuth(keys);
+        await doc.loadInfo();
+
+        let data = LocalStorageHelper.getSiteData();
+        let sheet: GoogleSpreadsheetWorksheet
+        
+        sheet = doc.sheetsByTitle["Shifts"];
+        data.local.shifts.forEach(async shift => {
+            await sheet.addRow({ Date: shift.date, Service: shift.service, '#': shift.shiftNumber });
+        });
+
+        sheet = doc.sheetsByTitle["Trips"];
+        data.local.trips.forEach(async trips => {
+            await sheet.addRow({ 
+                Date: trips.date, 
+                Service: trips.service, 
+                '#': trips.shiftNumber, 
+                Place: trips.place,
+                Pay: trips.pay,
+                Name: trips.name,
+                'End Address': trips.address
+            });
+        });
+
+        
     }
 }
