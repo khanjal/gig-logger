@@ -6,11 +6,13 @@ import { HeaderComponent } from './header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
+import { TruncatePipe } from './pipes/transform.pipe';
 
 @NgModule({
     declarations: [
         HeaderComponent,
-        TripsTableSimpleComponent
+        TripsTableSimpleComponent,
+        TruncatePipe
     ],
     imports: [
         CommonModule,
