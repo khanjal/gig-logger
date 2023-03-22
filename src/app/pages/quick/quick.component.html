@@ -97,8 +97,6 @@
     </form>
 </div>
 
-<mat-divider></mat-divider>
-
 <div class="container" *ngIf="unsavedTrips.length > 0">
     <trips-table-simple title="Unsaved Trips" [trips]="unsavedTrips"></trips-table-simple>
     <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save</button>

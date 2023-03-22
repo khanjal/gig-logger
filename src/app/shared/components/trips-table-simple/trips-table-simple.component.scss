@@ -4,12 +4,14 @@
     margin: 0 auto;
     overflow: hidden;
     padding-left: 1rem;
+    padding-bottom: .5rem;
 }
 
 .table-responsive {
     display: block;
     width: 100%;
     overflow-x: auto;
+    padding-bottom: .5rem;
 }
 
 mat-table {
