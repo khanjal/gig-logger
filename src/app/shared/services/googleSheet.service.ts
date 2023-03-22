@@ -1,10 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
+import { SiteModel } from '../models/site.model';
 
-import keys from '../data/jwt.keys.json';
+import keys from '../data/keys/jwt.keys.json';
+import { AddressHelper } from '../helpers/address.helper';
+import { NameHelper } from '../helpers/name.helper';
+import { PlaceHelper } from '../helpers/place.helper';
+import { ServiceHelper } from '../helpers/service.helper';
+import { ShiftHelper } from '../helpers/shift.helper';
+import { TripHelper } from '../helpers/trip.helper';
+import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
-const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4');
+
+
+const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
+//const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -14,13 +25,30 @@ const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'
 export class GoogleDriveService {
     data: any = null;
 
-    constructor(public http: HttpClient) { }
+    constructor(
+            public http: HttpClient, 
+            // private _addressService: AddressService,
+            // private _nameService: NameService,
+            // private _placeService: PlaceService,
+            // private _serviceService: ServiceService,
+            // private _shiftService: ShiftService,
+            // private _tripService: TripService,
+        ) { }
+
+    public async addSheet() {
+        await doc.useServiceAccountAuth(keys);
+        await doc.loadInfo();
+
+        const sheet = await doc.addSheet({ title: 'test2', headerValues: ['={"Address";SORT(UNIQUE({Trips!Q2:Q}))}', '=ARRAYFORMULA(IFS(ROW($A:$A)=1,"Visits",ISBLANK($A:$A), "",true,COUNTIF(Trips!P:P,$A:$A)+COUNTIF(Trips!Q:Q,$A:$A)))'] });
+    }
 
     public async getSheetDataById(id: number): Promise<GoogleSpreadsheetWorksheet> {
         await doc.useServiceAccountAuth(keys);
         await doc.loadInfo();
 
         const sheet = doc.sheetsById[id];
+        console.log(sheet.title);
+        console.log(sheet.rowCount);
 
         return sheet;
     }
@@ -30,7 +58,50 @@ export class GoogleDriveService {
         await doc.loadInfo();
 
         const sheet = doc.sheetsByTitle[name];
+        console.log(sheet.title);
+        console.log(sheet.rowCount);
 
         return sheet;
+    }
+
+    public async loadRemoteData() {
+        await doc.useServiceAccountAuth(keys);
+        await doc.loadInfo();
+
+        let site: SiteModel = new SiteModel;
+        let sheet, rows;
+
+        // Addresses
+        sheet = doc.sheetsByTitle["Addresses"];
+        rows = await sheet.getRows();
+        site.remote.addresses = AddressHelper.translateSheetData(rows);
+
+        // Names
+        sheet = doc.sheetsByTitle["Names"];
+        rows = await sheet.getRows();
+        site.remote.names = NameHelper.translateSheetData(rows);
+
+        // Places
+        sheet = doc.sheetsByTitle["Places"];
+        rows = await sheet.getRows();
+        site.remote.places = PlaceHelper.translateSheetData(rows);
+
+        // Services
+        sheet = doc.sheetsByTitle["Services"];
+        rows = await sheet.getRows();
+        site.remote.services = ServiceHelper.translateSheetData(rows);
+
+        // Shifts
+        sheet = doc.sheetsByTitle["Shifts"];
+        rows = await sheet.getRows();
+        site.remote.shifts = ShiftHelper.translateSheetData(rows);
+
+        // Trips
+        sheet = doc.sheetsByTitle["Trips"];
+        rows = await sheet.getRows();
+        site.remote.trips = TripHelper.translateSheetData(rows);
+        console.log(site.remote.trips);
+
+        LocalStorageHelper.updateRemoteData(site);
     }
 }

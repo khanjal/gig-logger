@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 import { AddressModel } from "src/app/shared/models/address.model";
 import { GoogleDriveService } from "./googleSheet.service";
 
@@ -25,10 +26,7 @@ export class AddressService {
         return addresses;
     }
 
-    public async loadAddresses() {
-        // Read Address sheet
-        let sheet = await this._googleSheetService.getSheetDataByName(sheetName);
-
+    public async getSheetData(sheet: GoogleSpreadsheetWorksheet): Promise<AddressModel[]> {
         console.log(sheet.title);
         console.log(sheet.rowCount);
 
@@ -54,6 +52,15 @@ export class AddressService {
         // console.log(addresses);
         console.log(addresses.length);
         // console.log(addresses);
+
+        return addresses;
+    }
+
+    public async loadAddresses() {
+        // Read Address sheet
+        let sheet = await this._googleSheetService.getSheetDataByName(sheetName);
+
+        let addresses = this.getSheetData(sheet);
 
         // Load addresses into storage
         localStorage.setItem('addresses', JSON.stringify(addresses));

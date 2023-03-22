@@ -9,13 +9,13 @@ import { ServiceModel } from 'src/app/shared/models/service.model';
 import { ShiftModel } from 'src/app/shared/models/shift.model';
 import { TripModel } from 'src/app/shared/models/trip.model';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
-import { AddressService } from 'src/app/shared/services/address.service';
-import { NameService } from 'src/app/shared/services/name.service';
-import { PlaceService } from 'src/app/shared/services/place.service';
-import { ServiceService } from 'src/app/shared/services/service.service';
-import { ShiftService } from 'src/app/shared/services/shift.service';
-import { TripService } from 'src/app/shared/services/trip.service';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
+import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
+import { NameHelper } from 'src/app/shared/helpers/name.helper';
+import { PlaceHelper } from 'src/app/shared/helpers/place.helper';
+import { ServiceHelper } from 'src/app/shared/helpers/service.helper';
+import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
+import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 
 @Component({
   selector: 'app-quick',
@@ -50,17 +50,12 @@ export class QuickComponent implements OnInit {
   filteredServices: Observable<ServiceModel[]> | undefined;
 
   shifts: ShiftModel[] = [];
-  trips: TripModel[] = [];
-  yesterdayTrips: TripModel[] = [];
+  savedTrips: TripModel[] = [];
+  unsavedTrips: TripModel[] = [];
 
   constructor(
       private _router: Router, 
-      private _addressService: AddressService, 
-      private _nameService: NameService,
-      private _placeService: PlaceService,
-      private _serviceService: ServiceService,
-      private _shiftService: ShiftService,
-      private _tripService: TripService
+      private _googleService: GoogleDriveService
     ) { }
 
   async ngOnInit(): Promise<void> {
@@ -144,17 +139,8 @@ export class QuickComponent implements OnInit {
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
 
-      let datestring = DateHelper.getDateString();
-      
-      shift.date = datestring;
-      shift.service = this.quickForm.value.service ?? "";
-
-      // Count number of shifts with same date and service type. Only add number if > 0.
-      let shiftNumber = await this._shiftService.getNextShiftNumber(this.quickForm.value.service ?? "");
-
-      shift.shiftNumber = shiftNumber++;
-
-      await this._shiftService.addShift(shift);
+      shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "");
+      ShiftHelper.addShift(shift);
     }
     else {
       // console.log(this.quickForm.value.shift);
@@ -176,11 +162,11 @@ export class QuickComponent implements OnInit {
     trip.shiftNumber = shift.shiftNumber ?? 0;
     trip.time = DateHelper.getTimeString(new Date);
 
-    await this._tripService.addTrip(trip);
+    TripHelper.addTrip(trip);
 
     console.log(trip);
 
-    this.trips = await this._tripService.getPastTrips();
+    this.unsavedTrips = TripHelper.getLocalTrips();
 
     // this._router.navigate(['/quick']);
     window.location.reload();
@@ -192,22 +178,17 @@ export class QuickComponent implements OnInit {
   }
 
   async load() {
-    this.addresses = await this._addressService.getAddresses();
-    this.names = await this._nameService.getNames();
-    this.places = await this._placeService.getPlaces();
-    this.services = await this._serviceService.getServices();
-    this.shifts = await this._shiftService.getTodaysShifts();
-    this.trips = await this._tripService.getPastTrips(1);
-    // this.trips = await this._tripService.getTrips();
+    this.addresses = AddressHelper.getRemoteAddresses();
+    this.names = NameHelper.getRemoteNames();
+    this.places = PlaceHelper.getRemotePlaces();
+    this.services = ServiceHelper.getRemoteServices();
+    this.shifts = ShiftHelper.getPastShifts(2);
+    this.savedTrips = TripHelper.getPastTrips(2);
+    this.unsavedTrips = TripHelper.getLocalTrips();
   }
 
   async reload() {
-    await this._addressService.loadAddresses()
-    await this._nameService.loadNames()
-    await this._placeService.loadPlaces();
-    await this._serviceService.loadServices();
-    await this._shiftService.loadShifts();
-    await this._tripService.loadTrips();
+    await this._googleService.loadRemoteData();
 
     await this.load();
 
