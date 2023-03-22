@@ -174,6 +174,8 @@ export class QuickComponent implements OnInit {
 
   async save() {
     console.log('Saving...');
+    await this._googleService.SaveLocalData();
+    await this.reload();
     console.log('Saved!');
   }
 
