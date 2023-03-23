@@ -116,7 +116,10 @@ export class GoogleDriveService {
                 Service: trips.service, 
                 '#': trips.shiftNumber, 
                 Place: trips.place,
+                Pickup: trips.time,
                 Pay: trips.pay,
+                Tip: trips.tip,
+                Bonus: trips.bonus,
                 Name: trips.name,
                 'End Address': trips.address
             });
