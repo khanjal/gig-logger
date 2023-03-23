@@ -169,7 +169,7 @@ export class QuickComponent implements OnInit {
     this.unsavedTrips = TripHelper.getLocalTrips();
 
     // this._router.navigate(['/quick']);
-    window.location.reload();
+    // window.location.reload();
   }
 
   async save() {
