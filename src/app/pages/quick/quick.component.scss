@@ -16,6 +16,15 @@
     padding: .5rem;
 }
 
+.button-row {
+    display: table-cell;
+    margin:0 auto;
+}
+
+button {
+    margin:0 auto;
+}
+
 @media (min-width: 768px) {
     .container {
         margin: 0 auto;

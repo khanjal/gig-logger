@@ -190,6 +190,10 @@ export class QuickComponent implements OnInit {
     this.unsavedTrips = TripHelper.getLocalTrips();
   }
 
+  async clear() {
+    
+  }
+
   async reload() {
     await this._googleService.loadRemoteData();
 
