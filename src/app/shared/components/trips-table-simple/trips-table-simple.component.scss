@@ -1,0 +1,49 @@
+
+.trips-container {
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
+    padding-left: 1rem;
+    padding-bottom: .5rem;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: .5rem;
+}
+
+mat-table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    display: table;
+    border-collapse: collapse;
+    margin: 0px;
+}
+
+mat-row,
+mat-header-row {
+    display: table-row;
+}
+
+mat-row:nth-child(even){
+    background-color: lightcyan;
+}
+
+mat-row:nth-child(odd){
+    background-color: lightyellow;
+}
+
+mat-cell,
+mat-header-cell {
+    word-wrap: initial;
+    display: table-cell;
+    padding: 0px 5px;
+    line-break: unset;
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+}   
