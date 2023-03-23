@@ -90,7 +90,8 @@ export class ShiftHelper {
 
     static createNewShift(service: string): ShiftModel {
         let shift: ShiftModel = new ShiftModel;
-        let datestring = DateHelper.getDateString();
+        // let datestring = DateHelper.getDateString();
+        let datestring = new Date().toLocaleDateString();
 
         shift.date = datestring;
         shift.service = service;
