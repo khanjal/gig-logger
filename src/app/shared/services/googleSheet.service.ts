@@ -126,8 +126,9 @@ export class GoogleDriveService {
                 Place: trip.place,
                 Pickup: trip.time,
                 Pay: trip.pay,
-                Tip: trip.tip,
-                Bonus: trip.bonus,
+                Tip: trip.tip ?? "",
+                Bonus: trip.bonus ?? "",
+                Cash: trip.cash ?? "",
                 Name: trip.name,
                 'End Address': trip.address,
                 Test: 'random stuff'
