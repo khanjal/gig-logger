@@ -104,6 +104,7 @@
 
 <div class="container" *ngFor="let trip of unsavedTrips">
     <trips-quick-view [trip]="trip"></trips-quick-view>
+    <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button>
     <button mat-stroked-button color="warn" type="button" (click)="clear()"><mat-icon>delete</mat-icon> Delete</button>
 </div>
 <div class="button-row">
