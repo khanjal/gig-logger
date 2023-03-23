@@ -3,12 +3,13 @@
 }
 
 .gap {
-    margin-right: 10px;
+    margin-right: 2rem;
 }
 
 a {
     color: white;
-    text-decoration: none ;
+    text-decoration: none;
+    vertical-align: bottom;
 
     &:hover {
         text-decoration: underline;
@@ -16,9 +17,10 @@ a {
 }
 
 mat-icon {
-    color: black;
+    color: white;
+    margin-right: .5rem;
 }
 
 mat-toolbar {
-    margin-bottom: 20px;
-  }
+    margin-bottom: 1rem;
+}
