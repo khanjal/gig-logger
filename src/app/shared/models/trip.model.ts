@@ -4,6 +4,7 @@ export class TripModel {
     bonus: number = 0;
     cash: number = 0;
     date: string = "";
+    distance: number = 0;
     key: string = "";
     name: string = "";
     note: string = "";

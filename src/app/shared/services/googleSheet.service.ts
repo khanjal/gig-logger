@@ -92,7 +92,7 @@ export class GoogleDriveService {
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
         site.remote.trips = TripHelper.translateSheetData(rows);
-        console.log(site.remote.trips);
+        // console.log(site.remote.trips);
 
         LocalStorageHelper.updateRemoteData(site);
     }
@@ -100,30 +100,40 @@ export class GoogleDriveService {
     public async SaveLocalData() {
         await doc.useServiceAccountAuth(keys);
         await doc.loadInfo();
+        console.log(doc.title);
 
         let data = LocalStorageHelper.getSiteData();
-        let sheet: GoogleSpreadsheetWorksheet
+        let sheet: GoogleSpreadsheetWorksheet;
         
         sheet = doc.sheetsByTitle["Shifts"];
+        let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.shifts.forEach(async shift => {
-            await sheet.addRow({ Date: shift.date, Service: shift.service, '#': shift.shiftNumber });
-        });
-
-        sheet = doc.sheetsByTitle["Trips"];
-        data.local.trips.forEach(async trips => {
-            await sheet.addRow({ 
-                Date: trips.date, 
-                Service: trips.service, 
-                '#': trips.shiftNumber, 
-                Place: trips.place,
-                Pickup: trips.time,
-                Pay: trips.pay,
-                Tip: trips.tip,
-                Bonus: trips.bonus,
-                Name: trips.name,
-                'End Address': trips.address
+            shiftRows.push({ 
+                Date: shift.date, 
+                Service: shift.service, 
+                '#': shift.shiftNumber 
             });
         });
+        await sheet.addRows(shiftRows);
+
+        sheet = doc.sheetsByTitle["Trips"];
+        let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
+        data.local.trips.forEach(async trip => {
+            tripRows.push({
+                Date: trip.date, 
+                Service: trip.service,
+                '#': trip.shiftNumber, 
+                Place: trip.place,
+                Pickup: trip.time,
+                Pay: trip.pay,
+                Tip: trip.tip,
+                Bonus: trip.bonus,
+                Name: trip.name,
+                'End Address': trip.address,
+                Test: 'random stuff'
+            });
+        });
+        await sheet.addRows(tripRows);
 
         
     }
