@@ -7,11 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { TruncatePipe } from './pipes/transform.pipe';
+import { TripsQuickViewComponent } from './components/trips-quick-view/trips-quick-view.component';
 
 @NgModule({
     declarations: [
         HeaderComponent,
         TripsTableSimpleComponent,
+        TripsQuickViewComponent,
         TruncatePipe
     ],
     imports: [
@@ -23,7 +25,8 @@ import { TruncatePipe } from './pipes/transform.pipe';
     ],
     exports: [
         HeaderComponent, 
-        TripsTableSimpleComponent
+        TripsTableSimpleComponent,
+        TripsQuickViewComponent
     ],
     providers: [],
     bootstrap: []
