@@ -1,9 +1,10 @@
 export class TripModel {
     id: number = 0;
     address: string = "";
-    bonus: number = 0;
-    cash: number = 0;
+    bonus?: number;
+    cash?: number;
     date: string = "";
+    distance: number = 0;
     key: string = "";
     name: string = "";
     note: string = "";
@@ -13,6 +14,6 @@ export class TripModel {
     service: string = "";
     shiftNumber: number = 0;
     time: string = "";
-    tip: number = 0;
+    tip?: number;
     total: number = 0;
 }
