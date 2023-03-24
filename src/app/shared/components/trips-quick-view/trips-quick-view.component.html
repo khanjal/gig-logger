@@ -1,9 +1,11 @@
-<p>
-    {{trip.date}} {{trip.time}} {{trip.service}}-{{trip.shiftNumber}} {{trip.place}}({{trip.distance}})
-</p>
-<p>
-    {{trip.name}}, {{trip.address}}
-</p>
-<p>
-    Pay {{trip.pay | currency}} Tip {{trip.tip | currency}} Bonus {{trip.bonus | currency}} Cash {{trip.cash | currency}}
-</p>
+<mat-card>
+    <div><img mat-card-sm-image></div>
+    <div>
+        <mat-card-header>{{trip.date}} {{trip.time}} {{trip.service}}-{{trip.shiftNumber}} {{trip.place}}({{trip.distance}})</mat-card-header>
+        <mat-card-content>
+            
+            <div>{{trip.name}}, {{trip.address | truncate:50}}</div>
+            <div>Pay {{trip.pay | currency}} Tip {{trip.tip | currency}} Bonus {{trip.bonus | currency}} Cash {{trip.cash | currency}}</div>
+        </mat-card-content>
+    </div>
+</mat-card>
