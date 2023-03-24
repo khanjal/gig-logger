@@ -2,7 +2,7 @@
     <h2 class="text-center mb-5">Angular Login with Google</h2>
     <div *ngIf="isLoggedin === false">
     <div>
-        <asl-google-signin-button type='standard' size='large'></asl-google-signin-button>
+        <asl-google-signin-button type='icon' shape="circle" size='large'></asl-google-signin-button>
     </div>
     </div>
     <div *ngIf="isLoggedin === true">
@@ -18,6 +18,6 @@
         <label>Email</label>
         <input type="text" class="form-control" [value]="socialUser.email" id="email" readonly>
         </div>
-        <button type="button" (click)="logOut()" class="btn btn-primary">Log Out</button>
+        <button mat-stroked-button color="primary" type="button" (click)="logOut()"><mat-icon>highlight_off</mat-icon> Log Out</button>
     </div>
 </div>
