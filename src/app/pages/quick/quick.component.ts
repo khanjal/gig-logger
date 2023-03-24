@@ -27,6 +27,7 @@ export class QuickComponent implements OnInit {
   quickForm = new FormGroup({
     address: new FormControl(''),
     amount: new FormControl(),
+    distance: new FormControl(),
     name: new FormControl(''),
     place: new FormControl(''),
     service: new FormControl(''),
@@ -149,7 +150,7 @@ export class QuickComponent implements OnInit {
       }
     }
 
-    console.log(shift);
+    // console.log(shift);
     
     let trip: TripModel = new TripModel;
 
@@ -164,7 +165,7 @@ export class QuickComponent implements OnInit {
 
     TripHelper.addTrip(trip);
 
-    console.log(trip);
+    // console.log(trip);
 
     this.unsavedTrips = TripHelper.getLocalTrips();
 
@@ -187,6 +188,10 @@ export class QuickComponent implements OnInit {
     this.shifts = ShiftHelper.getPastShifts(2);
     this.savedTrips = TripHelper.getPastTrips(2);
     this.unsavedTrips = TripHelper.getLocalTrips();
+  }
+
+  async clear() {
+    
   }
 
   async reload() {
