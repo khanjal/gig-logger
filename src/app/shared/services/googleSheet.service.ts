@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
+import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet, ServiceAccountCredentials } from 'google-spreadsheet';
 import { SiteModel } from '../models/site.model';
 import { AddressHelper } from '../helpers/address.helper';
 import { NameHelper } from '../helpers/name.helper';
@@ -10,7 +10,7 @@ import { ShiftHelper } from '../helpers/shift.helper';
 import { TripHelper } from '../helpers/trip.helper';
 import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
-import keys from '../data/keys/jwt.keys.json';
+import { environment } from '../../../environments/environment';
 
 //const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
 const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
@@ -28,14 +28,14 @@ export class GoogleDriveService {
         ) { }
 
     public async addSheet() {
-        await doc.useServiceAccountAuth(keys);
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
-        const sheet = await doc.addSheet({ title: 'test2', headerValues: ['={"Address";SORT(UNIQUE({Trips!Q2:Q}))}', '=ARRAYFORMULA(IFS(ROW($A:$A)=1,"Visits",ISBLANK($A:$A), "",true,COUNTIF(Trips!P:P,$A:$A)+COUNTIF(Trips!Q:Q,$A:$A)))'] });
+        // const sheet = await doc.addSheet({ title: 'test2', headerValues: ['={"Address";SORT(UNIQUE({Trips!Q2:Q}))}', '=ARRAYFORMULA(IFS(ROW($A:$A)=1,"Visits",ISBLANK($A:$A), "",true,COUNTIF(Trips!P:P,$A:$A)+COUNTIF(Trips!Q:Q,$A:$A)))'] });
     }
 
     public async getSheetDataById(id: number): Promise<GoogleSpreadsheetWorksheet> {
-        await doc.useServiceAccountAuth(keys);
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
         const sheet = doc.sheetsById[id];
@@ -46,7 +46,7 @@ export class GoogleDriveService {
     }
 
     public async getSheetDataByName(name: string): Promise<GoogleSpreadsheetWorksheet> {
-        await doc.useServiceAccountAuth(keys);
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
         const sheet = doc.sheetsByTitle[name];
@@ -57,7 +57,7 @@ export class GoogleDriveService {
     }
 
     public async loadRemoteData() {
-        await doc.useServiceAccountAuth(keys);
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
         let site: SiteModel = new SiteModel;
@@ -98,7 +98,7 @@ export class GoogleDriveService {
     }
 
     public async SaveLocalData() {
-        await doc.useServiceAccountAuth(keys);
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
         console.log(doc.title);
 
