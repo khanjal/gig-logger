@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
     this.socialAuthService.authState.subscribe((user) => {
       this.socialUser = user;
       this.isLoggedin = user != null;
+      sessionStorage.setItem('token', this.socialUser?.idToken);
       console.log(this.socialUser);
     });
   }
@@ -38,5 +39,6 @@ export class LoginComponent implements OnInit {
   }
   logOut(): void {
     this.socialAuthService.signOut();
+    sessionStorage.removeItem('token');
   }
 }
