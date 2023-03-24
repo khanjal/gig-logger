@@ -15,6 +15,8 @@ import { ShiftService } from './shared/services/shift.service';
 import { ServiceService } from './shared/services/service.service';
 import { TripService } from './shared/services/trip.service';
 import { SharedModule } from './shared/shared.module';
+import { AuthService } from './shared/services/auth.service';
+import { AuthGuardService } from './shared/services/auth-guard.service';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import { SharedModule } from './shared/shared.module';
   ],
   providers: [
     AddressService,
+    AuthService,
+    AuthGuardService,
     GoogleDriveService,
     NameService,
     PlaceService,
