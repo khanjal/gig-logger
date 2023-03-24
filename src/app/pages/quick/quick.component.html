@@ -49,6 +49,11 @@
             <input matInput type="number" name="amount" placeholder="4.75" formControlName="amount" value="">
         </mat-form-field>
 
+        <mat-form-field class="field-quarter-width">
+            <mat-label>Distance</mat-label>
+            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
+        </mat-form-field>
+
         <mat-form-field class="field-halfish-width" appearance="fill">
             <mat-label>Name</mat-label>
             <input type="text"
@@ -97,10 +102,21 @@
     </form>
 </div>
 
-<div class="container" *ngIf="unsavedTrips.length > 0">
-    <trips-table-simple title="Unsaved Trips" [trips]="unsavedTrips"></trips-table-simple>
-    <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save</button>
+<div class="container" *ngFor="let trip of unsavedTrips">
+    <trips-quick-view [trip]="trip"></trips-quick-view>
+    <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button>
+    <button mat-stroked-button color="warn" type="button" (click)="clear()"><mat-icon>delete</mat-icon> Delete</button>
 </div>
+<div class="button-row">
+    <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save All</button>
+</div>
+
+<!-- <div class="container" *ngIf="unsavedTrips.length > 0">
+    <trips-table-simple title="Unsaved Trips" [trips]="unsavedTrips"></trips-table-simple>
+    <div class="button-row">
+        <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save</button>
+    </div>
+</div> -->
 
 <div class="container">
     <trips-table-simple title="Saved Trips" [trips]="savedTrips" *ngIf="savedTrips.length > 0"></trips-table-simple>
