@@ -16,6 +16,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "npm run config && ng build",
     "config": "ts-node src/environments/set-env.ts",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -35,7 +36,9 @@
     "@angular/router": "^15.2.1",
     "@auth0/angular-jwt": "^5.1.2",
     "assert": "^2.0.0",
+    "colors": "^1.1.2",
     "crypto-browserify": "^3.12.0",
+    "dotenv": "^5.0.0",
     "google-auth-library": "^8.7.0",
     "google-spreadsheet": "^3.3.0",
     "https-browserify": "^1.0.0",
@@ -66,6 +69,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "process": "^0.11.10",
+    "ts-node": "~5.0.1",
     "typescript": "~4.9.5"
   }
 }
