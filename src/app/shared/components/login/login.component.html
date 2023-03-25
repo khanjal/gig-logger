@@ -4,6 +4,6 @@
         <asl-google-signin-button type='icon' shape="circle" size='large'></asl-google-signin-button>
     </div>
     <div *ngIf="isLoggedin === true">
-            <button mat-stroked-button color="primary" type="button" (click)="logOut()"><mat-icon>highlight_off</mat-icon> Log Out</button>
+            <button mat-flat-button color="warn" type="button" (click)="logOut()"><mat-icon>highlight_off</mat-icon> Log Out</button>
     </div>
 </div>
