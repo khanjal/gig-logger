@@ -35,6 +35,7 @@ export class QuickComponent implements OnInit {
   });
 
   isNewShift: boolean = false;
+  reloading: boolean = false;
 
   addresses: AddressModel[] = [];
   filteredAddresses: Observable<AddressModel[]> | undefined;
@@ -185,8 +186,8 @@ export class QuickComponent implements OnInit {
     this.names = NameHelper.getRemoteNames();
     this.places = PlaceHelper.getRemotePlaces();
     this.services = ServiceHelper.getRemoteServices();
-    this.shifts = ShiftHelper.getPastShifts(2);
-    this.savedTrips = TripHelper.getPastTrips(2);
+    this.shifts = ShiftHelper.getPastShifts(1);
+    this.savedTrips = TripHelper.getPastTrips(1);
     this.unsavedTrips = TripHelper.getLocalTrips();
   }
 
@@ -195,10 +196,11 @@ export class QuickComponent implements OnInit {
   }
 
   async reload() {
+    this.reloading = true;
     await this._googleService.loadRemoteData();
 
     await this.load();
-
+    this.reloading = false;
     // window.location.reload();
   }
 

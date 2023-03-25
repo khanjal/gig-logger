@@ -104,8 +104,8 @@
 
 <div class="container" *ngFor="let trip of unsavedTrips">
     <trips-quick-view [trip]="trip"></trips-quick-view>
-    <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button>
-    <button mat-stroked-button color="warn" type="button" (click)="clear()"><mat-icon>delete</mat-icon> Delete</button>
+    <!-- <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button>
+    <button mat-stroked-button color="warn" type="button" (click)="clear()"><mat-icon>delete</mat-icon> Delete</button> -->
 </div>
 <div class="button-row">
     <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save All</button>
@@ -120,5 +120,5 @@
 
 <div class="container">
     <trips-table-simple title="Saved Trips" [trips]="savedTrips" *ngIf="savedTrips.length > 0"></trips-table-simple>
-    <button mat-stroked-button color="warn" type="button" (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
+    <button mat-stroked-button color="warn" type="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
 </div>
