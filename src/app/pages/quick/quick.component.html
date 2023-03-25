@@ -63,8 +63,7 @@
                 matInput
                 formControlName="name"
                 [matAutocomplete]="autoName"
-                (blur)="showNameAddressesEvent($event)"
-                required>
+                (blur)="showNameAddressesEvent($event)" >
             <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
                 <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)">
                     {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
@@ -108,7 +107,7 @@
     <button mat-stroked-button color="warn" type="button" (click)="clear()"><mat-icon>delete</mat-icon> Delete</button> -->
 </div>
 <div class="button-row">
-    <button mat-stroked-button color="primary" type="button" (click)="save()"><mat-icon>save</mat-icon> Save All</button>
+    <button mat-stroked-button color="primary" type="button" [class.spinner]="saving" [disabled]="saving" (click)="save()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save All</button>
 </div>
 
 <!-- <div class="container" *ngIf="unsavedTrips.length > 0">
