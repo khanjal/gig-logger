@@ -10,6 +10,7 @@ const setEnv = () => {
         path: 'src/environments/.env'
     });
   // `environment.ts` file structure
+    console.log(`Client Email: ${process.env["client_email"]}`);
     const envConfigFile = `export const environment = {
     client_email: '${process.env["client_email"]}',
     private_key: '${process.env["private_key"]}',
