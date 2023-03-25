@@ -12,8 +12,8 @@ import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
 import { environment } from '../../../environments/environment';
 
-//const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
-const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
+const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
+//const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -86,18 +86,20 @@ export class GoogleDriveService {
         // Shifts
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
-        site.remote.shifts = ShiftHelper.translateSheetData(rows);
+        let shifts = ShiftHelper.translateSheetData(rows);
+        site.remote.shifts = ShiftHelper.getPastShifts(7, shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
-        site.remote.trips = TripHelper.translateSheetData(rows);
+        let trips = TripHelper.translateSheetData(rows);
+        site.remote.trips = TripHelper.getPastTrips(7, trips);
         // console.log(site.remote.trips);
 
         LocalStorageHelper.updateRemoteData(site);
     }
 
-    public async SaveLocalData() {
+    public async saveLocalData() {
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
         console.log(doc.title);
@@ -114,7 +116,14 @@ export class GoogleDriveService {
                 '#': shift.shiftNumber 
             });
         });
+
         await sheet.addRows(shiftRows);
+        // try {
+        //     await sheet.addRows(shiftRows);
+        // } catch (error) {
+        //     console.log(error);
+        // }
+        
 
         sheet = doc.sheetsByTitle["Trips"];
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
@@ -130,11 +139,16 @@ export class GoogleDriveService {
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
                 Name: trip.name,
-                'End Address': trip.address,
-                Test: 'random stuff'
+                'End Address': trip.address
             });
         });
         await sheet.addRows(tripRows);
+        // try {
+        //     await sheet.addRows(tripRows);
+        // } catch (error) {
+        //     console.log(error);
+        // }
+        
 
         
     }
