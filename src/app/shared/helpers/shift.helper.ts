@@ -22,8 +22,10 @@ export class ShiftHelper {
         return shifts;
     }
 
-    static getPastShifts(days: number = 0):  ShiftModel[] {
-        let shifts = this.getAllShifts();
+    static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
+        if (!shifts) {
+            shifts = this.getAllShifts();
+        }
 
         let datestring = DateHelper.getDateString(days);
 
