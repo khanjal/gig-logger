@@ -12,6 +12,7 @@ import { TripsQuickViewComponent } from './components/trips-quick-view/trips-qui
 import { LoginComponent } from '../shared/components/login/login.component';
 import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     ],
     imports: [
         CommonModule,
+        MatButtonModule,
         MatCardModule,
         MatIconModule,
         MatTableModule,
