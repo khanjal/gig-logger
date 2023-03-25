@@ -36,6 +36,7 @@ export class QuickComponent implements OnInit {
 
   isNewShift: boolean = false;
   reloading: boolean = false;
+  saving: boolean = false;
 
   addresses: AddressModel[] = [];
   filteredAddresses: Observable<AddressModel[]> | undefined;
@@ -176,8 +177,10 @@ export class QuickComponent implements OnInit {
 
   async save() {
     console.log('Saving...');
-    await this._googleService.SaveLocalData();
+    this.saving = true;
+    await this._googleService.saveLocalData();
     await this.reload();
+    this.saving = false;
     console.log('Saved!');
   }
 
