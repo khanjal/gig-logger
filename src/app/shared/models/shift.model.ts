@@ -1,6 +1,6 @@
 export class ShiftModel {
     id: number = 0;
-    date: string = "";
+    date: Date = new Date;
     distance: number = 0;
     key: string = "";
     saved: boolean = false;

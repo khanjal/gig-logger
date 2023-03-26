@@ -42,7 +42,7 @@ export class ShiftService {
         let todaysShifts: ShiftModel[] = [];
 
         shifts.forEach(shift => {
-            if (shift.date == datestring) {
+            if (shift.date == new Date) {
                 todaysShifts.push(shift);
             }
         });
