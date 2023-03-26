@@ -111,7 +111,7 @@ export class GoogleDriveService {
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.shifts.forEach(async shift => {
             shiftRows.push({ 
-                Date: shift.date, 
+                Date: shift.date.toLocaleDateString(), 
                 Service: shift.service, 
                 '#': shift.shiftNumber 
             });
@@ -129,7 +129,7 @@ export class GoogleDriveService {
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.trips.forEach(async trip => {
             tripRows.push({
-                Date: trip.date, 
+                Date: trip.date.toLocaleDateString(), 
                 Service: trip.service,
                 '#': trip.shiftNumber, 
                 Place: trip.place,
