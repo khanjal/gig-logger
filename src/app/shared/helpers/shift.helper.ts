@@ -68,7 +68,7 @@ export class ShiftHelper {
         let todaysShifts: ShiftModel[] = [];
 
         shifts.forEach(shift => {
-            if (shift.date == datestring) {
+            if (shift.date.toLocaleDateString() == new Date().toLocaleDateString()) {
                 todaysShifts.push(shift);
             }
         });
@@ -95,7 +95,7 @@ export class ShiftHelper {
         // let datestring = DateHelper.getDateString();
         let datestring = new Date().toLocaleDateString();
 
-        shift.date = datestring;
+        shift.date = new Date();
         shift.service = service;
 
         let shiftNumber = this.getNextShiftNumber(service);
