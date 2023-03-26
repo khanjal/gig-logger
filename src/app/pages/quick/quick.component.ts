@@ -144,6 +144,7 @@ export class QuickComponent implements OnInit {
 
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "");
       ShiftHelper.addShift(shift);
+      this.shifts = ShiftHelper.getPastShifts(1);
     }
     else {
       // console.log(this.quickForm.value.shift);
@@ -151,6 +152,12 @@ export class QuickComponent implements OnInit {
         shift = <ShiftModel><unknown>this.quickForm.value.shift;
       }
     }
+
+    let timeString = DateHelper.getTimeString(new Date);
+
+    shift.end = timeString;
+
+    // TODO: Update shift with time
 
     // console.log(shift);
     
@@ -163,7 +170,7 @@ export class QuickComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
     trip.shiftNumber = shift.shiftNumber ?? 0;
-    trip.time = DateHelper.getTimeString(new Date);
+    trip.time = shift.end = timeString;
 
     TripHelper.addTrip(trip);
 
