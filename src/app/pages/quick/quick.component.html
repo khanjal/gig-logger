@@ -118,6 +118,11 @@
 </div> -->
 
 <div class="container">
-    <trips-table-simple title="Saved Trips" [trips]="savedTrips" *ngIf="savedTrips.length > 0"></trips-table-simple>
+    <trips-table-simple title="Saved Local Trips" [trips]="savedTrips" *ngIf="savedTrips.length > 0"></trips-table-simple>
+    <button mat-stroked-button color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="reload()"><mat-icon>delete</mat-icon> Clear</button>
+</div>
+
+<div class="container">
+    <trips-table-simple title="Spreadsheet Trips" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></trips-table-simple>
     <button mat-stroked-button color="warn" type="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
 </div>

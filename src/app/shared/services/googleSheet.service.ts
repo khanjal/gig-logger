@@ -110,11 +110,17 @@ export class GoogleDriveService {
         sheet = doc.sheetsByTitle["Shifts"];
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.shifts.forEach(async shift => {
+            if (shift.saved) {
+                return;
+            }
+
             shiftRows.push({ 
                 Date: shift.date, 
                 Service: shift.service, 
                 '#': shift.shiftNumber 
             });
+
+            shift.saved = true;
         });
 
         await sheet.addRows(shiftRows);
@@ -128,6 +134,10 @@ export class GoogleDriveService {
         sheet = doc.sheetsByTitle["Trips"];
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.trips.forEach(async trip => {
+            if (trip.saved) {
+                return;
+            }
+
             tripRows.push({
                 Date: trip.date, 
                 Service: trip.service,
@@ -141,6 +151,8 @@ export class GoogleDriveService {
                 Name: trip.name,
                 'End Address': trip.address
             });
+
+            trip.saved = true;
         });
         await sheet.addRows(tripRows);
         // try {
@@ -149,7 +161,7 @@ export class GoogleDriveService {
         //     console.log(error);
         // }
         
-
+        LocalStorageHelper.updateLocalData(data);
         
     }
 }
