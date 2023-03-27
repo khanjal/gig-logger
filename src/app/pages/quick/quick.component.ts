@@ -35,6 +35,7 @@ export class QuickComponent implements OnInit {
   });
 
   isNewShift: boolean = false;
+  clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
 
@@ -54,6 +55,7 @@ export class QuickComponent implements OnInit {
 
   shifts: ShiftModel[] = [];
   savedTrips: TripModel[] = [];
+  sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
 
   constructor(
@@ -176,7 +178,8 @@ export class QuickComponent implements OnInit {
 
     // console.log(trip);
 
-    this.unsavedTrips = TripHelper.getLocalTrips();
+    this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
+    this.savedTrips = TripHelper.getSavedLocalTrips();
 
     // this._router.navigate(['/quick']);
     // window.location.reload();
@@ -197,8 +200,9 @@ export class QuickComponent implements OnInit {
     this.places = PlaceHelper.getRemotePlaces();
     this.services = ServiceHelper.getRemoteServices();
     this.shifts = ShiftHelper.getPastShifts(1);
-    this.savedTrips = TripHelper.getPastTrips(1);
-    this.unsavedTrips = TripHelper.getLocalTrips();
+    this.sheetTrips = TripHelper.getPastTrips(1);
+    this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
+    this.savedTrips = TripHelper.getSavedLocalTrips();
   }
 
   async clear() {
