@@ -48,6 +48,18 @@ export class TripHelper {
         return trips;
     }
 
+    static getSavedLocalTrips(): TripModel[] {
+        let trips = this.getLocalTrips();
+
+        return trips.filter(trip => trip.saved);
+    }
+
+    static getUnsavedLocalTrips(): TripModel[] {
+        let trips = this.getLocalTrips();
+
+        return trips.filter(trip => !trip.saved);
+    }
+
     static addTrip(trip: TripModel) {
         let trips = this.getLocalTrips();
 
