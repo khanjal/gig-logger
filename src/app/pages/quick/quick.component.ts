@@ -35,6 +35,7 @@ export class QuickComponent implements OnInit {
   });
 
   isNewShift: boolean = false;
+  clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
 
@@ -54,6 +55,7 @@ export class QuickComponent implements OnInit {
 
   shifts: ShiftModel[] = [];
   savedTrips: TripModel[] = [];
+  sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
 
   constructor(
@@ -144,6 +146,7 @@ export class QuickComponent implements OnInit {
 
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "");
       ShiftHelper.addShift(shift);
+      this.shifts = ShiftHelper.getPastShifts(1);
     }
     else {
       // console.log(this.quickForm.value.shift);
@@ -151,6 +154,12 @@ export class QuickComponent implements OnInit {
         shift = <ShiftModel><unknown>this.quickForm.value.shift;
       }
     }
+
+    let timeString = DateHelper.getTimeString(new Date);
+
+    shift.end = timeString;
+
+    // TODO: Update shift with time
 
     // console.log(shift);
     
@@ -163,13 +172,14 @@ export class QuickComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
     trip.shiftNumber = shift.shiftNumber ?? 0;
-    trip.time = DateHelper.getTimeString(new Date);
+    trip.time = shift.end = timeString;
 
     TripHelper.addTrip(trip);
 
     // console.log(trip);
 
-    this.unsavedTrips = TripHelper.getLocalTrips();
+    this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
+    this.savedTrips = TripHelper.getSavedLocalTrips();
 
     // this._router.navigate(['/quick']);
     // window.location.reload();
@@ -190,8 +200,9 @@ export class QuickComponent implements OnInit {
     this.places = PlaceHelper.getRemotePlaces();
     this.services = ServiceHelper.getRemoteServices();
     this.shifts = ShiftHelper.getPastShifts(1);
-    this.savedTrips = TripHelper.getPastTrips(1);
-    this.unsavedTrips = TripHelper.getLocalTrips();
+    this.sheetTrips = TripHelper.getPastTrips(1);
+    this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
+    this.savedTrips = TripHelper.getSavedLocalTrips();
   }
 
   async clear() {
