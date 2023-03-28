@@ -123,14 +123,11 @@ export class QuickFormComponent implements OnInit {
 
     TripHelper.addTrip(trip);
 
-    this.resetForm();
-    
+    // this.$emit('event-name');
+
+    this.quickForm.reset();
 
     // console.log(trip);
-  }
-
-  private resetForm() {
-    this.quickForm.reset();
   }
 
   public onShiftSelected(value:string) {
@@ -142,7 +139,7 @@ export class QuickFormComponent implements OnInit {
       this.isNewShift = false;
       this.quickForm.controls.service.clearValidators();
     }
-    
+
     this.quickForm.controls.service.updateValueAndValidity();
   }
 

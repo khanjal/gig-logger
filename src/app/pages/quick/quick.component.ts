@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ShiftModel } from 'src/app/shared/models/shift.model';
 import { TripModel } from 'src/app/shared/models/trip.model';
@@ -6,6 +6,7 @@ import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
+import { QuickFormComponent } from './quick-form/quick-form.component';
 
 @Component({
   selector: 'app-quick',
@@ -13,6 +14,7 @@ import { TripHelper } from 'src/app/shared/helpers/trip.helper';
   styleUrls: ['./quick.component.scss']
 })
 export class QuickComponent implements OnInit {
+  @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
 
   clearing: boolean = false;
   reloading: boolean = false;
@@ -48,6 +50,9 @@ export class QuickComponent implements OnInit {
     this.sheetTrips = TripHelper.getPastTrips(1);
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
     this.savedTrips = TripHelper.getSavedLocalTrips();
+
+    console.log(this.form);
+    this.form?.load();
   }
 
   async clear() {
