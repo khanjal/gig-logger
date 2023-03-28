@@ -1,4 +1,4 @@
-<form class="quick-form" [formGroup]="quickForm" (ngSubmit)="addTrip()">
+<form class="quick-form" [formGroup]="quickForm">
     <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
         <mat-label>Shift</mat-label>
         <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
@@ -94,6 +94,6 @@
         <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
     </div>
 
-    <button mat-stroked-button type="submit" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Add</button>
+    <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Add</button>
     
 </form>
