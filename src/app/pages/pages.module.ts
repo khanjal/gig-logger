@@ -13,12 +13,14 @@ import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
+import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     QuickComponent,
-    ShiftsComponent
+    ShiftsComponent,
+    QuickFormComponent
   ],
   imports: [
     CommonModule,
