@@ -1,104 +1,5 @@
 <div class="container">
-    <form class="quick-form" [formGroup]="quickForm" (ngSubmit)="addTrip()">
-        <mat-form-field appearance="fill" class="field-full-width">
-            <mat-label>Shift</mat-label>
-            <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
-                <mat-option value="new">New</mat-option>
-                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service }} {{ shift.shiftNumber == 0 ? "" : '#' + shift.shiftNumber }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <div *ngIf="isNewShift">
-            <mat-form-field class="field-full-width" appearance="fill">
-                <mat-label>Service</mat-label>
-                <input type="text"
-                    name="service"
-                    placeholder="Pick one"
-                    aria-label="Number"
-                    matInput
-                    formControlName="service"
-                    [matAutocomplete]="autoService"
-                    required>
-                <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
-                    <mat-option *ngFor="let service of filteredServices | async" [value]="service.service">
-                        {{ service.service }} ({{ service.visits }})
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
-        </div>
-
-        <mat-form-field class="field-full-width" appearance="fill">
-            <mat-label>Place</mat-label>
-            <input type="text"
-                name="place"
-                placeholder="Pick one"
-                aria-label="Number"
-                matInput
-                formControlName="place"
-                [matAutocomplete]="autoPlace"
-                required>
-            <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
-                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
-                    {{place.place}} ({{ place.visits }})
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
-
-        <mat-form-field class="field-quarter-width">
-            <mat-label>Pay</mat-label>
-            <input matInput type="number" name="amount" placeholder="4.75" formControlName="amount" value="">
-        </mat-form-field>
-
-        <mat-form-field class="field-quarter-width">
-            <mat-label>Distance</mat-label>
-            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
-        </mat-form-field>
-
-        <mat-form-field class="field-halfish-width" appearance="fill">
-            <mat-label>Name</mat-label>
-            <input type="text"
-                name="name"
-                placeholder="Pick one"
-                aria-label="Number"
-                matInput
-                formControlName="name"
-                [matAutocomplete]="autoName"
-                (blur)="showNameAddressesEvent($event)" >
-            <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)">
-                    {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
-
-        <div *ngFor="let address of selectedName?.addresses">
-            <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ getShortAddress(address) }}</a>
-        </div>
-
-        <mat-form-field class="field-full-width" appearance="fill">
-            <mat-label>Address</mat-label>
-            <input type="text"
-                name="address"
-                placeholder="Pick one"
-                aria-label="Number"
-                matInput
-                formControlName="address"
-                [matAutocomplete]="autoAddress"
-                (blur)="showAddressNamesEvent($event)" >
-            <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
-                    {{ getShortAddress(address.address) }} ({{ address.visits }})
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
-
-        <div *ngIf="selectedAddress">
-            <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
-        </div>
-
-        <button mat-stroked-button type="submit" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Add</button>
-        
-    </form>
+    <quick-form (parentReload)="load()"></quick-form>
 </div>
 
 <div class="container" *ngFor="let trip of unsavedTrips">
@@ -117,8 +18,8 @@
     </div>
 </div> -->
 
-<div class="container">
-    <trips-table-simple title="Saved Local Trips" [trips]="savedTrips" *ngIf="savedTrips.length > 0"></trips-table-simple>
+<div class="container" *ngIf="savedTrips.length > 0">
+    <trips-table-simple title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
     <button mat-stroked-button color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="reload()"><mat-icon>delete</mat-icon> Clear</button>
 </div>
 
