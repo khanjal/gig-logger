@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { TruncatePipe } from './pipes/transform.pipe';
 import { TripsQuickViewComponent } from './components/trips-quick-view/trips-quick-view.component';
-import { LoginComponent } from '../shared/components/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 @NgModule({
     declarations: [
         HeaderComponent,
-        LoginComponent,
+        ProfileComponent,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
         TruncatePipe
