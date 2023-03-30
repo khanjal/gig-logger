@@ -2,7 +2,6 @@
 
     <div *ngIf="!isLoggedin">
         <button mat-mini-fab type="button" (click)="logOut()"><mat-icon>power_settings_new</mat-icon></button>
-        <!-- <asl-google-signin-button type='icon' shape="circle" size='large'></asl-google-signin-button> -->
     </div>
     <div *ngIf="isLoggedin === true">
             <button mat-mini-fab color="warn" type="button" (click)="logOut()"><mat-icon>power_settings_new</mat-icon></button>

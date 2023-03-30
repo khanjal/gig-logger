@@ -10,7 +10,7 @@ import { RouterModule } from '@angular/router';
 import { TruncatePipe } from './pipes/transform.pipe';
 import { TripsQuickViewComponent } from './components/trips-quick-view/trips-quick-view.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { SocialLoginModule } from '@abacritt/angularx-social-login';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -30,8 +30,7 @@ import { MatButtonModule } from '@angular/material/button';
         MatTableModule,
         MatToolbarModule,
         RouterModule,
-        SocialLoginModule,
-        GoogleSigninButtonModule
+        SocialLoginModule
     ],
     exports: [
         HeaderComponent,
@@ -39,18 +38,6 @@ import { MatButtonModule } from '@angular/material/button';
         TripsQuickViewComponent
     ],
     providers: [
-        {
-            provide: 'SocialAuthServiceConfig',
-            useValue: {
-                autoLogin: false,
-                providers: [
-                {
-                    id: GoogleLoginProvider.PROVIDER_ID,
-                    provider: new GoogleLoginProvider('1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com'),
-                },
-            ],
-            } as SocialAuthServiceConfig,
-        },
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
         JwtHelperService
     ],
