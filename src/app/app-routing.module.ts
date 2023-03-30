@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { LoginComponent } from './shared/components/login/login.component';
+import { ProfileComponent } from './shared/components/profile/profile.component';
 import { QuickComponent } from './pages/quick/quick.component';
 import { ShiftsComponent } from './pages/shifts/shifts.component';
 import { AuthGuardService } from './shared/services/auth-guard.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: ProfileComponent },
   { path: 'quick', component: QuickComponent, canActivate: [AuthGuardService] },
   { path: 'shifts', component: ShiftsComponent }
 ];
