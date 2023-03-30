@@ -51,7 +51,7 @@ export class QuickComponent implements OnInit {
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
     this.savedTrips = TripHelper.getSavedLocalTrips();
 
-    console.log(this.form);
+    // console.log(this.form);
     this.form?.load();
   }
 

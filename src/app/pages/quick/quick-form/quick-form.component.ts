@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, startWith, map } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
@@ -21,6 +21,8 @@ import { TripModel } from 'src/app/shared/models/trip.model';
   styleUrls: ['./quick-form.component.scss']
 })
 export class QuickFormComponent implements OnInit {
+  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+
   quickForm = new FormGroup({
     address: new FormControl(''),
     amount: new FormControl(),
@@ -126,6 +128,8 @@ export class QuickFormComponent implements OnInit {
     // this.$emit('event-name');
 
     this.quickForm.reset();
+
+    this.parentReload.emit();
 
     // console.log(trip);
   }
