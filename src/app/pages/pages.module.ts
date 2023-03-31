@@ -13,7 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
-import { QuickFormComponent } from './quick/quick-form/quick-form.component';
+import { LoginComponent } from './login/login.component';
 import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 @NgModule({
@@ -21,7 +21,7 @@ import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig 
     HomeComponent,
     QuickComponent,
     ShiftsComponent,
-    QuickFormComponent
+    LoginComponent
   ],
   imports: [
     CommonModule,
