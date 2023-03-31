@@ -1,21 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, Observable, startWith } from 'rxjs';
-import { AddressModel } from 'src/app/shared/models/address.model';
-import { NameModel } from 'src/app/shared/models/name.model';
-import { PlaceModel } from 'src/app/shared/models/place.model';
-import { ServiceModel } from 'src/app/shared/models/service.model';
 import { ShiftModel } from 'src/app/shared/models/shift.model';
 import { TripModel } from 'src/app/shared/models/trip.model';
-import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
-import { NameHelper } from 'src/app/shared/helpers/name.helper';
-import { PlaceHelper } from 'src/app/shared/helpers/place.helper';
-import { ServiceHelper } from 'src/app/shared/helpers/service.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
+import { QuickFormComponent } from './quick-form/quick-form.component';
 
 @Component({
   selector: 'app-quick',
@@ -23,37 +14,15 @@ import { TripHelper } from 'src/app/shared/helpers/trip.helper';
   styleUrls: ['./quick.component.scss']
 })
 export class QuickComponent implements OnInit {
+  @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
 
-  quickForm = new FormGroup({
-    address: new FormControl(''),
-    amount: new FormControl(),
-    distance: new FormControl(),
-    name: new FormControl(''),
-    place: new FormControl(''),
-    service: new FormControl(''),
-    shift: new FormControl('')
-  });
-
-  isNewShift: boolean = false;
+  clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
 
-  addresses: AddressModel[] = [];
-  filteredAddresses: Observable<AddressModel[]> | undefined;
-  selectedAddress: AddressModel | undefined;
-
-  names: NameModel[] = [];
-  filteredNames: Observable<NameModel[]> | undefined;
-  selectedName: NameModel | undefined;
-
-  places: PlaceModel[] = [];
-  filteredPlaces: Observable<PlaceModel[]> | undefined;
-
-  services: ServiceModel[] = [];
-  filteredServices: Observable<ServiceModel[]> | undefined;
-
   shifts: ShiftModel[] = [];
   savedTrips: TripModel[] = [];
+  sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
 
   constructor(
@@ -64,115 +33,7 @@ export class QuickComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.load();
 
-    this.filteredAddresses = this.quickForm.controls.address.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterAddress(value || '')),
-    );
-
-    this.filteredNames = this.quickForm.controls.name.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterName(value || '')),
-    );
-
-    this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterPlace(value || '')),
-    );
-
-    this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterService(value || '')),
-    );
-  }
-
-  public onShiftSelected(value:string) {
-    if (value == 'new') {
-      this.isNewShift = true;
-    }
-    else {
-      this.isNewShift = false;
-      // Mark form untouched so that service isn't in error anymore
-    }
-  }
-
-  selectAddress(address: string) {
-    this.quickForm.controls.address.setValue(address);
-    this.showAddressNames(address);
-  }
-
-  showAddressNamesEvent(event: any) {
-    let address = event.target.value.toLowerCase();
-    this.showAddressNames(address);
-  }
-
-  showAddressNames(address: string) {
-    // console.log(address);
-
-    if (address) {
-      this.selectedAddress = this.addresses.find(option => option.address.toLowerCase().includes(address.toLowerCase()));
-    }
-    else
-    {
-      this.selectedAddress = new AddressModel;
-    }
-  }
-
-  showNameAddressesEvent(event: any) {
-    let name = event.target.value.toLowerCase();
-    this.showNameAddresses(name);
-  }
-
-  showNameAddresses(name: string) {
-    // console.log(name);
-    // console.log(this._filterName(name));
-
-    if (name) {
-      this.selectedName = this.names.find(option => option.name.toLowerCase().includes(name.toLowerCase()));
-    }
-    else
-    {
-      this.selectedName = new NameModel;
-    }
-  }
-
-  async addTrip() {
-    // console.log(this.quickForm.value);
-
-    let shift: ShiftModel = new ShiftModel;
-    if (this.quickForm.value.shift == "new") {
-      console.log("New Shift!");
-
-      shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "");
-      ShiftHelper.addShift(shift);
-    }
-    else {
-      // console.log(this.quickForm.value.shift);
-      if (this.quickForm.value.shift) {
-        shift = <ShiftModel><unknown>this.quickForm.value.shift;
-      }
-    }
-
-    // console.log(shift);
     
-    let trip: TripModel = new TripModel;
-
-    trip.address = this.quickForm.value.address ?? "";
-    trip.pay = +this.quickForm.value.amount ?? 0;
-    trip.date = shift.date;
-    trip.name = this.quickForm.value.name ?? "";
-    trip.place = this.quickForm.value.place ?? "";
-    trip.service = shift.service;
-    trip.shiftNumber = shift.shiftNumber ?? 0;
-    trip.time = DateHelper.getTimeString(new Date);
-
-    TripHelper.addTrip(trip);
-
-    // console.log(trip);
-
-    this.unsavedTrips = TripHelper.getLocalTrips();
-
-    // this._router.navigate(['/quick']);
-    // window.location.reload();
   }
 
   async save() {
@@ -185,13 +46,13 @@ export class QuickComponent implements OnInit {
   }
 
   async load() {
-    this.addresses = AddressHelper.getRemoteAddresses();
-    this.names = NameHelper.getRemoteNames();
-    this.places = PlaceHelper.getRemotePlaces();
-    this.services = ServiceHelper.getRemoteServices();
     this.shifts = ShiftHelper.getPastShifts(1);
-    this.savedTrips = TripHelper.getPastTrips(1);
-    this.unsavedTrips = TripHelper.getLocalTrips();
+    this.sheetTrips = TripHelper.getPastTrips(1);
+    this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
+    this.savedTrips = TripHelper.getSavedLocalTrips();
+
+    // console.log(this.form);
+    this.form?.load();
   }
 
   async clear() {
@@ -211,28 +72,6 @@ export class QuickComponent implements OnInit {
     return AddressHelper.getShortAddress(address);
   }
 
-  private _filterAddress(value: string): AddressModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.addresses.filter(option => option.address.toLowerCase().includes(filterValue));
-  }
-
-  private _filterName(value: string): NameModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.names.filter(option => option.name.toLowerCase().includes(filterValue));
-  }
-
-  private _filterPlace(value: string): PlaceModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
-  }
-
-  private _filterService(value: string): ServiceModel[] {
-    const filterValue = value.toLowerCase();
-
-    return this.services.filter(option => option.service.toLowerCase().includes(filterValue));
-  }
+  
 
 }
