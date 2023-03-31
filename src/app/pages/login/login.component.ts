@@ -12,7 +12,7 @@ export class LoginComponent {
   isLoggedin: boolean = false;
 
   constructor(
-    private socialAuthService: SocialAuthService, public router: Router
+    private socialAuthService: SocialAuthService, public _router: Router
   ) {}
   
   async ngOnInit(): Promise<void> {
@@ -22,6 +22,7 @@ export class LoginComponent {
         this.isLoggedin = user != null;
         sessionStorage.setItem('token', this.socialUser?.idToken);
         // console.log(this.socialUser);
+        this._router.navigate(['/quick']);
     });
   }
 }
