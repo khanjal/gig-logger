@@ -56,11 +56,7 @@ export class ShiftHelper {
     static getNextShiftNumber(service: string): number {
         let shifts: ShiftModel[] = this.getTodaysShifts();
 
-        console.log(shifts);
-        console.log(service);
-
         let serviceShifts = shifts.filter(shift => shift.service == service);
-        console.log(serviceShifts);
 
         return serviceShifts.length+1;
     }
@@ -72,12 +68,12 @@ export class ShiftHelper {
         let todaysShifts: ShiftModel[] = [];
 
         shifts.forEach(shift => {
-            if (new Date(shift.date).toDateString() == new Date().toDateString()) {
+            if (shift.date == datestring) {
                 todaysShifts.push(shift);
             }
         });
 
-        console.log(shifts);
+        // console.log(shifts);
 
         return todaysShifts;
     }
@@ -96,13 +92,15 @@ export class ShiftHelper {
 
     static createNewShift(service: string): ShiftModel {
         let shift: ShiftModel = new ShiftModel;
+        // let datestring = DateHelper.getDateString();
+        let datestring = new Date().toLocaleDateString();
 
+        shift.date = datestring;
         shift.service = service;
 
         let shiftNumber = this.getNextShiftNumber(service);
 
         shift.shiftNumber = shiftNumber;
-        shift.start = new Date().toLocaleTimeString();
         
         return shift;
     }
