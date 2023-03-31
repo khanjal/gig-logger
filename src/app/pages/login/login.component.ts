@@ -1,4 +1,4 @@
-import { SocialUser, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { SocialUser, SocialAuthService } from '@abacritt/angularx-social-login';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
+
 export class LoginComponent {
   socialUser!: SocialUser;
   isLoggedin: boolean = false;
