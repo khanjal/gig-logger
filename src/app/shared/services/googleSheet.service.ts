@@ -12,8 +12,8 @@ import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
 import { environment } from '../../../environments/environment';
 
-//const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
-const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
+const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
+//const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -110,17 +110,11 @@ export class GoogleDriveService {
         sheet = doc.sheetsByTitle["Shifts"];
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.shifts.forEach(async shift => {
-            if (shift.saved) {
-                return;
-            }
-
             shiftRows.push({ 
                 Date: shift.date, 
                 Service: shift.service, 
                 '#': shift.shiftNumber 
             });
-
-            shift.saved = true;
         });
 
         await sheet.addRows(shiftRows);
@@ -134,10 +128,6 @@ export class GoogleDriveService {
         sheet = doc.sheetsByTitle["Trips"];
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.trips.forEach(async trip => {
-            if (trip.saved) {
-                return;
-            }
-
             tripRows.push({
                 Date: trip.date, 
                 Service: trip.service,
@@ -151,8 +141,6 @@ export class GoogleDriveService {
                 Name: trip.name,
                 'End Address': trip.address
             });
-
-            trip.saved = true;
         });
         await sheet.addRows(tripRows);
         // try {
@@ -161,7 +149,7 @@ export class GoogleDriveService {
         //     console.log(error);
         // }
         
-        LocalStorageHelper.updateLocalData(data);
+
         
     }
 }
