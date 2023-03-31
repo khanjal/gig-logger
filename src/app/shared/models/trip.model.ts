@@ -3,7 +3,7 @@ export class TripModel {
     address: string = "";
     bonus?: number;
     cash?: number;
-    date: string = "";
+    date: string = new Date().toDateString();
     distance: number = 0;
     key: string = "";
     name: string = "";
