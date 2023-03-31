@@ -14,8 +14,7 @@ import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
-import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
-import { QuickFormComponent } from './quick/quick-form/quick-form.component';
+import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 
 @NgModule({
   declarations: [
@@ -37,7 +36,8 @@ import { QuickFormComponent } from './quick/quick-form/quick-form.component';
     MatTableModule,
     ReactiveFormsModule,
     SharedModule,
-    GoogleSigninButtonModule
+    GoogleSigninButtonModule,
+    SocialLoginModule
   ],
   providers: [
     {
