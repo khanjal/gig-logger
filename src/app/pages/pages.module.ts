@@ -13,14 +13,15 @@ import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
-import { QuickFormComponent } from './quick/quick-form/quick-form.component';
+import { LoginComponent } from './login/login.component';
+import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 @NgModule({
   declarations: [
     HomeComponent,
     QuickComponent,
     ShiftsComponent,
-    QuickFormComponent
+    LoginComponent
   ],
   imports: [
     CommonModule,
@@ -33,9 +34,23 @@ import { QuickFormComponent } from './quick/quick-form/quick-form.component';
     MatInputModule,
     MatTableModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    GoogleSigninButtonModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+          autoLogin: false,
+          providers: [
+          {
+              id: GoogleLoginProvider.PROVIDER_ID,
+              provider: new GoogleLoginProvider('1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com'),
+          },
+      ],
+      } as SocialAuthServiceConfig,
+  },
+  ],
   bootstrap: []
 })
 export class PagesModule { }
