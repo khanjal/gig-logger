@@ -15,11 +15,13 @@ import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
 import { LoginComponent } from './login/login.component';
 import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     QuickComponent,
+    QuickFormComponent,
     ShiftsComponent,
     LoginComponent
   ],
