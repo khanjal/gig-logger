@@ -10,7 +10,6 @@ import { RouterModule } from '@angular/router';
 import { TruncatePipe } from './pipes/transform.pipe';
 import { TripsQuickViewComponent } from './components/trips-quick-view/trips-quick-view.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { SocialLoginModule } from '@abacritt/angularx-social-login';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -29,8 +28,7 @@ import { MatButtonModule } from '@angular/material/button';
         MatIconModule,
         MatTableModule,
         MatToolbarModule,
-        RouterModule,
-        SocialLoginModule
+        RouterModule
     ],
     exports: [
         HeaderComponent,
