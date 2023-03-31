@@ -8,7 +8,7 @@ import { NumberHelper } from "./number.helper";
 export class TripHelper {
     static getPastTrips(days: number = 0, trips?: TripModel[]):  TripModel[] {
         if (!trips) {
-            trips = [...this.getLocalTrips(), ...this.getRemoteTrips()];
+            trips = this.getRemoteTrips();
         }
 
         let datestring = DateHelper.getDateString(days);
@@ -46,18 +46,6 @@ export class TripHelper {
         }
 
         return trips;
-    }
-
-    static getSavedLocalTrips(): TripModel[] {
-        let trips = this.getLocalTrips();
-
-        return trips.filter(trip => trip.saved);
-    }
-
-    static getUnsavedLocalTrips(): TripModel[] {
-        let trips = this.getLocalTrips();
-
-        return trips.filter(trip => !trip.saved);
     }
 
     static addTrip(trip: TripModel) {
