@@ -14,29 +14,20 @@ export class ProfileComponent implements OnInit {
   isLoggedin: boolean = false;
 
   constructor(
-    private socialAuthService: SocialAuthService, public router: Router
+    private socialAuthService: SocialAuthService, private _router: Router
   ) {}
   
   async ngOnInit(): Promise<void> {
     if (sessionStorage.getItem('token')) {
       this.isLoggedin = true;
     }
-    else {
-      // console.log('Logged out');
-      this.socialAuthService.authState.subscribe((user) => {
-        this.socialUser = user;
-        this.isLoggedin = user != null;
-        sessionStorage.setItem('token', this.socialUser?.idToken);
-        // console.log(this.socialUser);
-    });
-
-    //let token = await this.socialAuthService.getAccessToken('1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com');
-    
-    //console.log(token);
-    }
   }
 
-  logOut(): void {
+  login(): void {
+    this._router.navigate(['login']);
+  }
+
+  logout(): void {
     if(this.socialUser !== null) {
       // console.log(this.socialUser)
       this.socialAuthService.signOut();
@@ -45,6 +36,6 @@ export class ProfileComponent implements OnInit {
     sessionStorage.clear();
     this.isLoggedin = false;
 
-    this.router.navigate(['']);
+    this._router.navigate(['login']);
   }
 }
