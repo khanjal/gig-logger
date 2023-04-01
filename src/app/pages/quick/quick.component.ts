@@ -31,7 +31,7 @@ export class QuickComponent implements OnInit {
     ) { }
 
   async ngOnInit(): Promise<void> {
-    await this.load();
+    this.load();
 
     
   }
@@ -47,9 +47,9 @@ export class QuickComponent implements OnInit {
 
   public load() {
     this.shifts = ShiftHelper.getPastShifts(1);
-    this.sheetTrips = TripHelper.getRemoteTrips();
+    this.sheetTrips = TripHelper.getRemoteTrips().reverse();
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
-    this.savedTrips = TripHelper.getSavedLocalTrips();
+    this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
 
     // console.log(this.form);
     this.form?.load();
@@ -63,7 +63,7 @@ export class QuickComponent implements OnInit {
 
   async clearSavedLocalData() {
     ShiftHelper.clearSavedShifts();
-    TripHelper.clearSaved();
+    TripHelper.clearSavedTrips();
 
     this.load();
   }
