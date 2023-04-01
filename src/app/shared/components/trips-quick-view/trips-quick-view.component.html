@@ -1,6 +1,6 @@
 <mat-card>
     <div>
-        <mat-card-header>{{trip.place}}({{trip.distance}}) {{trip.time}} {{trip.date | date:'MMM d'}} {{trip.service}}-{{trip.shiftNumber}}</mat-card-header>
+        <mat-card-header>{{trip.place}}({{trip.distance}}) {{trip.time}} {{trip.date | date:'MMM d'}} {{trip.service}} {{ trip.shiftNumber == 0 ? "" : '#' + trip.shiftNumber }}</mat-card-header>
         <mat-card-content>
             
             <div>{{trip.name}}, {{trip.address | truncate:50}}</div>

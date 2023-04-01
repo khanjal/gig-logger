@@ -6,6 +6,9 @@ import { LocalStorageHelper } from "./localStorage.helper";
 import { NumberHelper } from "./number.helper";
 
 export class TripHelper {
+    static clearSaved() {
+      throw new Error('Method not implemented.');
+    }
     static getPastTrips(days: number = 0, trips?: TripModel[]):  TripModel[] {
         if (!trips) {
             trips = [...this.getLocalTrips(), ...this.getRemoteTrips()];
@@ -66,7 +69,17 @@ export class TripHelper {
         trips.push(trip);
 
         let gigs = LocalStorageHelper.getSiteData();
+        gigs.local.trips = trips;
 
+        LocalStorageHelper.updateLocalData(gigs);
+    }
+
+    static deleteTrip(trip: TripModel) {
+        let trips = this.getLocalTrips();
+
+        trips = trips.filter(x => x.id !== trip.id);
+
+        let gigs = LocalStorageHelper.getSiteData();
         gigs.local.trips = trips;
 
         LocalStorageHelper.updateLocalData(gigs);

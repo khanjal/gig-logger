@@ -1,7 +1,8 @@
 export class DateHelper {
     static getDateString(days: number = 0): string {
-        let date = new Date;
-        let dateString = `${date.getMonth() + 1}/${date.getDate()-days}/${date.getFullYear().toString().substr(-2)}`;
+        let currentDate = new Date();
+        let date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-days);
+        let dateString = date.toDateString();
 
         return dateString;
     }

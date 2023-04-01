@@ -74,10 +74,10 @@ export class QuickFormComponent implements OnInit {
       map(value => this._filterService(value || '')),
     );
 
-    await this.load();
+    this.load();
   }
 
-  async load() {
+  public load() {
     this.addresses = AddressHelper.getRemoteAddresses();
     this.names = NameHelper.getRemoteNames();
     this.places = PlaceHelper.getRemotePlaces();
@@ -86,7 +86,7 @@ export class QuickFormComponent implements OnInit {
     this.sheetTrips = TripHelper.getPastTrips(1);
   }
 
-  async addTrip() {
+  public addTrip() {
     // console.log(this.quickForm.value);
 
     let shift: ShiftModel = new ShiftModel;
@@ -114,6 +114,7 @@ export class QuickFormComponent implements OnInit {
     
     let trip: TripModel = new TripModel;
 
+    trip.id = TripHelper.getLocalTrips().length++;
     trip.address = this.quickForm.value.address ?? "";
     trip.pay = +this.quickForm.value.amount ?? 0;
     trip.date = shift.date;
