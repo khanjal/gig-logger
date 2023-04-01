@@ -5,6 +5,7 @@ import { DateHelper } from "./date.helper";
 import { LocalStorageHelper } from "./localStorage.helper";
 
 export class ShiftHelper {
+
     static getAllShifts(): ShiftModel[] {
         let shifts = [...this.getLocalShifts(), ...this.getRemoteShifts()];
 
@@ -94,6 +95,10 @@ export class ShiftHelper {
         LocalStorageHelper.updateLocalData(gigs);
     }
 
+    static clearSavedShifts() {
+        let shifts = this.getLocalShifts();
+      }
+
     static createNewShift(service: string): ShiftModel {
         let shift: ShiftModel = new ShiftModel;
 
@@ -101,6 +106,7 @@ export class ShiftHelper {
 
         let shiftNumber = this.getNextShiftNumber(service);
 
+        shift.id = ShiftHelper.getLocalShifts().length++;
         shift.shiftNumber = shiftNumber;
         shift.start = new Date().toLocaleTimeString();
         
