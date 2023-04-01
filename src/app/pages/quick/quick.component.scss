@@ -15,8 +15,16 @@ button {
     margin:0 auto;
 }
 
+.table {
+    overflow-x: auto;
+}
+
 .row-block {
     display: block;
+}
+
+.button-left {
+    float: left;
 }
 
 .button-right {
