@@ -128,11 +128,17 @@ export class QuickFormComponent implements OnInit {
 
     // this.$emit('event-name');
 
-    this.quickForm.reset();
+    this.formReset();
 
     this.parentReload.emit();
 
     // console.log(trip);
+  }
+
+  public formReset() {
+    this.selectedAddress = undefined;
+    this.selectedName = undefined;
+    this.quickForm.reset();
   }
 
   public onShiftSelected(value:string) {
