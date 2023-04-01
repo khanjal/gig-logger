@@ -12,15 +12,15 @@
         <button mat-stroked-button color="primary" type="button" [class.spinner]="saving" [disabled]="saving" (click)="save()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save All</button>
     </div>
 
-    <div *ngIf="savedTrips.length > 0">
-        <trips-table-simple title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
+    <div class="row" *ngIf="savedTrips.length > 0">
+        <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
         <div class="row row-block">
             <button class="button-right" mat-stroked-button color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="clearSavedLocalData()"><mat-icon>delete</mat-icon> Clear</button>
         </div>
     </div>
 
     <div class="row">
-        <trips-table-simple title="Spreadsheet Trips" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></trips-table-simple>
+        <trips-table-simple class="table" title="Spreadsheet Trips" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></trips-table-simple>
         <button mat-stroked-button color="warn" type="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
     </div>
 
