@@ -42,3 +42,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
       max-width: 768px;
   }
 }
+
+.row {
+  display: inline-grid;
+  margin: .5rem auto;
+  width: 100%;
+}

@@ -64,7 +64,7 @@
             (blur)="showNameAddressesEvent($event)" >
         <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
             <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)">
-                {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length }})
+                {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
             </mat-option>
         </mat-autocomplete>
     </mat-form-field>

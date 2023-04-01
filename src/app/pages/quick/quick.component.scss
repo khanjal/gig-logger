@@ -11,12 +11,14 @@
     margin-bottom: 1rem;
 }
 
-.button-row {
-    display: inline-grid;
-    margin: .5rem auto;
-    width: 100%;
-}
-
 button {
     margin:0 auto;
+}
+
+.row-block {
+    display: block;
+}
+
+.button-right {
+    float: right;
 }
