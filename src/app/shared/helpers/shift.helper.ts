@@ -89,7 +89,6 @@ export class ShiftHelper {
         shifts.push(shift);
 
         let gigs = LocalStorageHelper.getSiteData();
-
         gigs.local.shifts = shifts;
 
         LocalStorageHelper.updateLocalData(gigs);
@@ -97,7 +96,14 @@ export class ShiftHelper {
 
     static clearSavedShifts() {
         let shifts = this.getLocalShifts();
-      }
+
+        shifts = shifts.filter(x => !x.saved);
+
+        let gigs = LocalStorageHelper.getSiteData();
+        gigs.local.shifts = shifts;
+
+        LocalStorageHelper.updateLocalData(gigs);
+    }
 
     static createNewShift(service: string): ShiftModel {
         let shift: ShiftModel = new ShiftModel;
