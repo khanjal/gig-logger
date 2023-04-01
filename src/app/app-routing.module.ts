@@ -5,12 +5,14 @@ import { QuickComponent } from './pages/quick/quick.component';
 import { ShiftsComponent } from './pages/shifts/shifts.component';
 import { AuthGuardService } from './shared/services/auth-guard.service';
 import { LoginComponent } from './pages/login/login.component';
+import { SheetSetupComponent } from './pages/sheet-setup/sheet-setup.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'quick', component: QuickComponent, canActivate: [AuthGuardService] },
-  { path: 'shifts', component: ShiftsComponent }
+  { path: 'setup', component: SheetSetupComponent, canActivate: [AuthGuardService] },
+  { path: 'shifts', component: ShiftsComponent, canActivate: [AuthGuardService]  }
 ];
 
 @NgModule({

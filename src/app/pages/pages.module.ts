@@ -16,6 +16,10 @@ import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { LoginComponent } from './login/login.component';
+import { SheetsComponent } from './sheets/sheets.component';
+import { SheetSetupComponent } from './sheet-setup/sheet-setup.component';
+import { SheetSetupFormComponent } from './sheet-setup/sheet-setup-form/sheet-setup-form.component';
+import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-setup-table.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +27,11 @@ import { LoginComponent } from './login/login.component';
     QuickComponent,
     QuickFormComponent,
     ShiftsComponent,
-    LoginComponent
+    LoginComponent,
+    SheetsComponent,
+    SheetSetupComponent,
+    SheetSetupFormComponent,
+    SheetSetupTableComponent
   ],
   imports: [
     CommonModule,
