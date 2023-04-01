@@ -45,9 +45,9 @@ export class QuickComponent implements OnInit {
     console.log('Saved!');
   }
 
-  async load() {
+  public load() {
     this.shifts = ShiftHelper.getPastShifts(1);
-    this.sheetTrips = TripHelper.getPastTrips(1);
+    this.sheetTrips = TripHelper.getRemoteTrips();
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
     this.savedTrips = TripHelper.getSavedLocalTrips();
 
@@ -55,8 +55,17 @@ export class QuickComponent implements OnInit {
     this.form?.load();
   }
 
-  async clear() {
-    
+  async deleteUnsavedLocalTrip(trip: TripModel) {
+    TripHelper.deleteTrip(trip);
+
+    this.load();
+  }
+
+  async clearSavedLocalData() {
+    ShiftHelper.clearSavedShifts();
+    TripHelper.clearSaved();
+
+    this.load();
   }
 
   async reload() {
