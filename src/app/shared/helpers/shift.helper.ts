@@ -68,11 +68,7 @@ export class ShiftHelper {
     static getNextShiftNumber(service: string): number {
         let shifts: ShiftModel[] = this.getTodaysShifts();
 
-        console.log(shifts);
-        console.log(service);
-
         let serviceShifts = shifts.filter(shift => shift.service == service);
-        console.log(serviceShifts);
 
         return serviceShifts.length+1;
     }
@@ -89,7 +85,6 @@ export class ShiftHelper {
             }
         });
 
-        console.log(shifts);
 
         return todaysShifts;
     }
