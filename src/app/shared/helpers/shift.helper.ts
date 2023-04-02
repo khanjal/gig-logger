@@ -16,7 +16,7 @@ export class ShiftHelper {
         let localShifts = this.getLocalShifts();
 
         localShifts.forEach(localShift => {
-            let shiftFilter = shifts.filter(x => x.date === localShift.date && x.service === localShift.service && x.shiftNumber === localShift.shiftNumber);
+            let shiftFilter = shifts.filter(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
 
             if (shiftFilter.length > 0) {
                 return;
