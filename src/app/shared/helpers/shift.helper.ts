@@ -7,6 +7,11 @@ import { LocalStorageHelper } from "./localStorage.helper";
 export class ShiftHelper {
 
     static getAllShifts(): ShiftModel[] {
+        let shifts = [...this.getLocalShifts(), ...this.getRemoteShifts()];
+        return shifts;
+    }
+
+    static getUniqueShifts(): ShiftModel[] {
         let shifts = this.getRemoteShifts();
         let localShifts = this.getLocalShifts();
 
@@ -36,7 +41,7 @@ export class ShiftHelper {
 
     static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
         if (!shifts) {
-            shifts = this.getAllShifts();
+            shifts = this.getUniqueShifts();
         }
 
         let datestring = DateHelper.getDateString(days);
@@ -74,13 +79,12 @@ export class ShiftHelper {
     }
 
     static getTodaysShifts():  ShiftModel[] {
-        let shifts: ShiftModel[] = this.getAllShifts();
-        let datestring = DateHelper.getDateString();
+        let shifts: ShiftModel[] = this.getUniqueShifts();
 
         let todaysShifts: ShiftModel[] = [];
 
         shifts.forEach(shift => {
-            if (new Date(shift.date).toDateString() == new Date().toDateString()) {
+            if (new Date(shift.date).toLocaleDateString() == new Date().toLocaleDateString()) {
                 todaysShifts.push(shift);
             }
         });

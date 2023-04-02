@@ -56,9 +56,10 @@ export class QuickComponent implements OnInit {
   }
 
   async saveLocalTrip(trip: TripModel) {
-    // TripHelper.deleteTrip(trip);
-
-    this.load();
+    this.saving = true;
+    await this._googleService.saveLocalData();
+    await this.reload();
+    this.saving = false;
   }
 
   async deleteUnsavedLocalTrip(trip: TripModel) {

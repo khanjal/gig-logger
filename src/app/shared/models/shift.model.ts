@@ -1,6 +1,6 @@
 export class ShiftModel {
     id: number = 0;
-    date: string = new Date().toDateString();;
+    date: string = new Date().toLocaleDateString();;
     distance: number = 0;
     end: string = "";
     key: string = "";
