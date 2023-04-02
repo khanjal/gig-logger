@@ -55,6 +55,12 @@ export class QuickComponent implements OnInit {
     this.form?.load();
   }
 
+  async saveLocalTrip(trip: TripModel) {
+    // TripHelper.deleteTrip(trip);
+
+    this.load();
+  }
+
   async deleteUnsavedLocalTrip(trip: TripModel) {
     TripHelper.deleteTrip(trip);
 
