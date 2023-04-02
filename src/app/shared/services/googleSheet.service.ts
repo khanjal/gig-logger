@@ -100,14 +100,8 @@ export class GoogleDriveService {
     }
 
     public async saveLocalData() {
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
-        await doc.loadInfo();
-        console.log(doc.title);
-
         let data = LocalStorageHelper.getSiteData();
-        let sheet: GoogleSpreadsheetWorksheet;
-        
-        sheet = doc.sheetsByTitle["Shifts"];
+
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.shifts.forEach(async shift => {
             if (shift.saved) {
@@ -123,7 +117,7 @@ export class GoogleDriveService {
             shift.saved = true;
         });
 
-        await sheet.addRows(shiftRows);
+        await this.saveSheetData("Shifts", shiftRows);
         // try {
         //     await sheet.addRows(shiftRows);
         // } catch (error) {
@@ -131,7 +125,6 @@ export class GoogleDriveService {
         // }
         
 
-        sheet = doc.sheetsByTitle["Trips"];
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
         data.local.trips.forEach(async trip => {
             if (trip.saved) {
@@ -154,7 +147,8 @@ export class GoogleDriveService {
 
             trip.saved = true;
         });
-        await sheet.addRows(tripRows);
+
+        await this.saveSheetData("Trips", tripRows);
         // try {
         //     await sheet.addRows(tripRows);
         // } catch (error) {
@@ -163,5 +157,15 @@ export class GoogleDriveService {
         
         LocalStorageHelper.updateLocalData(data);
         
+    }
+
+    public async saveSheetData(sheetName: string, sheetRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[]) {
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.loadInfo();
+        console.log(doc.title);
+
+        let sheet = doc.sheetsByTitle[sheetName];
+
+        await sheet.addRows(sheetRows);
     }
 }
