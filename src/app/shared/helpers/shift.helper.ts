@@ -7,7 +7,18 @@ import { LocalStorageHelper } from "./localStorage.helper";
 export class ShiftHelper {
 
     static getAllShifts(): ShiftModel[] {
-        let shifts = [...this.getLocalShifts(), ...this.getRemoteShifts()];
+        let shifts = this.getRemoteShifts();
+        let localShifts = this.getLocalShifts();
+
+        localShifts.forEach(localShift => {
+            let shiftFilter = shifts.filter(x => x.date === localShift.date && x.service === localShift.service && x.shiftNumber === localShift.shiftNumber);
+
+            if (shiftFilter.length > 0) {
+                return;
+            }
+
+            shifts.push(localShift);
+        });
 
         return shifts;
     }
