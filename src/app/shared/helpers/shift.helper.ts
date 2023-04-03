@@ -3,6 +3,7 @@ import { ShiftModel } from "../models/shift.model";
 import { SiteModel } from "../models/site.model";
 import { DateHelper } from "./date.helper";
 import { LocalStorageHelper } from "./localStorage.helper";
+import { NumberHelper } from "./number.helper";
 
 export class ShiftHelper {
 
@@ -16,9 +17,9 @@ export class ShiftHelper {
         let localShifts = this.getLocalShifts();
 
         localShifts.forEach(localShift => {
-            let shiftFilter = shifts.filter(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
+            let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
 
-            if (shiftFilter.length > 0) {
+            if (foundShift) {
                 return;
             }
 
@@ -142,6 +143,8 @@ export class ShiftHelper {
             shiftModel.saved = true;
             shiftModel.service = row['Service'];
             shiftModel.shiftNumber = row['#'];
+            shiftModel.total = NumberHelper.getNumberFromString(row['G Total']);
+            shiftModel.trips = row['T Trip'];
             // console.log(shift);
 
             if (shiftModel.date) {
