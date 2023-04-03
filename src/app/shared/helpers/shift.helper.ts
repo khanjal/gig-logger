@@ -17,11 +17,11 @@ export class ShiftHelper {
         let localShifts = this.getLocalShifts();
 
         localShifts.forEach(localShift => {
-            // let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
+            let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
 
-            // if (foundShift) {
-            //     return;
-            // }
+            if (foundShift) {
+                return;
+            }
 
             shifts.push(localShift);
         });
@@ -42,7 +42,7 @@ export class ShiftHelper {
 
     static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
         if (!shifts) {
-            shifts = this.getUniqueShifts();
+            shifts = this.getAllShifts();
         }
 
         let datestring = DateHelper.getDateString(days);
@@ -80,7 +80,7 @@ export class ShiftHelper {
     }
 
     static getTodaysShifts():  ShiftModel[] {
-        let shifts: ShiftModel[] = this.getUniqueShifts();
+        let shifts: ShiftModel[] = this.getAllShifts();
 
         let todaysShifts: ShiftModel[] = [];
 
