@@ -52,7 +52,7 @@ export class QuickComponent implements OnInit {
     this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
 
     // console.log(this.form);
-    this.form?.load();
+    // this.form?.load();
   }
 
   async saveLocalTrip(trip: TripModel) {
@@ -79,7 +79,7 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
     await this._googleService.loadRemoteData();
 
-    await this.load();
+    this.load();
     this.reloading = false;
     // window.location.reload();
   }
