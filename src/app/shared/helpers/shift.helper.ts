@@ -144,7 +144,7 @@ export class ShiftHelper {
             shiftModel.service = row['Service'];
             shiftModel.shiftNumber = row['#'];
             shiftModel.total = NumberHelper.getNumberFromString(row['G Total']);
-            shiftModel.trips = row['T Trip'];
+            shiftModel.trips = row['T Trip'] ?? 0;
             // console.log(shift);
 
             if (shiftModel.date) {
