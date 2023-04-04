@@ -1,9 +1,9 @@
 <form class="quick-form" [formGroup]="quickForm">
     <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
-        <mat-label>Shift/Batch</mat-label>
+        <mat-label>Shift/Batch/Group</mat-label>
         <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
             <mat-option value="new">New</mat-option>
-            <mat-option *ngFor="let shift of shifts.reverse()" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service }} {{ shift.shiftNumber == 0 ? "" : '#' + shift.shiftNumber }}</mat-option>
+            <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service }} {{ shift.shiftNumber == 0 ? "" : '#' + shift.shiftNumber }} ({{ shift.trips }} Trips - {{ shift.total | currency }})</mat-option>
         </mat-select>
     </mat-form-field>
 

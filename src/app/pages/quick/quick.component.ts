@@ -7,6 +7,7 @@ import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service'
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
+import { SiteModel } from 'src/app/shared/models/site.model';
 
 @Component({
   selector: 'app-quick',
@@ -16,11 +17,12 @@ import { QuickFormComponent } from './quick-form/quick-form.component';
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
 
+  siteData: SiteModel = new SiteModel;
+
   clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
 
-  shifts: ShiftModel[] = [];
   savedTrips: TripModel[] = [];
   sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
@@ -32,8 +34,6 @@ export class QuickComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.load();
-
-    
   }
 
   async save() {
@@ -46,7 +46,6 @@ export class QuickComponent implements OnInit {
   }
 
   public load() {
-    this.shifts = ShiftHelper.getPastShifts(1);
     this.sheetTrips = TripHelper.getRemoteTrips().reverse();
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
     this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
@@ -79,7 +78,7 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
     await this._googleService.loadRemoteData();
 
-    await this.load();
+    this.load();
     this.reloading = false;
     // window.location.reload();
   }

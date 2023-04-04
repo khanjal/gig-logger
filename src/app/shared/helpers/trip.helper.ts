@@ -104,6 +104,7 @@ export class TripHelper {
             tripModel.id = row.rowIndex;
             tripModel.address = row['End Address'];
             tripModel.date = row['Date'];
+            tripModel.distance = row['Distance'] ?? 0;
             tripModel.key = row['Key'];
             tripModel.name = row['Name'];
             tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
