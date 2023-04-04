@@ -46,15 +46,33 @@
         </button>
     </mat-form-field>
 
-    <mat-form-field class="field-quarter-width" appearance="outline">
+    <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Pay</mat-label>
-        <input matInput type="number" name="amount" placeholder="4.75" formControlName="amount" value="">
+        <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay>
+        <button type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Clear" (click)="toggleAdvancedPay()">
+            <mat-icon>account_balance</mat-icon>
+        </button>
     </mat-form-field>
 
-    <mat-form-field class="field-quarter-width" appearance="outline">
+    <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Distance</mat-label>
         <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
     </mat-form-field>
+
+    <div *ngIf="showAdvancedPay">
+        <mat-form-field class="field-quarter-width" appearance="outline">
+            <mat-label>Tip</mat-label>
+            <input matInput type="number" name="tip" placeholder="3.5" formControlName="tip" value="">
+        </mat-form-field>
+        <mat-form-field class="field-quarter-width" appearance="outline">
+            <mat-label>Bonus</mat-label>
+            <input matInput type="number" name="bonus" placeholder="2" formControlName="bonus" value="">
+        </mat-form-field>
+        <mat-form-field class="field-quarter-width" appearance="outline">
+            <mat-label>Cash</mat-label>
+            <input matInput type="number" name="cash" placeholder="5" formControlName="cash" value="">
+        </mat-form-field>
+    </div>
 
     <mat-form-field class="field-halfish-width" appearance="outline">
         <mat-label>Name</mat-label>

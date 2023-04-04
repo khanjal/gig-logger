@@ -25,15 +25,19 @@ export class QuickFormComponent implements OnInit {
 
   quickForm = new FormGroup({
     address: new FormControl(''),
-    amount: new FormControl(),
+    bonus: new FormControl(),
+    cash: new FormControl(),
     distance: new FormControl(),
     name: new FormControl(''),
+    pay: new FormControl(),
     place: new FormControl(''),
     service: new FormControl(''),
-    shift: new FormControl('')
+    shift: new FormControl(''),
+    tip: new FormControl(),
   });
 
   isNewShift: boolean = false;
+  showAdvancedPay: boolean = false;
 
   addresses: AddressModel[] = [];
   filteredAddresses: Observable<AddressModel[]> | undefined;
@@ -113,8 +117,11 @@ export class QuickFormComponent implements OnInit {
 
     trip.id = TripHelper.getLocalTrips().length++;
     trip.address = this.quickForm.value.address ?? "";
-    trip.pay = +this.quickForm.value.amount ?? 0;
-    trip.total = trip.pay;
+    trip.pay = +this.quickForm.value.pay ?? 0;
+    trip.tip = +this.quickForm.value.tip ?? 0;
+    trip.bonus = +this.quickForm.value.bonus ?? 0;
+    trip.cash = +this.quickForm.value.cash ?? 0;
+    trip.total = trip.pay + trip.tip + trip.bonus;
     trip.date = shift.date;
     trip.distance = this.quickForm.value.distance ?? 0;
     trip.name = this.quickForm.value.name ?? "";
@@ -191,6 +198,10 @@ export class QuickFormComponent implements OnInit {
     {
       this.selectedName = new NameModel;
     }
+  }
+
+  toggleAdvancedPay() {
+    this.showAdvancedPay = !this.showAdvancedPay;
   }
 
   public getShortAddress(address: string): string {
