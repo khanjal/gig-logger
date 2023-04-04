@@ -22,8 +22,8 @@
                 <mat-header-cell *matHeaderCellDef>Time</mat-header-cell>
                 <mat-cell *matCellDef="let trip"> {{trip.time}} </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="amount">
-                <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+            <ng-container matColumnDef="total">
+                <mat-header-cell *matHeaderCellDef> Total </mat-header-cell>
                 <mat-cell *matCellDef="let trip"> {{trip.total | currency}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
