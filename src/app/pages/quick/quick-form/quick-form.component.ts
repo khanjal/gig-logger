@@ -87,8 +87,6 @@ export class QuickFormComponent implements OnInit {
   }
 
   public addTrip() {
-    // console.log(this.quickForm.value);
-
     let shift: ShiftModel = new ShiftModel;
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
@@ -98,7 +96,6 @@ export class QuickFormComponent implements OnInit {
       this.shifts = ShiftHelper.getPastShifts(1);
     }
     else {
-      // console.log(this.quickForm.value.shift);
       if (this.quickForm.value.shift) {
         shift = <ShiftModel><unknown>this.quickForm.value.shift;
       }
@@ -117,6 +114,7 @@ export class QuickFormComponent implements OnInit {
     trip.id = TripHelper.getLocalTrips().length++;
     trip.address = this.quickForm.value.address ?? "";
     trip.pay = +this.quickForm.value.amount ?? 0;
+    trip.total = trip.pay;
     trip.date = shift.date;
     trip.distance = this.quickForm.value.distance ?? 0;
     trip.name = this.quickForm.value.name ?? "";
