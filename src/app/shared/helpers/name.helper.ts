@@ -4,8 +4,11 @@ import { SiteModel } from "../models/site.model";
 import { LocalStorageHelper } from "./localStorage.helper";
 
 export class NameHelper {
-    static getRemoteNames(): NameModel[] {
-        let siteData: SiteModel = LocalStorageHelper.getSiteData();
+    static getRemoteNames(siteData?: SiteModel): NameModel[] {
+        if(!siteData){
+            siteData = LocalStorageHelper.getSiteData();
+        }
+        
         let names: NameModel[] = [];
 
         if (siteData) {

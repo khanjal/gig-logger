@@ -82,7 +82,7 @@ export class QuickFormComponent implements OnInit {
     this.names = NameHelper.getRemoteNames();
     this.places = PlaceHelper.getRemotePlaces();
     this.services = ServiceHelper.getRemoteServices();
-    this.shifts = ShiftHelper.getPastShifts(1);
+    this.shifts = ShiftHelper.getPastShifts(1).reverse();
     this.sheetTrips = TripHelper.getPastTrips(1);
   }
 
@@ -118,6 +118,7 @@ export class QuickFormComponent implements OnInit {
     trip.address = this.quickForm.value.address ?? "";
     trip.pay = +this.quickForm.value.amount ?? 0;
     trip.date = shift.date;
+    trip.distance = this.quickForm.value.distance ?? 0;
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
