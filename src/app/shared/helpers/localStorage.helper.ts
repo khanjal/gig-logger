@@ -5,7 +5,7 @@ export class LocalStorageHelper {
         let data = localStorage.getItem('gigs') ?? '""';
         let siteData: SiteModel = JSON.parse(data) as SiteModel;
 
-        console.log(siteData);
+        //console.log(siteData);
         if (!siteData.remote) {
             siteData = new SiteModel();
         }

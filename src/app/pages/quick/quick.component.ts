@@ -23,7 +23,6 @@ export class QuickComponent implements OnInit {
   reloading: boolean = false;
   saving: boolean = false;
 
-  shifts: ShiftModel[] = [];
   savedTrips: TripModel[] = [];
   sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
@@ -47,8 +46,7 @@ export class QuickComponent implements OnInit {
   }
 
   public load() {
-    this.shifts = ShiftHelper.getPastShifts(1);
-    this.sheetTrips = TripHelper.getRemoteTrips().reverse();
+    this.sheetTrips = TripHelper.getRemoteTrips();
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
     this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
 
