@@ -17,6 +17,7 @@ export class ShiftHelper {
         let localShifts = this.getLocalShifts();
 
         localShifts.forEach(localShift => {
+
             let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
 
             if (foundShift) {
@@ -80,7 +81,7 @@ export class ShiftHelper {
     }
 
     static getTodaysShifts():  ShiftModel[] {
-        let shifts: ShiftModel[] = this.getAllShifts();
+        let shifts: ShiftModel[] = this.getUniqueShifts();
 
         let todaysShifts: ShiftModel[] = [];
 
