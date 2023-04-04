@@ -134,6 +134,8 @@ export class QuickFormComponent implements OnInit {
 
     // this.$emit('event-name');
 
+    ShiftHelper.updateAllShiftTotals();
+    this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.formReset();
     this.parentReload.emit();
     this.showAdvancedPay = false;

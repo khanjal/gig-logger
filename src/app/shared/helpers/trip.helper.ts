@@ -6,8 +6,12 @@ import { LocalStorageHelper } from "./localStorage.helper";
 import { NumberHelper } from "./number.helper";
 
 export class TripHelper {
-
-    static getPastTrips(days: number = 0, trips?: TripModel[]):  TripModel[] {
+    static getAllTrips(): TripModel[] {
+        let trips = [...this.getUnsavedLocalTrips(), ...this.getRemoteTrips()];
+        return trips;
+    }
+    
+    static getPastTrips(days: number = 0, trips?: TripModel[]): TripModel[] {
         if (!trips) {
             trips = [...this.getLocalTrips(), ...this.getRemoteTrips()];
         }
