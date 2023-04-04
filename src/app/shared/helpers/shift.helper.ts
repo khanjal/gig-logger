@@ -188,7 +188,7 @@ export class ShiftHelper {
         shifts = this.updateShiftTotals(shifts);
 
         let data = LocalStorageHelper.getSiteData();
-        data.local.shifts = shifts;
+        data.remote.shifts = shifts;
 
         LocalStorageHelper.updateRemoteData(data);
     }
