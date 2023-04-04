@@ -7,6 +7,7 @@ import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service'
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
+import { SiteModel } from 'src/app/shared/models/site.model';
 
 @Component({
   selector: 'app-quick',
@@ -15,6 +16,8 @@ import { QuickFormComponent } from './quick-form/quick-form.component';
 })
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
+
+  siteData: SiteModel = new SiteModel;
 
   clearing: boolean = false;
   reloading: boolean = false;
@@ -32,8 +35,6 @@ export class QuickComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.load();
-
-    
   }
 
   async save() {
