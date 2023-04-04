@@ -3,7 +3,12 @@ import { SiteModel } from "../models/site.model";
 export class LocalStorageHelper {
     static getSiteData(): SiteModel {
         let data = localStorage.getItem('gigs') ?? '""';
-        let siteData: SiteModel = JSON.parse(data);
+        let siteData: SiteModel = JSON.parse(data) as SiteModel;
+
+        console.log(siteData);
+        if (!siteData.remote) {
+            siteData = new SiteModel();
+        }
 
         return siteData;
     }
