@@ -4,9 +4,9 @@ import { SiteModel } from "../models/site.model";
 import { DateHelper } from "./date.helper";
 import { LocalStorageHelper } from "./localStorage.helper";
 import { NumberHelper } from "./number.helper";
+import { TripHelper } from "./trip.helper";
 
 export class ShiftHelper {
-
     static getAllShifts(): ShiftModel[] {
         let shifts = [...this.getLocalShifts(), ...this.getRemoteShifts()];
         return shifts;
@@ -131,6 +131,12 @@ export class ShiftHelper {
         return shift;
     }
 
+    static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
+        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.shiftNumber - a.shiftNumber);
+
+        return shifts;
+    }
+
     static translateSheetData(rows: GoogleSpreadsheetRow[]): ShiftModel[] {
         let shifts: ShiftModel[] = [];
 
@@ -157,6 +163,50 @@ export class ShiftHelper {
         console.log(shifts.length);
         // console.log(shifts);
 
+        return shifts;
+    }
+
+    static updateAllShiftTotals() {
+        this.updateLocalShiftTotals();
+        this.updateRemoteShiftTotals();
+    }
+
+    static updateLocalShiftTotals() {
+        let shifts = this.getLocalShifts();
+        
+        shifts = this.updateShiftTotals(shifts);
+
+        let data = LocalStorageHelper.getSiteData();
+        data.local.shifts = shifts;
+
+        LocalStorageHelper.updateLocalData(data);
+    }
+
+    static updateRemoteShiftTotals() {
+        let shifts = this.getRemoteShifts();
+        
+        shifts = this.updateShiftTotals(shifts);
+
+        let data = LocalStorageHelper.getSiteData();
+        data.remote.shifts = shifts;
+
+        LocalStorageHelper.updateRemoteData(data);
+    }
+
+    static updateShiftTotals(shifts: ShiftModel[]): ShiftModel[] {
+        let trips = TripHelper.getAllTrips();
+
+        shifts.forEach(shift => {
+            shift.total = 0;
+            shift.trips = 0;
+            let filteredTrips = trips.filter(x => x.date === shift.date && x.service === shift.service && x.shiftNumber === shift.shiftNumber);
+            
+            filteredTrips.forEach(trip => {
+                shift.total += trip.total;
+                shift.trips++;
+            });
+        });
+        
         return shifts;
     }
 }

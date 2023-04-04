@@ -25,15 +25,19 @@ export class QuickFormComponent implements OnInit {
 
   quickForm = new FormGroup({
     address: new FormControl(''),
-    amount: new FormControl(),
+    bonus: new FormControl(),
+    cash: new FormControl(),
     distance: new FormControl(),
     name: new FormControl(''),
+    pay: new FormControl(),
     place: new FormControl(''),
     service: new FormControl(''),
-    shift: new FormControl('')
+    shift: new FormControl(''),
+    tip: new FormControl(),
   });
 
   isNewShift: boolean = false;
+  showAdvancedPay: boolean = false;
 
   addresses: AddressModel[] = [];
   filteredAddresses: Observable<AddressModel[]> | undefined;
@@ -78,17 +82,17 @@ export class QuickFormComponent implements OnInit {
   }
 
   public load() {
+    ShiftHelper.updateAllShiftTotals();
+
     this.addresses = AddressHelper.getRemoteAddresses();
     this.names = NameHelper.getRemoteNames();
     this.places = PlaceHelper.getRemotePlaces();
     this.services = ServiceHelper.getRemoteServices();
-    this.shifts = ShiftHelper.getPastShifts(1).reverse();
+    this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
   }
 
   public addTrip() {
-    // console.log(this.quickForm.value);
-
     let shift: ShiftModel = new ShiftModel;
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
@@ -98,7 +102,6 @@ export class QuickFormComponent implements OnInit {
       this.shifts = ShiftHelper.getPastShifts(1);
     }
     else {
-      // console.log(this.quickForm.value.shift);
       if (this.quickForm.value.shift) {
         shift = <ShiftModel><unknown>this.quickForm.value.shift;
       }
@@ -116,7 +119,11 @@ export class QuickFormComponent implements OnInit {
 
     trip.id = TripHelper.getLocalTrips().length++;
     trip.address = this.quickForm.value.address ?? "";
-    trip.pay = +this.quickForm.value.amount ?? 0;
+    trip.pay = +this.quickForm.value.pay ?? 0;
+    trip.tip = +this.quickForm.value.tip ?? 0;
+    trip.bonus = +this.quickForm.value.bonus ?? 0;
+    trip.cash = +this.quickForm.value.cash ?? 0;
+    trip.total = trip.pay + trip.tip + trip.bonus;
     trip.date = shift.date;
     trip.distance = this.quickForm.value.distance ?? 0;
     trip.name = this.quickForm.value.name ?? "";
@@ -127,11 +134,10 @@ export class QuickFormComponent implements OnInit {
 
     TripHelper.addTrip(trip);
 
-    // this.$emit('event-name');
-
+    this.load();
     this.formReset();
-
     this.parentReload.emit();
+    this.showAdvancedPay = false;
 
     // console.log(trip);
   }
@@ -193,6 +199,10 @@ export class QuickFormComponent implements OnInit {
     {
       this.selectedName = new NameModel;
     }
+  }
+
+  toggleAdvancedPay() {
+    this.showAdvancedPay = !this.showAdvancedPay;
   }
 
   public getShortAddress(address: string): string {
