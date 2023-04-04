@@ -42,7 +42,7 @@ export class ShiftHelper {
 
     static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
         if (!shifts) {
-            shifts = this.getAllShifts();
+            shifts = this.getUniqueShifts();
         }
 
         let datestring = DateHelper.getDateString(days);
