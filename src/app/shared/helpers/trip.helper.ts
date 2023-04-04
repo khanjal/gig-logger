@@ -101,18 +101,33 @@ export class TripHelper {
             // console.log(row);
             // console.log(row.rowIndex);
             let tripModel: TripModel = new TripModel;
-            tripModel.id = row.rowIndex;
-            tripModel.address = row['End Address'];
-            tripModel.date = row['Date'];
-            tripModel.distance = row['Distance'] ?? 0;
-            tripModel.key = row['Key'];
-            tripModel.name = row['Name'];
-            tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
-            tripModel.time = row['Pickup'];
-            tripModel.place = row['Place'];
+            
+            // Local
             tripModel.saved = true;
+
+            // Keys
+            tripModel.id = row.rowIndex;
+            tripModel.key = row['Key'];
+
+            // Service
             tripModel.service = row['Service'];
             tripModel.shiftNumber = row['#'];
+
+            // Person
+            tripModel.name = row['Name'];
+            tripModel.address = row['End Address'];
+            
+            tripModel.date = row['Date'];
+            tripModel.time = row['Pickup'];
+            tripModel.place = row['Place'];
+            tripModel.distance = row['Distance'] ?? 0;
+            
+            // Amounts
+            tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
+            tripModel.tip = NumberHelper.getNumberFromString(row['Tip']);
+            tripModel.bonus = NumberHelper.getNumberFromString(row['Bonus']);
+            tripModel.total = NumberHelper.getNumberFromString(row['Total']);
+
             // console.log(trip);
 
             if (tripModel.date) {

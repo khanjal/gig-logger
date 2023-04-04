@@ -24,7 +24,7 @@
             </ng-container>
             <ng-container matColumnDef="amount">
                 <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-                <mat-cell *matCellDef="let trip"> {{trip.pay | currency}} </mat-cell>
+                <mat-cell *matCellDef="let trip"> {{trip.total | currency}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
