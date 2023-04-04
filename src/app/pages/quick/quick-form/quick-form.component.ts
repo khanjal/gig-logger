@@ -82,7 +82,7 @@ export class QuickFormComponent implements OnInit {
     this.names = NameHelper.getRemoteNames();
     this.places = PlaceHelper.getRemotePlaces();
     this.services = ServiceHelper.getRemoteServices();
-    this.shifts = ShiftHelper.getPastShifts(1).reverse();
+    this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
   }
 
