@@ -46,6 +46,7 @@ export class QuickComponent implements OnInit {
   }
 
   public load() {
+    ShiftHelper.updateAllShiftTotals();
     this.sheetTrips = TripHelper.getRemoteTrips().reverse();
     this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
     this.savedTrips = TripHelper.getSavedLocalTrips().reverse();

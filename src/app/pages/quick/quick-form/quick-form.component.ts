@@ -82,6 +82,8 @@ export class QuickFormComponent implements OnInit {
   }
 
   public load() {
+    ShiftHelper.updateAllShiftTotals();
+
     this.addresses = AddressHelper.getRemoteAddresses();
     this.names = NameHelper.getRemoteNames();
     this.places = PlaceHelper.getRemotePlaces();
@@ -132,10 +134,7 @@ export class QuickFormComponent implements OnInit {
 
     TripHelper.addTrip(trip);
 
-    // this.$emit('event-name');
-
-    ShiftHelper.updateAllShiftTotals();
-    this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
+    this.load();
     this.formReset();
     this.parentReload.emit();
     this.showAdvancedPay = false;
