@@ -34,12 +34,16 @@
             matInput
             formControlName="place"
             [matAutocomplete]="autoPlace"
-            required>
+            required
+            #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
             <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
                 {{place.place}} ({{ place.visits }})
             </mat-option>
         </mat-autocomplete>
+        <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
+            <mat-icon>close</mat-icon>
+        </button>
     </mat-form-field>
 
     <mat-form-field class="field-quarter-width" appearance="outline">
@@ -61,12 +65,16 @@
             matInput
             formControlName="name"
             [matAutocomplete]="autoName"
-            (blur)="showNameAddressesEvent($event)" >
+            (blur)="showNameAddressesEvent($event)" 
+            #name>
         <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
             <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)">
                 {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
             </mat-option>
         </mat-autocomplete>
+        <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
+            <mat-icon>close</mat-icon>
+        </button>
     </mat-form-field>
 
     <div *ngFor="let address of selectedName?.addresses">
@@ -82,12 +90,16 @@
             matInput
             formControlName="address"
             [matAutocomplete]="autoAddress"
-            (blur)="showAddressNamesEvent($event)" >
+            (blur)="showAddressNamesEvent($event)"
+            #address />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
                 {{ getShortAddress(address.address) }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
+        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.address.setValue('')">
+            <mat-icon>close</mat-icon>
+        </button>
     </mat-form-field>
 
     <div *ngIf="selectedAddress">
