@@ -135,8 +135,8 @@ export class QuickFormComponent implements OnInit {
     // this.$emit('event-name');
 
     this.formReset();
-
     this.parentReload.emit();
+    this.showAdvancedPay = false;
 
     // console.log(trip);
   }
