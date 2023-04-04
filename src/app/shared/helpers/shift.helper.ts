@@ -131,6 +131,12 @@ export class ShiftHelper {
         return shift;
     }
 
+    static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
+        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.shiftNumber - a.shiftNumber);
+
+        return shifts;
+    }
+
     static translateSheetData(rows: GoogleSpreadsheetRow[]): ShiftModel[] {
         let shifts: ShiftModel[] = [];
 
