@@ -103,8 +103,8 @@
         <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ getShortAddress(address) }}</a>
     </div>
 
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>Address</mat-label>
+    <!-- <mat-form-field class="field-full-width" appearance="outline">
+        <mat-label>Pickup Address</mat-label>
         <input type="text"
             name="address"
             placeholder="Pick one"
@@ -119,7 +119,28 @@
                 {{ getShortAddress(address.address) }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.address.setValue('')">
+        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field> -->
+
+    <mat-form-field class="field-full-width" appearance="outline">
+        <mat-label>Destination Address</mat-label>
+        <input type="text"
+            name="address"
+            placeholder="Pick one"
+            aria-label="Number"
+            matInput
+            formControlName="address"
+            [matAutocomplete]="autoAddress"
+            (blur)="showAddressNamesEvent($event)"
+            #address />
+        <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
+            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
+                {{ getShortAddress(address.address) }} ({{ address.visits }})
+            </mat-option>
+        </mat-autocomplete>
+        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>

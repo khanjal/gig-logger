@@ -12,6 +12,6 @@ export class SheetSetupFormComponent {
   });
 
   public addSheet() {
-
+    // let spreadsheetId = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(resourceUrl)[1];
   }
 }
