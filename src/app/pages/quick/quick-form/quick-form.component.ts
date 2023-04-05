@@ -24,7 +24,7 @@ export class QuickFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   quickForm = new FormGroup({
-    address: new FormControl(''),
+    endAddress: new FormControl(''),
     bonus: new FormControl(),
     cash: new FormControl(),
     distance: new FormControl(),
@@ -58,7 +58,7 @@ export class QuickFormComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     
-    this.filteredAddresses = this.quickForm.controls.address.valueChanges.pipe(
+    this.filteredAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
       startWith(''),
       map(value => this._filterAddress(value || '')),
     );
@@ -118,7 +118,7 @@ export class QuickFormComponent implements OnInit {
     let trip: TripModel = new TripModel;
 
     trip.id = TripHelper.getLocalTrips().length++;
-    trip.address = this.quickForm.value.address ?? "";
+    trip.endAddress = this.quickForm.value.endAddress ?? "";
     trip.pay = +this.quickForm.value.pay ?? 0;
     trip.tip = +this.quickForm.value.tip ?? 0;
     trip.bonus = +this.quickForm.value.bonus ?? 0;
@@ -162,7 +162,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   selectAddress(address: string) {
-    this.quickForm.controls.address.setValue(address);
+    this.quickForm.controls.endAddress.setValue(address);
     this.showAddressNames(address);
   }
 

@@ -119,7 +119,7 @@ export class TripHelper {
 
             // Person
             tripModel.name = row['Name'];
-            tripModel.address = row['End Address'];
+            tripModel.endAddress = row['End Address'];
             
             tripModel.date = row['Date'];
             tripModel.time = row['Pickup'];

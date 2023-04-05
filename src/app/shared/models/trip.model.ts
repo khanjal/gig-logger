@@ -1,6 +1,7 @@
 export class TripModel {
     id: number = 0;
-    address: string = "";
+    startAddress: string = "";
+    endAddress: string = "";
     bonus?: number;
     cash?: number;
     date: string = new Date().toLocaleDateString();
