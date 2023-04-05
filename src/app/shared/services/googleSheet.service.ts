@@ -142,7 +142,7 @@ export class GoogleDriveService {
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
                 Name: trip.name,
-                'End Address': trip.address
+                'End Address': trip.endAddress
             });
 
             trip.saved = true;
