@@ -8,12 +8,6 @@ import { PagesModule } from './pages/pages.module';
 import { MatIconModule } from '@angular/material/icon';
 import { GoogleDriveService } from './shared/services/googleSheet.service';
 import { HttpClientModule } from '@angular/common/http';
-import { AddressService } from './shared/services/address.service';
-import { NameService } from './shared/services/name.service';
-import { PlaceService } from './shared/services/place.service';
-import { ShiftService } from './shared/services/shift.service';
-import { ServiceService } from './shared/services/service.service';
-import { TripService } from './shared/services/trip.service';
 import { SharedModule } from './shared/shared.module';
 import { AuthService } from './shared/services/auth.service';
 import { AuthGuardService } from './shared/services/auth-guard.service';
@@ -32,15 +26,9 @@ import { AuthGuardService } from './shared/services/auth-guard.service';
     SharedModule
   ],
   providers: [
-    AddressService,
     AuthService,
     AuthGuardService,
     GoogleDriveService,
-    NameService,
-    PlaceService,
-    ServiceService,
-    ShiftService,
-    TripService
   ],
   bootstrap: [AppComponent]
 })
