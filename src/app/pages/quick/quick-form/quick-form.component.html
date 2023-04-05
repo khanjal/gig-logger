@@ -127,11 +127,11 @@
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Destination Address</mat-label>
         <input type="text"
-            name="address"
+            name="endAddress"
             placeholder="Pick one"
             aria-label="Number"
             matInput
-            formControlName="address"
+            formControlName="endAddress"
             [matAutocomplete]="autoAddress"
             (blur)="showAddressNamesEvent($event)"
             #address />

@@ -8,7 +8,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class SheetSetupFormComponent {
   sheetForm = new FormGroup({
-    sheetid: new FormControl('')
+    sheetId: new FormControl('')
   });
 
   public addSheet() {
