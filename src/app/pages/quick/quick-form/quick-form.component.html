@@ -16,12 +16,16 @@
                 aria-label="Number"
                 matInput
                 formControlName="service"
-                [matAutocomplete]="autoService">
+                [matAutocomplete]="autoService"
+                #service>
             <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
                 <mat-option *ngFor="let service of filteredServices | async" [value]="service.service">
                     {{ service.service }} ({{ service.visits }})
                 </mat-option>
             </mat-autocomplete>
+            <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.service.setValue('')">
+                <mat-icon>close</mat-icon>
+            </button>
         </mat-form-field>
     </div>
 

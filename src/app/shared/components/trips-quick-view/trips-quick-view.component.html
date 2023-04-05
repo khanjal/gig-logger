@@ -2,8 +2,7 @@
     <div>
         <mat-card-header>{{trip.date | date:'MMMM d'}} - {{trip.time}} - {{trip.service}} {{ trip.shiftNumber == 0 ? "" : '#' + trip.shiftNumber }}</mat-card-header>
         <mat-card-content>
-            <div>{{trip.place}}({{trip.distance}})</div>
-            <div>{{trip.name}}</div>
+            <div>{{trip.place | truncate:15}} ({{trip.distance}}) - {{trip.name | truncate:15}}</div>
             <div>{{trip.address | truncate:40}}</div>
             <div>Pay {{trip.pay | currency}} Tip {{trip.tip ?? 0 | currency}} Bonus {{trip.bonus ?? 0 | currency}} Cash {{trip.cash ?? 0 | currency}}</div>
         </mat-card-content>
