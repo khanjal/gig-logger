@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PagesModule } from './pages/pages.module';
 import { MatIconModule } from '@angular/material/icon';
-import { GoogleDriveService } from './shared/services/googleSheet.service';
+import { GoogleSheetService } from './shared/services/googleSheet.service';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import { AuthService } from './shared/services/auth.service';
@@ -28,7 +28,7 @@ import { AuthGuardService } from './shared/services/auth-guard.service';
   providers: [
     AuthService,
     AuthGuardService,
-    GoogleDriveService,
+    GoogleSheetService,
   ],
   bootstrap: [AppComponent]
 })

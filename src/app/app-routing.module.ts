@@ -10,9 +10,9 @@ import { SheetSetupComponent } from './pages/sheet-setup/sheet-setup.component';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'quick', component: QuickComponent, canActivate: [AuthGuardService] },
-  { path: 'setup', component: SheetSetupComponent, canActivate: [AuthGuardService] },
-  { path: 'shifts', component: ShiftsComponent, canActivate: [AuthGuardService]  }
+  { path: 'quick', component: QuickComponent },
+  { path: 'setup', component: SheetSetupComponent },
+  // { path: 'shifts', component: ShiftsComponent, canActivate: [AuthGuardService]  }
 ];
 
 @NgModule({

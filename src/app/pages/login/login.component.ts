@@ -20,12 +20,12 @@ export class LoginComponent {
   
   async ngOnInit(): Promise<void> {
       // console.log('Logged out');
-      this.socialAuthService.authState.subscribe((user) => {
-        this.socialUser = user;
-        this.isLoggedin = user != null;
-        sessionStorage.setItem('token', this.socialUser?.idToken);
-        // console.log(this.socialUser);
-        this._router.navigate(['/quick']);
-    });
+      // this.socialAuthService.authState.subscribe((user) => {
+      //   this.socialUser = user;
+      //   this.isLoggedin = user != null;
+      //   sessionStorage.setItem('token', this.socialUser?.idToken);
+      //   // console.log(this.socialUser);
+      //   this._router.navigate(['/quick']);
+      // });
   }
 }
