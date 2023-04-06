@@ -149,6 +149,11 @@
         <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
     </div>
 
+    <mat-form-field class="field-full-width" appearance="outline">
+        <mat-label>Note</mat-label>
+        <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
+    </mat-form-field>
+
     <div class="row">
         <div mat-dialog-actions align="center">
             <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Add</button>

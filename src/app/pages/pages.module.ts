@@ -14,7 +14,6 @@ import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
-import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { LoginComponent } from './login/login.component';
 import { SheetsComponent } from './sheets/sheets.component';
 import { SheetSetupComponent } from './sheet-setup/sheet-setup.component';
@@ -45,23 +44,8 @@ import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-
     MatTableModule,
     ReactiveFormsModule,
     SharedModule,
-    GoogleSigninButtonModule,
-    SocialLoginModule
   ],
-  providers: [
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-          autoLogin: false,
-          providers: [
-          {
-              id: GoogleLoginProvider.PROVIDER_ID,
-              provider: new GoogleLoginProvider('1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com'),
-          },
-      ],
-      } as SocialAuthServiceConfig,
-  },
-  ],
+  providers: [],
   bootstrap: []
 })
 export class PagesModule { }
