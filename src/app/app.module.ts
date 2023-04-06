@@ -6,11 +6,9 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PagesModule } from './pages/pages.module';
 import { MatIconModule } from '@angular/material/icon';
-import { GoogleSheetService } from './shared/services/googleSheet.service';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
-import { AuthService } from './shared/services/auth.service';
-import { AuthGuardService } from './shared/services/auth-guard.service';
+import { GoogleSheetService } from './shared/services/googleSheet.service';
 
 @NgModule({
   declarations: [
@@ -26,9 +24,7 @@ import { AuthGuardService } from './shared/services/auth-guard.service';
     SharedModule
   ],
   providers: [
-    AuthService,
-    AuthGuardService,
-    GoogleSheetService,
+    GoogleSheetService
   ],
   bootstrap: [AppComponent]
 })

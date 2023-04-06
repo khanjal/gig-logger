@@ -1,13 +1,15 @@
-import { SocialAuthService } from '@abacritt/angularx-social-login';
+// import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class LoginService {
     providerId = "1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com";
 
-    constructor(private socialAuthService: SocialAuthService) {}
+    constructor(
+        // private socialAuthService: SocialAuthService
+        ) {}
 
     public async refreshToken() {
-        console.log(await this.socialAuthService.refreshAuthToken(this.providerId));
+        // console.log(await this.socialAuthService.refreshAuthToken(this.providerId));
     }
 }
