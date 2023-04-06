@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ShiftModel } from 'src/app/shared/models/shift.model';
 import { TripModel } from 'src/app/shared/models/trip.model';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
