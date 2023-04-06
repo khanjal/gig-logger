@@ -132,6 +132,8 @@ export class TripHelper {
             tripModel.bonus = NumberHelper.getNumberFromString(row['Bonus']);
             tripModel.total = NumberHelper.getNumberFromString(row['Total']);
 
+            tripModel.note = row['Note'];
+
             // console.log(trip);
 
             if (tripModel.date) {
