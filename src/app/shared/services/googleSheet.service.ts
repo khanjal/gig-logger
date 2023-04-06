@@ -168,7 +168,8 @@ export class GoogleSheetService {
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
                 Name: trip.name,
-                'End Address': trip.endAddress
+                'End Address': trip.endAddress,
+                Note: trip.note
             });
 
             trip.saved = true;
