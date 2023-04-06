@@ -29,6 +29,7 @@ export class QuickFormComponent implements OnInit {
     cash: new FormControl(),
     distance: new FormControl(),
     name: new FormControl(''),
+    note: new FormControl(''),
     pay: new FormControl(),
     place: new FormControl(''),
     service: new FormControl(''),
@@ -90,6 +91,16 @@ export class QuickFormComponent implements OnInit {
     this.services = ServiceHelper.getRemoteServices();
     this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
+
+    // Set defaults if there is only one place.
+    if (this.places.length === 1) {
+      this.quickForm.controls.place.setValue(this.places[0].place);
+    }
+
+    // Set defaults if there is only one service.
+    if (this.services.length === 1) {
+      this.quickForm.controls.service.setValue(this.services[0].service);
+    }
   }
 
   public addTrip() {
@@ -127,6 +138,7 @@ export class QuickFormComponent implements OnInit {
     trip.date = shift.date;
     trip.distance = this.quickForm.value.distance ?? 0;
     trip.name = this.quickForm.value.name ?? "";
+    trip.note = this.quickForm.value.note ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
     trip.shiftNumber = shift.shiftNumber ?? 0;

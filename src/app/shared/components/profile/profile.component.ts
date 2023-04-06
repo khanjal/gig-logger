@@ -1,4 +1,4 @@
-import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
+// import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -10,11 +10,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  socialUser!: SocialUser;
+  // socialUser!: SocialUser;
   isLoggedin: boolean = false;
 
   constructor(
-    private socialAuthService: SocialAuthService, private _router: Router
+    // private socialAuthService: SocialAuthService, 
+    private _router: Router
   ) {}
   
   async ngOnInit(): Promise<void> {
@@ -28,10 +29,10 @@ export class ProfileComponent implements OnInit {
   }
 
   logout(): void {
-    if(this.socialUser !== null) {
-      // console.log(this.socialUser)
-      this.socialAuthService.signOut();
-    }
+    // if(this.socialUser !== null) {
+    //   // console.log(this.socialUser)
+    //   this.socialAuthService.signOut();
+    // }
 
     sessionStorage.clear();
     this.isLoggedin = false;
