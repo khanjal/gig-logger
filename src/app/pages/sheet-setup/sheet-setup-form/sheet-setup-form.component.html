@@ -1,11 +1,11 @@
 <form class="sheet-form" [formGroup]="sheetForm">
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Sheet ID</mat-label>
-        <input matInput type="text" name="sheetId" placeholder="https://docs.google.com/spreadsheets/d/{id}/" formControlName="sheetId" value="">
+        <input matInput type="text" name="sheetId" placeholder="https://docs.google.com/spreadsheets/d/{id}/ - Link or ID" formControlName="sheetId" value="" required>
     </mat-form-field>
 
     <div mat-dialog-actions align="center">
-        <button mat-stroked-button type="button" (click)="addSheet()" [disabled]="!sheetForm.valid"><mat-icon>save</mat-icon> Save</button>
+        <button mat-stroked-button type="button" (click)="addSheet()" [class.spinner]="saving" [disabled]="!sheetForm.valid || saving"><mat-icon>save</mat-icon> Save</button>
         <button mat-stroked-button color="warn" type="button" (click)="sheetForm.reset()"><mat-icon>refresh</mat-icon> Reset</button>
     </div>
     
