@@ -13,6 +13,12 @@ export class LocalStorageHelper {
         return siteData;
     }
 
+    static getSpreadsheetId(): string {
+        let siteData = this.getSiteData();
+
+        return siteData.sheetId;
+    }
+
     static updateLocalData(data: SiteModel) {
         // Get current data
         let localData = localStorage.getItem('gigs') ?? '""';
