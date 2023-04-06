@@ -132,7 +132,7 @@ export class ShiftHelper {
     }
 
     static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
-        shifts.sort((a,b) => a.date.localeCompare(b.date) || a.service.localeCompare(b.service) || b.shiftNumber - a.shiftNumber);
+        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.shiftNumber - a.shiftNumber);
 
         return shifts;
     }
