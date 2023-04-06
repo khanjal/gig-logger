@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { ShiftModel } from 'src/app/shared/models/shift.model';
 import { TripModel } from 'src/app/shared/models/trip.model';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
-import { GoogleDriveService } from 'src/app/shared/services/googleSheet.service';
+import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { SiteModel } from 'src/app/shared/models/site.model';
+import { LocalStorageHelper } from 'src/app/shared/helpers/localStorage.helper';
 
 @Component({
   selector: 'app-quick',
@@ -29,7 +30,7 @@ export class QuickComponent implements OnInit {
 
   constructor(
       private _router: Router, 
-      private _googleService: GoogleDriveService
+      private _googleService: GoogleSheetService
     ) { }
 
   async ngOnInit(): Promise<void> {
@@ -77,7 +78,7 @@ export class QuickComponent implements OnInit {
 
   async reload() {
     this.reloading = true;
-    await this._googleService.loadRemoteData();
+    await this._googleService.loadRemoteData(LocalStorageHelper.getSpreadsheetId());
 
     this.load();
     this.reloading = false;

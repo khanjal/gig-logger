@@ -12,15 +12,12 @@ import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
 import { environment } from '../../../environments/environment';
 
-const doc = new GoogleSpreadsheet('1higrtVaDRpO3-uX92Fn3fJ5RtZ5dpqRI0CQf9eaDlg4'); // Real
-//const doc = new GoogleSpreadsheet('14KaPezs9thWd3qMsMr8uZBoX5LNkPHjl1UPMFKYg3Dw'); // Test
-
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
 // https://theoephraim.github.io/node-google-spreadsheet/#/
 
 @Injectable()
-export class GoogleDriveService {
+export class GoogleSheetService {
     data: any = null;
 
     constructor(
@@ -28,13 +25,19 @@ export class GoogleDriveService {
         ) { }
 
     public async addSheet() {
+        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const doc = new GoogleSpreadsheet(spreadsheetId);
+
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
-        // const sheet = await doc.addSheet({ title: 'test2', headerValues: ['={"Address";SORT(UNIQUE({Trips!Q2:Q}))}', '=ARRAYFORMULA(IFS(ROW($A:$A)=1,"Visits",ISBLANK($A:$A), "",true,COUNTIF(Trips!P:P,$A:$A)+COUNTIF(Trips!Q:Q,$A:$A)))'] });
+        //const sheet = await doc.addSheet({ title: 'test2', headerValues: ['={"Address";SORT(UNIQUE({Trips!Q2:Q}))}', '=ARRAYFORMULA(IFS(ROW($A:$A)=1,"Visits",ISBLANK($A:$A), "",true,COUNTIF(Trips!P:P,$A:$A)+COUNTIF(Trips!Q:Q,$A:$A)))'] });
     }
 
     public async getSheetDataById(id: number): Promise<GoogleSpreadsheetWorksheet> {
+        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const doc = new GoogleSpreadsheet(spreadsheetId);
+
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
@@ -46,6 +49,9 @@ export class GoogleDriveService {
     }
 
     public async getSheetDataByName(name: string): Promise<GoogleSpreadsheetWorksheet> {
+        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const doc = new GoogleSpreadsheet(spreadsheetId);
+
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
@@ -56,12 +62,32 @@ export class GoogleDriveService {
         return sheet;
     }
 
-    public async loadRemoteData() {
+    public async getSheetTitle(sheetId: string): Promise<string> {
+        let doc = new GoogleSpreadsheet(sheetId);
+        //console.log(sheetId);
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+
+        try {
+            await doc.loadInfo();
+
+            // console.log(doc.title);
+    
+            return doc.title;    
+        } catch (error) {
+            return "";
+        }
+    }
+
+    public async loadRemoteData(spreadsheetId: string) {
+        let doc = new GoogleSpreadsheet(spreadsheetId);
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
         let site: SiteModel = new SiteModel;
         let sheet, rows;
+
+        site.sheetId = spreadsheetId;
+        site.sheetName = doc.title;
 
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
@@ -160,6 +186,9 @@ export class GoogleDriveService {
     }
 
     public async saveSheetData(sheetName: string, sheetRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[]) {
+        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const doc = new GoogleSpreadsheet(spreadsheetId);
+
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
         console.log(doc.title);
