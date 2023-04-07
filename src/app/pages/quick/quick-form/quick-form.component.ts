@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, startWith, map } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
@@ -56,6 +57,8 @@ export class QuickFormComponent implements OnInit {
 
   sheetTrips: TripModel[] = [];
   shifts: ShiftModel[] = [];
+
+  constructor(private _snackBar: MatSnackBar) {}
 
   async ngOnInit(): Promise<void> {
     
@@ -145,6 +148,8 @@ export class QuickFormComponent implements OnInit {
     trip.time = shift.end = timeString;
 
     TripHelper.addTrip(trip);
+
+    this._snackBar.open("Trip Stored");
 
     this.load();
     this.formReset();

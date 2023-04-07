@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
@@ -41,11 +42,14 @@ import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-
     MatListModule,
     MatIconModule,
     MatInputModule,
+    MatSnackBarModule,
     MatTableModule,
     ReactiveFormsModule,
     SharedModule,
   ],
-  providers: [],
+  providers: [
+      {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}
+  ],
   bootstrap: []
 })
 export class PagesModule { }
