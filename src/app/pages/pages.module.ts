@@ -16,6 +16,7 @@ import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 import { LoginComponent } from './login/login.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SheetsComponent } from './sheets/sheets.component';
 import { SheetSetupComponent } from './sheet-setup/sheet-setup.component';
 import { SheetSetupFormComponent } from './sheet-setup/sheet-setup-form/sheet-setup-form.component';
@@ -45,6 +46,7 @@ import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-
     MatSnackBarModule,
     MatTableModule,
     ReactiveFormsModule,
+    ScrollingModule,
     SharedModule,
   ],
   providers: [
