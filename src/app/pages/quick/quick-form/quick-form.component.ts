@@ -220,13 +220,13 @@ export class QuickFormComponent implements OnInit {
   private async _filterAddress(value: string): Promise<IAddress[]> {
     const filterValue = value.toLowerCase();
 
-    return (await this._addressService.filterRemoteAddress(filterValue)).slice(0,25);
+    return await this._addressService.filterRemoteAddress(filterValue);
   }
 
   private async _filterName(value: string): Promise<NameModel[]> {
     const filterValue = value.toLowerCase();
 
-    return (await this._nameService.filterRemoteNames(filterValue)).slice(0,25);
+    return await this._nameService.filterRemoteNames(filterValue);
   }
 
   private _filterPlace(value: string): PlaceModel[] {
