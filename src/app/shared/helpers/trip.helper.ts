@@ -115,7 +115,7 @@ export class TripHelper {
 
             // Service
             tripModel.service = row['Service'];
-            tripModel.shiftNumber = row['#'];
+            tripModel.number = row['#'];
 
             // Person
             tripModel.name = row['Name'];

@@ -155,7 +155,7 @@ export class GoogleSheetService {
             shiftRows.push({ 
                 Date: shift.date, 
                 Service: shift.service, 
-                '#': shift.shiftNumber 
+                '#': shift.number 
             });
 
             shift.saved = true;
@@ -178,7 +178,7 @@ export class GoogleSheetService {
             tripRows.push({
                 Date: trip.date, 
                 Service: trip.service,
-                '#': trip.shiftNumber, 
+                '#': trip.number, 
                 Place: trip.place,
                 Pickup: trip.time,
                 Pay: trip.pay,

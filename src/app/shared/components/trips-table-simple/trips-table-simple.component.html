@@ -12,7 +12,7 @@
             </ng-container>
             <ng-container matColumnDef="service">
                 <mat-header-cell *matHeaderCellDef> Service </mat-header-cell>
-                <mat-cell *matCellDef="let trip"> {{trip.service}}{{ trip.shiftNumber ? '-' : ''}}{{ trip.shiftNumber}} </mat-cell>
+                <mat-cell *matCellDef="let trip"> {{trip.service}}{{ trip.number ? '-' : ''}}{{ trip.number}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="place">
                 <mat-header-cell *matHeaderCellDef> Place </mat-header-cell>

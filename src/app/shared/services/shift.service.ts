@@ -15,7 +15,7 @@ export class ShiftService {
             key: shift.key,
             saved: shift.saved,
             service: shift.service,
-            shiftNumber: shift.shiftNumber,
+            number: shift.number,
             start: shift.start,
             total: shift.total,
             trips: shift.trips
