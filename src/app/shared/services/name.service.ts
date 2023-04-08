@@ -6,6 +6,14 @@ import { IName } from '@interfaces/name.interface';
 export class NameService {
     names$ = liveQuery(() => spreadsheetDB.names.toArray());
     
+    public async filterRemoteNames(name: string): Promise<IName[]> {
+        return await spreadsheetDB.names.where("name").startsWithAnyOfIgnoreCase(name).toArray();
+    }
+
+    public async findRemoteName(name: string): Promise<IName | undefined> {
+        return await spreadsheetDB.names.where("name").anyOfIgnoreCase(name).first();
+    }
+
     public async getRemoteNames(): Promise<IName[]> {
         return await spreadsheetDB.names.toArray();
     }
