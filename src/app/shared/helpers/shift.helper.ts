@@ -18,7 +18,7 @@ export class ShiftHelper {
 
         localShifts.forEach(localShift => {
 
-            let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
+            let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.number == localShift.number);
 
             if (foundShift) {
                 return;
@@ -125,14 +125,14 @@ export class ShiftHelper {
         let shiftNumber = this.getNextShiftNumber(service);
 
         shift.id = ShiftHelper.getLocalShifts().length++;
-        shift.shiftNumber = shiftNumber;
+        shift.number = shiftNumber;
         shift.start = new Date().toLocaleTimeString();
         
         return shift;
     }
 
     static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
-        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.shiftNumber - a.shiftNumber);
+        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.number - a.number);
 
         return shifts;
     }
@@ -149,7 +149,7 @@ export class ShiftHelper {
             shiftModel.date = row['Date'];
             shiftModel.saved = true;
             shiftModel.service = row['Service'];
-            shiftModel.shiftNumber = row['#'];
+            shiftModel.number = row['#'];
             shiftModel.total = NumberHelper.getNumberFromString(row['G Total']);
             shiftModel.trips = row['T Trip'] ?? 0;
             // console.log(shift);
@@ -199,7 +199,7 @@ export class ShiftHelper {
         shifts.forEach(shift => {
             shift.total = 0;
             shift.trips = 0;
-            let filteredTrips = trips.filter(x => x.date === shift.date && x.service === shift.service && x.shiftNumber === shift.shiftNumber);
+            let filteredTrips = trips.filter(x => x.date === shift.date && x.service === shift.service && x.number === shift.number);
             
             filteredTrips.forEach(trip => {
                 shift.total += trip.total;

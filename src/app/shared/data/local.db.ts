@@ -1,17 +1,20 @@
 import { IShift } from '@interfaces/shift.interface';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import Dexie, { Table } from 'dexie';
 
 
 export class AppDB extends Dexie {
+    spreadsheets!: Table<ISpreadsheet, number>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
 
     constructor() {
-        super('localQuery');
+        super('localDB');
         this.version(1).stores({
-        shifts: '++id',
-        trips: '++id',
+            spreadsheets: '++id, spreadsheetId',
+            shifts: '++id, date, service, number, [date+service+number]',
+            trips: '++id, date, service, number, [date+service+number]',
         });
     }
 }

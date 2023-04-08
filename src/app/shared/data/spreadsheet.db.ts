@@ -17,14 +17,14 @@ export class AppDB extends Dexie {
     trips!: Table<ITrip, number>;
 
     constructor() {
-        super('spreadsheetQuery');
+        super('spreadsheetDB');
         this.version(1).stores({
             addresses: '++id, address',
             names: '++id, name',
             places: '++id, place',
             services: '++id, service',
-            shifts: '++id',
-            trips: '++id',
+            shifts: '++id, date, service, number, [date+service+number]',
+            trips: '++id, date, service, number, [date+service+number]',
         });
     }
 }
