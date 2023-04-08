@@ -6,7 +6,7 @@ export interface IShift {
     key: string;
     saved: boolean;
     service: string;
-    shiftNumber: number;
+    number: number;
     start: string;
     total: number;
     trips: number;

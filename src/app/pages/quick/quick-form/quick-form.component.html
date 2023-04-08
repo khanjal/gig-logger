@@ -3,7 +3,7 @@
         <mat-label>Shift/Batch/Group</mat-label>
         <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
             <mat-option value="new">New</mat-option>
-            <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service }} {{ shift.shiftNumber == 0 ? "" : '#' + shift.shiftNumber }} ({{ shift.trips }} @ {{ shift.total | currency }})</mat-option>
+            <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.trips }} @ {{ shift.total | currency }})</mat-option>
         </mat-select>
     </mat-form-field>
 

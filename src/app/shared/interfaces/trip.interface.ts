@@ -13,7 +13,7 @@ export interface ITrip {
     place: string;
     saved: boolean;
     service: string;
-    shiftNumber: number;
+    number: number;
     time: string;
     tip?: number;
     total: number;

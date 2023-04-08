@@ -13,7 +13,7 @@ export class TripModel {
     place: string = "";
     saved: boolean = false;
     service: string = "";
-    shiftNumber: number = 0;
+    number: number = 0;
     time: string = "";
     tip?: number;
     total: number = 0;
