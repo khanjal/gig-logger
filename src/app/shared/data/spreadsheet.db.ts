@@ -19,10 +19,10 @@ export class AppDB extends Dexie {
     constructor() {
         super('spreadsheetQuery');
         this.version(1).stores({
-            addresses: '++id',
-            names: '++id',
-            places: '++id',
-            services: '++id',
+            addresses: '++id, address',
+            names: '++id, name',
+            places: '++id, place',
+            services: '++id, service',
             shifts: '++id',
             trips: '++id',
         });

@@ -1,18 +1,16 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { IAddress } from '@interfaces/address.interface';
 import { AddressService } from '@services/address.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
-import { Observable, startWith, map } from 'rxjs';
+import { Observable, startWith, map, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
-import { NameHelper } from 'src/app/shared/helpers/name.helper';
-import { PlaceHelper } from 'src/app/shared/helpers/place.helper';
-import { ServiceHelper } from 'src/app/shared/helpers/service.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { AddressModel } from 'src/app/shared/models/address.model';
@@ -47,11 +45,9 @@ export class QuickFormComponent implements OnInit {
   isNewShift: boolean = false;
   showAdvancedPay: boolean = false;
 
-  addresses: AddressModel[] = [];
-  filteredAddresses: Observable<AddressModel[]> | undefined;
-  selectedAddress: AddressModel | undefined;
+  filteredAddresses: Observable<IAddress[]> | undefined;
+  selectedAddress: IAddress | undefined;
 
-  names: NameModel[] = [];
   filteredNames: Observable<NameModel[]> | undefined;
   selectedName: NameModel | undefined;
 
@@ -78,12 +74,12 @@ export class QuickFormComponent implements OnInit {
     
     this.filteredAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
       startWith(''),
-      map(value => this._filterAddress(value || '')),
+      mergeMap(async value => await this._filterAddress(value || ''))
     );
 
     this.filteredNames = this.quickForm.controls.name.valueChanges.pipe(
       startWith(''),
-      map(value => this._filterName(value || '')),
+      mergeMap(async value => await this._filterName(value || ''))
     );
 
     this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
@@ -102,13 +98,7 @@ export class QuickFormComponent implements OnInit {
   public async load() {
     ShiftHelper.updateAllShiftTotals();
 
-    //this.addresses = AddressHelper.getRemoteAddresses();
-    this.addresses = await this._addressService.getRemoteAddresses();
-    //this.names = NameHelper.getRemoteNames();
-    this.names = await this._nameService.getRemoteNames();
-    // this.places = PlaceHelper.getRemotePlaces();
     this.places = await this._placeService.getRemotePlaces();
-    //this.services = ServiceHelper.getRemoteServices();
     this.services = await this._serviceService.getRemoteServices();
     this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
@@ -206,16 +196,8 @@ export class QuickFormComponent implements OnInit {
     this.showAddressNames(address);
   }
 
-  showAddressNames(address: string) {
-    // console.log(address);
-
-    if (address) {
-      this.selectedAddress = this.addresses.find(option => option.address.toLowerCase().includes(address.toLowerCase()));
-    }
-    else
-    {
-      this.selectedAddress = new AddressModel;
-    }
+  async showAddressNames(address: string) {
+    this.selectedAddress = await this._addressService.getRemoteAddress(address);
   }
 
   showNameAddressesEvent(event: any) {
@@ -223,17 +205,8 @@ export class QuickFormComponent implements OnInit {
     this.showNameAddresses(name);
   }
 
-  showNameAddresses(name: string) {
-    // console.log(name);
-    // console.log(this._filterName(name));
-
-    if (name) {
-      this.selectedName = this.names.find(option => option.name.toLowerCase().includes(name.toLowerCase()));
-    }
-    else
-    {
-      this.selectedName = new NameModel;
-    }
+  async showNameAddresses(name: string) {
+    this.selectedName = await this._nameService.findRemoteName(name);
   }
 
   toggleAdvancedPay() {
@@ -244,16 +217,16 @@ export class QuickFormComponent implements OnInit {
     return AddressHelper.getShortAddress(address);
   }
 
-  private _filterAddress(value: string): AddressModel[] {
+  private async _filterAddress(value: string): Promise<IAddress[]> {
     const filterValue = value.toLowerCase();
 
-    return this.addresses.filter(option => option.address.toLowerCase().includes(filterValue));
+    return (await this._addressService.filterRemoteAddress(filterValue)).slice(0,25);
   }
 
-  private _filterName(value: string): NameModel[] {
+  private async _filterName(value: string): Promise<NameModel[]> {
     const filterValue = value.toLowerCase();
 
-    return this.names.filter(option => option.name.toLowerCase().includes(filterValue));
+    return (await this._nameService.filterRemoteNames(filterValue)).slice(0,25);
   }
 
   private _filterPlace(value: string): PlaceModel[] {
