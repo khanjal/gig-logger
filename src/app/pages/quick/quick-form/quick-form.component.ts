@@ -1,6 +1,12 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AddressService } from '@services/address.service';
+import { NameService } from '@services/name.service';
+import { PlaceService } from '@services/place.service';
+import { ServiceService } from '@services/service.service';
+import { ShiftService } from '@services/shift.service';
+import { TripService } from '@services/trip.service';
 import { Observable, startWith, map } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
@@ -58,7 +64,15 @@ export class QuickFormComponent implements OnInit {
   sheetTrips: TripModel[] = [];
   shifts: ShiftModel[] = [];
 
-  constructor(private _snackBar: MatSnackBar) {}
+  constructor(
+    private _snackBar: MatSnackBar,
+    private _addressService: AddressService,
+    private _nameService: NameService,
+    private _placeService: PlaceService,
+    private _serviceService: ServiceService,
+    private _shfitService: ShiftService,
+    private _tripService: TripService
+    ) {}
 
   async ngOnInit(): Promise<void> {
     
@@ -85,13 +99,17 @@ export class QuickFormComponent implements OnInit {
     this.load();
   }
 
-  public load() {
+  public async load() {
     ShiftHelper.updateAllShiftTotals();
 
-    this.addresses = AddressHelper.getRemoteAddresses();
-    this.names = NameHelper.getRemoteNames();
-    this.places = PlaceHelper.getRemotePlaces();
-    this.services = ServiceHelper.getRemoteServices();
+    //this.addresses = AddressHelper.getRemoteAddresses();
+    this.addresses = await this._addressService.getRemoteAddresses();
+    //this.names = NameHelper.getRemoteNames();
+    this.names = await this._nameService.getRemoteNames();
+    // this.places = PlaceHelper.getRemotePlaces();
+    this.places = await this._placeService.getRemotePlaces();
+    //this.services = ServiceHelper.getRemoteServices();
+    this.services = await this._serviceService.getRemoteServices();
     this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
 

@@ -11,6 +11,12 @@ import { TripHelper } from '../helpers/trip.helper';
 import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
 import { environment } from '../../../environments/environment';
+import { ShiftService } from './shift.service';
+import { TripService } from './trip.service';
+import { AddressService } from './address.service';
+import { NameService } from './name.service';
+import { PlaceService } from './place.service';
+import { ServiceService } from './service.service';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -21,7 +27,13 @@ export class GoogleSheetService {
     data: any = null;
 
     constructor(
-            public http: HttpClient
+            public http: HttpClient,
+            private _addressService: AddressService,
+            private _nameService: NameService,
+            private _placeService: PlaceService,
+            private _serviceService: ServiceService,
+            private _shfitService: ShiftService,
+            private _tripService: TripService
         ) { }
 
     public async addSheet() {
@@ -92,34 +104,40 @@ export class GoogleSheetService {
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
         rows = await sheet.getRows();
-        site.remote.addresses = AddressHelper.translateSheetData(rows);
+        // site.remote.addresses = AddressHelper.translateSheetData(rows);
+        await this._addressService.loadAddresses(AddressHelper.translateSheetData(rows));
 
         // Names
         sheet = doc.sheetsByTitle["Names"];
         rows = await sheet.getRows();
-        site.remote.names = NameHelper.translateSheetData(rows);
+        // site.remote.names = NameHelper.translateSheetData(rows);
+        await this._nameService.loadNames(NameHelper.translateSheetData(rows));
 
         // Places
         sheet = doc.sheetsByTitle["Places"];
         rows = await sheet.getRows();
-        site.remote.places = PlaceHelper.translateSheetData(rows);
+        // site.remote.places = PlaceHelper.translateSheetData(rows);
+        await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
 
         // Services
         sheet = doc.sheetsByTitle["Services"];
         rows = await sheet.getRows();
-        site.remote.services = ServiceHelper.translateSheetData(rows);
+        // site.remote.services = ServiceHelper.translateSheetData(rows);
+        await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
 
         // Shifts
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
         let shifts = ShiftHelper.translateSheetData(rows);
         site.remote.shifts = ShiftHelper.getPastShifts(7, shifts);
+        await this._shfitService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
         let trips = TripHelper.translateSheetData(rows);
         site.remote.trips = TripHelper.getPastTrips(7, trips);
+        await this._tripService.loadTrips(trips);
         // console.log(site.remote.trips);
 
         LocalStorageHelper.updateRemoteData(site);
