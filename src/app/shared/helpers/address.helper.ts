@@ -1,11 +1,16 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { AddressModel } from "../models/address.model";
+import { AddressModel } from "@models/address.model";
 
 export class AddressHelper {
     static getShortAddress(address: string): string {
         if (address) {
             let addressArray = address.split(", ");
-            return `${ addressArray[0] }, ${ addressArray[1] }`; 
+            let addressString = addressArray[0];
+
+            if (addressArray[1]) {
+                addressString = `${ addressString }, ${ addressArray[1] }`;
+            }
+            return addressString;
         }
         
         return "";

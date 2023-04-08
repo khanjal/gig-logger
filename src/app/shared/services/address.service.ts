@@ -6,6 +6,14 @@ import { IAddress } from '@interfaces/address.interface';
 export class AddressService {
     addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
+    public async filterRemoteAddress(address: string): Promise<IAddress[]> {
+        return await spreadsheetDB.addresses.where("address").startsWithAnyOfIgnoreCase(address).toArray();
+    }
+
+    public async getRemoteAddress(address: string): Promise<IAddress | undefined> {
+        return await spreadsheetDB.addresses.where("address").anyOfIgnoreCase(address).first();
+    }
+
     public async getRemoteAddresses(): Promise<IAddress[]> {
         return await spreadsheetDB.addresses.toArray();
     }
