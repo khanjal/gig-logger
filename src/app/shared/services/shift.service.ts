@@ -20,6 +20,10 @@ export class ShiftService {
         return await localDB.shifts.where(field).equals(value).toArray();
     }
 
+    public async queryRemoteShifts(field: string, value: string | number): Promise<IShift[]> {
+        return await spreadsheetDB.shifts.where(field).equals(value).toArray();
+    }
+
     public async loadShifts(shifts: ShiftModel[]) {
         await spreadsheetDB.shifts.clear();
         await spreadsheetDB.shifts.bulkAdd(shifts);

@@ -4,6 +4,8 @@ import { SiteModel } from "../models/site.model";
 import { DateHelper } from "./date.helper";
 import { NumberHelper } from "./number.helper";
 import { TripHelper } from "./trip.helper";
+import { IShift } from "@interfaces/shift.interface";
+import { ITrip } from "@interfaces/trip.interface";
 
 export class ShiftHelper {
     static getAllShifts(): ShiftModel[] {
@@ -11,22 +13,21 @@ export class ShiftHelper {
         return shifts;
     }
 
-    static getUniqueShifts(): ShiftModel[] {
-        let shifts = this.getRemoteShifts();
-        let localShifts = this.getLocalShifts();
+    static getUniqueShifts(shifts: IShift[]): ShiftModel[] {
+        let uniqueShifts: IShift[] = [];
 
-        localShifts.forEach(localShift => {
+        shifts.forEach(shift => {
 
-            let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.number == localShift.number);
+            let foundShift = uniqueShifts.find(x => x.date == shift.date && x.service == shift.service && x.number == shift.number);
 
             if (foundShift) {
                 return;
             }
 
-            shifts.push(localShift);
+            uniqueShifts.push(shift);
         });
 
-        return shifts;
+        return uniqueShifts;
     }
 
     static getLocalShifts(): ShiftModel[] {
@@ -42,7 +43,8 @@ export class ShiftHelper {
 
     static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
         if (!shifts) {
-            shifts = this.getUniqueShifts();
+            //shifts = this.getUniqueShifts();
+            shifts = [];
         }
 
         let datestring = DateHelper.getDateString(days);
@@ -71,8 +73,8 @@ export class ShiftHelper {
         return shifts;
     }
 
-    static getNextShiftNumber(service: string): number {
-        let shifts: ShiftModel[] = this.getTodaysShifts();
+    static getNextShiftNumber(service: string, shifts: IShift[]): number {
+        shifts = this.getUniqueShifts(shifts);
 
         let serviceShifts = shifts.filter(shift => shift.service == service);
 
@@ -80,7 +82,8 @@ export class ShiftHelper {
     }
 
     static getTodaysShifts():  ShiftModel[] {
-        let shifts: ShiftModel[] = this.getUniqueShifts();
+        //let shifts: ShiftModel[] = this.getUniqueShifts();
+        let shifts: ShiftModel[] = [];
 
         let todaysShifts: ShiftModel[] = [];
 
@@ -116,14 +119,14 @@ export class ShiftHelper {
         // LocalStorageHelper.updateLocalData(gigs);
     }
 
-    static createNewShift(service: string): ShiftModel {
+    static createNewShift(service: string, shifts: IShift[]): ShiftModel {
         let shift: ShiftModel = new ShiftModel;
 
         shift.service = service;
 
-        let shiftNumber = this.getNextShiftNumber(service);
+        let shiftNumber = this.getNextShiftNumber(service, shifts);
 
-        shift.id = ShiftHelper.getLocalShifts().length++;
+        // shift.id = ShiftHelper.getLocalShifts().length++;
         shift.number = shiftNumber;
         shift.start = new Date().toLocaleTimeString();
         
@@ -131,7 +134,8 @@ export class ShiftHelper {
     }
 
     static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
-        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.number - a.number);
+        //shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.number - a.number);
+        shifts.sort((a,b) => b.key.localeCompare(a.key));
 
         return shifts;
     }
