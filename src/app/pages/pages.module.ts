@@ -49,7 +49,9 @@ import { MatCardModule } from '@angular/material/card';
     MatTableModule,
     ReactiveFormsModule,
     ScrollingModule,
-    SharedModule,
+    SharedModule
+  ],
+  exports: [
   ],
   providers: [
       {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}

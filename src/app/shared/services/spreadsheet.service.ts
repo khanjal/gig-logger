@@ -2,6 +2,7 @@ import { liveQuery } from 'dexie';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { localDB } from '@data/local.db';
 import { Spreadsheet } from '@models/spreadsheet.model';
+import { spreadsheetDB } from '@data/spreadsheet.db';
 
 export class SpreadsheetService {
     spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
@@ -18,7 +19,29 @@ export class SpreadsheetService {
         return await localDB.spreadsheets.toArray();
     }
 
-    public async update(spreadsheet: Spreadsheet) {
+    public async update(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.put(spreadsheet);
+    }
+
+    public async deleteSpreadsheet(spreadsheet: ISpreadsheet) {
+        await localDB.spreadsheets.delete(spreadsheet.id);
+    }
+
+    public deleteData() {
+        localDB.delete().then(() => {
+            console.log("Local Database successfully deleted");
+        }).catch((err) => {
+            console.error("Could not delete local database");
+        }).finally(() => {
+            // Do what should be done next...
+        });
+
+        spreadsheetDB.delete().then(() => {
+            console.log("Spreadsheet Database successfully deleted");
+        }).catch((err) => {
+            console.error("Could not delete spreadsheet database");
+        }).finally(() => {
+            // Do what should be done next...
+        });
     }
 }
