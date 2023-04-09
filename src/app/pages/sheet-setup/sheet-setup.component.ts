@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { LocalStorageHelper } from 'src/app/shared/helpers/localStorage.helper';
 
 @Component({
   selector: 'app-sheet-setup',
@@ -9,6 +8,6 @@ import { LocalStorageHelper } from 'src/app/shared/helpers/localStorage.helper';
 export class SheetSetupComponent {
 
   public getDataSize() {
-    return LocalStorageHelper.formatBytes(LocalStorageHelper.getDataSize());
+    // return LocalStorageHelper.formatBytes(LocalStorageHelper.getDataSize());
   }
 }

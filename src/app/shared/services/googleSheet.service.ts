@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet, ServiceAccountCredentials } from 'google-spreadsheet';
-import { SiteModel } from '../models/site.model';
 import { AddressHelper } from '../helpers/address.helper';
 import { NameHelper } from '../helpers/name.helper';
 import { PlaceHelper } from '../helpers/place.helper';
 import { ServiceHelper } from '../helpers/service.helper';
 import { ShiftHelper } from '../helpers/shift.helper';
 import { TripHelper } from '../helpers/trip.helper';
-import { LocalStorageHelper } from '../helpers/localStorage.helper';
 
 import { environment } from '../../../environments/environment';
 import { ShiftService } from './shift.service';
@@ -17,6 +15,8 @@ import { AddressService } from './address.service';
 import { NameService } from './name.service';
 import { PlaceService } from './place.service';
 import { ServiceService } from './service.service';
+import { Spreadsheet } from '@models/spreadsheet.model';
+import { SpreadsheetService } from './spreadsheet.service';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -33,11 +33,12 @@ export class GoogleSheetService {
             private _placeService: PlaceService,
             private _serviceService: ServiceService,
             private _shfitService: ShiftService,
+            private _spreadsheetService: SpreadsheetService,
             private _tripService: TripService
         ) { }
 
     public async addSheet() {
-        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0].id;
         const doc = new GoogleSpreadsheet(spreadsheetId);
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
@@ -47,7 +48,7 @@ export class GoogleSheetService {
     }
 
     public async getSheetDataById(id: number): Promise<GoogleSpreadsheetWorksheet> {
-        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0].id;
         const doc = new GoogleSpreadsheet(spreadsheetId);
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
@@ -61,7 +62,7 @@ export class GoogleSheetService {
     }
 
     public async getSheetDataByName(name: string): Promise<GoogleSpreadsheetWorksheet> {
-        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
+        const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0].id;
         const doc = new GoogleSpreadsheet(spreadsheetId);
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
@@ -95,11 +96,22 @@ export class GoogleSheetService {
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
 
-        let site: SiteModel = new SiteModel;
         let sheet, rows;
 
-        site.sheetId = spreadsheetId;
-        site.sheetName = doc.title;
+        let spreadsheet = new Spreadsheet;
+        spreadsheet.id = spreadsheetId;
+        spreadsheet.name = doc.title;
+        spreadsheet.default = "false";
+
+        let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+
+        // Set as default if only one
+        if ((await this._spreadsheetService.getSpreadsheets()).length === 0 || defaultSpreadsheet?.id === spreadsheetId) {
+            spreadsheet.default = "true"
+        }
+        await this._spreadsheetService.update(spreadsheet);
+
+        // await this._spreadsheetService
 
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
@@ -129,54 +141,44 @@ export class GoogleSheetService {
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
         let shifts = ShiftHelper.translateSheetData(rows);
-        site.remote.shifts = ShiftHelper.getPastShifts(7, shifts);
+        // site.remote.shifts = ShiftHelper.getPastShifts(7, shifts);
         await this._shfitService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
         let trips = TripHelper.translateSheetData(rows);
-        site.remote.trips = TripHelper.getPastTrips(7, trips);
+        // site.remote.trips = TripHelper.getPastTrips(7, trips);
         await this._tripService.loadTrips(trips);
         // console.log(site.remote.trips);
-
-        LocalStorageHelper.updateRemoteData(site);
     }
 
-    public async saveLocalData() {
-        let data = LocalStorageHelper.getSiteData();
-
+    public async commitUnsavedShifts() {
+        let shifts = await this._shfitService.queryLocalShifts("saved", "false");
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
-        data.local.shifts.forEach(async shift => {
-            if (shift.saved) {
-                return;
-            }
 
+        shifts.forEach(async shift => {
             shiftRows.push({ 
                 Date: shift.date, 
                 Service: shift.service, 
                 '#': shift.number 
             });
 
-            shift.saved = true;
+            shift.saved = "true";
+            await this._shfitService.updateLocalShift(shift);
         });
 
         await this.saveSheetData("Shifts", shiftRows);
-        // try {
-        //     await sheet.addRows(shiftRows);
-        // } catch (error) {
-        //     console.log(error);
-        // }
-        
+    }
 
+    public async commitUnsavedTrips() {
+        let trips = await this._tripService.queryLocalTrips("saved", "false");
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
-        data.local.trips.forEach(async trip => {
-            if (trip.saved) {
-                return;
-            }
 
+        trips.forEach(async trip => {
             tripRows.push({
                 Date: trip.date, 
+                Distance: trip.distance,
                 Service: trip.service,
                 '#': trip.number, 
                 Place: trip.place,
@@ -190,23 +192,82 @@ export class GoogleSheetService {
                 Note: trip.note
             });
 
-            trip.saved = true;
+            trip.saved = "true";
+            await this._tripService.updateLocalTrip(trip);
         });
 
         await this.saveSheetData("Trips", tripRows);
-        // try {
-        //     await sheet.addRows(tripRows);
-        // } catch (error) {
-        //     console.log(error);
-        // }
-        
-        LocalStorageHelper.updateLocalData(data);
-        
     }
 
+    // public async saveLocalData() {
+    //     let data = LocalStorageHelper.getSiteData();
+
+    //     let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
+    //     data.local.shifts.forEach(async shift => {
+    //         if (shift.saved) {
+    //             return;
+    //         }
+
+    //         shiftRows.push({ 
+    //             Date: shift.date, 
+    //             Service: shift.service, 
+    //             '#': shift.number 
+    //         });
+
+    //         shift.saved = "true";
+    //     });
+
+    //     await this.saveSheetData("Shifts", shiftRows);
+    //     // try {
+    //     //     await sheet.addRows(shiftRows);
+    //     // } catch (error) {
+    //     //     console.log(error);
+    //     // }
+        
+
+    //     let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
+    //     data.local.trips.forEach(async trip => {
+    //         if (trip.saved) {
+    //             return;
+    //         }
+
+    //         tripRows.push({
+    //             Date: trip.date, 
+    //             Service: trip.service,
+    //             '#': trip.number, 
+    //             Place: trip.place,
+    //             Pickup: trip.time,
+    //             Pay: trip.pay,
+    //             Tip: trip.tip ?? "",
+    //             Bonus: trip.bonus ?? "",
+    //             Cash: trip.cash ?? "",
+    //             Name: trip.name,
+    //             'End Address': trip.endAddress,
+    //             Note: trip.note
+    //         });
+
+    //         trip.saved = "true";
+    //     });
+
+    //     await this.saveSheetData("Trips", tripRows);
+    //     // try {
+    //     //     await sheet.addRows(tripRows);
+    //     // } catch (error) {
+    //     //     console.log(error);
+    //     // }
+        
+    //     LocalStorageHelper.updateLocalData(data);
+        
+    // }
+
     public async saveSheetData(sheetName: string, sheetRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[]) {
-        const spreadsheetId = LocalStorageHelper.getSpreadsheetId();
-        const doc = new GoogleSpreadsheet(spreadsheetId);
+        const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+        
+        if(!spreadsheetId) {
+            return;
+        }
+        
+        const doc = new GoogleSpreadsheet(spreadsheetId.id);
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
