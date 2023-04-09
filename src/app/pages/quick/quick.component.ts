@@ -7,7 +7,8 @@ import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { SiteModel } from 'src/app/shared/models/site.model';
-import { LocalStorageHelper } from 'src/app/shared/helpers/localStorage.helper';
+import { TripService } from '@services/trip.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 @Component({
   selector: 'app-quick',
@@ -29,7 +30,9 @@ export class QuickComponent implements OnInit {
 
   constructor(
       private _router: Router, 
-      private _googleService: GoogleSheetService
+      private _googleService: GoogleSheetService,
+      private _spreadsheetService: SpreadsheetService,
+      private _tripService: TripService
     ) { }
 
   async ngOnInit(): Promise<void> {
@@ -39,17 +42,18 @@ export class QuickComponent implements OnInit {
   async save() {
     console.log('Saving...');
     this.saving = true;
-    await this._googleService.saveLocalData();
+    await this._googleService.commitUnsavedShifts();
+    await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
     console.log('Saved!');
   }
 
-  public load() {
+  public async load() {
     ShiftHelper.updateAllShiftTotals();
-    this.sheetTrips = TripHelper.getRemoteTrips().reverse();
-    this.unsavedTrips = TripHelper.getUnsavedLocalTrips();
-    this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
+    this.sheetTrips = (await this._tripService.getRemoteTrips()).reverse().slice(0,50);
+    this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
+    //this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
 
     // console.log(this.form);
     this.form?.load();
@@ -57,7 +61,7 @@ export class QuickComponent implements OnInit {
 
   async saveLocalTrip(trip: TripModel) {
     this.saving = true;
-    await this._googleService.saveLocalData();
+    await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
   }
@@ -77,7 +81,8 @@ export class QuickComponent implements OnInit {
 
   async reload() {
     this.reloading = true;
-    await this._googleService.loadRemoteData(LocalStorageHelper.getSpreadsheetId());
+    const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0]?.id;
+    await this._googleService.loadRemoteData(spreadsheetId);
 
     this.load();
     this.reloading = false;

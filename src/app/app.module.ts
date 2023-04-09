@@ -15,6 +15,7 @@ import { AddressService } from '@services/address.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ServiceService } from '@services/service.service';
     PlaceService,
     ServiceService,
     ShiftService,
+    SpreadsheetService,
     TripService
   ],
   bootstrap: [AppComponent]

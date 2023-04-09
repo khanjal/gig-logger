@@ -2,7 +2,6 @@ import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { SiteModel } from "../models/site.model";
 import { TripModel } from "../models/trip.model";
 import { DateHelper } from "./date.helper";
-import { LocalStorageHelper } from "./localStorage.helper";
 import { NumberHelper } from "./number.helper";
 
 export class TripHelper {
@@ -32,7 +31,7 @@ export class TripHelper {
     }
 
     static getRemoteTrips(): TripModel[] {
-        let siteData: SiteModel = LocalStorageHelper.getSiteData();
+        let siteData: SiteModel = new SiteModel;
         let trips: TripModel[] = [];
 
         if (siteData) {
@@ -43,7 +42,7 @@ export class TripHelper {
     }
 
     static getLocalTrips():  TripModel[] {
-        let siteData: SiteModel = LocalStorageHelper.getSiteData();
+        let siteData: SiteModel = new SiteModel;
         let trips: TripModel[] = [];
 
         if (siteData) {
@@ -70,10 +69,10 @@ export class TripHelper {
 
         trips.push(trip);
 
-        let gigs = LocalStorageHelper.getSiteData();
-        gigs.local.trips = trips;
+        // let gigs = LocalStorageHelper.getSiteData();
+        // gigs.local.trips = trips;
 
-        LocalStorageHelper.updateLocalData(gigs);
+        // LocalStorageHelper.updateLocalData(gigs);
     }
 
     static deleteTrip(trip: TripModel) {
@@ -81,10 +80,10 @@ export class TripHelper {
 
         trips = trips.filter(x => x.id !== trip.id);
 
-        let gigs = LocalStorageHelper.getSiteData();
-        gigs.local.trips = trips;
+        // let gigs = LocalStorageHelper.getSiteData();
+        // gigs.local.trips = trips;
 
-        LocalStorageHelper.updateLocalData(gigs);
+        // LocalStorageHelper.updateLocalData(gigs);
     }
 
     static clearSavedTrips() {
@@ -92,10 +91,10 @@ export class TripHelper {
 
         trips = trips.filter(x => !x.saved);
 
-        let gigs = LocalStorageHelper.getSiteData();
-        gigs.local.trips = trips;
+        // let gigs = LocalStorageHelper.getSiteData();
+        // gigs.local.trips = trips;
 
-        LocalStorageHelper.updateLocalData(gigs);
+        // LocalStorageHelper.updateLocalData(gigs);
     }
 
     static translateSheetData(rows: GoogleSpreadsheetRow[]): TripModel[] {
@@ -107,7 +106,7 @@ export class TripHelper {
             let tripModel: TripModel = new TripModel;
             
             // Local
-            tripModel.saved = true;
+            tripModel.saved = "true";
 
             // Keys
             tripModel.id = row.rowIndex;

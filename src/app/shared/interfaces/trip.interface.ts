@@ -11,7 +11,7 @@ export interface ITrip {
     note: string;
     pay: number;
     place: string;
-    saved: boolean;
+    saved: string;
     service: string;
     number: number;
     time: string;

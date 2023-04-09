@@ -6,6 +6,10 @@ import { IService } from '@interfaces/service.interface';
 export class ServiceService {
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
     
+    public async filterRemoteServices(service: string): Promise<IService[]> {
+        return await spreadsheetDB.services.where("service").startsWithAnyOfIgnoreCase(service).toArray();
+    }
+
     public async getRemoteServices(): Promise<IService[]> {
         return await spreadsheetDB.services.toArray();
     }
