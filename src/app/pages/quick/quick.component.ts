@@ -44,6 +44,7 @@ export class QuickComponent implements OnInit {
     this.saving = true;
     await this._googleService.commitUnsavedShifts();
     await this._googleService.commitUnsavedTrips();
+    await this._googleService.loadRemoteData();
     await this.reload();
     this.saving = false;
     console.log('Saved!');
@@ -53,7 +54,7 @@ export class QuickComponent implements OnInit {
     ShiftHelper.updateAllShiftTotals();
     this.sheetTrips = (await this._tripService.getRemoteTrips()).reverse().slice(0,50);
     this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
-    //this.savedTrips = TripHelper.getSavedLocalTrips().reverse();
+    this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
     this.form?.load();
@@ -81,8 +82,7 @@ export class QuickComponent implements OnInit {
 
   async reload() {
     this.reloading = true;
-    const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0]?.id;
-    await this._googleService.loadRemoteData(spreadsheetId);
+    await this._googleService.loadRemoteData();
 
     this.load();
     this.reloading = false;

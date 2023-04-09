@@ -48,3 +48,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   margin: .5rem auto;
   width: 100%;
 }
+
+.row-block {
+  display: inline-block;
+}
+
+button {
+  margin: 0 auto;
+}
+
+.button-left {
+  float: left;
+}
+
+.button-right {
+  float: right;
+}

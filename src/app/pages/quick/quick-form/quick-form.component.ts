@@ -95,8 +95,6 @@ export class QuickFormComponent implements OnInit {
   public async load() {
     ShiftHelper.updateAllShiftTotals();
 
-    //this.places = await this._placeService.getRemotePlaces();
-    //this.services = await this._serviceService.getRemoteServices();
     this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
 

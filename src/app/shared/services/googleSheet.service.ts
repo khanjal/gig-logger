@@ -91,7 +91,14 @@ export class GoogleSheetService {
         }
     }
 
-    public async loadRemoteData(spreadsheetId: string) {
+    public async loadRemoteData() {
+        let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+        let spreadsheetId = defaultSpreadsheet.id;
+
+        if (!spreadsheetId) {
+            return;
+        }
+
         let doc = new GoogleSpreadsheet(spreadsheetId);
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
@@ -103,7 +110,6 @@ export class GoogleSheetService {
         spreadsheet.name = doc.title;
         spreadsheet.default = "false";
 
-        let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
 
         // Set as default if only one
         if ((await this._spreadsheetService.getSpreadsheets()).length === 0 || defaultSpreadsheet?.id === spreadsheetId) {
@@ -198,67 +204,6 @@ export class GoogleSheetService {
 
         await this.saveSheetData("Trips", tripRows);
     }
-
-    // public async saveLocalData() {
-    //     let data = LocalStorageHelper.getSiteData();
-
-    //     let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
-    //     data.local.shifts.forEach(async shift => {
-    //         if (shift.saved) {
-    //             return;
-    //         }
-
-    //         shiftRows.push({ 
-    //             Date: shift.date, 
-    //             Service: shift.service, 
-    //             '#': shift.number 
-    //         });
-
-    //         shift.saved = "true";
-    //     });
-
-    //     await this.saveSheetData("Shifts", shiftRows);
-    //     // try {
-    //     //     await sheet.addRows(shiftRows);
-    //     // } catch (error) {
-    //     //     console.log(error);
-    //     // }
-        
-
-    //     let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
-    //     data.local.trips.forEach(async trip => {
-    //         if (trip.saved) {
-    //             return;
-    //         }
-
-    //         tripRows.push({
-    //             Date: trip.date, 
-    //             Service: trip.service,
-    //             '#': trip.number, 
-    //             Place: trip.place,
-    //             Pickup: trip.time,
-    //             Pay: trip.pay,
-    //             Tip: trip.tip ?? "",
-    //             Bonus: trip.bonus ?? "",
-    //             Cash: trip.cash ?? "",
-    //             Name: trip.name,
-    //             'End Address': trip.endAddress,
-    //             Note: trip.note
-    //         });
-
-    //         trip.saved = "true";
-    //     });
-
-    //     await this.saveSheetData("Trips", tripRows);
-    //     // try {
-    //     //     await sheet.addRows(tripRows);
-    //     // } catch (error) {
-    //     //     console.log(error);
-    //     // }
-        
-    //     LocalStorageHelper.updateLocalData(data);
-        
-    // }
 
     public async saveSheetData(sheetName: string, sheetRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[]) {
         const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];

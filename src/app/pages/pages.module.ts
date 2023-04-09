@@ -21,6 +21,7 @@ import { SheetsComponent } from './sheets/sheets.component';
 import { SheetSetupComponent } from './sheet-setup/sheet-setup.component';
 import { SheetSetupFormComponent } from './sheet-setup/sheet-setup-form/sheet-setup-form.component';
 import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-setup-table.component';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-
     CommonModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatCardModule,
     MatFormFieldModule,
     MatSelectModule,
     MatListModule,
