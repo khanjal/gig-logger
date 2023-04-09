@@ -41,6 +41,7 @@
       "@interfaces/*": ["./src/app/shared/interfaces/*"],
       "@helpers/*": ["./src/app/shared/helpers/*"],
       "@models/*": ["./src/app/shared/models/*"],
+      "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"]
       
     }

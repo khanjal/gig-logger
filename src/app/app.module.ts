@@ -28,7 +28,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
     HttpClientModule,
     MatIconModule,
     PagesModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [
     AddressService,

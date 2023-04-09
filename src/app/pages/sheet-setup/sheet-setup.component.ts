@@ -10,6 +10,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 })
 export class SheetSetupComponent {
 
+  deleting: boolean = false;
   reloading: boolean = false;
   setting: boolean = false;
   spreadsheets: ISpreadsheet[] | undefined;
@@ -45,6 +46,27 @@ export class SheetSetupComponent {
     this.load();
     this.reload();
     this.setting = false;
+  }
+
+  public async deleteSpreadsheet(spreadsheet: ISpreadsheet) {
+    this.deleting = true;
+    if (spreadsheet.default === "false") {
+      await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
+    }
+
+    this.deleting = false;
+
+    this.load();
+  }
+
+  public async deleteAllData() {
+    this.deleting = true;
+    this._spreadsheetService.deleteData();
+
+    this.spreadsheets = [];
+    this.deleting = false;
+
+    window.location.reload();
   }
 
   public getDataSize() {
