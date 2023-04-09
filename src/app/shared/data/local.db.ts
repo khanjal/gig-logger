@@ -5,7 +5,7 @@ import Dexie, { Table } from 'dexie';
 
 
 export class AppDB extends Dexie {
-    spreadsheets!: Table<ISpreadsheet, number>;
+    spreadsheets!: Table<ISpreadsheet, string>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
 

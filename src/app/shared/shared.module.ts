@@ -7,11 +7,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
-import { TruncatePipe } from './pipes/transform.pipe';
 import { TripsQuickViewComponent } from './components/trips-quick-view/trips-quick-view.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
+import { TruncatePipe } from '@pipes/transform.pipe';
 
 @NgModule({
     declarations: [
@@ -33,7 +33,8 @@ import { MatButtonModule } from '@angular/material/button';
     exports: [
         HeaderComponent,
         TripsTableSimpleComponent,
-        TripsQuickViewComponent
+        TripsQuickViewComponent,
+        TruncatePipe
     ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },

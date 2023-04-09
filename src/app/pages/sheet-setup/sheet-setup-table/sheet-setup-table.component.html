@@ -2,7 +2,7 @@
     <div>
         <mat-card-header>{{ spreadsheet.name }} {{ spreadsheet.default === "true" ? "- default" : "" }} </mat-card-header>
         <mat-card-content>
-            <div><a href="https://docs.google.com/spreadsheets/d/{{ spreadsheet.id }}" target="_blank">{{ spreadsheet.id }}</a></div>
+            <div><a href="https://docs.google.com/spreadsheets/d/{{ spreadsheet.id }}" target="_blank">{{ spreadsheet.id | truncate:10 }}</a></div>
         </mat-card-content>
     </div>
 </mat-card>
