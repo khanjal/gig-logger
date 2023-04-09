@@ -1,5 +1,24 @@
 <div class="container">
-    <h2>Setup</h2>
-    <sheet-setup-form></sheet-setup-form>
-    Data Size: {{ getDataSize() }}
+    <h2>Add Spreadsheet</h2>
+    <sheet-setup-form (parentReload)="load()"></sheet-setup-form>
+</div>
+
+<div class="container">
+    <h2>Current Spreadsheets</h2>
+    <div *ngFor="let spreadsheet of spreadsheets">
+        <app-sheet-setup-table [spreadsheet]="spreadsheet"></app-sheet-setup-table>
+        <div class="row row-block">
+            <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
+            <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
+            <button mat-stroked-button type="button" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
+            <button mat-stroked-button type="button" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
+            <button mat-stroked-button class="button-right" color="warn" type="button" *ngIf="spreadsheet.default === 'false'" ><mat-icon>delete</mat-icon> Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row row-block">
+        <button mat-stroked-button class="button-right" color="warn" type="button" ><mat-icon>delete</mat-icon> Delete All Data</button>
+    </div>
 </div>
