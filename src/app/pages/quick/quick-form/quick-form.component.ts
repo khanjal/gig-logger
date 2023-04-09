@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IAddress } from '@interfaces/address.interface';
+import { IShift } from '@interfaces/shift.interface';
 import { AddressService } from '@services/address.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
@@ -93,10 +94,14 @@ export class QuickFormComponent implements OnInit {
   }
 
   public async load() {
-    ShiftHelper.updateAllShiftTotals();
+    // ShiftHelper.updateAllShiftTotals();
+    let shifts = await this._shfitService.getRemoteShifts();
+    this.shifts = ShiftHelper.sortShiftsDesc(shifts).reverse();
 
-    this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
-    this.sheetTrips = TripHelper.getPastTrips(1);
+    let localShifts = await this._shfitService.queryLocalShifts("saved", "false");
+    this.shifts.push(...localShifts);
+    this.shifts.reverse()
+    // this.sheetTrips = TripHelper.getPastTrips(1);
 
     // Set defaults if there is only one place.
     // if (this.f.length === 1) {
@@ -113,11 +118,15 @@ export class QuickFormComponent implements OnInit {
     let shift: ShiftModel = new ShiftModel;
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
+      let shifts: IShift[] = [];
 
-      shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "");
-      // ShiftHelper.addShift(shift);
+      shifts.push(...await this._shfitService.queryLocalShifts("date", new Date().toLocaleDateString()));
+      shifts.push(...await this._shfitService.queryRemoteShifts("date", new Date().toLocaleDateString()));
+      
+      shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
+      
+      
       await this._shfitService.addNewShift(shift);
-      this.shifts = ShiftHelper.getPastShifts(1);
     }
     else {
       if (this.quickForm.value.shift) {
@@ -135,7 +144,6 @@ export class QuickFormComponent implements OnInit {
     
     let trip: TripModel = new TripModel;
 
-    trip.id = TripHelper.getLocalTrips().length++;
     trip.endAddress = this.quickForm.value.endAddress ?? "";
     trip.pay = +this.quickForm.value.pay ?? 0;
     trip.tip = +this.quickForm.value.tip ?? 0;

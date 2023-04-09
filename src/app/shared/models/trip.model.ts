@@ -1,5 +1,5 @@
 export class TripModel {
-    id: number = 0;
+    id?: number;
     startAddress: string = "";
     endAddress: string = "";
     bonus?: number;
