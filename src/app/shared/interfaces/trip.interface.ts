@@ -1,5 +1,5 @@
 export interface ITrip {
-    id: number;
+    id?: number;
     startAddress: string;
     endAddress: string;
     bonus?: number;

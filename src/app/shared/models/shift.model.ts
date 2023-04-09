@@ -1,7 +1,7 @@
 import { IShift } from "@interfaces/shift.interface";
 
 export class ShiftModel implements IShift {
-    id: number = 0;
+    id?: number;
     date: string = new Date().toLocaleDateString();;
     distance: number = 0;
     end: string = "";
