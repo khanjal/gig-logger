@@ -11,7 +11,7 @@ export class TripModel {
     note: string = "";
     pay: number = 0;
     place: string = "";
-    saved: boolean = false;
+    saved: string = "false";
     service: string = "";
     number: number = 0;
     time: string = "";

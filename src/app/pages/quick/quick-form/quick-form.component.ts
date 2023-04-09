@@ -8,7 +8,7 @@ import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
-import { Observable, startWith, map, mergeMap } from 'rxjs';
+import { Observable, startWith, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
@@ -50,10 +50,8 @@ export class QuickFormComponent implements OnInit {
   filteredNames: Observable<NameModel[]> | undefined;
   selectedName: NameModel | undefined;
 
-  places: PlaceModel[] = [];
   filteredPlaces: Observable<PlaceModel[]> | undefined;
 
-  services: ServiceModel[] = [];
   filteredServices: Observable<ServiceModel[]> | undefined;
 
   sheetTrips: TripModel[] = [];
@@ -83,12 +81,12 @@ export class QuickFormComponent implements OnInit {
 
     this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
       startWith(''),
-      map(value => this._filterPlace(value || '')),
+      mergeMap(async value => await this._filterPlace(value || ''))
     );
 
     this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
       startWith(''),
-      map(value => this._filterService(value || '')),
+      mergeMap(async value => await this._filterService(value || ''))
     );
 
     this.load();
@@ -97,29 +95,30 @@ export class QuickFormComponent implements OnInit {
   public async load() {
     ShiftHelper.updateAllShiftTotals();
 
-    this.places = await this._placeService.getRemotePlaces();
-    this.services = await this._serviceService.getRemoteServices();
+    //this.places = await this._placeService.getRemotePlaces();
+    //this.services = await this._serviceService.getRemoteServices();
     this.shifts = ShiftHelper.sortShiftsDesc(ShiftHelper.getPastShifts(1));
     this.sheetTrips = TripHelper.getPastTrips(1);
 
     // Set defaults if there is only one place.
-    if (this.places.length === 1) {
-      this.quickForm.controls.place.setValue(this.places[0].place);
-    }
+    // if (this.f.length === 1) {
+    //   this.quickForm.controls.place.setValue(this.places[0].place);
+    // }
 
-    // Set defaults if there is only one service.
-    if (this.services.length === 1) {
-      this.quickForm.controls.service.setValue(this.services[0].service);
-    }
+    // Set default to most used service
+    // if (this.services.length === 1) {
+    //   this.quickForm.controls.service.setValue(this.services[0].service);
+    // }
   }
 
-  public addTrip() {
+  public async addTrip() {
     let shift: ShiftModel = new ShiftModel;
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
 
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "");
-      ShiftHelper.addShift(shift);
+      // ShiftHelper.addShift(shift);
+      await this._shfitService.addNewShift(shift);
       this.shifts = ShiftHelper.getPastShifts(1);
     }
     else {
@@ -154,7 +153,8 @@ export class QuickFormComponent implements OnInit {
     trip.number = shift.number ?? 0;
     trip.time = shift.end = timeString;
 
-    TripHelper.addTrip(trip);
+    // TripHelper.addTrip(trip);
+    await this._tripService.addTrip(trip);
 
     this._snackBar.open("Trip Stored");
 
@@ -228,15 +228,15 @@ export class QuickFormComponent implements OnInit {
     return await this._nameService.filterRemoteNames(filterValue);
   }
 
-  private _filterPlace(value: string): PlaceModel[] {
+  private async _filterPlace(value: string): Promise<PlaceModel[]> {
     const filterValue = value.toLowerCase();
 
-    return this.places.filter(option => option.place.toLowerCase().includes(filterValue));
+    return await this._placeService.filterRemotePlaces(filterValue);
   }
 
-  private _filterService(value: string): ServiceModel[] {
+  private async _filterService(value: string): Promise<ServiceModel[]> {
     const filterValue = value.toLowerCase();
 
-    return this.services.filter(option => option.service.toLowerCase().includes(filterValue));
+    return await this._serviceService.filterRemoteServices(filterValue);
   }
 }

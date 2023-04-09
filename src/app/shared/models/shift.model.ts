@@ -1,12 +1,14 @@
-export class ShiftModel {
+import { IShift } from "@interfaces/shift.interface";
+
+export class ShiftModel implements IShift {
     id: number = 0;
     date: string = new Date().toLocaleDateString();;
     distance: number = 0;
     end: string = "";
     key: string = "";
-    saved: boolean = false;
+    saved: string = "false";
     service: string = "";
-    shiftNumber: number = 0;
+    number: number = 0;
     start: string = "";
     total: number = 0;
     trips: number = 0;

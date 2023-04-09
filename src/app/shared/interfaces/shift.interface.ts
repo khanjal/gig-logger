@@ -4,7 +4,7 @@ export interface IShift {
     distance: number;
     end: string;
     key: string;
-    saved: boolean;
+    saved: string;
     service: string;
     number: number;
     start: string;

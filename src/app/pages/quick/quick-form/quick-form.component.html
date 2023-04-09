@@ -19,9 +19,11 @@
                 [matAutocomplete]="autoService"
                 #service>
             <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
-                <mat-option *ngFor="let service of filteredServices | async" [value]="service.service">
-                    {{ service.service }} ({{ service.visits }})
-                </mat-option>
+                <cdk-virtual-scroll-viewport itemSize="20">
+                    <mat-option *ngFor="let service of filteredServices | async" [value]="service.service" class="mat-option">
+                        {{ service.service }} ({{ service.visits }})
+                    </mat-option>
+                </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
             <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.service.setValue('')">
                 <mat-icon>close</mat-icon>
@@ -41,9 +43,11 @@
             required
             #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
-            <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place">
-                {{place.place}} ({{ place.visits }})
-            </mat-option>
+            <cdk-virtual-scroll-viewport itemSize="20">
+                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" class="mat-option">
+                    {{place.place}} ({{ place.visits }})
+                </mat-option>
+            </cdk-virtual-scroll-viewport>
         </mat-autocomplete>
         <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
             <mat-icon>close</mat-icon>

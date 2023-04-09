@@ -1,5 +1,5 @@
 export class Spreadsheet {
     id: string = "";
     name: string = "";
-    default: boolean = false;
+    default: string = "false";
 }
