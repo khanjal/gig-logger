@@ -10,6 +10,10 @@ export class AddressService {
         return await spreadsheetDB.addresses.where("address").startsWithAnyOfIgnoreCase(address).toArray();
     }
 
+    public async findRemoteAddress(address: string): Promise<IAddress | undefined> {
+        return await spreadsheetDB.addresses.where("address").anyOfIgnoreCase(address).first();
+    }
+
     public async getRemoteAddress(address: string): Promise<IAddress | undefined> {
         return await spreadsheetDB.addresses.where("address").anyOfIgnoreCase(address).first();
     }
@@ -21,5 +25,9 @@ export class AddressService {
     public async loadAddresses(addresses: AddressModel[]) {
         await spreadsheetDB.addresses.clear();
         await spreadsheetDB.addresses.bulkAdd(addresses);
+    }
+
+    public async update(address: IAddress) {
+        await spreadsheetDB.addresses.put(address);
     }
 }

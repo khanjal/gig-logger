@@ -38,14 +38,18 @@ export class QuickComponent implements OnInit {
   }
 
   async save() {
+    console.time("saving");
     console.log('Saving...');
+    
     this.saving = true;
     await this._googleService.commitUnsavedShifts();
     await this._googleService.commitUnsavedTrips();
-    await this._googleService.loadRemoteData();
+    // await this._googleService.loadRemoteData();
     await this.reload();
     this.saving = false;
+
     console.log('Saved!');
+    console.timeEnd("saving");
   }
 
   public async load() {

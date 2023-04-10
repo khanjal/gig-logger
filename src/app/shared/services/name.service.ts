@@ -22,4 +22,8 @@ export class NameService {
         await spreadsheetDB.names.clear();
         await spreadsheetDB.names.bulkAdd(names);
     }
+
+    public async update(name: IName) {
+        await spreadsheetDB.names.put(name);
+    }
 }
