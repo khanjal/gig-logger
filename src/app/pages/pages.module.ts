@@ -18,10 +18,10 @@ import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 import { LoginComponent } from './login/login.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SheetsComponent } from './sheets/sheets.component';
-import { SheetSetupComponent } from './sheet-setup/sheet-setup.component';
-import { SheetSetupFormComponent } from './sheet-setup/sheet-setup-form/sheet-setup-form.component';
-import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-setup-table.component';
 import { MatCardModule } from '@angular/material/card';
+import { SetupComponent } from './sheet-setup/setup.component';
+import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-form.component';
+import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-quick-view.component';
 
 @NgModule({
   declarations: [
@@ -31,9 +31,9 @@ import { MatCardModule } from '@angular/material/card';
     ShiftsComponent,
     LoginComponent,
     SheetsComponent,
-    SheetSetupComponent,
-    SheetSetupFormComponent,
-    SheetSetupTableComponent
+    SetupComponent,
+    SheetAddFormComponent,
+    SheetQuickViewComponent
   ],
   imports: [
     CommonModule,

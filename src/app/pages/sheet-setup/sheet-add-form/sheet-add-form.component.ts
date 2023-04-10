@@ -5,11 +5,11 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 
 @Component({
-  selector: 'sheet-setup-form',
-  templateUrl: './sheet-setup-form.component.html',
-  styleUrls: ['./sheet-setup-form.component.scss']
+  selector: 'sheet-add-form',
+  templateUrl: './sheet-add-form.component.html',
+  styleUrls: ['./sheet-add-form.component.scss']
 })
-export class SheetSetupFormComponent {
+export class SheetAddFormComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   
   sheetForm = new FormGroup({
