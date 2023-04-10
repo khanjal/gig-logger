@@ -11,6 +11,10 @@ export class TripService {
         await localDB.trips.add(trip);
     }
 
+    public async deleteLocal(tripId: number) {
+        await localDB.trips.delete(tripId);
+    }
+
     public async getLocalTrips(): Promise<ITrip[]> {
         return await localDB.trips.toArray();
     }

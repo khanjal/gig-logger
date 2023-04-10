@@ -19,11 +19,11 @@
                 [matAutocomplete]="autoService"
                 #service>
             <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
-                <cdk-virtual-scroll-viewport itemSize="20">
+                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
                     <mat-option *ngFor="let service of filteredServices | async" [value]="service.service" class="mat-option">
                         {{ service.service }} ({{ service.visits }})
                     </mat-option>
-                </cdk-virtual-scroll-viewport>
+                <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
             <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.service.setValue('')">
                 <mat-icon>close</mat-icon>
@@ -43,11 +43,11 @@
             required
             #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
-            <cdk-virtual-scroll-viewport itemSize="20">
+            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
                 <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" class="mat-option">
                     {{place.place}} ({{ place.visits }})
                 </mat-option>
-            </cdk-virtual-scroll-viewport>
+            <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
             <mat-icon>close</mat-icon>
@@ -94,11 +94,11 @@
             (blur)="showNameAddressesEvent($event)" 
             #name>
         <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-            <cdk-virtual-scroll-viewport itemSize="20">
-                <mat-option *cdkVirtualFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
+            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
                     {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
                 </mat-option>
-            </cdk-virtual-scroll-viewport>
+            <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
             <mat-icon>close</mat-icon>
@@ -142,11 +142,11 @@
             (blur)="showAddressNamesEvent($event)"
             #address />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <cdk-virtual-scroll-viewport itemSize="20">
-                <mat-option *cdkVirtualFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
+            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
                     {{ getShortAddress(address.address) }} ({{ address.visits }})
                 </mat-option>
-        </cdk-virtual-scroll-viewport>
+        <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
