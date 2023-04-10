@@ -3,12 +3,9 @@ import { Router } from '@angular/router';
 import { TripModel } from 'src/app/shared/models/trip.model';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
-import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
-import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { SiteModel } from 'src/app/shared/models/site.model';
 import { TripService } from '@services/trip.service';
-import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ShiftService } from '@services/shift.service';
 
 @Component({
@@ -52,7 +49,7 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    ShiftHelper.updateAllShiftTotals();
+    // ShiftHelper.updateAllShiftTotals();
     this.sheetTrips = (await this._tripService.getRemoteTrips()).reverse().slice(0,50);
     this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
