@@ -17,6 +17,8 @@ import { PlaceService } from './place.service';
 import { ServiceService } from './service.service';
 import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
+import { IShift } from '@interfaces/shift.interface';
+import { ITrip } from '@interfaces/trip.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -32,7 +34,7 @@ export class GoogleSheetService {
             private _nameService: NameService,
             private _placeService: PlaceService,
             private _serviceService: ServiceService,
-            private _shfitService: ShiftService,
+            private _shiftService: ShiftService,
             private _spreadsheetService: SpreadsheetService,
             private _tripService: TripService
         ) { }
@@ -122,14 +124,14 @@ export class GoogleSheetService {
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
         rows = await sheet.getRows();
-        // site.remote.addresses = AddressHelper.translateSheetData(rows);
-        await this._addressService.loadAddresses(AddressHelper.translateSheetData(rows));
+        let addresses = AddressHelper.translateSheetData(rows);
+        await this._addressService.loadAddresses(addresses);
 
         // Names
         sheet = doc.sheetsByTitle["Names"];
         rows = await sheet.getRows();
-        // site.remote.names = NameHelper.translateSheetData(rows);
-        await this._nameService.loadNames(NameHelper.translateSheetData(rows));
+        let names = NameHelper.translateSheetData(rows);
+        await this._nameService.loadNames(names);
 
         // Places
         sheet = doc.sheetsByTitle["Places"];
@@ -148,7 +150,7 @@ export class GoogleSheetService {
         rows = await sheet.getRows();
         let shifts = ShiftHelper.translateSheetData(rows);
         // site.remote.shifts = ShiftHelper.getPastShifts(7, shifts);
-        await this._shfitService.loadShifts(shifts);
+        await this._shiftService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
@@ -157,10 +159,59 @@ export class GoogleSheetService {
         // site.remote.trips = TripHelper.getPastTrips(7, trips);
         await this._tripService.loadTrips(trips);
         // console.log(site.remote.trips);
+
+        // Update addresses with names and names with addresses.
+        trips.forEach(async trip => {
+            // Make sure both address & name exists
+            if (!trip.name && !trip.endAddress) {
+                return;
+            }
+
+            // Add address to name
+            //let name = await this._nameService.findRemoteName(trip.name);
+            let name = names.find(name => name.name === trip.name);
+            if (!name) {
+                return;
+            }
+            if (!name.addresses) {
+                name.addresses = [];
+            }
+            name.addresses?.push(trip.endAddress);
+            name.addresses = [...new Set(name.addresses)];
+            this._nameService.update(name!);
+
+            // Add name to address
+            let address = addresses.find(address => address.address === trip.endAddress);
+            //let address = await this._addressService.findRemoteAddress(trip.endAddress);
+            if (!address) {
+                return;
+            }
+            if (!address.names) {
+                address.names = [];
+            }
+            address.names?.push(trip.name);
+            address.names = [...new Set(address.names)];
+            this._addressService.update(address!);
+        });
+    }
+
+    public async commitShift(shift: IShift) {
+        let shiftRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[]);
+
+        shiftRow = { 
+            Date: shift.date, 
+            Service: shift.service, 
+            '#': shift.number 
+        };
+        
+        shift.saved = "true";
+        await this._shiftService.updateLocalShift(shift);
+
+        await this.saveRowData("Shifts", shiftRow);
     }
 
     public async commitUnsavedShifts() {
-        let shifts = await this._shfitService.queryLocalShifts("saved", "false");
+        let shifts = await this._shiftService.queryLocalShifts("saved", "false");
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
 
         shifts.forEach(async shift => {
@@ -171,10 +222,35 @@ export class GoogleSheetService {
             });
 
             shift.saved = "true";
-            await this._shfitService.updateLocalShift(shift);
+            await this._shiftService.updateLocalShift(shift);
         });
 
         await this.saveSheetData("Shifts", shiftRows);
+    }
+
+    public async commitTrip(trip: ITrip) {
+        let tripRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[]);
+
+        tripRow = { 
+            Date: trip.date, 
+                Distance: trip.distance,
+                Service: trip.service,
+                '#': trip.number, 
+                Place: trip.place,
+                Pickup: trip.time,
+                Pay: trip.pay,
+                Tip: trip.tip ?? "",
+                Bonus: trip.bonus ?? "",
+                Cash: trip.cash ?? "",
+                Name: trip.name,
+                'End Address': trip.endAddress,
+                Note: trip.note
+        };
+        
+        trip.saved = "true";
+        await this._tripService.updateLocalTrip(trip);
+
+        await this.saveRowData("Trips", tripRow);
     }
 
     public async commitUnsavedTrips() {
@@ -221,5 +297,23 @@ export class GoogleSheetService {
         let sheet = doc.sheetsByTitle[sheetName];
 
         await sheet.addRows(sheetRows);
+    }
+
+    public async saveRowData(sheetName: string, sheetRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])) {
+        const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+        
+        if(!spreadsheetId) {
+            return;
+        }
+        
+        const doc = new GoogleSpreadsheet(spreadsheetId.id);
+
+        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.loadInfo();
+        console.log(doc.title);
+
+        let sheet = doc.sheetsByTitle[sheetName];
+
+        await sheet.addRow(sheetRow);
     }
 }
