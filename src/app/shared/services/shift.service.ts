@@ -12,6 +12,10 @@ export class ShiftService {
         await localDB.shifts.add(shift);
     }
 
+    public deleteLocal(shiftId: number) {
+        localDB.shifts.delete(shiftId);
+    }
+
     public async getRemoteShifts(): Promise<IShift[]> {
         return await spreadsheetDB.shifts.toArray();
     }

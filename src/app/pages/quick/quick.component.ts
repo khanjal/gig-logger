@@ -9,6 +9,7 @@ import { QuickFormComponent } from './quick-form/quick-form.component';
 import { SiteModel } from 'src/app/shared/models/site.model';
 import { TripService } from '@services/trip.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ShiftService } from '@services/shift.service';
 
 @Component({
   selector: 'app-quick',
@@ -31,7 +32,7 @@ export class QuickComponent implements OnInit {
   constructor(
       private _router: Router, 
       private _googleService: GoogleSheetService,
-      private _spreadsheetService: SpreadsheetService,
+      private _shiftService: ShiftService,
       private _tripService: TripService
     ) { }
 
@@ -68,14 +69,21 @@ export class QuickComponent implements OnInit {
   }
 
   async deleteUnsavedLocalTrip(trip: TripModel) {
-    TripHelper.deleteTrip(trip);
+    await this._tripService.deleteLocal(trip.id!);
 
     this.load();
   }
 
   async clearSavedLocalData() {
-    ShiftHelper.clearSavedShifts();
-    TripHelper.clearSavedTrips();
+    let savedShifts = await this._shiftService.queryLocalShifts("saved", "true");
+    savedShifts.forEach(shift => {
+      this._shiftService.deleteLocal(shift.id!);
+    });
+
+    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    savedTrips.forEach(trip => {
+      this._tripService.deleteLocal(trip.id!);
+    });
 
     this.load();
   }

@@ -96,11 +96,12 @@ export class QuickFormComponent implements OnInit {
   public async load() {
     // ShiftHelper.updateAllShiftTotals();
     let shifts = await this._shfitService.getRemoteShifts();
-    this.shifts = ShiftHelper.sortShiftsDesc(shifts).reverse();
+    shifts = ShiftHelper.sortShiftsDesc(shifts).reverse();
 
     let localShifts = await this._shfitService.queryLocalShifts("saved", "false");
-    this.shifts.push(...localShifts);
-    this.shifts.reverse()
+    shifts.push(...localShifts);
+    shifts.reverse();
+    this.shifts = shifts.slice(0,15);
     // this.sheetTrips = TripHelper.getPastTrips(1);
 
     // Set defaults if there is only one place.
@@ -225,13 +226,13 @@ export class QuickFormComponent implements OnInit {
   private async _filterAddress(value: string): Promise<IAddress[]> {
     const filterValue = value.toLowerCase();
 
-    return await this._addressService.filterRemoteAddress(filterValue);
+    return (await this._addressService.filterRemoteAddress(filterValue)).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<NameModel[]> {
     const filterValue = value.toLowerCase();
 
-    return await this._nameService.filterRemoteNames(filterValue);
+    return (await this._nameService.filterRemoteNames(filterValue)).slice(0,100);
   }
 
   private async _filterPlace(value: string): Promise<PlaceModel[]> {
