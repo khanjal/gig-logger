@@ -13,7 +13,6 @@ import { Observable, startWith, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
-import { TripHelper } from 'src/app/shared/helpers/trip.helper';
 import { NameModel } from 'src/app/shared/models/name.model';
 import { PlaceModel } from 'src/app/shared/models/place.model';
 import { ServiceModel } from 'src/app/shared/models/service.model';
@@ -160,7 +159,6 @@ export class QuickFormComponent implements OnInit {
     trip.number = shift.number ?? 0;
     trip.time = shift.end = timeString;
 
-    // TripHelper.addTrip(trip);
     await this._tripService.addTrip(trip);
 
     this._snackBar.open("Trip Stored");
