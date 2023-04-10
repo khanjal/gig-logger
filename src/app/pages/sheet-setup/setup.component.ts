@@ -4,11 +4,11 @@ import { GoogleSheetService } from '@services/googleSheet.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 
 @Component({
-  selector: 'app-sheet-setup',
-  templateUrl: './sheet-setup.component.html',
-  styleUrls: ['./sheet-setup.component.scss']
+  selector: 'app-setup',
+  templateUrl: './setup.component.html',
+  styleUrls: ['./setup.component.scss']
 })
-export class SheetSetupComponent {
+export class SetupComponent {
 
   deleting: boolean = false;
   reloading: boolean = false;

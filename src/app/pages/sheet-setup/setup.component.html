@@ -1,12 +1,12 @@
 <div class="container">
     <h2>Add Spreadsheet</h2>
-    <sheet-setup-form (parentReload)="load()"></sheet-setup-form>
+    <sheet-add-form (parentReload)="load()"></sheet-add-form>
 </div>
 
 <div class="container" *ngIf="spreadsheets?.length">
     <h2>Current Spreadsheets</h2>
     <div *ngFor="let spreadsheet of spreadsheets">
-        <app-sheet-setup-table [spreadsheet]="spreadsheet"></app-sheet-setup-table>
+        <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
         <div class="row row-block">
             <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
             <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
