@@ -64,3 +64,10 @@ button {
 .button-right {
   float: right;
 }
+
+
+.custom-modalbox {
+  .mat-mdc-dialog-container .mdc-dialog__surface  {
+      padding: 1rem;
+  }
+}

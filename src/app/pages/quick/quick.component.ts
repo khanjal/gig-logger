@@ -74,8 +74,9 @@ export class QuickComponent implements OnInit {
   async editUnsavedLocalTrip(trip: TripModel) {
     let dialogRef = this.dialog.open(QuickFormComponent, {
       data: trip,
-      height: '700px',
-      width: '600px'
+      height: '600px',
+      width: '500px',
+      panelClass: 'custom-modalbox'
     });
   }
 
