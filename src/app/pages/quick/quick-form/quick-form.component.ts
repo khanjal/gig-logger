@@ -45,7 +45,7 @@ export class QuickFormComponent implements OnInit {
     tip: new FormControl(),
   });
 
-  isNewShift: boolean = false;
+  isNewShift: boolean = true;
   showAdvancedPay: boolean = false;
   showPickupAddress: boolean = false;
 
@@ -117,6 +117,13 @@ export class QuickFormComponent implements OnInit {
     shifts.push(...localShifts);
     shifts.reverse();
     this.shifts = shifts.slice(0,15);
+
+    //TODO: Set default shift to today or leave new
+    if (this.shifts.length > 0 && !this.data.id) {
+      this.selectedShift = this.shifts[0];
+      this.isNewShift = false;
+    }
+
     // this.sheetTrips = TripHelper.getPastTrips(1);
 
     // Set defaults if there is only one place.
@@ -195,6 +202,7 @@ export class QuickFormComponent implements OnInit {
   public formReset() {
     this.selectedAddress = undefined;
     this.selectedName = undefined;
+    this.placeAddresses = undefined;
     this.quickForm.reset();
   }
 
@@ -254,7 +262,7 @@ export class QuickFormComponent implements OnInit {
   }
   
   compareShifts(o1: IShift, o2: IShift): boolean {
-    return o1.date === o2.date && o1.service === o2.service && o1.number === o2.number;
+    return o1?.date === o2?.date && o1?.service === o2?.service && o1?.number === o2?.number
   }
 
   public getShortAddress(address: string): string {
@@ -287,8 +295,6 @@ export class QuickFormComponent implements OnInit {
 
   private async loadForm() {
     this.selectedShift = (await this._shfitService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
-
-    // this.quickForm.controls.shift.setValue(this.data.date);
     this.quickForm.controls.service.setValue(this.data.service);
 
     this.quickForm.controls.pay.setValue(this.data.pay);
