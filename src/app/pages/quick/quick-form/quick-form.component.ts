@@ -56,11 +56,13 @@ export class QuickFormComponent implements OnInit {
   selectedName: NameModel | undefined;
 
   filteredPlaces: Observable<PlaceModel[]> | undefined;
+  placeAddresses: string[] | undefined;
 
   filteredServices: Observable<ServiceModel[]> | undefined;
 
   sheetTrips: TripModel[] = [];
   shifts: ShiftModel[] = [];
+  selectedShift: IShift | undefined;
 
   title: string = "Add Trip";
 
@@ -232,12 +234,27 @@ export class QuickFormComponent implements OnInit {
     this.selectedName = await this._nameService.findRemoteName(name);
   }
 
+  showPlaceAddressesEvent(event: any) {
+    let place = event.target.value;
+    this.showPlaceAddresses(place);
+  }
+
+  async showPlaceAddresses(place: string) {
+    if (place) {
+      this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
+    }
+  }
+
   toggleAdvancedPay() {
     this.showAdvancedPay = !this.showAdvancedPay;
   }
 
   togglePickupAddress() {
     this.showPickupAddress = !this.showPickupAddress;
+  }
+  
+  compareShifts(o1: IShift, o2: IShift): boolean {
+    return o1.date === o2.date && o1.service === o2.service && o1.number === o2.number;
   }
 
   public getShortAddress(address: string): string {
@@ -269,8 +286,9 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async loadForm() {
-    // Find shift to assign
-    this.quickForm.controls.shift.setValue(this.data.number.toLocaleString());
+    this.selectedShift = (await this._shfitService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
+
+    // this.quickForm.controls.shift.setValue(this.data.date);
     this.quickForm.controls.service.setValue(this.data.service);
 
     this.quickForm.controls.pay.setValue(this.data.pay);
@@ -281,8 +299,11 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.place.setValue(this.data.place);
     this.quickForm.controls.distance.setValue(this.data.distance);
     this.quickForm.controls.name.setValue(this.data.name);
+    this.showNameAddresses(this.data.name);
+
     this.quickForm.controls.startAddress.setValue(this.data.startAddress);
     this.quickForm.controls.endAddress.setValue(this.data.endAddress);
+    this.showAddressNames(this.data.endAddress);
 
     this.quickForm.controls.note.setValue(this.data.note);
   }

@@ -177,12 +177,11 @@ export class GoogleSheetService {
                 name.addresses = [];
             }
             name.addresses?.push(trip.endAddress);
-            name.addresses = [...new Set(name.addresses)];
+            name.addresses = [...new Set(name.addresses)].sort();
             this._nameService.update(name!);
 
             // Add name to address
             let address = addresses.find(address => address.address === trip.endAddress);
-            //let address = await this._addressService.findRemoteAddress(trip.endAddress);
             if (!address) {
                 return;
             }
@@ -190,7 +189,7 @@ export class GoogleSheetService {
                 address.names = [];
             }
             address.names?.push(trip.name);
-            address.names = [...new Set(address.names)];
+            address.names = [...new Set(address.names)].sort();
             this._addressService.update(address!);
         });
     }

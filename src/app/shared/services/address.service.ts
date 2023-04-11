@@ -30,4 +30,8 @@ export class AddressService {
     public async update(address: IAddress) {
         await spreadsheetDB.addresses.put(address);
     }
+
+    public async queryRemoteAddresses(field: string, value: string | number): Promise<IAddress[]> {
+        return await spreadsheetDB.addresses.where(field).equals(value).toArray();
+    }
 }
