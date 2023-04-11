@@ -22,6 +22,7 @@ import { MatCardModule } from '@angular/material/card';
 import { SetupComponent } from './sheet-setup/setup.component';
 import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-form.component';
 import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-quick-view.component';
+import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-qu
     MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
     MatListModule,
@@ -54,7 +56,10 @@ import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-qu
   exports: [
   ],
   providers: [
-      {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}
+      {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}},
+      {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},
+      {provide: MAT_DIALOG_DATA, useValue: {}},
+      {provide: MatDialogRef, useValue: {}}
   ],
   bootstrap: []
 })

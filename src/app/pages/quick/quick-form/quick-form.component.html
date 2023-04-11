@@ -1,3 +1,4 @@
+<h1>{{ title }}</h1>
 <form class="quick-form" [formGroup]="quickForm">
     <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
         <mat-label>Shift/Batch/Group</mat-label>
@@ -40,7 +41,6 @@
             matInput
             formControlName="place"
             [matAutocomplete]="autoPlace"
-            required
             #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
@@ -105,18 +105,22 @@
         </button>
     </mat-form-field>
 
+    <button type="button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+        <mat-icon>contact_mail</mat-icon>
+    </button>
+
     <div *ngFor="let address of selectedName?.addresses">
         <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ getShortAddress(address) }}</a>
     </div>
 
-    <!-- <mat-form-field class="field-full-width" appearance="outline">
+    <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
         <mat-label>Pickup Address</mat-label>
         <input type="text"
-            name="address"
+            name="startAddress"
             placeholder="Pick one"
             aria-label="Number"
             matInput
-            formControlName="address"
+            formControlName="startAddress"
             [matAutocomplete]="autoAddress"
             (blur)="showAddressNamesEvent($event)"
             #address />
@@ -128,7 +132,7 @@
         <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
-    </mat-form-field> -->
+    </mat-form-field>
 
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Destination Address</mat-label>
@@ -146,7 +150,7 @@
                 <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
                     {{ getShortAddress(address.address) }} ({{ address.visits }})
                 </mat-option>
-        <!-- </cdk-virtual-scroll-viewport> -->
+            <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
@@ -163,9 +167,13 @@
     </mat-form-field>
 
     <div class="row">
-        <div mat-dialog-actions align="center">
+        <div mat-dialog-actions align="center" *ngIf="!data.id">
             <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
             <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
+        </div>
+        <div mat-dialog-actions align="center" *ngIf="data.id">
+            <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Update</button>
+            <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
         </div>
     </div>
     
