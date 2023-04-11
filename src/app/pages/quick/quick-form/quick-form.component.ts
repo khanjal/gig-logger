@@ -1,8 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IAddress } from '@interfaces/address.interface';
 import { IShift } from '@interfaces/shift.interface';
+import { ITrip } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
@@ -25,10 +27,10 @@ import { TripModel } from 'src/app/shared/models/trip.model';
   styleUrls: ['./quick-form.component.scss']
 })
 export class QuickFormComponent implements OnInit {
+  // @Input() data!: ITrip;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   quickForm = new FormGroup({
-    endAddress: new FormControl(''),
     bonus: new FormControl(),
     cash: new FormControl(),
     distance: new FormControl(),
@@ -38,11 +40,14 @@ export class QuickFormComponent implements OnInit {
     place: new FormControl(''),
     service: new FormControl(''),
     shift: new FormControl(''),
+    endAddress: new FormControl(''),
+    startAddress: new FormControl(''),
     tip: new FormControl(),
   });
 
   isNewShift: boolean = false;
   showAdvancedPay: boolean = false;
+  showPickupAddress: boolean = false;
 
   filteredAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
@@ -57,7 +62,11 @@ export class QuickFormComponent implements OnInit {
   sheetTrips: TripModel[] = [];
   shifts: ShiftModel[] = [];
 
+  title: string = "Add Trip";
+
   constructor(
+    public dialogRef: MatDialogRef<QuickFormComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ITrip,
     private _snackBar: MatSnackBar,
     private _addressService: AddressService,
     private _nameService: NameService,
@@ -68,7 +77,11 @@ export class QuickFormComponent implements OnInit {
     ) {}
 
   async ngOnInit(): Promise<void> {
-    
+    if (this.data?.id) {
+      this.title = `Edit Trip - ${ this.data.id }`;
+      // Load form with passed in data.
+    }
+
     this.filteredAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterAddress(value || ''))
@@ -145,6 +158,7 @@ export class QuickFormComponent implements OnInit {
     let trip: TripModel = new TripModel;
 
     trip.endAddress = this.quickForm.value.endAddress ?? "";
+    trip.startAddress = this.quickForm.value.startAddress ?? "";
     trip.pay = +this.quickForm.value.pay ?? 0;
     trip.tip = +this.quickForm.value.tip ?? 0;
     trip.bonus = +this.quickForm.value.bonus ?? 0;
@@ -169,6 +183,10 @@ export class QuickFormComponent implements OnInit {
     this.showAdvancedPay = false;
 
     // console.log(trip);
+  }
+
+  public editTrip() {
+    this.dialogRef.close();
   }
 
   public formReset() {
@@ -215,6 +233,10 @@ export class QuickFormComponent implements OnInit {
 
   toggleAdvancedPay() {
     this.showAdvancedPay = !this.showAdvancedPay;
+  }
+
+  togglePickupAddress() {
+    this.showPickupAddress = !this.showPickupAddress;
   }
 
   public getShortAddress(address: string): string {
