@@ -80,6 +80,7 @@ export class QuickFormComponent implements OnInit {
     if (this.data?.id) {
       this.title = `Edit Trip - ${ this.data.id }`;
       // Load form with passed in data.
+      await this.loadForm()
     }
 
     this.filteredAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
@@ -265,5 +266,24 @@ export class QuickFormComponent implements OnInit {
     const filterValue = value.toLowerCase();
 
     return await this._serviceService.filterRemoteServices(filterValue);
+  }
+
+  private async loadForm() {
+    // Find shift to assign
+    this.quickForm.controls.shift.setValue(this.data.number.toLocaleString());
+    this.quickForm.controls.service.setValue(this.data.service);
+
+    this.quickForm.controls.pay.setValue(this.data.pay);
+    this.quickForm.controls.tip.setValue(this.data.tip);
+    this.quickForm.controls.bonus.setValue(this.data.bonus);
+    this.quickForm.controls.cash.setValue(this.data.cash);
+
+    this.quickForm.controls.place.setValue(this.data.place);
+    this.quickForm.controls.distance.setValue(this.data.distance);
+    this.quickForm.controls.name.setValue(this.data.name);
+    this.quickForm.controls.startAddress.setValue(this.data.startAddress);
+    this.quickForm.controls.endAddress.setValue(this.data.endAddress);
+
+    this.quickForm.controls.note.setValue(this.data.note);
   }
 }
