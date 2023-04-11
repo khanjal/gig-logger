@@ -110,7 +110,7 @@
         <mat-icon>contact_mail</mat-icon>
     </button>
 
-    <div *ngIf="placeAddresses && placeAddresses.length > 0" class="selected-name-address field-full-width">
+    <div *ngIf="showPickupAddress && placeAddresses && placeAddresses.length > 0" class="selected-name-address field-full-width">
         <a mat-button color="primary" class="address-link" (click)="selectAddress(address)" *ngFor="let address of placeAddresses">{{ getShortAddress(address) }}</a>
     </div>
 
