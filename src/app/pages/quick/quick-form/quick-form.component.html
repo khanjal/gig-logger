@@ -2,7 +2,7 @@
 <form class="quick-form" [formGroup]="quickForm">
     <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
         <mat-label>Shift/Batch/Group</mat-label>
-        <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
+        <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)' required>
             <mat-option value="new">New</mat-option>
             <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.trips }} @ {{ shift.total | currency }})</mat-option>
         </mat-select>
@@ -41,10 +41,11 @@
             matInput
             formControlName="place"
             [matAutocomplete]="autoPlace"
+            (blur)="showPlaceAddressesEvent($event)"
             #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" class="mat-option">
+                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place"  (click)="showPlaceAddresses(place.place)" class="mat-option">
                     {{place.place}} ({{ place.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
@@ -109,8 +110,8 @@
         <mat-icon>contact_mail</mat-icon>
     </button>
 
-    <div *ngFor="let address of selectedName?.addresses">
-        <a mat-button color="primary" class="address-link" (click)="selectAddress(address)">{{ getShortAddress(address) }}</a>
+    <div *ngIf="placeAddresses && placeAddresses.length > 0" class="selected-name-address field-full-width">
+        <a mat-button color="primary" class="address-link" (click)="selectAddress(address)" *ngFor="let address of placeAddresses">{{ getShortAddress(address) }}</a>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
@@ -133,6 +134,10 @@
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
+
+    <div *ngIf="selectedName" class="selected-name-address field-full-width">
+        <a mat-button color="primary" class="address-link" (click)="selectAddress(address)" *ngFor="let address of selectedName?.addresses">{{ getShortAddress(address) }}</a>
+    </div>
 
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Destination Address</mat-label>
@@ -157,7 +162,7 @@
         </button>
     </mat-form-field>
 
-    <div *ngIf="selectedAddress">
+    <div *ngIf="selectedAddress" class="selected-name-address field-full-width">
         <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
     </div>
 
