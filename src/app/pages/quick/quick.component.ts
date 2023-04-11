@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TripModel } from 'src/app/shared/models/trip.model';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
@@ -27,6 +28,7 @@ export class QuickComponent implements OnInit {
   unsavedTrips: TripModel[] = [];
 
   constructor(
+      public dialog: MatDialog,
       private _router: Router, 
       private _googleService: GoogleSheetService,
       private _shiftService: ShiftService,
@@ -67,6 +69,14 @@ export class QuickComponent implements OnInit {
     await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
+  }
+
+  async editUnsavedLocalTrip(trip: TripModel) {
+    let dialogRef = this.dialog.open(QuickFormComponent, {
+      data: trip,
+      height: '700px',
+      width: '600px'
+    });
   }
 
   async deleteUnsavedLocalTrip(trip: TripModel) {
