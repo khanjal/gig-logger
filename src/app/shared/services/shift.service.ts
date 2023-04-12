@@ -3,6 +3,7 @@ import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ShiftModel } from '@models/shift.model';
 import { IShift } from '@interfaces/shift.interface';
 import { localDB } from '@data/local.db';
+import { DateHelper } from '@helpers/date.helper';
 
 export class ShiftService {
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
@@ -28,6 +29,20 @@ export class ShiftService {
     public async loadShifts(shifts: ShiftModel[]) {
         await spreadsheetDB.shifts.clear();
         await spreadsheetDB.shifts.bulkAdd(shifts);
+    }
+
+    public async getLocalShiftsPreviousDays(days: number): Promise<IShift[]> {
+        let dates = DateHelper.getDatesArray(days);
+        let shifts = await localDB.shifts.where("date").anyOf(dates).toArray();
+
+        return shifts;
+    }
+
+    public async getRemoteShiftsPreviousDays(days: number): Promise<IShift[]> {
+        let dates = DateHelper.getDatesArray(days);
+        let shifts = await spreadsheetDB.shifts.where("date").anyOf(dates).toArray();
+
+        return shifts;
     }
 
     public async queryLocalShifts(field: string, value: string | number): Promise<IShift[]> {

@@ -109,10 +109,13 @@ export class QuickFormComponent implements OnInit {
   }
 
   public async load() {
+    // TODO: stop this from loading twice
+
     // ShiftHelper.updateAllShiftTotals();
-    let shifts = await this._shfitService.getAllShifts();
+    let shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
+                  ...await this._shfitService.getLocalShiftsPreviousDays(7)];
     shifts = ShiftHelper.sortShiftsDesc(shifts);
-    this.shifts = shifts.slice(0,15);
+    this.shifts = shifts;
 
     //TODO: Set default shift to last trip.
     if (this.shifts.length > 0 && !this.data.id) {
@@ -136,7 +139,7 @@ export class QuickFormComponent implements OnInit {
 
   private async createShift(): Promise<IShift> {
     let shift: ShiftModel = new ShiftModel;
-    if (this.quickForm.value.shift == "new") {
+    if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
       console.log("New Shift!");
       let shifts: IShift[] = [];
 
@@ -165,21 +168,27 @@ export class QuickFormComponent implements OnInit {
     let trip: TripModel = new TripModel;
 
     trip.id = this.data.id;
-    trip.endAddress = this.quickForm.value.endAddress ?? "";
+    trip.key = shift.key;
+    
+    trip.date = shift.date;
+    trip.service = shift.service;
+    trip.number = shift.number ?? 0;
+
     trip.startAddress = this.quickForm.value.startAddress ?? "";
+    trip.endAddress = this.quickForm.value.endAddress ?? "";
+    trip.distance = this.quickForm.value.distance ?? 0;
+
     trip.pay = +this.quickForm.value.pay ?? 0;
     trip.tip = +this.quickForm.value.tip ?? 0;
     trip.bonus = +this.quickForm.value.bonus ?? 0;
     trip.cash = +this.quickForm.value.cash ?? 0;
     trip.total = trip.pay + trip.tip + trip.bonus;
-    trip.date = shift.date;
-    trip.distance = this.quickForm.value.distance ?? 0;
+    
     trip.name = this.quickForm.value.name ?? "";
-    trip.note = this.quickForm.value.note ?? "";
     trip.place = this.quickForm.value.place ?? "";
-    trip.service = shift.service;
-    trip.number = shift.number ?? 0;
     trip.time = shift.end;
+
+    trip.note = this.quickForm.value.note ?? "";
 
     return trip;
   }
@@ -225,7 +234,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   public onShiftSelected(value:string) {
-    if (value == 'new') {
+    if (value == 'new' || this.shifts.length === 0) {
       this.isNewShift = true;
       this.quickForm.controls.service.setValidators([Validators.required]);
     }
