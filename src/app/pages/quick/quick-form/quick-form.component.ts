@@ -117,8 +117,9 @@ export class QuickFormComponent implements OnInit {
     //TODO: Set default shift to last trip.
     if (this.shifts.length > 0 && !this.data.id) {
       this.selectedShift = this.shifts[0];
-      this.onShiftSelected(this.quickForm.value.shift ?? "");
     }
+
+    this.onShiftSelected(this.quickForm.value.shift ?? "");
 
     // this.sheetTrips = TripHelper.getPastTrips(1);
 
