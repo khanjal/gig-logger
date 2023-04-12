@@ -110,18 +110,14 @@ export class QuickFormComponent implements OnInit {
 
   public async load() {
     // ShiftHelper.updateAllShiftTotals();
-    let shifts = await this._shfitService.getRemoteShifts();
-    shifts = ShiftHelper.sortShiftsDesc(shifts).reverse();
-
-    let localShifts = await this._shfitService.queryLocalShifts("saved", "false");
-    shifts.push(...localShifts);
-    shifts.reverse();
+    let shifts = await this._shfitService.getAllShifts();
+    shifts = ShiftHelper.sortShiftsDesc(shifts);
     this.shifts = shifts.slice(0,15);
 
-    //TODO: Set default shift to today or leave new
+    //TODO: Set default shift to last trip.
     if (this.shifts.length > 0 && !this.data.id) {
       this.selectedShift = this.shifts[0];
-      this.isNewShift = false;
+      this.onShiftSelected(this.quickForm.value.shift ?? "");
     }
 
     // this.sheetTrips = TripHelper.getPastTrips(1);
@@ -137,7 +133,7 @@ export class QuickFormComponent implements OnInit {
     // }
   }
 
-  public async addTrip() {
+  private async createShift(): Promise<IShift> {
     let shift: ShiftModel = new ShiftModel;
     if (this.quickForm.value.shift == "new") {
       console.log("New Shift!");
@@ -161,12 +157,13 @@ export class QuickFormComponent implements OnInit {
 
     shift.end = timeString;
 
-    // TODO: Update shift with time
+    return shift;
+  }
 
-    // console.log(shift);
-    
+  private createTrip(shift: IShift): ITrip {
     let trip: TripModel = new TripModel;
 
+    trip.id = this.data.id;
     trip.endAddress = this.quickForm.value.endAddress ?? "";
     trip.startAddress = this.quickForm.value.startAddress ?? "";
     trip.pay = +this.quickForm.value.pay ?? 0;
@@ -181,7 +178,19 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.service = shift.service;
     trip.number = shift.number ?? 0;
-    trip.time = shift.end = timeString;
+    trip.time = shift.end;
+
+    return trip;
+  }
+
+  public async addTrip() {
+    let shift = await this.createShift();
+
+    // TODO: Update shift with time
+
+    // console.log(shift);
+    
+    let trip = this.createTrip(shift);
 
     await this._tripService.addTrip(trip);
 
@@ -195,7 +204,15 @@ export class QuickFormComponent implements OnInit {
     // console.log(trip);
   }
 
-  public editTrip() {
+  public async editTrip() {
+    let shift = await this.createShift();
+
+    let trip = this.createTrip(shift);
+
+    await this._tripService.updateLocalTrip(trip);
+
+    this._snackBar.open("Trip Updated");
+
     this.dialogRef.close();
   }
 

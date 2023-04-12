@@ -78,6 +78,10 @@ export class QuickComponent implements OnInit {
       width: '500px',
       panelClass: 'custom-modalbox'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.load();
+    });
   }
 
   async deleteUnsavedLocalTrip(trip: TripModel) {
