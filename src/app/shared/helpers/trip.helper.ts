@@ -3,6 +3,7 @@ import { SiteModel } from "../models/site.model";
 import { TripModel } from "../models/trip.model";
 import { DateHelper } from "./date.helper";
 import { NumberHelper } from "./number.helper";
+import { ITrip } from "@interfaces/trip.interface";
 
 export class TripHelper {
     static getAllTrips(): TripModel[] {
@@ -95,6 +96,12 @@ export class TripHelper {
         // gigs.local.trips = trips;
 
         // LocalStorageHelper.updateLocalData(gigs);
+    }
+
+    static sortTripsDesc(trips: ITrip[]): ITrip[] {
+        trips.sort((a,b) => b.key.localeCompare(a.key));
+
+        return trips;
     }
 
     static translateSheetData(rows: GoogleSpreadsheetRow[]): TripModel[] {

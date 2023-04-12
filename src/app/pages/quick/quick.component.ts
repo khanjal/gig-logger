@@ -8,6 +8,7 @@ import { QuickFormComponent } from './quick-form/quick-form.component';
 import { SiteModel } from 'src/app/shared/models/site.model';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
+import { TripHelper } from '@helpers/trip.helper';
 
 @Component({
   selector: 'app-quick',
@@ -56,7 +57,7 @@ export class QuickComponent implements OnInit {
 
   public async load() {
     // ShiftHelper.updateAllShiftTotals();
-    this.sheetTrips = (await this._tripService.getRemoteTrips()).reverse().slice(0,50);
+    this.sheetTrips = TripHelper.sortTripsDesc(await this._tripService.getRemoteTripsPreviousDays(7));
     this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
