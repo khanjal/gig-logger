@@ -16,8 +16,18 @@ export class ShiftService {
         localDB.shifts.delete(shiftId);
     }
 
+    public async getAllShifts(): Promise<IShift[]> {
+        let shifts = [...await this.getRemoteShifts(), ...await this.queryLocalShifts("saved", "false")];
+        return shifts;
+    }
+
     public async getRemoteShifts(): Promise<IShift[]> {
         return await spreadsheetDB.shifts.toArray();
+    }
+    
+    public async loadShifts(shifts: ShiftModel[]) {
+        await spreadsheetDB.shifts.clear();
+        await spreadsheetDB.shifts.bulkAdd(shifts);
     }
 
     public async queryLocalShifts(field: string, value: string | number): Promise<IShift[]> {
@@ -34,11 +44,6 @@ export class ShiftService {
 
         let shifts = [...remoteShifts, ...localShifts];
         return shifts;
-    }
-
-    public async loadShifts(shifts: ShiftModel[]) {
-        await spreadsheetDB.shifts.clear();
-        await spreadsheetDB.shifts.bulkAdd(shifts);
     }
 
     public async updateLocalShift(shift: ShiftModel) {
