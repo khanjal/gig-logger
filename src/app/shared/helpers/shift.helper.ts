@@ -126,15 +126,14 @@ export class ShiftHelper {
 
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
-        // shift.id = ShiftHelper.getLocalShifts().length++;
-        shift.number = shiftNumber;
+        shift.key = `${DateHelper.getDays}-${shiftNumber}-${service}`;
+        shift.number = shiftNumber ?? 0;
         shift.start = new Date().toLocaleTimeString();
         
         return shift;
     }
 
-    static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
-        //shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.number - a.number);
+    static sortShiftsDesc(shifts: IShift[]): IShift[] {
         shifts.sort((a,b) => b.key.localeCompare(a.key));
 
         return shifts;
