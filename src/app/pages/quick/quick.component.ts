@@ -62,7 +62,7 @@ export class QuickComponent implements OnInit {
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
-    this.form?.load();
+    // this.form?.load();
   }
 
   async saveLocalTrip(trip: TripModel) {
