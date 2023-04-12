@@ -126,7 +126,7 @@ export class ShiftHelper {
 
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
-        shift.key = `${DateHelper.getDays}-${shiftNumber}-${service}`;
+        shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
         shift.number = shiftNumber ?? 0;
         shift.start = new Date().toLocaleTimeString();
         

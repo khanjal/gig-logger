@@ -23,7 +23,7 @@ export class DateHelper {
         // To calculate the no. of days between two dates
         let days = time / (1000 * 3600 * 24);
 
-        return Math.trunc(days);
+        return Math.trunc(days) + 2;
     }
 
     static getTimeString(date: Date): string {
