@@ -13,8 +13,8 @@ export class AppDB extends Dexie {
         super('localDB');
         this.version(1).stores({
             spreadsheets: '++id, spreadsheetId, default',
-            shifts: '++id, date, service, number, [date+service+number], saved',
-            trips: '++id, date, service, number, [date+service+number], saved',
+            shifts: '++id, date, service, number, key, [date+service+number], saved',
+            trips: '++id, date, service, number, key, [date+service+number], saved',
         });
     }
 }

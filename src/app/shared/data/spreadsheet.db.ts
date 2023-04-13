@@ -23,8 +23,8 @@ export class AppDB extends Dexie {
             names: '++id, name',
             places: '++id, place',
             services: '++id, service',
-            shifts: '++id, date, service, number, [date+service+number]',
-            trips: '++id, date, service, number, [date+service+number]',
+            shifts: '++id, date, service, number, key, [date+service+number]',
+            trips: '++id, date, service, number, key, [date+service+number]',
         });
     }
 }
