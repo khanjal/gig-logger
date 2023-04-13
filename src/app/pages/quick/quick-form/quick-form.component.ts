@@ -114,14 +114,19 @@ export class QuickFormComponent implements OnInit {
     this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
                   ...await this._shfitService.getLocalShiftsPreviousDays(7)];
 
-    // Update all shift totals from displayed shifts.
-    await this.calculateShiftTotals(this.shifts);
-
-    this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
-
     //Set default shift to last trip or latest shift.
     if (this.shifts.length > 0 && !this.data.id) {
+      // Remove duplicates
+      this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
+
+      // Update all shift totals from displayed shifts.
+      await this.calculateShiftTotals(this.shifts);
+
+      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+      
       let trips = await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString());
+      console.log(trips);
+      trips = trips.filter(x => x.saved === "false");
       let trip = TripHelper.sortTripsDesc(trips)[0];
       let shift = this.shifts.find(x => x.key === trip?.key);
       
@@ -153,7 +158,7 @@ export class QuickFormComponent implements OnInit {
       shift.trips = 0;
       shift.total = 0;
 
-      let trips = [...await this._tripService.queryLocalTrips("key", shift.key),
+      let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => x.saved === "false"),
                   ...await this._tripService.queryRemoteTrips("key", shift.key)];
       trips.forEach(trip => {
           shift.trips++;
@@ -263,7 +268,6 @@ export class QuickFormComponent implements OnInit {
   }
 
   public onShiftSelected(value:string) {
-    console.log(value);
     if (value == 'new' || value == '' || this.shifts.length === 0) {
       this.isNewShift = true;
       this.quickForm.controls.service.setValidators([Validators.required]);

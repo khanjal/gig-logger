@@ -16,6 +16,25 @@ export class AddressHelper {
         return "";
     }
 
+    static getPlaceAddress(place: string, address: string): string {
+        if (!place || !address) {
+            return address;
+        }
+
+        let addressArray = address.split(", ");
+
+        if (addressArray.length === 1) {
+            return addressArray[0];
+        }
+
+        if (addressArray[0] !== place)
+        {
+            return addressArray[0];
+        }
+
+        return addressArray[1];
+    }
+
     static translateSheetData(rows: GoogleSpreadsheetRow[]): AddressModel[] {
         let addresses: AddressModel[] = [];
 
