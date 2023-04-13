@@ -275,7 +275,11 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.service.updateValueAndValidity();
   }
 
-  selectAddress(address: string) {
+  selectPickupAddress(address: string) {
+    this.quickForm.controls.startAddress.setValue(address);
+  }
+
+  selectDestinationAddress(address: string) {
     this.quickForm.controls.endAddress.setValue(address);
     this.showAddressNames(address);
   }
@@ -306,6 +310,11 @@ export class QuickFormComponent implements OnInit {
   async showPlaceAddresses(place: string) {
     if (place) {
       this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
+
+      // Auto assign to start address if only one and if there is no start address already.
+      if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress && !this.data.id) {
+        this.quickForm.controls.startAddress.setValue(this.placeAddresses[0]);
+      }
     }
   }
 
@@ -357,8 +366,12 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.tip.setValue(this.data.tip);
     this.quickForm.controls.bonus.setValue(this.data.bonus);
     this.quickForm.controls.cash.setValue(this.data.cash);
+    this.showAdvancedPay = true;
 
     this.quickForm.controls.place.setValue(this.data.place);
+    this.showPlaceAddresses(this.data.place);
+    this.showPickupAddress = true;
+
     this.quickForm.controls.distance.setValue(this.data.distance);
     this.quickForm.controls.name.setValue(this.data.name);
     this.showNameAddresses(this.data.name);
