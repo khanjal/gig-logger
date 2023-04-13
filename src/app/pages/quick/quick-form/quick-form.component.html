@@ -111,7 +111,7 @@
     </button>
 
     <div *ngIf="showPickupAddress && placeAddresses && placeAddresses.length > 0" class="selected-name-address field-full-width">
-        <a mat-button color="primary" class="address-link" (click)="selectAddress(address)" *ngFor="let address of placeAddresses">{{ getShortAddress(address) }}</a>
+        <a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)" *ngFor="let address of placeAddresses">{{ getShortAddress(address) }}</a>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
@@ -136,7 +136,7 @@
     </mat-form-field>
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
-        <a mat-button color="primary" class="address-link" (click)="selectAddress(address)" *ngFor="let address of selectedName?.addresses">{{ getShortAddress(address) }}</a>
+        <a mat-button color="primary" class="address-link" (click)="selectDestinationAddress(address)" *ngFor="let address of selectedName?.addresses">{{ getShortAddress(address) }}</a>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline">
