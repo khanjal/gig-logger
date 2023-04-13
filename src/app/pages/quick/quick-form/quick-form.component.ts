@@ -233,7 +233,7 @@ export class QuickFormComponent implements OnInit {
 
     await this._tripService.addTrip(trip);
 
-    this._snackBar.open("Trip Stored");
+    this._snackBar.open("Trip stored to device");
 
     this.load();
     this.formReset();
@@ -263,7 +263,8 @@ export class QuickFormComponent implements OnInit {
   }
 
   public onShiftSelected(value:string) {
-    if (value == 'new' || this.shifts.length === 0) {
+    console.log(value);
+    if (value == 'new' || value == '' || this.shifts.length === 0) {
       this.isNewShift = true;
       this.quickForm.controls.service.setValidators([Validators.required]);
     }
