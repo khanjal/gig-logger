@@ -176,12 +176,12 @@ export class QuickFormComponent implements OnInit {
 
     trip.startAddress = this.quickForm.value.startAddress ?? "";
     trip.endAddress = this.quickForm.value.endAddress ?? "";
-    trip.distance = this.quickForm.value.distance ?? 0;
+    trip.distance = this.quickForm.value.distance;
 
     trip.pay = +this.quickForm.value.pay ?? 0;
-    trip.tip = +this.quickForm.value.tip ?? 0;
-    trip.bonus = +this.quickForm.value.bonus ?? 0;
-    trip.cash = +this.quickForm.value.cash ?? 0;
+    trip.tip = +this.quickForm.value.tip;
+    trip.bonus = +this.quickForm.value.bonus;
+    trip.cash = +this.quickForm.value.cash;
     trip.total = trip.pay + trip.tip + trip.bonus;
     
     trip.name = this.quickForm.value.name ?? "";
