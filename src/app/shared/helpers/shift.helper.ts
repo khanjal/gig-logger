@@ -133,6 +133,12 @@ export class ShiftHelper {
         return shift;
     }
 
+    static removeDuplicateShifts(shifts: IShift[]): IShift[] {
+        shifts = shifts.filter((value, index, self) => self.map(x => x.key).indexOf(value.key) == index);
+
+        return shifts;
+    }
+
     static sortShiftsDesc(shifts: IShift[]): IShift[] {
         shifts.sort((a,b) => b.key.localeCompare(a.key));
 
