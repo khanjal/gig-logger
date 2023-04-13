@@ -2,6 +2,7 @@ import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -109,17 +110,25 @@ export class QuickFormComponent implements OnInit {
   }
 
   public async load() {
-    // TODO: stop this from loading twice
-
     // ShiftHelper.updateAllShiftTotals();
-    let shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
+    this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
                   ...await this._shfitService.getLocalShiftsPreviousDays(7)];
-    shifts = ShiftHelper.sortShiftsDesc(shifts);
-    this.shifts = shifts;
 
-    //TODO: Set default shift to last trip.
+    // Update all shift totals from displayed shifts.
+    await this.calculateShiftTotals(this.shifts);
+
+    this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+
+    //Set default shift to last trip or latest shift.
     if (this.shifts.length > 0 && !this.data.id) {
-      this.selectedShift = this.shifts[0];
+      let trips = await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString());
+      let trip = TripHelper.sortTripsDesc(trips)[0];
+      let shift = this.shifts.find(x => x.key === trip?.key);
+      
+      if (shift) {
+        
+        this.selectedShift = shift;
+      }
     }
 
     this.onShiftSelected(this.quickForm.value.shift ?? "");
@@ -135,6 +144,26 @@ export class QuickFormComponent implements OnInit {
     // if (this.services.length === 1) {
     //   this.quickForm.controls.service.setValue(this.services[0].service);
     // }
+  }
+
+  private async calculateShiftTotals(shifts: IShift[]): Promise<IShift[]> {
+    let calculatedShifts: IShift[] = [];
+
+    shifts.forEach(async shift => {
+      shift.trips = 0;
+      shift.total = 0;
+
+      let trips = [...await this._tripService.queryLocalTrips("key", shift.key),
+                  ...await this._tripService.queryRemoteTrips("key", shift.key)];
+      trips.forEach(trip => {
+          shift.trips++;
+          shift.total += trip.total;
+      });
+
+      calculatedShifts.push(shift);
+    });
+
+    return calculatedShifts;
   }
 
   private async createShift(): Promise<IShift> {
@@ -179,9 +208,9 @@ export class QuickFormComponent implements OnInit {
     trip.distance = this.quickForm.value.distance;
 
     trip.pay = +this.quickForm.value.pay ?? 0;
-    trip.tip = +this.quickForm.value.tip;
-    trip.bonus = +this.quickForm.value.bonus;
-    trip.cash = +this.quickForm.value.cash;
+    trip.tip = this.quickForm.value.tip;
+    trip.bonus = this.quickForm.value.bonus;
+    trip.cash = this.quickForm.value.cash;
     trip.total = trip.pay + trip.tip + trip.bonus;
     
     trip.name = this.quickForm.value.name ?? "";

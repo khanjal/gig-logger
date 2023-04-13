@@ -42,6 +42,10 @@ export class TripService {
         return await localDB.trips.where(field).equals(value).toArray();
     }
 
+    public async queryRemoteTrips(field: string, value: string | number): Promise<ITrip[]> {
+        return await spreadsheetDB.trips.where(field).equals(value).toArray();
+    }
+
     public async loadTrips(trips: TripModel[]) {
         await spreadsheetDB.trips.clear();
         await spreadsheetDB.trips.bulkAdd(trips);

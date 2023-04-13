@@ -2,8 +2,8 @@ export interface ITrip {
     id?: number;
     startAddress: string;
     endAddress: string;
-    bonus?: number;
-    cash?: number;
+    bonus: number;
+    cash: number;
     date: string;
     distance: number;
     key: string;
@@ -15,6 +15,6 @@ export interface ITrip {
     service: string;
     number: number;
     time: string;
-    tip?: number;
+    tip: number;
     total: number;
 }
