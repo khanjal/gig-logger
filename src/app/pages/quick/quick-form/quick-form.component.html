@@ -1,4 +1,14 @@
-<h1>{{ title }}</h1>
+<h1>{{title}}</h1>
+
+<!-- <div class="row field-halfish-width">
+    <h1>{{ title }}</h1>
+</div>
+<div class="row field-quarter-width">
+    <button class="button-right" type="button" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
+        <mat-icon>close</mat-icon>
+    </button>
+</div> -->
+
 <form class="quick-form" [formGroup]="quickForm">
     <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
         <mat-label>Shift/Batch/Group</mat-label>
@@ -130,7 +140,7 @@
                 {{ getShortAddress(address.address) }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
+        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.startAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
