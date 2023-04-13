@@ -4,7 +4,7 @@
         <mat-card-content>
             <div>{{trip.place | truncate:15}} ({{trip.distance}}) - {{trip.name | truncate:15}}</div>
             <div>{{trip.endAddress | truncate:40}}</div>
-            <div>Pay {{trip.pay | currency}} Tip {{trip.tip ?? 0 | currency}} Bonus {{trip.bonus ?? 0 | currency}} Cash {{trip.cash ?? 0 | currency}}</div>
+            <div>Pay {{trip.pay | currency}} Tip {{trip.tip | currency}} Bonus {{trip.bonus | currency}} Cash {{trip.cash | currency}}</div>
         </mat-card-content>
     </div>
 </mat-card>

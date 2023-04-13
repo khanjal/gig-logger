@@ -2,8 +2,8 @@ export class TripModel {
     id?: number;
     startAddress: string = "";
     endAddress: string = "";
-    bonus?: number;
-    cash?: number;
+    bonus: number = 0;
+    cash: number = 0;
     date: string = new Date().toLocaleDateString();
     distance: number = 0;
     key: string = "";
@@ -15,6 +15,6 @@ export class TripModel {
     service: string = "";
     number: number = 0;
     time: string = "";
-    tip?: number;
+    tip: number = 0;
     total: number = 0;
 }
