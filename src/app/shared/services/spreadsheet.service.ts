@@ -27,7 +27,7 @@ export class SpreadsheetService {
         await localDB.spreadsheets.delete(spreadsheet.id);
     }
 
-    public deleteData() {
+    public deleteLocalData() {
         localDB.delete().then(() => {
             console.log("Local Database successfully deleted");
         }).catch((err) => {
@@ -35,7 +35,9 @@ export class SpreadsheetService {
         }).finally(() => {
             // Do what should be done next...
         });
+    }
 
+    public deleteRemoteData() {
         spreadsheetDB.delete().then(() => {
             console.log("Spreadsheet Database successfully deleted");
         }).catch((err) => {
@@ -43,5 +45,10 @@ export class SpreadsheetService {
         }).finally(() => {
             // Do what should be done next...
         });
+    }
+
+    public deleteData() {
+        this.deleteLocalData();
+        this.deleteRemoteData();
     }
 }

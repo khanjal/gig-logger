@@ -106,41 +106,7 @@ export class QuickFormComponent implements OnInit {
       mergeMap(async value => await this._filterService(value || ''))
     );
 
-    this.load();
-  }
-
-  public async load() {
-    this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
-                  ...await this._shfitService.getLocalShiftsPreviousDays(7)];
-
-    //Set default shift to last trip or latest shift.
-    if (this.shifts.length > 0 && !this.data.id) {
-      // Remove duplicates
-      this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
-
-      // Update all shift totals from displayed shifts.
-      await this.calculateShiftTotals(this.shifts);
-
-      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
-      
-      let trips = await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString());
-      let latestTrip = TripHelper.sortTripsDesc(trips)[0];
-      let shift = this.shifts.find(x => x.key === latestTrip?.key);
-      
-      if (shift) {
-        
-        this.selectedShift = shift;
-      }
-
-      // Set place if only one in the list.
-      let places = await this._placeService.getRemotePlaces();
-      if (places.length === 1) {
-        this.quickForm.controls.place.setValue(places[0].place);
-        await this.showPlaceAddresses(places[0].place);
-      }
-    }
-
-    this.onShiftSelected(this.quickForm.value.shift ?? "");
+    await this.setDefaultShift();
   }
 
   private async calculateShiftTotals(shifts: IShift[]): Promise<IShift[]> {
@@ -219,6 +185,40 @@ export class QuickFormComponent implements OnInit {
     return trip;
   }
 
+  private async setDefaultShift() {
+    this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
+                  ...await this._shfitService.getLocalShiftsPreviousDays(7)];
+
+    //Set default shift to last trip or latest shift.
+    if (this.shifts.length > 0 && !this.data.id) {
+      // Remove duplicates
+      this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
+
+      // Update all shift totals from displayed shifts.
+      await this.calculateShiftTotals(this.shifts);
+
+      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+
+      let trips = await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString());
+      let latestTrip = TripHelper.sortTripsDesc(trips)[0];
+      let shift = this.shifts.find(x => x.key === latestTrip?.key);
+
+      if (shift) {
+        this.selectedShift = shift;
+      }
+
+      // Set place if only one in the list.
+      let places = await this._placeService.getRemotePlaces();
+      if (places.length === 1) {
+        this.quickForm.controls.place.setValue(places[0].place);
+        await this.showPlaceAddresses(places[0].place);
+      }
+    }
+
+    // Check to see if service should be displayed
+    this.onShiftSelected(this.quickForm.value.shift ?? "");
+  }
+
   public async addTrip() {
     let shift = await this.createShift();
 
@@ -232,8 +232,8 @@ export class QuickFormComponent implements OnInit {
 
     this._snackBar.open("Trip stored to device");
 
-    this.load();
     this.formReset();
+    this.setDefaultShift();
     this.parentReload.emit();
     this.showAdvancedPay = false;
 
@@ -257,6 +257,7 @@ export class QuickFormComponent implements OnInit {
     this.selectedName = undefined;
     this.placeAddresses = undefined;
     this.quickForm.reset();
+    this.setDefaultShift();
   }
 
   public onShiftSelected(value:string) {
