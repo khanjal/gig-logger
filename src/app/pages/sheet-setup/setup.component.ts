@@ -69,6 +69,15 @@ export class SetupComponent {
     window.location.reload();
   }
 
+  public async deleteLocalData() {
+    this.deleting = true;
+    this._spreadsheetService.deleteLocalData();
+    this.deleting = false;
+
+    localStorage.clear();
+    window.location.reload();
+  }
+
   public getDataSize() {
     // return LocalStorageHelper.formatBytes(LocalStorageHelper.getDataSize());
   }
