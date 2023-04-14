@@ -125,14 +125,19 @@ export class QuickFormComponent implements OnInit {
       this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
       
       let trips = await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString());
-      console.log(trips);
-      trips = trips.filter(x => x.saved === "false");
-      let trip = TripHelper.sortTripsDesc(trips)[0];
-      let shift = this.shifts.find(x => x.key === trip?.key);
+      let latestTrip = TripHelper.sortTripsDesc(trips)[0];
+      let shift = this.shifts.find(x => x.key === latestTrip?.key);
       
       if (shift) {
         
         this.selectedShift = shift;
+      }
+
+      // Set place if only one in the list.
+      let places = await this._placeService.getRemotePlaces();
+      if (places.length === 1) {
+        this.quickForm.controls.place.setValue(places[0].place);
+        await this.showPlaceAddresses(places[0].place);
       }
     }
 
@@ -268,7 +273,8 @@ export class QuickFormComponent implements OnInit {
   }
 
   public onShiftSelected(value:string) {
-    if (value == 'new' || value == '' || this.shifts.length === 0) {
+    // TODO: Look into fixing this value check.
+    if (value === 'new' || value === '' || value === ' ' || this.shifts.length === 0) {
       this.isNewShift = true;
       this.quickForm.controls.service.setValidators([Validators.required]);
     }
