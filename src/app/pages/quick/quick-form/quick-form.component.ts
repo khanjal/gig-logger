@@ -110,7 +110,6 @@ export class QuickFormComponent implements OnInit {
   }
 
   public async load() {
-    // ShiftHelper.updateAllShiftTotals();
     this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
                   ...await this._shfitService.getLocalShiftsPreviousDays(7)];
 
@@ -142,18 +141,6 @@ export class QuickFormComponent implements OnInit {
     }
 
     this.onShiftSelected(this.quickForm.value.shift ?? "");
-
-    // this.sheetTrips = TripHelper.getPastTrips(1);
-
-    // Set defaults if there is only one place.
-    // if (this.f.length === 1) {
-    //   this.quickForm.controls.place.setValue(this.places[0].place);
-    // }
-
-    // Set default to most used service
-    // if (this.services.length === 1) {
-    //   this.quickForm.controls.service.setValue(this.services[0].service);
-    // }
   }
 
   private async calculateShiftTotals(shifts: IShift[]): Promise<IShift[]> {
@@ -273,10 +260,11 @@ export class QuickFormComponent implements OnInit {
   }
 
   public onShiftSelected(value:string) {
-    // TODO: Look into fixing this value check.
-    if (value === 'new' || value === '' || value === ' ' || this.shifts.length === 0) {
+    if (!value) {
       this.isNewShift = true;
       this.quickForm.controls.service.setValidators([Validators.required]);
+
+      //TODO: Set the most used service as default.
     }
     else {
       this.isNewShift = false;
@@ -326,6 +314,9 @@ export class QuickFormComponent implements OnInit {
       if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress && !this.data.id) {
         this.quickForm.controls.startAddress.setValue(this.placeAddresses[0]);
       }
+    }
+    else {
+      this.placeAddresses = [];
     }
   }
 
