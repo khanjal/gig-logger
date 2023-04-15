@@ -3,7 +3,7 @@
         <mat-card-header>{{trip.date | date:'MMMM d'}} - {{trip.time}} - {{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }}</mat-card-header>
         <mat-card-content>
             <div><span>P:</span> {{trip.place | truncate:15}}({{trip.distance}})  {{ getPlaceAddress(trip.place, trip.startAddress) | truncate:40}}</div>
-            <div><span>D:</span> {{trip.name | truncate:15}} {{trip.endAddress | truncate:40}}</div>
+            <div><span>D:</span> {{trip.name | truncate:15}} {{ getShortAddress(trip.endAddress) | truncate:40}}</div>
             <div>Pay {{trip.pay | currency}} Tip {{trip.tip | currency}} Bonus {{trip.bonus | currency}} Cash {{trip.cash | currency}}</div>
         </mat-card-content>
     </div>

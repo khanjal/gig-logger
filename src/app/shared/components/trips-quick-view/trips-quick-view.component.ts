@@ -13,4 +13,8 @@ export class TripsQuickViewComponent {
   public getPlaceAddress(place: string, address: string) {
     return AddressHelper.getPlaceAddress(place, address);
   }
+
+  public getShortAddress(address: string) {
+    return AddressHelper.getShortAddress(address);
+  }
 }
