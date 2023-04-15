@@ -32,23 +32,26 @@ export class QuickFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   quickForm = new FormGroup({
+    shift: new FormControl(''),
+    service: new FormControl(''),
+    place: new FormControl(''),
+    name: new FormControl(''),
+    distance: new FormControl(),
+    startOdometer: new FormControl(),
+    endOdometer: new FormControl(),
+    pay: new FormControl(),
+    tip: new FormControl(),
     bonus: new FormControl(),
     cash: new FormControl(),
-    distance: new FormControl(),
-    name: new FormControl(''),
-    note: new FormControl(''),
-    pay: new FormControl(),
-    place: new FormControl(''),
-    service: new FormControl(''),
-    shift: new FormControl(''),
-    endAddress: new FormControl(''),
     startAddress: new FormControl(''),
-    tip: new FormControl(),
+    endAddress: new FormControl(''),
+    note: new FormControl('')
   });
 
   isNewShift: boolean = true;
   showAdvancedPay: boolean = false;
   showPickupAddress: boolean = false;
+  showOdometer: boolean = false;
 
   filteredAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
@@ -323,6 +326,10 @@ export class QuickFormComponent implements OnInit {
 
   toggleAdvancedPay() {
     this.showAdvancedPay = !this.showAdvancedPay;
+  }
+
+  toggleOdometer() {
+    this.showOdometer = !this.showOdometer;
   }
 
   togglePickupAddress() {

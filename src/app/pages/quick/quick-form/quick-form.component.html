@@ -24,7 +24,7 @@
             <input type="text"
                 name="service"
                 placeholder="Pick one"
-                aria-label="Number"
+                aria-label="Service"
                 matInput
                 formControlName="service"
                 [matAutocomplete]="autoService"
@@ -36,7 +36,7 @@
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.service.setValue('')">
+            <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-form-field>
@@ -47,7 +47,6 @@
         <input type="text"
             name="place"
             placeholder="Pick one"
-            aria-label="Number"
             matInput
             formControlName="place"
             [matAutocomplete]="autoPlace"
@@ -60,7 +59,7 @@
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
-        <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
+        <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
@@ -68,7 +67,7 @@
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Pay</mat-label>
         <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay>
-        <button type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Clear" (click)="toggleAdvancedPay()">
+        <button type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
             <mat-icon>account_balance</mat-icon>
         </button>
     </mat-form-field>
@@ -76,7 +75,21 @@
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Distance</mat-label>
         <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
+        <button type="button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
+            <mat-icon>drive_eta</mat-icon>
+        </button>
     </mat-form-field>
+
+    <div *ngIf="showOdometer">
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>Start Odometer</mat-label>
+            <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer" value="">
+        </mat-form-field>
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>End Odometer</mat-label>
+            <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer" value="">
+        </mat-form-field>
+    </div>
 
     <div *ngIf="showAdvancedPay">
         <mat-form-field class="field-quarter-width" appearance="outline">
@@ -98,7 +111,7 @@
         <input type="text"
             name="name"
             placeholder="Pick one"
-            aria-label="Number"
+            aria-label="Name"
             matInput
             formControlName="name"
             [matAutocomplete]="autoName"
@@ -129,7 +142,6 @@
         <input type="text"
             name="startAddress"
             placeholder="Pick one"
-            aria-label="Number"
             matInput
             formControlName="startAddress"
             [matAutocomplete]="autoAddress"
@@ -140,7 +152,7 @@
                 {{ getShortAddress(address.address) }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.startAddress.setValue('')">
+        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
@@ -154,7 +166,6 @@
         <input type="text"
             name="endAddress"
             placeholder="Pick one"
-            aria-label="Number"
             matInput
             formControlName="endAddress"
             [matAutocomplete]="autoAddress"
@@ -167,7 +178,7 @@
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.endAddress.setValue('')">
+        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
