@@ -235,13 +235,14 @@ export class GoogleSheetService {
                 Distance: trip.distance,
                 Service: trip.service,
                 '#': trip.number, 
-                Place: trip.place,
                 Pickup: trip.time,
+                Place: trip.place,
+                Name: trip.name,
                 Pay: trip.pay,
                 Tip: trip.tip ?? "",
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
-                Name: trip.name,
+                'Start Address': trip.startAddress,
                 'End Address': trip.endAddress,
                 Note: trip.note
         };
