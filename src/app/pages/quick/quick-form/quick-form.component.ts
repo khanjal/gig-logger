@@ -219,7 +219,7 @@ export class QuickFormComponent implements OnInit {
     }
 
     // Check to see if service should be displayed
-    this.onShiftSelected(this.quickForm.value.shift ?? "");
+    await this.onShiftSelected(this.quickForm.value.shift ?? "");
   }
 
   public async addTrip() {
@@ -263,12 +263,14 @@ export class QuickFormComponent implements OnInit {
     this.setDefaultShift();
   }
 
-  public onShiftSelected(value:string) {
+  public async onShiftSelected(value:string) {
     if (!value) {
       this.isNewShift = true;
       this.quickForm.controls.service.setValidators([Validators.required]);
 
-      //TODO: Set the most used service as default.
+      //Set the most used service as default.
+      let service = (await this._serviceService.getRemoteServices()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
+      this.quickForm.controls.service.setValue(service.service);
     }
     else {
       this.isNewShift = false;

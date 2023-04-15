@@ -131,7 +131,7 @@ export class TripHelper {
             tripModel.date = row['Date'];
             tripModel.time = row['Pickup'];
             tripModel.place = row['Place'];
-            tripModel.distance = row['Distance'] ?? 0;
+            tripModel.distance = NumberHelper.getNumberFromString(row['Distance']);
             
             // Amounts
             tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
