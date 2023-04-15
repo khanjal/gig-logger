@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SheetSetupTableComponent } from './sheet-setup-table.component';
+import { SheetQuickViewComponent } from './sheet-quick-view.component';
 
 describe('SheetSetupTableComponent', () => {
-  let component: SheetSetupTableComponent;
-  let fixture: ComponentFixture<SheetSetupTableComponent>;
+  let component: SheetQuickViewComponent;
+  let fixture: ComponentFixture<SheetQuickViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SheetSetupTableComponent ]
+      declarations: [ SheetQuickViewComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SheetSetupTableComponent);
+    fixture = TestBed.createComponent(SheetQuickViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
