@@ -80,17 +80,6 @@
         </button>
     </mat-form-field>
 
-    <div *ngIf="showOdometer">
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Start Odometer</mat-label>
-            <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer" value="">
-        </mat-form-field>
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>End Odometer</mat-label>
-            <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer" value="">
-        </mat-form-field>
-    </div>
-
     <div *ngIf="showAdvancedPay">
         <mat-form-field class="field-quarter-width" appearance="outline">
             <mat-label>Tip</mat-label>
@@ -103,6 +92,17 @@
         <mat-form-field class="field-quarter-width" appearance="outline">
             <mat-label>Cash</mat-label>
             <input matInput type="number" name="cash" placeholder="5" formControlName="cash" value="">
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="showOdometer">
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>Start Odometer</mat-label>
+            <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer" value="">
+        </mat-form-field>
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>End Odometer</mat-label>
+            <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer" value="">
         </mat-form-field>
     </div>
 

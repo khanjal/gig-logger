@@ -1,5 +1,6 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { ServiceModel } from "../models/service.model";
+import { NumberHelper } from "./number.helper";
 
 export class ServiceHelper {
 
@@ -12,7 +13,7 @@ export class ServiceHelper {
             let serviceModel: ServiceModel = new ServiceModel;
             serviceModel.id = row.rowIndex;
             serviceModel.service = row['Service'];
-            serviceModel.visits = row['Trips'];
+            serviceModel.visits = NumberHelper.getNumberFromString(row['Trips']);
             // console.log(placeModel);
 
             if (serviceModel.service) {
