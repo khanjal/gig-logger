@@ -1,9 +1,9 @@
 export class TripModel {
-    id: number = 0;
+    id?: number;
     startAddress: string = "";
     endAddress: string = "";
-    bonus?: number;
-    cash?: number;
+    bonus: number = 0;
+    cash: number = 0;
     date: string = new Date().toLocaleDateString();
     distance: number = 0;
     key: string = "";
@@ -11,10 +11,10 @@ export class TripModel {
     note: string = "";
     pay: number = 0;
     place: string = "";
-    saved: boolean = false;
+    saved: string = "false";
     service: string = "";
-    shiftNumber: number = 0;
+    number: number = 0;
     time: string = "";
-    tip?: number;
+    tip: number = 0;
     total: number = 0;
 }

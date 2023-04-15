@@ -9,16 +9,20 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
 import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 import { LoginComponent } from './login/login.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SheetsComponent } from './sheets/sheets.component';
-import { SheetSetupComponent } from './sheet-setup/sheet-setup.component';
-import { SheetSetupFormComponent } from './sheet-setup/sheet-setup-form/sheet-setup-form.component';
-import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-setup-table.component';
+import { MatCardModule } from '@angular/material/card';
+import { SetupComponent } from './sheet-setup/setup.component';
+import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-form.component';
+import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-quick-view.component';
+import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -28,24 +32,35 @@ import { SheetSetupTableComponent } from './sheet-setup/sheet-setup-table/sheet-
     ShiftsComponent,
     LoginComponent,
     SheetsComponent,
-    SheetSetupComponent,
-    SheetSetupFormComponent,
-    SheetSetupTableComponent
+    SetupComponent,
+    SheetAddFormComponent,
+    SheetQuickViewComponent
   ],
   imports: [
     CommonModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
     MatListModule,
     MatIconModule,
     MatInputModule,
+    MatSnackBarModule,
     MatTableModule,
     ReactiveFormsModule,
-    SharedModule,
+    ScrollingModule,
+    SharedModule
   ],
-  providers: [],
+  exports: [
+  ],
+  providers: [
+      {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}},
+      {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},
+      {provide: MAT_DIALOG_DATA, useValue: {}},
+      {provide: MatDialogRef, useValue: {}}
+  ],
   bootstrap: []
 })
 export class PagesModule { }

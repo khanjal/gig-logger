@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SheetSetupFormComponent } from './sheet-setup-form.component';
+import { SheetSetupComponent } from './setup.component';
 
-describe('SheetSetupFormComponent', () => {
-  let component: SheetSetupFormComponent;
-  let fixture: ComponentFixture<SheetSetupFormComponent>;
+describe('SheetSetupComponent', () => {
+  let component: SheetSetupComponent;
+  let fixture: ComponentFixture<SheetSetupComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SheetSetupFormComponent ]
+      declarations: [ SheetSetupComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SheetSetupFormComponent);
+    fixture = TestBed.createComponent(SheetSetupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

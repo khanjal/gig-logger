@@ -8,7 +8,14 @@ import { PagesModule } from './pages/pages.module';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
-import { GoogleSheetService } from './shared/services/googleSheet.service';
+import { GoogleSheetService } from '@services/googleSheet.service';
+import { ShiftService } from '@services/shift.service';
+import { TripService } from '@services/trip.service';
+import { AddressService } from '@services/address.service';
+import { NameService } from '@services/name.service';
+import { PlaceService } from '@services/place.service';
+import { ServiceService } from '@services/service.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 @NgModule({
   declarations: [
@@ -21,10 +28,17 @@ import { GoogleSheetService } from './shared/services/googleSheet.service';
     HttpClientModule,
     MatIconModule,
     PagesModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [
-    GoogleSheetService
+    AddressService,
+    NameService,
+    GoogleSheetService,
+    PlaceService,
+    ServiceService,
+    ShiftService,
+    SpreadsheetService,
+    TripService
   ],
   bootstrap: [AppComponent]
 })

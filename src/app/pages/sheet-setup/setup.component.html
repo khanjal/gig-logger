@@ -1,0 +1,26 @@
+<div class="container">
+    <h1>Setup</h1>
+    <h2>Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><mat-icon>open_in_new</mat-icon></a></h2>
+    <sheet-add-form (parentReload)="load()"></sheet-add-form>
+</div>
+
+<div class="container" *ngIf="spreadsheets?.length">
+    <h2>Current Spreadsheets</h2>
+    <div *ngFor="let spreadsheet of spreadsheets">
+        <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
+        <div class="row row-block">
+            <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
+            <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
+            <button mat-stroked-button type="button" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
+            <button mat-stroked-button type="button" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
+            <button mat-stroked-button class="button-right" color="warn" type="button" *ngIf="spreadsheet.default === 'false'"  [class.spinner]="deleting" [disabled]="deleting" (click)="deleteSpreadsheet(spreadsheet)"><mat-icon>delete</mat-icon> Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row row-block">
+        <!-- <button mat-stroked-button color="warn" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteLocalData()"><mat-icon>delete</mat-icon> Delete Local Data</button> -->
+        <button mat-stroked-button class="button-right" color="warn" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteAllData()"><mat-icon>delete</mat-icon> Delete All Data</button>
+    </div>
+</div>

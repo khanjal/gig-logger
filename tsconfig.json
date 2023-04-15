@@ -36,7 +36,14 @@
       "querystring": ["./node_modules/querystring-es3"],
       "stream": ["./node_modules/stream-browserify"],
       "url": ["./node_modules/url"],
-      "util": ["./node_modules/util"]
+      "util": ["./node_modules/util"],
+      "@data/*": ["./src/app/shared/data/*"],
+      "@interfaces/*": ["./src/app/shared/interfaces/*"],
+      "@helpers/*": ["./src/app/shared/helpers/*"],
+      "@models/*": ["./src/app/shared/models/*"],
+      "@pipes/*": ["./src/app/shared/pipes/*"],
+      "@services/*": ["./src/app/shared/services/*"]
+      
     }
   },
   "angularCompilerOptions": {
