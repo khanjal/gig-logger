@@ -1,27 +1,38 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { AddressModel } from "../models/address.model";
-import { SiteModel } from "../models/site.model";
-import { LocalStorageHelper } from "./localStorage.helper";
+import { AddressModel } from "@models/address.model";
 
 export class AddressHelper {
     static getShortAddress(address: string): string {
         if (address) {
             let addressArray = address.split(", ");
-            return `${ addressArray[0] }, ${ addressArray[1] }`; 
+            let addressString = addressArray[0];
+
+            if (addressArray[1]) {
+                addressString = `${ addressString }, ${ addressArray[1] }`;
+            }
+            return addressString;
         }
         
         return "";
     }
 
-    static getRemoteAddresses(): AddressModel[] {
-        let siteData: SiteModel = LocalStorageHelper.getSiteData();
-        let addresses: AddressModel[] = [];
-
-        if (siteData) {
-            addresses = siteData.remote.addresses;
+    static getPlaceAddress(place: string, address: string): string {
+        if (!place || !address) {
+            return address;
         }
 
-        return addresses;
+        let addressArray = address.split(", ");
+
+        if (addressArray.length === 1) {
+            return addressArray[0];
+        }
+
+        if (addressArray[0] !== place)
+        {
+            return addressArray[0];
+        }
+
+        return addressArray[1];
     }
 
     static translateSheetData(rows: GoogleSpreadsheetRow[]): AddressModel[] {

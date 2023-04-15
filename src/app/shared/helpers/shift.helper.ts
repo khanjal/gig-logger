@@ -2,9 +2,10 @@ import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { ShiftModel } from "../models/shift.model";
 import { SiteModel } from "../models/site.model";
 import { DateHelper } from "./date.helper";
-import { LocalStorageHelper } from "./localStorage.helper";
 import { NumberHelper } from "./number.helper";
 import { TripHelper } from "./trip.helper";
+import { IShift } from "@interfaces/shift.interface";
+import { ITrip } from "@interfaces/trip.interface";
 
 export class ShiftHelper {
     static getAllShifts(): ShiftModel[] {
@@ -12,26 +13,25 @@ export class ShiftHelper {
         return shifts;
     }
 
-    static getUniqueShifts(): ShiftModel[] {
-        let shifts = this.getRemoteShifts();
-        let localShifts = this.getLocalShifts();
+    static getUniqueShifts(shifts: IShift[]): ShiftModel[] {
+        let uniqueShifts: IShift[] = [];
 
-        localShifts.forEach(localShift => {
+        shifts.forEach(shift => {
 
-            let foundShift = shifts.find(x => x.date == localShift.date && x.service == localShift.service && x.shiftNumber == localShift.shiftNumber);
+            let foundShift = uniqueShifts.find(x => x.date == shift.date && x.service == shift.service && x.number == shift.number);
 
             if (foundShift) {
                 return;
             }
 
-            shifts.push(localShift);
+            uniqueShifts.push(shift);
         });
 
-        return shifts;
+        return uniqueShifts;
     }
 
     static getLocalShifts(): ShiftModel[] {
-        let siteData: SiteModel = LocalStorageHelper.getSiteData();
+        let siteData: SiteModel = new SiteModel;
         let shifts: ShiftModel[] = [];
 
         if (siteData) {
@@ -43,7 +43,8 @@ export class ShiftHelper {
 
     static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
         if (!shifts) {
-            shifts = this.getUniqueShifts();
+            //shifts = this.getUniqueShifts();
+            shifts = [];
         }
 
         let datestring = DateHelper.getDateString(days);
@@ -62,7 +63,7 @@ export class ShiftHelper {
     }
 
     static getRemoteShifts(): ShiftModel[] {
-        let siteData: SiteModel = LocalStorageHelper.getSiteData();
+        let siteData: SiteModel = new SiteModel;
         let shifts: ShiftModel[] = [];
 
         if (siteData) {
@@ -72,8 +73,8 @@ export class ShiftHelper {
         return shifts;
     }
 
-    static getNextShiftNumber(service: string): number {
-        let shifts: ShiftModel[] = this.getTodaysShifts();
+    static getNextShiftNumber(service: string, shifts: IShift[]): number {
+        shifts = this.getUniqueShifts(shifts);
 
         let serviceShifts = shifts.filter(shift => shift.service == service);
 
@@ -81,7 +82,8 @@ export class ShiftHelper {
     }
 
     static getTodaysShifts():  ShiftModel[] {
-        let shifts: ShiftModel[] = this.getUniqueShifts();
+        //let shifts: ShiftModel[] = this.getUniqueShifts();
+        let shifts: ShiftModel[] = [];
 
         let todaysShifts: ShiftModel[] = [];
 
@@ -100,10 +102,10 @@ export class ShiftHelper {
 
         shifts.push(shift);
 
-        let gigs = LocalStorageHelper.getSiteData();
-        gigs.local.shifts = shifts;
+        // let gigs = LocalStorageHelper.getSiteData();
+        // gigs.local.shifts = shifts;
 
-        LocalStorageHelper.updateLocalData(gigs);
+        // LocalStorageHelper.updateLocalData(gigs);
     }
 
     static clearSavedShifts() {
@@ -111,28 +113,34 @@ export class ShiftHelper {
 
         shifts = shifts.filter(x => !x.saved);
 
-        let gigs = LocalStorageHelper.getSiteData();
-        gigs.local.shifts = shifts;
+        // let gigs = LocalStorageHelper.getSiteData();
+        // gigs.local.shifts = shifts;
 
-        LocalStorageHelper.updateLocalData(gigs);
+        // LocalStorageHelper.updateLocalData(gigs);
     }
 
-    static createNewShift(service: string): ShiftModel {
+    static createNewShift(service: string, shifts: IShift[]): ShiftModel {
         let shift: ShiftModel = new ShiftModel;
 
         shift.service = service;
 
-        let shiftNumber = this.getNextShiftNumber(service);
+        let shiftNumber = this.getNextShiftNumber(service, shifts);
 
-        shift.id = ShiftHelper.getLocalShifts().length++;
-        shift.shiftNumber = shiftNumber;
+        shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
+        shift.number = shiftNumber ?? 0;
         shift.start = new Date().toLocaleTimeString();
         
         return shift;
     }
 
-    static sortShiftsDesc(shifts: ShiftModel[]): ShiftModel[] {
-        shifts.sort((a,b) => b.date.localeCompare(a.date) || a.service.localeCompare(b.service) || b.shiftNumber - a.shiftNumber);
+    static removeDuplicateShifts(shifts: IShift[]): IShift[] {
+        shifts = shifts.filter((value, index, self) => self.map(x => x.key).indexOf(value.key) == index);
+
+        return shifts;
+    }
+
+    static sortShiftsDesc(shifts: IShift[]): IShift[] {
+        shifts.sort((a,b) => b.key.localeCompare(a.key));
 
         return shifts;
     }
@@ -147,9 +155,9 @@ export class ShiftHelper {
             shiftModel.id = row.rowIndex;
             shiftModel.key = row['Key'];
             shiftModel.date = row['Date'];
-            shiftModel.saved = true;
+            shiftModel.saved = "true";
             shiftModel.service = row['Service'];
-            shiftModel.shiftNumber = row['#'];
+            shiftModel.number = row['#'];
             shiftModel.total = NumberHelper.getNumberFromString(row['G Total']);
             shiftModel.trips = row['T Trip'] ?? 0;
             // console.log(shift);
@@ -176,10 +184,10 @@ export class ShiftHelper {
         
         shifts = this.updateShiftTotals(shifts);
 
-        let data = LocalStorageHelper.getSiteData();
-        data.local.shifts = shifts;
+        // let data = LocalStorageHelper.getSiteData();
+        // data.local.shifts = shifts;
 
-        LocalStorageHelper.updateLocalData(data);
+        // LocalStorageHelper.updateLocalData(data);
     }
 
     static updateRemoteShiftTotals() {
@@ -187,10 +195,10 @@ export class ShiftHelper {
         
         shifts = this.updateShiftTotals(shifts);
 
-        let data = LocalStorageHelper.getSiteData();
-        data.remote.shifts = shifts;
+        // let data = LocalStorageHelper.getSiteData();
+        // data.remote.shifts = shifts;
 
-        LocalStorageHelper.updateRemoteData(data);
+        // LocalStorageHelper.updateRemoteData(data);
     }
 
     static updateShiftTotals(shifts: ShiftModel[]): ShiftModel[] {
@@ -199,7 +207,7 @@ export class ShiftHelper {
         shifts.forEach(shift => {
             shift.total = 0;
             shift.trips = 0;
-            let filteredTrips = trips.filter(x => x.date === shift.date && x.service === shift.service && x.shiftNumber === shift.shiftNumber);
+            let filteredTrips = trips.filter(x => x.date === shift.date && x.service === shift.service && x.number === shift.number);
             
             filteredTrips.forEach(trip => {
                 shift.total += trip.total;

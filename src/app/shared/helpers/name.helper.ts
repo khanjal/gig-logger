@@ -1,22 +1,7 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { NameModel } from "../models/name.model";
-import { SiteModel } from "../models/site.model";
-import { LocalStorageHelper } from "./localStorage.helper";
 
 export class NameHelper {
-    static getRemoteNames(siteData?: SiteModel): NameModel[] {
-        if(!siteData){
-            siteData = LocalStorageHelper.getSiteData();
-        }
-        
-        let names: NameModel[] = [];
-
-        if (siteData) {
-            names = siteData.remote.names;
-        }
-
-        return names;
-    }
 
     static translateSheetData(rows: GoogleSpreadsheetRow[]): NameModel[] {
         let names: NameModel[] = [];
