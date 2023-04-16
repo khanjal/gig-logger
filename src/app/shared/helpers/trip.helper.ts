@@ -129,7 +129,7 @@ export class TripHelper {
             tripModel.endAddress = row['End Address'];
             
             tripModel.date = row['Date'];
-            tripModel.time = row['Pickup'];
+            tripModel.pickupTime = row['Pickup'];
             tripModel.place = row['Place'];
             tripModel.distance = NumberHelper.getNumberFromString(row['Distance']);
             

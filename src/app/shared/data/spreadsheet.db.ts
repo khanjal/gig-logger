@@ -4,6 +4,7 @@ import { IPlace } from '@interfaces/place.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { IWeekday } from '@interfaces/weekday.interface';
 import Dexie, { Table } from 'dexie';
 
 // https://dexie.org/docs/Tutorial/Angular
@@ -15,6 +16,7 @@ export class AppDB extends Dexie {
     services!: Table<IService, number>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
+    weekdays!: Table<IWeekday, number>;
 
     constructor() {
         super('spreadsheetDB');
@@ -25,6 +27,7 @@ export class AppDB extends Dexie {
             services: '++id, service',
             shifts: '++id, date, service, number, key, [date+service+number]',
             trips: '++id, date, service, number, key, [date+service+number]',
+            weekdays: '++id, day'
         });
     }
 }
