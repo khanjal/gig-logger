@@ -9,6 +9,9 @@ import { SiteModel } from 'src/app/shared/models/site.model';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
 import { TripHelper } from '@helpers/trip.helper';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ITrip } from '@interfaces/trip.interface';
+import { DateHelper } from '@helpers/date.helper';
 
 @Component({
   selector: 'app-quick',
@@ -30,6 +33,7 @@ export class QuickComponent implements OnInit {
 
   constructor(
       public dialog: MatDialog,
+      private _snackBar: MatSnackBar,
       private _router: Router, 
       private _googleService: GoogleSheetService,
       private _shiftService: ShiftService,
@@ -53,6 +57,8 @@ export class QuickComponent implements OnInit {
 
     console.log('Saved!');
     console.timeEnd("saving");
+
+    this._snackBar.open("Trip(s) saved to spreadsheet");
   }
 
   public async load() {
@@ -65,14 +71,14 @@ export class QuickComponent implements OnInit {
     // this.form?.load();
   }
 
-  async saveLocalTrip(trip: TripModel) {
+  async saveLocalTrip(trip: ITrip) {
     this.saving = true;
     await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
   }
 
-  async editUnsavedLocalTrip(trip: TripModel) {
+  async editUnsavedLocalTrip(trip: ITrip) {
     let dialogRef = this.dialog.open(QuickFormComponent, {
       data: trip,
       height: '600px',
@@ -85,7 +91,13 @@ export class QuickComponent implements OnInit {
     });
   }
 
-  async deleteUnsavedLocalTrip(trip: TripModel) {
+  async setDropoffTime(trip: ITrip) {
+    // TODO: Check if dropoff time is already set and prompt to overwrite
+    trip.dropoffTime = DateHelper.getTimeString(new Date);
+    await this._tripService.updateLocalTrip(trip);
+  }
+
+  async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
     this.load();
