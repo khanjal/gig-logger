@@ -199,15 +199,17 @@ export class QuickFormComponent implements OnInit {
     this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
                   ...await this._shfitService.getLocalShiftsPreviousDays(7)];
 
+    if (this.shifts.length > 0) {
+      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+    }
+
     //Set default shift to last trip or latest shift.
-    if (this.shifts.length > 0 && !this.data.id) {
+    if (!this.data.id) {
       // Remove duplicates
       this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
 
       // Update all shift totals from displayed shifts.
       await this.calculateShiftTotals(this.shifts);
-
-      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
 
       let today = new Date().toLocaleDateString();
 
