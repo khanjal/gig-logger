@@ -209,8 +209,10 @@ export class QuickFormComponent implements OnInit {
 
       this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
 
-      let trips = [... await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString()),
-                  ...await this._tripService.queryRemoteTrips("date", new Date().toLocaleDateString())];
+      let today = new Date().toLocaleDateString();
+
+      let trips = [... await this._tripService.queryLocalTrips("date", today),
+                  ...await this._tripService.queryRemoteTrips("date", today)];
 
       let latestTrip = TripHelper.sortTripsDesc(trips)[0];
       let shift = this.shifts.find(x => x.key === latestTrip?.key);
