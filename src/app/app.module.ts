@@ -16,6 +16,7 @@ import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { WeekdayService } from '@services/weekday.service';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
     ServiceService,
     ShiftService,
     SpreadsheetService,
-    TripService
+    TripService,
+    WeekdayService
   ],
   bootstrap: [AppComponent]
 })
