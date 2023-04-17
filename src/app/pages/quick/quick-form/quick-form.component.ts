@@ -182,8 +182,11 @@ export class QuickFormComponent implements OnInit {
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
 
-    // Only set pickup time if new shift
-    if (!this.data?.id) {
+    // Set non form properties depending on edit/add
+    if (this.data?.id) {
+      trip.pickupTime = this.data?.pickupTime;
+    }
+    else {
       trip.pickupTime = shift.end;
     }
 
