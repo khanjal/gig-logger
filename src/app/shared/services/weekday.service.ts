@@ -9,4 +9,8 @@ export class WeekdayService {
         await spreadsheetDB.weekdays.clear();
         await spreadsheetDB.weekdays.bulkAdd(weekdays);
     }
+
+    public async queryWeekdays(field: string, value: string | number): Promise<IWeekday[]> {
+        return await spreadsheetDB.weekdays.where(field).equals(value).toArray();
+    }
 }

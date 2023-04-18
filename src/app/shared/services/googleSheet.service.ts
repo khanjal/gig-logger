@@ -161,7 +161,6 @@ export class GoogleSheetService {
         rows = await sheet.getRows();
         let weekdays = WeekdayHelper.translateSheetData(rows);
         await this._weekdayService.loadWeekdays(weekdays);
-        console.log(weekdays);
 
         // Update addresses with names and names with addresses.
         trips.forEach(async trip => {
