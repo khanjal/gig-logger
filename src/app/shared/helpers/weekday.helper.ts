@@ -19,6 +19,7 @@ export class WeekdayHelper {
                 cash: NumberHelper.getNumberFromString(row['Dash']),
                 total: NumberHelper.getNumberFromString(row['Total']),
                 days: NumberHelper.getNumberFromString(row['# Days']),
+                dailyAverage: NumberHelper.getNumberFromString(row['$/Day']),
                 currentAverage: NumberHelper.getNumberFromString(row['Curr Avg']),
                 previousAverage: NumberHelper.getNumberFromString(row['Prev Avg'])
             };
