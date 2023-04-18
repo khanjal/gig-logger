@@ -1,17 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TripModel } from 'src/app/shared/models/trip.model';
-import { AddressHelper } from 'src/app/shared/helpers/address.helper';
-import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
+import { TripModel } from '@models/trip.model';
+import { AddressHelper } from '@helpers/address.helper';
+import { GoogleSheetService } from '@services/googleSheet.service';
 import { QuickFormComponent } from './quick-form/quick-form.component';
-import { SiteModel } from 'src/app/shared/models/site.model';
+import { SiteModel } from '@models/site.model';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
 import { TripHelper } from '@helpers/trip.helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
+import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
 
 @Component({
   selector: 'app-quick',
@@ -20,6 +21,7 @@ import { DateHelper } from '@helpers/date.helper';
 })
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
+  @ViewChild(CurrentDayAverageComponent) average:CurrentDayAverageComponent | undefined;
 
   siteData: SiteModel = new SiteModel;
 
@@ -41,7 +43,7 @@ export class QuickComponent implements OnInit {
     ) { }
 
   async ngOnInit(): Promise<void> {
-    this.load();
+    await this.load();
   }
 
   async save() {
@@ -62,13 +64,13 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    // ShiftHelper.updateAllShiftTotals();
     this.sheetTrips = TripHelper.sortTripsDesc(await this._tripService.getRemoteTripsPreviousDays(7));
     this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
     // this.form?.load();
+    await this.average?.load();
   }
 
   async saveLocalTrip(trip: ITrip) {
@@ -86,8 +88,8 @@ export class QuickComponent implements OnInit {
       panelClass: 'custom-modalbox'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.load();
+    dialogRef.afterClosed().subscribe(async result => {
+      await this.load();
     });
   }
 
@@ -100,7 +102,7 @@ export class QuickComponent implements OnInit {
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
-    this.load();
+    await this.load();
   }
 
   async clearSavedLocalData() {
@@ -121,7 +123,7 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
     await this._googleService.loadRemoteData();
 
-    this.load();
+    await this.load();
     this.reloading = false;
     // window.location.reload();
   }

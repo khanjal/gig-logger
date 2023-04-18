@@ -38,8 +38,9 @@
       "url": ["./node_modules/url"],
       "util": ["./node_modules/util"],
       "@data/*": ["./src/app/shared/data/*"],
-      "@interfaces/*": ["./src/app/shared/interfaces/*"],
+      "@components/*": ["./src/app/shared/components/*"],
       "@helpers/*": ["./src/app/shared/helpers/*"],
+      "@interfaces/*": ["./src/app/shared/interfaces/*"],
       "@models/*": ["./src/app/shared/models/*"],
       "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"]
