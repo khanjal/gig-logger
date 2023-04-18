@@ -1,18 +1,10 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { ShiftModel } from "../models/shift.model";
-import { SiteModel } from "../models/site.model";
-import { DateHelper } from "./date.helper";
-import { NumberHelper } from "./number.helper";
-import { TripHelper } from "./trip.helper";
+import { ShiftModel } from "@models/shift.model";
+import { DateHelper } from "@helpers/date.helper";
+import { NumberHelper } from "@helpers/number.helper";
 import { IShift } from "@interfaces/shift.interface";
-import { ITrip } from "@interfaces/trip.interface";
 
 export class ShiftHelper {
-    static getAllShifts(): ShiftModel[] {
-        let shifts = [...this.getLocalShifts(), ...this.getRemoteShifts()];
-        return shifts;
-    }
-
     static getUniqueShifts(shifts: IShift[]): ShiftModel[] {
         let uniqueShifts: IShift[] = [];
 
@@ -28,49 +20,6 @@ export class ShiftHelper {
         });
 
         return uniqueShifts;
-    }
-
-    static getLocalShifts(): ShiftModel[] {
-        let siteData: SiteModel = new SiteModel;
-        let shifts: ShiftModel[] = [];
-
-        if (siteData) {
-            shifts = siteData.local.shifts;
-        }
-
-        return shifts;
-    }
-
-    static getPastShifts(days: number = 0, shifts?: ShiftModel[]):  ShiftModel[] {
-        if (!shifts) {
-            //shifts = this.getUniqueShifts();
-            shifts = [];
-        }
-
-        let datestring = DateHelper.getDateString(days);
-
-        let pastShifts: ShiftModel[] = [];
-
-        shifts.forEach(shift => {
-            if (new Date(shift.date) >= new Date(datestring)) {
-                pastShifts.push(shift);
-            }
-        });
-
-        // console.log(pastShifts);
-
-        return pastShifts;
-    }
-
-    static getRemoteShifts(): ShiftModel[] {
-        let siteData: SiteModel = new SiteModel;
-        let shifts: ShiftModel[] = [];
-
-        if (siteData) {
-            shifts = siteData.remote.shifts;
-        }
-
-        return shifts;
     }
 
     static getNextShiftNumber(service: string, shifts: IShift[]): number {
@@ -95,28 +44,6 @@ export class ShiftHelper {
 
 
         return todaysShifts;
-    }
-
-    static addShift(shift: ShiftModel) {
-        let shifts = this.getLocalShifts();
-
-        shifts.push(shift);
-
-        // let gigs = LocalStorageHelper.getSiteData();
-        // gigs.local.shifts = shifts;
-
-        // LocalStorageHelper.updateLocalData(gigs);
-    }
-
-    static clearSavedShifts() {
-        let shifts = this.getLocalShifts();
-
-        shifts = shifts.filter(x => !x.saved);
-
-        // let gigs = LocalStorageHelper.getSiteData();
-        // gigs.local.shifts = shifts;
-
-        // LocalStorageHelper.updateLocalData(gigs);
     }
 
     static createNewShift(service: string, shifts: IShift[]): ShiftModel {
@@ -171,50 +98,6 @@ export class ShiftHelper {
         console.log(shifts.length);
         // console.log(shifts);
 
-        return shifts;
-    }
-
-    static updateAllShiftTotals() {
-        this.updateLocalShiftTotals();
-        this.updateRemoteShiftTotals();
-    }
-
-    static updateLocalShiftTotals() {
-        let shifts = this.getLocalShifts();
-        
-        shifts = this.updateShiftTotals(shifts);
-
-        // let data = LocalStorageHelper.getSiteData();
-        // data.local.shifts = shifts;
-
-        // LocalStorageHelper.updateLocalData(data);
-    }
-
-    static updateRemoteShiftTotals() {
-        let shifts = this.getRemoteShifts();
-        
-        shifts = this.updateShiftTotals(shifts);
-
-        // let data = LocalStorageHelper.getSiteData();
-        // data.remote.shifts = shifts;
-
-        // LocalStorageHelper.updateRemoteData(data);
-    }
-
-    static updateShiftTotals(shifts: ShiftModel[]): ShiftModel[] {
-        let trips = TripHelper.getAllTrips();
-
-        shifts.forEach(shift => {
-            shift.total = 0;
-            shift.trips = 0;
-            let filteredTrips = trips.filter(x => x.date === shift.date && x.service === shift.service && x.number === shift.number);
-            
-            filteredTrips.forEach(trip => {
-                shift.total += trip.total;
-                shift.trips++;
-            });
-        });
-        
         return shifts;
     }
 }
