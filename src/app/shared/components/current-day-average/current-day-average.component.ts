@@ -24,6 +24,7 @@ export class CurrentDayAverageComponent implements OnInit {
   }
 
   async load() {
+    this.currentAverage = 0;
     let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
     let averageQuery = await this._weekdayService.queryWeekdays("day", dayOfWeek);
     this.weeklyAverage = averageQuery[0].dailyAverage;
