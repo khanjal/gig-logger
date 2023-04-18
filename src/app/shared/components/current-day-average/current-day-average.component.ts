@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
@@ -9,6 +9,8 @@ import { WeekdayService } from '@services/weekday.service';
 })
 
 export class CurrentDayAverageComponent implements OnInit {
+  @Input() date: string = new Date().toLocaleDateString();
+
   currentAverage: number = 0;
   weeklyAverage: number | undefined;
 
@@ -22,12 +24,12 @@ export class CurrentDayAverageComponent implements OnInit {
   }
 
   async load() {
-    let today = new Date();
-    let averageQuery = await this._weekdayService.queryWeekdays("day", today.toLocaleDateString('en-us', {weekday: 'short'}));
+    let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
+    let averageQuery = await this._weekdayService.queryWeekdays("day", dayOfWeek);
     this.weeklyAverage = averageQuery[0].dailyAverage;
 
-    let todaysTrips = [... await this._tripService.queryLocalTrips("date", today.toLocaleDateString()),
-                      ...await this._tripService.queryRemoteTrips("date", today.toLocaleDateString())];
+    let todaysTrips = [... await this._tripService.queryLocalTrips("date", this.date),
+                      ...await this._tripService.queryRemoteTrips("date", this.date)];
 
     todaysTrips.forEach(trip => {
       this.currentAverage += trip.total;
