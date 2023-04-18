@@ -53,7 +53,8 @@ export class QuickFormComponent implements OnInit {
   showPickupAddress: boolean = false;
   showOdometer: boolean = false;
 
-  filteredAddresses: Observable<IAddress[]> | undefined;
+  filteredStartAddresses: Observable<IAddress[]> | undefined;
+  filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
@@ -89,7 +90,12 @@ export class QuickFormComponent implements OnInit {
       await this.loadForm()
     }
 
-    this.filteredAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
+    this.filteredStartAddresses = this.quickForm.controls.startAddress.valueChanges.pipe(
+      startWith(''),
+      mergeMap(async value => await this._filterAddress(value || ''))
+    );
+
+    this.filteredEndAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterAddress(value || ''))
     );
