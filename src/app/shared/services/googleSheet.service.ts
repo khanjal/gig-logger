@@ -267,6 +267,7 @@ export class GoogleSheetService {
                 '#': trip.number, 
                 Place: trip.place,
                 Pickup: trip.pickupTime,
+                Dropoff: trip.dropoffTime,
                 Pay: trip.pay,
                 Tip: trip.tip ?? "",
                 Bonus: trip.bonus ?? "",
