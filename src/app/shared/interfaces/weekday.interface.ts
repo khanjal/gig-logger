@@ -8,6 +8,7 @@ export interface IWeekday {
     cash: number;
     total: number;
     days: number;
+    dailyAverage: number;
     currentAverage: number;
     previousAverage: number;
 }

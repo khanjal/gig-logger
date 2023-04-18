@@ -1,4 +1,6 @@
 <div class="container">
+    <div><app-current-day-average class="button-right"></app-current-day-average></div>
+    
     <quick-form (parentReload)="load()"></quick-form>
 
     <div *ngFor="let trip of unsavedTrips">

@@ -12,14 +12,16 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
 import { TruncatePipe } from '@pipes/transform.pipe';
+import { CurrentDayAverageComponent } from './components/current-day-average/current-day-average.component';
 
 @NgModule({
     declarations: [
+        CurrentDayAverageComponent,
         HeaderComponent,
         ProfileComponent,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
-        TruncatePipe
+        TruncatePipe,
     ],
     imports: [
         CommonModule,
@@ -31,6 +33,7 @@ import { TruncatePipe } from '@pipes/transform.pipe';
         RouterModule
     ],
     exports: [
+        CurrentDayAverageComponent,
         HeaderComponent,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
