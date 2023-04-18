@@ -145,14 +145,13 @@
             matInput
             formControlName="startAddress"
             [matAutocomplete]="autoAddress"
-            (blur)="showAddressNamesEvent($event)"
-            #address />
+            #startAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
+            <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
                 {{ getShortAddress(address.address) }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
+        <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
@@ -170,15 +169,15 @@
             formControlName="endAddress"
             [matAutocomplete]="autoAddress"
             (blur)="showAddressNamesEvent($event)"
-            #address />
+            #endAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
+                <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
                     {{ getShortAddress(address.address) }} ({{ address.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
+        <button type="button" *ngIf="endAddress.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>

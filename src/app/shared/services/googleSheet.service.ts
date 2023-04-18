@@ -196,29 +196,14 @@ export class GoogleSheetService {
         });
     }
 
-    public async commitShift(shift: IShift) {
-        let shiftRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[]);
-
-        shiftRow = { 
-            Date: shift.date, 
-            Service: shift.service, 
-            '#': shift.number 
-        };
-        
-        shift.saved = "true";
-        await this._shiftService.updateLocalShift(shift);
-
-        await this.saveRowData("Shifts", shiftRow);
-    }
-
     public async commitUnsavedShifts() {
         let shifts = await this._shiftService.queryLocalShifts("saved", "false");
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
 
         shifts.forEach(async shift => {
             shiftRows.push({ 
-                Date: shift.date, 
-                Service: shift.service, 
+                Date: shift.date.trim(), 
+                Service: shift.service.trim(), 
                 '#': shift.number 
             });
 
@@ -229,53 +214,27 @@ export class GoogleSheetService {
         await this.saveSheetData("Shifts", shiftRows);
     }
 
-    public async commitTrip(trip: ITrip) {
-        let tripRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[]);
-
-        tripRow = { 
-            Date: trip.date, 
-                Distance: trip.distance,
-                Service: trip.service,
-                '#': trip.number, 
-                Pickup: trip.pickupTime,
-                Place: trip.place,
-                Name: trip.name,
-                Pay: trip.pay,
-                Tip: trip.tip ?? "",
-                Bonus: trip.bonus ?? "",
-                Cash: trip.cash ?? "",
-                'Start Address': trip.startAddress,
-                'End Address': trip.endAddress,
-                Note: trip.note
-        };
-        
-        trip.saved = "true";
-        await this._tripService.updateLocalTrip(trip);
-
-        await this.saveRowData("Trips", tripRow);
-    }
-
     public async commitUnsavedTrips() {
         let trips = await this._tripService.queryLocalTrips("saved", "false");
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
 
         trips.forEach(async trip => {
             tripRows.push({
-                Date: trip.date, 
+                Date: trip.date.trim(), 
                 Distance: trip.distance,
-                Service: trip.service,
+                Service: trip.service.trim(),
                 '#': trip.number, 
-                Place: trip.place,
-                Pickup: trip.pickupTime,
-                Dropoff: trip.dropoffTime,
+                Place: trip.place.trim(),
+                Pickup: trip.pickupTime.trim(),
+                Dropoff: trip.dropoffTime.trim(),
                 Pay: trip.pay,
                 Tip: trip.tip ?? "",
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
-                Name: trip.name,
-                'Start Address': trip.startAddress,
-                'End Address': trip.endAddress,
-                Note: trip.note
+                Name: trip.name.trim(),
+                'Start Address': trip.startAddress.trim(),
+                'End Address': trip.endAddress.trim(),
+                Note: trip.note.trim()
             });
 
             trip.saved = "true";
