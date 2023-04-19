@@ -69,7 +69,7 @@ export class QuickComponent implements OnInit {
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
-    // this.form?.load();
+
     await this.average?.load();
   }
 
@@ -90,6 +90,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       await this.load();
+      this.form?.load();
     });
   }
 
@@ -103,6 +104,7 @@ export class QuickComponent implements OnInit {
     await this._tripService.deleteLocal(trip.id!);
 
     await this.load();
+    this.form?.load();
   }
 
   async clearSavedLocalData() {
