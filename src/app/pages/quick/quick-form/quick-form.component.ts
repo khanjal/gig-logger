@@ -53,7 +53,8 @@ export class QuickFormComponent implements OnInit {
   showPickupAddress: boolean = false;
   showOdometer: boolean = false;
 
-  filteredAddresses: Observable<IAddress[]> | undefined;
+  filteredStartAddresses: Observable<IAddress[]> | undefined;
+  filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
@@ -71,25 +72,26 @@ export class QuickFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-    public dialogRef: MatDialogRef<QuickFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ITrip,
-    private _snackBar: MatSnackBar,
-    private _addressService: AddressService,
-    private _nameService: NameService,
-    private _placeService: PlaceService,
-    private _serviceService: ServiceService,
-    private _shfitService: ShiftService,
-    private _tripService: TripService
+      public dialogRef: MatDialogRef<QuickFormComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: ITrip,
+      private _snackBar: MatSnackBar,
+      private _addressService: AddressService,
+      private _nameService: NameService,
+      private _placeService: PlaceService,
+      private _serviceService: ServiceService,
+      private _shfitService: ShiftService,
+      private _tripService: TripService
     ) {}
 
   async ngOnInit(): Promise<void> {
-    if (this.data?.id) {
-      this.title = `Edit Trip - ${ this.data.id }`;
-      // Load form with passed in data.
-      await this.loadForm()
-    }
+    this.load();
 
-    this.filteredAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
+    this.filteredStartAddresses = this.quickForm.controls.startAddress.valueChanges.pipe(
+      startWith(''),
+      mergeMap(async value => await this._filterAddress(value || ''))
+    );
+
+    this.filteredEndAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterAddress(value || ''))
     );
@@ -108,6 +110,14 @@ export class QuickFormComponent implements OnInit {
       startWith(''),
       mergeMap(async value => await this._filterService(value || ''))
     );
+  }
+
+  public async load() {
+    if (this.data?.id) {
+      this.title = `Edit Trip - ${ this.data.id }`;
+      // Load form with passed in data.
+      await this.loadForm()
+    }
 
     await this.setDefaultShift();
   }
@@ -181,7 +191,15 @@ export class QuickFormComponent implements OnInit {
     
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
-    trip.time = shift.end;
+
+    // Set non form properties depending on edit/add
+    if (this.data?.id) {
+      trip.pickupTime = this.data?.pickupTime;
+      trip.dropoffTime = this.data?.dropoffTime;
+    }
+    else {
+      trip.pickupTime = shift.end;
+    }
 
     trip.note = this.quickForm.value.note ?? "";
 
@@ -192,19 +210,30 @@ export class QuickFormComponent implements OnInit {
     this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
                   ...await this._shfitService.getLocalShiftsPreviousDays(7)];
 
+    if (this.shifts.length > 0) {
+      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+    }
+
     //Set default shift to last trip or latest shift.
-    if (this.shifts.length > 0 && !this.data.id) {
+    if (!this.data.id) {
       // Remove duplicates
       this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
 
       // Update all shift totals from displayed shifts.
       await this.calculateShiftTotals(this.shifts);
 
-      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+      let today = new Date().toLocaleDateString();
 
-      let trips = await this._tripService.queryLocalTrips("date", new Date().toLocaleDateString());
+      let trips = await this._tripService.queryLocalTrips("date", today);
+
+      // Check for local trips first. If not use remote trips.
+      if (trips.length === 0) {
+        await this._tripService.queryRemoteTrips("date", today)
+      }
+
       let latestTrip = TripHelper.sortTripsDesc(trips)[0];
       let shift = this.shifts.find(x => x.key === latestTrip?.key);
+      console.log(shift);
 
       if (shift) {
         this.selectedShift = shift;
@@ -236,7 +265,6 @@ export class QuickFormComponent implements OnInit {
     this._snackBar.open("Trip stored to device");
 
     this.formReset();
-    this.setDefaultShift();
     this.parentReload.emit();
     this.showAdvancedPay = false;
 

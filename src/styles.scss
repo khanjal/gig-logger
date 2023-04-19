@@ -43,7 +43,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 
-.row {
+.row-grid {
   display: inline-grid;
   margin: .5rem auto;
   width: 100%;
@@ -51,18 +51,29 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .row-block {
   display: inline-block;
-  margin-bottom: 1rem;
+  margin: .5rem auto;
+  width: 100%;
 }
 
-button {
-  margin: 0 auto;
+.row-flex {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  margin: 1rem 0;
+  align-items: center;
+}
+
+.button {
+    margin: 0 auto;
 }
 
 .button-left {
+  align-self: flex-start;
   float: left;
 }
 
 .button-right {
+  align-self: flex-end;
   float: right;
 }
 
