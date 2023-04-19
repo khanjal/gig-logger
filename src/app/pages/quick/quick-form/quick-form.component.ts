@@ -72,23 +72,19 @@ export class QuickFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-    public dialogRef: MatDialogRef<QuickFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ITrip,
-    private _snackBar: MatSnackBar,
-    private _addressService: AddressService,
-    private _nameService: NameService,
-    private _placeService: PlaceService,
-    private _serviceService: ServiceService,
-    private _shfitService: ShiftService,
-    private _tripService: TripService
+      public dialogRef: MatDialogRef<QuickFormComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: ITrip,
+      private _snackBar: MatSnackBar,
+      private _addressService: AddressService,
+      private _nameService: NameService,
+      private _placeService: PlaceService,
+      private _serviceService: ServiceService,
+      private _shfitService: ShiftService,
+      private _tripService: TripService
     ) {}
 
   async ngOnInit(): Promise<void> {
-    if (this.data?.id) {
-      this.title = `Edit Trip - ${ this.data.id }`;
-      // Load form with passed in data.
-      await this.loadForm()
-    }
+    this.load();
 
     this.filteredStartAddresses = this.quickForm.controls.startAddress.valueChanges.pipe(
       startWith(''),
@@ -114,6 +110,14 @@ export class QuickFormComponent implements OnInit {
       startWith(''),
       mergeMap(async value => await this._filterService(value || ''))
     );
+  }
+
+  public async load() {
+    if (this.data?.id) {
+      this.title = `Edit Trip - ${ this.data.id }`;
+      // Load form with passed in data.
+      await this.loadForm()
+    }
 
     await this.setDefaultShift();
   }
@@ -220,11 +224,16 @@ export class QuickFormComponent implements OnInit {
 
       let today = new Date().toLocaleDateString();
 
-      let trips = [... await this._tripService.queryLocalTrips("date", today),
-                  ...await this._tripService.queryRemoteTrips("date", today)];
+      let trips = await this._tripService.queryLocalTrips("date", today);
+
+      // Check for local trips first. If not use remote trips.
+      if (trips.length === 0) {
+        await this._tripService.queryRemoteTrips("date", today)
+      }
 
       let latestTrip = TripHelper.sortTripsDesc(trips)[0];
       let shift = this.shifts.find(x => x.key === latestTrip?.key);
+      console.log(shift);
 
       if (shift) {
         this.selectedShift = shift;
@@ -256,7 +265,6 @@ export class QuickFormComponent implements OnInit {
     this._snackBar.open("Trip stored to device");
 
     this.formReset();
-    this.setDefaultShift();
     this.parentReload.emit();
     this.showAdvancedPay = false;
 
