@@ -234,8 +234,13 @@ export class QuickFormComponent implements OnInit {
       let latestTrip = TripHelper.sortTripsDesc(trips)[0];
       let shift = this.shifts.find(x => x.key === latestTrip?.key);
 
+      // If a shift is found assign it.
       if (shift) {
         this.selectedShift = shift;
+      }
+      else {
+        // If there is a shift today that has no trips select it.
+        this.selectedShift = this.shifts.find(x => x.date === today);
       }
 
       // Set place if only one in the list.
