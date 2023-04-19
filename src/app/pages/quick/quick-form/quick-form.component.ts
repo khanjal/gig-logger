@@ -233,7 +233,6 @@ export class QuickFormComponent implements OnInit {
 
       let latestTrip = TripHelper.sortTripsDesc(trips)[0];
       let shift = this.shifts.find(x => x.key === latestTrip?.key);
-      console.log(shift);
 
       if (shift) {
         this.selectedShift = shift;
