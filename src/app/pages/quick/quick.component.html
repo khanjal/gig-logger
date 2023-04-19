@@ -3,6 +3,7 @@
     
     <quick-form (parentReload)="load()"></quick-form>
 
+    <h2 *ngIf="unsavedTrips.length > 0">Unsaved Local Trips</h2>
     <div *ngFor="let trip of unsavedTrips">
         <trips-quick-view [trip]="trip"></trips-quick-view>
         <!-- <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button> -->
@@ -15,7 +16,7 @@
         </div>
     </div>
     <div class="row-grid">
-        <button mat-stroked-button color="primary" type="button" class="button" [class.spinner]="saving" [disabled]="saving" (click)="save()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save All</button>
+        <button mat-stroked-button color="primary" type="button" class="button" [class.spinner]="saving" [disabled]="saving" (click)="save()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
     </div>
 
     <div class="row-grid" *ngIf="savedTrips.length > 0">
