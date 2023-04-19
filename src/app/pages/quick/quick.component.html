@@ -1,31 +1,33 @@
 <div class="container">
+    <div><app-current-day-average class="button-right"></app-current-day-average></div>
+    
     <quick-form (parentReload)="load()"></quick-form>
 
     <div *ngFor="let trip of unsavedTrips">
         <trips-quick-view [trip]="trip"></trips-quick-view>
         <!-- <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button> -->
-        <div class="row row-block">
+        <div class="row-flex">
             <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
-            <button mat-stroked-button type="button" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
-            <!-- <button mat-stroked-button type="button"><mat-icon>schedule</mat-icon> Set Pickup</button>
-            <button mat-stroked-button type="button"><mat-icon>schedule</mat-icon> Set Dropoff</button> -->
+            <button mat-stroked-button type="button" class="button-left" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
+            <!-- <button mat-stroked-button class="button-center" type="button" (click)="setPickupTime(trip)"><mat-icon>schedule</mat-icon> Set Pickup</button> -->
+            <button mat-stroked-button type="button" (click)="setDropoffTime(trip)" *ngIf="!trip.dropoffTime"><mat-icon>schedule</mat-icon> Set Dropoff</button>
             <button mat-stroked-button class="button-right" color="warn" type="button" (click)="deleteUnsavedLocalTrip(trip)"><mat-icon>delete</mat-icon> Delete</button>
         </div>
     </div>
-    <div class="row">
-        <button mat-stroked-button color="primary" type="button" [class.spinner]="saving" [disabled]="saving" (click)="save()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save All</button>
+    <div class="row-grid">
+        <button mat-stroked-button color="primary" type="button" class="button" [class.spinner]="saving" [disabled]="saving" (click)="save()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save All</button>
     </div>
 
-    <div class="row" *ngIf="savedTrips.length > 0">
+    <div class="row-grid" *ngIf="savedTrips.length > 0">
         <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
         <div class="row row-block">
             <button class="button-right" mat-stroked-button color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="clearSavedLocalData()"><mat-icon>delete</mat-icon> Clear</button>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row-grid">
         <trips-table-simple class="table" title="Spreadsheet Trips" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></trips-table-simple>
-        <button mat-stroked-button color="warn" type="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
+        <button mat-stroked-button color="warn" type="button" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
     </div>
 
 </div>

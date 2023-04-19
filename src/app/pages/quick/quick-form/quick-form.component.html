@@ -145,14 +145,13 @@
             matInput
             formControlName="startAddress"
             [matAutocomplete]="autoAddress"
-            (blur)="showAddressNamesEvent($event)"
-            #address />
+            #startAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)">
+            <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
                 {{ getShortAddress(address.address) }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
+        <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
@@ -170,15 +169,15 @@
             formControlName="endAddress"
             [matAutocomplete]="autoAddress"
             (blur)="showAddressNamesEvent($event)"
-            #address />
+            #endAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
+                <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
                     {{ getShortAddress(address.address) }} ({{ address.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
-        <button type="button" *ngIf="address.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
+        <button type="button" *ngIf="endAddress.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
@@ -191,16 +190,14 @@
         <mat-label>Note</mat-label>
         <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
     </mat-form-field>
-
-    <div class="row">
-        <div mat-dialog-actions align="center" *ngIf="!data.id">
-            <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
-            <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
-        </div>
-        <div mat-dialog-actions align="center" *ngIf="data.id">
-            <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Update</button>
-            <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
-        </div>
-    </div>
     
 </form>
+
+<div class="row-flex" *ngIf="!data.id">
+    <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
+    <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
+</div>
+<div class="row-flex" *ngIf="data.id">
+    <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Update</button>
+    <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
+</div>

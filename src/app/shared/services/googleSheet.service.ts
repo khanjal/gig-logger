@@ -19,6 +19,8 @@ import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { WeekdayHelper } from '@helpers/weekday.helper';
+import { WeekdayService } from './weekday.service';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -36,7 +38,8 @@ export class GoogleSheetService {
             private _serviceService: ServiceService,
             private _shiftService: ShiftService,
             private _spreadsheetService: SpreadsheetService,
-            private _tripService: TripService
+            private _tripService: TripService,
+            private _weekdayService: WeekdayService
         ) { }
 
     public async addSheet() {
@@ -119,8 +122,6 @@ export class GoogleSheetService {
         }
         await this._spreadsheetService.update(spreadsheet);
 
-        // await this._spreadsheetService
-
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
         rows = await sheet.getRows();
@@ -136,29 +137,30 @@ export class GoogleSheetService {
         // Places
         sheet = doc.sheetsByTitle["Places"];
         rows = await sheet.getRows();
-        // site.remote.places = PlaceHelper.translateSheetData(rows);
         await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
 
         // Services
         sheet = doc.sheetsByTitle["Services"];
         rows = await sheet.getRows();
-        // site.remote.services = ServiceHelper.translateSheetData(rows);
         await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
 
         // Shifts
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
         let shifts = ShiftHelper.translateSheetData(rows);
-        // site.remote.shifts = ShiftHelper.getPastShifts(7, shifts);
         await this._shiftService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
         let trips = TripHelper.translateSheetData(rows);
-        // site.remote.trips = TripHelper.getPastTrips(7, trips);
         await this._tripService.loadTrips(trips);
-        // console.log(site.remote.trips);
+
+        // Weekdays
+        sheet = doc.sheetsByTitle["Weekdays"];
+        rows = await sheet.getRows();
+        let weekdays = WeekdayHelper.translateSheetData(rows);
+        await this._weekdayService.loadWeekdays(weekdays);
 
         // Update addresses with names and names with addresses.
         trips.forEach(async trip => {
@@ -194,29 +196,14 @@ export class GoogleSheetService {
         });
     }
 
-    public async commitShift(shift: IShift) {
-        let shiftRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[]);
-
-        shiftRow = { 
-            Date: shift.date, 
-            Service: shift.service, 
-            '#': shift.number 
-        };
-        
-        shift.saved = "true";
-        await this._shiftService.updateLocalShift(shift);
-
-        await this.saveRowData("Shifts", shiftRow);
-    }
-
     public async commitUnsavedShifts() {
         let shifts = await this._shiftService.queryLocalShifts("saved", "false");
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
 
         shifts.forEach(async shift => {
             shiftRows.push({ 
-                Date: shift.date, 
-                Service: shift.service, 
+                Date: shift.date.trim(), 
+                Service: shift.service.trim(), 
                 '#': shift.number 
             });
 
@@ -227,51 +214,27 @@ export class GoogleSheetService {
         await this.saveSheetData("Shifts", shiftRows);
     }
 
-    public async commitTrip(trip: ITrip) {
-        let tripRow: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[]);
-
-        tripRow = { 
-            Date: trip.date, 
-                Distance: trip.distance,
-                Service: trip.service,
-                '#': trip.number, 
-                Pickup: trip.time,
-                Place: trip.place,
-                Name: trip.name,
-                Pay: trip.pay,
-                Tip: trip.tip ?? "",
-                Bonus: trip.bonus ?? "",
-                Cash: trip.cash ?? "",
-                'Start Address': trip.startAddress,
-                'End Address': trip.endAddress,
-                Note: trip.note
-        };
-        
-        trip.saved = "true";
-        await this._tripService.updateLocalTrip(trip);
-
-        await this.saveRowData("Trips", tripRow);
-    }
-
     public async commitUnsavedTrips() {
         let trips = await this._tripService.queryLocalTrips("saved", "false");
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
 
         trips.forEach(async trip => {
             tripRows.push({
-                Date: trip.date, 
+                Date: trip.date.trim(), 
                 Distance: trip.distance,
-                Service: trip.service,
+                Service: trip.service.trim(),
                 '#': trip.number, 
-                Place: trip.place,
-                Pickup: trip.time,
+                Place: trip.place.trim(),
+                Pickup: trip.pickupTime.trim(),
+                Dropoff: trip.dropoffTime.trim(),
                 Pay: trip.pay,
                 Tip: trip.tip ?? "",
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
-                Name: trip.name,
-                'End Address': trip.endAddress,
-                Note: trip.note
+                Name: trip.name.trim(),
+                'Start Address': trip.startAddress.trim(),
+                'End Address': trip.endAddress.trim(),
+                Note: trip.note.trim()
             });
 
             trip.saved = "true";

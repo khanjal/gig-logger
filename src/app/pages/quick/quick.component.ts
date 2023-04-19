@@ -1,14 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TripModel } from 'src/app/shared/models/trip.model';
-import { AddressHelper } from 'src/app/shared/helpers/address.helper';
-import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
+import { TripModel } from '@models/trip.model';
+import { AddressHelper } from '@helpers/address.helper';
+import { GoogleSheetService } from '@services/googleSheet.service';
 import { QuickFormComponent } from './quick-form/quick-form.component';
-import { SiteModel } from 'src/app/shared/models/site.model';
+import { SiteModel } from '@models/site.model';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
 import { TripHelper } from '@helpers/trip.helper';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ITrip } from '@interfaces/trip.interface';
+import { DateHelper } from '@helpers/date.helper';
+import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
 
 @Component({
   selector: 'app-quick',
@@ -17,6 +21,7 @@ import { TripHelper } from '@helpers/trip.helper';
 })
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
+  @ViewChild(CurrentDayAverageComponent) average:CurrentDayAverageComponent | undefined;
 
   siteData: SiteModel = new SiteModel;
 
@@ -30,6 +35,7 @@ export class QuickComponent implements OnInit {
 
   constructor(
       public dialog: MatDialog,
+      private _snackBar: MatSnackBar,
       private _router: Router, 
       private _googleService: GoogleSheetService,
       private _shiftService: ShiftService,
@@ -37,7 +43,7 @@ export class QuickComponent implements OnInit {
     ) { }
 
   async ngOnInit(): Promise<void> {
-    this.load();
+    await this.load();
   }
 
   async save() {
@@ -53,26 +59,28 @@ export class QuickComponent implements OnInit {
 
     console.log('Saved!');
     console.timeEnd("saving");
+
+    this._snackBar.open("Trip(s) saved to spreadsheet");
   }
 
   public async load() {
-    // ShiftHelper.updateAllShiftTotals();
     this.sheetTrips = TripHelper.sortTripsDesc(await this._tripService.getRemoteTripsPreviousDays(7));
     this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
-    // this.form?.load();
+
+    await this.average?.load();
   }
 
-  async saveLocalTrip(trip: TripModel) {
+  async saveLocalTrip(trip: ITrip) {
     this.saving = true;
     await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
   }
 
-  async editUnsavedLocalTrip(trip: TripModel) {
+  async editUnsavedLocalTrip(trip: ITrip) {
     let dialogRef = this.dialog.open(QuickFormComponent, {
       data: trip,
       height: '600px',
@@ -80,15 +88,23 @@ export class QuickComponent implements OnInit {
       panelClass: 'custom-modalbox'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.load();
+    dialogRef.afterClosed().subscribe(async result => {
+      await this.load();
+      this.form?.load();
     });
   }
 
-  async deleteUnsavedLocalTrip(trip: TripModel) {
+  async setDropoffTime(trip: ITrip) {
+    // TODO: Check if dropoff time is already set and prompt to overwrite
+    trip.dropoffTime = DateHelper.getTimeString(new Date);
+    await this._tripService.updateLocalTrip(trip);
+  }
+
+  async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
-    this.load();
+    await this.load();
+    this.form?.load();
   }
 
   async clearSavedLocalData() {
@@ -109,7 +125,7 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
     await this._googleService.loadRemoteData();
 
-    this.load();
+    await this.load();
     this.reloading = false;
     // window.location.reload();
   }
