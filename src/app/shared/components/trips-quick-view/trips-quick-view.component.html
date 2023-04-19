@@ -1,6 +1,6 @@
 <mat-card>
     <div>
-        <mat-card-header>{{trip.date | date:'MMMM d'}} - {{trip.time}} - {{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }}</mat-card-header>
+        <mat-card-header>{{trip.date | date:'MMMM d'}} - {{trip.pickupTime}} - {{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }}</mat-card-header>
         <mat-card-content>
             <div><span>P:</span> {{trip.place | truncate:15}}({{trip.distance}})  {{ getPlaceAddress(trip.place, trip.startAddress) | truncate:40}}</div>
             <div><span>D:</span> {{trip.name | truncate:15}} {{ getShortAddress(trip.endAddress) | truncate:40}}</div>

@@ -1,105 +1,11 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { SiteModel } from "../models/site.model";
-import { TripModel } from "../models/trip.model";
-import { DateHelper } from "./date.helper";
-import { NumberHelper } from "./number.helper";
+import { TripModel } from "@models/trip.model";
+import { NumberHelper } from "@helpers/number.helper";
 import { ITrip } from "@interfaces/trip.interface";
 
 export class TripHelper {
-    static getAllTrips(): TripModel[] {
-        let trips = [...this.getUnsavedLocalTrips(), ...this.getRemoteTrips()];
-        return trips;
-    }
-    
-    static getPastTrips(days: number = 0, trips?: TripModel[]): TripModel[] {
-        if (!trips) {
-            trips = [...this.getLocalTrips(), ...this.getRemoteTrips()];
-        }
-
-        let datestring = DateHelper.getDateString(days);
-
-        let todaysTrips: TripModel[] = [];
-
-        trips.forEach(trip => {
-            if (new Date(trip.date) >= new Date(datestring)) {
-                todaysTrips.push(trip);
-            }
-        });
-
-        // console.log(trips);
-
-        return todaysTrips;
-    }
-
-    static getRemoteTrips(): TripModel[] {
-        let siteData: SiteModel = new SiteModel;
-        let trips: TripModel[] = [];
-
-        if (siteData) {
-            trips = siteData.remote.trips;
-        }
-
-        return trips;
-    }
-
-    static getLocalTrips():  TripModel[] {
-        let siteData: SiteModel = new SiteModel;
-        let trips: TripModel[] = [];
-
-        if (siteData) {
-            trips = siteData.local.trips;
-        }
-
-        return trips;
-    }
-
-    static getSavedLocalTrips(): TripModel[] {
-        let trips = this.getLocalTrips();
-
-        return trips.filter(trip => trip.saved);
-    }
-
-    static getUnsavedLocalTrips(): TripModel[] {
-        let trips = this.getLocalTrips();
-
-        return trips.filter(trip => !trip.saved);
-    }
-
-    static addTrip(trip: TripModel) {
-        let trips = this.getLocalTrips();
-
-        trips.push(trip);
-
-        // let gigs = LocalStorageHelper.getSiteData();
-        // gigs.local.trips = trips;
-
-        // LocalStorageHelper.updateLocalData(gigs);
-    }
-
-    static deleteTrip(trip: TripModel) {
-        let trips = this.getLocalTrips();
-
-        trips = trips.filter(x => x.id !== trip.id);
-
-        // let gigs = LocalStorageHelper.getSiteData();
-        // gigs.local.trips = trips;
-
-        // LocalStorageHelper.updateLocalData(gigs);
-    }
-
-    static clearSavedTrips() {
-        let trips = this.getLocalTrips();
-
-        trips = trips.filter(x => !x.saved);
-
-        // let gigs = LocalStorageHelper.getSiteData();
-        // gigs.local.trips = trips;
-
-        // LocalStorageHelper.updateLocalData(gigs);
-    }
-
     static sortTripsDesc(trips: ITrip[]): ITrip[] {
-        // trips.sort((a,b) => a.time.localeCompare(b.time) && a.date.localeCompare(b.date));
+        // trips.sort((a,b) => a.pickupTime.localeCompare(b.pickupTime) && a.date.localeCompare(b.date));
         trips.sort((a,b) => (b.id ?? 0) - (a.id ?? 0));
 
         return trips;
@@ -129,7 +35,7 @@ export class TripHelper {
             tripModel.endAddress = row['End Address'];
             
             tripModel.date = row['Date'];
-            tripModel.time = row['Pickup'];
+            tripModel.pickupTime = row['Pickup'];
             tripModel.place = row['Place'];
             tripModel.distance = NumberHelper.getNumberFromString(row['Distance']);
             
