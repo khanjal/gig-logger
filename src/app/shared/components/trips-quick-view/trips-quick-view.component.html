@@ -1,10 +1,16 @@
 <mat-card>
     <div>
-        <mat-card-header>{{trip.date | date:'MMMM d'}} - {{trip.pickupTime}} - {{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }}</mat-card-header>
+        <mat-card-header><h3>{{trip.date | date:'MMM d'}}, {{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}} ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</h3></mat-card-header>
         <mat-card-content>
-            <div><span>P:</span> {{trip.place | truncate:15}}({{trip.distance}})  {{ getPlaceAddress(trip.place, trip.startAddress) | truncate:40}}</div>
-            <div><span>D:</span> {{trip.name | truncate:15}} {{ getShortAddress(trip.endAddress) | truncate:40}}</div>
-            <div>Pay {{trip.pay | currency}} Tip {{trip.tip | currency}} Bonus {{trip.bonus | currency}} Cash {{trip.cash | currency}}</div>
+            <div><b>{{trip.place | truncate:15}}{{trip.distance ? '('+trip.distance+')' : ''}}</b> {{ getPlaceAddress(trip.place, trip.startAddress) | truncate:40}}</div>
+            <div><b>{{trip.name | truncate:15}}</b> {{ getShortAddress(trip.endAddress) | truncate:40}}</div>
+            <div>
+                <span class="padding-right" *ngIf="trip.pay"><b>Pay</b> {{trip.pay | currency}}</span> 
+                <span class="padding-right" *ngIf="trip.tip"><b>Tip</b> {{trip.tip | currency}}</span> 
+                <span class="padding-right" *ngIf="trip.bonus"><b>Bonus</b> {{trip.bonus | currency}}</span> 
+                <span class="padding-right" *ngIf="trip.cash"><b>Cash</b> {{trip.cash | currency}}</span>
+                <span class="padding-right" *ngIf="trip.total > trip.pay"><b>Total</b> {{trip.total | currency}}</span>
+            </div>
         </mat-card-content>
     </div>
 </mat-card>
