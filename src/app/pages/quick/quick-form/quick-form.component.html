@@ -186,6 +186,20 @@
         <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
     </div>
 
+    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
+        <mat-label>Pickup Time</mat-label>
+        <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+
+    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
+        <mat-label>Dropoff Time</mat-label>
+        <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+    
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Note</mat-label>
         <input matInput type="text" name="note" placeholder="" formControlName="note" value="">

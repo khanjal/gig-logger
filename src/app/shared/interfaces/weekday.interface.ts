@@ -9,6 +9,7 @@ export interface IWeekday {
     total: number;
     days: number;
     dailyAverage: number;
+    dailyPrevAverage: number;
     currentAverage: number;
     previousAverage: number;
 }
