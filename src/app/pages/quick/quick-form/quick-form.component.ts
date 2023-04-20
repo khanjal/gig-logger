@@ -271,6 +271,7 @@ export class QuickFormComponent implements OnInit {
     this.formReset();
     this.parentReload.emit();
     this.showAdvancedPay = false;
+    this.showPickupAddress = false;
 
     // console.log(trip);
   }
