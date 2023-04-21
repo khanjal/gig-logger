@@ -36,6 +36,7 @@ export class TripHelper {
             
             tripModel.date = row['Date'];
             tripModel.pickupTime = row['Pickup'];
+            tripModel.dropoffTime = row['Dropoff'];
             tripModel.place = row['Place'];
             tripModel.distance = NumberHelper.getNumberFromString(row['Distance']);
             
