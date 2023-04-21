@@ -53,8 +53,6 @@ export class SheetAddFormComponent {
       await this._spreadsheetService.update(spreadsheet);
 
       await this._googleService.loadRemoteData();
-
-      // TODO: Show sheet in list to remove (delete data)
     }
     else {
       // Error
