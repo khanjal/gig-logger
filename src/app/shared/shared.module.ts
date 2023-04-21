@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { CurrentDayAverageComponent } from './components/current-day-average/current-day-average.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
         TripsQuickViewComponent,
         NoSecondsPipe,
         TruncatePipe,
+        ConfirmDialogComponent,
     ],
     imports: [
         CommonModule,
