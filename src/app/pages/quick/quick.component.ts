@@ -53,6 +53,7 @@ export class QuickComponent implements OnInit {
     console.log('Saving...');
     
     this.saving = true;
+    // TODO: Don't save shifts with no trips.
     await this._googleService.commitUnsavedShifts();
     await this._googleService.commitUnsavedTrips();
     // await this._googleService.loadRemoteData();
