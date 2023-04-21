@@ -75,7 +75,7 @@ export class QuickFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-      public dialogRef: MatDialogRef<QuickFormComponent>,
+      public formDialogRef: MatDialogRef<QuickFormComponent>,
       @Inject(MAT_DIALOG_DATA) public data: ITrip,
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
@@ -194,6 +194,7 @@ export class QuickFormComponent implements OnInit {
     
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
+    trip.note = this.quickForm.value.note ?? "";
 
     // Set form properties depending on edit/add
     if (this.data?.id) {
@@ -203,8 +204,6 @@ export class QuickFormComponent implements OnInit {
     else {
       trip.pickupTime = shift.end;
     }
-
-    trip.note = this.quickForm.value.note ?? "";
 
     return trip;
   }
@@ -288,7 +287,7 @@ export class QuickFormComponent implements OnInit {
 
     this._snackBar.open("Trip Updated");
 
-    this.dialogRef.close();
+    this.formDialogRef.close();
   }
 
   public formReset() {
