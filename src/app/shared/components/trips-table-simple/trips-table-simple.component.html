@@ -18,9 +18,13 @@
                 <mat-header-cell *matHeaderCellDef> Place </mat-header-cell>
                 <mat-cell *matCellDef="let trip"> {{trip.place | truncate:15}} </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="time">
-                <mat-header-cell *matHeaderCellDef>Time</mat-header-cell>
-                <mat-cell *matCellDef="let trip"> {{trip.pickupTime}} </mat-cell>
+            <ng-container matColumnDef="pickup">
+                <mat-header-cell *matHeaderCellDef>Pickup</mat-header-cell>
+                <mat-cell *matCellDef="let trip"> {{trip.pickupTime | noseconds}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="dropoff">
+                <mat-header-cell *matHeaderCellDef>Dropoff</mat-header-cell>
+                <mat-cell *matCellDef="let trip"> {{trip.dropoffTime | noseconds}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="total">
                 <mat-header-cell *matHeaderCellDef> Total </mat-header-cell>
