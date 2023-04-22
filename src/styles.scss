@@ -5,10 +5,6 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-* {
-  scroll-margin-top: 2rem;
-}
-
 .material-icons{
     font-family: 'Material Icons' !important;
 }
@@ -47,6 +43,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 
+.focus-scroll {
+  scroll-margin-top: 2rem;
+}
+
 .row-grid {
   display: inline-grid;
   margin: .5rem auto;
@@ -80,7 +80,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   align-self: flex-end;
   float: right;
 }
-
 
 .custom-modalbox {
   .mat-mdc-dialog-container .mdc-dialog__surface  {
