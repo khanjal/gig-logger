@@ -10,7 +10,7 @@ export class FocusScrollDirective {
   ngOnInit() { }
 
   @HostListener('focus', ['$event.target']) onFocus() {
-    this.el.nativeElement.scrollIntoView();
+    this.el.nativeElement.scrollIntoView(true);
   }
 
 }
