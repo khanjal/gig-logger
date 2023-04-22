@@ -417,7 +417,7 @@ export class QuickFormComponent implements OnInit {
     this.selectedShift = (await this._shfitService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
     this.quickForm.controls.service.setValue(this.data.service);
 
-    this.quickForm.controls.pay.setValue(this.data.pay);
+    this.quickForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
     this.quickForm.controls.tip.setValue(this.data.tip);
     this.quickForm.controls.bonus.setValue(this.data.bonus);
     this.quickForm.controls.cash.setValue(this.data.cash);
