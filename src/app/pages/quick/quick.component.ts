@@ -53,7 +53,6 @@ export class QuickComponent implements OnInit {
     console.log('Saving...');
     
     this.saving = true;
-    // TODO: Don't save shifts with no trips.
     await this._googleService.commitUnsavedShifts();
     await this._googleService.commitUnsavedTrips();
     // await this._googleService.loadRemoteData();
@@ -153,6 +152,8 @@ export class QuickComponent implements OnInit {
 
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
+
+    // TODO: Delete local shifts with no trips.
 
     await this.load();
     this.form?.load();
