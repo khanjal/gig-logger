@@ -17,7 +17,6 @@ import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 import { LoginComponent } from './login/login.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { SheetsComponent } from './sheets/sheets.component';
 import { MatCardModule } from '@angular/material/card';
 import { SetupComponent } from './sheet-setup/setup.component';
 import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-form.component';
@@ -31,7 +30,6 @@ import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialog
     QuickFormComponent,
     ShiftsComponent,
     LoginComponent,
-    SheetsComponent,
     SetupComponent,
     SheetAddFormComponent,
     SheetQuickViewComponent
