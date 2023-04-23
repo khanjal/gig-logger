@@ -38,7 +38,7 @@
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
             <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
-                <mat-icon>close</mat-icon>
+                <mat-icon>delete</mat-icon>
             </button>
         </mat-form-field>
     </div>
@@ -62,7 +62,7 @@
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
@@ -128,7 +128,7 @@
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
@@ -156,7 +156,7 @@
             </mat-option>
         </mat-autocomplete>
         <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
@@ -183,7 +183,7 @@
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="endAddress.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
