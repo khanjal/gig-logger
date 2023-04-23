@@ -1,19 +1,21 @@
 import { NgModule } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
-import { TripsTableSimpleComponent } from './components/trips-table-simple/trips-table-simple.component';
+import { TripsTableSimpleComponent } from '@components/trips-table-simple/trips-table-simple.component';
 import { HeaderComponent } from './header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
-import { TripsQuickViewComponent } from './components/trips-quick-view/trips-quick-view.component';
-import { ProfileComponent } from './components/profile/profile.component';
+import { TripsQuickViewComponent } from '@components/trips-quick-view/trips-quick-view.component';
+import { ProfileComponent } from '@components/profile/profile.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
 import { TruncatePipe } from '@pipes/truncate.pipe';
-import { CurrentDayAverageComponent } from './components/current-day-average/current-day-average.component';
+import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
 @NgModule({
     declarations: [
@@ -24,6 +26,8 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
         TripsQuickViewComponent,
         NoSecondsPipe,
         TruncatePipe,
+        ConfirmDialogComponent,
+        FocusScrollDirective
     ],
     imports: [
         CommonModule,
@@ -39,7 +43,8 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
         HeaderComponent,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
-        TruncatePipe
+        TruncatePipe,
+        FocusScrollDirective
     ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },

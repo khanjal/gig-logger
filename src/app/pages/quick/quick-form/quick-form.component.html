@@ -23,11 +23,12 @@
             <mat-label>Service</mat-label>
             <input type="text"
                 name="service"
-                placeholder="Pick one"
+                placeholder="Pick one or enter new"
                 aria-label="Service"
                 matInput
                 formControlName="service"
                 [matAutocomplete]="autoService"
+                focus-scroll
                 #service>
             <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
                 <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
@@ -46,11 +47,12 @@
         <mat-label>Place</mat-label>
         <input type="text"
             name="place"
-            placeholder="Pick one"
+            placeholder="Pick one or enter new"
             matInput
             formControlName="place"
             [matAutocomplete]="autoPlace"
             (blur)="showPlaceAddressesEvent($event)"
+            focus-scroll
             #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
@@ -67,7 +69,7 @@
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Pay</mat-label>
         <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay>
-        <button type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+        <button focus-scroll type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
             <mat-icon>account_balance</mat-icon>
         </button>
     </mat-form-field>
@@ -75,7 +77,7 @@
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Distance</mat-label>
         <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
-        <button type="button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
+        <button focus-scroll type="button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
             <mat-icon>drive_eta</mat-icon>
         </button>
     </mat-form-field>
@@ -110,12 +112,13 @@
         <mat-label>Name</mat-label>
         <input type="text"
             name="name"
-            placeholder="Pick one"
+            placeholder="Pick one or enter new"
             aria-label="Name"
             matInput
             formControlName="name"
             [matAutocomplete]="autoName"
             (blur)="showNameAddressesEvent($event)" 
+            focus-scroll
             #name>
         <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
@@ -141,10 +144,11 @@
         <mat-label>Pickup Address</mat-label>
         <input type="text"
             name="startAddress"
-            placeholder="Pick one"
+            placeholder="Pick one or enter new"
             matInput
             formControlName="startAddress"
             [matAutocomplete]="autoAddress"
+            focus-scroll
             #startAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
@@ -164,11 +168,12 @@
         <mat-label>Destination Address</mat-label>
         <input type="text"
             name="endAddress"
-            placeholder="Pick one"
+            placeholder="Pick one or enter new"
             matInput
             formControlName="endAddress"
             [matAutocomplete]="autoAddress"
             (blur)="showAddressNamesEvent($event)"
+            focus-scroll
             #endAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
@@ -186,6 +191,20 @@
         <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
     </div>
 
+    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
+        <mat-label>Pickup Time</mat-label>
+        <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+
+    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
+        <mat-label>Dropoff Time</mat-label>
+        <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+    
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Note</mat-label>
         <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
