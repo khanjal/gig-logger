@@ -5,7 +5,6 @@ import { TripModel } from '@models/trip.model';
 import { AddressHelper } from '@helpers/address.helper';
 import { GoogleSheetService } from '@services/googleSheet.service';
 import { QuickFormComponent } from './quick-form/quick-form.component';
-import { SiteModel } from '@models/site.model';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
 import { TripHelper } from '@helpers/trip.helper';
@@ -15,6 +14,7 @@ import { DateHelper } from '@helpers/date.helper';
 import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 @Component({
   selector: 'app-quick',
@@ -25,8 +25,6 @@ export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
   @ViewChild(CurrentDayAverageComponent) average:CurrentDayAverageComponent | undefined;
 
-  siteData: SiteModel = new SiteModel;
-
   clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
@@ -35,17 +33,21 @@ export class QuickComponent implements OnInit {
   sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
 
+  sheetId: string = "";
+
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
       private _router: Router, 
       private _googleService: GoogleSheetService,
+      private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService
     ) { }
 
   async ngOnInit(): Promise<void> {
     await this.load();
+    this.sheetId = (await this._sheetService.querySpreadsheets("default", "true"))[0].id;
   }
 
   async saveAllTrips() {
