@@ -45,6 +45,8 @@ export class QuickFormComponent implements OnInit {
     cash: new FormControl(),
     startAddress: new FormControl(''),
     endAddress: new FormControl(''),
+    pickupTime: new FormControl(''),
+    dropoffTime: new FormControl(''),
     note: new FormControl('')
   });
 
@@ -52,6 +54,7 @@ export class QuickFormComponent implements OnInit {
   showAdvancedPay: boolean = false;
   showPickupAddress: boolean = false;
   showOdometer: boolean = false;
+  showTimes: boolean = false;
 
   filteredStartAddresses: Observable<IAddress[]> | undefined;
   filteredEndAddresses: Observable<IAddress[]> | undefined;
@@ -72,7 +75,7 @@ export class QuickFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-      public dialogRef: MatDialogRef<QuickFormComponent>,
+      public formDialogRef: MatDialogRef<QuickFormComponent>,
       @Inject(MAT_DIALOG_DATA) public data: ITrip,
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
@@ -191,17 +194,16 @@ export class QuickFormComponent implements OnInit {
     
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
+    trip.note = this.quickForm.value.note ?? "";
 
-    // Set non form properties depending on edit/add
+    // Set form properties depending on edit/add
     if (this.data?.id) {
-      trip.pickupTime = this.data?.pickupTime;
-      trip.dropoffTime = this.data?.dropoffTime;
+      trip.pickupTime = this.quickForm.value.pickupTime ?? "";
+      trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
     else {
       trip.pickupTime = shift.end;
     }
-
-    trip.note = this.quickForm.value.note ?? "";
 
     return trip;
   }
@@ -271,6 +273,7 @@ export class QuickFormComponent implements OnInit {
     this.formReset();
     this.parentReload.emit();
     this.showAdvancedPay = false;
+    this.showPickupAddress = false;
 
     // console.log(trip);
   }
@@ -284,7 +287,7 @@ export class QuickFormComponent implements OnInit {
 
     this._snackBar.open("Trip Updated");
 
-    this.dialogRef.close();
+    this.formDialogRef.close();
   }
 
   public formReset() {
@@ -374,6 +377,14 @@ export class QuickFormComponent implements OnInit {
     return o1?.date === o2?.date && o1?.service === o2?.service && o1?.number === o2?.number
   }
 
+  setPickupTime() {
+    this.quickForm.controls.pickupTime.setValue(DateHelper.getTimeString(new Date));
+  }
+
+  setDropoffTime() {
+    this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
+  }
+
   public getShortAddress(address: string): string {
     return AddressHelper.getShortAddress(address);
   }
@@ -406,7 +417,7 @@ export class QuickFormComponent implements OnInit {
     this.selectedShift = (await this._shfitService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
     this.quickForm.controls.service.setValue(this.data.service);
 
-    this.quickForm.controls.pay.setValue(this.data.pay);
+    this.quickForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
     this.quickForm.controls.tip.setValue(this.data.tip);
     this.quickForm.controls.bonus.setValue(this.data.bonus);
     this.quickForm.controls.cash.setValue(this.data.cash);
@@ -423,6 +434,10 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.startAddress.setValue(this.data.startAddress);
     this.quickForm.controls.endAddress.setValue(this.data.endAddress);
     this.showAddressNames(this.data.endAddress);
+
+    this.quickForm.controls.pickupTime.setValue(this.data.pickupTime);
+    this.quickForm.controls.dropoffTime.setValue(this.data.dropoffTime);
+    this.showTimes = true;
 
     this.quickForm.controls.note.setValue(this.data.note);
   }

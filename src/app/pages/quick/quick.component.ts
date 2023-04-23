@@ -13,6 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-quick',
@@ -46,7 +48,7 @@ export class QuickComponent implements OnInit {
     await this.load();
   }
 
-  async save() {
+  async saveAllTrips() {
     console.time("saving");
     console.log('Saving...');
     
@@ -93,6 +95,54 @@ export class QuickComponent implements OnInit {
       this.form?.load();
     });
   }
+  
+  async confirmDeleteTripDialog(trip: ITrip) {
+    const message = `This may not be saved to your spreadsheet. Are you sure you want to delete this?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Delete";
+    dialogData.message = message;
+    dialogData.trueText = "Delete";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      height: "175px",
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
+
+      if(result) {
+        await this.deleteUnsavedLocalTrip(trip);
+      }
+    });
+  }
+  
+  async confirmSaveTripsDialog() {
+    const message = `This will save all trips to your spreadsheet and you will have to make further changes there. Are you sure you want to save?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Save";
+    dialogData.message = message;
+    dialogData.trueText = "Save";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      height: "200px",
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
+
+      if(result) {
+        await this.saveAllTrips();
+      }
+    });
+  }
 
   async setDropoffTime(trip: ITrip) {
     // TODO: Check if dropoff time is already set and prompt to overwrite
@@ -102,6 +152,8 @@ export class QuickComponent implements OnInit {
 
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
+
+    // TODO: Delete local shifts with no trips.
 
     await this.load();
     this.form?.load();
