@@ -21,6 +21,7 @@ import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
+import { SheetHelper } from '@helpers/sheet.helper';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -107,6 +108,7 @@ export class GoogleSheetService {
         let doc = new GoogleSpreadsheet(spreadsheetId);
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
+        let sheets = SheetHelper.getSheetNames(doc);
 
         let sheet, rows;
 
