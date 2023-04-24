@@ -350,6 +350,7 @@ export class QuickFormComponent implements OnInit {
   async showPlaceAddresses(place: string) {
     if (place) {
       this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
+      // TODO: Filter to exact places and avoid partial searches.
 
       // Auto assign to start address if only one and if there is no start address already.
       if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress && !this.data.id) {
@@ -383,6 +384,10 @@ export class QuickFormComponent implements OnInit {
 
   setDropoffTime() {
     this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
+  }
+
+  public getPlaceAddress(address: string) {
+    return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
   }
 
   public getShortAddress(address: string): string {
