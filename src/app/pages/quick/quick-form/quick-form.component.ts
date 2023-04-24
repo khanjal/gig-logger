@@ -196,6 +196,12 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
 
+    // Prepend place to start address if it isn't on it.
+    if (trip.place && !trip.startAddress.startsWith(trip.place))
+    {
+      trip.startAddress = `${trip.place}, ${trip.startAddress}`;
+    }
+
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
