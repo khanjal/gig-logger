@@ -11,6 +11,10 @@ export class SpreadsheetService {
         await localDB.spreadsheets.add(spreadsheet);
     }
 
+    public async getDefaultSheet(): Promise<Spreadsheet> {
+        return (await this.querySpreadsheets("default", "true"))[0];
+    }
+
     public async querySpreadsheets(field: string, value: string | number): Promise<ISpreadsheet[]> {
         return await localDB.spreadsheets.where(field).equals(value).toArray();
     }
