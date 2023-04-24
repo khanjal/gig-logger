@@ -188,7 +188,7 @@
     </mat-form-field>
 
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width">
-        <div class="row" *ngFor="let name of selectedAddress.names">{{ name }}</div>
+        <div class="row-flex" *ngFor="let name of selectedAddress.names">{{ name }}</div>
     </div>
 
     <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
