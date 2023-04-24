@@ -109,6 +109,7 @@ export class GoogleSheetService {
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
         let sheets = SheetHelper.getSheetNames(doc);
+        // TODO - Check to make sure necessary sheets exist on spreadsheet.
 
         let sheet, rows;
 

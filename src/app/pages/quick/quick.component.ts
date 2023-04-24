@@ -69,7 +69,7 @@ export class QuickComponent implements OnInit {
 
   public async load() {
     this.sheetTrips = TripHelper.sortTripsDesc(await this._tripService.getRemoteTripsPreviousDays(7));
-    this.unsavedTrips = await this._tripService.queryLocalTrips("saved", "false");
+    this.unsavedTrips = (await this._tripService.queryLocalTrips("saved", "false")).reverse();
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);

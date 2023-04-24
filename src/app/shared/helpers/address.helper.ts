@@ -27,7 +27,7 @@ export class AddressHelper {
             return addressArray[0];
         }
 
-        if (addressArray[0] !== place)
+        if (addressArray[0].toLocaleLowerCase() !== place.toLocaleLowerCase())
         {
             return addressArray[0];
         }
