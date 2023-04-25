@@ -136,8 +136,8 @@
         <mat-icon>contact_mail</mat-icon>
     </button>
 
-    <div *ngIf="showPickupAddress && placeAddresses && placeAddresses.length > 0" class="selected-name-address field-full-width">
-        <div *ngFor="let address of placeAddresses"><a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)">{{ address }}</a></div>
+    <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
+        <div *ngFor="let address of selectedPlace.addresses"><a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)">{{ address }}</a></div>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
@@ -191,19 +191,19 @@
         <div class="row-flex" *ngFor="let name of selectedAddress.names">{{ name }}</div>
     </div>
 
-    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
+    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
         <mat-label>Pickup Time</mat-label>
         <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
     </mat-form-field>
 
-    <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+    <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
 
-    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
+    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
         <mat-label>Dropoff Time</mat-label>
         <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
     </mat-form-field>
 
-    <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+    <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
     
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Note</mat-label>
@@ -212,11 +212,11 @@
     
 </form>
 
-<div class="row-flex" *ngIf="!data.id">
+<div class="row-flex" *ngIf="!data?.id">
     <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
     <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
 </div>
-<div class="row-flex" *ngIf="data.id">
+<div class="row-flex" *ngIf="data?.id">
     <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Update</button>
     <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
 </div>

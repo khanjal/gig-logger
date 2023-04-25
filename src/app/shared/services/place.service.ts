@@ -19,6 +19,10 @@ export class PlaceService {
         await spreadsheetDB.places.bulkAdd(places);
     }
 
+    public async getRemotePlace(place: string): Promise<IPlace | undefined> {
+        return await spreadsheetDB.places.where("place").anyOfIgnoreCase(place).first();
+    }
+
     public async queryRemotePlaces(field: string, value: string | number): Promise<IPlace[]> {
         return await spreadsheetDB.places.where(field).equals(value).toArray();
     }
