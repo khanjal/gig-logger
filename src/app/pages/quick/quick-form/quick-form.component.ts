@@ -213,12 +213,6 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
 
-    // Remove start address if it's the prepended name only.
-    if (trip.place && trip.startAddress && trip.startAddress.trim() === `${trip.place},`)
-    {
-      trip.startAddress = "";
-    }
-
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
@@ -414,26 +408,10 @@ export class QuickFormComponent implements OnInit {
   async selectPlace(place: string) {
     if (place) {
       this.selectedPlace = await this._placeService.getRemotePlace(place);
-      // TODO: Filter to exact places and avoid partial searches.
-
-      // Clear out pickup address if it's just the default place with a comma
-      let addressArray = this.quickForm.value.startAddress?.split(",");
-      // console.log(addressArray);
-      if (this.quickForm.value.startAddress?.includes(",") 
-          && addressArray?.length 
-          && addressArray?.length > 1 
-          && addressArray[1].trim() === "") {
-        this.quickForm.controls.startAddress.setValue("");
-      }
 
       // Auto assign to start address if only one and if there is no start address already.
       if (this.selectedPlace?.addresses.length === 1 && !this.quickForm.value.startAddress) {
         this.quickForm.controls.startAddress.setValue(this.selectedPlace?.addresses[0]);
-      }
-
-      // Set empty pickup address to prepend the place
-      if (!this.quickForm.value.startAddress) {
-        this.quickForm.controls.startAddress.setValue(`${place}, `);
       }
     }
   }
