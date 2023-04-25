@@ -24,15 +24,15 @@ export class AddressHelper {
         let addressArray = address.split(", ");
 
         if (addressArray.length === 1) {
-            return addressArray[0];
+            return address;
         }
 
         if (addressArray[0].toLocaleLowerCase() === place.toLocaleLowerCase())
         {
-            return addressArray[1];
+            return addressArray.slice(1, addressArray.length).join(", ");
         }
 
-        return `${addressArray[0]}, ${addressArray[1]}`;
+        return address;
     }
 
     static translateSheetData(rows: GoogleSpreadsheetRow[]): AddressModel[] {
