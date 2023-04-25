@@ -27,12 +27,12 @@ export class AddressHelper {
             return addressArray[0];
         }
 
-        if (addressArray[0] !== place)
+        if (addressArray[0].toLocaleLowerCase() === place.toLocaleLowerCase())
         {
-            return addressArray[0];
+            return addressArray[1];
         }
 
-        return addressArray[1];
+        return `${addressArray[0]}, ${addressArray[1]}`;
     }
 
     static translateSheetData(rows: GoogleSpreadsheetRow[]): AddressModel[] {

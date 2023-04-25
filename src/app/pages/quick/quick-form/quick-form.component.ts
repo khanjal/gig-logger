@@ -196,6 +196,12 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
 
+    // Prepend place to start address if it isn't on it.
+    if (trip.place && trip.startAddress && !trip.startAddress.startsWith(trip.place))
+    {
+      trip.startAddress = `${trip.place}, ${trip.startAddress.trim()}`;
+    }
+
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
@@ -350,6 +356,7 @@ export class QuickFormComponent implements OnInit {
   async showPlaceAddresses(place: string) {
     if (place) {
       this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
+      // TODO: Filter to exact places and avoid partial searches.
 
       // Auto assign to start address if only one and if there is no start address already.
       if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress && !this.data.id) {
@@ -383,6 +390,10 @@ export class QuickFormComponent implements OnInit {
 
   setDropoffTime() {
     this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
+  }
+
+  public getPlaceAddress(address: string) {
+    return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
   }
 
   public getShortAddress(address: string): string {
@@ -431,7 +442,16 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.name.setValue(this.data.name);
     this.showNameAddresses(this.data.name);
 
+    // If place name is in start address remove it.
+    if (this.data.startAddress.startsWith(this.data.place)) {
+      let addressStrings = this.data.startAddress.split(",");
+      addressStrings = addressStrings.slice(1, addressStrings.length);
+
+      this.data.startAddress = addressStrings.join(",").trim();
+    }
+
     this.quickForm.controls.startAddress.setValue(this.data.startAddress);
+    
     this.quickForm.controls.endAddress.setValue(this.data.endAddress);
     this.showAddressNames(this.data.endAddress);
 
