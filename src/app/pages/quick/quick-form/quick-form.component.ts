@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
+import { IName } from '@interfaces/name.interface';
+import { IPlace } from '@interfaces/place.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
@@ -62,10 +64,10 @@ export class QuickFormComponent implements OnInit {
   selectedAddress: IAddress | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
-  selectedName: NameModel | undefined;
+  selectedName: IName | undefined;
 
   filteredPlaces: Observable<PlaceModel[]> | undefined;
-  placeAddresses: string[] | undefined;
+  selectedPlace: IPlace | undefined;
 
   filteredServices: Observable<ServiceModel[]> | undefined;
 
@@ -355,7 +357,7 @@ export class QuickFormComponent implements OnInit {
   public formReset() {
     this.selectedAddress = undefined;
     this.selectedName = undefined;
-    this.placeAddresses = undefined;
+    this.selectedPlace = undefined;
     this.quickForm.reset();
     this.setDefaultShift();
   }
@@ -411,12 +413,12 @@ export class QuickFormComponent implements OnInit {
 
   async selectPlace(place: string) {
     if (place) {
-      this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
+      this.selectedPlace = await this._placeService.getRemotePlace(place);
       // TODO: Filter to exact places and avoid partial searches.
 
       // Clear out pickup address if it's just the default place with a comma
       let addressArray = this.quickForm.value.startAddress?.split(",");
-      console.log(addressArray);
+      // console.log(addressArray);
       if (this.quickForm.value.startAddress?.includes(",") 
           && addressArray?.length 
           && addressArray?.length > 1 
@@ -425,17 +427,14 @@ export class QuickFormComponent implements OnInit {
       }
 
       // Auto assign to start address if only one and if there is no start address already.
-      if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress) {
-        this.quickForm.controls.startAddress.setValue(this.placeAddresses[0]);
+      if (this.selectedPlace?.addresses.length === 1 && !this.quickForm.value.startAddress) {
+        this.quickForm.controls.startAddress.setValue(this.selectedPlace?.addresses[0]);
       }
 
       // Set empty pickup address to prepend the place
       if (!this.quickForm.value.startAddress) {
         this.quickForm.controls.startAddress.setValue(`${place}, `);
       }
-    }
-    else {
-      this.placeAddresses = [];
     }
   }
 
