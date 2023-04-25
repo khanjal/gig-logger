@@ -11,8 +11,8 @@ import { WeekdayService } from '@services/weekday.service';
 export class CurrentDayAverageComponent implements OnInit {
   @Input() date: string = new Date().toLocaleDateString();
 
-  currentAverage: number = 0;
-  weeklyAverage: number | undefined;
+  currentAmount: number = 0;
+  dailyAverage: number | undefined;
 
   constructor(
       private _tripService: TripService,
@@ -24,17 +24,11 @@ export class CurrentDayAverageComponent implements OnInit {
   }
 
   async load() {
-    this.currentAverage = 0;
+    this.currentAmount = 0;
     let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
-    let averageQuery = await this._weekdayService.queryWeekdays("day", dayOfWeek);
-    this.weeklyAverage = averageQuery[0].dailyPrevAverage;
-
-    let todaysTrips = [... (await this._tripService.queryLocalTrips("date", this.date)).filter(x => x.saved === "false"),
-                      ...await this._tripService.queryRemoteTrips("date", this.date)];
-
-    todaysTrips.forEach(trip => {
-      this.currentAverage += trip.total;
-    });
+    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    this.currentAmount = weekday.currentAmount;
+    this.dailyAverage = weekday.dailyPrevAverage;
   }
 
   
