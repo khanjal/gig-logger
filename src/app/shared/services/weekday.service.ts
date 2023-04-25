@@ -13,4 +13,8 @@ export class WeekdayService {
     public async queryWeekdays(field: string, value: string | number): Promise<IWeekday[]> {
         return await spreadsheetDB.weekdays.where(field).equals(value).toArray();
     }
+
+    public async updateWeekday(weekday: IWeekday) {
+        await spreadsheetDB.weekdays.put(weekday);
+    }
 }

@@ -8,9 +8,7 @@
         <trips-quick-view [trip]="trip"></trips-quick-view>
         <!-- <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button> -->
         <div class="row-flex">
-            <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
             <button mat-stroked-button type="button" class="button-left" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
-            <!-- <button mat-stroked-button class="button-center" type="button" (click)="setPickupTime(trip)"><mat-icon>schedule</mat-icon> Set Pickup</button> -->
             <button mat-stroked-button type="button" (click)="setDropoffTime(trip)" *ngIf="!trip.dropoffTime"><mat-icon>schedule</mat-icon> Set Dropoff</button>
             <button mat-stroked-button class="button-right" color="warn" type="button" (click)="confirmDeleteTripDialog(trip)"><mat-icon>delete</mat-icon> Delete</button>
         </div>
