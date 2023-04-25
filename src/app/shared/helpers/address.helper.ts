@@ -44,7 +44,7 @@ export class AddressHelper {
             let addressModel: AddressModel = new AddressModel;
             addressModel.id = row.rowIndex;
             addressModel.address = row['Address'];
-            addressModel.names =  row['Names']?.split("; ");
+            addressModel.names =  [];
             addressModel.visits = row['Visits'];
             // console.log(addressModel);
 
