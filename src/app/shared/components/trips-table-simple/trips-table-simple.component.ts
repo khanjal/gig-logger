@@ -8,6 +8,7 @@ import { TripModel } from 'src/app/shared/models/trip.model';
 })
 export class TripsTableSimpleComponent implements OnInit {
   @Input() title: string = "";
+  @Input() link: string = "";
   @Input() trips: TripModel[] = [];
   
   // TODO: Add grouping: https://stackblitz.com/edit/angular-material-table-row-grouping?file=src%2Fapp%2Fapp.module.ts
