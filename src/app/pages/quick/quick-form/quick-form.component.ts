@@ -211,10 +211,10 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
 
-    // Prepend place to start address if it isn't on it.
-    if (trip.place && trip.startAddress && !trip.startAddress.startsWith(trip.place))
+    // Remove start address if it's the prepended name only.
+    if (trip.place && trip.startAddress && trip.startAddress.trim() === `${trip.place},`)
     {
-      trip.startAddress = `${trip.place}, ${trip.startAddress.trim()}`;
+      trip.startAddress = "";
     }
 
     // Set form properties depending on edit/add
@@ -240,23 +240,14 @@ export class QuickFormComponent implements OnInit {
     this.showAdvancedPay = true;
 
     this.quickForm.controls.place.setValue(this.data.place);
-    this.showPlaceAddresses(this.data.place);
+    this.selectPlace(this.data.place);
     this.showPickupAddress = true;
 
     this.quickForm.controls.distance.setValue(this.data.distance);
     this.quickForm.controls.name.setValue(this.data.name);
     this.showNameAddresses(this.data.name);
 
-    // If place name is in start address remove it.
-    if (this.data.startAddress.startsWith(this.data.place)) {
-      let addressStrings = this.data.startAddress.split(",");
-      addressStrings = addressStrings.slice(1, addressStrings.length);
-
-      this.data.startAddress = addressStrings.join(",").trim();
-    }
-
     this.quickForm.controls.startAddress.setValue(this.data.startAddress);
-    
     this.quickForm.controls.endAddress.setValue(this.data.endAddress);
     this.showAddressNames(this.data.endAddress);
 
@@ -304,7 +295,7 @@ export class QuickFormComponent implements OnInit {
       let places = await this._placeService.getRemotePlaces();
       if (places.length === 1) {
         this.quickForm.controls.place.setValue(places[0].place);
-        await this.showPlaceAddresses(places[0].place);
+        await this.selectPlace(places[0].place);
       }
     }
 
@@ -413,19 +404,34 @@ export class QuickFormComponent implements OnInit {
     this.selectedName = await this._nameService.findRemoteName(name);
   }
 
-  showPlaceAddressesEvent(event: any) {
+  selectPlaceEvent(event: any) {
     let place = event.target.value;
-    this.showPlaceAddresses(place);
+    this.selectPlace(place);
   }
 
-  async showPlaceAddresses(place: string) {
+  async selectPlace(place: string) {
     if (place) {
       this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
       // TODO: Filter to exact places and avoid partial searches.
 
+      // Clear out pickup address if it's just the default place with a comma
+      let addressArray = this.quickForm.value.startAddress?.split(",");
+      console.log(addressArray);
+      if (this.quickForm.value.startAddress?.includes(",") 
+          && addressArray?.length 
+          && addressArray?.length > 1 
+          && addressArray[1].trim() === "") {
+        this.quickForm.controls.startAddress.setValue("");
+      }
+
       // Auto assign to start address if only one and if there is no start address already.
-      if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress && !this.data.id) {
+      if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress) {
         this.quickForm.controls.startAddress.setValue(this.placeAddresses[0]);
+      }
+
+      // Set empty pickup address to prepend the place
+      if (!this.quickForm.value.startAddress) {
+        this.quickForm.controls.startAddress.setValue(`${place}, `);
       }
     }
     else {

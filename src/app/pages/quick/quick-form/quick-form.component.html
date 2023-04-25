@@ -51,12 +51,12 @@
             matInput
             formControlName="place"
             [matAutocomplete]="autoPlace"
-            (blur)="showPlaceAddressesEvent($event)"
+            (blur)="selectPlaceEvent($event)"
             focus-scroll
             #place>
         <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place"  (click)="showPlaceAddresses(place.place)" class="mat-option">
+                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place"  (click)="selectPlace(place.place)" class="mat-option">
                     {{place.place}} ({{ place.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
