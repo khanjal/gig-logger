@@ -38,7 +38,7 @@
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
             <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
-                <mat-icon>close</mat-icon>
+                <mat-icon>delete</mat-icon>
             </button>
         </mat-form-field>
     </div>
@@ -62,7 +62,7 @@
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
@@ -128,7 +128,7 @@
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
@@ -137,7 +137,7 @@
     </button>
 
     <div *ngIf="showPickupAddress && placeAddresses && placeAddresses.length > 0" class="selected-name-address field-full-width">
-        <a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)" *ngFor="let address of placeAddresses">{{ getShortAddress(address) }}</a>
+        <div *ngFor="let address of placeAddresses"><a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)">{{ address }}</a></div>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
@@ -156,12 +156,12 @@
             </mat-option>
         </mat-autocomplete>
         <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
-        <a mat-button color="primary" class="address-link" (click)="selectDestinationAddress(address)" *ngFor="let address of selectedName?.addresses">{{ getShortAddress(address) }}</a>
+        <div *ngFor="let address of selectedName?.addresses"><a mat-button color="primary" class="address-link" (click)="selectDestinationAddress(address)">{{ getShortAddress(address) }}</a></div>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline">
@@ -183,12 +183,12 @@
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button type="button" *ngIf="endAddress.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
-            <mat-icon>close</mat-icon>
+            <mat-icon>delete</mat-icon>
         </button>
     </mat-form-field>
 
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width">
-        <p *ngFor="let name of selectedAddress.names">{{ name }}</p>
+        <div class="row-flex" *ngFor="let name of selectedAddress.names">{{ name }}</div>
     </div>
 
     <mat-form-field class="field-third-width" appearance="outline" *ngIf="data.id">
