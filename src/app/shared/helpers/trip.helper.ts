@@ -32,6 +32,7 @@ export class TripHelper {
 
             // Person
             tripModel.name = row['Name'];
+            tripModel.startAddress = row['Start Address'];
             tripModel.endAddress = row['End Address'];
             
             tripModel.date = row['Date'];
