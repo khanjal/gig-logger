@@ -15,6 +15,7 @@ import { CurrentDayAverageComponent } from '@components/current-day-average/curr
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { WeekdayService } from '@services/weekday.service';
 
 @Component({
   selector: 'app-quick',
@@ -42,7 +43,8 @@ export class QuickComponent implements OnInit {
       private _googleService: GoogleSheetService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
-      private _tripService: TripService
+      private _tripService: TripService,
+      private _weekdayService: WeekdayService
     ) { }
 
   async ngOnInit(): Promise<void> {
@@ -155,7 +157,20 @@ export class QuickComponent implements OnInit {
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
-    // TODO: Delete local shifts with no trips.
+    // Update shift numbers.
+    // TODO break shift total into pay/tip/bonus
+    let shift = (await this._shiftService.queryShiftsByKey(trip.date, trip.service, trip.number))[0];
+    shift.trips--;
+    shift.total -= trip.pay + trip.tip + trip.bonus;
+    await this._shiftService.updateShift(shift);
+    
+    // Update weekday current amount.
+    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    weekday.currentAmount -= trip.pay + trip.tip + trip.bonus;
+    await this._weekdayService.updateWeekday(weekday);
+
+    // TODO: Delete unsaved local shifts with no trips.
 
     await this.load();
     this.form?.load();
@@ -187,7 +202,5 @@ export class QuickComponent implements OnInit {
   public getShortAddress(address: string): string {
     return AddressHelper.getShortAddress(address);
   }
-
-  
 
 }
