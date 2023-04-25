@@ -26,7 +26,7 @@ export class SheetHelper {
         let sheets = this.getSpreadsheetSheets(spreadsheet);
 
         names = sheets.map(x => x.a1SheetName);
-        console.log(names);
+        // console.log(names);
 
         return names;
     }
