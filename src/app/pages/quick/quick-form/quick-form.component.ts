@@ -197,9 +197,9 @@ export class QuickFormComponent implements OnInit {
     trip.note = this.quickForm.value.note ?? "";
 
     // Prepend place to start address if it isn't on it.
-    if (trip.place && !trip.startAddress.startsWith(trip.place))
+    if (trip.place && trip.startAddress && !trip.startAddress.startsWith(trip.place))
     {
-      trip.startAddress = `${trip.place}, ${trip.startAddress}`;
+      trip.startAddress = `${trip.place}, ${trip.startAddress.trim()}`;
     }
 
     // Set form properties depending on edit/add
@@ -442,7 +442,16 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.name.setValue(this.data.name);
     this.showNameAddresses(this.data.name);
 
+    // If place name is in start address remove it.
+    if (this.data.startAddress.startsWith(this.data.place)) {
+      let addressStrings = this.data.startAddress.split(",");
+      addressStrings = addressStrings.slice(1, addressStrings.length);
+
+      this.data.startAddress = addressStrings.join(",").trim();
+    }
+
     this.quickForm.controls.startAddress.setValue(this.data.startAddress);
+    
     this.quickForm.controls.endAddress.setValue(this.data.endAddress);
     this.showAddressNames(this.data.endAddress);
 
