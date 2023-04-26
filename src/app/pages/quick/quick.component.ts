@@ -16,6 +16,7 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 @Component({
   selector: 'app-quick',
@@ -34,7 +35,7 @@ export class QuickComponent implements OnInit {
   sheetTrips: TripModel[] = [];
   unsavedTrips: TripModel[] = [];
 
-  sheetId: string = "";
+  defaultSheet: ISpreadsheet | undefined;
 
   constructor(
       public dialog: MatDialog,
@@ -49,7 +50,7 @@ export class QuickComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.load();
-    this.sheetId = (await this._sheetService.querySpreadsheets("default", "true"))[0].id;
+    this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
   }
 
   async saveAllTrips() {
@@ -59,7 +60,6 @@ export class QuickComponent implements OnInit {
     this.saving = true;
     await this._googleService.commitUnsavedShifts();
     await this._googleService.commitUnsavedTrips();
-    // await this._googleService.loadRemoteData();
     await this.reload();
     this.saving = false;
 
@@ -148,6 +148,54 @@ export class QuickComponent implements OnInit {
     });
   }
 
+  async confirmUnsaveTripsDialog() {
+    const message = `This will revert all local saved trips to unsaved status. If you save these trips again they may cause duplicates. Do you want to reset to unsaved status?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Unsaved Status";
+    dialogData.message = message;
+    dialogData.trueText = "Set Unsaved";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      height: "225px",
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
+
+      if(result) {
+        await this.unsaveLocalData();
+      }
+    });
+  }
+
+  async confirmClearTripsDialog() {
+    const message = `This will clear all local saved trips. Only clear these if you have confirmed they are in your spreadheet. Are you sure you want to clear?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Clear";
+    dialogData.message = message;
+    dialogData.trueText = "Clear";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      height: "200px",
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
+
+      if(result) {
+        await this.clearSavedLocalData();
+      }
+    });
+  }
+
   async setDropoffTime(trip: ITrip) {
     // TODO: Check if dropoff time is already set and prompt to overwrite
     trip.dropoffTime = DateHelper.getTimeString(new Date);
@@ -185,9 +233,15 @@ export class QuickComponent implements OnInit {
       this._shiftService.deleteLocal(shift.id!);
     });
 
+    this.load();
+  }
+
+  async unsaveLocalData() {
     let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
-    savedTrips.forEach(trip => {
-      this._tripService.deleteLocal(trip.id!);
+
+    savedTrips.forEach(async trip => {
+      trip.saved = "false";
+      await this._tripService.updateLocalTrip(trip);
     });
 
     this.load();
