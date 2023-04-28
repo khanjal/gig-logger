@@ -31,6 +31,13 @@ export class ShiftService {
         await spreadsheetDB.shifts.bulkAdd(shifts);
     }
 
+    public async getPreviousWeekShifts(): Promise<IShift[]> {
+        let shifts = [...await this.getRemoteShiftsPreviousDays(7), 
+            ...(await this.getLocalShiftsPreviousDays(7)).filter(x => x.saved === "false")];
+
+        return shifts;
+    }
+
     public async getLocalShiftsPreviousDays(days: number): Promise<IShift[]> {
         let dates = DateHelper.getDatesArray(days);
         let shifts = await localDB.shifts.where("date").anyOf(dates).toArray();
@@ -61,7 +68,15 @@ export class ShiftService {
         return shifts;
     }
 
-    public async updateLocalShift(shift: ShiftModel) {
+    public async updateShift(shift: IShift) {
+        (shift.saved === "true" ? await this.updateLocalShift(shift) : await this.updateLocalShift(shift));
+    }
+
+    public async updateLocalShift(shift: IShift) {
         await localDB.shifts.put(shift);
+    }
+
+    public async updateRemoteShift(shift: IShift) {
+        await spreadsheetDB.shifts.put(shift);
     }
 }

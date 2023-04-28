@@ -14,12 +14,20 @@ export class PlaceService {
         return await spreadsheetDB.places.toArray();
     }
 
-    public async loadPlaces(places: PlaceModel[]) {
+    public async loadPlaces(places: IPlace[]) {
         await spreadsheetDB.places.clear();
         await spreadsheetDB.places.bulkAdd(places);
     }
 
+    public async getRemotePlace(place: string): Promise<IPlace | undefined> {
+        return await spreadsheetDB.places.where("place").anyOfIgnoreCase(place).first();
+    }
+
     public async queryRemotePlaces(field: string, value: string | number): Promise<IPlace[]> {
         return await spreadsheetDB.places.where(field).equals(value).toArray();
+    }
+
+    public async update(place: IPlace) {
+        await spreadsheetDB.places.put(place);
     }
 }

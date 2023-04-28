@@ -1,22 +1,23 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { PlaceModel } from "../models/place.model";
+import { IPlace } from "@interfaces/place.interface";
 
 export class PlaceHelper {
     
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): PlaceModel[] {
-        let places: PlaceModel[] = [];
+    static translateSheetData(rows: GoogleSpreadsheetRow[]): IPlace[] {
+        let places: IPlace[] = [];
 
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let placeModel: PlaceModel = new PlaceModel;
-            placeModel.id = row.rowIndex;
-            placeModel.place = row['Place'];
-            placeModel.visits = row['Trips'];
+            let place: IPlace = {} as IPlace;
+            place.id = row.rowIndex;
+            place.place = row['Place'];
+            place.addresses = [];
+            place.visits = row['Trips'];
             // console.log(placeModel);
 
-            if (placeModel.place) {
-                places.push(placeModel);
+            if (place.place) {
+                places.push(place);
             }
             
         });
