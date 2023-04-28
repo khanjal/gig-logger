@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { GoogleSheetService } from '@services/googleSheet.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
+import { TimerService } from '@services/timer.service';
 
 @Component({
   selector: 'app-setup',
@@ -9,6 +11,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
   styleUrls: ['./setup.component.scss']
 })
 export class SetupComponent {
+  @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
   deleting: boolean = false;
   reloading: boolean = false;
@@ -17,7 +20,8 @@ export class SetupComponent {
 
   constructor(
     private _googleSheetService: GoogleSheetService,
-    private _spreadsheetService: SpreadsheetService
+    private _spreadsheetService: SpreadsheetService,
+    private _timerService: TimerService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -63,10 +67,45 @@ export class SetupComponent {
     this.deleting = true;
     this._spreadsheetService.deleteData();
 
+    await this._timerService.delay(1000);
+
     this.spreadsheets = [];
     this.deleting = false;
 
-    window.location.reload();
+    await this.load();
+  }
+
+  public async deleteAndReload() {
+    this.deleting = true;
+    this.reloading = true;
+    this.setting = true;
+    
+    // Store current spreadsheets.
+    this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
+    this._spreadsheetService.deleteData();
+
+    await this._timerService.delay(2000);
+
+    // Add default sheet first
+    let defaultSpreadsheet = this.spreadsheets.find(x => x.default === "true");
+    if (defaultSpreadsheet)
+    {
+      await this.form?.setupForm(defaultSpreadsheet?.id);
+    }
+
+    // Add other spreadsheets
+    this.spreadsheets = this.spreadsheets.filter(x => x.default === "false");
+    this.spreadsheets?.forEach(async spreadsheet => {
+      console.log(`Adding spreadsheet: ${spreadsheet.name}`);
+      await this.form?.setupForm(spreadsheet.id);
+    });
+    
+    await this._timerService.delay(10000);
+    this.deleting = false;
+    this.reloading = false;
+    this.setting = false;
+
+    await this.load();
   }
 
   public async deleteLocalData() {
