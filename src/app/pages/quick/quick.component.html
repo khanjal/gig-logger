@@ -6,7 +6,6 @@
     <h2 *ngIf="unsavedTrips.length > 0">Unsaved Local Trips</h2>
     <div *ngFor="let trip of unsavedTrips">
         <trips-quick-view [trip]="trip"></trips-quick-view>
-        <!-- <button mat-stroked-button color="primary" type="button" (click)="clear()"><mat-icon>edit</mat-icon> Edit</button> -->
         <div class="row-flex">
             <button mat-stroked-button type="button" class="button-left" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
             <button mat-stroked-button type="button" (click)="setDropoffTime(trip)" *ngIf="!trip.dropoffTime"><mat-icon>schedule</mat-icon> Set Dropoff</button>
@@ -20,7 +19,7 @@
     <div class="row-grid" *ngIf="savedTrips.length > 0">
         <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
         <div class="row-block">
-            <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmUnsaveTripsDialog()"><mat-icon>block</mat-icon> Unsave Trips</button>
+            <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
             <button mat-stroked-button class="button-right" color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmClearTripsDialog()"><mat-icon>delete</mat-icon> Clear</button>
         </div>
     </div>
