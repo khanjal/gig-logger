@@ -21,6 +21,7 @@
 <div class="container">
     <div>
         <!-- <button mat-stroked-button color="warn" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteLocalData()"><mat-icon>delete</mat-icon> Delete Local Data</button> -->
+        <button mat-stroked-button color="primary" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteAndReload()"><mat-icon>refresh</mat-icon> Delete & Reload</button>
         <button mat-stroked-button color="warn" type="button" class="button-right" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteAllData()"><mat-icon>delete</mat-icon> Delete All Data</button>
     </div>
 </div>
