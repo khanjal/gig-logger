@@ -118,7 +118,6 @@ export class GoogleSheetService {
         spreadsheet.name = doc.title;
         spreadsheet.default = "false";
 
-
         // Set as default if only one
         if ((await this._spreadsheetService.getSpreadsheets()).length === 0 || defaultSpreadsheet?.id === spreadsheetId) {
             spreadsheet.default = "true"

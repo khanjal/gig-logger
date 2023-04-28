@@ -31,24 +31,29 @@ export class SpreadsheetService {
         await localDB.spreadsheets.delete(spreadsheet.id);
     }
 
-    public deleteLocalData() {
+    public deleteLocalData(): boolean {
         localDB.delete().then(() => {
             console.log("Local Database successfully deleted");
         }).catch((err) => {
             console.error("Could not delete local database");
-        }).finally(() => {
-            // Do what should be done next...
+        }).finally(async () => {
+            localDB.open();
         });
+
+        return true;
     }
 
     public deleteRemoteData() {
         spreadsheetDB.delete().then(() => {
             console.log("Spreadsheet Database successfully deleted");
+            // spreadsheetDB.open();
         }).catch((err) => {
             console.error("Could not delete spreadsheet database");
-        }).finally(() => {
-            // Do what should be done next...
+        }).finally(async () => {
+            spreadsheetDB.open();
         });
+
+        return true;
     }
 
     public deleteData() {
