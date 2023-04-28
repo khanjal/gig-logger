@@ -140,6 +140,7 @@ export class GoogleSheetService {
         // Places
         sheet = doc.sheetsByTitle["Places"];
         rows = await sheet.getRows();
+        let places = PlaceHelper.translateSheetData(rows);
         await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
 
         // Services
@@ -165,37 +166,33 @@ export class GoogleSheetService {
         let weekdays = WeekdayHelper.translateSheetData(rows);
         await this._weekdayService.loadWeekdays(weekdays);
 
-        // Update addresses with names and names with addresses.
+        // Update addresses with names, names with addresses, and places with addresses.
         trips.forEach(async trip => {
-            // Make sure both address & name exists
-            if (!trip.name && !trip.endAddress) {
-                return;
-            }
-
             // Add address to name
-            //let name = await this._nameService.findRemoteName(trip.name);
             let name = names.find(name => name.name === trip.name);
-            if (!name) {
-                return;
+            if (name && trip.endAddress && !name.addresses.includes(trip.endAddress)) {
+                name.addresses?.push(trip.endAddress);
+                name.addresses = [...new Set(name.addresses)].sort();
+                this._nameService.update(name!);
             }
-            if (!name.addresses) {
-                name.addresses = [];
-            }
-            name.addresses?.push(trip.endAddress);
-            name.addresses = [...new Set(name.addresses)].sort();
-            this._nameService.update(name!);
 
             // Add name to address
             let address = addresses.find(address => address.address === trip.endAddress);
-            if (!address) {
-                return;
+            if (address && trip.name && !address.names.includes(trip.name)) {
+                address.names?.push(trip.name);
+                address.names = [...new Set(address.names)].sort();
+                this._addressService.update(address!);
             }
-            if (!address.names) {
-                address.names = [];
+
+            // Add address to place
+            let place = places.find(place => place.place === trip.place);
+            if (place && trip.startAddress && !place.addresses.includes(trip.startAddress)) {
+                // console.log(`Adding ${trip.startAddress} to ${place.place}`);
+                place.addresses.push(trip.startAddress);
+                place.addresses = [...new Set(place.addresses)].sort();
+                this._placeService.update(place!);    
             }
-            address.names?.push(trip.name);
-            address.names = [...new Set(address.names)].sort();
-            this._addressService.update(address!);
+            
         });
     }
 

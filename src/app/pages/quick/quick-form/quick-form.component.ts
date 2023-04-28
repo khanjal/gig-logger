@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
+import { IName } from '@interfaces/name.interface';
+import { IPlace } from '@interfaces/place.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
@@ -12,6 +14,7 @@ import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
+import { WeekdayService } from '@services/weekday.service';
 import { Observable, startWith, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
@@ -61,10 +64,10 @@ export class QuickFormComponent implements OnInit {
   selectedAddress: IAddress | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
-  selectedName: NameModel | undefined;
+  selectedName: IName | undefined;
 
   filteredPlaces: Observable<PlaceModel[]> | undefined;
-  placeAddresses: string[] | undefined;
+  selectedPlace: IPlace | undefined;
 
   filteredServices: Observable<ServiceModel[]> | undefined;
 
@@ -82,8 +85,9 @@ export class QuickFormComponent implements OnInit {
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _serviceService: ServiceService,
-      private _shfitService: ShiftService,
-      private _tripService: TripService
+      private _shiftService: ShiftService,
+      private _tripService: TripService,
+      private _weekdayService: WeekdayService
     ) {}
 
   async ngOnInit(): Promise<void> {
@@ -125,8 +129,8 @@ export class QuickFormComponent implements OnInit {
     await this.setDefaultShift();
   }
 
-  private async calculateShiftTotals(shifts: IShift[]): Promise<IShift[]> {
-    let calculatedShifts: IShift[] = [];
+  private async calculateShiftTotals() {
+    let shifts = await this._shiftService.getPreviousWeekShifts();
 
     shifts.forEach(async shift => {
       shift.trips = 0;
@@ -139,10 +143,25 @@ export class QuickFormComponent implements OnInit {
           shift.total += trip.total;
       });
 
-      calculatedShifts.push(shift);
+      this._shiftService.updateShift(shift);
+    });
+  }
+
+  private async calculateDailyTotal() {
+    let currentAmount = 0;
+    let date = new Date().toLocaleDateString();
+    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+
+    let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => x.saved === "false"),
+                      ...await this._tripService.queryRemoteTrips("date", date)];
+
+    todaysTrips.forEach(trip => {
+      currentAmount += trip.total;
     });
 
-    return calculatedShifts;
+    weekday.currentAmount = currentAmount;
+    await this._weekdayService.updateWeekday(weekday);
   }
 
   private async createShift(): Promise<IShift> {
@@ -150,19 +169,17 @@ export class QuickFormComponent implements OnInit {
     if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
       console.log("New Shift!");
       let shifts: IShift[] = [];
+      let today: string = new Date().toLocaleDateString();
 
-      shifts.push(...await this._shfitService.queryLocalShifts("date", new Date().toLocaleDateString()));
-      shifts.push(...await this._shfitService.queryRemoteShifts("date", new Date().toLocaleDateString()));
+      shifts.push(...(await this._shiftService.queryLocalShifts("date", today)).filter(x => x.saved === "false"));
+      shifts.push(...await this._shiftService.queryRemoteShifts("date", today));
       
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
       
-      
-      await this._shfitService.addNewShift(shift);
+      await this._shiftService.addNewShift(shift);
     }
     else {
-      if (this.quickForm.value.shift) {
-        shift = <ShiftModel><unknown>this.quickForm.value.shift;
-      }
+      shift = <IShift><unknown>this.quickForm.value.shift;
     }
 
     let timeString = DateHelper.getTimeString(new Date);
@@ -196,12 +213,6 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
 
-    // Prepend place to start address if it isn't on it.
-    if (trip.place && trip.startAddress && !trip.startAddress.startsWith(trip.place))
-    {
-      trip.startAddress = `${trip.place}, ${trip.startAddress.trim()}`;
-    }
-
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
@@ -214,9 +225,37 @@ export class QuickFormComponent implements OnInit {
     return trip;
   }
 
+  private async loadForm() {
+    this.selectedShift = (await this._shiftService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
+    this.quickForm.controls.service.setValue(this.data.service);
+
+    this.quickForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
+    this.quickForm.controls.tip.setValue(this.data.tip);
+    this.quickForm.controls.bonus.setValue(this.data.bonus);
+    this.quickForm.controls.cash.setValue(this.data.cash);
+    this.showAdvancedPay = true;
+
+    this.quickForm.controls.place.setValue(this.data.place);
+    this.selectPlace(this.data.place);
+    this.showPickupAddress = true;
+
+    this.quickForm.controls.distance.setValue(this.data.distance);
+    this.quickForm.controls.name.setValue(this.data.name);
+    this.showNameAddresses(this.data.name);
+
+    this.quickForm.controls.startAddress.setValue(this.data.startAddress);
+    this.quickForm.controls.endAddress.setValue(this.data.endAddress);
+    this.showAddressNames(this.data.endAddress);
+
+    this.quickForm.controls.pickupTime.setValue(this.data.pickupTime);
+    this.quickForm.controls.dropoffTime.setValue(this.data.dropoffTime);
+    this.showTimes = true;
+
+    this.quickForm.controls.note.setValue(this.data.note);
+  }
+
   private async setDefaultShift() {
-    this.shifts = [...await this._shfitService.getRemoteShiftsPreviousDays(7), 
-                  ...await this._shfitService.getLocalShiftsPreviousDays(7)];
+    this.shifts = await this._shiftService.getPreviousWeekShifts();
 
     if (this.shifts.length > 0) {
       this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
@@ -226,9 +265,6 @@ export class QuickFormComponent implements OnInit {
     if (!this.data.id) {
       // Remove duplicates
       this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
-
-      // Update all shift totals from displayed shifts.
-      await this.calculateShiftTotals(this.shifts);
 
       let today = new Date().toLocaleDateString();
 
@@ -255,7 +291,7 @@ export class QuickFormComponent implements OnInit {
       let places = await this._placeService.getRemotePlaces();
       if (places.length === 1) {
         this.quickForm.controls.place.setValue(places[0].place);
-        await this.showPlaceAddresses(places[0].place);
+        await this.selectPlace(places[0].place);
       }
     }
 
@@ -273,6 +309,18 @@ export class QuickFormComponent implements OnInit {
     let trip = this.createTrip(shift);
 
     await this._tripService.addTrip(trip);
+    
+    // Update shift total.
+    // TODO: Break shift total into pay/tip/bonus/cash
+    shift.trips++;
+    shift.total += trip.pay + trip.tip + trip.bonus;
+    await this._shiftService.updateShift(shift);
+    
+    // Update weekday current amount.
+    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
+    await this._weekdayService.updateWeekday(weekday);
 
     this._snackBar.open("Trip stored to device");
 
@@ -291,6 +339,10 @@ export class QuickFormComponent implements OnInit {
 
     await this._tripService.updateLocalTrip(trip);
 
+    // Update all shift totals from displayed shifts and daily total.
+    await this.calculateShiftTotals();
+    await this.calculateDailyTotal();
+
     this._snackBar.open("Trip Updated");
 
     this.formDialogRef.close();
@@ -299,7 +351,7 @@ export class QuickFormComponent implements OnInit {
   public formReset() {
     this.selectedAddress = undefined;
     this.selectedName = undefined;
-    this.placeAddresses = undefined;
+    this.selectedPlace = undefined;
     this.quickForm.reset();
     this.setDefaultShift();
   }
@@ -348,23 +400,19 @@ export class QuickFormComponent implements OnInit {
     this.selectedName = await this._nameService.findRemoteName(name);
   }
 
-  showPlaceAddressesEvent(event: any) {
+  selectPlaceEvent(event: any) {
     let place = event.target.value;
-    this.showPlaceAddresses(place);
+    this.selectPlace(place);
   }
 
-  async showPlaceAddresses(place: string) {
+  async selectPlace(place: string) {
     if (place) {
-      this.placeAddresses = (await this._addressService.filterRemoteAddress(place)).map(address => address.address);
-      // TODO: Filter to exact places and avoid partial searches.
+      this.selectedPlace = await this._placeService.getRemotePlace(place);
 
       // Auto assign to start address if only one and if there is no start address already.
-      if (this.placeAddresses.length === 1 && !this.quickForm.value.startAddress && !this.data.id) {
-        this.quickForm.controls.startAddress.setValue(this.placeAddresses[0]);
+      if (this.selectedPlace?.addresses.length === 1 && !this.quickForm.value.startAddress) {
+        this.quickForm.controls.startAddress.setValue(this.selectedPlace?.addresses[0]);
       }
-    }
-    else {
-      this.placeAddresses = [];
     }
   }
 
@@ -422,43 +470,5 @@ export class QuickFormComponent implements OnInit {
     const filterValue = value.toLowerCase();
 
     return await this._serviceService.filterRemoteServices(filterValue);
-  }
-
-  private async loadForm() {
-    this.selectedShift = (await this._shfitService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
-    this.quickForm.controls.service.setValue(this.data.service);
-
-    this.quickForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
-    this.quickForm.controls.tip.setValue(this.data.tip);
-    this.quickForm.controls.bonus.setValue(this.data.bonus);
-    this.quickForm.controls.cash.setValue(this.data.cash);
-    this.showAdvancedPay = true;
-
-    this.quickForm.controls.place.setValue(this.data.place);
-    this.showPlaceAddresses(this.data.place);
-    this.showPickupAddress = true;
-
-    this.quickForm.controls.distance.setValue(this.data.distance);
-    this.quickForm.controls.name.setValue(this.data.name);
-    this.showNameAddresses(this.data.name);
-
-    // If place name is in start address remove it.
-    if (this.data.startAddress.startsWith(this.data.place)) {
-      let addressStrings = this.data.startAddress.split(",");
-      addressStrings = addressStrings.slice(1, addressStrings.length);
-
-      this.data.startAddress = addressStrings.join(",").trim();
-    }
-
-    this.quickForm.controls.startAddress.setValue(this.data.startAddress);
-    
-    this.quickForm.controls.endAddress.setValue(this.data.endAddress);
-    this.showAddressNames(this.data.endAddress);
-
-    this.quickForm.controls.pickupTime.setValue(this.data.pickupTime);
-    this.quickForm.controls.dropoffTime.setValue(this.data.dropoffTime);
-    this.showTimes = true;
-
-    this.quickForm.controls.note.setValue(this.data.note);
   }
 }

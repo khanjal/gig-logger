@@ -12,7 +12,7 @@ export class NameHelper {
             let nameModel: NameModel = new NameModel;
             nameModel.id = row.rowIndex;
             nameModel.name = row['Name'];
-            nameModel.addresses =  row['Addresses']?.split("; ");
+            nameModel.addresses =  [];
             nameModel.visits = row['Visits'];
             // console.log(nameModel);
 
