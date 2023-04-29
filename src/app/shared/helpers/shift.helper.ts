@@ -72,20 +72,20 @@ export class ShiftHelper {
         return shifts;
     }
 
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): ShiftModel[] {
-        let shifts: ShiftModel[] = [];
+    static translateSheetData(rows: GoogleSpreadsheetRow[]): IShift[] {
+        let shifts: IShift[] = [];
 
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let shiftModel: ShiftModel = new ShiftModel;
+            let shiftModel: IShift = {} as IShift;
             shiftModel.id = row.rowIndex;
             shiftModel.key = row['Key'];
             shiftModel.date = row['Date'];
             shiftModel.saved = "true";
             shiftModel.service = row['Service'];
             shiftModel.number = row['#'];
-            shiftModel.total = NumberHelper.getNumberFromString(row['G Total']);
+            shiftModel.total = NumberHelper.getNumberFromString(row['G Total']) ?? 0;
             shiftModel.trips = row['T Trip'] ?? 0;
             // console.log(shift);
 

@@ -42,10 +42,10 @@ export class TripHelper {
             tripModel.distance = NumberHelper.getNumberFromString(row['Distance']);
             
             // Amounts
-            tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
+            tripModel.pay = NumberHelper.getNumberFromString(row['Pay']) ?? 0;
             tripModel.tip = NumberHelper.getNumberFromString(row['Tip']);
             tripModel.bonus = NumberHelper.getNumberFromString(row['Bonus']);
-            tripModel.total = NumberHelper.getNumberFromString(row['Total']);
+            tripModel.total = NumberHelper.getNumberFromString(row['Total']) ?? 0;
 
             tripModel.note = row['Note'];
 
