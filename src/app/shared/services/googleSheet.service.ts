@@ -199,7 +199,22 @@ export class GoogleSheetService {
         let shifts = await this._shiftService.queryLocalShifts("saved", "false");
         let shiftRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
 
+        // console.log('Unsaved shifts');
+        // console.table(shifts);
+
         shifts.forEach(async shift => {
+            // Delete empty shifts and continue to next
+            if (shift?.id && shift?.total === 0 && shift?.trips === 0){
+                // console.log('Deleting shift:');
+                // console.table(shift);
+
+                this._shiftService.deleteLocal(shift.id);
+                return;
+            }
+
+            // console.log('Saving Shift:');
+            // console.table(shift);
+
             shiftRows.push({ 
                 Date: shift.date.trim(), 
                 Service: shift.service.trim(), 
@@ -210,12 +225,18 @@ export class GoogleSheetService {
             await this._shiftService.updateLocalShift(shift);
         });
 
-        await this.saveSheetData("Shifts", shiftRows);
+        // Only save if there are shift rows.
+        if (shiftRows.length) {
+            await this.saveSheetData("Shifts", shiftRows);
+        }
     }
 
     public async commitUnsavedTrips() {
         let trips = await this._tripService.queryLocalTrips("saved", "false");
         let tripRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[] = [];
+
+        // console.log('Unsaved trips:')
+        // console.table(trips);
 
         trips.forEach(async trip => {
             tripRows.push({
@@ -240,7 +261,10 @@ export class GoogleSheetService {
             await this._tripService.updateLocalTrip(trip);
         });
 
-        await this.saveSheetData("Trips", tripRows);
+        // Only save if there are trip rows.
+        if (tripRows.length) {
+            await this.saveSheetData("Trips", tripRows);
+        }
     }
 
     public async saveSheetData(sheetName: string, sheetRows: ({ [header: string]: string | number | boolean; } | (string | number | boolean)[])[]) {
