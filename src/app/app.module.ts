@@ -17,6 +17,7 @@ import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
+import { TimerService } from '@services/timer.service';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { WeekdayService } from '@services/weekday.service';
     ServiceService,
     ShiftService,
     SpreadsheetService,
+    TimerService,
     TripService,
     WeekdayService
   ],
