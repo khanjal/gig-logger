@@ -33,12 +33,20 @@ export class SheetAddFormComponent {
       spreadsheetId = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId)![1];
     }
     
-    let sheetTitle = await this._googleService.getSheetTitle(spreadsheetId);
+    await this.setupForm(spreadsheetId);
+
+    this.saving = false;
+    this.sheetForm.reset();
+    this.parentReload.emit();
+  }
+
+  public async setupForm(id: string) {
+    let sheetTitle = await this._googleService.getSheetTitle(id);
 
     if(sheetTitle != "") {
       console.log(sheetTitle);
       let spreadsheet = new Spreadsheet();
-      spreadsheet.id = spreadsheetId;
+      spreadsheet.id = id;
       spreadsheet.name = sheetTitle;
       spreadsheet.default = "false";
 
@@ -46,21 +54,23 @@ export class SheetAddFormComponent {
       let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
 
       if (!defaultSpreadsheet?.id || defaultSpreadsheet.id === spreadsheet.id) {
+        console.log("Setting default to true");
         spreadsheet.default = "true";
       }
 
+      // Change this to check spreadsheet details to make sure it's a valid spreadsheet.
       // Add sheet & load data from it.
       await this._spreadsheetService.update(spreadsheet);
 
-      await this._googleService.loadRemoteData();
+      
+      if (spreadsheet.default === "true") {
+        console.log("Loading default data");
+        await this._googleService.loadRemoteData();
+      }
     }
     else {
       // Error
     }
-
-    this.saving = false;
-    this.sheetForm.reset();
-    this.parentReload.emit();
   }
 }
 

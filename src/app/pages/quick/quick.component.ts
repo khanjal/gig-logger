@@ -218,11 +218,6 @@ export class QuickComponent implements OnInit {
     weekday.currentAmount -= trip.pay + trip.tip + trip.bonus;
     await this._weekdayService.updateWeekday(weekday);
 
-    // Delete unsaved local shifts with no trips.
-    if (shift.id && shift.total === 0 && shift.trips === 0){
-      this._shiftService.deleteLocal(shift.id);
-    }
-
     await this.load();
     this.form?.load();
   }
@@ -231,6 +226,11 @@ export class QuickComponent implements OnInit {
     let savedShifts = await this._shiftService.queryLocalShifts("saved", "true");
     savedShifts.forEach(shift => {
       this._shiftService.deleteLocal(shift.id!);
+    });
+
+    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    savedTrips.forEach(trip => {
+      this._tripService.deleteLocal(trip.id!);
     });
 
     this.load();
