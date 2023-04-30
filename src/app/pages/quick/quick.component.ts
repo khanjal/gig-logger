@@ -228,6 +228,11 @@ export class QuickComponent implements OnInit {
       this._shiftService.deleteLocal(shift.id!);
     });
 
+    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    savedTrips.forEach(trip => {
+      this._tripService.deleteLocal(trip.id!);
+    });
+
     this.load();
   }
 
