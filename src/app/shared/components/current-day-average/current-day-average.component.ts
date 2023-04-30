@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
 @Component({
@@ -11,11 +10,17 @@ import { WeekdayService } from '@services/weekday.service';
 export class CurrentDayAverageComponent implements OnInit {
   @Input() date: string = new Date().toLocaleDateString();
 
-  currentAmount: number = 0;
+  currentDayAmount: number = 0;
   dailyAverage: number | undefined;
 
+  currentWeekAmount: number = 0;
+  weeklyAverage: number | undefined;
+
+  showDailyAverage: boolean = true;
+  showWeeklyAverage: boolean = false;
+  showMonthlyAverage: boolean = false;
+
   constructor(
-      private _tripService: TripService,
       private _weekdayService: WeekdayService
     ) {}
 
@@ -24,13 +29,34 @@ export class CurrentDayAverageComponent implements OnInit {
   }
 
   async load() {
-    this.currentAmount = 0;
+    // Load daily average
+    this.currentDayAmount = 0;
     let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    this.currentAmount = weekday.currentAmount;
+    this.currentDayAmount = weekday.currentAmount;
     this.dailyAverage = weekday.dailyPrevAverage;
+
+    // Load weekly average
+    this.currentWeekAmount = 0;
+    let weekTotal = (await this._weekdayService.queryWeekdays("day", "Tot"))[0];
+    this.currentWeekAmount = weekTotal.currentAmount + this.currentDayAmount;
+    this.weeklyAverage = weekTotal.dailyPrevAverage;
   }
 
-  
+  toggle() {
+    if(this.showDailyAverage) {
+      this.showDailyAverage = false;
+      this.showWeeklyAverage = true;
+
+      return;
+    }
+
+    if(this.showWeeklyAverage) {
+      this.showWeeklyAverage = false;
+      this.showDailyAverage = true;
+
+      return;
+    }
+  }
 
 }
