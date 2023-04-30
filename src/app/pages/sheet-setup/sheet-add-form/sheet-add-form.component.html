@@ -6,6 +6,6 @@
 </form>
 
 <div class="row-flex">
-    <button mat-stroked-button type="button" (click)="addSheet()" [class.spinner]="saving" [disabled]="!sheetForm.valid || saving"><mat-icon>add</mat-icon> Add</button>
+    <button mat-stroked-button color="primary" type="button" (click)="addSheet()" [class.spinner]="saving" [disabled]="!sheetForm.valid || saving"><mat-icon>add</mat-icon> Add</button>
     <button mat-stroked-button color="warn" type="button" (click)="sheetForm.reset()"><mat-icon>refresh</mat-icon> Reset</button>
 </div>
