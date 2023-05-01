@@ -12,14 +12,14 @@ import { ProfileComponent } from '@components/profile/profile.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { MatButtonModule } from '@angular/material/button';
 import { TruncatePipe } from '@pipes/truncate.pipe';
-import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
+import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
 @NgModule({
     declarations: [
-        CurrentDayAverageComponent,
+        CurrentAverageComponent,
         HeaderComponent,
         ProfileComponent,
         TripsTableSimpleComponent,
@@ -39,7 +39,7 @@ import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.dire
         RouterModule
     ],
     exports: [
-        CurrentDayAverageComponent,
+        CurrentAverageComponent,
         HeaderComponent,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
