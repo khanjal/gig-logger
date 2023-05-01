@@ -3,12 +3,12 @@ import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
 @Component({
-  selector: 'app-current-day-average',
-  templateUrl: './current-day-average.component.html',
-  styleUrls: ['./current-day-average.component.scss']
+  selector: 'app-current-average',
+  templateUrl: './current-average.component.html',
+  styleUrls: ['./current-average.component.scss']
 })
 
-export class CurrentDayAverageComponent implements OnInit {
+export class CurrentAverageComponent implements OnInit {
   @Input() date: string = new Date().toLocaleDateString();
 
   currentDayAmount: number = 0;
