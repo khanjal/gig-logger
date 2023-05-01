@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class CurrentDayAverageComponent implements OnInit {
   showMonthlyAverage: boolean = false;
 
   constructor(
+      private _tripService: TripService,
       private _weekdayService: WeekdayService
     ) {}
 
@@ -39,7 +41,12 @@ export class CurrentDayAverageComponent implements OnInit {
     // Load weekly average
     this.currentWeekAmount = 0;
     let weekTotal = (await this._weekdayService.queryWeekdays("day", "Tot"))[0];
-    this.currentWeekAmount = weekTotal.currentAmount + this.currentDayAmount;
+
+    // Add unsaved trip amounts.
+    let unsavedTrips = (await this._tripService.getLocalTrips()).filter(x => x.saved === "false");
+    let unsavedTripsAmount = unsavedTrips.reduce((n, {total}) => n + total, 0);
+    
+    this.currentWeekAmount = weekTotal.currentAmount + unsavedTripsAmount;
     this.weeklyAverage = weekTotal.dailyPrevAverage;
   }
 
