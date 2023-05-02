@@ -22,6 +22,9 @@ import { ITrip } from '@interfaces/trip.interface';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
 import { SheetHelper } from '@helpers/sheet.helper';
+import { IAddress } from '@interfaces/address.interface';
+import { AddressModel } from '@models/address.model';
+import { NameModel } from '@models/name.model';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -169,17 +172,56 @@ export class GoogleSheetService {
         trips.forEach(async trip => {
             // Add address to name
             let name = names.find(name => name.name === trip.name);
-            if (name && trip.endAddress && !name.addresses.includes(trip.endAddress)) {
-                name.addresses?.push(trip.endAddress);
-                name.addresses = [...new Set(name.addresses)].sort();
+
+            if (name && trip.note) {
+                name.notes.push(trip.note);
+
+                this._nameService.update(name!);
+            }
+
+            if (name && trip.endAddress) {
+                let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
+
+                if (nameAddress) {
+                    nameAddress.notes.push(trip.note);
+                    nameAddress.visits++;
+                }
+                else {
+                    let address = new AddressModel;
+                    address.address = trip.endAddress;
+                    address.notes.push(trip.note);
+                    address.visits = 1;
+                    name.addresses.push(address);
+                }
+
                 this._nameService.update(name!);
             }
 
             // Add name to address
             let address = addresses.find(address => address.address === trip.endAddress);
-            if (address && trip.name && !address.names.includes(trip.name)) {
-                address.names?.push(trip.name);
-                address.names = [...new Set(address.names)].sort();
+
+            if (address && trip.note) {
+                address.notes.push(trip.note);
+
+                this._addressService.update(address!);
+            }
+
+            if (address && trip.name) {
+                let addressName = address.names.find(x => x.name === trip.name);
+
+                if (addressName) {
+                    addressName.notes.push(trip.note);
+                    addressName.visits++;
+                }
+                else {
+                    let name = new NameModel;
+                    name.name = trip.name;
+                    name.notes.push(trip.note);
+                    name.visits = 1;
+
+                    address.names.push(name);
+                }
+
                 this._addressService.update(address!);
             }
 
