@@ -11,7 +11,7 @@ import { TripHelper } from '@helpers/trip.helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
-import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
+import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -25,7 +25,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 })
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
-  @ViewChild(CurrentDayAverageComponent) average:CurrentDayAverageComponent | undefined;
+  @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
 
   clearing: boolean = false;
   reloading: boolean = false;

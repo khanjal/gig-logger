@@ -3,12 +3,12 @@ import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
 @Component({
-  selector: 'app-current-day-average',
-  templateUrl: './current-day-average.component.html',
-  styleUrls: ['./current-day-average.component.scss']
+  selector: 'app-current-average',
+  templateUrl: './current-average.component.html',
+  styleUrls: ['./current-average.component.scss']
 })
 
-export class CurrentDayAverageComponent implements OnInit {
+export class CurrentAverageComponent implements OnInit {
   @Input() date: string = new Date().toLocaleDateString();
 
   currentDayAmount: number = 0;
@@ -45,8 +45,7 @@ export class CurrentDayAverageComponent implements OnInit {
     // Add unsaved trip amounts.
     let unsavedTrips = (await this._tripService.getLocalTrips()).filter(x => x.saved === "false");
     let unsavedTripsAmount = unsavedTrips.reduce((n, {total}) => n + total, 0);
-    
-    this.currentWeekAmount = weekTotal.currentAmount + unsavedTripsAmount;
+    this.currentWeekAmount = (isNaN(weekTotal.currentAmount) ? 0 : weekTotal.currentAmount) + unsavedTripsAmount;
     this.weeklyAverage = weekTotal.dailyPrevAverage;
   }
 
