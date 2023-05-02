@@ -161,7 +161,10 @@
     </mat-form-field>
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
-        <div *ngFor="let address of selectedName?.addresses"><a mat-button color="primary" class="address-link" (click)="selectDestinationAddress(address)">{{ getShortAddress(address) }}</a></div>
+        <div *ngFor="let address of selectedName?.addresses">
+            <a mat-button color="primary" class="address-link" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
+            <p class="note" *ngFor="let note of address.notes"><span *ngIf="note"  [ngClass]="selectedAddress?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></p>
+        </div>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline">
@@ -188,7 +191,10 @@
     </mat-form-field>
 
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width">
-        <div class="row-flex" *ngFor="let name of selectedAddress.names">{{ name }}</div>
+        <div *ngFor="let name of selectedAddress.names">
+            <div>{{ name.name }} ({{name.visits}})</div>
+            <div class="note" *ngFor="let note of name.notes"><span *ngIf="note" [ngClass]="selectedName?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></div>
+        </div>
     </div>
 
     <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
