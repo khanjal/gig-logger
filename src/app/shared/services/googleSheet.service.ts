@@ -178,58 +178,68 @@ export class GoogleSheetService {
         // Update addresses with names, names with addresses, and places with addresses.
         this._snackBar.open("Linking data");
         trips.forEach(async trip => {
-            // Add address to name
-            let name = names.find(name => name.name === trip.name);
+            let note = {} as INote;
 
-            if (name && !trip.endAddress && trip.note) {
-                name.notes.push({date: trip.date, text: trip.note, name: trip.name} as INote);
-
-                this._nameService.update(name!);
+            // If trip note exists create it.
+            if (trip.note) {
+                note.date = trip.date;
+                note.text = trip.note;
+                note.name = trip.name;
+                note.address = trip.endAddress;
             }
+
+            // Add addresses to name
+            let name = names.find(name => name.name === trip.name);
 
             if (name && trip.endAddress) {
                 let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
 
                 if (nameAddress) {
-                    nameAddress.notes.push({date: trip.date, text: trip.note, name: name.name, address: trip.endAddress} as INote);
                     nameAddress.visits++;
                 }
                 else {
                     let address = new AddressModel;
                     address.address = trip.endAddress;
-                    address.notes.push({date: trip.date, text: trip.note, name: name.name, address: trip.endAddress} as INote);
                     address.visits = 1;
+                    if(trip.note) {address.notes.push(note)};
                     name.addresses.push(address);
                 }
 
                 this._nameService.update(name!);
             }
 
+            // Add note to name
+            if (name && trip.note) {
+                name.notes.push(note);
+                name.stringNotes.push(trip.note);
+                this._nameService.update(name!);
+            }
+
             // Add name to address
             let address = addresses.find(address => address.address === trip.endAddress);
-
-            if (address && !trip.name && trip.note) {
-                address.notes.push({date: trip.date, text: trip.note, name: trip.name} as INote);
-
-                this._addressService.update(address!);
-            }
 
             if (address && trip.name) {
                 let addressName = address.names.find(x => x.name === trip.name);
 
                 if (addressName) {
-                    addressName.notes.push({date: trip.date, text: trip.note, name: trip.name, address: address.address} as INote);
                     addressName.visits++;
                 }
                 else {
                     let name = new NameModel;
                     name.name = trip.name;
-                    name.notes.push({date: trip.date, text: trip.note, name: trip.name, address: address.address} as INote);
+                    if(trip.note) {name.notes.push(note)};
                     name.visits = 1;
 
                     address.names.push(name);
                 }
 
+                this._addressService.update(address!);
+            }
+
+            // Add note to address.
+            if (address && trip.note) {
+                address.notes.push(note);
+                address.stringNotes.push(trip.note);
                 this._addressService.update(address!);
             }
 
