@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
 import { IName } from '@interfaces/name.interface';
+import { INote } from '@interfaces/note.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -62,9 +63,11 @@ export class QuickFormComponent implements OnInit {
   filteredStartAddresses: Observable<IAddress[]> | undefined;
   filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
+  selectedAddressNotes: INote[] | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
   selectedName: IName | undefined;
+  selectedNameNotes: INote[] | undefined;
 
   filteredPlaces: Observable<PlaceModel[]> | undefined;
   selectedPlace: IPlace | undefined;
@@ -350,7 +353,9 @@ export class QuickFormComponent implements OnInit {
 
   public formReset() {
     this.selectedAddress = undefined;
+    this.selectedAddressNotes = undefined;
     this.selectedName = undefined;
+    this.selectedNameNotes = undefined;
     this.selectedPlace = undefined;
     this.quickForm.reset();
     this.setDefaultShift();
@@ -389,6 +394,7 @@ export class QuickFormComponent implements OnInit {
 
   async showAddressNames(address: string) {
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
+    this.selectedAddressNotes = this.selectedAddress?.notes.filter(x => !x.name);
   }
 
   showNameAddressesEvent(event: any) {
@@ -398,6 +404,7 @@ export class QuickFormComponent implements OnInit {
 
   async showNameAddresses(name: string) {
     this.selectedName = await this._nameService.findRemoteName(name);
+    this.selectedNameNotes = this.selectedName?.notes?.filter(x => !x.address);
   }
 
   selectPlaceEvent(event: any) {
@@ -444,6 +451,7 @@ export class QuickFormComponent implements OnInit {
     return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
   }
 
+  // TODO: Change this into a pipe
   public getShortAddress(address: string): string {
     return AddressHelper.getShortAddress(address);
   }
