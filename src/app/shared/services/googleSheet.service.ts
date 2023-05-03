@@ -17,14 +17,12 @@ import { PlaceService } from './place.service';
 import { ServiceService } from './service.service';
 import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
 import { SheetHelper } from '@helpers/sheet.helper';
-import { IAddress } from '@interfaces/address.interface';
 import { AddressModel } from '@models/address.model';
 import { NameModel } from '@models/name.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -36,6 +34,7 @@ export class GoogleSheetService {
 
     constructor(
             public http: HttpClient,
+            private _snackBar: MatSnackBar,
             private _addressService: AddressService,
             private _nameService: NameService,
             private _placeService: PlaceService,
@@ -130,45 +129,53 @@ export class GoogleSheetService {
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} addresses`);
         let addresses = AddressHelper.translateSheetData(rows);
         await this._addressService.loadAddresses(addresses);
 
         // Names
         sheet = doc.sheetsByTitle["Names"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} names`);
         let names = NameHelper.translateSheetData(rows);
         await this._nameService.loadNames(names);
 
         // Places
         sheet = doc.sheetsByTitle["Places"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} places`);
         let places = PlaceHelper.translateSheetData(rows);
         await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
 
         // Services
         sheet = doc.sheetsByTitle["Services"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} services`);
         await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
 
         // Shifts
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} shifts`);
         let shifts = ShiftHelper.translateSheetData(rows);
         await this._shiftService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} trips`);
         let trips = TripHelper.translateSheetData(rows);
         await this._tripService.loadTrips(trips);
 
         // Weekdays
         sheet = doc.sheetsByTitle["Weekdays"];
         rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${rows.length} weekdays`);
         let weekdays = WeekdayHelper.translateSheetData(rows);
         await this._weekdayService.loadWeekdays(weekdays);
 
         // Update addresses with names, names with addresses, and places with addresses.
+        this._snackBar.open("Linking data");
         trips.forEach(async trip => {
             // Add address to name
             let name = names.find(name => name.name === trip.name);
@@ -235,6 +242,8 @@ export class GoogleSheetService {
             }
             
         });
+
+        this._snackBar.open("Spreadsheet data loaded");
     }
 
     public async commitUnsavedShifts() {
