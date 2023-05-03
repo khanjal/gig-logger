@@ -1,10 +1,11 @@
 import { IAddress } from "@interfaces/address.interface";
 import { IName } from "@interfaces/name.interface";
+import { INote } from "@interfaces/note.interface";
 
 export class AddressModel implements IAddress {
     id: number = 0;
     address: string = "";
     names: IName[] = [];
-    notes: string[] = [];
+    notes: INote[] = [];
     visits: number = 0;
 }
