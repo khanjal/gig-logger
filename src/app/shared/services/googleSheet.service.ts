@@ -23,6 +23,7 @@ import { SheetHelper } from '@helpers/sheet.helper';
 import { AddressModel } from '@models/address.model';
 import { NameModel } from '@models/name.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { INote } from '@interfaces/note.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -181,7 +182,7 @@ export class GoogleSheetService {
             let name = names.find(name => name.name === trip.name);
 
             if (name && !trip.endAddress && trip.note) {
-                name.notes.push(trip.note);
+                name.notes.push({date: trip.date, text: trip.note, name: trip.name} as INote);
 
                 this._nameService.update(name!);
             }
@@ -190,13 +191,13 @@ export class GoogleSheetService {
                 let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
 
                 if (nameAddress) {
-                    nameAddress.notes.push(trip.note);
+                    nameAddress.notes.push({date: trip.date, text: trip.note, name: name.name, address: trip.endAddress} as INote);
                     nameAddress.visits++;
                 }
                 else {
                     let address = new AddressModel;
                     address.address = trip.endAddress;
-                    address.notes.push(trip.note);
+                    address.notes.push({date: trip.date, text: trip.note, name: name.name, address: trip.endAddress} as INote);
                     address.visits = 1;
                     name.addresses.push(address);
                 }
@@ -208,7 +209,7 @@ export class GoogleSheetService {
             let address = addresses.find(address => address.address === trip.endAddress);
 
             if (address && !trip.name && trip.note) {
-                address.notes.push(trip.note);
+                address.notes.push({date: trip.date, text: trip.note, name: trip.name} as INote);
 
                 this._addressService.update(address!);
             }
@@ -217,13 +218,13 @@ export class GoogleSheetService {
                 let addressName = address.names.find(x => x.name === trip.name);
 
                 if (addressName) {
-                    addressName.notes.push(trip.note);
+                    addressName.notes.push({date: trip.date, text: trip.note, name: trip.name, address: address.address} as INote);
                     addressName.visits++;
                 }
                 else {
                     let name = new NameModel;
                     name.name = trip.name;
-                    name.notes.push(trip.note);
+                    name.notes.push({date: trip.date, text: trip.note, name: trip.name, address: address.address} as INote);
                     name.visits = 1;
 
                     address.names.push(name);

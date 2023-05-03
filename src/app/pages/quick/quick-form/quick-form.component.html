@@ -165,13 +165,13 @@
     <!-- Name Notes -->
     <div *ngIf="selectedName?.notes?.length" class="note">
         <div class="title">Unknown Address</div>
-        <p class="note-line" *ngFor="let note of selectedName?.notes">"{{note}}"</p>
+        <p class="note-line" *ngFor="let note of selectedName?.notes">"{{note.text}}" -{{note.date}}</p>
     </div>
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedName?.addresses">
             <a mat-button color="primary" class="address-link" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
-            <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddress?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></p>
+            <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddress?.notes?.includes(note) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
 
@@ -202,13 +202,13 @@
     <!-- Address Notes -->
     <div *ngIf="selectedAddress?.notes?.length" class="note">
         <div class="title">Unknown Name</div>
-        <p class="note-line" *ngFor="let note of selectedAddress?.notes">"{{note}}"</p>
+        <p class="note-line" *ngFor="let note of selectedAddress?.notes">"{{note}}" -{{note.date}}</p>
     </div>
 
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width note">
         <div *ngFor="let name of selectedAddress.names">
             <div class="title name">{{ name.name }} ({{name.visits}})</div>
-            <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedName?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></p>
+            <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedName?.notes?.includes(note) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
 
