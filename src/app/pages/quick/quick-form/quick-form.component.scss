@@ -26,6 +26,17 @@
 }
 
 .note {
+    margin-left: 1rem;
+
+    .title {
+        font-weight: bold;
+        padding-bottom: .5rem;
+    }
+
+    .name { margin-left: .5rem;}
+}
+
+.note-line {
     font-style: italic;
     margin-left: .5rem;
 

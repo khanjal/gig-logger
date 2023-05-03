@@ -137,7 +137,9 @@
     </button>
 
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
-        <div *ngFor="let address of selectedPlace.addresses"><a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)">{{ getShortAddress(address) }}</a></div>
+        <div *ngFor="let address of selectedPlace.addresses">
+            <a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)">{{ getShortAddress(address) }}</a>
+        </div>
     </div>
 
     <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
@@ -160,13 +162,20 @@
         </button>
     </mat-form-field>
 
+    <!-- Name Notes -->
+    <div *ngIf="selectedName?.notes?.length" class="note">
+        <div class="title">Unknown Address</div>
+        <p class="note-line" *ngFor="let note of selectedName?.notes">"{{note}}"</p>
+    </div>
+
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedName?.addresses">
             <a mat-button color="primary" class="address-link" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
-            <p class="note" *ngFor="let note of address.notes"><span *ngIf="note"  [ngClass]="selectedAddress?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></p>
+            <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddress?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></p>
         </div>
     </div>
 
+    <!-- Destination Address -->
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Destination Address</mat-label>
         <input type="text"
@@ -190,10 +199,16 @@
         </button>
     </mat-form-field>
 
-    <div *ngIf="selectedAddress" class="selected-name-address field-full-width">
+    <!-- Address Notes -->
+    <div *ngIf="selectedAddress?.notes?.length" class="note">
+        <div class="title">Unknown Name</div>
+        <p class="note-line" *ngFor="let note of selectedAddress?.notes">"{{note}}"</p>
+    </div>
+
+    <div *ngIf="selectedAddress" class="selected-name-address field-full-width note">
         <div *ngFor="let name of selectedAddress.names">
-            <div>{{ name.name }} ({{name.visits}})</div>
-            <div class="note" *ngFor="let note of name.notes"><span *ngIf="note" [ngClass]="selectedName?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></div>
+            <div class="title name">{{ name.name }} ({{name.visits}})</div>
+            <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedName?.notes?.includes(note) ? 'highlight' : ''">"{{note}}"</span></p>
         </div>
     </div>
 
