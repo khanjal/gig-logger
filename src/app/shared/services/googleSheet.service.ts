@@ -130,48 +130,48 @@ export class GoogleSheetService {
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} addresses`);
+        this._snackBar.open(`Loading addresses`);
         let addresses = AddressHelper.translateSheetData(rows);
         await this._addressService.loadAddresses(addresses);
 
         // Names
         sheet = doc.sheetsByTitle["Names"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} names`);
+        this._snackBar.open(`Loading names`);
         let names = NameHelper.translateSheetData(rows);
         await this._nameService.loadNames(names);
 
         // Places
         sheet = doc.sheetsByTitle["Places"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} places`);
+        this._snackBar.open(`Loading places`);
         let places = PlaceHelper.translateSheetData(rows);
         await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
 
         // Services
         sheet = doc.sheetsByTitle["Services"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} services`);
+        this._snackBar.open(`Loading services`);
         await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
 
         // Shifts
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} shifts`);
+        this._snackBar.open(`Loading shifts`);
         let shifts = ShiftHelper.translateSheetData(rows);
         await this._shiftService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} trips`);
+        this._snackBar.open(`Loading trips`);
         let trips = TripHelper.translateSheetData(rows);
         await this._tripService.loadTrips(trips);
 
         // Weekdays
         sheet = doc.sheetsByTitle["Weekdays"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading ${rows.length} weekdays`);
+        this._snackBar.open(`Loading weekdays`);
         let weekdays = WeekdayHelper.translateSheetData(rows);
         await this._weekdayService.loadWeekdays(weekdays);
 
