@@ -180,7 +180,7 @@ export class GoogleSheetService {
             // Add address to name
             let name = names.find(name => name.name === trip.name);
 
-            if (name && trip.note) {
+            if (name && !trip.endAddress && trip.note) {
                 name.notes.push(trip.note);
 
                 this._nameService.update(name!);
@@ -207,7 +207,7 @@ export class GoogleSheetService {
             // Add name to address
             let address = addresses.find(address => address.address === trip.endAddress);
 
-            if (address && trip.note) {
+            if (address && !trip.name && trip.note) {
                 address.notes.push(trip.note);
 
                 this._addressService.update(address!);
@@ -277,6 +277,7 @@ export class GoogleSheetService {
         });
 
         // Only save if there are shift rows.
+        // TODO: Save shifts individually. 
         if (shiftRows.length) {
             await this.saveSheetData("Shifts", shiftRows);
         }
@@ -313,6 +314,7 @@ export class GoogleSheetService {
         });
 
         // Only save if there are trip rows.
+        // TODO: Save trips individually.
         if (tripRows.length) {
             await this.saveSheetData("Trips", tripRows);
         }
