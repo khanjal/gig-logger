@@ -7,6 +7,5 @@ export class AddressModel implements IAddress {
     address: string = "";
     names: IName[] = [];
     notes: INote[] = [];
-    stringNotes: string[] = [];
     visits: number = 0;
 }
