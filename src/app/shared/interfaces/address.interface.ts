@@ -6,6 +6,5 @@ export interface IAddress {
     address: string;
     names: IName[];
     notes: INote[];
-    stringNotes: string[];
     visits: number;
 }
