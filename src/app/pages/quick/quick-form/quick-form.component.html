@@ -10,6 +10,7 @@
 </div> -->
 
 <form class="quick-form" [formGroup]="quickForm">
+    <!-- Shift -->
     <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
         <mat-label>Shift/Batch/Group</mat-label>
         <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)'>
@@ -18,6 +19,7 @@
         </mat-select>
     </mat-form-field>
 
+    <!-- Service -->
     <div *ngIf="isNewShift">
         <mat-form-field class="field-full-width" appearance="outline">
             <mat-label>Service</mat-label>
@@ -43,6 +45,7 @@
         </mat-form-field>
     </div>
 
+    <!-- Place -->
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Place</mat-label>
         <input type="text"
@@ -66,6 +69,7 @@
         </button>
     </mat-form-field>
 
+    <!-- Pay -->
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Pay</mat-label>
         <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay>
@@ -74,6 +78,7 @@
         </button>
     </mat-form-field>
 
+    <!-- Distance -->
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Distance</mat-label>
         <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
@@ -82,6 +87,7 @@
         </button>
     </mat-form-field>
 
+    <!-- Tip/Bonus/Cash -->
     <div *ngIf="showAdvancedPay">
         <mat-form-field class="field-quarter-width" appearance="outline">
             <mat-label>Tip</mat-label>
@@ -97,6 +103,7 @@
         </mat-form-field>
     </div>
 
+    <!-- Odometer -->
     <div *ngIf="showOdometer">
         <mat-form-field class="field-third-width" appearance="outline">
             <mat-label>Start Odometer</mat-label>
@@ -108,6 +115,7 @@
         </mat-form-field>
     </div>
 
+    <!-- Name -->
     <mat-form-field class="field-halfish-width" appearance="outline">
         <mat-label>Name</mat-label>
         <input type="text"
@@ -132,16 +140,19 @@
         </button>
     </mat-form-field>
 
+    <!-- Pickup Address Button -->
     <button type="button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
         <mat-icon>contact_mail</mat-icon>
     </button>
 
+    <!-- Pickup Address List -->
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedPlace.addresses">
-            <a mat-button color="primary" class="address-link" (click)="selectPickupAddress(address)">{{ getShortAddress(address) }}</a>
+            <a mat-button color="primary" class="address-link"  [ngClass]="address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address)">{{ getShortAddress(address) }}</a>
         </div>
     </div>
 
+    <!-- Pickup Address -->
     <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
         <mat-label>Pickup Address</mat-label>
         <input type="text"
@@ -162,7 +173,7 @@
         </button>
     </mat-form-field>
 
-    <!-- Name Notes -->
+    <!-- Name List/Notes -->
     <div *ngIf="selectedNameNotes?.length" class="note">
         <div class="title">Unknown Address</div>
         <p class="note-line" *ngFor="let note of selectedNameNotes">"{{note.text}}" -{{note.date}}</p>
@@ -170,7 +181,7 @@
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedName?.addresses">
-            <a mat-button color="primary" class="address-link" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
+            <a mat-button color="primary" class="address-link" [ngClass]="address.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
             <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddressStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
@@ -199,7 +210,7 @@
         </button>
     </mat-form-field>
 
-    <!-- Address Notes -->
+    <!-- Address List/Notes -->
     <div *ngIf="selectedAddressNotes?.length" class="note">
         <div class="title">Unknown Name</div>
         <p class="note-line" *ngFor="let note of selectedAddressNotes">"{{note.text}}" -{{note.date}}</p>
@@ -207,11 +218,12 @@
 
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width note">
         <div *ngFor="let name of selectedAddress.names">
-            <div class="title name">{{ name.name }} ({{name.visits}})</div>
+            <div class="title name"><span [ngClass]="name.name === quickForm.value.name ? 'highlight' : ''">{{ name.name }} ({{name.visits}})</span></div>
             <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedNameStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
 
+    <!-- Pickup Time -->
     <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
         <mat-label>Pickup Time</mat-label>
         <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
@@ -219,6 +231,7 @@
 
     <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
 
+    <!-- Dropoff Time -->
     <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
         <mat-label>Dropoff Time</mat-label>
         <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
@@ -226,6 +239,7 @@
 
     <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
     
+    <!-- Note -->
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Note</mat-label>
         <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
