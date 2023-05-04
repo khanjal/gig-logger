@@ -64,10 +64,12 @@ export class QuickFormComponent implements OnInit {
   filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
   selectedAddressNotes: INote[] | undefined;
+  selectedAddressStringNotes: string[] | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
   selectedName: IName | undefined;
   selectedNameNotes: INote[] | undefined;
+  selectedNameStringNotes: string[] | undefined;
 
   filteredPlaces: Observable<PlaceModel[]> | undefined;
   selectedPlace: IPlace | undefined;
@@ -395,6 +397,7 @@ export class QuickFormComponent implements OnInit {
   async showAddressNames(address: string) {
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
     this.selectedAddressNotes = this.selectedAddress?.notes.filter(x => !x.name);
+    this.selectedAddressStringNotes = this.selectedAddress?.notes?.map(x => x.text);
   }
 
   showNameAddressesEvent(event: any) {
@@ -405,6 +408,7 @@ export class QuickFormComponent implements OnInit {
   async showNameAddresses(name: string) {
     this.selectedName = await this._nameService.findRemoteName(name);
     this.selectedNameNotes = this.selectedName?.notes?.filter(x => !x.address);
+    this.selectedNameStringNotes = this.selectedName?.notes?.map(x => x.text);
   }
 
   selectPlaceEvent(event: any) {
@@ -449,11 +453,6 @@ export class QuickFormComponent implements OnInit {
 
   public getPlaceAddress(address: string) {
     return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
-  }
-
-  // TODO: Change this into a pipe
-  public getShortAddress(address: string): string {
-    return AddressHelper.getShortAddress(address);
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
