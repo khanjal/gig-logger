@@ -211,7 +211,6 @@ export class GoogleSheetService {
             // Add note to name
             if (name && trip.note) {
                 name.notes.push(note);
-                name.stringNotes.push(trip.note);
                 this._nameService.update(name!);
             }
 
@@ -239,7 +238,6 @@ export class GoogleSheetService {
             // Add note to address.
             if (address && trip.note) {
                 address.notes.push(note);
-                address.stringNotes.push(trip.note);
                 this._addressService.update(address!);
             }
 
