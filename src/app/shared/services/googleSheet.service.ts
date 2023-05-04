@@ -64,8 +64,8 @@ export class GoogleSheetService {
         await doc.loadInfo();
 
         const sheet = doc.sheetsById[id];
-        console.log(sheet.title);
-        console.log(sheet.rowCount);
+        // console.log(sheet.title);
+        // console.log(sheet.rowCount);
 
         return sheet;
     }
@@ -78,8 +78,8 @@ export class GoogleSheetService {
         await doc.loadInfo();
 
         const sheet = doc.sheetsByTitle[name];
-        console.log(sheet.title);
-        console.log(sheet.rowCount);
+        // console.log(sheet.title);
+        // console.log(sheet.rowCount);
 
         return sheet;
     }
@@ -288,6 +288,7 @@ export class GoogleSheetService {
         // Only save if there are shift rows.
         // TODO: Save shifts individually. 
         if (shiftRows.length) {
+            this._snackBar.open(`Saving shifts`);
             await this.saveSheetData("Shifts", shiftRows);
         }
     }
@@ -325,6 +326,7 @@ export class GoogleSheetService {
         // Only save if there are trip rows.
         // TODO: Save trips individually.
         if (tripRows.length) {
+            this._snackBar.open(`Saving trips`);
             await this.saveSheetData("Trips", tripRows);
         }
     }
@@ -340,7 +342,7 @@ export class GoogleSheetService {
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
-        console.log(doc.title);
+        // console.log(doc.title);
 
         let sheet = doc.sheetsByTitle[sheetName];
 
@@ -358,7 +360,7 @@ export class GoogleSheetService {
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
-        console.log(doc.title);
+        // console.log(doc.title);
 
         let sheet = doc.sheetsByTitle[sheetName];
 
