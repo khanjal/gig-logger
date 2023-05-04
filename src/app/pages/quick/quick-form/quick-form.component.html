@@ -171,7 +171,7 @@
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedName?.addresses">
             <a mat-button color="primary" class="address-link" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
-            <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddress?.stringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
+            <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddressStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
 
@@ -208,7 +208,7 @@
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width note">
         <div *ngFor="let name of selectedAddress.names">
             <div class="title name">{{ name.name }} ({{name.visits}})</div>
-            <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedName?.stringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
+            <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedNameStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
 
