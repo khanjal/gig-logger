@@ -16,6 +16,7 @@ import { CurrentAverageComponent } from '@components/current-average/current-ave
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.dire
         TripsQuickViewComponent,
         NoSecondsPipe,
         TruncatePipe,
+        ShortAddressPipe,
         ConfirmDialogComponent,
         FocusScrollDirective
     ],
@@ -41,6 +43,8 @@ import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.dire
     exports: [
         CurrentAverageComponent,
         HeaderComponent,
+        NoSecondsPipe,
+        ShortAddressPipe,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
         TruncatePipe,

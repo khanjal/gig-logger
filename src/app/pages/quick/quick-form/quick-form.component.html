@@ -148,7 +148,7 @@
     <!-- Pickup Address List -->
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedPlace.addresses">
-            <a mat-button color="primary" class="address-link"  [ngClass]="address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address)">{{ getShortAddress(address) }}</a>
+            <a mat-button color="primary" class="address-link"  [ngClass]="address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address)">{{ address | shortaddress }}</a>
         </div>
     </div>
 
@@ -165,7 +165,7 @@
             #startAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
-                {{ getShortAddress(address.address) }} ({{ address.visits }})
+                {{ address.address | shortaddress }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
         <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
@@ -181,7 +181,7 @@
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedName?.addresses">
-            <a mat-button color="primary" class="address-link" [ngClass]="address.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(address.address)">{{ getShortAddress(address.address) }} ({{ address?.visits }})</a>
+            <a mat-button color="primary" class="address-link" [ngClass]="address.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(address.address)">{{ address.address | shortaddress }} ({{ address?.visits }})</a>
             <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddressStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
         </div>
     </div>
@@ -201,7 +201,7 @@
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
                 <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
-                    {{ getShortAddress(address.address) }} ({{ address.visits }})
+                    {{ address.address | shortaddress }} ({{ address.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>

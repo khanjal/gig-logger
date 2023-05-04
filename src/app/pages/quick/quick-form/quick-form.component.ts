@@ -455,11 +455,6 @@ export class QuickFormComponent implements OnInit {
     return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
   }
 
-  // TODO: Change this into a pipe
-  public getShortAddress(address: string): string {
-    return AddressHelper.getShortAddress(address);
-  }
-
   private async _filterAddress(value: string): Promise<IAddress[]> {
     const filterValue = value.toLowerCase();
 
