@@ -17,6 +17,7 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { TripsTableGroupComponent } from './components/trips-table-group/trips-table-group.component';
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
         TruncatePipe,
         ShortAddressPipe,
         ConfirmDialogComponent,
-        FocusScrollDirective
+        FocusScrollDirective,
+        TripsTableGroupComponent
     ],
     imports: [
         CommonModule,
@@ -46,6 +48,7 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
         NoSecondsPipe,
         ShortAddressPipe,
         TripsTableSimpleComponent,
+        TripsTableGroupComponent,
         TripsQuickViewComponent,
         TruncatePipe,
         FocusScrollDirective
