@@ -25,7 +25,7 @@
     </div>
 
     <div class="row-grid">
-        <trips-table-simple class="table" title="{{defaultSheet?.name}} - Trips" link="{{defaultSheet?.id}}" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></trips-table-simple>
+        <app-trips-table-group class="table" title="{{defaultSheet?.name}} - Trips" link="{{defaultSheet?.id}}" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></app-trips-table-group>
         <button mat-stroked-button color="warn" type="button" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
     </div>
 
