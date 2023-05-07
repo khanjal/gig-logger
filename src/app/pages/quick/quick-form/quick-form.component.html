@@ -180,6 +180,7 @@
     </div>
 
     <div *ngIf="selectedName" class="selected-name-address field-full-width">
+        <p>Pay: {{selectedName.pay | currency}} Tip: {{selectedName.tip | currency}} Cash: {{selectedName.cash | currency}} </p>
         <div *ngFor="let address of selectedName?.addresses">
             <a mat-button color="primary" class="address-link" [ngClass]="address.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(address.address)">{{ address.address | shortaddress }} ({{ address?.visits }})</a>
             <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddressStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
@@ -217,6 +218,7 @@
     </div>
 
     <div *ngIf="selectedAddress" class="selected-name-address field-full-width note">
+        <p>Pay: {{selectedAddress.pay | currency}} Tip: {{selectedAddress.tip | currency}} Cash: {{selectedAddress.cash | currency}} </p>
         <div *ngFor="let name of selectedAddress.names">
             <div class="title name"><span [ngClass]="name.name === quickForm.value.name ? 'highlight' : ''">{{ name.name }} ({{name.visits}})</span></div>
             <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedNameStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p>
