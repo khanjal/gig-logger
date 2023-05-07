@@ -24,6 +24,7 @@ import { AddressModel } from '@models/address.model';
 import { NameModel } from '@models/name.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { INote } from '@interfaces/note.interface';
+import { IName } from '@interfaces/name.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -194,12 +195,23 @@ export class GoogleSheetService {
             if (name && trip.endAddress) {
                 let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
 
+                // TODO: Figure out how to combine the amounts increments.
                 if (nameAddress) {
+                    nameAddress.pay += trip.pay;
+                    nameAddress.tip += trip.tip;
+                    nameAddress.bonus += trip.bonus;
+                    nameAddress.total += trip.total;
+                    nameAddress.cash += trip.cash;
                     nameAddress.visits++;
                 }
                 else {
                     let address = new AddressModel;
                     address.address = trip.endAddress;
+                    address.pay += trip.pay;
+                    address.tip += trip.tip;
+                    address.bonus += trip.bonus;
+                    address.total += trip.total;
+                    address.cash += trip.cash;
                     address.visits = 1;
                     if(trip.note) {address.notes.push(note)};
                     name.addresses.push(address);
@@ -218,14 +230,25 @@ export class GoogleSheetService {
             let address = addresses.find(address => address.address === trip.endAddress);
 
             if (address && trip.name) {
-                let addressName = address.names.find(x => x.name === trip.name);
+                let addressName = address.names.find(x => x.name === trip.name); // TODO: Maybe make this a new model so you we don't have to below?
 
+                // TODO: Figure out how to combine the amounts increments.
                 if (addressName) {
+                    addressName.pay += trip.pay;
+                    addressName.tip += trip.tip;
+                    addressName.bonus += trip.bonus;
+                    addressName.total += trip.total;
+                    addressName.cash += trip.cash;
                     addressName.visits++;
                 }
                 else {
                     let name = new NameModel;
                     name.name = trip.name;
+                    name.pay += trip.pay;
+                    name.tip += trip.tip;
+                    name.bonus += trip.bonus;
+                    name.total += trip.total;
+                    name.cash += trip.cash;
                     if(trip.note) {name.notes.push(note)};
                     name.visits = 1;
 
