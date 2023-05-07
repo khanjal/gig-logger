@@ -1,7 +1,7 @@
-export interface ITrip {
+import { IAmount } from "./amount.interface";
+
+export interface ITrip extends IAmount {
     id?: number;
-    bonus: number;
-    cash: number;
     date: string;
     distance: number;
     endAddress: string;
@@ -10,12 +10,9 @@ export interface ITrip {
     name: string;
     note: string;
     number: number;
-    pay: number;
     pickupTime: string;
     place: string;
     saved: string;
     service: string;
     startAddress: string;
-    tip: number;
-    total: number;
 }
