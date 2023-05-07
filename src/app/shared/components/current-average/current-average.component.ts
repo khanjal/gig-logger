@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
@@ -22,6 +23,7 @@ export class CurrentAverageComponent implements OnInit {
   showMonthlyAverage: boolean = false;
 
   constructor(
+    private _snackBar: MatSnackBar,
       private _tripService: TripService,
       private _weekdayService: WeekdayService
     ) {}
@@ -53,6 +55,7 @@ export class CurrentAverageComponent implements OnInit {
     if(this.showDailyAverage) {
       this.showDailyAverage = false;
       this.showWeeklyAverage = true;
+      this._snackBar.open("Showing weekly average");
 
       return;
     }
@@ -60,6 +63,7 @@ export class CurrentAverageComponent implements OnInit {
     if(this.showWeeklyAverage) {
       this.showWeeklyAverage = false;
       this.showDailyAverage = true;
+      this._snackBar.open("Showing daily average");
 
       return;
     }
