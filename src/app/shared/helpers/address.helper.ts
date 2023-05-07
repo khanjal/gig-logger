@@ -1,5 +1,6 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { AddressModel } from "@models/address.model";
+import { NumberHelper } from "./number.helper";
 
 export class AddressHelper {
     static getShortAddress(address: string): string {
@@ -46,6 +47,14 @@ export class AddressHelper {
             addressModel.address = row['Address'];
             addressModel.names =  [];
             addressModel.visits = row['Visits'];
+
+            // Amount data
+            addressModel.pay = NumberHelper.getNumberFromString(row['Pay']);
+            addressModel.tip = NumberHelper.getNumberFromString(row['Tip']);
+            addressModel.bonus = NumberHelper.getNumberFromString(row['Bonus']);
+            addressModel.total = NumberHelper.getNumberFromString(row['Total']);
+            addressModel.cash = NumberHelper.getNumberFromString(row['Cash']);
+
             // console.log(addressModel);
 
             if (addressModel.address) {
