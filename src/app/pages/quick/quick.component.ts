@@ -66,7 +66,7 @@ export class QuickComponent implements OnInit {
     console.log('Saved!');
     console.timeEnd("saving");
 
-    this._snackBar.open("Trip(s) saved to spreadsheet");
+    this._snackBar.open("Trip(s) Saved to Spreadsheet");
   }
 
   public async load() {
