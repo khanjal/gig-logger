@@ -253,7 +253,7 @@ export class QuickComponent implements OnInit {
 
     await this.load();
     this.reloading = false;
-    // window.location.reload();
+    window.location.reload();
   }
 
   public getShortAddress(address: string): string {
