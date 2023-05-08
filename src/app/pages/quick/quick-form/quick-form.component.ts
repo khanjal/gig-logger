@@ -306,9 +306,6 @@ export class QuickFormComponent implements OnInit {
 
   public async addTrip() {
     let shift = await this.createShift();
-
-    // TODO: Update shift with time
-
     // console.log(shift);
     
     let trip = this.createTrip(shift);
