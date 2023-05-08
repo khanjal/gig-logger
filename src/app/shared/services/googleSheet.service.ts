@@ -269,7 +269,9 @@ export class GoogleSheetService {
 
             shiftRows.push({ 
                 Date: shift.date.trim(), 
-                Service: shift.service.trim(), 
+                Service: shift.service.trim(),
+                Start: shift.start,
+                End: shift.end,
                 '#': shift.number 
             });
 
