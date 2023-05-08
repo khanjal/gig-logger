@@ -327,7 +327,7 @@ export class QuickFormComponent implements OnInit {
     weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
     await this._weekdayService.updateWeekday(weekday);
 
-    this._snackBar.open("Trip stored to device");
+    this._snackBar.open("Trip Stored to Device");
 
     this.formReset();
     this.parentReload.emit();
