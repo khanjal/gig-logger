@@ -131,53 +131,53 @@ export class GoogleSheetService {
         // Addresses
         sheet = doc.sheetsByTitle["Addresses"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading addresses`);
+        this._snackBar.open(`Loading Addresses`);
         let addresses = AddressHelper.translateSheetData(rows);
         await this._addressService.loadAddresses(addresses);
 
         // Names
         sheet = doc.sheetsByTitle["Names"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading names`);
+        this._snackBar.open(`Loading Names`);
         let names = NameHelper.translateSheetData(rows);
         await this._nameService.loadNames(names);
 
         // Places
         sheet = doc.sheetsByTitle["Places"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading places`);
+        this._snackBar.open(`Loading Places`);
         let places = PlaceHelper.translateSheetData(rows);
         await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
 
         // Services
         sheet = doc.sheetsByTitle["Services"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading services`);
+        this._snackBar.open(`Loading Services`);
         await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
 
         // Shifts
         sheet = doc.sheetsByTitle["Shifts"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading shifts`);
+        this._snackBar.open(`Loading Shifts`);
         let shifts = ShiftHelper.translateSheetData(rows);
         await this._shiftService.loadShifts(shifts);
 
         // Trips
         sheet = doc.sheetsByTitle["Trips"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading trips`);
+        this._snackBar.open(`Loading Trips`);
         let trips = TripHelper.translateSheetData(rows);
         await this._tripService.loadTrips(trips);
 
         // Weekdays
         sheet = doc.sheetsByTitle["Weekdays"];
         rows = await sheet.getRows();
-        this._snackBar.open(`Loading weekdays`);
+        this._snackBar.open(`Loading Weekdays`);
         let weekdays = WeekdayHelper.translateSheetData(rows);
         await this._weekdayService.loadWeekdays(weekdays);
 
         // Update addresses with names, names with addresses, and places with addresses.
-        this._snackBar.open("Linking data");
+        this._snackBar.open("Linking Data");
         trips.forEach(async trip => {
             let note = {} as INote;
 
@@ -195,29 +195,14 @@ export class GoogleSheetService {
             if (name && trip.endAddress) {
                 let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
 
-                // TODO: Figure out how to combine the amounts increments.
-                if (nameAddress) {
-                    nameAddress.pay += trip.pay;
-                    nameAddress.tip += trip.tip;
-                    nameAddress.bonus += trip.bonus;
-                    nameAddress.total += trip.total;
-                    nameAddress.cash += trip.cash;
-                    nameAddress.visits++;
-                }
-                else {
-                    let address = new AddressModel;
-                    address.address = trip.endAddress;
-                    address.pay += trip.pay;
-                    address.tip += trip.tip;
-                    address.bonus += trip.bonus;
-                    address.total += trip.total;
-                    address.cash += trip.cash;
-                    address.visits = 1;
-                    if(trip.note) {address.notes.push(note)};
-                    name.addresses.push(address);
-                }
+                if(!nameAddress) {
+                    let address = addresses.find(address => address.address === trip.endAddress);
 
-                this._nameService.update(name!);
+                    if (address) {
+                        name.addresses.push(address);
+                        this._nameService.update(name);
+                    }
+                }
             }
 
             // Add note to name
@@ -232,30 +217,14 @@ export class GoogleSheetService {
             if (address && trip.name) {
                 let addressName = address.names.find(x => x.name === trip.name); // TODO: Maybe make this a new model so you we don't have to below?
 
-                // TODO: Figure out how to combine the amounts increments.
-                if (addressName) {
-                    addressName.pay += trip.pay;
-                    addressName.tip += trip.tip;
-                    addressName.bonus += trip.bonus;
-                    addressName.total += trip.total;
-                    addressName.cash += trip.cash;
-                    addressName.visits++;
-                }
-                else {
-                    let name = new NameModel;
-                    name.name = trip.name;
-                    name.pay += trip.pay;
-                    name.tip += trip.tip;
-                    name.bonus += trip.bonus;
-                    name.total += trip.total;
-                    name.cash += trip.cash;
-                    if(trip.note) {name.notes.push(note)};
-                    name.visits = 1;
+                if(!addressName) {
+                    let name = names.find(name => name.name === trip.name);
 
-                    address.names.push(name);
+                    if (name) {
+                        address.names.push(name);
+                        this._addressService.update(address);
+                    }
                 }
-
-                this._addressService.update(address!);
             }
 
             // Add note to address.
@@ -275,7 +244,7 @@ export class GoogleSheetService {
             
         });
 
-        this._snackBar.open("Spreadsheet data loaded");
+        this._snackBar.open("Spreadsheet Data Loaded");
     }
 
     public async commitUnsavedShifts() {
@@ -311,7 +280,6 @@ export class GoogleSheetService {
         // Only save if there are shift rows.
         // TODO: Save shifts individually. 
         if (shiftRows.length) {
-            this._snackBar.open(`Saving shifts`);
             await this.saveSheetData("Shifts", shiftRows);
         }
     }
@@ -349,7 +317,6 @@ export class GoogleSheetService {
         // Only save if there are trip rows.
         // TODO: Save trips individually.
         if (tripRows.length) {
-            this._snackBar.open(`Saving trips`);
             await this.saveSheetData("Trips", tripRows);
         }
     }
@@ -378,7 +345,8 @@ export class GoogleSheetService {
         if(!spreadsheetId) {
             return;
         }
-        
+        this._snackBar.open(`Saving ${{sheetName}}`);
+
         const doc = new GoogleSpreadsheet(spreadsheetId.id);
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
