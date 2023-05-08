@@ -55,7 +55,7 @@ export class CurrentAverageComponent implements OnInit {
     if(this.showDailyAverage) {
       this.showDailyAverage = false;
       this.showWeeklyAverage = true;
-      this._snackBar.open("Showing weekly average");
+      this._snackBar.open("Showing Weekly Average");
 
       return;
     }
@@ -63,7 +63,7 @@ export class CurrentAverageComponent implements OnInit {
     if(this.showWeeklyAverage) {
       this.showWeeklyAverage = false;
       this.showDailyAverage = true;
-      this._snackBar.open("Showing daily average");
+      this._snackBar.open("Showing Daily Average");
 
       return;
     }
