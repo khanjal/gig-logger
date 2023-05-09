@@ -103,7 +103,7 @@ export class SetupComponent {
     this.reloading = false;
     this.setting = false;
 
-    this._snackBar.open("Databases Refreshed and Spreadsheet(s) Loaded");
+    this._snackBar.open("Databases and Spreadsheet(s) Loaded");
 
     await this.load();
   }

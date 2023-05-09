@@ -234,7 +234,7 @@ export class QuickComponent implements OnInit {
       this._tripService.deleteLocal(trip.id!);
     });
 
-    this.load();
+    await this.load();
   }
 
   async unsaveLocalData() {
@@ -245,7 +245,7 @@ export class QuickComponent implements OnInit {
       await this._tripService.updateLocalTrip(trip);
     });
 
-    this.load();
+    await this.load();
   }
 
   async reload() {
@@ -254,7 +254,7 @@ export class QuickComponent implements OnInit {
 
     await this.load();
     this.reloading = false;
-    window.location.reload();
+    // window.location.reload();
   }
 
   public getShortAddress(address: string): string {
