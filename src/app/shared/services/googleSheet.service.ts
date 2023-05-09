@@ -221,38 +221,38 @@ export class GoogleSheetService {
 
             if (name && trip.endAddress) {
                 // console.log(`Adding ${trip.endAddress} to ${name.name}`);
-                let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
-                // if (name.name === "Aaron B") {
-                //     console.log(name);
-                //     console.log(trip);
+                // let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
+                // // if (name.name === "Aaron B") {
+                // //     console.log(name);
+                // //     console.log(trip);
+                // // }
+                // if (nameAddress) {
+                //     nameAddress.pay += trip.pay;
+                //     nameAddress.tip += trip.tip;
+                //     nameAddress.bonus += trip.bonus;
+                //     nameAddress.total += trip.total;
+                //     nameAddress.cash += trip.cash;
+                //     nameAddress.visits++;
+
+                //     if(trip.note) { nameAddress.notes.push(note); };
                 // }
-                if (nameAddress) {
-                    nameAddress.pay += trip.pay;
-                    nameAddress.tip += trip.tip;
-                    nameAddress.bonus += trip.bonus;
-                    nameAddress.total += trip.total;
-                    nameAddress.cash += trip.cash;
-                    nameAddress.visits++;
+                // else {
+                //     let address = {} as IAddress;
+                //     address.address = trip.endAddress;
+                //     address.pay = trip.pay;
+                //     address.tip = trip.tip;
+                //     address.bonus = trip.bonus;
+                //     address.total = trip.total;
+                //     address.cash = trip.cash;
+                //     address.notes = [];
+                //     address.visits = 1;
 
-                    if(trip.note) { nameAddress.notes.push(note); };
-                }
-                else {
-                    let address = {} as IAddress;
-                    address.address = trip.endAddress;
-                    address.pay = trip.pay;
-                    address.tip = trip.tip;
-                    address.bonus = trip.bonus;
-                    address.total = trip.total;
-                    address.cash = trip.cash;
-                    address.notes = [];
-                    address.visits = 1;
+                //     if(trip.note) { address.notes.push(note); };
 
-                    if(trip.note) { address.notes.push(note); };
-
-                    name.addresses.push(address);
-                }
+                //     name.addresses.push(address);
+                // }
                 // console.table(name);
-                updateName = true;
+                // updateName = true;
             }
 
             // Add note to name
@@ -270,32 +270,32 @@ export class GoogleSheetService {
             let address = addresses.find(x => x.address === trip.endAddress);
 
             if (address && trip.name) {
-                let addressName = address.names.find(x => x.name === trip.name);
+                // let addressName = address.names.find(x => x.name === trip.name);
 
-                if (addressName) {
-                    addressName.pay += trip.pay;
-                    addressName.tip += trip.tip;
-                    addressName.bonus += trip.bonus;
-                    addressName.total += trip.total;
-                    addressName.cash += trip.cash;
-                    addressName.visits++;
-                }
-                else {
-                    let name = {} as IName;
-                    name.name = trip.name;
-                    name.pay = trip.pay;
-                    name.tip = trip.tip;
-                    name.bonus = trip.bonus;
-                    name.total = trip.total;
-                    name.cash = trip.cash;
-                    name.notes = [];
-                    name.visits = 1;
+                // if (addressName) {
+                //     addressName.pay += trip.pay;
+                //     addressName.tip += trip.tip;
+                //     addressName.bonus += trip.bonus;
+                //     addressName.total += trip.total;
+                //     addressName.cash += trip.cash;
+                //     addressName.visits++;
+                // }
+                // else {
+                //     let name = {} as IName;
+                //     name.name = trip.name;
+                //     name.pay = trip.pay;
+                //     name.tip = trip.tip;
+                //     name.bonus = trip.bonus;
+                //     name.total = trip.total;
+                //     name.cash = trip.cash;
+                //     name.notes = [];
+                //     name.visits = 1;
 
-                    if(trip.note) {name.notes.push(note)};
+                //     if(trip.note) {name.notes.push(note)};
 
-                    address.names.push(name);
-                }
-                updateAddress = true;
+                //     address.names.push(name);
+                // }
+                // updateAddress = true;
             }
 
             // Add note to address.
@@ -330,7 +330,10 @@ export class GoogleSheetService {
             
             // Go through each trip and add addresses and notes
             addressTrips.forEach(async trip => {
-                let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
+                if (!name.addresses.includes(trip.endAddress)) {
+                    name.addresses.push(trip.endAddress);
+                }
+                
                 let note = {} as INote;
                 // If trip note exists create it.
                 if (trip.note) {
@@ -338,30 +341,10 @@ export class GoogleSheetService {
                     note.text = trip.note;
                     note.name = trip.name;
                     note.address = trip.endAddress;
-                }                
 
-                if (nameAddress) {
-                    nameAddress.pay += trip.pay;
-                    nameAddress.tip += trip.tip;
-                    nameAddress.bonus += trip.bonus;
-                    nameAddress.total += trip.total;
-                    nameAddress.cash += trip.cash;
-                    if(trip.note) { nameAddress.notes.push(note); }
-                    nameAddress.visits++;
-                }
-                else {
-                    let address = {} as IAddress;
-                    address.address = trip.endAddress;
-                    address.pay = trip.pay;
-                    address.tip = trip.tip;
-                    address.bonus = trip.bonus;
-                    address.total = trip.total;
-                    address.cash = trip.cash;
-                    address.notes = [];
-                    address.visits = 1;
-                    if (trip.note) { address.notes.push(note); }
-                    name.addresses.push(address);
-                }
+                    name.notes.push(note);
+                }                
+                
                 // console.table(name);
                 await this._nameService.update(name);
             });
@@ -378,7 +361,10 @@ export class GoogleSheetService {
 
             // Go through each trip and add addresses and notes
             nameTrips.forEach(async trip => {
-                let addressName = address.names.find(x => x.name === trip.name);
+                if (!address.names.includes(trip.name)) {
+                    address.names.push(trip.name);
+                }
+
                 let note = {} as INote;
                 // If trip note exists create it.
                 if (trip.note) {
@@ -386,30 +372,10 @@ export class GoogleSheetService {
                     note.text = trip.note;
                     note.name = trip.name;
                     note.address = trip.endAddress;
-                }                
 
-                if (addressName) {
-                    addressName.pay += trip.pay;
-                    addressName.tip += trip.tip;
-                    addressName.bonus += trip.bonus;
-                    addressName.total += trip.total;
-                    addressName.cash += trip.cash;
-                    if(trip.note) { addressName.notes.push(note); }
-                    addressName.visits++;
-                }
-                else {
-                    let name = {} as IName;
-                    name.name = trip.name;
-                    name.pay = trip.pay;
-                    name.tip = trip.tip;
-                    name.bonus = trip.bonus;
-                    name.total = trip.total;
-                    name.cash = trip.cash;
-                    name.notes = [];
-                    name.visits = 1;
-                    if (trip.note) { name.notes.push(note); }
-                    address.names.push(name);
-                }
+                    address.notes.push(note);
+                }                
+                
                 // console.table(name);
                 await this._addressService.update(address)
             });
