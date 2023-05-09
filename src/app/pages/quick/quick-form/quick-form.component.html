@@ -72,7 +72,7 @@
     <!-- Pay -->
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Pay</mat-label>
-        <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay>
+        <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
         <button type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
             <mat-icon>account_balance</mat-icon>
         </button>
@@ -81,7 +81,7 @@
     <!-- Distance -->
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Distance</mat-label>
-        <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
+        <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
         <button type="button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
             <mat-icon>drive_eta</mat-icon>
         </button>
