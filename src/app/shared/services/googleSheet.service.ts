@@ -34,6 +34,7 @@ import { IAddress } from '@interfaces/address.interface';
 @Injectable()
 export class GoogleSheetService {
     data: any = null;
+    doc: GoogleSpreadsheet | undefined;
 
     constructor(
             public http: HttpClient,
@@ -110,17 +111,17 @@ export class GoogleSheetService {
             return;
         }
 
-        let doc = new GoogleSpreadsheet(spreadsheetId);
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
-        await doc.loadInfo();
-        let sheets = SheetHelper.getSheetNames(doc);
+        this.doc = new GoogleSpreadsheet(spreadsheetId);
+        await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await this.doc.loadInfo();
+        let sheets = SheetHelper.getSheetNames(this.doc);
         // TODO - Check to make sure necessary sheets exist on spreadsheet.
 
         let sheet, rows;
 
         let spreadsheet = new Spreadsheet;
         spreadsheet.id = spreadsheetId;
-        spreadsheet.name = doc.title;
+        spreadsheet.name = this.doc.title;
         spreadsheet.default = "false";
 
         // Set as default if only one
@@ -129,56 +130,23 @@ export class GoogleSheetService {
         }
         await this._spreadsheetService.update(spreadsheet);
 
-        // Addresses
-        sheet = doc.sheetsByTitle["Addresses"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Addresses`);
-        let addresses = AddressHelper.translateSheetData(rows);
-        await this._addressService.loadAddresses(addresses);
-
-        // Names
-        sheet = doc.sheetsByTitle["Names"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Names`);
-        let names = NameHelper.translateSheetData(rows);
-        await this._nameService.loadNames(names);
-
-        // Places
-        sheet = doc.sheetsByTitle["Places"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Places`);
-        let places = PlaceHelper.translateSheetData(rows);
-        await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
-
-        // Services
-        sheet = doc.sheetsByTitle["Services"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Services`);
-        await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
-
-        // Shifts
-        sheet = doc.sheetsByTitle["Shifts"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Shifts`);
-        let shifts = ShiftHelper.translateSheetData(rows);
-        await this._shiftService.loadShifts(shifts);
-
-        // Trips
-        sheet = doc.sheetsByTitle["Trips"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Trips`);
-        let trips = TripHelper.translateSheetData(rows);
-        await this._tripService.loadTrips(trips);
-
-        // Weekdays
-        sheet = doc.sheetsByTitle["Weekdays"];
-        rows = await sheet.getRows();
-        this._snackBar.open(`Loading Weekdays`);
-        let weekdays = WeekdayHelper.translateSheetData(rows);
-        await this._weekdayService.loadWeekdays(weekdays);
+        await this.loadSheetData("Addresses");
+        await this.loadSheetData("Names");
+        await this.loadSheetData("Places");
+        await this.loadSheetData("Services");
+        await this.loadSheetData("Shifts");
+        await this.loadSheetData("Trips");
+        await this.loadSheetData("Weekdays");
 
         // Update addresses with names, names with addresses, and places with addresses.
         this._snackBar.open("Linking Data");
+        
+        // Load data needed.
+        let trips = await this._tripService.getRemoteTrips();
+        let places = await this._placeService.getRemotePlaces();
+        let names = await this._nameService.getRemoteNames();
+        let addresses = await this._addressService.getRemoteAddresses();
+        
         trips.forEach(async trip => {
             let note = {} as INote;
 
@@ -252,6 +220,44 @@ export class GoogleSheetService {
         });
 
         this._snackBar.open("Spreadsheet Data Loaded");
+    }
+
+    private async loadSheetData(sheetName: string) {
+        let sheet = this.doc?.sheetsByTitle[sheetName];
+        if (!sheet) {
+            this._snackBar.open(`${sheetName} Not Found`);
+            return;
+        }
+
+        let rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${sheetName}`);
+
+        switch (sheetName) {
+            case "Address":
+                await this._addressService.loadAddresses(AddressHelper.translateSheetData(rows));
+                break;
+            case "Names":
+                await this._nameService.loadNames(NameHelper.translateSheetData(rows));
+                break;
+            case "Places":
+                await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
+                break;
+            case "Services":
+                await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
+                break;
+            case "Shifts":
+                await this._shiftService.loadShifts(ShiftHelper.translateSheetData(rows));
+                break;
+            case "Trips":
+                await this._tripService.loadTrips(TripHelper.translateSheetData(rows));
+                break;
+            case "Weekdays":
+                await this._weekdayService.loadWeekdays(WeekdayHelper.translateSheetData(rows));
+                break;
+            default:
+                this._snackBar.open(`${sheetName} Not Found`);
+                break;
+        }
     }
 
     public async commitUnsavedShifts() {
