@@ -220,7 +220,7 @@ export class QuickFormComponent implements OnInit {
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
     else {
-      trip.pickupTime = shift.end;
+      trip.pickupTime = DateHelper.getTimeString(new Date);
     }
 
     return trip;
