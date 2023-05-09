@@ -198,6 +198,7 @@ export class QuickComponent implements OnInit {
 
   async setDropoffTime(trip: ITrip) {
     // TODO: Check if dropoff time is already set and prompt to overwrite
+    // TODO: Update shit end time
     trip.dropoffTime = DateHelper.getTimeString(new Date);
     await this._tripService.updateLocalTrip(trip);
   }
