@@ -25,6 +25,7 @@ import { NameModel } from '@models/name.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { INote } from '@interfaces/note.interface';
 import { IName } from '@interfaces/name.interface';
+import { IAddress } from '@interfaces/address.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -194,14 +195,17 @@ export class GoogleSheetService {
 
             if (name && trip.endAddress) {
                 let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
+                let address = addresses.find(address => address.address === trip.endAddress);
 
-                if(!nameAddress) {
-                    let address = addresses.find(address => address.address === trip.endAddress);
+                if(!nameAddress && address) {
+                    let basicAddress = {} as IAddress;
+                    basicAddress.id = address.id;
+                    basicAddress.address = address.address;
+                    basicAddress.pay = address.pay;
+                    basicAddress.tip = address.tip;
 
-                    if (address) {
-                        name.addresses.push(address);
-                        this._nameService.update(name);
-                    }
+                    name.addresses.push(basicAddress);
+                    this._nameService.update(name);
                 }
             }
 
@@ -215,15 +219,18 @@ export class GoogleSheetService {
             let address = addresses.find(address => address.address === trip.endAddress);
 
             if (address && trip.name) {
-                let addressName = address.names.find(x => x.name === trip.name); // TODO: Maybe make this a new model so you we don't have to below?
+                let addressName = address.names.find(x => x.name === trip.name);
+                let name = names.find(name => name.name === trip.name);
 
-                if(!addressName) {
-                    let name = names.find(name => name.name === trip.name);
+                if (!addressName && name) {
+                    let basicName = {} as IName;
+                    basicName.id = name.id;
+                    basicName.name = name.name;
+                    basicName.pay = name.pay;
+                    basicName.tip = name.tip;
 
-                    if (name) {
-                        address.names.push(name);
-                        this._addressService.update(address);
-                    }
+                    address.names.push(name);
+                    this._addressService.update(address);
                 }
             }
 

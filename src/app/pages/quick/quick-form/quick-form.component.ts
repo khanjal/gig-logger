@@ -187,10 +187,6 @@ export class QuickFormComponent implements OnInit {
       shift = <IShift><unknown>this.quickForm.value.shift;
     }
 
-    let timeString = DateHelper.getTimeString(new Date);
-
-    shift.end = timeString;
-
     return shift;
   }
 
@@ -426,14 +422,20 @@ export class QuickFormComponent implements OnInit {
 
   toggleAdvancedPay() {
     this.showAdvancedPay = !this.showAdvancedPay;
+
+    this.showAdvancedPay ? this._snackBar.open("Showing Additional Payment Fields") : this._snackBar.open("Hiding Additional Payment Fields");
   }
 
   toggleOdometer() {
     this.showOdometer = !this.showOdometer;
+
+    this.showOdometer ? this._snackBar.open("Showing Odometer Fields") : this._snackBar.open("Hiding Odometer Fields");
   }
 
   togglePickupAddress() {
     this.showPickupAddress = !this.showPickupAddress;
+
+    this.showPickupAddress ? this._snackBar.open("Showing Pickup Address") : this._snackBar.open("Hiding Pickup Address");
   }
   
   compareShifts(o1: IShift, o2: IShift): boolean {
