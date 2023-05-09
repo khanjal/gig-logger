@@ -7,7 +7,7 @@ export class NameModel implements IName {
     bonus: number = 0;
     cash: number = 0;
     name: string = "";
-    addresses: IAddress[] = [];
+    addresses: string[] = [];
     pay: number = 0;
     notes: INote[] = [];
     tip: number = 0;

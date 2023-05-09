@@ -1,5 +1,4 @@
 import { IAddress } from "@interfaces/address.interface";
-import { IName } from "@interfaces/name.interface";
 import { INote } from "@interfaces/note.interface";
 
 export class AddressModel implements IAddress {
@@ -7,7 +6,7 @@ export class AddressModel implements IAddress {
     address: string = "";
     bonus: number = 0;
     cash: number = 0;
-    names: IName[] = [];
+    names: string[] = [];
     notes: INote[] = [];
     pay: number = 0;
     tip: number = 0;
