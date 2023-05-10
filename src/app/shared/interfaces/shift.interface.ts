@@ -1,4 +1,6 @@
-export interface IShift {
+import { IAmount } from "./amount.interface";
+
+export interface IShift extends IAmount {
     id?: number;
     date: string;
     distance: number;
@@ -8,6 +10,5 @@ export interface IShift {
     service: string;
     number: number;
     start: string;
-    total: number;
     trips: number;
 }

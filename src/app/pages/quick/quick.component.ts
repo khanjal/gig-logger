@@ -11,7 +11,7 @@ import { TripHelper } from '@helpers/trip.helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
-import { CurrentDayAverageComponent } from '@components/current-day-average/current-day-average.component';
+import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -25,7 +25,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 })
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
-  @ViewChild(CurrentDayAverageComponent) average:CurrentDayAverageComponent | undefined;
+  @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
 
   clearing: boolean = false;
   reloading: boolean = false;
@@ -66,7 +66,7 @@ export class QuickComponent implements OnInit {
     console.log('Saved!');
     console.timeEnd("saving");
 
-    this._snackBar.open("Trip(s) saved to spreadsheet");
+    this._snackBar.open("Trip(s) Saved to Spreadsheet");
   }
 
   public async load() {
@@ -198,6 +198,7 @@ export class QuickComponent implements OnInit {
 
   async setDropoffTime(trip: ITrip) {
     // TODO: Check if dropoff time is already set and prompt to overwrite
+    // TODO: Update shit end time
     trip.dropoffTime = DateHelper.getTimeString(new Date);
     await this._tripService.updateLocalTrip(trip);
   }
@@ -233,7 +234,7 @@ export class QuickComponent implements OnInit {
       this._tripService.deleteLocal(trip.id!);
     });
 
-    this.load();
+    await this.load();
   }
 
   async unsaveLocalData() {
@@ -244,7 +245,7 @@ export class QuickComponent implements OnInit {
       await this._tripService.updateLocalTrip(trip);
     });
 
-    this.load();
+    await this.load();
   }
 
   async reload() {
