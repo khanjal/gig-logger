@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
 import { IName } from '@interfaces/name.interface';
+import { INote } from '@interfaces/note.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -62,9 +63,13 @@ export class QuickFormComponent implements OnInit {
   filteredStartAddresses: Observable<IAddress[]> | undefined;
   filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
+  selectedAddressNotes: INote[] | undefined;
+  selectedAddressStringNotes: string[] | undefined;
 
   filteredNames: Observable<NameModel[]> | undefined;
   selectedName: IName | undefined;
+  selectedNameNotes: INote[] | undefined;
+  selectedNameStringNotes: string[] | undefined;
 
   filteredPlaces: Observable<PlaceModel[]> | undefined;
   selectedPlace: IPlace | undefined;
@@ -182,10 +187,6 @@ export class QuickFormComponent implements OnInit {
       shift = <IShift><unknown>this.quickForm.value.shift;
     }
 
-    let timeString = DateHelper.getTimeString(new Date);
-
-    shift.end = timeString;
-
     return shift;
   }
 
@@ -219,7 +220,7 @@ export class QuickFormComponent implements OnInit {
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
     else {
-      trip.pickupTime = shift.end;
+      trip.pickupTime = DateHelper.getTimeString(new Date);
     }
 
     return trip;
@@ -301,9 +302,6 @@ export class QuickFormComponent implements OnInit {
 
   public async addTrip() {
     let shift = await this.createShift();
-
-    // TODO: Update shift with time
-
     // console.log(shift);
     
     let trip = this.createTrip(shift);
@@ -322,7 +320,7 @@ export class QuickFormComponent implements OnInit {
     weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
     await this._weekdayService.updateWeekday(weekday);
 
-    this._snackBar.open("Trip stored to device");
+    this._snackBar.open("Trip Stored to Device");
 
     this.formReset();
     this.parentReload.emit();
@@ -350,7 +348,9 @@ export class QuickFormComponent implements OnInit {
 
   public formReset() {
     this.selectedAddress = undefined;
+    this.selectedAddressNotes = undefined;
     this.selectedName = undefined;
+    this.selectedNameNotes = undefined;
     this.selectedPlace = undefined;
     this.quickForm.reset();
     this.setDefaultShift();
@@ -389,6 +389,8 @@ export class QuickFormComponent implements OnInit {
 
   async showAddressNames(address: string) {
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
+    this.selectedAddressNotes = this.selectedAddress?.notes.filter(x => !x.name);
+    this.selectedAddressStringNotes = this.selectedAddress?.notes?.map(x => x.text);
   }
 
   showNameAddressesEvent(event: any) {
@@ -398,6 +400,8 @@ export class QuickFormComponent implements OnInit {
 
   async showNameAddresses(name: string) {
     this.selectedName = await this._nameService.findRemoteName(name);
+    this.selectedNameNotes = this.selectedName?.notes?.filter(x => !x.address);
+    this.selectedNameStringNotes = this.selectedName?.notes?.map(x => x.text);
   }
 
   selectPlaceEvent(event: any) {
@@ -418,14 +422,20 @@ export class QuickFormComponent implements OnInit {
 
   toggleAdvancedPay() {
     this.showAdvancedPay = !this.showAdvancedPay;
+
+    this.showAdvancedPay ? this._snackBar.open("Showing Additional Payment Fields") : this._snackBar.open("Hiding Additional Payment Fields");
   }
 
   toggleOdometer() {
     this.showOdometer = !this.showOdometer;
+
+    this.showOdometer ? this._snackBar.open("Showing Odometer Fields") : this._snackBar.open("Hiding Odometer Fields");
   }
 
   togglePickupAddress() {
     this.showPickupAddress = !this.showPickupAddress;
+
+    this.showPickupAddress ? this._snackBar.open("Showing Pickup Address") : this._snackBar.open("Hiding Pickup Address");
   }
   
   compareShifts(o1: IShift, o2: IShift): boolean {
@@ -442,10 +452,6 @@ export class QuickFormComponent implements OnInit {
 
   public getPlaceAddress(address: string) {
     return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
-  }
-
-  public getShortAddress(address: string): string {
-    return AddressHelper.getShortAddress(address);
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {

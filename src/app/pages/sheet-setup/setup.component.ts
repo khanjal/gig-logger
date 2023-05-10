@@ -103,7 +103,7 @@ export class SetupComponent {
     this.reloading = false;
     this.setting = false;
 
-    this._snackBar.open("Databases refreshed and spreadsheet(s) loaded");
+    this._snackBar.open("Databases and Spreadsheet(s) Loaded");
 
     await this.load();
   }
@@ -116,7 +116,7 @@ export class SetupComponent {
     localStorage.clear();
     // window.location.reload();
 
-    this._snackBar.open("All data deleted");
+    this._snackBar.open("All Data Deleted");
 
     await this.load();
   }

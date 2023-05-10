@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CurrentDayAverageComponent } from './current-day-average.component';
+import { CurrentAverageComponent } from './current-average.component';
 
 describe('CurrentDayAverageComponent', () => {
-  let component: CurrentDayAverageComponent;
-  let fixture: ComponentFixture<CurrentDayAverageComponent>;
+  let component: CurrentAverageComponent;
+  let fixture: ComponentFixture<CurrentAverageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CurrentDayAverageComponent ]
+      declarations: [ CurrentAverageComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CurrentDayAverageComponent);
+    fixture = TestBed.createComponent(CurrentAverageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
