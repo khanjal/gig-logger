@@ -17,11 +17,14 @@ import { PlaceService } from './place.service';
 import { ServiceService } from './service.service';
 import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
 import { SheetHelper } from '@helpers/sheet.helper';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { INote } from '@interfaces/note.interface';
+import { IName } from '@interfaces/name.interface';
+import { IAddress } from '@interfaces/address.interface';
+import { TimerService } from './timer.service';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -30,9 +33,11 @@ import { SheetHelper } from '@helpers/sheet.helper';
 @Injectable()
 export class GoogleSheetService {
     data: any = null;
+    doc: GoogleSpreadsheet | undefined;
 
     constructor(
             public http: HttpClient,
+            private _snackBar: MatSnackBar,
             private _addressService: AddressService,
             private _nameService: NameService,
             private _placeService: PlaceService,
@@ -61,8 +66,8 @@ export class GoogleSheetService {
         await doc.loadInfo();
 
         const sheet = doc.sheetsById[id];
-        console.log(sheet.title);
-        console.log(sheet.rowCount);
+        // console.log(sheet.title);
+        // console.log(sheet.rowCount);
 
         return sheet;
     }
@@ -75,8 +80,8 @@ export class GoogleSheetService {
         await doc.loadInfo();
 
         const sheet = doc.sheetsByTitle[name];
-        console.log(sheet.title);
-        console.log(sheet.rowCount);
+        // console.log(sheet.title);
+        // console.log(sheet.rowCount);
 
         return sheet;
     }
@@ -105,17 +110,17 @@ export class GoogleSheetService {
             return;
         }
 
-        let doc = new GoogleSpreadsheet(spreadsheetId);
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
-        await doc.loadInfo();
-        let sheets = SheetHelper.getSheetNames(doc);
+        this.doc = new GoogleSpreadsheet(spreadsheetId);
+        await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await this.doc.loadInfo();
+        let sheets = SheetHelper.getSheetNames(this.doc);
         // TODO - Check to make sure necessary sheets exist on spreadsheet.
 
         let sheet, rows;
 
         let spreadsheet = new Spreadsheet;
         spreadsheet.id = spreadsheetId;
-        spreadsheet.name = doc.title;
+        spreadsheet.name = this.doc.title;
         spreadsheet.default = "false";
 
         // Set as default if only one
@@ -124,63 +129,184 @@ export class GoogleSheetService {
         }
         await this._spreadsheetService.update(spreadsheet);
 
-        // Addresses
-        sheet = doc.sheetsByTitle["Addresses"];
-        rows = await sheet.getRows();
-        let addresses = AddressHelper.translateSheetData(rows);
-        await this._addressService.loadAddresses(addresses);
+        // Delete spreadsheetDB to reload.
+        // this._spreadsheetService.deleteRemoteData();
 
-        // Names
-        sheet = doc.sheetsByTitle["Names"];
-        rows = await sheet.getRows();
-        let names = NameHelper.translateSheetData(rows);
-        await this._nameService.loadNames(names);
+        await this.loadSheetData("Addresses");
+        await this.loadSheetData("Names");
+        await this.loadSheetData("Places");
+        await this.loadSheetData("Services");
+        await this.loadSheetData("Shifts");
+        await this.loadSheetData("Trips");
+        await this.loadSheetData("Weekdays");
 
-        // Places
-        sheet = doc.sheetsByTitle["Places"];
-        rows = await sheet.getRows();
-        let places = PlaceHelper.translateSheetData(rows);
-        await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
+        this._snackBar.open("Linking Trip Data");
+        await this.linkNameData();
+        await this.linkAddressData();
+        await this.linkPlaceData();
+        // await this.linkTripData();
 
-        // Services
-        sheet = doc.sheetsByTitle["Services"];
-        rows = await sheet.getRows();
-        await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
+        // await this._timerService.delay(10000);
 
-        // Shifts
-        sheet = doc.sheetsByTitle["Shifts"];
-        rows = await sheet.getRows();
-        let shifts = ShiftHelper.translateSheetData(rows);
-        await this._shiftService.loadShifts(shifts);
+        this._snackBar.open("Spreadsheet Data Loaded");
+    }
 
-        // Trips
-        sheet = doc.sheetsByTitle["Trips"];
-        rows = await sheet.getRows();
-        let trips = TripHelper.translateSheetData(rows);
-        await this._tripService.loadTrips(trips);
+    private async loadSheetData(sheetName: string) {
+        let sheet = this.doc?.sheetsByTitle[sheetName];
+        if (!sheet) {
+            this._snackBar.open(`${sheetName} Not Found`);
+            return;
+        }
 
-        // Weekdays
-        sheet = doc.sheetsByTitle["Weekdays"];
-        rows = await sheet.getRows();
-        let weekdays = WeekdayHelper.translateSheetData(rows);
-        await this._weekdayService.loadWeekdays(weekdays);
+        console.log(`Loading ${sheetName}`);
 
+        let rows = await sheet.getRows();
+        this._snackBar.open(`Loading ${sheetName}`);
+
+        switch (sheetName) {
+            case "Addresses":
+                await this._addressService.loadAddresses(AddressHelper.translateSheetData(rows));
+                break;
+            case "Names":
+                await this._nameService.loadNames(NameHelper.translateSheetData(rows));
+                break;
+            case "Places":
+                await this._placeService.loadPlaces(PlaceHelper.translateSheetData(rows));
+                break;
+            case "Services":
+                await this._serviceService.loadServices(ServiceHelper.translateSheetData(rows));
+                break;
+            case "Shifts":
+                await this._shiftService.loadShifts(ShiftHelper.translateSheetData(rows));
+                break;
+            case "Trips":
+                await this._tripService.loadTrips(TripHelper.translateSheetData(rows));
+                break;
+            case "Weekdays":
+                await this._weekdayService.loadWeekdays(WeekdayHelper.translateSheetData(rows));
+                break;
+            default:
+                this._snackBar.open(`${sheetName} Not Found`);
+                break;
+        }
+    }
+
+    private async linkTripData() {
         // Update addresses with names, names with addresses, and places with addresses.
+        this._snackBar.open("Linking Data");
+                
+        // Load data needed.
+        let trips = await this._tripService.getRemoteTrips();
+        let places = await this._placeService.getRemotePlaces();
+        let names = await this._nameService.getRemoteNames();
+        let addresses = await this._addressService.getRemoteAddresses();
+        
+        console.log('Linking Trip Data');
+
         trips.forEach(async trip => {
-            // Add address to name
-            let name = names.find(name => name.name === trip.name);
-            if (name && trip.endAddress && !name.addresses.includes(trip.endAddress)) {
-                name.addresses?.push(trip.endAddress);
-                name.addresses = [...new Set(name.addresses)].sort();
-                this._nameService.update(name!);
+            let note = {} as INote;
+            let updateName: boolean = false;
+            let updateAddress: boolean = false;
+
+            // If trip note exists create it.
+            if (trip.note) {
+                note.date = trip.date;
+                note.text = trip.note;
+                note.name = trip.name;
+                note.address = trip.endAddress;
+            }
+
+            // Add addresses to name
+            let name = names.find(x => x.name === trip.name);
+
+            if (name && trip.endAddress) {
+                // console.log(`Adding ${trip.endAddress} to ${name.name}`);
+                // let nameAddress = name.addresses.find(x => x.address === trip.endAddress);
+                // // if (name.name === "Aaron B") {
+                // //     console.log(name);
+                // //     console.log(trip);
+                // // }
+                // if (nameAddress) {
+                //     nameAddress.pay += trip.pay;
+                //     nameAddress.tip += trip.tip;
+                //     nameAddress.bonus += trip.bonus;
+                //     nameAddress.total += trip.total;
+                //     nameAddress.cash += trip.cash;
+                //     nameAddress.visits++;
+
+                //     if(trip.note) { nameAddress.notes.push(note); };
+                // }
+                // else {
+                //     let address = {} as IAddress;
+                //     address.address = trip.endAddress;
+                //     address.pay = trip.pay;
+                //     address.tip = trip.tip;
+                //     address.bonus = trip.bonus;
+                //     address.total = trip.total;
+                //     address.cash = trip.cash;
+                //     address.notes = [];
+                //     address.visits = 1;
+
+                //     if(trip.note) { address.notes.push(note); };
+
+                //     name.addresses.push(address);
+                // }
+                // console.table(name);
+                // updateName = true;
+            }
+
+            // Add note to name
+            if (name && trip.note) {
+                name.notes.push(note);
+                updateName = true;
+                
+            }
+
+            if (name && updateName) {
+                await this._nameService.update(name);
             }
 
             // Add name to address
-            let address = addresses.find(address => address.address === trip.endAddress);
-            if (address && trip.name && !address.names.includes(trip.name)) {
-                address.names?.push(trip.name);
-                address.names = [...new Set(address.names)].sort();
-                this._addressService.update(address!);
+            let address = addresses.find(x => x.address === trip.endAddress);
+
+            if (address && trip.name) {
+                // let addressName = address.names.find(x => x.name === trip.name);
+
+                // if (addressName) {
+                //     addressName.pay += trip.pay;
+                //     addressName.tip += trip.tip;
+                //     addressName.bonus += trip.bonus;
+                //     addressName.total += trip.total;
+                //     addressName.cash += trip.cash;
+                //     addressName.visits++;
+                // }
+                // else {
+                //     let name = {} as IName;
+                //     name.name = trip.name;
+                //     name.pay = trip.pay;
+                //     name.tip = trip.tip;
+                //     name.bonus = trip.bonus;
+                //     name.total = trip.total;
+                //     name.cash = trip.cash;
+                //     name.notes = [];
+                //     name.visits = 1;
+
+                //     if(trip.note) {name.notes.push(note)};
+
+                //     address.names.push(name);
+                // }
+                // updateAddress = true;
+            }
+
+            // Add note to address.
+            if (address && trip.note) {
+                address.notes.push(note);
+                updateAddress = true;
+            }
+
+            if (address && updateAddress)
+            {
+                await this._addressService.update(address);
             }
 
             // Add address to place
@@ -189,9 +315,87 @@ export class GoogleSheetService {
                 // console.log(`Adding ${trip.startAddress} to ${place.place}`);
                 place.addresses.push(trip.startAddress);
                 place.addresses = [...new Set(place.addresses)].sort();
-                this._placeService.update(place!);    
+                await this._placeService.update(place);
             }
             
+        });
+    }
+
+    private async linkNameData () {
+        let names = await this._nameService.getRemoteNames();
+        let trips = await this._tripService.getRemoteTrips();
+
+        names.forEach(async name => {
+            let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
+            
+            // Go through each trip and add addresses and notes
+            addressTrips.forEach(async trip => {
+                if (!name.addresses.includes(trip.endAddress)) {
+                    name.addresses.push(trip.endAddress);
+                }
+                
+                let note = {} as INote;
+                // If trip note exists create it.
+                if (trip.note) {
+                    note.date = trip.date;
+                    note.text = trip.note;
+                    note.name = trip.name;
+                    note.address = trip.endAddress;
+
+                    name.notes.push(note);
+                }                
+                
+                // console.table(name);
+                await this._nameService.update(name);
+            });
+            // console.log(`Name: ${name.name}`);
+        });
+    }
+
+    private async linkAddressData () {
+        let addresses = await this._addressService.getRemoteAddresses();
+        let trips = await this._tripService.getRemoteTrips();
+
+        addresses.forEach(async address => {
+            let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
+
+            // Go through each trip and add addresses and notes
+            nameTrips.forEach(async trip => {
+                if (!address.names.includes(trip.name)) {
+                    address.names.push(trip.name);
+                }
+
+                let note = {} as INote;
+                // If trip note exists create it.
+                if (trip.note) {
+                    note.date = trip.date;
+                    note.text = trip.note;
+                    note.name = trip.name;
+                    note.address = trip.endAddress;
+
+                    address.notes.push(note);
+                }                
+                
+                // console.table(name);
+                await this._addressService.update(address)
+            });
+            // console.log(`Address: ${address.address}`);
+        });
+    }
+
+    private async linkPlaceData() {
+        let trips = await this._tripService.getRemoteTrips();
+        let places = await this._placeService.getRemotePlaces();
+
+        places.forEach(async place => {
+            let placeAddresses = trips.filter(x => x.place === place.place && x.startAddress);
+
+            placeAddresses.forEach(placeAddress => {
+                place.addresses.push(placeAddress.startAddress);
+            });
+
+            place.addresses = [...new Set(place.addresses)].sort();
+            await this._placeService.update(place);
         });
     }
 
@@ -217,7 +421,9 @@ export class GoogleSheetService {
 
             shiftRows.push({ 
                 Date: shift.date.trim(), 
-                Service: shift.service.trim(), 
+                Service: shift.service.trim(),
+                Start: shift.start,
+                End: shift.end,
                 '#': shift.number 
             });
 
@@ -226,6 +432,7 @@ export class GoogleSheetService {
         });
 
         // Only save if there are shift rows.
+        // TODO: Save shifts individually. 
         if (shiftRows.length) {
             await this.saveSheetData("Shifts", shiftRows);
         }
@@ -262,6 +469,7 @@ export class GoogleSheetService {
         });
 
         // Only save if there are trip rows.
+        // TODO: Save trips individually.
         if (tripRows.length) {
             await this.saveSheetData("Trips", tripRows);
         }
@@ -278,7 +486,7 @@ export class GoogleSheetService {
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
-        console.log(doc.title);
+        // console.log(doc.title);
 
         let sheet = doc.sheetsByTitle[sheetName];
 
@@ -291,12 +499,13 @@ export class GoogleSheetService {
         if(!spreadsheetId) {
             return;
         }
-        
+        this._snackBar.open(`Saving ${{sheetName}}`);
+
         const doc = new GoogleSpreadsheet(spreadsheetId.id);
 
         await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
         await doc.loadInfo();
-        console.log(doc.title);
+        // console.log(doc.title);
 
         let sheet = doc.sheetsByTitle[sheetName];
 

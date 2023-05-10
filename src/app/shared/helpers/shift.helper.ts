@@ -82,9 +82,11 @@ export class ShiftHelper {
             shiftModel.id = row.rowIndex;
             shiftModel.key = row['Key'];
             shiftModel.date = row['Date'];
+            shiftModel.end = row['End'];
             shiftModel.saved = "true";
             shiftModel.service = row['Service'];
             shiftModel.number = row['#'];
+            shiftModel.start = row['Start'];
             shiftModel.total = NumberHelper.getNumberFromString(row['G Total']) ?? 0;
             shiftModel.trips = row['T Trip'] ?? 0;
             // console.log(shift);

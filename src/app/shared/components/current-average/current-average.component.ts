@@ -1,14 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
 @Component({
-  selector: 'app-current-day-average',
-  templateUrl: './current-day-average.component.html',
-  styleUrls: ['./current-day-average.component.scss']
+  selector: 'app-current-average',
+  templateUrl: './current-average.component.html',
+  styleUrls: ['./current-average.component.scss']
 })
 
-export class CurrentDayAverageComponent implements OnInit {
+export class CurrentAverageComponent implements OnInit {
   @Input() date: string = new Date().toLocaleDateString();
 
   currentDayAmount: number = 0;
@@ -22,6 +23,7 @@ export class CurrentDayAverageComponent implements OnInit {
   showMonthlyAverage: boolean = false;
 
   constructor(
+    private _snackBar: MatSnackBar,
       private _tripService: TripService,
       private _weekdayService: WeekdayService
     ) {}
@@ -35,7 +37,7 @@ export class CurrentDayAverageComponent implements OnInit {
     this.currentDayAmount = 0;
     let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    this.currentDayAmount = weekday.currentAmount;
+    this.currentDayAmount = isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
     this.dailyAverage = weekday.dailyPrevAverage;
 
     // Load weekly average
@@ -45,8 +47,7 @@ export class CurrentDayAverageComponent implements OnInit {
     // Add unsaved trip amounts.
     let unsavedTrips = (await this._tripService.getLocalTrips()).filter(x => x.saved === "false");
     let unsavedTripsAmount = unsavedTrips.reduce((n, {total}) => n + total, 0);
-    
-    this.currentWeekAmount = weekTotal.currentAmount + unsavedTripsAmount;
+    this.currentWeekAmount = (isNaN(weekTotal.currentAmount) ? 0 : weekTotal.currentAmount) + unsavedTripsAmount;
     this.weeklyAverage = weekTotal.dailyPrevAverage;
   }
 
@@ -54,6 +55,7 @@ export class CurrentDayAverageComponent implements OnInit {
     if(this.showDailyAverage) {
       this.showDailyAverage = false;
       this.showWeeklyAverage = true;
+      this._snackBar.open("Showing Weekly Average");
 
       return;
     }
@@ -61,6 +63,7 @@ export class CurrentDayAverageComponent implements OnInit {
     if(this.showWeeklyAverage) {
       this.showWeeklyAverage = false;
       this.showDailyAverage = true;
+      this._snackBar.open("Showing Daily Average");
 
       return;
     }

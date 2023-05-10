@@ -11,6 +11,8 @@
                 <span class="padding-right" *ngIf="trip.cash"><b>Cash</b> {{trip.cash | currency}}</span>
                 <span class="padding-right" *ngIf="trip.total > trip.pay"><b>Total</b> {{trip.total | currency}}</span>
             </div>
+            <div *ngIf="trip.note">"{{trip.note}}"
+            </div>
         </mat-card-content>
     </div>
 </mat-card>
