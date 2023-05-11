@@ -14,7 +14,7 @@ export class DeliveryService {
         await spreadsheetDB.deliveries.bulkAdd(deliveries);
     }
 
-    public async queryRemoteShifts(field: string, value: string | number): Promise<IDelivery[]> {
+    public async queryRemoteDeliveries(field: string, value: string | number): Promise<IDelivery[]> {
         return await spreadsheetDB.deliveries.where(field).equals(value).toArray();
     }
 }
