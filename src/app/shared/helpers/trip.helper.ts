@@ -11,49 +11,49 @@ export class TripHelper {
         return trips;
     }
 
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): TripModel[] {
-        let trips: TripModel[] = [];
+    static translateSheetData(rows: GoogleSpreadsheetRow[]): ITrip[] {
+        let trips: ITrip[] = [];
 
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let tripModel: TripModel = new TripModel;
+            let trip: ITrip = {} as ITrip;
             
             // Local
-            tripModel.saved = "true";
+            trip.saved = "true";
 
             // Keys
-            tripModel.id = row.rowIndex;
-            tripModel.key = row['Key'];
+            trip.id = row.rowIndex;
+            trip.key = row['Key'];
 
             // Service
-            tripModel.service = row['Service'];
-            tripModel.number = row['#'];
+            trip.service = row['Service'];
+            trip.number = row['#'];
 
             // Person
-            tripModel.name = row['Name'];
-            tripModel.startAddress = row['Start Address'];
-            tripModel.endAddress = row['End Address'];
+            trip.name = row['Name'];
+            trip.startAddress = row['Start Address'];
+            trip.endAddress = row['End Address'];
             
-            tripModel.date = row['Date'];
-            tripModel.pickupTime = row['Pickup'];
-            tripModel.dropoffTime = row['Dropoff'];
-            tripModel.place = row['Place'];
-            tripModel.distance = NumberHelper.getNumberFromString(row['Distance']);
+            trip.date = row['Date'];
+            trip.pickupTime = row['Pickup'];
+            trip.dropoffTime = row['Dropoff'];
+            trip.place = row['Place'];
+            trip.distance = NumberHelper.getNumberFromString(row['Distance']);
             
             // Amounts
-            tripModel.pay = NumberHelper.getNumberFromString(row['Pay']);
-            tripModel.tip = NumberHelper.getNumberFromString(row['Tip']);
-            tripModel.bonus = NumberHelper.getNumberFromString(row['Bonus']);
-            tripModel.total = NumberHelper.getNumberFromString(row['Total']);
-            tripModel.cash = NumberHelper.getNumberFromString(row['Cash']);
+            trip.pay = NumberHelper.getNumberFromString(row['Pay']);
+            trip.tip = NumberHelper.getNumberFromString(row['Tip']);
+            trip.bonus = NumberHelper.getNumberFromString(row['Bonus']);
+            trip.total = NumberHelper.getNumberFromString(row['Total']);
+            trip.cash = NumberHelper.getNumberFromString(row['Cash']);
 
-            tripModel.note = row['Note'];
+            trip.note = row['Note'];
 
             // console.log(trip);
 
-            if (tripModel.date) {
-                trips.push(tripModel);
+            if (trip.date) {
+                trips.push(trip);
             }
             
         });

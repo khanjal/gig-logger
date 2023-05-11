@@ -6,8 +6,8 @@ import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
-import { INote } from '@interfaces/note.interface';
 import { IPlace } from '@interfaces/place.interface';
+import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
@@ -22,11 +22,6 @@ import { Observable, startWith, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
-import { NameModel } from 'src/app/shared/models/name.model';
-import { PlaceModel } from 'src/app/shared/models/place.model';
-import { ServiceModel } from 'src/app/shared/models/service.model';
-import { ShiftModel } from 'src/app/shared/models/shift.model';
-import { TripModel } from 'src/app/shared/models/trip.model';
 
 @Component({
   selector: 'quick-form',
@@ -67,17 +62,17 @@ export class QuickFormComponent implements OnInit {
   selectedAddress: IAddress | undefined;
   selectedAddressDeliveries: IDelivery[] | undefined;
   
-  filteredNames: Observable<NameModel[]> | undefined;
+  filteredNames: Observable<IName[]> | undefined;
   selectedName: IName | undefined;
   selectedNameDeliveries: IDelivery[] | undefined;
   
-  filteredPlaces: Observable<PlaceModel[]> | undefined;
+  filteredPlaces: Observable<IPlace[]> | undefined;
   selectedPlace: IPlace | undefined;
 
-  filteredServices: Observable<ServiceModel[]> | undefined;
+  filteredServices: Observable<IService[]> | undefined;
 
-  sheetTrips: TripModel[] = [];
-  shifts: ShiftModel[] = [];
+  sheetTrips: ITrip[] = [];
+  shifts: IShift[] = [];
   selectedShift: IShift | undefined;
 
   title: string = "Add Trip";
@@ -171,7 +166,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async createShift(): Promise<IShift> {
-    let shift: ShiftModel = new ShiftModel;
+    let shift: IShift = {} as IShift;
     if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
       console.log("New Shift!");
       let shifts: IShift[] = [];
@@ -192,7 +187,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   private createTrip(shift: IShift): ITrip {
-    let trip: TripModel = new TripModel;
+    let trip: ITrip = {} as ITrip;
 
     trip.id = this.data?.id;
     trip.key = shift.key;
@@ -461,19 +456,19 @@ export class QuickFormComponent implements OnInit {
     return (await this._addressService.filterRemoteAddress(filterValue)).slice(0,100);
   }
 
-  private async _filterName(value: string): Promise<NameModel[]> {
+  private async _filterName(value: string): Promise<IName[]> {
     const filterValue = value;
 
     return (await this._nameService.filterRemoteNames(filterValue)).slice(0,100);
   }
 
-  private async _filterPlace(value: string): Promise<PlaceModel[]> {
+  private async _filterPlace(value: string): Promise<IPlace[]> {
     const filterValue = value;
 
     return await this._placeService.filterRemotePlaces(filterValue);
   }
 
-  private async _filterService(value: string): Promise<ServiceModel[]> {
+  private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
     return await this._serviceService.filterRemoteServices(filterValue);

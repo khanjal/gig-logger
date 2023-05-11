@@ -1,5 +1,6 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { IPlace } from "@interfaces/place.interface";
+import { NumberHelper } from "./number.helper";
 
 export class PlaceHelper {
     
@@ -11,10 +12,16 @@ export class PlaceHelper {
             // console.log(row.rowIndex);
             let place: IPlace = {} as IPlace;
             place.id = row.rowIndex;
-            place.place = row['Place'];
             place.addresses = [];
+            place.place = row['Place'];
             place.visits = row['Trips'];
             // console.log(placeModel);
+
+            place.bonus = NumberHelper.getNumberFromString(row['Bonus']);
+            place.cash = NumberHelper.getNumberFromString(row['Cash']);
+            place.pay = NumberHelper.getNumberFromString(row['Pay']);
+            place.tip = NumberHelper.getNumberFromString(row['Tip']);
+            place.total = NumberHelper.getNumberFromString(row['Total']);
 
             if (place.place) {
                 places.push(place);
