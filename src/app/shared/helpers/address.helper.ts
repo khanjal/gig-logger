@@ -1,6 +1,6 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { AddressModel } from "@models/address.model";
 import { NumberHelper } from "./number.helper";
+import { IAddress } from "@interfaces/address.interface";
 
 export class AddressHelper {
     static getShortAddress(address: string): string {
@@ -36,29 +36,30 @@ export class AddressHelper {
         return address;
     }
 
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): AddressModel[] {
-        let addresses: AddressModel[] = [];
+    static translateSheetData(rows: GoogleSpreadsheetRow[]): IAddress[] {
+        let addresses: IAddress[] = [];
 
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let addressModel: AddressModel = new AddressModel;
-            addressModel.id = row.rowIndex;
-            addressModel.address = row['Address'];
-            addressModel.names =  [];
-            addressModel.visits = row['Visits'];
+            let address: IAddress = {} as IAddress;
+            address.id = row.rowIndex;
+            address.address = row['Address'];
+            address.names =  [];
+            address.notes = [];
+            address.visits = row['Visits'];
 
             // Amount data
-            addressModel.pay = NumberHelper.getNumberFromString(row['Pay']);
-            addressModel.tip = NumberHelper.getNumberFromString(row['Tip']);
-            addressModel.bonus = NumberHelper.getNumberFromString(row['Bonus']);
-            addressModel.total = NumberHelper.getNumberFromString(row['Total']);
-            addressModel.cash = NumberHelper.getNumberFromString(row['Cash']);
+            address.pay = NumberHelper.getNumberFromString(row['Pay']);
+            address.tip = NumberHelper.getNumberFromString(row['Tip']);
+            address.bonus = NumberHelper.getNumberFromString(row['Bonus']);
+            address.total = NumberHelper.getNumberFromString(row['Total']);
+            address.cash = NumberHelper.getNumberFromString(row['Cash']);
 
             // console.log(addressModel);
 
-            if (addressModel.address) {
-                addresses.push(addressModel);
+            if (address.address) {
+                addresses.push(address);
             }
             
         });

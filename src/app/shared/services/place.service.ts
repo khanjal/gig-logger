@@ -30,4 +30,28 @@ export class PlaceService {
     public async update(place: IPlace) {
         await spreadsheetDB.places.put(place);
     }
+
+    public async updatePlaces(places: IPlace[]) {
+        let remotePlaces = await this.getRemotePlaces();
+
+        places.forEach(place => {
+            let remotePlace = remotePlaces.find(x => x.place === place.place);
+
+            if (remotePlace) {
+                place.id = remotePlace.id;
+                place.addresses.push(...remotePlace.addresses);
+                place.bonus += remotePlace.bonus;
+                place.cash += remotePlace.cash;
+                place.pay += remotePlace.pay;
+                place.tip += remotePlace.tip;
+                place.total += remotePlace.total;
+                place.visits += remotePlace.visits;
+            }
+            else {
+                place.id = undefined;
+            }
+        });
+
+        await spreadsheetDB.places.bulkPut(places);
+    }
 }
