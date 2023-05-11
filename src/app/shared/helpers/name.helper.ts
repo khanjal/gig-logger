@@ -11,30 +11,30 @@ export class NameHelper {
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let nameData: IName = {} as IName;
-            nameData.id = row.rowIndex;
-            nameData.name = row['Name'];
-            nameData.addresses =  [];
-            nameData.notes = [];
-            nameData.visits = row['Visits'];
+            let name: IName = {} as IName;
+            name.id = row.rowIndex;
+            name.name = row['Name'];
+            name.addresses =  [];
+            name.notes = [];
+            name.visits = NumberHelper.getNumberFromString(row['Visits']);
 
             // Amount data
-            nameData.pay = NumberHelper.getNumberFromString(row['Pay']);
-            nameData.tip = NumberHelper.getNumberFromString(row['Tip']);
-            nameData.bonus = NumberHelper.getNumberFromString(row['Bonus']);
-            nameData.total = NumberHelper.getNumberFromString(row['Total']);
-            nameData.cash = NumberHelper.getNumberFromString(row['Cash']);
+            name.pay = NumberHelper.getNumberFromString(row['Pay']);
+            name.tip = NumberHelper.getNumberFromString(row['Tip']);
+            name.bonus = NumberHelper.getNumberFromString(row['Bonus']);
+            name.total = NumberHelper.getNumberFromString(row['Total']);
+            name.cash = NumberHelper.getNumberFromString(row['Cash']);
 
             // console.log(nameModel);
 
-            if (nameData.name) {
-                names.push(nameData);
+            if (name.name) {
+                names.push(name);
             }
             
         });
         // console.log(names);
         console.log(names.length);
-        // console.log(names);
+        // console.table(names);
 
         return names;
     }
