@@ -259,7 +259,7 @@ export class GoogleSheetService {
             }
         });
 
-        console.table(deliveries);
+        // console.table(deliveries);
         await this._deliveryService.loadDeliveries(deliveries);
     }
 
