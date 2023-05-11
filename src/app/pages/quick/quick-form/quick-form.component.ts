@@ -194,7 +194,7 @@ export class QuickFormComponent implements OnInit {
   private createTrip(shift: IShift): ITrip {
     let trip: TripModel = new TripModel;
 
-    trip.id = this.data.id;
+    trip.id = this.data?.id;
     trip.key = shift.key;
     
     trip.date = shift.date;
