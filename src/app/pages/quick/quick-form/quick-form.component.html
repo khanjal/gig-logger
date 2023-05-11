@@ -174,18 +174,11 @@
     </mat-form-field>
 
     <!-- Name List/Notes -->
-    <div *ngIf="selectedNameNotes && selectedNameNotes.length > 0" class="note">
-        <div class="title">Unknown Address</div>
-        <p class="note-line" *ngFor="let note of selectedNameNotes">"{{note.text}}" -{{note.date}}</p>
-    </div>
-
-    <div *ngIf="selectedName" class="selected-name-address field-full-width">
-        <div *ngFor="let address of selectedName?.addresses">
-            <a mat-button color="primary" class="address-link" [ngClass]="address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(address)">{{ address | shortaddress }}</a>
-            <!-- <a mat-button color="primary" class="address-link" [ngClass]="address.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(address.address)">{{ address.address | shortaddress }} ({{ address?.visits }})</a>
-            <p class="note">Pay: {{address.pay | currency}} Tip: {{address.tip | currency}} Cash: {{address.cash | currency}} </p>
-            <p class="note-line" *ngFor="let note of address.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedAddressStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p> -->
-        </div>
+    <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
+        <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">{{ delivery.address | shortaddress }} ({{ delivery?.visits }})</a>
+        <div class="title name" *ngIf="!delivery.address">Unknown Name ({{delivery.visits}})</div>
+        <div class="note"><span class="bold">Pay:</span> {{delivery.pay | currency}} <span class="bold">Tip:</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash:</span> {{delivery.cash | currency}}</span></div>
+        <div class="note-line" *ngIf="delivery.notes.length > 0"><span class="note-line" *ngFor="let note of delivery.notes">"{{note.text}}" -{{note.date}}</span></div>
     </div>
 
     <!-- Destination Address -->
@@ -213,18 +206,10 @@
     </mat-form-field>
 
     <!-- Address List/Notes -->
-    <div *ngIf="selectedAddressNotes?.length" class="note">
-        <div class="title">Unknown Name</div>
-        <p class="note-line" *ngFor="let note of selectedAddressNotes">"{{note.text}}" -{{note.date}}</p>
-    </div>
-
-    <div *ngIf="selectedAddress && selectedAddress.names.length > 0" class="selected-name-address field-full-width note">
-        <div *ngFor="let name of selectedAddress.names">
-            <div class="title name"><span [ngClass]="name === quickForm.value.name ? 'highlight' : ''">{{ name }}</span></div>
-            <!-- <div class="title name"><span [ngClass]="name.name === quickForm.value.name ? 'highlight' : ''">{{ name.name }} ({{name.visits}})</span></div>
-            <p class="note">Pay: {{name.pay | currency}} Tip: {{name.tip | currency}} Cash: {{name.cash | currency}} </p>
-            <p class="note-line" *ngFor="let note of name.notes"><span class="note-line" *ngIf="note" [ngClass]="selectedNameStringNotes?.includes(note.text) ? 'highlight' : ''">"{{note.text}}" -{{note.date}}</span></p> -->
-        </div>
+    <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
+        <div class="bold"><span [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''">{{ delivery.name === "" ? "Unknown Name" : delivery.name }} ({{delivery.visits}})</span></div>
+        <div class="note"><span class="bold">Pay:</span> {{delivery.pay | currency}} <span class="bold">Tip:</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash:</span> {{delivery.cash | currency}}</span></div>
+        <div class="note-line" *ngFor="let note of delivery.notes"><span class="note-line" *ngIf="note">"{{note.text}}" -{{note.date}}</span></div>
     </div>
 
     <!-- Pickup Time -->
