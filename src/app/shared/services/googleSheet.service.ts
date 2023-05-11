@@ -27,6 +27,7 @@ import { IAddress } from '@interfaces/address.interface';
 import { TimerService } from './timer.service';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { DeliveryService } from './delivery.service';
+import { ITrip } from '@interfaces/trip.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -149,6 +150,33 @@ export class GoogleSheetService {
         await this.linkPlaceData();
         await this.linkDeliveryData();
 
+        // Load secondary sheet data;
+        let secondarySheets = await this._spreadsheetService.querySpreadsheets("default", "false");
+        secondarySheets.forEach(async secondarySheet => {
+            if (!secondarySheet?.id) {
+                return;
+            }
+            this._snackBar.open(`Loading Spreadsheet: ${secondarySheet.name}`);
+            console.log(secondarySheet.name);
+
+            this.doc = new GoogleSpreadsheet(secondarySheet.id);
+            await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+            await this.doc.loadInfo();
+
+            // Add basic data.
+            await this.updateSheetData("Addresses");
+            await this.updateSheetData("Names");
+            await this.updateSheetData("Places");
+            await this.updateSheetData("Services");
+
+            // Get sheet trips.
+            let sheet = this.doc?.sheetsByTitle["Trips"];
+            let rows = await sheet.getRows();
+
+            let trips = TripHelper.translateSheetData(rows);
+            await this.linkDeliveryData(trips);
+        });
+
         // await this._timerService.delay(10000);
 
         this._snackBar.open("Spreadsheet Data Loaded");
@@ -184,6 +212,7 @@ export class GoogleSheetService {
                 break;
             case "Trips":
                 await this._tripService.loadTrips(TripHelper.translateSheetData(rows));
+                await this._deliveryService.clear();
                 break;
             case "Weekdays":
                 await this._weekdayService.loadWeekdays(WeekdayHelper.translateSheetData(rows));
@@ -194,13 +223,47 @@ export class GoogleSheetService {
         }
     }
 
-    private async linkDeliveryData() {
+    private async updateSheetData(sheetName: string) {
+        let sheet = this.doc?.sheetsByTitle[sheetName];
+        if (!sheet) {
+            this._snackBar.open(`${sheetName} Not Found`);
+            return;
+        }
+
+        console.log(`Updating ${sheetName}`);
+
+        let rows = await sheet.getRows();
+        this._snackBar.open(`Updating ${sheetName}`);
+
+        switch (sheetName) {
+            case "Addresses":
+                await this._addressService.updateAddresses(AddressHelper.translateSheetData(rows));
+                break;
+            case "Names":
+                await this._nameService.updateNames(NameHelper.translateSheetData(rows));
+                break;
+            case "Places":
+                await this._placeService.updatePlaces(PlaceHelper.translateSheetData(rows));
+                break;
+            case "Services":
+                await this._serviceService.updateServices(ServiceHelper.translateSheetData(rows));
+                break;
+            default:
+                this._snackBar.open(`${sheetName} Not Found`);
+                break;
+        }
+    }
+
+    private async linkDeliveryData(trips: ITrip[] = []) {
         // Update addresses with names, names with addresses, and places with addresses.
         this._snackBar.open("Linking Data");
                 
         // Load data needed.
-        let trips = await this._tripService.getRemoteTrips();
-        let deliveries: IDelivery[] = [];
+        if (trips.length === 0) {
+            trips = await this._tripService.getRemoteTrips();
+        }
+        
+        let deliveries: IDelivery[] = await this._deliveryService.getRemoteDeliveries();
         console.log('Linking Trip Data');
 
         trips.forEach(async trip => {

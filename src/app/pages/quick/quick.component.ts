@@ -31,9 +31,9 @@ export class QuickComponent implements OnInit {
   reloading: boolean = false;
   saving: boolean = false;
 
-  savedTrips: TripModel[] = [];
-  sheetTrips: TripModel[] = [];
-  unsavedTrips: TripModel[] = [];
+  savedTrips: ITrip[] = [];
+  sheetTrips: ITrip[] = [];
+  unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
 
@@ -254,7 +254,7 @@ export class QuickComponent implements OnInit {
 
     await this.load();
     this.reloading = false;
-    window.location.reload();
+    // window.location.reload();
   }
 
   public getShortAddress(address: string): string {

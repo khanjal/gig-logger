@@ -5,6 +5,9 @@ import { IDelivery } from '@interfaces/delivery.interface';
 export class DeliveryService {
     names$ = liveQuery(() => spreadsheetDB.deliveries.toArray());
 
+    public async clear() {
+        await spreadsheetDB.deliveries.clear();
+    }
     public async getRemoteDeliveries(): Promise<IDelivery[]> {
         return await spreadsheetDB.deliveries.toArray();
     }

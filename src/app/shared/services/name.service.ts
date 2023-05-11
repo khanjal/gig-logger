@@ -1,6 +1,5 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { NameModel } from '@models/name.model';
 import { IName } from '@interfaces/name.interface';
 
 export class NameService {
@@ -18,12 +17,37 @@ export class NameService {
         return await spreadsheetDB.names.toArray();
     }
 
-    public async loadNames(names: NameModel[]) {
+    public async loadNames(names: IName[]) {
         await spreadsheetDB.names.clear();
         await spreadsheetDB.names.bulkAdd(names);
     }
 
     public async update(name: IName) {
         await spreadsheetDB.names.put(name);
+    }
+
+    public async updateNames(names: IName[]) {
+        let remoteNames = await this.getRemoteNames();
+
+        names.forEach(name => {
+            let remoteName = remoteNames.find(x => x.name === name.name);
+
+            if (remoteName) {
+                name.id = remoteName.id;
+                name.addresses.push(...remoteName.addresses);
+                name.bonus += remoteName.bonus;
+                name.cash += remoteName.cash;
+                name.notes.push(...remoteName.notes);
+                name.pay += remoteName.pay;
+                name.tip += remoteName.tip;
+                name.total += remoteName.total;
+                name.visits += remoteName.visits;
+            }
+            else {
+                name.id = undefined;
+            }
+        });
+
+        await spreadsheetDB.names.bulkPut(names);
     }
 }
