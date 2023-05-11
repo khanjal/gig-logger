@@ -6,6 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class NoSecondsPipe implements PipeTransform {
 
     transform(text: string): string {
+        if (!text) {
+            return "";
+        }
+
         let splitSpaces = text.split(" ");
         let splittedString = splitSpaces[0].split(":");
 

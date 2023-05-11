@@ -209,6 +209,7 @@ export class QuickFormComponent implements OnInit {
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
+    trip.saved = "false";
 
     // Set form properties depending on edit/add
     if (this.data?.id) {
