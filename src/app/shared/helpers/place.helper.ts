@@ -14,7 +14,7 @@ export class PlaceHelper {
             place.id = row.rowIndex;
             place.addresses = [];
             place.place = row['Place'];
-            place.visits = row['Trips'];
+            place.visits = NumberHelper.getNumberFromString(row['Trips']);
             // console.log(placeModel);
 
             place.bonus = NumberHelper.getNumberFromString(row['Bonus']);

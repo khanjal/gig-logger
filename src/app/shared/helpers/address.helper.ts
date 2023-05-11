@@ -47,7 +47,7 @@ export class AddressHelper {
             address.address = row['Address'];
             address.names =  [];
             address.notes = [];
-            address.visits = row['Visits'];
+            address.visits = NumberHelper.getNumberFromString(row['Visits']);
 
             // Amount data
             address.pay = NumberHelper.getNumberFromString(row['Pay']);
