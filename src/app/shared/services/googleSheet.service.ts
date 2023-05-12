@@ -151,36 +151,11 @@ export class GoogleSheetService {
         await this.linkPlaceData();
         await this.linkDeliveryData();
 
-        // Load secondary sheet data;
-        let secondarySheets = await this._spreadsheetService.querySpreadsheets("default", "false");
-        secondarySheets.forEach(async secondarySheet => {
-            if (!secondarySheet?.id) {
-                return;
-            }
-            this._snackBar.open(`Loading Spreadsheet: ${secondarySheet.name}`);
-            console.log(secondarySheet.name);
-
-            this.doc = new GoogleSpreadsheet(secondarySheet.id);
-            await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
-            await this.doc.loadInfo();
-
-            // Add basic data.
-            await this.updateSheetData("Addresses");
-            await this.updateSheetData("Names");
-            await this.updateSheetData("Places");
-            await this.updateSheetData("Services");
-
-            // Get sheet trips.
-            let sheet = this.doc?.sheetsByTitle["Trips"];
-            let rows = await sheet.getRows();
-
-            let trips = TripHelper.translateSheetData(rows);
-            await this.linkDeliveryData(trips);
-        });
+        // await this.loadSecondarySheetData();
 
         // await this._timerService.delay(10000);
 
-        this._snackBar.open("Spreadsheet Data Loaded");
+        this._snackBar.open("Primary Spreadsheet Data Loaded");
     }
 
     private async loadSheetData(sheetName: string) {
@@ -253,6 +228,36 @@ export class GoogleSheetService {
                 this._snackBar.open(`${sheetName} Not Found`);
                 break;
         }
+    }
+
+    public async loadSecondarySheetData() {
+        // Load secondary sheet data;
+        let secondarySheets = await this._spreadsheetService.querySpreadsheets("default", "false");
+        secondarySheets.forEach(async secondarySheet => {
+            if (!secondarySheet?.id) {
+                console.log("Returning");
+                return;
+            }
+            this._snackBar.open(`Loading Spreadsheet: ${secondarySheet.name}`);
+            console.log(secondarySheet.name);
+
+            this.doc = new GoogleSpreadsheet(secondarySheet.id);
+            await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+            await this.doc.loadInfo();
+
+            // Add basic data.
+            await this.updateSheetData("Addresses");
+            await this.updateSheetData("Names");
+            await this.updateSheetData("Places");
+            await this.updateSheetData("Services");
+
+            // Get sheet trips.
+            let sheet = this.doc?.sheetsByTitle["Trips"];
+            let rows = await sheet.getRows();
+
+            let trips = TripHelper.translateSheetData(rows);
+            await this.linkDeliveryData(trips);
+        });
     }
 
     private async linkDeliveryData(trips: ITrip[] = []) {
@@ -455,19 +460,19 @@ export class GoogleSheetService {
             tripRows.push({
                 Date: trip.date.trim(), 
                 Distance: trip.distance,
-                Service: trip.service.trim(),
+                Service: trip.service?.trim(),
                 '#': trip.number, 
-                Place: trip.place.trim(),
-                Pickup: trip.pickupTime.trim(),
-                Dropoff: trip.dropoffTime.trim(),
+                Place: trip.place?.trim(),
+                Pickup: trip.pickupTime?.trim(),
+                Dropoff: trip.dropoffTime?.trim(),
                 Pay: trip.pay,
                 Tip: trip.tip ?? "",
                 Bonus: trip.bonus ?? "",
                 Cash: trip.cash ?? "",
-                Name: trip.name.trim(),
-                'Start Address': trip.startAddress.trim(),
-                'End Address': trip.endAddress.trim(),
-                Note: trip.note.trim()
+                Name: trip.name?.trim(),
+                'Start Address': trip.startAddress?.trim(),
+                'End Address': trip.endAddress?.trim(),
+                Note: trip.note?.trim()
             });
 
             trip.saved = "true";
