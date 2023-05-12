@@ -32,7 +32,8 @@ export class QuickComponent implements OnInit {
   saving: boolean = false;
 
   savedTrips: ITrip[] = [];
-  sheetTrips: ITrip[] = [];
+  sheetPreviousTrips: ITrip[] = [];
+  sheetTodayTrips: ITrip[] = [];
   unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
@@ -70,13 +71,16 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    this.sheetTrips = TripHelper.sortTripsDesc(await this._tripService.getRemoteTripsPreviousDays(7));
-    this.unsavedTrips = (await this._tripService.queryLocalTrips("saved", "false")).reverse();
+    this.sheetPreviousTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)).filter(x => x.date !== DateHelper.getDateString()));
+    this.sheetTodayTrips = (await this._tripService.queryRemoteTrips("date", DateHelper.getDateString())).reverse();
+    this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
 
     await this.average?.load();
+    await this.form?.load();
+    //await this.groupTable?.load(this.sheetTrips);
   }
 
   async saveLocalTrip(trip: ITrip) {
@@ -96,7 +100,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       await this.load();
-      this.form?.load();
+      await this.form?.load();
     });
   }
   
@@ -220,7 +224,7 @@ export class QuickComponent implements OnInit {
     await this._weekdayService.updateWeekday(weekday);
 
     await this.load();
-    this.form?.load();
+    await this.form?.load();
   }
 
   async clearSavedLocalData() {
@@ -251,6 +255,8 @@ export class QuickComponent implements OnInit {
   async reload() {
     this.reloading = true;
     await this._googleService.loadRemoteData();
+    await this._googleService.loadSecondarySheetData();
+    console.log('Done');
 
     await this.load();
     this.reloading = false;
