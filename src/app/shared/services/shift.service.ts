@@ -25,6 +25,10 @@ export class ShiftService {
     public async getRemoteShifts(): Promise<IShift[]> {
         return await spreadsheetDB.shifts.toArray();
     }
+
+    public async getUnsavedLocalShifts(): Promise<IShift[]> {
+        return await spreadsheetDB.shifts.where("saved").notEqual("true").toArray();
+    }
     
     public async loadShifts(shifts: ShiftModel[]) {
         await spreadsheetDB.shifts.clear();
