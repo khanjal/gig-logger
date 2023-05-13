@@ -248,8 +248,8 @@ export class GoogleSheetService {
             // Add basic data.
             await this.updateSheetData("Addresses");
             await this.updateSheetData("Names");
-            await this.updateSheetData("Places");
-            await this.updateSheetData("Services");
+            // await this.updateSheetData("Places");
+            // await this.updateSheetData("Services");
 
             // Get sheet trips.
             let sheet = this.doc?.sheetsByTitle["Trips"];
