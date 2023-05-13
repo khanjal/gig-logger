@@ -182,9 +182,9 @@
             {{ delivery.address | shortaddress }} ({{ delivery?.visits }})
             
         </a>
-        <button type="button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+        <!-- <button type="button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
             <mat-icon>contact_mail</mat-icon>
-        </button>
+        </button> -->
         <div class="note">
             <span class="bold">Pay:</span> {{delivery.pay | currency}} <span class="bold">Tip:</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash:</span> {{delivery.cash | currency}}</span>
         </div>
@@ -223,7 +223,7 @@
             <span [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''">
                 {{ delivery.name === "" ? "Unknown Name" : delivery.name }} ({{delivery.visits}})
             </span>
-            <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon>
+            <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
         </div>
         <div class="note">
             <span class="bold">Pay:</span> {{delivery.pay | currency}} 
