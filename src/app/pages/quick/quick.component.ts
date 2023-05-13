@@ -70,13 +70,14 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    this.sheetTrips = TripHelper.sortTripsDesc(await this._tripService.getRemoteTripsPreviousDays(7));
-    this.unsavedTrips = (await this._tripService.queryLocalTrips("saved", "false")).reverse();
+    this.sheetTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)));
+    this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
     // console.log(this.form);
 
     await this.average?.load();
+    await this.form?.load();
   }
 
   async saveLocalTrip(trip: ITrip) {
@@ -96,7 +97,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       await this.load();
-      this.form?.load();
+      await this.form?.load();
     });
   }
   
@@ -220,7 +221,7 @@ export class QuickComponent implements OnInit {
     await this._weekdayService.updateWeekday(weekday);
 
     await this.load();
-    this.form?.load();
+    await this.form?.load();
   }
 
   async clearSavedLocalData() {
@@ -251,6 +252,8 @@ export class QuickComponent implements OnInit {
   async reload() {
     this.reloading = true;
     await this._googleService.loadRemoteData();
+    await this._googleService.loadSecondarySheetData();
+    console.log('Done');
 
     await this.load();
     this.reloading = false;
