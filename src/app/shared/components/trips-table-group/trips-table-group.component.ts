@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ITripGroup } from '@interfaces/trip-group.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { WeekdayService } from '@services/weekday.service';
@@ -8,7 +8,7 @@ import { WeekdayService } from '@services/weekday.service';
   templateUrl: './trips-table-group.component.html',
   styleUrls: ['./trips-table-group.component.scss']
 })
-export class TripsTableGroupComponent implements OnInit {
+export class TripsTableGroupComponent implements OnInit, OnChanges {
   @Input() title: string = "";
   @Input() link: string = "";
   @Input() trips: ITrip[] = [];
@@ -19,12 +19,24 @@ export class TripsTableGroupComponent implements OnInit {
   constructor(
     private _weekdayService: WeekdayService
   ) {}
+  
+  async ngOnChanges(changes: SimpleChanges) {
+    // console.log("TripsTableGroup: OnChanges");
+    await this.load();
+  }
 
-  async ngOnInit() { 
+  async ngOnInit() {
+    // console.log("TripsTableGroup: OnInit");
     this.displayedColumns = ['service', 'place', 'pickup', 'dropoff', 'total', 'name', 'address'];
+    await this.load();
+  }
 
+  async load() {
+    // console.log("TripsTableGroup: Loading");
     // Get unique dates in trips.
     let dates: string[] = [... new Set(this.trips.map(trip => trip.date))];
+    this.tripGroups = [];
+    // console.log(this.trips);
     
     dates.forEach(async date => {
       let tripGroup = {} as ITripGroup;
