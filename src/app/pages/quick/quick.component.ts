@@ -32,8 +32,7 @@ export class QuickComponent implements OnInit {
   saving: boolean = false;
 
   savedTrips: ITrip[] = [];
-  sheetPreviousTrips: ITrip[] = [];
-  sheetTodayTrips: ITrip[] = [];
+  sheetTrips: ITrip[] = [];
   unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
@@ -71,8 +70,7 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    this.sheetPreviousTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)).filter(x => x.date !== DateHelper.getDateString()));
-    this.sheetTodayTrips = (await this._tripService.queryRemoteTrips("date", DateHelper.getDateString())).reverse();
+    this.sheetTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)));
     this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
     this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
 
@@ -80,7 +78,6 @@ export class QuickComponent implements OnInit {
 
     await this.average?.load();
     await this.form?.load();
-    //await this.groupTable?.load(this.sheetTrips);
   }
 
   async saveLocalTrip(trip: ITrip) {

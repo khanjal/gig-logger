@@ -24,12 +24,8 @@
         </div>
     </div>
 
-    <div class="row-grid" *ngIf="sheetTodayTrips.length > 0">
-        <trips-table-simple class="table" title="Saved Sheet Trips" [trips]="sheetTodayTrips"></trips-table-simple>
-    </div>
-
     <div class="row-grid">
-        <app-trips-table-group class="table" title="Previous Sheet Trips" link="{{defaultSheet?.id}}" [trips]="sheetPreviousTrips" *ngIf="sheetPreviousTrips.length > 0"></app-trips-table-group>
+        <app-trips-table-group class="table" title="{{defaultSheet?.name}} - Trips" link="{{defaultSheet?.id}}" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></app-trips-table-group>
         <button mat-stroked-button color="warn" type="button" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
     </div>
 
