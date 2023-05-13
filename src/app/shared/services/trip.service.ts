@@ -19,6 +19,10 @@ export class TripService {
         return await localDB.trips.toArray();
     }
 
+    public async getUnsavedLocalTrips(): Promise<ITrip[]> {
+        return await localDB.trips.where("saved").notEqual("true").toArray();
+    }
+
     public async getRemoteTrips(): Promise<ITrip[]> {
         return await spreadsheetDB.trips.toArray();
     }
