@@ -19,12 +19,8 @@ import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
-import { SheetHelper } from '@helpers/sheet.helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { INote } from '@interfaces/note.interface';
-import { IName } from '@interfaces/name.interface';
-import { IAddress } from '@interfaces/address.interface';
-import { TimerService } from './timer.service';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { DeliveryService } from './delivery.service';
 import { ITrip } from '@interfaces/trip.interface';
@@ -151,10 +147,7 @@ export class GoogleSheetService {
         await this.linkPlaceData();
         await this.linkDeliveryData();
 
-        // await this.loadSecondarySheetData();
-
-        // await this._timerService.delay(10000);
-
+        console.log("Primary Spreadsheet Data Loaded");
         this._snackBar.open("Primary Spreadsheet Data Loaded");
     }
 
