@@ -1,7 +1,7 @@
 import { IAmount } from "./amount.interface";
 
 export interface ITrip extends IAmount {
-    id?: number;
+    id: number;
     date: string;
     distance: number;
     endAddress: string;

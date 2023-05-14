@@ -4,12 +4,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
+import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
-import { INote } from '@interfaces/note.interface';
 import { IPlace } from '@interfaces/place.interface';
+import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
+import { DeliveryService } from '@services/delivery.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { ServiceService } from '@services/service.service';
@@ -20,11 +22,6 @@ import { Observable, startWith, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
-import { NameModel } from 'src/app/shared/models/name.model';
-import { PlaceModel } from 'src/app/shared/models/place.model';
-import { ServiceModel } from 'src/app/shared/models/service.model';
-import { ShiftModel } from 'src/app/shared/models/shift.model';
-import { TripModel } from 'src/app/shared/models/trip.model';
 
 @Component({
   selector: 'quick-form',
@@ -63,21 +60,19 @@ export class QuickFormComponent implements OnInit {
   filteredStartAddresses: Observable<IAddress[]> | undefined;
   filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
-  selectedAddressNotes: INote[] | undefined;
-  selectedAddressStringNotes: string[] | undefined;
-
-  filteredNames: Observable<NameModel[]> | undefined;
+  selectedAddressDeliveries: IDelivery[] | undefined;
+  
+  filteredNames: Observable<IName[]> | undefined;
   selectedName: IName | undefined;
-  selectedNameNotes: INote[] | undefined;
-  selectedNameStringNotes: string[] | undefined;
-
-  filteredPlaces: Observable<PlaceModel[]> | undefined;
+  selectedNameDeliveries: IDelivery[] | undefined;
+  
+  filteredPlaces: Observable<IPlace[]> | undefined;
   selectedPlace: IPlace | undefined;
 
-  filteredServices: Observable<ServiceModel[]> | undefined;
+  filteredServices: Observable<IService[]> | undefined;
 
-  sheetTrips: TripModel[] = [];
-  shifts: ShiftModel[] = [];
+  sheetTrips: ITrip[] = [];
+  shifts: IShift[] = [];
   selectedShift: IShift | undefined;
 
   title: string = "Add Trip";
@@ -87,6 +82,7 @@ export class QuickFormComponent implements OnInit {
       @Inject(MAT_DIALOG_DATA) public data: ITrip,
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
+      private _deliveryService: DeliveryService,
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _serviceService: ServiceService,
@@ -170,7 +166,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async createShift(): Promise<IShift> {
-    let shift: ShiftModel = new ShiftModel;
+    let shift: IShift = {} as IShift;
     if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
       console.log("New Shift!");
       let shifts: IShift[] = [];
@@ -191,9 +187,9 @@ export class QuickFormComponent implements OnInit {
   }
 
   private createTrip(shift: IShift): ITrip {
-    let trip: TripModel = new TripModel;
+    let trip: ITrip = {} as ITrip;
 
-    trip.id = this.data.id;
+    trip.id = this.data?.id;
     trip.key = shift.key;
     
     trip.date = shift.date;
@@ -213,6 +209,7 @@ export class QuickFormComponent implements OnInit {
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
+    trip.saved = "false";
 
     // Set form properties depending on edit/add
     if (this.data?.id) {
@@ -348,9 +345,9 @@ export class QuickFormComponent implements OnInit {
 
   public formReset() {
     this.selectedAddress = undefined;
-    this.selectedAddressNotes = undefined;
+    this.selectedAddressDeliveries = undefined;
     this.selectedName = undefined;
-    this.selectedNameNotes = undefined;
+    this.selectedNameDeliveries = undefined;
     this.selectedPlace = undefined;
     this.quickForm.reset();
     this.setDefaultShift();
@@ -383,25 +380,25 @@ export class QuickFormComponent implements OnInit {
   }
 
   showAddressNamesEvent(event: any) {
-    let address = event.target.value.toLowerCase();
+    let address = event.target.value;
     this.showAddressNames(address);
   }
 
   async showAddressNames(address: string) {
+    if (!address) { return; }
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
-    this.selectedAddressNotes = this.selectedAddress?.notes.filter(x => !x.name);
-    this.selectedAddressStringNotes = this.selectedAddress?.notes?.map(x => x.text);
+    this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
   }
 
   showNameAddressesEvent(event: any) {
-    let name = event.target.value.toLowerCase();
+    let name = event.target.value;
     this.showNameAddresses(name);
   }
 
   async showNameAddresses(name: string) {
+    if (!name) { return; }
     this.selectedName = await this._nameService.findRemoteName(name);
-    this.selectedNameNotes = this.selectedName?.notes?.filter(x => !x.address);
-    this.selectedNameStringNotes = this.selectedName?.notes?.map(x => x.text);
+    this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
   }
 
   selectPlaceEvent(event: any) {
@@ -455,25 +452,25 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
-    const filterValue = value.toLowerCase();
+    const filterValue = value;
 
     return (await this._addressService.filterRemoteAddress(filterValue)).slice(0,100);
   }
 
-  private async _filterName(value: string): Promise<NameModel[]> {
-    const filterValue = value.toLowerCase();
+  private async _filterName(value: string): Promise<IName[]> {
+    const filterValue = value;
 
     return (await this._nameService.filterRemoteNames(filterValue)).slice(0,100);
   }
 
-  private async _filterPlace(value: string): Promise<PlaceModel[]> {
-    const filterValue = value.toLowerCase();
+  private async _filterPlace(value: string): Promise<IPlace[]> {
+    const filterValue = value;
 
     return await this._placeService.filterRemotePlaces(filterValue);
   }
 
-  private async _filterService(value: string): Promise<ServiceModel[]> {
-    const filterValue = value.toLowerCase();
+  private async _filterService(value: string): Promise<IService[]> {
+    const filterValue = value;
 
     return await this._serviceService.filterRemoteServices(filterValue);
   }

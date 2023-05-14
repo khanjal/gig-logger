@@ -1,6 +1,5 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { TripModel } from '@models/trip.model';
 import { ITrip } from '@interfaces/trip.interface';
 import { localDB } from '@data/local.db';
 import { DateHelper } from '@helpers/date.helper';
@@ -8,7 +7,7 @@ import { DateHelper } from '@helpers/date.helper';
 export class TripService {
     trips$ = liveQuery(() => spreadsheetDB.trips.toArray());
     
-    public async addTrip(trip: TripModel) {
+    public async addTrip(trip: ITrip) {
         await localDB.trips.add(trip);
     }
 
@@ -18,6 +17,10 @@ export class TripService {
 
     public async getLocalTrips(): Promise<ITrip[]> {
         return await localDB.trips.toArray();
+    }
+
+    public async getUnsavedLocalTrips(): Promise<ITrip[]> {
+        return await localDB.trips.where("saved").notEqual("true").toArray();
     }
 
     public async getRemoteTrips(): Promise<ITrip[]> {
@@ -46,12 +49,12 @@ export class TripService {
         return await spreadsheetDB.trips.where(field).equals(value).toArray();
     }
 
-    public async loadTrips(trips: TripModel[]) {
+    public async loadTrips(trips: ITrip[]) {
         await spreadsheetDB.trips.clear();
         await spreadsheetDB.trips.bulkAdd(trips);
     }
 
-    public async updateLocalTrip(trip: TripModel) {
+    public async updateLocalTrip(trip: ITrip) {
         await localDB.trips.put(trip);
     }
 }
