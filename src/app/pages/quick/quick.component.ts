@@ -17,6 +17,8 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { ViewportScroller } from '@angular/common';
+import { TimerService } from '@services/timer.service';
 
 @Component({
   selector: 'app-quick',
@@ -44,8 +46,10 @@ export class QuickComponent implements OnInit {
       private _googleService: GoogleSheetService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
+      private _timerService: TimerService,
       private _tripService: TripService,
-      private _weekdayService: WeekdayService
+      private _weekdayService: WeekdayService,
+      private _viewportScroller: ViewportScroller
     ) { }
 
   async ngOnInit(): Promise<void> {
@@ -66,6 +70,7 @@ export class QuickComponent implements OnInit {
     console.log('Saved!');
     console.timeEnd("saving");
 
+    this._viewportScroller.scrollToAnchor("savedLocalTrips");
     this._snackBar.open("Trip(s) Saved to Spreadsheet");
   }
 
@@ -253,10 +258,12 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
     await this._googleService.loadRemoteData();
     await this._googleService.loadSecondarySheetData();
-    console.log('Done');
+    await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
 
+    console.log("Done");
     await this.load();
     this.reloading = false;
+    this._viewportScroller.scrollToAnchor("addTrip");
     // window.location.reload();
   }
 
