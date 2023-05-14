@@ -1,4 +1,5 @@
 import { IAddress } from '@interfaces/address.interface';
+import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IService } from '@interfaces/service.interface';
@@ -11,6 +12,7 @@ import Dexie, { Table } from 'dexie';
 
 export class AppDB extends Dexie {
     addresses!: Table<IAddress, number>;
+    deliveries!: Table<IDelivery, number>;
     names!: Table<IName, number>;
     places!: Table<IPlace, number>;
     services!: Table<IService, number>;
@@ -22,6 +24,7 @@ export class AppDB extends Dexie {
         super('spreadsheetDB');
         this.version(1).stores({
             addresses: '++id, address',
+            deliveries: '++id, address, name',
             names: '++id, name',
             places: '++id, place',
             services: '++id, service',

@@ -14,9 +14,32 @@ export class ServiceService {
         return await spreadsheetDB.services.toArray();
     }
 
-
-    public async loadServices(services: ServiceModel[]) {
+    public async loadServices(services: IService[]) {
         await spreadsheetDB.services.clear();
         await spreadsheetDB.services.bulkAdd(services);
+    }
+
+    public async updateServices(services: IService[]) {
+        let remoteServices = await this.getRemoteServices();
+
+        services.forEach(async service => {
+            let remoteService = remoteServices.find(x => x.service === service.service);
+
+            if (remoteService) {
+                console.log(remoteService);
+                service.id = remoteService.id;
+                service.bonus += remoteService.bonus;
+                service.cash += remoteService.cash;
+                service.pay += remoteService.pay;
+                service.tip += remoteService.tip;
+                service.total += remoteService.total;
+                service.visits += remoteService.visits;
+            }
+            else {
+                service.id = undefined;
+            }
+        });
+
+        await spreadsheetDB.services.bulkPut(services);
     }
 }
