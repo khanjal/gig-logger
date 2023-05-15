@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" id="addTrip">
     <div><app-current-average class="button-right"></app-current-average></div>
     
     <quick-form (parentReload)="load()"></quick-form>
@@ -16,7 +16,7 @@
         <button mat-stroked-button color="primary" type="button" class="button" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveTripsDialog()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
     </div>
 
-    <div class="row-grid" *ngIf="savedTrips.length > 0">
+    <div class="row-grid" *ngIf="savedTrips.length > 0" id="savedLocalTrips">
         <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
         <div class="row-block">
             <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
