@@ -391,6 +391,11 @@ export class QuickFormComponent implements OnInit {
     this.showAddressNames(address);
   }
 
+  selectName(name: string) {
+    this.quickForm.controls.name.setValue(name);
+    this.showNameAddresses(name);
+  }
+
   showAddressNamesEvent(event: any) {
     let address = event.target.value;
     this.showAddressNames(address);
