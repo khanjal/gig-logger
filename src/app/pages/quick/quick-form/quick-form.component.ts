@@ -209,6 +209,9 @@ export class QuickFormComponent implements OnInit {
     trip.bonus = this.quickForm.value.bonus;
     trip.cash = this.quickForm.value.cash;
     trip.total = trip.pay + trip.tip + trip.bonus;
+
+    trip.startOdometer = this.quickForm.value.startOdometer;
+    trip.endOdometer = this.quickForm.value.endOdometer;
     
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
@@ -237,6 +240,10 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.bonus.setValue(this.data.bonus);
     this.quickForm.controls.cash.setValue(this.data.cash);
     this.showAdvancedPay = true;
+
+    this.quickForm.controls.startOdometer.setValue(this.data.startOdometer);
+    this.quickForm.controls.endOdometer.setValue(this.data.endOdometer);
+    this.showOdometer = true;
 
     this.quickForm.controls.place.setValue(this.data.place);
     this.selectPlace(this.data.place);
