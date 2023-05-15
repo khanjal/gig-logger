@@ -1,3 +1,4 @@
+import { ViewportScroller } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -46,8 +47,10 @@ export class QuickFormComponent implements OnInit {
     cash: new FormControl(),
     startAddress: new FormControl(''),
     endAddress: new FormControl(''),
+    endUnit: new FormControl(''),
     pickupTime: new FormControl(''),
     dropoffTime: new FormControl(''),
+    orderNumber: new FormControl(''),
     note: new FormControl('')
   });
 
@@ -55,6 +58,7 @@ export class QuickFormComponent implements OnInit {
   showAdvancedPay: boolean = false;
   showPickupAddress: boolean = false;
   showOdometer: boolean = false;
+  showOrder: boolean = false;
   showTimes: boolean = false;
 
   filteredStartAddresses: Observable<IAddress[]> | undefined;
@@ -88,7 +92,8 @@ export class QuickFormComponent implements OnInit {
       private _serviceService: ServiceService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
-      private _weekdayService: WeekdayService
+      private _weekdayService: WeekdayService,
+      private _viewportScroller: ViewportScroller
     ) {}
 
   async ngOnInit(): Promise<void> {
@@ -198,6 +203,7 @@ export class QuickFormComponent implements OnInit {
 
     trip.startAddress = this.quickForm.value.startAddress ?? "";
     trip.endAddress = this.quickForm.value.endAddress ?? "";
+    trip.endUnit = this.quickForm.value.endUnit ?? "";
     trip.distance = this.quickForm.value.distance;
 
     trip.pay = +this.quickForm.value.pay ?? 0;
@@ -209,6 +215,7 @@ export class QuickFormComponent implements OnInit {
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
+    trip.orderNumber = this.quickForm.value.orderNumber ?? "";
     trip.saved = "false";
 
     // Set form properties depending on edit/add
@@ -250,6 +257,10 @@ export class QuickFormComponent implements OnInit {
     this.showTimes = true;
 
     this.quickForm.controls.note.setValue(this.data.note);
+
+    this.quickForm.controls.endUnit.setValue(this.data.endUnit);
+    this.quickForm.controls.orderNumber.setValue(this.data.orderNumber);
+    this.showOrder = true;
   }
 
   private async setDefaultShift() {
@@ -351,6 +362,7 @@ export class QuickFormComponent implements OnInit {
     this.selectedPlace = undefined;
     this.quickForm.reset();
     this.setDefaultShift();
+    this._viewportScroller.scrollToAnchor("addTrip");
   }
 
   public async onShiftSelected(value:string) {
@@ -429,6 +441,12 @@ export class QuickFormComponent implements OnInit {
     this.showOdometer ? this._snackBar.open("Showing Odometer Fields") : this._snackBar.open("Hiding Odometer Fields");
   }
 
+  toggleOrder() {
+    this.showOrder = !this.showOrder;
+
+    this.showOrder ? this._snackBar.open("Showing Order Fields") : this._snackBar.open("Hiding Order Fields");
+  }
+
   togglePickupAddress() {
     this.showPickupAddress = !this.showPickupAddress;
 
@@ -436,7 +454,7 @@ export class QuickFormComponent implements OnInit {
   }
   
   compareShifts(o1: IShift, o2: IShift): boolean {
-    return o1?.date === o2?.date && o1?.service === o2?.service && o1?.number === o2?.number
+    return ShiftHelper.compareShifts(o1, o2);
   }
 
   setPickupTime() {
