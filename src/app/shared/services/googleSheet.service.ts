@@ -467,6 +467,8 @@ export class GoogleSheetService {
                 'End Address': trip.endAddress?.trim(),
                 'End Unit': trip.endUnit?.trim(),
                 'Order #': trip.orderNumber?.trim(),
+                'Odo Start': trip.startOdometer,
+                'Odo End': trip.endOdometer,
                 Note: trip.note?.trim()
             });
 

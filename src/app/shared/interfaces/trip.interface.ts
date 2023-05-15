@@ -6,6 +6,7 @@ export interface ITrip extends IAmount {
     distance: number;
     endAddress: string;
     endUnit: string;
+    endOdometer: number;
     dropoffTime: string;
     key: string;
     name: string;
@@ -17,4 +18,5 @@ export interface ITrip extends IAmount {
     saved: string;
     service: string;
     startAddress: string;
+    startOdometer: number;
 }

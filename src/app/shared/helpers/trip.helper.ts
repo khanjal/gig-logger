@@ -47,6 +47,10 @@ export class TripHelper {
             trip.total = NumberHelper.getNumberFromString(row['Total']);
             trip.cash = NumberHelper.getNumberFromString(row['Cash']);
 
+            // Odometers
+            trip.startOdometer = NumberHelper.getNumberFromString(row['Odo Start']);
+            trip.endOdometer = NumberHelper.getNumberFromString(row['Odo End']);
+
             trip.note = row['Note'];
 
             // Other
