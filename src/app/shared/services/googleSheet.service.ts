@@ -465,6 +465,8 @@ export class GoogleSheetService {
                 Name: trip.name?.trim(),
                 'Start Address': trip.startAddress?.trim(),
                 'End Address': trip.endAddress?.trim(),
+                'End Unit': trip.endUnit?.trim(),
+                'Order #': trip.orderNumber?.trim(),
                 Note: trip.note?.trim()
             });
 
