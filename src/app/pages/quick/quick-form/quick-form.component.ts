@@ -100,12 +100,10 @@ export class QuickFormComponent implements OnInit {
     this.load();
 
     this.filteredStartAddresses = this.quickForm.controls.startAddress.valueChanges.pipe(
-      startWith(''),
       mergeMap(async value => await this._filterAddress(value || ''))
     );
 
     this.filteredEndAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
-      startWith(''),
       mergeMap(async value => await this._filterAddress(value || ''))
     );
 
@@ -475,9 +473,9 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
-    const filterValue = value;
-
-    return (await this._addressService.filterRemoteAddress(filterValue)).slice(0,100);
+    let addresses = await this._addressService.getRemoteAddresses();
+    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    return (addresses).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
