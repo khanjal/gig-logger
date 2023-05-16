@@ -15,7 +15,6 @@ import { AddressService } from './address.service';
 import { NameService } from './name.service';
 import { PlaceService } from './place.service';
 import { ServiceService } from './service.service';
-import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
@@ -24,6 +23,7 @@ import { INote } from '@interfaces/note.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { DeliveryService } from './delivery.service';
 import { ITrip } from '@interfaces/trip.interface';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -119,7 +119,7 @@ export class GoogleSheetService {
 
         let sheet, rows;
 
-        let spreadsheet = new Spreadsheet;
+        let spreadsheet = {} as ISpreadsheet;
         spreadsheet.id = spreadsheetId;
         spreadsheet.name = this.doc.title;
         spreadsheet.default = "false";
