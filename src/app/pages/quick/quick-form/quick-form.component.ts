@@ -370,7 +370,7 @@ export class QuickFormComponent implements OnInit {
     this.showPickupAddress = false;
     this.showOdometer = false;
     this.showOrder = false;
-    
+
     this.quickForm.reset();
     this.setDefaultShift();
     this._viewportScroller.scrollToAnchor("addTrip");
@@ -492,15 +492,17 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async _filterName(value: string): Promise<IName[]> {
-    const filterValue = value;
+    let names = await this._nameService.getRemoteNames();
+    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
-    return (await this._nameService.filterRemoteNames(filterValue)).slice(0,100);
+    return (names).slice(0,100);
   }
 
   private async _filterPlace(value: string): Promise<IPlace[]> {
-    const filterValue = value;
+    let places = await this._placeService.getRemotePlaces();
+    places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
-    return await this._placeService.filterRemotePlaces(filterValue);
+    return places;
   }
 
   private async _filterService(value: string): Promise<IService[]> {
