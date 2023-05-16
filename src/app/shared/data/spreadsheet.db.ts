@@ -2,6 +2,7 @@ import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
+import { IRating } from '@interfaces/rating.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -15,6 +16,7 @@ export class AppDB extends Dexie {
     deliveries!: Table<IDelivery, number>;
     names!: Table<IName, number>;
     places!: Table<IPlace, number>;
+    ratings!: Table<IRating, number>;
     services!: Table<IService, number>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
@@ -27,6 +29,7 @@ export class AppDB extends Dexie {
             deliveries: '++id, address, name',
             names: '++id, name',
             places: '++id, place',
+            ratings: '++id, date, time',
             services: '++id, service',
             shifts: '++id, date, service, number, key, [date+service+number]',
             trips: '++id, date, service, number, key, [date+service+number]',
