@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Spreadsheet } from '@models/spreadsheet.model';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 
@@ -45,7 +45,7 @@ export class SheetAddFormComponent {
 
     if(sheetTitle != "") {
       console.log(sheetTitle);
-      let spreadsheet = new Spreadsheet();
+      let spreadsheet = {} as ISpreadsheet;
       spreadsheet.id = id;
       spreadsheet.name = sheetTitle;
       spreadsheet.default = "false";

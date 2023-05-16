@@ -1,17 +1,16 @@
 import { liveQuery } from 'dexie';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { localDB } from '@data/local.db';
-import { Spreadsheet } from '@models/spreadsheet.model';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 export class SpreadsheetService {
     spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
     
-    public async add(spreadsheet: Spreadsheet) {
+    public async add(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.add(spreadsheet);
     }
 
-    public async getDefaultSheet(): Promise<Spreadsheet> {
+    public async getDefaultSheet(): Promise<ISpreadsheet> {
         return (await this.querySpreadsheets("default", "true"))[0];
     }
 

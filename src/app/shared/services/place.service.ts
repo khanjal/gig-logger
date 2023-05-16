@@ -1,6 +1,5 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { PlaceModel } from '@models/place.model';
 import { IPlace } from '@interfaces/place.interface';
 
 export class PlaceService {
