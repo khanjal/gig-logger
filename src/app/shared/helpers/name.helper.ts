@@ -1,5 +1,4 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { NameModel } from "../models/name.model";
 import { NumberHelper } from "./number.helper";
 import { IName } from "@interfaces/name.interface";
 

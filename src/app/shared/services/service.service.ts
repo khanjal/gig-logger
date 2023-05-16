@@ -1,6 +1,5 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ServiceModel } from '@models/service.model';
 import { IService } from '@interfaces/service.interface';
 
 export class ServiceService {

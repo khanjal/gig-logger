@@ -1,6 +1,5 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ShiftModel } from '@models/shift.model';
 import { IShift } from '@interfaces/shift.interface';
 import { localDB } from '@data/local.db';
 import { DateHelper } from '@helpers/date.helper';
@@ -9,7 +8,7 @@ export class ShiftService {
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
     localShifts$ = liveQuery(() => localDB.shifts.toArray());
 
-    public async addNewShift(shift: ShiftModel) {
+    public async addNewShift(shift: IShift) {
         await localDB.shifts.add(shift);
     }
 
@@ -30,7 +29,7 @@ export class ShiftService {
         return await spreadsheetDB.shifts.where("saved").notEqual("true").toArray();
     }
     
-    public async loadShifts(shifts: ShiftModel[]) {
+    public async loadShifts(shifts: IShift[]) {
         await spreadsheetDB.shifts.clear();
         await spreadsheetDB.shifts.bulkAdd(shifts);
     }
