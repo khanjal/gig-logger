@@ -337,9 +337,7 @@ export class QuickFormComponent implements OnInit {
 
     this.formReset();
     this.parentReload.emit();
-    this.showAdvancedPay = false;
-    this.showPickupAddress = false;
-
+    
     // console.log(trip);
   }
 
@@ -360,11 +358,19 @@ export class QuickFormComponent implements OnInit {
   }
 
   public formReset() {
+    // Reset all selections
     this.selectedAddress = undefined;
     this.selectedAddressDeliveries = undefined;
     this.selectedName = undefined;
     this.selectedNameDeliveries = undefined;
     this.selectedPlace = undefined;
+
+    // Reset all show fields
+    this.showAdvancedPay = false;
+    this.showPickupAddress = false;
+    this.showOdometer = false;
+    this.showOrder = false;
+    
     this.quickForm.reset();
     this.setDefaultShift();
     this._viewportScroller.scrollToAnchor("addTrip");
