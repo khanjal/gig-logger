@@ -270,6 +270,7 @@ export class QuickFormComponent implements OnInit {
 
   private async setDefaultShift() {
     this.shifts = await this._shiftService.getPreviousWeekShifts();
+    // console.log(this.shifts);
 
     if (this.shifts.length > 0) {
       this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
@@ -315,10 +316,7 @@ export class QuickFormComponent implements OnInit {
 
   public async addTrip() {
     let shift = await this.createShift();
-    // console.log(shift);
-    
     let trip = this.createTrip(shift);
-
     await this._tripService.addTrip(trip);
     
     // Update shift total.
@@ -337,9 +335,7 @@ export class QuickFormComponent implements OnInit {
 
     this.formReset();
     this.parentReload.emit();
-    this.showAdvancedPay = false;
-    this.showPickupAddress = false;
-
+    
     // console.log(trip);
   }
 
@@ -360,11 +356,19 @@ export class QuickFormComponent implements OnInit {
   }
 
   public formReset() {
+    // Reset all selections
     this.selectedAddress = undefined;
     this.selectedAddressDeliveries = undefined;
     this.selectedName = undefined;
     this.selectedNameDeliveries = undefined;
     this.selectedPlace = undefined;
+
+    // Reset all show fields
+    this.showAdvancedPay = false;
+    this.showPickupAddress = false;
+    this.showOdometer = false;
+    this.showOrder = false;
+
     this.quickForm.reset();
     this.setDefaultShift();
     this._viewportScroller.scrollToAnchor("addTrip");
@@ -486,15 +490,17 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async _filterName(value: string): Promise<IName[]> {
-    const filterValue = value;
+    let names = await this._nameService.getRemoteNames();
+    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
-    return (await this._nameService.filterRemoteNames(filterValue)).slice(0,100);
+    return (names).slice(0,100);
   }
 
   private async _filterPlace(value: string): Promise<IPlace[]> {
-    const filterValue = value;
+    let places = await this._placeService.getRemotePlaces();
+    places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
-    return await this._placeService.filterRemotePlaces(filterValue);
+    return places;
   }
 
   private async _filterService(value: string): Promise<IService[]> {
