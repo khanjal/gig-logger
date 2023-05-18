@@ -92,10 +92,10 @@ export class ShiftHelper {
             shift.end = row['End'];
             shift.saved = "true";
             shift.service = row['Service'];
-            shift.number = row['#'];
+            shift.number = NumberHelper.getNumberFromString(row['#']);
             shift.start = row['Start'];
-            shift.total = NumberHelper.getNumberFromString(row['G Total']) ?? 0;
-            shift.trips = row['T Trip'] ?? 0;
+            shift.total = NumberHelper.getNumberFromString(row['G Total']);
+            shift.trips = NumberHelper.getNumberFromString(row['T Trip']);
             // console.log(shift);
 
             if (shift.date) {
