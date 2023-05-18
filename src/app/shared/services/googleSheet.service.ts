@@ -291,7 +291,14 @@ export class GoogleSheetService {
                 delivery.services.push(trip.service);
                 delivery.tip += trip.tip;
                 delivery.total += trip.total;
+                delivery.units.push(trip.endUnit);
                 delivery.visits++;
+
+                // Remove duplicates
+                delivery.dates = [...new Set(delivery.dates)];
+                delivery.places = [...new Set(delivery.places)].sort();
+                delivery.services = [...new Set(delivery.services)].sort();
+                delivery.units = [...new Set(delivery.units)];
                 
                 if (note) {
                     delivery.notes.push(note);
@@ -311,6 +318,7 @@ export class GoogleSheetService {
                 delivery.services = [trip.service];
                 delivery.tip = trip.tip;
                 delivery.total = trip.total;
+                delivery.units = [trip.endUnit];
                 delivery.visits = 1;
 
                 if (note) {
