@@ -270,6 +270,7 @@ export class QuickFormComponent implements OnInit {
 
   private async setDefaultShift() {
     this.shifts = await this._shiftService.getPreviousWeekShifts();
+    // console.log(this.shifts);
 
     if (this.shifts.length > 0) {
       this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
@@ -315,10 +316,7 @@ export class QuickFormComponent implements OnInit {
 
   public async addTrip() {
     let shift = await this.createShift();
-    // console.log(shift);
-    
     let trip = this.createTrip(shift);
-
     await this._tripService.addTrip(trip);
     
     // Update shift total.
