@@ -8,5 +8,6 @@ export interface IDelivery extends IAmount {
     notes: INote[]
     places: string[]
     services: string[]
+    units: string[]
     visits: number
 }

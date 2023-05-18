@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TripModel } from '@models/trip.model';
 import { AddressHelper } from '@helpers/address.helper';
 import { GoogleSheetService } from '@services/googleSheet.service';
 import { QuickFormComponent } from './quick-form/quick-form.component';

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Spreadsheet } from '@models/spreadsheet.model';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 
@@ -30,9 +30,19 @@ export class SheetAddFormComponent {
     // console.log(sheetId);
 
     if(spreadsheetId.includes("/")) {
-      spreadsheetId = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId)![1];
+      let spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
+
+      if(spreadsheetGroups && spreadsheetGroups?.length > 0) {
+        spreadsheetId = spreadsheetGroups[1];
+      }
     }
-    
+
+    if(!spreadsheetId) {
+      this.saving = false;
+      return;
+    }
+
+    // console.log(spreadsheetId);
     await this.setupForm(spreadsheetId);
 
     this.saving = false;
@@ -45,7 +55,7 @@ export class SheetAddFormComponent {
 
     if(sheetTitle != "") {
       console.log(sheetTitle);
-      let spreadsheet = new Spreadsheet();
+      let spreadsheet = {} as ISpreadsheet;
       spreadsheet.id = id;
       spreadsheet.name = sheetTitle;
       spreadsheet.default = "false";

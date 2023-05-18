@@ -1,5 +1,4 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { ShiftModel } from "@models/shift.model";
 import { DateHelper } from "@helpers/date.helper";
 import { NumberHelper } from "@helpers/number.helper";
 import { IShift } from "@interfaces/shift.interface";
@@ -9,7 +8,7 @@ export class ShiftHelper {
         return o1?.date === o2?.date && o1?.service === o2?.service && o1?.number === o2?.number
     }
 
-    static getUniqueShifts(shifts: IShift[]): ShiftModel[] {
+    static getUniqueShifts(shifts: IShift[]): IShift[] {
         let uniqueShifts: IShift[] = [];
 
         shifts.forEach(shift => {
@@ -34,11 +33,11 @@ export class ShiftHelper {
         return serviceShifts.length+1;
     }
 
-    static getTodaysShifts():  ShiftModel[] {
+    static getTodaysShifts():  IShift[] {
         //let shifts: ShiftModel[] = this.getUniqueShifts();
-        let shifts: ShiftModel[] = [];
+        let shifts: IShift[] = [];
 
-        let todaysShifts: ShiftModel[] = [];
+        let todaysShifts: IShift[] = [];
 
         shifts.forEach(shift => {
             if (new Date(shift.date).toLocaleDateString() == new Date().toLocaleDateString()) {
@@ -50,16 +49,20 @@ export class ShiftHelper {
         return todaysShifts;
     }
 
-    static createNewShift(service: string, shifts: IShift[]): ShiftModel {
-        let shift: ShiftModel = new ShiftModel;
+    static createNewShift(service: string, shifts: IShift[]): IShift {
+        let shift: IShift = {} as IShift;
 
         shift.service = service;
 
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
+        shift.date = DateHelper.getDateString();
         shift.number = shiftNumber ?? 0;
+        shift.saved = "false";
         shift.start = new Date().toLocaleTimeString();
+        shift.total = 0;
+        shift.trips = 0;
         
         return shift;
     }
@@ -82,21 +85,21 @@ export class ShiftHelper {
         rows.forEach(row => {
             // console.log(row);
             // console.log(row.rowIndex);
-            let shiftModel: IShift = {} as IShift;
-            shiftModel.id = row.rowIndex;
-            shiftModel.key = row['Key'];
-            shiftModel.date = row['Date'];
-            shiftModel.end = row['End'];
-            shiftModel.saved = "true";
-            shiftModel.service = row['Service'];
-            shiftModel.number = row['#'];
-            shiftModel.start = row['Start'];
-            shiftModel.total = NumberHelper.getNumberFromString(row['G Total']) ?? 0;
-            shiftModel.trips = row['T Trip'] ?? 0;
+            let shift: IShift = {} as IShift;
+            shift.id = row.rowIndex;
+            shift.key = row['Key'];
+            shift.date = row['Date'];
+            shift.end = row['End'];
+            shift.saved = "true";
+            shift.service = row['Service'];
+            shift.number = NumberHelper.getNumberFromString(row['#']);
+            shift.start = row['Start'];
+            shift.total = NumberHelper.getNumberFromString(row['G Total']);
+            shift.trips = NumberHelper.getNumberFromString(row['T Trip']);
             // console.log(shift);
 
-            if (shiftModel.date) {
-                shifts.push(shiftModel);
+            if (shift.date) {
+                shifts.push(shift);
             }
             
         });
