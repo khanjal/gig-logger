@@ -30,9 +30,19 @@ export class SheetAddFormComponent {
     // console.log(sheetId);
 
     if(spreadsheetId.includes("/")) {
-      spreadsheetId = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId)![1];
+      let spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
+
+      if(spreadsheetGroups && spreadsheetGroups?.length > 0) {
+        spreadsheetId = spreadsheetGroups[1];
+      }
     }
-    
+
+    if(!spreadsheetId) {
+      this.saving = false;
+      return;
+    }
+
+    // console.log(spreadsheetId);
     await this.setupForm(spreadsheetId);
 
     this.saving = false;
