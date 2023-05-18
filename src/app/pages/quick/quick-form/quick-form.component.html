@@ -116,34 +116,36 @@
     </div>
 
     <!-- Name -->
-    <mat-form-field class="field-halfish-width" appearance="outline">
-        <mat-label>Name</mat-label>
-        <input type="text"
-            name="name"
-            placeholder="Pick one or enter new"
-            aria-label="Name"
-            matInput
-            formControlName="name"
-            [matAutocomplete]="autoName"
-            (blur)="showNameAddressesEvent($event)" 
-            focus-scroll
-            #name>
-        <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
-                    {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
-                </mat-option>
-            <!-- </cdk-virtual-scroll-viewport> -->
-        </mat-autocomplete>
-        <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </mat-form-field>
+    <div class="row-block">
+        <mat-form-field class="field-halfish-width" appearance="outline">
+            <mat-label>Name</mat-label>
+            <input type="text"
+                name="name"
+                placeholder="Pick one or enter new"
+                aria-label="Name"
+                matInput
+                formControlName="name"
+                [matAutocomplete]="autoName"
+                (blur)="showNameAddressesEvent($event)" 
+                focus-scroll
+                #name>
+            <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
+                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                    <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
+                        {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
+                    </mat-option>
+                <!-- </cdk-virtual-scroll-viewport> -->
+            </mat-autocomplete>
+            <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-form-field>
 
     <!-- Pickup Address Button -->
-    <button type="button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
-        <mat-icon>contact_mail</mat-icon>
-    </button>
+        <button type="button" class="button-right" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+            <mat-icon>contact_mail</mat-icon>
+        </button>
+    </div>
 
     <!-- Pickup Address List -->
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
@@ -176,15 +178,12 @@
     <!-- Name List/Notes -->
     <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
         <div class="title name" *ngIf="!delivery.address">
-            Unknown Name ({{delivery.visits}})
+            Unknown Address ({{delivery.visits}})
         </div>
         <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
             {{ delivery.address | shortaddress }} ({{ delivery?.visits }})
             
         </a>
-        <!-- <button type="button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
-            <mat-icon>contact_mail</mat-icon>
-        </button> -->
         <div class="note">
             <span class="bold">Pay:</span> {{delivery.pay | currency}} <span class="bold">Tip:</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash:</span> {{delivery.cash | currency}}</span>
         </div>
@@ -220,9 +219,13 @@
     <!-- Address List/Notes -->
     <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
         <div class="bold">
-            <span [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''">
-                {{ delivery.name === "" ? "Unknown Name" : delivery.name }} ({{delivery.visits}})
-            </span>
+            <div class="title name" *ngIf="!delivery.name">
+                Unknown Name ({{delivery.visits}})
+            </div>
+            <a mat-button color="primary" class="address-link" [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''" (mousedown)="selectName(delivery.name)" *ngIf="delivery.name">
+                {{ delivery.name }} ({{ delivery.visits }})
+                
+            </a>
             <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
         </div>
         <div class="note">
@@ -254,11 +257,28 @@
     <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
     
     <!-- Note -->
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>Note</mat-label>
-        <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
-    </mat-form-field>
-    
+    <div class="row-block">
+        <mat-form-field class="field-halfish-width" appearance="outline">
+            <mat-label>Note</mat-label>
+            <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
+        </mat-form-field>
+
+        <button type="button" class="button-right" matSuffix mat-icon-button aria-label="Toggle Address/Order" (click)="toggleOrder()">
+            <mat-icon>business</mat-icon>
+        </button>
+    </div>
+
+    <!-- Address 2/Order -->
+    <div *ngIf="showOrder">
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>Apt/Unit/Room</mat-label>
+            <input matInput type="text" name="endUnit" placeholder="104" formControlName="endUnit" value="">
+        </mat-form-field>
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>Order Number</mat-label>
+            <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber" value="">
+        </mat-form-field>
+    </div>
 </form>
 
 <div class="row-flex" *ngIf="!data?.id">
