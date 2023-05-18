@@ -1,5 +1,4 @@
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { TripModel } from "@models/trip.model";
 import { NumberHelper } from "@helpers/number.helper";
 import { ITrip } from "@interfaces/trip.interface";
 
@@ -48,7 +47,15 @@ export class TripHelper {
             trip.total = NumberHelper.getNumberFromString(row['Total']);
             trip.cash = NumberHelper.getNumberFromString(row['Cash']);
 
+            // Odometers
+            trip.startOdometer = NumberHelper.getNumberFromString(row['Odo Start']);
+            trip.endOdometer = NumberHelper.getNumberFromString(row['Odo End']);
+
             trip.note = row['Note'];
+
+            // Other
+            trip.endUnit = row['End Unit'];
+            trip.orderNumber = row['Order #'];
 
             // console.log(trip);
 

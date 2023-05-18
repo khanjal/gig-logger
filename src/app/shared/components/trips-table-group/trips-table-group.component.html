@@ -2,7 +2,7 @@
     <h2 *ngIf="!link">{{ title }}</h2>
     <h2 *ngIf="link">{{ title }} <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
     <div *ngFor="let tripGroup of tripGroups">
-        <h3>{{ tripGroup.date | date:'E, MMM d' }} <span class="button-right">{{ tripGroup.amount | currency }} / {{ tripGroup.average | currency }}</span></h3>
+        <h3>{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}}) <span class="button-right">{{ tripGroup.amount | currency }} / {{ tripGroup.average | currency }}</span></h3>
         <div class='table-responsive'>
             <mat-table [dataSource]="tripGroup.trips">
                 <ng-container matColumnDef="service">

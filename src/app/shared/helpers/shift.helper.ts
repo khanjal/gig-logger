@@ -5,6 +5,10 @@ import { NumberHelper } from "@helpers/number.helper";
 import { IShift } from "@interfaces/shift.interface";
 
 export class ShiftHelper {
+    static compareShifts(o1: IShift, o2: IShift): boolean {
+        return o1?.date === o2?.date && o1?.service === o2?.service && o1?.number === o2?.number
+    }
+
     static getUniqueShifts(shifts: IShift[]): ShiftModel[] {
         let uniqueShifts: IShift[] = [];
 
