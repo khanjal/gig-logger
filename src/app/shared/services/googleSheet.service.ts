@@ -298,8 +298,11 @@ export class GoogleSheetService {
                 delivery.dates = [...new Set(delivery.dates)];
                 delivery.places = [...new Set(delivery.places)].sort();
                 delivery.services = [...new Set(delivery.services)].sort();
-                delivery.units = [...new Set(delivery.units)];
                 
+                if (delivery.units) {
+                    delivery.units = [...new Set(delivery.units)];
+                }
+
                 if (note) {
                     delivery.notes.push(note);
                 }
@@ -318,8 +321,11 @@ export class GoogleSheetService {
                 delivery.services = [trip.service];
                 delivery.tip = trip.tip;
                 delivery.total = trip.total;
-                delivery.units = [trip.endUnit];
                 delivery.visits = 1;
+
+                if (delivery.units) {
+                    delivery.units = [trip.endUnit];
+                }
 
                 if (note) {
                     delivery.notes.push(note);
