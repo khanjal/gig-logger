@@ -30,9 +30,9 @@ export class TripHelper {
             trip.number = row['#'];
 
             // Person
-            trip.name = row['Name'];
-            trip.startAddress = row['Start Address'];
-            trip.endAddress = row['End Address'];
+            trip.name = row['Name'].trim();
+            trip.startAddress = row['Start Address'].trim();
+            trip.endAddress = row['End Address'].trim();
             
             trip.date = row['Date'];
             trip.pickupTime = row['Pickup'];
