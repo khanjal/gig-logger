@@ -285,21 +285,31 @@ export class GoogleSheetService {
             if (delivery){
                 delivery.bonus += trip.bonus,
                 delivery.cash += trip.cash,
-                delivery.dates.push(trip.date);
                 delivery.pay += trip.pay;
-                delivery.places.push(trip.place);
-                delivery.services.push(trip.service);
                 delivery.tip += trip.tip;
                 delivery.total += trip.total;
-                delivery.units.push(trip.endUnit);
                 delivery.visits++;
 
-                // Remove duplicates
-                delivery.dates = [...new Set(delivery.dates)];
-                delivery.places = [...new Set(delivery.places)].sort();
-                delivery.services = [...new Set(delivery.services)].sort();
-                delivery.units = [...new Set(delivery.units)];
+                if (trip.date) {
+                    delivery.dates.push(trip.date);
+                    delivery.dates = [...new Set(delivery.dates)];
+                }
                 
+                if (trip.place) {
+                    delivery.places.push(trip.place);
+                    delivery.places = [...new Set(delivery.places)].sort();
+                }
+
+                if (trip.service) {
+                    delivery.services.push(trip.service);
+                    delivery.services = [...new Set(delivery.services)].sort();
+                }
+                
+                if (trip.endUnit) {
+                    delivery.units.push(trip.endUnit);
+                    delivery.units = [...new Set(delivery.units)];
+                }
+
                 if (note) {
                     delivery.notes.push(note);
                 }
@@ -310,20 +320,16 @@ export class GoogleSheetService {
                 delivery.address = trip.endAddress;
                 delivery.bonus = trip.bonus;
                 delivery.cash = trip.cash;
-                delivery.dates = [trip.date];
+                delivery.dates = trip.date ? [trip.date] : [];
                 delivery.name = trip.name;
-                delivery.notes = [];
+                delivery.notes = note ? [note] : [];
                 delivery.pay = trip.pay;
-                delivery.places = [trip.place];
-                delivery.services = [trip.service];
+                delivery.places = trip.place ? [trip.place] : [];
+                delivery.services = trip.service? [trip.service] : [];
                 delivery.tip = trip.tip;
                 delivery.total = trip.total;
-                delivery.units = [trip.endUnit];
+                delivery.units = trip.endUnit ? [trip.endUnit] : [];
                 delivery.visits = 1;
-
-                if (note) {
-                    delivery.notes.push(note);
-                }
 
                 deliveries.push(delivery);
             }
