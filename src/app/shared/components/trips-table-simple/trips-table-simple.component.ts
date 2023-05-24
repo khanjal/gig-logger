@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TripModel } from 'src/app/shared/models/trip.model';
+import { ITrip } from '@interfaces/trip.interface';
 
 @Component({
   selector: 'trips-table-simple',
@@ -9,7 +9,7 @@ import { TripModel } from 'src/app/shared/models/trip.model';
 export class TripsTableSimpleComponent implements OnInit {
   @Input() title: string = "";
   @Input() link: string = "";
-  @Input() trips: TripModel[] = [];
+  @Input() trips: ITrip[] = [];
   
   // TODO: Add grouping: https://stackblitz.com/edit/angular-material-table-row-grouping?file=src%2Fapp%2Fapp.module.ts
   displayedColumns: string[] = [];
