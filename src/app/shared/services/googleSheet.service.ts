@@ -15,7 +15,6 @@ import { AddressService } from './address.service';
 import { NameService } from './name.service';
 import { PlaceService } from './place.service';
 import { ServiceService } from './service.service';
-import { Spreadsheet } from '@models/spreadsheet.model';
 import { SpreadsheetService } from './spreadsheet.service';
 import { WeekdayHelper } from '@helpers/weekday.helper';
 import { WeekdayService } from './weekday.service';
@@ -24,6 +23,7 @@ import { INote } from '@interfaces/note.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { DeliveryService } from './delivery.service';
 import { ITrip } from '@interfaces/trip.interface';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 // https://medium.com/@bluesmike/how-i-implemented-angular8-googlesheets-crud-8883ac3cb6d8
 // https://www.npmjs.com/package/google-spreadsheet
@@ -119,7 +119,7 @@ export class GoogleSheetService {
 
         let sheet, rows;
 
-        let spreadsheet = new Spreadsheet;
+        let spreadsheet = {} as ISpreadsheet;
         spreadsheet.id = spreadsheetId;
         spreadsheet.name = this.doc.title;
         spreadsheet.default = "false";
@@ -285,14 +285,31 @@ export class GoogleSheetService {
             if (delivery){
                 delivery.bonus += trip.bonus,
                 delivery.cash += trip.cash,
-                delivery.dates.push(trip.date);
                 delivery.pay += trip.pay;
-                delivery.places.push(trip.place);
-                delivery.services.push(trip.service);
                 delivery.tip += trip.tip;
                 delivery.total += trip.total;
                 delivery.visits++;
+
+                if (trip.date) {
+                    delivery.dates.push(trip.date);
+                    delivery.dates = [...new Set(delivery.dates)];
+                }
                 
+                if (trip.place) {
+                    delivery.places.push(trip.place);
+                    delivery.places = [...new Set(delivery.places)].sort();
+                }
+
+                if (trip.service) {
+                    delivery.services.push(trip.service);
+                    delivery.services = [...new Set(delivery.services)].sort();
+                }
+                
+                if (trip.endUnit) {
+                    delivery.units.push(trip.endUnit);
+                    delivery.units = [...new Set(delivery.units)];
+                }
+
                 if (note) {
                     delivery.notes.push(note);
                 }
@@ -303,19 +320,16 @@ export class GoogleSheetService {
                 delivery.address = trip.endAddress;
                 delivery.bonus = trip.bonus;
                 delivery.cash = trip.cash;
-                delivery.dates = [trip.date];
+                delivery.dates = trip.date ? [trip.date] : [];
                 delivery.name = trip.name;
-                delivery.notes = [];
+                delivery.notes = note ? [note] : [];
                 delivery.pay = trip.pay;
-                delivery.places = [trip.place];
-                delivery.services = [trip.service];
+                delivery.places = trip.place ? [trip.place] : [];
+                delivery.services = trip.service? [trip.service] : [];
                 delivery.tip = trip.tip;
                 delivery.total = trip.total;
+                delivery.units = trip.endUnit ? [trip.endUnit] : [];
                 delivery.visits = 1;
-
-                if (note) {
-                    delivery.notes.push(note);
-                }
 
                 deliveries.push(delivery);
             }
