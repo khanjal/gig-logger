@@ -1,0 +1,9 @@
+{
+  "function": {
+    "GigLoggerService": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  }
+}
