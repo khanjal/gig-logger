@@ -21,5 +21,23 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
+  },
+  "parameters": {
+    "AMPLIFY_function_GigLoggerService_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "GigLoggerService"
+        }
+      ]
+    },
+    "AMPLIFY_function_GigLoggerService_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "GigLoggerService"
+        }
+      ]
+    }
   }
 }
