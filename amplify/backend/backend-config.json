@@ -1,4 +1,20 @@
 {
+  "api": {
+    "GigLoggerAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "GigLoggerService"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
   "function": {
     "GigLoggerService": {
       "build": true,
