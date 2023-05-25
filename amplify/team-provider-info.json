@@ -10,6 +10,11 @@
       "StackName": "amplify-amplify8949d842cef74-staging-120659",
       "StackId": "arn:aws:cloudformation:us-east-1:316675302119:stack/amplify-amplify8949d842cef74-staging-120659/df271c50-d14e-11ed-ab72-0e00ddd13d6b",
       "AmplifyAppId": "d29rpvxj38h7ws"
+    },
+    "categories": {
+      "function": {
+        "GigLoggerService": {}
+      }
     }
   }
 }
