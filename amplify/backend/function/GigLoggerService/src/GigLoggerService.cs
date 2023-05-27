@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -14,9 +13,9 @@ using Amazon.Lambda.APIGatewayEvents;
 // to match if you intend to test the function with 'amplify mock function'
 namespace GigLoggerService
 {
-    // If you rename this class, you will need to update the invocation shim
-    // to match if you intend to test the function with 'amplify mock function'
-    public class GigLoggerService
+  // If you rename this class, you will need to update the invocation shim
+  // to match if you intend to test the function with 'amplify mock function'
+  public class GigLoggerService
     {
         /// <summary>
         /// A Lambda function to respond to HTTP Get methods from API Gateway
@@ -44,7 +43,7 @@ namespace GigLoggerService
                 case "GET":
                     context.Logger.LogLine($"Get Request: {request.Path}\n");
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    response.Body = "{ \"message\": \"Hello AWS Serverless\" }";
+                    response.Body = "{ \"message\": \"Hello AWS Serverless " + request.PathParameters["id"] +" \" }";
                     response.Headers["Content-Type"] = "application/json";
                     break;
                 case "POST":
