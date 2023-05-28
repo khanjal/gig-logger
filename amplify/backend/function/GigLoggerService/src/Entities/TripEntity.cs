@@ -1,4 +1,4 @@
-public class Trip
+public class TripEntity : AmountEntity
 {
     public int Id { get; set; }
     public string Key { get; set; }
@@ -9,11 +9,6 @@ public class Trip
     public string Pickup { get; set; }
     public string Dropoff { get; set; }
     public string Duration { get; set; }
-    public string Pay { get; set; }
-    public string Tip { get; set; }
-    public string Bonus { get; set; }
-    public string Total { get; set; }
-    public string Cash { get; set; }
     public string OdometerStart { get; set; }
     public string OdometerEnd { get; set; }
     public string Distance { get; set; }

@@ -2,50 +2,56 @@ using System.Collections.Generic;
 
 public static class TripsMapper
 {
-    public static List<Trip> MapFromRangeData(IList<IList<object>> values)
+    public static List<TripEntity> MapFromRangeData(IList<IList<object>> values)
     {
-        var trips = new List<Trip>();
-        var id = 1;
+        var trips = new List<TripEntity>();
+        var headers = new Dictionary<int, string>();
+        var id = 0;
+
         foreach (var value in values)
         {
+            id++;
             if (id == 1) {
-                id++;
+                headers = HeaderParser.ParserHeader(value);
                 continue;
             }
 
-            Trip trip = new()
+            if (value.Count < headers.Count) {
+                continue;
+            }
+
+            TripEntity trip = new()
             {
                 Id = id,
-                Key = value[22].ToString(),
-                Date = value[0].ToString(),
-                Service = value[1].ToString(),
-                Number = value[2].ToString(),
-                Place = value[4].ToString(),
-                Pickup = value[5].ToString(),
-                Dropoff = value[6].ToString(),
-                Duration = value[7].ToString(),
-                Pay = value[8].ToString(),
-                Tip = value[9].ToString(),
-                Bonus = value[10].ToString(),
-                Total = value[11].ToString(),
-                Cash = value[12].ToString(),
-                OdometerStart = value[13].ToString(),
-                OdometerEnd = value[14].ToString(),
-                Distance = value[15].ToString(),
-                Name = value[16].ToString(),
-                StartAddress = value[17].ToString(),
-                EndAddress = value[18].ToString(),
-                EndUnit = value[19].ToString(),
-                OrderNumber = value[20].ToString(),
-                Note = value[21].ToString(),
+                Key = value[HeaderParser.GetHeaderKey(headers, "Key")].ToString(),
+                Date = value[HeaderParser.GetHeaderKey(headers, "Date")].ToString(),
+                Service = value[HeaderParser.GetHeaderKey(headers, "Service")].ToString(),
+                Number = value[HeaderParser.GetHeaderKey(headers, "#")].ToString(),
+                Place = value[HeaderParser.GetHeaderKey(headers, "Place")].ToString(),
+                Pickup = value[HeaderParser.GetHeaderKey(headers, "Pickup")].ToString(),
+                Dropoff = value[HeaderParser.GetHeaderKey(headers, "Dropoff")].ToString(),
+                Duration = value[HeaderParser.GetHeaderKey(headers, "Duration")].ToString(),
+                Pay = value[HeaderParser.GetHeaderKey(headers, "Pay")].ToString(),
+                Tip = value[HeaderParser.GetHeaderKey(headers, "Tip")].ToString(),
+                Bonus = value[HeaderParser.GetHeaderKey(headers, "Bonus")].ToString(),
+                Total = value[HeaderParser.GetHeaderKey(headers, "Total")].ToString(),
+                Cash = value[HeaderParser.GetHeaderKey(headers, "Cash")].ToString(),
+                OdometerStart = value[HeaderParser.GetHeaderKey(headers, "Odo Start")].ToString(),
+                OdometerEnd = value[HeaderParser.GetHeaderKey(headers, "Odo End")].ToString(),
+                Distance = value[HeaderParser.GetHeaderKey(headers, "Distance")].ToString(),
+                Name = value[HeaderParser.GetHeaderKey(headers, "Name")].ToString(),
+                StartAddress = value[HeaderParser.GetHeaderKey(headers, "Start Address")].ToString(),
+                EndAddress = value[HeaderParser.GetHeaderKey(headers, "End Address")].ToString(),
+                EndUnit = value[HeaderParser.GetHeaderKey(headers, "EndUnit")].ToString(),
+                OrderNumber = value[HeaderParser.GetHeaderKey(headers, "Order #")].ToString(),
+                Note = value[HeaderParser.GetHeaderKey(headers, "Note")].ToString(),
             };
             
             trips.Add(trip);
-            id++;
         }
         return trips;
     }
-    public static IList<IList<object>> MapToRangeData(Trip trip)
+    public static IList<IList<object>> MapToRangeData(TripEntity trip)
     {
         var objectList = new List<object>() { 
             trip.Date, 
