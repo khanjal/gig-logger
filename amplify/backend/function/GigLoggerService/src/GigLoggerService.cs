@@ -28,7 +28,7 @@ namespace GigLoggerService
     {
         readonly ServiceProvider _serviceProvider;
         public SpreadsheetsResource.ValuesResource _googleSheetValues;
-        public Sheet _sheet = new();
+        public SheetEntity _sheet = new();
         public string _spreadsheetId = "";
 
         public GigLoggerService()
@@ -76,8 +76,13 @@ namespace GigLoggerService
                     context.Logger.LogLine($"Get Request: {request.Path}\n");
                     _spreadsheetId = request.PathParameters["id"];
 
+                    _sheet.Addresses = GetAddresses();
+                    _sheet.Names = GetNames();
+                    _sheet.Places = GetPlaces();
+                    _sheet.Services = GetServices();
                     _sheet.Shifts = GetShifts();
                     _sheet.Trips = GetTrips();
+                    _sheet.Weekdays = GetWeekdays();
 
                     response.StatusCode = (int)HttpStatusCode.OK;
                     // response.Body = "{ \"message\": \"Hello AWS Serverless " + request.PathParameters["id"] +" \" }";
@@ -113,7 +118,7 @@ namespace GigLoggerService
             return response;
         }
 
-        private List<Trip> GetTrips() {
+        private List<TripEntity> GetTrips() {
             var range = "Trips";
             var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
             var googleResponse = googleRequest.Execute();
@@ -124,7 +129,7 @@ namespace GigLoggerService
             return trips;
         }
 
-        private List<Shift> GetShifts() {
+        private List<ShiftEntity> GetShifts() {
             var range = "Shifts";
             var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
             var googleResponse = googleRequest.Execute();
@@ -133,6 +138,61 @@ namespace GigLoggerService
             var shifts = ShiftsMapper.MapFromRangeData(values);
 
             return shifts;
+        }
+
+        private List<AddressEntity> GetAddresses() {
+            var range = "Addresses";
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
+            var googleResponse = googleRequest.Execute();
+            var values = googleResponse.Values;
+
+            var addresses = AddressMapper.MapFromRangeData(values);
+
+            return addresses;
+        }
+
+        private List<NameEntity> GetNames() {
+            var range = "Names";
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
+            var googleResponse = googleRequest.Execute();
+            var values = googleResponse.Values;
+
+            var names = NameMapper.MapFromRangeData(values);
+
+            return names;
+        }
+
+        private List<PlaceEntity> GetPlaces() {
+            var range = "Places";
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
+            var googleResponse = googleRequest.Execute();
+            var values = googleResponse.Values;
+
+            var places = PlaceMapper.MapFromRangeData(values);
+
+            return places;
+        }
+
+        private List<ServiceEntity> GetServices() {
+            var range = "Services";
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
+            var googleResponse = googleRequest.Execute();
+            var values = googleResponse.Values;
+
+            var services = ServiceMapper.MapFromRangeData(values);
+
+            return services;
+        }
+
+        private List<WeekdayEntity> GetWeekdays() {
+            var range = "Weekdays";
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
+            var googleResponse = googleRequest.Execute();
+            var values = googleResponse.Values;
+
+            var weekdays = WeekdayMapper.MapFromRangeData(values);
+
+            return weekdays;
         }
 
         /// <summary>

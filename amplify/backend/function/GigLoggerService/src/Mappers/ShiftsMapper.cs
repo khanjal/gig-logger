@@ -2,38 +2,44 @@ using System.Collections.Generic;
 
 public static class ShiftsMapper
 {
-    public static List<Shift> MapFromRangeData(IList<IList<object>> values)
+    public static List<ShiftEntity> MapFromRangeData(IList<IList<object>> values)
     {
-        var shifts = new List<Shift>();
-        var id = 1;
+        var shifts = new List<ShiftEntity>();
+        var headers = new Dictionary<int, string>();
+        var id = 0;
+
         foreach (var value in values)
         {
+            id++;
             if (id == 1) {
-                id++;
+                headers = HeaderParser.ParserHeader(value);
                 continue;
             }
 
-            Shift shift = new()
+            if (value.Count < headers.Count) {
+                continue;
+            }
+
+            ShiftEntity shift = new()
             {
                 Id = id,
-                Key = value[31].ToString(),
-                Date = value[0].ToString(),
-                Start = value[1].ToString(),
-                End = value[2].ToString(),
-                Service = value[3].ToString(),
-                Number = value[4].ToString(),
-                Active = value[5].ToString(),
-                Time = value[6].ToString(),
-                Omit = value[7].ToString(),
-                Note = value[14].ToString(),
+                Key = value[HeaderParser.GetHeaderKey(headers, "Key")].ToString(),
+                Date = value[HeaderParser.GetHeaderKey(headers, "Date")].ToString(),
+                Start = value[HeaderParser.GetHeaderKey(headers, "Start")].ToString(),
+                End = value[HeaderParser.GetHeaderKey(headers, "End")].ToString(),
+                Service = value[HeaderParser.GetHeaderKey(headers, "Service")].ToString(),
+                Number = value[HeaderParser.GetHeaderKey(headers, "#")].ToString(),
+                Active = value[HeaderParser.GetHeaderKey(headers, "Active")].ToString(),
+                Time = value[HeaderParser.GetHeaderKey(headers, "Time")].ToString(),
+                Omit = value[HeaderParser.GetHeaderKey(headers, "O")].ToString(),
+                Note = value[HeaderParser.GetHeaderKey(headers, "Note")].ToString(),
             };
             
             shifts.Add(shift);
-            id++;
         }
         return shifts;
     }
-    public static IList<IList<object>> MapToRangeData(Shift shift)
+    public static IList<IList<object>> MapToRangeData(ShiftEntity shift)
     {
         var objectList = new List<object>() { 
             shift.Date,

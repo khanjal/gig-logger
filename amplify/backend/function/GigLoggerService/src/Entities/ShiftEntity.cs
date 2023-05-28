@@ -1,4 +1,4 @@
-public class Shift
+public class ShiftEntity : AmountEntity
 {
     public int Id { get; set; }
     public string Key { get; set; }
