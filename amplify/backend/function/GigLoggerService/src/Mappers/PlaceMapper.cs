@@ -16,21 +16,21 @@ public static class PlaceMapper
                 continue;
             }
 
-            if (value.Count < headers.Count) {
+            if (value[0].ToString() == "") {
                 continue;
             }
 
             PlaceEntity place = new()
             {
                 Id = id,
-                Place = value[HeaderParser.GetHeaderKey(headers, "Place")].ToString(),
-                Trips = value[HeaderParser.GetHeaderKey(headers, "Trips")].ToString(),
-                Pay = value[HeaderParser.GetHeaderKey(headers, "Pay")].ToString(),
-                Tip = value[HeaderParser.GetHeaderKey(headers, "Tip")].ToString(),
-                Bonus = value[HeaderParser.GetHeaderKey(headers, "Bonus")].ToString(),
-                Total = value[HeaderParser.GetHeaderKey(headers, "Total")].ToString(),
-                Cash = value[HeaderParser.GetHeaderKey(headers, "Cash")].ToString(),
-                Miles = value[HeaderParser.GetHeaderKey(headers, "Miles")].ToString(),
+                Place = HeaderParser.GetValue("Place", value, headers),
+                Trips = HeaderParser.GetValue("Trips", value, headers),
+                Pay = HeaderParser.GetValue("Pay", value, headers),
+                Tip = HeaderParser.GetValue("Tip", value, headers),
+                Bonus = HeaderParser.GetValue("Bonus", value, headers),
+                Total = HeaderParser.GetValue("Total", value, headers),
+                Cash = HeaderParser.GetValue("Cash", value, headers),
+                Miles = HeaderParser.GetValue("Miles", value, headers),
             };
             
             places.Add(place);

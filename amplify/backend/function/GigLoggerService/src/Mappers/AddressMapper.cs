@@ -16,21 +16,21 @@ public static class AddressMapper
                 continue;
             }
 
-            if (value.Count < headers.Count) {
+            if (value[0].ToString() == "") {
                 continue;
             }
 
             AddressEntity address = new AddressEntity()
             {
                 Id = id,
-                Address = value[HeaderParser.GetHeaderKey(headers, "Address")].ToString(),
-                Visits = value[HeaderParser.GetHeaderKey(headers, "Visits")].ToString(),
-                Pay = value[HeaderParser.GetHeaderKey(headers, "Pay")].ToString(),
-                Tip = value[HeaderParser.GetHeaderKey(headers, "Tip")].ToString(),
-                Bonus = value[HeaderParser.GetHeaderKey(headers, "Bonus")].ToString(),
-                Total = value[HeaderParser.GetHeaderKey(headers, "Total")].ToString(),
-                Cash = value[HeaderParser.GetHeaderKey(headers, "Cash")].ToString(),
-                Miles = value[HeaderParser.GetHeaderKey(headers, "Miles")].ToString(),
+                Address = HeaderParser.GetValue("Address", value, headers),
+                Visits = HeaderParser.GetValue("Visits", value, headers),
+                Pay = HeaderParser.GetValue("Pay", value, headers),
+                Tip = HeaderParser.GetValue("Tip", value, headers),
+                Bonus = HeaderParser.GetValue("Bonus", value, headers),
+                Total = HeaderParser.GetValue("Total", value, headers),
+                Cash = HeaderParser.GetValue("Cash", value, headers),
+                Miles = HeaderParser.GetValue("Miles", value, headers),
             };
             
             addresses.Add(address);

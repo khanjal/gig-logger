@@ -16,23 +16,23 @@ public static class ShiftsMapper
                 continue;
             }
 
-            if (value.Count < headers.Count) {
+            if (value[0].ToString() == "") {
                 continue;
             }
 
             ShiftEntity shift = new()
             {
                 Id = id,
-                Key = value[HeaderParser.GetHeaderKey(headers, "Key")].ToString(),
-                Date = value[HeaderParser.GetHeaderKey(headers, "Date")].ToString(),
-                Start = value[HeaderParser.GetHeaderKey(headers, "Start")].ToString(),
-                End = value[HeaderParser.GetHeaderKey(headers, "End")].ToString(),
-                Service = value[HeaderParser.GetHeaderKey(headers, "Service")].ToString(),
-                Number = value[HeaderParser.GetHeaderKey(headers, "#")].ToString(),
-                Active = value[HeaderParser.GetHeaderKey(headers, "Active")].ToString(),
-                Time = value[HeaderParser.GetHeaderKey(headers, "Time")].ToString(),
-                Omit = value[HeaderParser.GetHeaderKey(headers, "O")].ToString(),
-                Note = value[HeaderParser.GetHeaderKey(headers, "Note")].ToString(),
+                Key = HeaderParser.GetValue("Key", value, headers),
+                Date = HeaderParser.GetValue("Date", value, headers),
+                Start = HeaderParser.GetValue("Start", value, headers),
+                End = HeaderParser.GetValue("End", value, headers),
+                Service = HeaderParser.GetValue("Service", value, headers),
+                Number = HeaderParser.GetValue("#", value, headers),
+                Active = HeaderParser.GetValue("Active", value, headers),
+                Time = HeaderParser.GetValue("Time", value, headers),
+                Omit = HeaderParser.GetValue("O", value, headers),
+                Note = HeaderParser.GetValue("Note", value, headers),
             };
             
             shifts.Add(shift);
