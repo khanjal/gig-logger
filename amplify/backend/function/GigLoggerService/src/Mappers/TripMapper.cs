@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public static class TripsMapper
+public static class TripMapper
 {
     public static List<TripEntity> MapFromRangeData(IList<IList<object>> values)
     {
