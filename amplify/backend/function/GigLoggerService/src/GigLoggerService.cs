@@ -95,7 +95,6 @@ namespace GigLoggerService
                         LoadData("Places");
                         LoadData("Services");
                         LoadData("Shifts");
-                        
                         LoadData("Weekdays");
                     }
 
@@ -134,9 +133,17 @@ namespace GigLoggerService
 
         private void LoadData(string sheetRange)
         {
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, sheetRange);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
+            IList<IList<object>> values;
+            try
+            {
+                var googleRequest = _googleSheetValues.Get(_spreadsheetId, sheetRange);
+                var googleResponse = googleRequest.Execute();
+                values = googleResponse.Values;
+            }
+            catch (System.Exception)
+            {
+                return;
+            }
 
             switch (sheetRange)
             {
@@ -157,11 +164,11 @@ namespace GigLoggerService
                 break;
 
                 case "Shifts":
-                    _sheet.Shifts = ShiftsMapper.MapFromRangeData(values);
+                    _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
                 break;
 
                 case "Trips":
-                    _sheet.Trips = TripsMapper.MapFromRangeData(values);
+                    _sheet.Trips = TripMapper.MapFromRangeData(values);
                 break;
 
                 case "Weekdays":
