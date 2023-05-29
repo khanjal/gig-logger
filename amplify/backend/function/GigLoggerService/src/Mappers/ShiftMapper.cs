@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public static class ShiftsMapper
+public static class ShiftMapper
 {
     public static List<ShiftEntity> MapFromRangeData(IList<IList<object>> values)
     {
