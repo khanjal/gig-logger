@@ -18,4 +18,14 @@ public static class HeaderParser {
     public static int GetHeaderKey(Dictionary<int, string> header, string value) {
         return header.FirstOrDefault(x => x.Value.Trim() == value.Trim()).Key;
     }
+
+    public static string GetValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
+        var columnId = GetHeaderKey(headers, columnName);
+
+        if (columnId > values.Count) {
+            return "";
+        }
+
+        return values[columnId].ToString().Trim();
+    }
 }
