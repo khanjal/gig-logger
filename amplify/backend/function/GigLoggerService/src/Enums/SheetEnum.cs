@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-public enum Sheet {
+public enum SheetEnum {
     [Description("Addresses")]
     Addresses,
 
