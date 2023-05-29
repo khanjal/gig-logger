@@ -86,16 +86,16 @@ namespace GigLoggerService
                     Console.Write(JsonSerializer.Serialize(request.PathParameters));
 
                     if (action == "primary" || action == "secondary") {
-                        LoadData("Addresses");
-                        LoadData("Names");
-                        LoadData("Trips");
+                        LoadData(SheetEnum.Addresses.DisplayName());
+                        LoadData(SheetEnum.Names.DisplayName());
+                        LoadData(SheetEnum.Trips.DisplayName());
                     }
 
                     if (action == "primary") {
-                        LoadData("Places");
-                        LoadData("Services");
-                        LoadData("Shifts");
-                        LoadData("Weekdays");
+                        LoadData(SheetEnum.Places.DisplayName());
+                        LoadData(SheetEnum.Services.DisplayName());
+                        LoadData(SheetEnum.Shifts.DisplayName());
+                        LoadData(SheetEnum.Weekdays.DisplayName());
                     }
 
                     response.StatusCode = (int)HttpStatusCode.OK;
