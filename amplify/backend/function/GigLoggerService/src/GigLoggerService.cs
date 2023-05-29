@@ -59,6 +59,8 @@ namespace GigLoggerService
                 }
             };
 
+            _sheet = new();
+
             using (var scope = _serviceProvider.CreateScope())
             {
                 var googleSheetsService = scope.ServiceProvider.GetRequiredService<GoogleSheetsHelper>();
@@ -75,17 +77,29 @@ namespace GigLoggerService
                 case "GET":
                     context.Logger.LogLine($"Get Request: {request.Path}\n");
                     _spreadsheetId = request.PathParameters["id"];
+                    var action = request.PathParameters["action"];
 
-                    _sheet.Addresses = GetAddresses();
-                    _sheet.Names = GetNames();
-                    _sheet.Places = GetPlaces();
-                    _sheet.Services = GetServices();
-                    _sheet.Shifts = GetShifts();
-                    _sheet.Trips = GetTrips();
-                    _sheet.Weekdays = GetWeekdays();
+                    if (action == null) {
+                        response.Body = "{ \"message\": \"Choose an action for " + request.PathParameters["id"] +"\" }";
+                    }
+
+                    Console.Write(JsonSerializer.Serialize(request.PathParameters));
+
+                    if (action == "primary" || action == "secondary") {
+                        LoadData("Addresses");
+                        LoadData("Names");
+                        LoadData("Trips");
+                    }
+
+                    if (action == "primary") {
+                        LoadData("Places");
+                        LoadData("Services");
+                        LoadData("Shifts");
+                        
+                        LoadData("Weekdays");
+                    }
 
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    // response.Body = "{ \"message\": \"Hello AWS Serverless " + request.PathParameters["id"] +" \" }";
                     response.Body = JsonSerializer.Serialize(_sheet);
                     response.Headers["Content-Type"] = "application/json";
                     break;
@@ -118,81 +132,42 @@ namespace GigLoggerService
             return response;
         }
 
-        private List<TripEntity> GetTrips() {
-            var range = "Trips";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
+        private void LoadData(string sheetRange)
+        {
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, sheetRange);
             var googleResponse = googleRequest.Execute();
             var values = googleResponse.Values;
 
-            var trips = TripsMapper.MapFromRangeData(values);
+            switch (sheetRange)
+            {
+                case "Addresses":
+                    _sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    break;
 
-            return trips;
-        }
+                case "Names":
+                    _sheet.Names = NameMapper.MapFromRangeData(values);
+                break;
 
-        private List<ShiftEntity> GetShifts() {
-            var range = "Shifts";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
+                case "Places":
+                    _sheet.Places = PlaceMapper.MapFromRangeData(values);
+                break;
 
-            var shifts = ShiftsMapper.MapFromRangeData(values);
+                case "Services":
+                    _sheet.Services = ServiceMapper.MapFromRangeData(values);
+                break;
 
-            return shifts;
-        }
+                case "Shifts":
+                    _sheet.Shifts = ShiftsMapper.MapFromRangeData(values);
+                break;
 
-        private List<AddressEntity> GetAddresses() {
-            var range = "Addresses";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
+                case "Trips":
+                    _sheet.Trips = TripsMapper.MapFromRangeData(values);
+                break;
 
-            var addresses = AddressMapper.MapFromRangeData(values);
-
-            return addresses;
-        }
-
-        private List<NameEntity> GetNames() {
-            var range = "Names";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
-
-            var names = NameMapper.MapFromRangeData(values);
-
-            return names;
-        }
-
-        private List<PlaceEntity> GetPlaces() {
-            var range = "Places";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
-
-            var places = PlaceMapper.MapFromRangeData(values);
-
-            return places;
-        }
-
-        private List<ServiceEntity> GetServices() {
-            var range = "Services";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
-
-            var services = ServiceMapper.MapFromRangeData(values);
-
-            return services;
-        }
-
-        private List<WeekdayEntity> GetWeekdays() {
-            var range = "Weekdays";
-            var googleRequest = _googleSheetValues.Get(_spreadsheetId, range);
-            var googleResponse = googleRequest.Execute();
-            var values = googleResponse.Values;
-
-            var weekdays = WeekdayMapper.MapFromRangeData(values);
-
-            return weekdays;
+                case "Weekdays":
+                    _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
+                break;
+            }
         }
 
         /// <summary>

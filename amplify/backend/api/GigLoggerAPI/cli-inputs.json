@@ -1,8 +1,8 @@
 {
   "version": 1,
   "paths": {
-    "/sheet/{id}": {
-      "name": "/sheet/{id}",
+    "/sheet/{id}/{action}": {
+      "name": "/sheet/{id}/{action}",
       "lambdaFunction": "GigLoggerService",
       "permissions": {
         "setting": "open"

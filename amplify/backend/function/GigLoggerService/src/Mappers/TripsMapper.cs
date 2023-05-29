@@ -16,35 +16,35 @@ public static class TripsMapper
                 continue;
             }
 
-            if (value.Count < headers.Count) {
+            if (value[0].ToString() == "") {
                 continue;
             }
 
             TripEntity trip = new()
             {
                 Id = id,
-                Key = value[HeaderParser.GetHeaderKey(headers, "Key")].ToString(),
-                Date = value[HeaderParser.GetHeaderKey(headers, "Date")].ToString(),
-                Service = value[HeaderParser.GetHeaderKey(headers, "Service")].ToString(),
-                Number = value[HeaderParser.GetHeaderKey(headers, "#")].ToString(),
-                Place = value[HeaderParser.GetHeaderKey(headers, "Place")].ToString(),
-                Pickup = value[HeaderParser.GetHeaderKey(headers, "Pickup")].ToString(),
-                Dropoff = value[HeaderParser.GetHeaderKey(headers, "Dropoff")].ToString(),
-                Duration = value[HeaderParser.GetHeaderKey(headers, "Duration")].ToString(),
-                Pay = value[HeaderParser.GetHeaderKey(headers, "Pay")].ToString(),
-                Tip = value[HeaderParser.GetHeaderKey(headers, "Tip")].ToString(),
-                Bonus = value[HeaderParser.GetHeaderKey(headers, "Bonus")].ToString(),
-                Total = value[HeaderParser.GetHeaderKey(headers, "Total")].ToString(),
-                Cash = value[HeaderParser.GetHeaderKey(headers, "Cash")].ToString(),
-                OdometerStart = value[HeaderParser.GetHeaderKey(headers, "Odo Start")].ToString(),
-                OdometerEnd = value[HeaderParser.GetHeaderKey(headers, "Odo End")].ToString(),
-                Distance = value[HeaderParser.GetHeaderKey(headers, "Distance")].ToString(),
-                Name = value[HeaderParser.GetHeaderKey(headers, "Name")].ToString(),
-                StartAddress = value[HeaderParser.GetHeaderKey(headers, "Start Address")].ToString(),
-                EndAddress = value[HeaderParser.GetHeaderKey(headers, "End Address")].ToString(),
-                EndUnit = value[HeaderParser.GetHeaderKey(headers, "EndUnit")].ToString(),
-                OrderNumber = value[HeaderParser.GetHeaderKey(headers, "Order #")].ToString(),
-                Note = value[HeaderParser.GetHeaderKey(headers, "Note")].ToString(),
+                Key = HeaderParser.GetValue("Key", value, headers),
+                Date = HeaderParser.GetValue("Date", value, headers),
+                Service = HeaderParser.GetValue("Service", value, headers),
+                Number = HeaderParser.GetValue("#", value, headers),
+                Place = HeaderParser.GetValue("Place", value, headers),
+                Pickup = HeaderParser.GetValue("Pickup", value, headers),
+                Dropoff = HeaderParser.GetValue("Dropoff", value, headers),
+                Duration = HeaderParser.GetValue("Duration", value, headers),
+                Pay = HeaderParser.GetValue("Pay", value, headers),
+                Tip = HeaderParser.GetValue("Tip", value, headers),
+                Bonus = HeaderParser.GetValue("Bonus", value, headers),
+                Total = HeaderParser.GetValue("Total", value, headers),
+                Cash = HeaderParser.GetValue("Cash", value, headers),
+                OdometerStart = HeaderParser.GetValue("Odo Start", value, headers),
+                OdometerEnd = HeaderParser.GetValue("Odo End", value, headers),
+                Distance = HeaderParser.GetValue("Distance", value, headers),
+                Name = HeaderParser.GetValue("Name", value, headers),
+                StartAddress = HeaderParser.GetValue("Start Address", value, headers),
+                EndAddress = HeaderParser.GetValue("End Address", value, headers),
+                EndUnit = HeaderParser.GetValue("End Unit", value, headers),
+                OrderNumber = HeaderParser.GetValue("Order #", value, headers),
+                Note = HeaderParser.GetValue("Note", value, headers),
             };
             
             trips.Add(trip);
