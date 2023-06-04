@@ -171,25 +171,64 @@ namespace GigLoggerService
 
     private void LoadSpreadSheetData(string action)
     {
-        if (action == "batch") {
-            var body = new BatchGetValuesByDataFilterRequest();
-            var dataFilter = new DataFilter();
-            dataFilter.A1Range = "Services";
-            body.DataFilters.Add(dataFilter);
-            var test = _googleSheetValues.BatchGetByDataFilter(body, _spreadsheetId);
-        }
-        if (action == "primary" || action == "secondary") {
-            LoadData(SheetEnum.Addresses.DisplayName());
-            LoadData(SheetEnum.Names.DisplayName());
-            LoadData(SheetEnum.Trips.DisplayName());
+        var sheets = new List<SheetEnum>();
+
+        switch (action)
+        {
+            case "primary":
+                sheets.Add(SheetEnum.Addresses);
+                sheets.Add(SheetEnum.Names);
+                sheets.Add(SheetEnum.Places);
+                sheets.Add(SheetEnum.Services);
+                sheets.Add(SheetEnum.Shifts);
+                sheets.Add(SheetEnum.Trips);
+                sheets.Add(SheetEnum.Weekdays);
+            break;
+            
+            case "secondary":
+                sheets.Add(SheetEnum.Addresses);
+                sheets.Add(SheetEnum.Names);
+                sheets.Add(SheetEnum.Trips);
+            break;
         }
 
-        if (action == "primary") {
-            LoadData(SheetEnum.Places.DisplayName());
-            LoadData(SheetEnum.Services.DisplayName());
-            LoadData(SheetEnum.Shifts.DisplayName());
-            LoadData(SheetEnum.Weekdays.DisplayName());
+        LoadBatchData(sheets);
+    }
+
+    private void LoadBatchData(List<SheetEnum> sheets)
+    {
+        var body = new BatchGetValuesByDataFilterRequest();
+        body.DataFilters = new List<DataFilter>();
+
+        foreach (var sheet in sheets)
+        {
+            var filter = new DataFilter();
+            filter.A1Range = sheet.DisplayName();
+            body.DataFilters.Add(filter);    
         }
+
+        IList<MatchedValueRange> matchedValues;
+        try
+        {
+            var googleRequest = _googleSheetValues.BatchGetByDataFilter(body, _spreadsheetId);
+            var googleResponse = googleRequest.Execute();
+            matchedValues = googleResponse.ValueRanges;
+        }
+        catch (System.Exception)
+        {
+            _sheet.Errors.Add($"Failed to load sheet data");
+            return;
+        }
+        
+        foreach (var matchedValue in matchedValues)
+        {
+            var sheetRange = matchedValue.DataFilters[0].A1Range;
+
+            var values = matchedValue.ValueRange.Values;
+
+            MapData(sheetRange, values);
+        }
+        //Console.Write(JsonSerializer.Serialize(matchedValues));
     }
 
     private IList<IList<object>> GetSheetData(string sheetRange) {
@@ -219,34 +258,42 @@ namespace GigLoggerService
             if (values == null) {
                 return;
             }
+
+            MapData(sheetRange, values);
+        }
+
+        private void MapData(string sheetRange, IList<IList<object>> values) {
+            SheetEnum sheetEnum;
+
+            Enum.TryParse<SheetEnum>(sheetRange, out sheetEnum);
             
-            switch (sheetRange)
+            switch (sheetEnum)
             {
-                case "Addresses":
+                case SheetEnum.Addresses:
                     _sheet.Addresses = AddressMapper.MapFromRangeData(values);
                     break;
 
-                case "Names":
+                case SheetEnum.Names:
                     _sheet.Names = NameMapper.MapFromRangeData(values);
                 break;
 
-                case "Places":
+                case SheetEnum.Places:
                     _sheet.Places = PlaceMapper.MapFromRangeData(values);
                 break;
 
-                case "Services":
+                case SheetEnum.Services:
                     _sheet.Services = ServiceMapper.MapFromRangeData(values);
                 break;
 
-                case "Shifts":
+                case SheetEnum.Shifts:
                     _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
                 break;
 
-                case "Trips":
+                case SheetEnum.Trips:
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
                 break;
 
-                case "Weekdays":
+                case SheetEnum.Weekdays:
                     _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
                 break;
             }
