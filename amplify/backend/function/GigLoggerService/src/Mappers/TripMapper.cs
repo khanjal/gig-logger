@@ -51,34 +51,87 @@ public static class TripMapper
         }
         return trips;
     }
-    public static IList<IList<object>> MapToRangeData(TripEntity trip)
+    public static IList<IList<object>> MapToRangeData(List<TripEntity> trips, IList<object> tripHeaders)
     {
-        var objectList = new List<object>() { 
-            trip.Date, 
-            trip.Service, 
-            trip.Number, 
-            "",
-            trip.Place,
-            trip.Pickup,
-            trip.Dropoff,
-            trip.Duration,
-            trip.Pay,
-            trip.Tip,
-            trip.Bonus,
-            "",
-            trip.Cash,
-            trip.OdometerStart,
-            trip.OdometerEnd,
-            trip.Distance,
-            trip.Name,
-            trip.StartAddress,
-            trip.EndAddress,
-            trip.EndUnit,
-            trip.OrderNumber,
-            trip.Note
-        };
+        var rangeData = new List<IList<object>>();
 
-        var rangeData = new List<IList<object>> { objectList };
+        foreach (var trip in trips)
+        {
+            var objectList = new List<object>();
+
+            foreach (var header in tripHeaders)
+            {
+                switch (header.ToString())
+                {
+                    case "Date":
+                        objectList.Add(trip.Date);
+                        break;
+                    case "Service":
+                        objectList.Add(trip.Service);
+                        break;
+                    case "Number":
+                        objectList.Add(trip.Number);
+                        break;
+                    case "Place":
+                        objectList.Add(trip.Place);
+                        break;
+                    case "Pickup":
+                        objectList.Add(trip.Pickup);
+                        break;
+                    case "Dropoff":
+                        objectList.Add(trip.Dropoff);
+                        break;
+                    case "Duration":
+                        objectList.Add(trip.Duration);
+                        break;
+                    case "Pay":
+                        objectList.Add(trip.Pay);
+                        break;
+                    case "Tip":
+                        objectList.Add(trip.Tip);
+                        break;
+                    case "Bonus":
+                        objectList.Add(trip.Bonus);
+                        break;
+                    case "Cash":
+                        objectList.Add(trip.Cash);
+                        break;
+                    case "Odo Start":
+                        objectList.Add(trip.OdometerStart);
+                        break;
+                    case "Odo End":
+                        objectList.Add(trip.OdometerEnd);
+                        break;
+                    case "Distance":
+                        objectList.Add(trip.Distance);
+                        break;
+                    case "Name":
+                        objectList.Add(trip.Name);
+                        break;
+                    case "Start Address":
+                        objectList.Add(trip.StartAddress);
+                        break;
+                    case "End Address":
+                        objectList.Add(trip.EndAddress);
+                        break;
+                    case "End Unit":
+                        objectList.Add(trip.EndUnit);
+                        break;
+                    case "Order #":
+                        objectList.Add(trip.OrderNumber);
+                        break;
+                    case "Note":
+                        objectList.Add(trip.Note);
+                        break;
+                    default:
+                        objectList.Add(null);
+                        break;
+                }   
+            }
+
+            rangeData.Add(objectList);
+        }
+        
         return rangeData;
     }
 }
