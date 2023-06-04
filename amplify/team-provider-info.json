@@ -15,7 +15,7 @@
       "function": {
         "GigLoggerService": {
           "deploymentBucketName": "amplify-amplify8949d842cef74-staging-120659-deployment",
-          "s3Key": "amplify-builds/GigLoggerService-4e327034745032383778-build.zip"
+          "s3Key": "amplify-builds/GigLoggerService-50456532754b30386d67-build.zip"
         }
       },
       "api": {
