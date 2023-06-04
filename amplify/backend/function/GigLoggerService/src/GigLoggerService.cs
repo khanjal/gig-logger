@@ -8,6 +8,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Google.Apis.Sheets.v4;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
+using Google.Apis.Sheets.v4.Data;
 
 // https://aws.amazon.com/blogs/developer/introducing-net-core-support-for-aws-amplify-backend-functions/
 // https://code-maze.com/google-sheets-api-with-net-core/
@@ -71,13 +72,14 @@ namespace GigLoggerService
             // await scope.ServiceProvider.GetService<GigLoggerService>().Run(evnt);
 
             string contentType = null;
+            string action = null;
             request.Headers?.TryGetValue("Content-Type", out contentType);
 
             switch (request.HttpMethod) {
                 case "GET":
                     context.Logger.LogLine($"Get Request: {request.Path}\n");
                     _spreadsheetId = request.PathParameters["id"];
-                    var action = request.PathParameters["action"];
+                    action = request.PathParameters["action"];
 
                     if (action == null) {
                         response.Body = "{ \"message\": \"Choose an action for " + request.PathParameters["id"] +"\" }";
@@ -85,17 +87,17 @@ namespace GigLoggerService
 
                     Console.Write(JsonSerializer.Serialize(request.PathParameters));
 
-                    if (action == "primary" || action == "secondary") {
-                        LoadData(SheetEnum.Addresses.DisplayName());
-                        LoadData(SheetEnum.Names.DisplayName());
-                        LoadData(SheetEnum.Trips.DisplayName());
-                    }
-
-                    if (action == "primary") {
-                        LoadData(SheetEnum.Places.DisplayName());
-                        LoadData(SheetEnum.Services.DisplayName());
-                        LoadData(SheetEnum.Shifts.DisplayName());
-                        LoadData(SheetEnum.Weekdays.DisplayName());
+                    switch (action)
+                    {
+                        case "primary":
+                        case "secondary":
+                            LoadSpreadSheetData(action);
+                            break;
+                        case "check":
+                            CheckSpreadSheet();
+                            break;
+                        case "generate":
+                            break;
                     }
 
                     response.StatusCode = (int)HttpStatusCode.OK;
@@ -104,10 +106,34 @@ namespace GigLoggerService
                     break;
                 case "POST":
                     context.Logger.LogLine($"Post Request: {request.Path}\n");
+
+                    _spreadsheetId = request.PathParameters["id"];
+                    action = request.PathParameters["action"];
+
                     if (!String.IsNullOrEmpty(contentType)) {
                         context.Logger.LogLine($"Content type: {contentType}");
                     }
                     context.Logger.LogLine($"Body: {request.Body}");
+
+                    switch (action)
+                    {
+                        case "trips":
+                            var sheet = JsonSerializer.Deserialize<SheetEntity>(request.Body);
+                            context.Logger.LogDebug(JsonSerializer.Serialize(sheet));
+
+                            // Create & save shift rows.
+                            var shiftHeaders = GetSheetData($"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1")[0];
+                            var shifts = ShiftMapper.MapToRangeData(sheet.Shifts, shiftHeaders);
+                            context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
+
+                            // Create & save trip rows.
+                            var tripHeaders = GetSheetData($"{SheetEnum.Trips.DisplayName()}!A1:ZZ1")[0];
+                            var trips = TripMapper.MapToRangeData(sheet.Trips, tripHeaders);
+                            context.Logger.LogDebug(JsonSerializer.Serialize(trips));
+                            
+                        break;
+                    }
+
                     response.StatusCode = (int)HttpStatusCode.OK;
                     break;
                 case "PUT":
@@ -131,20 +157,69 @@ namespace GigLoggerService
             return response;
         }
 
-        private void LoadData(string sheetRange)
+    private void CheckSpreadSheet()
+    {
+        foreach (var name in Enum.GetNames<SheetEnum>())
+        {
+            SheetEnum sheetEnum = (SheetEnum)Enum.Parse(typeof(SheetEnum), name);
+
+            GetSheetData(sheetEnum.DisplayName());
+
+            Console.WriteLine(name);
+        }
+    }
+
+    private void LoadSpreadSheetData(string action)
+    {
+        if (action == "batch") {
+            var body = new BatchGetValuesByDataFilterRequest();
+            var dataFilter = new DataFilter();
+            dataFilter.A1Range = "Services";
+            body.DataFilters.Add(dataFilter);
+            var test = _googleSheetValues.BatchGetByDataFilter(body, _spreadsheetId);
+        }
+        if (action == "primary" || action == "secondary") {
+            LoadData(SheetEnum.Addresses.DisplayName());
+            LoadData(SheetEnum.Names.DisplayName());
+            LoadData(SheetEnum.Trips.DisplayName());
+        }
+
+        if (action == "primary") {
+            LoadData(SheetEnum.Places.DisplayName());
+            LoadData(SheetEnum.Services.DisplayName());
+            LoadData(SheetEnum.Shifts.DisplayName());
+            LoadData(SheetEnum.Weekdays.DisplayName());
+        }
+    }
+
+    private IList<IList<object>> GetSheetData(string sheetRange) {
+        IList<IList<object>> values;
+
+        try
+        {
+            var googleRequest = _googleSheetValues.Get(_spreadsheetId, sheetRange);
+            var googleResponse = googleRequest.Execute();
+            values = googleResponse.Values;
+        }
+        catch (System.Exception)
+        {
+            _sheet.Errors.Add($"Failed to load {sheetRange}");
+            return null;
+        }
+
+        return values;
+    }
+
+    private void LoadData(string sheetRange)
         {
             IList<IList<object>> values;
-            try
-            {
-                var googleRequest = _googleSheetValues.Get(_spreadsheetId, sheetRange);
-                var googleResponse = googleRequest.Execute();
-                values = googleResponse.Values;
-            }
-            catch (System.Exception)
-            {
+
+            values = GetSheetData(sheetRange);
+
+            if (values == null) {
                 return;
             }
-
+            
             switch (sheetRange)
             {
                 case "Addresses":
