@@ -39,27 +39,66 @@ public static class ShiftMapper
         }
         return shifts;
     }
-    public static IList<IList<object>> MapToRangeData(ShiftEntity shift)
+    public static IList<IList<object>> MapToRangeData(List<ShiftEntity> shifts, IList<object> shiftHeaders)
     {
-        var objectList = new List<object>() { 
-            shift.Date,
-            shift.Start,
-            shift.End,
-            shift.Service, 
-            shift.Number,
-            shift.Active,
-            shift.Time,
-            shift.Omit,
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            shift.Note
-        };
+        var rangeData = new List<IList<object>>();
 
-        var rangeData = new List<IList<object>> { objectList };
+        foreach (var shift in shifts)
+        {
+            var objectList = new List<object>();
+
+            foreach (var header in shiftHeaders)
+            {
+                switch (header.ToString())
+                {
+                    case "Date":
+                        objectList.Add(shift.Date);
+                        break;
+                    case "Start":
+                        objectList.Add(shift.Start);
+                        break;
+                    case "End":
+                        objectList.Add(shift.End);
+                        break;
+                    case "Service":
+                        objectList.Add(shift.Service);
+                        break;
+                    case "Number":
+                        objectList.Add(shift.Number);
+                        break;
+                    case "Active":
+                        objectList.Add(shift.Active);
+                        break;
+                    case "Time":
+                        objectList.Add(shift.Time);
+                        break;
+                    case "Omit":
+                        objectList.Add(shift.Omit);
+                        break;
+                    case "Pay":
+                        objectList.Add(shift.Pay);
+                        break;
+                    case "Tip":
+                        objectList.Add(shift.Tip);
+                        break;
+                    case "Bonus":
+                        objectList.Add(shift.Bonus);
+                        break;
+                    case "Cash":
+                        objectList.Add(shift.Cash);
+                        break;
+                    case "Note":
+                        objectList.Add(shift.Note);
+                        break;
+                    default:
+                        objectList.Add(null);
+                        break;
+                }   
+            }
+
+            rangeData.Add(objectList);
+        }
+        
         return rangeData;
     }
 }
