@@ -18,6 +18,7 @@ import { WeekdayService } from '@services/weekday.service';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ViewportScroller } from '@angular/common';
 import { TimerService } from '@services/timer.service';
+import { GigLoggerService } from '@services/gig-logger.service';
 
 @Component({
   selector: 'app-quick',
@@ -42,6 +43,7 @@ export class QuickComponent implements OnInit {
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
       private _router: Router, 
+      private _gigLoggerService: GigLoggerService,
       private _googleService: GoogleSheetService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
@@ -261,6 +263,7 @@ export class QuickComponent implements OnInit {
 
   async reload() {
     this.reloading = true;
+    await this._gigLoggerService.getSheetData(this.defaultSheet?.id);
     await this._googleService.loadRemoteData();
     await this._googleService.loadSecondarySheetData();
     await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
