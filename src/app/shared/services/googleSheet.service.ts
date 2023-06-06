@@ -34,9 +34,11 @@ export class GoogleSheetService {
     data: any = null;
     doc: GoogleSpreadsheet | undefined;
 
-    clientEmail = environment.client_email;
-    privateKey = environment.private_key;
+    // clientEmail = environment.client_email;
+    // privateKey = environment.private_key;
 
+    clientEmail = "";
+    privateKey = "";
 
     constructor(
             public http: HttpClient,
