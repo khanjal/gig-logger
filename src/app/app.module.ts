@@ -19,6 +19,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
 import { TimerService } from '@services/timer.service';
 import { DeliveryService } from '@services/delivery.service';
+import { GigLoggerService } from '@services/gig-logger.service';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { DeliveryService } from '@services/delivery.service';
     AddressService,
     DeliveryService,
     NameService,
+    GigLoggerService,
     GoogleSheetService,
     PlaceService,
     ServiceService,
