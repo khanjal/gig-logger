@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.DependencyInjection;
 
 using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
+
 using Google.Apis.Sheets.v4;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
 using Google.Apis.Sheets.v4.Data;
+using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
 
 // https://aws.amazon.com/blogs/developer/introducing-net-core-support-for-aws-amplify-backend-functions/
 // https://code-maze.com/google-sheets-api-with-net-core/
@@ -29,6 +32,7 @@ namespace GigLoggerService
     {
         readonly ServiceProvider _serviceProvider;
         public SpreadsheetsResource.ValuesResource _googleSheetValues;
+        public SpreadsheetsResource.SheetsResource _googleSheetSheets;
         public SheetEntity _sheet = new();
         public string _spreadsheetId = "";
 
@@ -118,18 +122,15 @@ namespace GigLoggerService
                     switch (action)
                     {
                         case "trips":
-                            var sheet = JsonSerializer.Deserialize<SheetEntity>(request.Body);
-                            context.Logger.LogDebug(JsonSerializer.Serialize(sheet));
+                            
+                            var sheetData = JsonSerializer.Deserialize<SheetEntity>(request.Body);
+                            context.Logger.LogDebug(JsonSerializer.Serialize(sheetData));
 
-                            // Create & save shift rows.
-                            var shiftHeaders = GetSheetData($"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1")[0];
-                            var shifts = ShiftMapper.MapToRangeData(sheet.Shifts, shiftHeaders);
-                            context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
+                            if (sheetData != null) {
+                                SaveTripData(sheetData);
+                            }
 
-                            // Create & save trip rows.
-                            var tripHeaders = GetSheetData($"{SheetEnum.Trips.DisplayName()}!A1:ZZ1")[0];
-                            var trips = TripMapper.MapToRangeData(sheet.Trips, tripHeaders);
-                            context.Logger.LogDebug(JsonSerializer.Serialize(trips));
+                            
                             
                         break;
                     }
@@ -157,6 +158,38 @@ namespace GigLoggerService
             return response;
         }
 
+    private void SaveTripData(SheetEntity sheetData)
+    {
+        // Create & save shift rows.
+        var shiftRange = $"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1";
+        var shiftHeaders = GetSheetData(shiftRange)[0];
+        var shifts = ShiftMapper.MapToRangeData(sheetData.Shifts, shiftHeaders);
+        // context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
+
+        if (shifts.Count > 0) {
+            var valueRange = new ValueRange { Values = shifts };
+            AppendData(valueRange, shiftRange);
+        }
+
+        // Create & save trip rows.
+        var tripRange = $"{SheetEnum.Trips.DisplayName()}!A1:ZZ1";
+        var tripHeaders = GetSheetData(tripRange)[0];
+        var trips = TripMapper.MapToRangeData(sheetData.Trips, tripHeaders);
+        // context.Logger.LogDebug(JsonSerializer.Serialize(trips));
+
+        if (trips.Count > 0) {
+            var valueRange = new ValueRange { Values = trips };
+            AppendData(valueRange, tripRange);
+        }
+    }
+
+    private void AppendData(ValueRange valueRange, string range)
+    {
+        var appendRequest = _googleSheetValues.Append(valueRange, _spreadsheetId, range);
+        appendRequest.ValueInputOption = AppendRequest.ValueInputOptionEnum.USERENTERED;
+        appendRequest.Execute();
+    }
+
     private void CheckSpreadSheet()
     {
         foreach (var name in Enum.GetNames<SheetEnum>())
@@ -172,6 +205,7 @@ namespace GigLoggerService
     private void LoadSpreadSheetData(string action)
     {
         var sheets = new List<SheetEnum>();
+        LoadSpreadSheetProperties();
 
         switch (action)
         {
@@ -193,6 +227,13 @@ namespace GigLoggerService
         }
 
         LoadBatchData(sheets);
+    }
+
+    private void LoadSpreadSheetProperties()
+    {
+        // var googleRequest = _googleSheetValues.Get;
+        // var googleResponse = googleRequest.Execute();
+        // matchedValues = googleResponse.ValueRanges;
     }
 
     private void LoadBatchData(List<SheetEnum> sheets)
