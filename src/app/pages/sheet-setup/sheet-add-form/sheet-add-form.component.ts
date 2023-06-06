@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 
@@ -19,7 +20,7 @@ export class SheetAddFormComponent {
   saving: boolean = false;
 
   constructor(
-    private _googleService: GoogleSheetService,
+    private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService
   ) { }
 
@@ -45,13 +46,13 @@ export class SheetAddFormComponent {
     // console.log(spreadsheetId);
     await this.setupForm(spreadsheetId);
 
-    this.saving = false;
     this.sheetForm.reset();
     this.parentReload.emit();
   }
 
   public async setupForm(id: string) {
-    let sheetTitle = await this._googleService.getSheetTitle(id);
+    // let sheetTitle = await this._googleService.getSheetTitle(id);
+    let sheetTitle = id;
 
     if(sheetTitle != "") {
       console.log(sheetTitle);
@@ -75,7 +76,13 @@ export class SheetAddFormComponent {
       
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
-        await this._googleService.loadRemoteData();
+        // await this._googleService.loadRemoteData();
+        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe((data) => {
+          console.log(data);
+          this.saving = false;
+        }
+        );
+        console.log("After Data");
       }
     }
     else {
