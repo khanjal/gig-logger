@@ -129,8 +129,6 @@ namespace GigLoggerService
                             if (sheetData != null) {
                                 SaveTripData(sheetData);
                             }
-
-                            
                             
                         break;
                     }
@@ -143,10 +141,26 @@ namespace GigLoggerService
                         context.Logger.LogLine($"Content type: {contentType}");
                     }
                     context.Logger.LogLine($"Body: {request.Body}");
+
+                    // var range = $"{SHEET_NAME}!A{rowId}:D{rowId}";
+                    // var valueRange = new ValueRange
+                    // {
+                    //     Values = ItemsMapper.MapToRangeData(item)
+                    // };
+                    // var updateRequest = _googleSheetValues.Update(valueRange, SPREADSHEET_ID, range);
+                    // updateRequest.ValueInputOption = UpdateRequest.ValueInputOptionEnum.USERENTERED;
+                    // updateRequest.Execute();
+
                     response.StatusCode = (int)HttpStatusCode.OK;
                     break;
                 case "DELETE":
                     context.Logger.LogLine($"Delete Request: {request.Path}\n");
+
+                    // var range = $"{SHEET_NAME}!A{rowId}:D{rowId}";
+                    // var requestBody = new ClearValuesRequest();
+                    // var deleteRequest = _googleSheetValues.Clear(requestBody, SPREADSHEET_ID, range);
+                    // deleteRequest.Execute();
+                    
                     response.StatusCode = (int)HttpStatusCode.OK;
                     break;
                 default:
