@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -77,14 +78,13 @@ export class SheetAddFormComponent {
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
         // await this._googleService.loadRemoteData();
-        let data = (await this._gigLoggerService.getSheetData(spreadsheet.id));
-        // .subscribe((data) => {
-        //   console.log(data);
-        //   this.saving = false;
-        // }
-        // );
-        console.log("After Data");
-        console.log(data);
+        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe((data) => {
+            // console.log(data);
+            let sheetData = <ISheet>data;
+            this._gigLoggerService.loadData(sheetData);
+            this.saving = false;
+          }
+        );
       }
     }
     else {
