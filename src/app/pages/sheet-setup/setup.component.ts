@@ -38,8 +38,8 @@ export class SetupComponent {
 
   public async reload() {
     this.reloading = true;
-    (await this._gigLoggerService.getSheetData(this.spreadsheets?.find(x => x.default === "true")?.id)).subscribe((data) => {
-        this._gigLoggerService.loadData(<ISheet>data);
+    (await this._gigLoggerService.getSheetData(this.spreadsheets?.find(x => x.default === "true")?.id)).subscribe(async (data) => {
+        await this._gigLoggerService.loadData(<ISheet>data);
         this.reloading = false;
       }
     );
@@ -103,7 +103,7 @@ export class SetupComponent {
 
     // Load default spreadsheet data.
     (await this._gigLoggerService.getSheetData(this.spreadsheets?.find(x => x.default === "true")?.id)).subscribe(async (data) => {
-        this._gigLoggerService.loadData(<ISheet>data);
+        await this._gigLoggerService.loadData(<ISheet>data);
         this.deleting = false;
         this.reloading = false;
         this.setting = false;
