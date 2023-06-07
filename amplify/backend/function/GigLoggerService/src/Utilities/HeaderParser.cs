@@ -38,6 +38,25 @@ public static class HeaderParser {
         return values[columnId].ToString().Trim();
     }
 
+    public static int GetIntValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
+        var columnId = GetHeaderKey(headers, columnName);
+
+        if (columnId > values.Count || columnId < 0) {
+            return 0;
+        }
+
+        var value = values[columnId].ToString().Trim();
+        try 
+        {
+            return int.Parse(value);
+        }
+        catch {
+            var intNumber = Regex.Replace(value, @"[^\d]", ""); // Remove all special symbols.
+            if (intNumber == "") { intNumber = "0"; } // Make empty into 0s.
+            return int.Parse(intNumber);
+        }
+    }
+
     public static decimal GetDecimalValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
         var columnId = GetHeaderKey(headers, columnName);
 
@@ -48,14 +67,13 @@ public static class HeaderParser {
         var value = values[columnId].ToString().Trim();
         // Console.WriteLine(columnName);
         // Console.WriteLine(value);
-        try
-        {
+        try {
             return decimal.Parse(value);
         }
         catch
         {
             var currencyNumber = Regex.Replace(value, @"[^\d.-]", ""); // Remove all special currency symbols except for .'s and -'s
-            if (currencyNumber == "-") { currencyNumber = "0"; } // Make account -s into 0s.
+            if (currencyNumber == "-" || currencyNumber == "") { currencyNumber = "0"; } // Make account -'s into 0s.
             return decimal.Parse(currencyNumber);
         }
     }

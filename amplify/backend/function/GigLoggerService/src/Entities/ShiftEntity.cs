@@ -6,7 +6,7 @@ public class ShiftEntity : AmountEntity
     public string Start { get; set; }
     public string End { get; set; }
     public string Service { get; set; }
-    public string Number { get; set; }
+    public int Number { get; set; }
     public string Active { get; set; }
     public string Time { get; set; }
     public string Omit { get; set; }
