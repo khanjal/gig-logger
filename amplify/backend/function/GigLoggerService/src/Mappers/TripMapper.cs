@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text.Json;
 
 public static class TripMapper
 {
@@ -22,15 +20,14 @@ public static class TripMapper
                 continue;
             }
 
-            Console.Write(JsonSerializer.Serialize(value));
-
+            // Console.Write(JsonSerializer.Serialize(value));
             TripEntity trip = new()
             {
                 Id = id,
                 Key = HeaderParser.GetStringValue("Key", value, headers),
                 Date = HeaderParser.GetStringValue("Date", value, headers),
                 Service = HeaderParser.GetStringValue("Service", value, headers),
-                Number = HeaderParser.GetStringValue("#", value, headers),
+                Number = HeaderParser.GetIntValue("#", value, headers),
                 Place = HeaderParser.GetStringValue("Place", value, headers),
                 Pickup = HeaderParser.GetStringValue("Pickup", value, headers),
                 Dropoff = HeaderParser.GetStringValue("Dropoff", value, headers),
@@ -40,9 +37,9 @@ public static class TripMapper
                 Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
                 Total = HeaderParser.GetDecimalValue("Total", value, headers),
                 Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
-                OdometerStart = HeaderParser.GetStringValue("Odo Start", value, headers),
-                OdometerEnd = HeaderParser.GetStringValue("Odo End", value, headers),
-                Distance = HeaderParser.GetStringValue("Distance", value, headers),
+                OdometerStart = HeaderParser.GetDecimalValue("Odo Start", value, headers),
+                OdometerEnd = HeaderParser.GetDecimalValue("Odo End", value, headers),
+                Distance = HeaderParser.GetDecimalValue("Distance", value, headers),
                 Name = HeaderParser.GetStringValue("Name", value, headers),
                 StartAddress = HeaderParser.GetStringValue("Start Address", value, headers),
                 EndAddress = HeaderParser.GetStringValue("End Address", value, headers),
