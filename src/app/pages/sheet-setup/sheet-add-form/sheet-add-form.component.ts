@@ -77,8 +77,8 @@ export class SheetAddFormComponent {
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
         // await this._googleService.loadRemoteData();
-        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe((data) => {
-            this._gigLoggerService.loadData(<ISheet>data);
+        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
+            await this._gigLoggerService.loadData(<ISheet>data);
             this.saving = false;
           }
         );
