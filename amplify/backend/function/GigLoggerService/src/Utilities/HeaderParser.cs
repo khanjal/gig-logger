@@ -46,15 +46,14 @@ public static class HeaderParser {
         }
 
         var value = values[columnId].ToString().Trim();
-        try 
-        {
-            return int.Parse(value);
-        }
-        catch {
-            var intNumber = Regex.Replace(value, @"[^\d]", ""); // Remove all special symbols.
-            if (intNumber == "") { intNumber = "0"; } // Make empty into 0s.
-            return int.Parse(intNumber);
-        }
+        value = Regex.Replace(value, @"[^\d]", ""); // Remove all special symbols.
+        if (value == "") { 
+            return 0; // Make empty into 0s.
+        } 
+
+        int.TryParse(value, out int result);
+
+        return result;
     }
 
     public static decimal GetDecimalValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
@@ -65,16 +64,15 @@ public static class HeaderParser {
         }
 
         var value = values[columnId].ToString().Trim();
+        value = Regex.Replace(value, @"[^\d.-]", ""); // Remove all special currency symbols except for .'s and -'s
+        if (value == "-" || value == "") { 
+            value = "0";  // Make account -'s into 0s.
+        }
         // Console.WriteLine(columnName);
         // Console.WriteLine(value);
-        try {
-            return decimal.Parse(value);
-        }
-        catch
-        {
-            var currencyNumber = Regex.Replace(value, @"[^\d.-]", ""); // Remove all special currency symbols except for .'s and -'s
-            if (currencyNumber == "-" || currencyNumber == "") { currencyNumber = "0"; } // Make account -'s into 0s.
-            return decimal.Parse(currencyNumber);
-        }
+
+        decimal.TryParse(value, out decimal result);
+
+        return result;
     }
 }
