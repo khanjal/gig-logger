@@ -34,10 +34,10 @@ public static class WeekdayMapper
                 Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
                 Time = HeaderParser.GetStringValue("Time", value, headers),
                 Days = HeaderParser.GetIntValue("Days", value, headers),
-                DailyAverage = HeaderParser.GetStringValue("$/Day", value, headers),
-                PreviousDailyAverage = HeaderParser.GetStringValue("$/Prev", value, headers),
-                CurrentAmount = HeaderParser.GetStringValue("Curr Amt", value, headers),
-                PreviousAmount = HeaderParser.GetStringValue("Prev Amt", value, headers),
+                DailyAverage = HeaderParser.GetDecimalValue("$/Day", value, headers),
+                PreviousDailyAverage = HeaderParser.GetDecimalValue("$/Prev", value, headers),
+                CurrentAmount = HeaderParser.GetDecimalValue("Curr Amt", value, headers),
+                PreviousAmount = HeaderParser.GetDecimalValue("Prev Amt", value, headers),
             };
             
             weekdays.Add(weekday);
