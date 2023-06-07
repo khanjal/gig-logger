@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AddressHelper } from '@helpers/address.helper';
-import { GoogleSheetService } from '@services/googleSheet.service';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
@@ -19,6 +18,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ViewportScroller } from '@angular/common';
 import { TimerService } from '@services/timer.service';
 import { GigLoggerService } from '@services/gig-logger.service';
+import { ISheet } from '@interfaces/sheet.interface';
 
 @Component({
   selector: 'app-quick',
@@ -44,7 +44,6 @@ export class QuickComponent implements OnInit {
       private _snackBar: MatSnackBar,
       private _router: Router, 
       private _gigLoggerService: GigLoggerService,
-      private _googleService: GoogleSheetService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _timerService: TimerService,
@@ -63,8 +62,8 @@ export class QuickComponent implements OnInit {
     console.log('Saving...');
     
     this.saving = true;
-    await this._googleService.commitUnsavedShifts();
-    await this._googleService.commitUnsavedTrips();
+    // await this._googleService.commitUnsavedShifts();
+    // await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
 
@@ -88,7 +87,7 @@ export class QuickComponent implements OnInit {
 
   async saveLocalTrip(trip: ITrip) {
     this.saving = true;
-    await this._googleService.commitUnsavedTrips();
+    // await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
   }
@@ -263,15 +262,18 @@ export class QuickComponent implements OnInit {
 
   async reload() {
     this.reloading = true;
-    await this._gigLoggerService.getSheetData(this.defaultSheet?.id);
-    await this._googleService.loadRemoteData();
-    await this._googleService.loadSecondarySheetData();
-    await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
-
-    console.log("Done");
-    await this.load();
-    this.reloading = false;
-    this._viewportScroller.scrollToAnchor("addTrip");
+    // await this._googleService.loadRemoteData();
+    // await this._googleService.loadSecondarySheetData();
+    (await this._gigLoggerService.getSheetData(this.defaultSheet?.id)).subscribe(async (data) => {
+        await this._gigLoggerService.loadData(<ISheet>data);
+        console.log("Done");
+        await this.load();
+        this.reloading = false;
+        this._viewportScroller.scrollToAnchor("addTrip");
+      }
+    );
+    //await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
+    
     // window.location.reload();
   }
 
