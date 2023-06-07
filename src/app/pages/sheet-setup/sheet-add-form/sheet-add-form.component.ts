@@ -4,7 +4,6 @@ import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 
 @Component({
   selector: 'sheet-add-form',
@@ -53,7 +52,7 @@ export class SheetAddFormComponent {
 
   public async setupForm(id: string) {
     // let sheetTitle = await this._googleService.getSheetTitle(id);
-    let sheetTitle = id;
+    let sheetTitle = id.substring(0, 5);
 
     if(sheetTitle != "") {
       console.log(sheetTitle);
@@ -79,9 +78,7 @@ export class SheetAddFormComponent {
         console.log("Loading default data");
         // await this._googleService.loadRemoteData();
         (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe((data) => {
-            // console.log(data);
-            let sheetData = <ISheet>data;
-            this._gigLoggerService.loadData(sheetData);
+            this._gigLoggerService.loadData(<ISheet>data);
             this.saving = false;
           }
         );

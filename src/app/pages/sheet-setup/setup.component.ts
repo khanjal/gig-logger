@@ -5,6 +5,8 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { TimerService } from '@services/timer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GigLoggerService } from '@services/gig-logger.service';
+import { ISheet } from '@interfaces/sheet.interface';
 
 @Component({
   selector: 'app-setup',
@@ -21,7 +23,7 @@ export class SetupComponent {
 
   constructor(
     private _snackBar: MatSnackBar,
-    private _googleSheetService: GoogleSheetService,
+    private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService,
     private _timerService: TimerService
   ) { }
@@ -36,8 +38,12 @@ export class SetupComponent {
 
   public async reload() {
     this.reloading = true;
-    await this._googleSheetService.loadRemoteData();
-    this.reloading = false;
+    (await this._gigLoggerService.getSheetData(this.spreadsheets?.find(x => x.default === "true")?.id)).subscribe((data) => {
+        this._gigLoggerService.loadData(<ISheet>data);
+        this.reloading = false;
+      }
+    );
+    // await this._googleSheetService.loadRemoteData();
   }
 
   public async setDefault(spreadsheet: ISpreadsheet) {
@@ -96,16 +102,17 @@ export class SetupComponent {
     });
 
     // Load default spreadsheet data.
-    await this._googleSheetService.loadRemoteData();
-    
-    //await this._timerService.delay(10000);
-    this.deleting = false;
-    this.reloading = false;
-    this.setting = false;
+    (await this._gigLoggerService.getSheetData(this.spreadsheets?.find(x => x.default === "true")?.id)).subscribe(async (data) => {
+        this._gigLoggerService.loadData(<ISheet>data);
+        this.deleting = false;
+        this.reloading = false;
+        this.setting = false;
 
-    this._snackBar.open("Databases and Spreadsheet(s) Loaded");
+        this._snackBar.open("Databases and Spreadsheet(s) Loaded");
 
-    await this.load();
+        await this.load();
+      }
+    );
   }
 
   public async deleteLocalData() {
