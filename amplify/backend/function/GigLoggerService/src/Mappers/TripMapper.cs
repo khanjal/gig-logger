@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 public static class TripMapper
 {
@@ -20,31 +22,33 @@ public static class TripMapper
                 continue;
             }
 
+            Console.Write(JsonSerializer.Serialize(value));
+
             TripEntity trip = new()
             {
                 Id = id,
-                Key = HeaderParser.GetValue("Key", value, headers),
-                Date = HeaderParser.GetValue("Date", value, headers),
-                Service = HeaderParser.GetValue("Service", value, headers),
-                Number = HeaderParser.GetValue("#", value, headers),
-                Place = HeaderParser.GetValue("Place", value, headers),
-                Pickup = HeaderParser.GetValue("Pickup", value, headers),
-                Dropoff = HeaderParser.GetValue("Dropoff", value, headers),
-                Duration = HeaderParser.GetValue("Duration", value, headers),
-                Pay = HeaderParser.GetValue("Pay", value, headers),
-                Tip = HeaderParser.GetValue("Tip", value, headers),
-                Bonus = HeaderParser.GetValue("Bonus", value, headers),
-                Total = HeaderParser.GetValue("Total", value, headers),
-                Cash = HeaderParser.GetValue("Cash", value, headers),
-                OdometerStart = HeaderParser.GetValue("Odo Start", value, headers),
-                OdometerEnd = HeaderParser.GetValue("Odo End", value, headers),
-                Distance = HeaderParser.GetValue("Distance", value, headers),
-                Name = HeaderParser.GetValue("Name", value, headers),
-                StartAddress = HeaderParser.GetValue("Start Address", value, headers),
-                EndAddress = HeaderParser.GetValue("End Address", value, headers),
-                EndUnit = HeaderParser.GetValue("End Unit", value, headers),
-                OrderNumber = HeaderParser.GetValue("Order #", value, headers),
-                Note = HeaderParser.GetValue("Note", value, headers),
+                Key = HeaderParser.GetStringValue("Key", value, headers),
+                Date = HeaderParser.GetStringValue("Date", value, headers),
+                Service = HeaderParser.GetStringValue("Service", value, headers),
+                Number = HeaderParser.GetStringValue("#", value, headers),
+                Place = HeaderParser.GetStringValue("Place", value, headers),
+                Pickup = HeaderParser.GetStringValue("Pickup", value, headers),
+                Dropoff = HeaderParser.GetStringValue("Dropoff", value, headers),
+                Duration = HeaderParser.GetStringValue("Duration", value, headers),
+                Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
+                Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
+                Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
+                Total = HeaderParser.GetDecimalValue("Total", value, headers),
+                Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
+                OdometerStart = HeaderParser.GetStringValue("Odo Start", value, headers),
+                OdometerEnd = HeaderParser.GetStringValue("Odo End", value, headers),
+                Distance = HeaderParser.GetStringValue("Distance", value, headers),
+                Name = HeaderParser.GetStringValue("Name", value, headers),
+                StartAddress = HeaderParser.GetStringValue("Start Address", value, headers),
+                EndAddress = HeaderParser.GetStringValue("End Address", value, headers),
+                EndUnit = HeaderParser.GetStringValue("End Unit", value, headers),
+                OrderNumber = HeaderParser.GetStringValue("Order #", value, headers),
+                Note = HeaderParser.GetStringValue("Note", value, headers),
             };
             
             trips.Add(trip);

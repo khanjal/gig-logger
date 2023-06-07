@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public static class HeaderParser {
     public static Dictionary<int, string> ParserHeader(IList<object> sheetHeader) {
@@ -16,16 +17,46 @@ public static class HeaderParser {
     }
 
     public static int GetHeaderKey(Dictionary<int, string> header, string value) {
-        return header.FirstOrDefault(x => x.Value.Trim() == value.Trim()).Key;
+        try
+        {
+            return header.First(x => x.Value.Trim() == value.Trim()).Key;
+        }
+        catch (System.Exception)
+        {
+            return -1;
+        }
+        
     }
 
-    public static string GetValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
+    public static string GetStringValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
         var columnId = GetHeaderKey(headers, columnName);
 
-        if (columnId > values.Count) {
+        if (columnId > values.Count || columnId < 0) {
             return "";
         }
 
         return values[columnId].ToString().Trim();
+    }
+
+    public static decimal GetDecimalValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
+        var columnId = GetHeaderKey(headers, columnName);
+
+        if (columnId > values.Count || columnId < 0) {
+            return 0;
+        }
+
+        var value = values[columnId].ToString().Trim();
+        // Console.WriteLine(columnName);
+        // Console.WriteLine(value);
+        try
+        {
+            return decimal.Parse(value);
+        }
+        catch
+        {
+            var currencyNumber = Regex.Replace(value, @"[^\d.-]", ""); // Remove all special currency symbols except for .'s and -'s
+            if (currencyNumber == "-") { currencyNumber = "0"; } // Make account -s into 0s.
+            return decimal.Parse(currencyNumber);
+        }
     }
 }
