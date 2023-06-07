@@ -30,7 +30,7 @@ public static class AddressMapper
                 Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
                 Total = HeaderParser.GetDecimalValue("Total", value, headers),
                 Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
-                Miles = HeaderParser.GetStringValue("Miles", value, headers),
+                Miles = HeaderParser.GetDecimalValue("Miles", value, headers),
             };
             
             addresses.Add(address);
