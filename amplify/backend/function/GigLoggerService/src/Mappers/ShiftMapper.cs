@@ -23,16 +23,16 @@ public static class ShiftMapper
             ShiftEntity shift = new()
             {
                 Id = id,
-                Key = HeaderParser.GetValue("Key", value, headers),
-                Date = HeaderParser.GetValue("Date", value, headers),
-                Start = HeaderParser.GetValue("Start", value, headers),
-                End = HeaderParser.GetValue("End", value, headers),
-                Service = HeaderParser.GetValue("Service", value, headers),
-                Number = HeaderParser.GetValue("#", value, headers),
-                Active = HeaderParser.GetValue("Active", value, headers),
-                Time = HeaderParser.GetValue("Time", value, headers),
-                Omit = HeaderParser.GetValue("O", value, headers),
-                Note = HeaderParser.GetValue("Note", value, headers),
+                Key = HeaderParser.GetStringValue("Key", value, headers),
+                Date = HeaderParser.GetStringValue("Date", value, headers),
+                Start = HeaderParser.GetStringValue("Start", value, headers),
+                End = HeaderParser.GetStringValue("End", value, headers),
+                Service = HeaderParser.GetStringValue("Service", value, headers),
+                Number = HeaderParser.GetStringValue("#", value, headers),
+                Active = HeaderParser.GetStringValue("Active", value, headers),
+                Time = HeaderParser.GetStringValue("Time", value, headers),
+                Omit = HeaderParser.GetStringValue("O", value, headers),
+                Note = HeaderParser.GetStringValue("Note", value, headers),
             };
             
             shifts.Add(shift);

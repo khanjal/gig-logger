@@ -1,12 +1,28 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 public class SheetEntity {
+    [JsonPropertyName("addresses")]
     public List<AddressEntity> Addresses { get; set; } = new List<AddressEntity>();
+
+    [JsonPropertyName("names")]
     public List<NameEntity> Names { get; set; } = new List<NameEntity>();
+
+    [JsonPropertyName("places")]
     public List<PlaceEntity> Places { get; set; } = new List<PlaceEntity>();
+
+    [JsonPropertyName("services")]
     public List<ServiceEntity> Services { get; set; } = new List<ServiceEntity>();
+
+    [JsonPropertyName("shifts")]
     public List<ShiftEntity> Shifts { get; set; } = new List<ShiftEntity>();
+
+    [JsonPropertyName("trips")]
     public List<TripEntity> Trips { get; set; } = new List<TripEntity>();
+
+    [JsonPropertyName("weekdays")]
     public List<WeekdayEntity> Weekdays { get; set; } = new List<WeekdayEntity>();
+
+    [JsonPropertyName("errors")]
     public List<string> Errors { get; set; } = new List<string>();
 }

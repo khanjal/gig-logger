@@ -20,23 +20,24 @@ public static class WeekdayMapper
                 continue;
             }
 
+            // Console.Write(JsonSerializer.Serialize(value));
             WeekdayEntity weekday = new()
             {
                 Id = id,
-                Day = HeaderParser.GetValue("Day", value, headers),
-                Miles = HeaderParser.GetValue("Miles", value, headers),
-                Trips = HeaderParser.GetValue("Trips", value, headers),
-                Pay = HeaderParser.GetValue("Pay", value, headers),
-                Tip = HeaderParser.GetValue("Tip", value, headers),
-                Bonus = HeaderParser.GetValue("Bonus", value, headers),
-                Total = HeaderParser.GetValue("Total", value, headers),
-                Cash = HeaderParser.GetValue("Cash", value, headers),
-                Time = HeaderParser.GetValue("Time", value, headers),
-                Days = HeaderParser.GetValue("Days", value, headers),
-                DailyAverage = HeaderParser.GetValue("$/Day", value, headers),
-                PreviousDailyAverage = HeaderParser.GetValue("$/Prev", value, headers),
-                CurrentAmount = HeaderParser.GetValue("Curr Amt", value, headers),
-                PreviousAmount = HeaderParser.GetValue("Prev Amt", value, headers),
+                Day = HeaderParser.GetStringValue("Day", value, headers),
+                Miles = HeaderParser.GetStringValue("Miles", value, headers),
+                Trips = HeaderParser.GetStringValue("Trips", value, headers),
+                Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
+                Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
+                Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
+                Total = HeaderParser.GetDecimalValue("Total", value, headers),
+                Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
+                Time = HeaderParser.GetStringValue("Time", value, headers),
+                Days = HeaderParser.GetStringValue("Days", value, headers),
+                DailyAverage = HeaderParser.GetStringValue("$/Day", value, headers),
+                PreviousDailyAverage = HeaderParser.GetStringValue("$/Prev", value, headers),
+                CurrentAmount = HeaderParser.GetStringValue("Curr Amt", value, headers),
+                PreviousAmount = HeaderParser.GetStringValue("Prev Amt", value, headers),
             };
             
             weekdays.Add(weekday);
