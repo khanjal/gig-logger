@@ -21,14 +21,14 @@ public class WeekdayEntity : AmountEntity
     public string Time { get; set; }
 
     [JsonPropertyName("dailyAverage")]
-    public string DailyAverage { get; set; }
+    public decimal DailyAverage { get; set; }
 
     [JsonPropertyName("dailyPrevAverage")]
-    public string PreviousDailyAverage { get; set; }
+    public decimal PreviousDailyAverage { get; set; }
 
     [JsonPropertyName("currentAmount")]
-    public string CurrentAmount { get; set; }
+    public decimal CurrentAmount { get; set; }
 
     [JsonPropertyName("previousAmount")]
-    public string PreviousAmount { get; set; }
+    public decimal PreviousAmount { get; set; }
 }
