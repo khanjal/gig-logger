@@ -24,13 +24,13 @@ public static class NameMapper
             {
                 Id = id,
                 Name = HeaderParser.GetStringValue("Name", value, headers),
-                Visits = HeaderParser.GetStringValue("Visits", value, headers),
+                Visits = HeaderParser.GetIntValue("Visits", value, headers),
                 Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
                 Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
                 Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
                 Total = HeaderParser.GetDecimalValue("Total", value, headers),
                 Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
-                Miles = HeaderParser.GetStringValue("Miles", value, headers),
+                Miles = HeaderParser.GetIntValue("Miles", value, headers),
             };
             
             names.Add(name);
