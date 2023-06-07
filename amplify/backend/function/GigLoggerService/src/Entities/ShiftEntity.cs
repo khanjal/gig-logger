@@ -26,6 +26,9 @@ public class ShiftEntity : AmountEntity
     [JsonPropertyName("active")]
     public string Active { get; set; }
 
+    [JsonPropertyName("trips")]
+    public int Trips { get; set; }
+
     [JsonPropertyName("time")]
     public string Time { get; set; }
 
