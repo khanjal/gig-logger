@@ -28,7 +28,7 @@ public static class ShiftMapper
                 Start = HeaderParser.GetStringValue("Start", value, headers),
                 End = HeaderParser.GetStringValue("End", value, headers),
                 Service = HeaderParser.GetStringValue("Service", value, headers),
-                Number = HeaderParser.GetStringValue("#", value, headers),
+                Number = HeaderParser.GetIntValue("#", value, headers),
                 Active = HeaderParser.GetStringValue("Active", value, headers),
                 Time = HeaderParser.GetStringValue("Time", value, headers),
                 Omit = HeaderParser.GetStringValue("O", value, headers),
