@@ -1,9 +1,20 @@
+using System.Text.Json.Serialization;
+
 public class AmountEntity
 {
-    public string Pay { get; set; }
-    public string Tip { get; set; }
-    public string Bonus { get; set; }
-    public string Total { get; set; }
-    public string Cash { get; set; }
+    [JsonPropertyName("pay")]
+    public decimal Pay { get; set; }
+
+    [JsonPropertyName("tip")]
+    public decimal Tip { get; set; }
+
+    [JsonPropertyName("bonus")]
+    public decimal Bonus { get; set; }
+
+    [JsonPropertyName("total")]
+    public decimal Total { get; set; }
+
+    [JsonPropertyName("cash")]
+    public decimal Cash { get; set; }
     
 }

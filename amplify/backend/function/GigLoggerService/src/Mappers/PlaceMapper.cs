@@ -23,14 +23,14 @@ public static class PlaceMapper
             PlaceEntity place = new()
             {
                 Id = id,
-                Place = HeaderParser.GetValue("Place", value, headers),
-                Trips = HeaderParser.GetValue("Trips", value, headers),
-                Pay = HeaderParser.GetValue("Pay", value, headers),
-                Tip = HeaderParser.GetValue("Tip", value, headers),
-                Bonus = HeaderParser.GetValue("Bonus", value, headers),
-                Total = HeaderParser.GetValue("Total", value, headers),
-                Cash = HeaderParser.GetValue("Cash", value, headers),
-                Miles = HeaderParser.GetValue("Miles", value, headers),
+                Place = HeaderParser.GetStringValue("Place", value, headers),
+                Trips = HeaderParser.GetStringValue("Trips", value, headers),
+                Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
+                Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
+                Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
+                Total = HeaderParser.GetDecimalValue("Total", value, headers),
+                Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
+                Miles = HeaderParser.GetStringValue("Miles", value, headers),
             };
             
             places.Add(place);

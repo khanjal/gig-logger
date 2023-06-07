@@ -77,12 +77,14 @@ export class SheetAddFormComponent {
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
         // await this._googleService.loadRemoteData();
-        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe((data) => {
-          console.log(data);
-          this.saving = false;
-        }
-        );
+        let data = (await this._gigLoggerService.getSheetData(spreadsheet.id));
+        // .subscribe((data) => {
+        //   console.log(data);
+        //   this.saving = false;
+        // }
+        // );
         console.log("After Data");
+        console.log(data);
       }
     }
     else {
