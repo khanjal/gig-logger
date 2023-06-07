@@ -29,10 +29,16 @@ public static class ShiftMapper
                 End = HeaderParser.GetStringValue("End", value, headers),
                 Service = HeaderParser.GetStringValue("Service", value, headers),
                 Number = HeaderParser.GetIntValue("#", value, headers),
-                Active = HeaderParser.GetStringValue("Active", value, headers),
-                Time = HeaderParser.GetStringValue("Time", value, headers),
+                Active = HeaderParser.GetStringValue("T Active", value, headers),
+                Time = HeaderParser.GetStringValue("T Time", value, headers),
+                Trips = HeaderParser.GetIntValue("T Trip", value, headers),
                 Omit = HeaderParser.GetStringValue("O", value, headers),
                 Note = HeaderParser.GetStringValue("Note", value, headers),
+                Pay = HeaderParser.GetDecimalValue("T Pay", value, headers),
+                Tip = HeaderParser.GetDecimalValue("T Tip", value, headers),
+                Bonus = HeaderParser.GetDecimalValue("T Bonus", value, headers),
+                Total = HeaderParser.GetDecimalValue("G Total", value, headers),
+                Cash = HeaderParser.GetDecimalValue("T Cash", value, headers),
             };
             
             shifts.Add(shift);
