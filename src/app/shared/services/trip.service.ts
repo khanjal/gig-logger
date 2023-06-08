@@ -53,6 +53,14 @@ export class TripService {
         return await spreadsheetDB.trips.where(field).equals(value).toArray();
     }
 
+    public async saveUnsavedTrips() {
+        let trips = await this.getUnsavedLocalTrips();
+        trips.forEach(async trip => {
+            trip.saved = true;
+            await this.updateLocalTrip(trip);
+        });
+    }
+
     public async loadTrips(trips: ITrip[]) {
         await spreadsheetDB.trips.clear();
         await spreadsheetDB.trips.bulkAdd(trips);
