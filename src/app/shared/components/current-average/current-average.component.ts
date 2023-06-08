@@ -45,7 +45,7 @@ export class CurrentAverageComponent implements OnInit {
     let weekTotal = (await this._weekdayService.queryWeekdays("day", "Tot"))[0];
 
     // Add unsaved trip amounts.
-    let unsavedTrips = (await this._tripService.getLocalTrips()).filter(x => x.saved === "false");
+    let unsavedTrips = (await this._tripService.getUnsavedLocalTrips());
     let unsavedTripsAmount = unsavedTrips.reduce((n, {total}) => n + total, 0);
     this.currentWeekAmount = (isNaN(weekTotal.currentAmount) ? 0 : weekTotal.currentAmount) + unsavedTripsAmount;
     this.weeklyAverage = weekTotal.dailyPrevAverage;

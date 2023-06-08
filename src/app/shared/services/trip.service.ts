@@ -19,8 +19,12 @@ export class TripService {
         return await localDB.trips.toArray();
     }
 
+    public async getSavedLocalTrips(): Promise<ITrip[]> {
+        return (await this.getLocalTrips()).filter(x => x.saved);
+    }
+
     public async getUnsavedLocalTrips(): Promise<ITrip[]> {
-        return await localDB.trips.where("saved").notEqual("true").toArray();
+        return (await this.getLocalTrips()).filter(x => !x.saved);
     }
 
     public async getRemoteTrips(): Promise<ITrip[]> {
@@ -47,6 +51,14 @@ export class TripService {
 
     public async queryRemoteTrips(field: string, value: string | number): Promise<ITrip[]> {
         return await spreadsheetDB.trips.where(field).equals(value).toArray();
+    }
+
+    public async saveUnsavedTrips() {
+        let trips = await this.getUnsavedLocalTrips();
+        trips.forEach(async trip => {
+            trip.saved = true;
+            await this.updateLocalTrip(trip);
+        });
     }
 
     public async loadTrips(trips: ITrip[]) {

@@ -6,7 +6,7 @@ export interface IShift extends IAmount {
     distance: number;
     end: string;
     key: string;
-    saved: string;
+    saved: boolean;
     service: string;
     number: number;
     start: string;
