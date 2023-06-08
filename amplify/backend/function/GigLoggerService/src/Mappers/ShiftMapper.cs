@@ -56,7 +56,7 @@ public static class ShiftMapper
 
             foreach (var header in shiftHeaders)
             {
-                switch (header.ToString())
+                switch (header.ToString().Trim())
                 {
                     case "Date":
                         objectList.Add(shift.Date);
@@ -70,7 +70,7 @@ public static class ShiftMapper
                     case "Service":
                         objectList.Add(shift.Service);
                         break;
-                    case "Number":
+                    case "#":
                         objectList.Add(shift.Number);
                         break;
                     case "Active":
