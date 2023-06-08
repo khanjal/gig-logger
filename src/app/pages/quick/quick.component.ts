@@ -58,26 +58,46 @@ export class QuickComponent implements OnInit {
   }
 
   async saveAllTrips() {
+    if (!this.defaultSheet?.id) {
+      this._snackBar.open("Please Reload Manually");
+      return;
+    }
+
     console.time("saving");
     console.log('Saving...');
     
     this.saving = true;
     // await this._googleService.commitUnsavedShifts();
     // await this._googleService.commitUnsavedTrips();
-    await this.reload();
-    this.saving = false;
+    let sheetData = {} as ISheet;
+    sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
+    sheetData.trips = await this._tripService.getUnsavedLocalTrips();
 
-    console.log('Saved!');
-    console.timeEnd("saving");
+    (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet.id)).subscribe(async (data) => {
+      await this._tripService.saveUnsavedTrips();
+      await this._shiftService.saveUnsavedShifts();
 
-    this._viewportScroller.scrollToAnchor("savedLocalTrips");
-    this._snackBar.open("Trip(s) Saved to Spreadsheet");
+      console.log('Saved!');
+      console.timeEnd("saving");
+
+      this._viewportScroller.scrollToAnchor("savedLocalTrips");
+      this._snackBar.open("Trip(s) Saved to Spreadsheet");
+
+      (await this._gigLoggerService.getSheetData(this.defaultSheet!.id)).subscribe(async (data) => {
+            this._snackBar.open("Refreshing Spreadsheet Data");    
+            await this._gigLoggerService.loadData(<ISheet>data);
+            await this.load();
+            this.saving = false;
+          }
+        );
+      }
+    );
   }
 
   public async load() {
     this.sheetTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)));
     this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
-    this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
+    this.savedTrips = (await this._tripService.getSavedLocalTrips()).reverse();
 
     // console.log(this.form);
 
@@ -236,12 +256,12 @@ export class QuickComponent implements OnInit {
   }
 
   async clearSavedLocalData() {
-    let savedShifts = await this._shiftService.queryLocalShifts("saved", "true");
+    let savedShifts = await this._shiftService.getSavedLocalShifts();
     savedShifts.forEach(shift => {
       this._shiftService.deleteLocal(shift.id!);
     });
 
-    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    let savedTrips = await this._tripService.getSavedLocalTrips();
     savedTrips.forEach(trip => {
       this._tripService.deleteLocal(trip.id!);
     });
@@ -250,10 +270,10 @@ export class QuickComponent implements OnInit {
   }
 
   async unsaveLocalData() {
-    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    let savedTrips = await this._tripService.getSavedLocalTrips();
 
     savedTrips.forEach(async trip => {
-      trip.saved = "false";
+      trip.saved = false;
       await this._tripService.updateLocalTrip(trip);
     });
 
@@ -261,15 +281,22 @@ export class QuickComponent implements OnInit {
   }
 
   async reload() {
+    let sheetId = this.defaultSheet?.id;
+    if (!sheetId) {
+      return;
+    }
+
     this.reloading = true;
     // await this._googleService.loadRemoteData();
     // await this._googleService.loadSecondarySheetData();
-    (await this._gigLoggerService.getSheetData(this.defaultSheet?.id)).subscribe(async (data) => {
+
+    (await this._gigLoggerService.getSheetData(sheetId)).subscribe(async (data) => {
         await this._gigLoggerService.loadData(<ISheet>data);
         console.log("Done");
         await this.load();
         this.reloading = false;
         this._viewportScroller.scrollToAnchor("addTrip");
+        this._snackBar.open("Spreadsheet(s) Data Loaded");
       }
     );
     //await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
