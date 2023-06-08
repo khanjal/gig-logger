@@ -451,7 +451,7 @@ export class GoogleSheetService {
                 '#': shift.number 
             });
 
-            shift.saved = "true";
+            shift.saved = true;
             await this._shiftService.updateLocalShift(shift);
         });
 
@@ -492,7 +492,7 @@ export class GoogleSheetService {
                 Note: trip.note?.trim()
             });
 
-            trip.saved = "true";
+            trip.saved = true;
             await this._tripService.updateLocalTrip(trip);
         });
 

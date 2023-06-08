@@ -32,8 +32,12 @@ export class GigLoggerService {
         private _weekdayService: WeekdayService
     ) {}
 
-    public async getSheetData(sheetId: string | undefined) {
+    public async getSheetData(sheetId: string) {
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
+    }
+
+    public async postSheetData(sheetData: ISheet, sheetId: string) {
+        return this._http.post<any>(`${this.apiUrl}${sheetId}/trips`, JSON.stringify(sheetData));
     }
 
     public async loadData(sheetData: ISheet) {
