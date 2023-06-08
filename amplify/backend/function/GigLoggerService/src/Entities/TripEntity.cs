@@ -30,13 +30,13 @@ public class TripEntity : AmountEntity
     public string Duration { get; set; }
 
     [JsonPropertyName("startOdometer")]
-    public decimal OdometerStart { get; set; }
+    public decimal? OdometerStart { get; set; }
 
     [JsonPropertyName("endOdometer")]
-    public decimal OdometerEnd { get; set; }
+    public decimal? OdometerEnd { get; set; }
 
     [JsonPropertyName("distance")]
-    public decimal Distance { get; set; }
+    public decimal? Distance { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; }
