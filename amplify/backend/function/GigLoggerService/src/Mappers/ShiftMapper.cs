@@ -39,6 +39,7 @@ public static class ShiftMapper
                 Bonus = HeaderParser.GetDecimalValue("T Bonus", value, headers),
                 Total = HeaderParser.GetDecimalValue("G Total", value, headers),
                 Cash = HeaderParser.GetDecimalValue("T Cash", value, headers),
+                Saved = true
             };
             
             shifts.Add(shift);
