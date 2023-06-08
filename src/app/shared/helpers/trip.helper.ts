@@ -19,7 +19,7 @@ export class TripHelper {
             let trip: ITrip = {} as ITrip;
             
             // Local
-            trip.saved = "true";
+            trip.saved = true;
 
             // Keys
             trip.id = row.rowIndex;
