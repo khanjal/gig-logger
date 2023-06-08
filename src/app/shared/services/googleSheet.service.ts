@@ -34,6 +34,12 @@ export class GoogleSheetService {
     data: any = null;
     doc: GoogleSpreadsheet | undefined;
 
+    // clientEmail = environment.client_email;
+    // privateKey = environment.private_key;
+
+    clientEmail = "";
+    privateKey = "";
+
     constructor(
             public http: HttpClient,
             private _snackBar: MatSnackBar,
@@ -52,7 +58,7 @@ export class GoogleSheetService {
         const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0].id;
         const doc = new GoogleSpreadsheet(spreadsheetId);
 
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
         await doc.loadInfo();
 
         //const sheet = await doc.addSheet({ title: 'test2', headerValues: ['={"Address";SORT(UNIQUE({Trips!Q2:Q}))}', '=ARRAYFORMULA(IFS(ROW($A:$A)=1,"Visits",ISBLANK($A:$A), "",true,COUNTIF(Trips!P:P,$A:$A)+COUNTIF(Trips!Q:Q,$A:$A)))'] });
@@ -62,7 +68,7 @@ export class GoogleSheetService {
         const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0].id;
         const doc = new GoogleSpreadsheet(spreadsheetId);
 
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
         await doc.loadInfo();
 
         const sheet = doc.sheetsById[id];
@@ -76,7 +82,7 @@ export class GoogleSheetService {
         const spreadsheetId = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0].id;
         const doc = new GoogleSpreadsheet(spreadsheetId);
 
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
         await doc.loadInfo();
 
         const sheet = doc.sheetsByTitle[name];
@@ -89,7 +95,7 @@ export class GoogleSheetService {
     public async getSheetTitle(sheetId: string): Promise<string> {
         let doc = new GoogleSpreadsheet(sheetId);
         //console.log(sheetId);
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
 
         try {
             await doc.loadInfo();
@@ -111,7 +117,7 @@ export class GoogleSheetService {
         }
 
         this.doc = new GoogleSpreadsheet(spreadsheetId);
-        await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await this.doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
         await this.doc.loadInfo();
         // let sheets = SheetHelper.getSheetNames(this.doc);
         // console.table(sheets);
@@ -235,7 +241,7 @@ export class GoogleSheetService {
             console.log(secondarySheet.name);
 
             this.doc = new GoogleSpreadsheet(secondarySheet.id);
-            await this.doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+            await this.doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
             await this.doc.loadInfo();
 
             // Add basic data.
@@ -445,7 +451,7 @@ export class GoogleSheetService {
                 '#': shift.number 
             });
 
-            shift.saved = "true";
+            shift.saved = true;
             await this._shiftService.updateLocalShift(shift);
         });
 
@@ -486,7 +492,7 @@ export class GoogleSheetService {
                 Note: trip.note?.trim()
             });
 
-            trip.saved = "true";
+            trip.saved = true;
             await this._tripService.updateLocalTrip(trip);
         });
 
@@ -506,7 +512,7 @@ export class GoogleSheetService {
         
         const doc = new GoogleSpreadsheet(spreadsheetId.id);
 
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
         await doc.loadInfo();
         // console.log(doc.title);
 
@@ -525,7 +531,7 @@ export class GoogleSheetService {
 
         const doc = new GoogleSpreadsheet(spreadsheetId.id);
 
-        await doc.useServiceAccountAuth({client_email: environment.client_email, private_key: environment.private_key});
+        await doc.useServiceAccountAuth({client_email: this.clientEmail, private_key: this.privateKey});
         await doc.loadInfo();
         // console.log(doc.title);
 

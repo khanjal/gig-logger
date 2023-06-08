@@ -17,7 +17,7 @@ export class ShiftService {
     }
 
     public async getAllShifts(): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShifts(), ...await this.queryLocalShifts("saved", "false")];
+        let shifts = [...await this.getRemoteShifts(), ...await this.getUnsavedLocalShifts()];
         return shifts;
     }
 
@@ -25,8 +25,12 @@ export class ShiftService {
         return await spreadsheetDB.shifts.toArray();
     }
 
+    public async getSavedLocalShifts(): Promise<IShift[]> {
+        return (await localDB.shifts.toArray()).filter(x => x.saved);
+    }
+
     public async getUnsavedLocalShifts(): Promise<IShift[]> {
-        return await spreadsheetDB.shifts.where("saved").notEqual("true").toArray();
+        return (await localDB.shifts.toArray()).filter(x => !x.saved);
     }
     
     public async loadShifts(shifts: IShift[]) {
@@ -36,7 +40,7 @@ export class ShiftService {
 
     public async getPreviousWeekShifts(): Promise<IShift[]> {
         let shifts = [...await this.getRemoteShiftsPreviousDays(7), 
-            ...(await this.getLocalShiftsPreviousDays(7)).filter(x => x.saved === "false")];
+            ...(await this.getLocalShiftsPreviousDays(7)).filter(x => !x.saved)];
 
         return shifts;
     }
@@ -71,8 +75,16 @@ export class ShiftService {
         return shifts;
     }
 
+    public async saveUnsavedShifts() {
+        let shifts = await this.getUnsavedLocalShifts();
+        shifts.forEach(async shift => {
+            shift.saved = true;
+            await this.updateShift(shift);
+        });
+    }
+
     public async updateShift(shift: IShift) {
-        (shift.saved === "true" ? await this.updateLocalShift(shift) : await this.updateLocalShift(shift));
+        (shift.saved ? await this.updateLocalShift(shift) : await this.updateLocalShift(shift));
     }
 
     public async updateLocalShift(shift: IShift) {
