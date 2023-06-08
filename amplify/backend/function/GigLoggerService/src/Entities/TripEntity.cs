@@ -55,4 +55,7 @@ public class TripEntity : AmountEntity
 
     [JsonPropertyName("note")]
     public string Note { get; set; }
+
+    [JsonPropertyName("saved")]
+    public bool Saved { get; set; }
 }

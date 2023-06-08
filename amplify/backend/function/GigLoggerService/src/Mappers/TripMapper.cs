@@ -46,6 +46,7 @@ public static class TripMapper
                 EndUnit = HeaderParser.GetStringValue("End Unit", value, headers),
                 OrderNumber = HeaderParser.GetStringValue("Order #", value, headers),
                 Note = HeaderParser.GetStringValue("Note", value, headers),
+                Saved = true
             };
             
             trips.Add(trip);
