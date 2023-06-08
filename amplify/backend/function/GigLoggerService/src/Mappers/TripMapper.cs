@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 public static class TripMapper
 {
@@ -63,7 +65,7 @@ public static class TripMapper
 
             foreach (var header in tripHeaders)
             {
-                switch (header.ToString())
+                switch (header.ToString().Trim())
                 {
                     case "Date":
                         objectList.Add(trip.Date);
@@ -71,7 +73,7 @@ public static class TripMapper
                     case "Service":
                         objectList.Add(trip.Service);
                         break;
-                    case "Number":
+                    case "#":
                         objectList.Add(trip.Number);
                         break;
                     case "Place":
@@ -133,7 +135,7 @@ public static class TripMapper
 
             rangeData.Add(objectList);
         }
-        
+        Console.Write(JsonSerializer.Serialize(rangeData));
         return rangeData;
     }
 }
