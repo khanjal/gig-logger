@@ -140,7 +140,7 @@ export class QuickFormComponent implements OnInit {
       shift.trips = 0;
       shift.total = 0;
 
-      let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => x.saved === "false"),
+      let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
                   ...await this._tripService.queryRemoteTrips("key", shift.key)];
       trips.forEach(trip => {
           shift.trips++;
@@ -157,7 +157,7 @@ export class QuickFormComponent implements OnInit {
     let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
-    let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => x.saved === "false"),
+    let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
                       ...await this._tripService.queryRemoteTrips("date", date)];
 
     todaysTrips.forEach(trip => {
@@ -175,7 +175,7 @@ export class QuickFormComponent implements OnInit {
       let shifts: IShift[] = [];
       let today: string = new Date().toLocaleDateString();
 
-      shifts.push(...(await this._shiftService.queryLocalShifts("date", today)).filter(x => x.saved === "false"));
+      shifts.push(...(await this._shiftService.queryLocalShifts("date", today)).filter(x => !x.saved));
       shifts.push(...await this._shiftService.queryRemoteShifts("date", today));
       
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
@@ -217,7 +217,7 @@ export class QuickFormComponent implements OnInit {
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
     trip.orderNumber = this.quickForm.value.orderNumber ?? "";
-    trip.saved = "false";
+    trip.saved = false;
 
     // Set form properties depending on edit/add
     if (this.data?.id) {
