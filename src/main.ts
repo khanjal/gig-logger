@@ -4,8 +4,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
-import awsconfig from './aws-exports';
-// import * as awsconfig from './aws-exports';
+// import awsconfig from './aws-exports';
+import * as awsconfig from './aws-exports';
 import { API, Amplify } from 'aws-amplify';
 
 if (environment.production) {
