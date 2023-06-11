@@ -8,7 +8,6 @@ import { PagesModule } from './pages/pages.module';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
-import { GoogleSheetService } from '@services/googleSheet.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
 import { AddressService } from '@services/address.service';
@@ -39,7 +38,6 @@ import { GigLoggerService } from '@services/gig-logger.service';
     DeliveryService,
     NameService,
     GigLoggerService,
-    GoogleSheetService,
     PlaceService,
     ServiceService,
     ShiftService,
