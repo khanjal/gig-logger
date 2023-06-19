@@ -1,4 +1,4 @@
-using System.IO;
+using System;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
@@ -14,20 +14,23 @@ public class GoogleSheetsHelper
     }
     private void InitializeService()
     {
-        var credential = GetCredentialsFromFile();
+        var credential = GetCredentialsFromEnvironment();
         Service = new SheetsService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
             ApplicationName = APPLICATION_NAME
         });
     }
-    private GoogleCredential GetCredentialsFromFile()
+    private GoogleCredential GetCredentialsFromEnvironment()
     {
+        JsonCredentialParameters credentials = new JsonCredentialParameters();
+        credentials.Type = Environment.GetEnvironmentVariable("CREDENTIAL_TYPE");
+        credentials.PrivateKey = Environment.GetEnvironmentVariable("CREDENTIAL_KEY");
+        credentials.ClientEmail = Environment.GetEnvironmentVariable("CREDENTIAL_EMAIL");
+        
         GoogleCredential credential;
-        using (var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read))
-        {
-            credential = GoogleCredential.FromStream(stream).CreateScoped(Scopes);
-        }
+        credential = GoogleCredential.FromJsonParameters(credentials);
+
         return credential;
     }
 }
