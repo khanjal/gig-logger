@@ -216,7 +216,7 @@ export class QuickFormComponent implements OnInit {
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
     trip.note = this.quickForm.value.note ?? "";
-    trip.orderNumber = this.quickForm.value.orderNumber ?? "";
+    trip.orderNumber = this.quickForm.value.orderNumber?.toLocaleUpperCase() ?? "";
     trip.saved = false;
 
     // Set form properties depending on edit/add
