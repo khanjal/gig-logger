@@ -52,7 +52,7 @@ export class SheetAddFormComponent {
 
   public async setupForm(id: string) {
     // let sheetTitle = await this._googleService.getSheetTitle(id);
-    let sheetTitle = id.substring(0, 5);
+    let sheetTitle = `${id.substring(0, 5)}...`;
 
     if(sheetTitle != "") {
       console.log(sheetTitle);
