@@ -13,6 +13,7 @@ import { WeekdayService } from "./weekday.service";
 import { IDelivery } from "@interfaces/delivery.interface";
 import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
+import { RegionService } from "./region.service";
 
 @Injectable()
 export class GigLoggerService {
@@ -25,6 +26,7 @@ export class GigLoggerService {
         private _deliveryService: DeliveryService,
         private _nameService: NameService,
         private _placeService: PlaceService,
+        private _regionService: RegionService,
         private _serviceService: ServiceService,
         private _shiftService: ShiftService,
         private _spreadsheetService: SpreadsheetService,
@@ -44,6 +46,7 @@ export class GigLoggerService {
         await this._addressService.loadAddresses(sheetData.addresses);
         await this._nameService.loadNames(sheetData.names);
         await this._placeService.loadPlaces(sheetData.places);
+        await this._regionService.load(sheetData.regions);
         await this._serviceService.loadServices(sheetData.services);
         await this._shiftService.loadShifts(sheetData.shifts);
         await this._tripService.loadTrips(sheetData.trips);

@@ -15,6 +15,7 @@ export interface ITrip extends IAmount {
     orderNumber: string;
     pickupTime: string;
     place: string;
+    region: string;
     saved: boolean;
     service: string;
     startAddress: string;
