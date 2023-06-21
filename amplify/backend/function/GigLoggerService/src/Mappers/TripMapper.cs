@@ -125,9 +125,9 @@ public static class TripMapper
                     case "Order #":
                         objectList.Add(trip.OrderNumber);
                         break;
-                    case "Region":
-                        objectList.Add(trip.Region);
-                        break;
+                    // case "Region":
+                    //     objectList.Add(trip.Region);
+                    //     break;
                     case "Note":
                         objectList.Add(trip.Note);
                         break;

@@ -2,6 +2,7 @@
     <div>
         <mat-card-header><h3>{{trip.date | date:'MMM d'}}, {{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}} ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</h3></mat-card-header>
         <mat-card-content>
+            <div *ngIf="trip.region">{{trip.region}}</div>
             <div><b>{{trip.place | truncate:15}}{{trip.distance ? '('+trip.distance+')' : ''}}</b> {{ getPlaceAddress(trip.place, trip.startAddress) | truncate:40}}</div>
             <div><b>{{trip.name | truncate:15}}</b> {{ getShortAddress(trip.endAddress) | truncate:25}}</div>
             <div><span class="padding-right" *ngIf="trip.endUnit"><b>Unit #</b> {{trip.endUnit}}</span> <span *ngIf="trip.orderNumber"><b>Order #</b> {{trip.orderNumber}}</span></div>
@@ -12,8 +13,7 @@
                 <span class="padding-right" *ngIf="trip.cash"><b>Cash</b> {{trip.cash | currency}}</span>
                 <span class="padding-right" *ngIf="trip.total > trip.pay"><b>Total</b> {{trip.total | currency}}</span>
             </div>
-            <div *ngIf="trip.note">"{{trip.note}}"
-            </div>
+            <div *ngIf="trip.note">"{{trip.note}}"</div>
         </mat-card-content>
     </div>
 </mat-card>
