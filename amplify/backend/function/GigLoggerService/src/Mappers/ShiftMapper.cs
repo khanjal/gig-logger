@@ -33,6 +33,7 @@ public static class ShiftMapper
                 Time = HeaderParser.GetStringValue("T Time", value, headers),
                 Trips = HeaderParser.GetIntValue("T Trip", value, headers),
                 Omit = HeaderParser.GetStringValue("O", value, headers),
+                Region = HeaderParser.GetStringValue("Region", value, headers),
                 Note = HeaderParser.GetStringValue("Note", value, headers),
                 Pay = HeaderParser.GetDecimalValue("T Pay", value, headers),
                 Tip = HeaderParser.GetDecimalValue("T Tip", value, headers),
@@ -93,6 +94,9 @@ public static class ShiftMapper
                         break;
                     case "Cash":
                         objectList.Add(shift.Cash);
+                        break;
+                    case "Region":
+                        objectList.Add(shift.Region);
                         break;
                     case "Note":
                         objectList.Add(shift.Note);
