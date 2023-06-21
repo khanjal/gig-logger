@@ -45,6 +45,32 @@
         </mat-form-field>
     </div>
 
+    <!-- Region -->
+    <div *ngIf="isNewShift">
+        <mat-form-field class="field-full-width" appearance="outline">
+            <mat-label>Region</mat-label>
+            <input type="text"
+                name="region"
+                placeholder="Pick one or enter new"
+                aria-label="Region"
+                matInput
+                formControlName="region"
+                [matAutocomplete]="autoRegion"
+                focus-scroll
+                #region>
+            <mat-autocomplete autoActiveFirstOption #autoRegion="matAutocomplete">
+                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                    <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" class="mat-option">
+                        {{ region.region }} ({{ region.visits }})
+                    </mat-option>
+                <!-- </cdk-virtual-scroll-viewport> -->
+            </mat-autocomplete>
+            <button type="button" *ngIf="region.value" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
     <!-- Place -->
     <mat-form-field class="field-full-width" appearance="outline">
         <mat-label>Place</mat-label>
