@@ -53,6 +53,9 @@ public class TripEntity : AmountEntity
     [JsonPropertyName("orderNumber")]
     public string OrderNumber { get; set; }
 
+    [JsonPropertyName("region")]
+    public string Region { get; set; }
+
     [JsonPropertyName("note")]
     public string Note { get; set; }
 

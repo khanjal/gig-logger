@@ -19,6 +19,7 @@ import { WeekdayService } from '@services/weekday.service';
 import { TimerService } from '@services/timer.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
+import { RegionService } from '@services/region.service';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { GigLoggerService } from '@services/gig-logger.service';
     NameService,
     GigLoggerService,
     PlaceService,
+    RegionService,
     ServiceService,
     ShiftService,
     SpreadsheetService,
