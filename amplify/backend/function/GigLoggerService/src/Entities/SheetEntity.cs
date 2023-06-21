@@ -11,6 +11,9 @@ public class SheetEntity {
     [JsonPropertyName("places")]
     public List<PlaceEntity> Places { get; set; } = new List<PlaceEntity>();
 
+    [JsonPropertyName("regions")]
+    public List<RegionEntity> Regions { get; set; } = new List<RegionEntity>();
+
     [JsonPropertyName("services")]
     public List<ServiceEntity> Services { get; set; } = new List<ServiceEntity>();
 

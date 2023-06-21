@@ -47,6 +47,7 @@ public static class TripMapper
                 EndAddress = HeaderParser.GetStringValue("End Address", value, headers),
                 EndUnit = HeaderParser.GetStringValue("End Unit", value, headers),
                 OrderNumber = HeaderParser.GetStringValue("Order #", value, headers),
+                Region = HeaderParser.GetStringValue("Region", value, headers),
                 Note = HeaderParser.GetStringValue("Note", value, headers),
                 Saved = true
             };
@@ -124,6 +125,9 @@ public static class TripMapper
                     case "Order #":
                         objectList.Add(trip.OrderNumber);
                         break;
+                    // case "Region":
+                    //     objectList.Add(trip.Region);
+                    //     break;
                     case "Note":
                         objectList.Add(trip.Note);
                         break;

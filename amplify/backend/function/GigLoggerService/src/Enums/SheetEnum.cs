@@ -10,6 +10,9 @@ public enum SheetEnum {
     [Description("Places")]
     Places,
 
+    [Description("Regions")]
+    Regions,
+
     [Description("Services")]
     Services,
 

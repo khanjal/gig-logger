@@ -14,7 +14,8 @@ export class SheetAddFormComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   
   sheetForm = new FormGroup({
-    sheetId: new FormControl('')
+    sheetId: new FormControl(''),
+    sheetName: new FormControl('')
   });
 
   saving: boolean = false;
@@ -52,13 +53,17 @@ export class SheetAddFormComponent {
 
   public async setupForm(id: string) {
     // let sheetTitle = await this._googleService.getSheetTitle(id);
-    let sheetTitle = `${id.substring(0, 5)}...`;
+    let sheetName = this.sheetForm.value.sheetName;
 
-    if(sheetTitle != "") {
-      console.log(sheetTitle);
+    if (!sheetName) {
+      sheetName = `${id.substring(0, 10)}...`;
+    }
+  
+    if(sheetName != "") {
+      console.log(sheetName);
       let spreadsheet = {} as ISpreadsheet;
       spreadsheet.id = id;
-      spreadsheet.name = sheetTitle;
+      spreadsheet.name = sheetName;
       spreadsheet.default = "false";
 
       // Check for default spreadsheet

@@ -227,6 +227,7 @@ namespace GigLoggerService
                 sheets.Add(SheetEnum.Addresses);
                 sheets.Add(SheetEnum.Names);
                 sheets.Add(SheetEnum.Places);
+                sheets.Add(SheetEnum.Regions);
                 sheets.Add(SheetEnum.Services);
                 sheets.Add(SheetEnum.Shifts);
                 sheets.Add(SheetEnum.Trips);
@@ -334,6 +335,10 @@ namespace GigLoggerService
 
                 case SheetEnum.Places:
                     _sheet.Places = PlaceMapper.MapFromRangeData(values);
+                break;
+
+                case SheetEnum.Regions:
+                    _sheet.Regions = RegionMapper.MapFromRangeData(values);
                 break;
 
                 case SheetEnum.Services:
