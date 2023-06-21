@@ -56,7 +56,7 @@ export class SheetAddFormComponent {
     let sheetName = this.sheetForm.value.sheetName;
 
     if (!sheetName) {
-      sheetName = `${id.substring(0, 5)}...`;
+      sheetName = `${id.substring(0, 10)}...`;
     }
   
     if(sheetName != "") {
