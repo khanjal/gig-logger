@@ -8,6 +8,7 @@ import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
+import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -15,6 +16,7 @@ import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
+import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
@@ -36,6 +38,7 @@ export class QuickFormComponent implements OnInit {
   quickForm = new FormGroup({
     shift: new FormControl(''),
     service: new FormControl(''),
+    region: new FormControl(''),
     place: new FormControl(''),
     name: new FormControl(''),
     distance: new FormControl(),
@@ -73,8 +76,10 @@ export class QuickFormComponent implements OnInit {
   filteredPlaces: Observable<IPlace[]> | undefined;
   selectedPlace: IPlace | undefined;
 
-  filteredServices: Observable<IService[]> | undefined;
+  filteredRegions: Observable<IRegion[]> | undefined;
 
+  filteredServices: Observable<IService[]> | undefined;
+  
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
   selectedShift: IShift | undefined;
@@ -89,6 +94,7 @@ export class QuickFormComponent implements OnInit {
       private _deliveryService: DeliveryService,
       private _nameService: NameService,
       private _placeService: PlaceService,
+      private _regionService: RegionService,
       private _serviceService: ServiceService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
@@ -115,6 +121,11 @@ export class QuickFormComponent implements OnInit {
     this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterPlace(value || ''))
+    );
+
+    this.filteredRegions = this.quickForm.controls.region.valueChanges.pipe(
+      startWith(''),
+      mergeMap(async value => await this._filterRegion(value || ''))
     );
 
     this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
@@ -179,6 +190,7 @@ export class QuickFormComponent implements OnInit {
       shifts.push(...await this._shiftService.queryRemoteShifts("date", today));
       
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
+      shift.region = this.quickForm.value.region ?? "";
       
       await this._shiftService.addNewShift(shift);
     }
@@ -197,6 +209,7 @@ export class QuickFormComponent implements OnInit {
     
     trip.date = shift.date;
     trip.service = shift.service;
+    trip.region = shift.region;
     trip.number = shift.number ?? 0;
 
     trip.startAddress = this.quickForm.value.startAddress ?? "";
@@ -382,6 +395,10 @@ export class QuickFormComponent implements OnInit {
       //Set the most used service as default.
       let service = (await this._serviceService.getRemoteServices()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
       this.quickForm.controls.service.setValue(service.service);
+
+      //Set the most used region as default.
+      let region = (await this._regionService.get()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
+      this.quickForm.controls.region.setValue(region.region);
     }
     else {
       this.isNewShift = false;
@@ -501,6 +518,12 @@ export class QuickFormComponent implements OnInit {
     places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
     return places;
+  }
+
+  private async _filterRegion(value: string): Promise<IRegion[]> {
+    const filterValue = value;
+
+    return await this._regionService.filter(filterValue);
   }
 
   private async _filterService(value: string): Promise<IService[]> {
