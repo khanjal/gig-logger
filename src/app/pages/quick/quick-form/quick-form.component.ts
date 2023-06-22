@@ -144,6 +144,7 @@ export class QuickFormComponent implements OnInit {
     await this.setDefaultShift();
   }
 
+  // TODO move this to a helper or service
   private async calculateShiftTotals() {
     let shifts = await this._shiftService.getPreviousWeekShifts();
 
@@ -231,7 +232,7 @@ export class QuickFormComponent implements OnInit {
     trip.note = this.quickForm.value.note ?? "";
     trip.orderNumber = this.quickForm.value.orderNumber?.toLocaleUpperCase() ?? "";
     trip.saved = false;
-
+    
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
@@ -240,6 +241,8 @@ export class QuickFormComponent implements OnInit {
     else {
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
+
+    trip.duration = DateHelper.getDuration(trip.pickupTime, trip.dropoffTime);
 
     return trip;
   }
