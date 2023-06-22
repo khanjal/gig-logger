@@ -8,6 +8,7 @@ export interface ITrip extends IAmount {
     endUnit: string;
     endOdometer: number;
     dropoffTime: string;
+    duration: string;
     key: string;
     name: string;
     note: string;
