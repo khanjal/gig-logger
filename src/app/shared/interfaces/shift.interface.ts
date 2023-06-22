@@ -4,6 +4,7 @@ export interface IShift extends IAmount {
     id?: number;
     date: string;
     distance: number;
+    active: string;
     end: string;
     key: string;
     region: string;
@@ -11,5 +12,6 @@ export interface IShift extends IAmount {
     service: string;
     number: number;
     start: string;
+    time: string;
     trips: number;
 }
