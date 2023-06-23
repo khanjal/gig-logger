@@ -233,6 +233,7 @@ export class QuickComponent implements OnInit {
     }
 
     trip.dropoffTime = dropOffTime;
+    trip.duration = DateHelper.getDuration(trip.pickupTime, trip.dropoffTime);
     await this._tripService.updateLocalTrip(trip);
   }
 
