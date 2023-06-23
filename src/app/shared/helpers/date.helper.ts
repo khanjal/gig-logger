@@ -37,34 +37,31 @@ export class DateHelper {
         }
 
         let startDate = Date.parse(new Date().toDateString() + ' ' + start);
-        console.log(new Date(startDate));
-
         let endDate = Date.parse(new Date().toDateString() + ' ' + end);
-        console.log(new Date(endDate));
 
         let diff = endDate - startDate;
-        console.log(diff);
 
-        const seconds = Math.floor((diff / 1000) % 60);
-        console.log(seconds);
-
-        const minutes = Math.floor((diff / (60 * 1000)) % 60);
-        console.log(minutes);
-
-        const hours = Math.floor((diff / (60* 60 * 1000)) % 60);
-        console.log(hours);
-
-        const duration = `${hours}:${this.pad(minutes.toString())}:${this.pad(seconds.toString())}`;
-        console.log(duration);
-        
-        return "";
-    }
-
-    static pad(number: string) {
-        if (number.length < 2) {
-            number = `0${number}`;
+        if (endDate < startDate) {
+            endDate += 86400000; // Add day if end less than start.
+            diff = endDate - startDate;
         }
 
-        return number;
+        const seconds = Math.floor((diff / 1000) % 60);
+        const minutes = Math.floor((diff / (60 * 1000)) % 60);
+        const hours = Math.floor((diff / (60* 60 * 1000)) % 60);
+
+        const duration = `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}.000`;
+        // console.log(duration);
+        
+        return duration;
+    }
+
+    static pad(number: number) {
+        let numberString = number.toString();
+        if (numberString.length < 2) {
+            numberString = `0${numberString}`;
+        }
+
+        return numberString;
     }
 }
