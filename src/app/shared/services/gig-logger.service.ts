@@ -55,6 +55,8 @@ export class GigLoggerService {
         await this.linkNameData();
         await this.linkAddressData();
         await this.linkPlaceData();
+
+        await this._deliveryService.clear();
         await this.linkDeliveries(sheetData.trips);
     }
 
