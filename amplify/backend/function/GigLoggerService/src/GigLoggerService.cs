@@ -102,6 +102,9 @@ namespace GigLoggerService
                             break;
                         case "generate":
                             break;
+                        case "warmup":
+                            WarmupLambda();
+                            break;
                     }
 
                     response.StatusCode = (int)HttpStatusCode.OK;
@@ -174,17 +177,6 @@ namespace GigLoggerService
 
     private void SaveTripData(SheetEntity sheetData)
     {
-        // Create & save shift rows.
-        var shiftRange = $"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1";
-        var shiftHeaders = GetSheetData(shiftRange)[0];
-        var shifts = ShiftMapper.MapToRangeData(sheetData.Shifts, shiftHeaders);
-        // context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
-
-        if (shifts.Count > 0) {
-            var valueRange = new ValueRange { Values = shifts };
-            AppendData(valueRange, shiftRange);
-        }
-
         // Create & save trip rows.
         var tripRange = $"{SheetEnum.Trips.DisplayName()}!A1:ZZ1";
         var tripHeaders = GetSheetData(tripRange)[0];
@@ -194,6 +186,17 @@ namespace GigLoggerService
         if (trips.Count > 0) {
             var valueRange = new ValueRange { Values = trips };
             AppendData(valueRange, tripRange);
+        }
+
+         // Create & save shift rows.
+        var shiftRange = $"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1";
+        var shiftHeaders = GetSheetData(shiftRange)[0];
+        var shifts = ShiftMapper.MapToRangeData(sheetData.Shifts, shiftHeaders);
+        // context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
+
+        if (shifts.Count > 0) {
+            var valueRange = new ValueRange { Values = shifts };
+            AppendData(valueRange, shiftRange);
         }
     }
 
@@ -231,6 +234,7 @@ namespace GigLoggerService
                 sheets.Add(SheetEnum.Services);
                 sheets.Add(SheetEnum.Shifts);
                 sheets.Add(SheetEnum.Trips);
+                sheets.Add(SheetEnum.Types);
                 sheets.Add(SheetEnum.Weekdays);
             break;
             
@@ -353,10 +357,19 @@ namespace GigLoggerService
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
                 break;
 
+                case SheetEnum.Types:
+                    _sheet.Types = TypeMapper.MapFromRangeData(values);
+                break;
+
                 case SheetEnum.Weekdays:
                     _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
                 break;
             }
+        }
+
+        private void WarmupLambda()
+        {
+            Console.WriteLine("Warming up Lambda");
         }
 
         /// <summary>
