@@ -38,6 +38,10 @@ export class GigLoggerService {
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
+    public async warmupLambda(sheetId: string) {
+        return this._http.get(`${this.apiUrl}${sheetId}/warmup`);
+    }
+
     public async postSheetData(sheetData: ISheet, sheetId: string) {
         return this._http.post<any>(`${this.apiUrl}${sheetId}/trips`, JSON.stringify(sheetData));
     }
