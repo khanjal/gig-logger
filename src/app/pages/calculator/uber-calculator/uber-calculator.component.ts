@@ -14,9 +14,11 @@ export class UberCalculatorComponent {
     customer2Price: new FormControl(''),
   });
 
-  ratio: number | undefined;
+  customer1Ratio: number | undefined;
   customer1Fare: number | undefined;
   customer1Boost: number | undefined;
+
+  customer2Ratio: number | undefined;
   customer2Fare: number | undefined;
   customer2Boost: number | undefined;
 
@@ -26,19 +28,30 @@ export class UberCalculatorComponent {
     const customer1Price: number = +(this.uberForm.value.customer1Price ?? "1");
     const customer2Price: number = +(this.uberForm.value.customer2Price ?? "1");
 
+    const ratio = +((customer2Price * (customer1Price / 100)).toFixed(2));
+    console.log(ratio);
+
     if (customer1Price > customer2Price) {
-      this.ratio = +((customer2Price / customer1Price).toFixed(2));
+      this.customer1Ratio = 1 - ratio;
+      this.customer2Ratio = ratio;
     }
     else {
-      this.ratio = +((customer1Price / customer2Price).toFixed(2));
+      this.customer1Ratio = ratio;
+      this.customer2Ratio = 1 - ratio;
     }
 
-    this.customer1Fare = +((paidFare * this.ratio).toFixed(2));
-    this.customer2Fare = paidFare - this.customer1Fare;
+    // this.ratio = +((customer1Price * (customer2Price/100)).toFixed(2));
 
-    this.customer1Boost = +((paidBoost * this.ratio).toFixed(2));
-    this.customer2Boost = paidBoost - this.customer1Boost;
+    this.customer1Fare = +((paidFare * this.customer1Ratio).toFixed(2));
+    this.customer2Fare = +((paidFare * this.customer2Ratio).toFixed(2));
 
-    console.log(this.ratio);
+    this.customer1Boost = +((paidBoost * this.customer1Ratio).toFixed(2));
+    this.customer2Boost = +((paidBoost * this.customer2Ratio).toFixed(2));
+  }
+
+  reset() {
+    this.uberForm.reset();
+    this.customer1Fare = 0;
+    this.customer2Fare = 0;
   }
 }
