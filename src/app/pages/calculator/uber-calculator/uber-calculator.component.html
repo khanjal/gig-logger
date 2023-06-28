@@ -12,21 +12,25 @@
 
     <h3>Paid To Uber</h3>
     <mat-form-field class="field-width" appearance="outline">
-        <mat-label>Customer 1 Paid</mat-label>
+        <mat-label>Cust 1 Service Fee</mat-label>
         <input matInput type="number" name="customer1Price" placeholder="10.98" formControlName="customer1Price" value="" required>
     </mat-form-field>
 
     <mat-form-field class="field-width" appearance="outline">
-        <mat-label>Customer 2 Paid</mat-label>
+        <mat-label>Cust 2 Service Fee</mat-label>
         <input matInput type="number" name="customer2Price" placeholder="6.89" formControlName="customer2Price" value="" required>
     </mat-form-field>
 </form>
 
-<p>{{ratio}}</p>
-<p>{{customer1Fare}} | {{customer1Boost}}</p>
-<p>{{customer2Fare}} | {{customer2Boost}}</p>
+<span *ngIf="customer1Fare">Customer 1 
+    <p>Ratio: {{customer1Ratio | percent}} Pay: {{customer1Fare | currency}} Bonus: {{customer1Boost | currency}}</p>
+</span>
+
+<span *ngIf="customer2Fare">Customer 2 
+    <p>Ratio: {{customer2Ratio | percent}} Pay: {{customer2Fare | currency}} Bonus: {{customer2Boost | currency}}</p>
+</span>
 
 <div class="row-flex">
     <button mat-stroked-button color="primary" type="button" (click)="calculate()" ><mat-icon>input</mat-icon> Calculate</button>
-    <button mat-stroked-button color="warn" type="button" (click)="uberForm.reset()"><mat-icon>refresh</mat-icon> Reset</button>
+    <button mat-stroked-button color="warn" type="button" (click)="reset()"><mat-icon>refresh</mat-icon> Reset</button>
 </div>
