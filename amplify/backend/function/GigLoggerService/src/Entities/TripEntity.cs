@@ -17,6 +17,9 @@ public class TripEntity : AmountEntity
     [JsonPropertyName("number")]
     public int Number { get; set; }
 
+    [JsonPropertyName("type")]
+    public string Type { get; set; }
+
     [JsonPropertyName("place")]
     public string Place { get; set; }
 
