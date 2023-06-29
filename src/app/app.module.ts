@@ -20,6 +20,7 @@ import { TimerService } from '@services/timer.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { RegionService } from '@services/region.service';
+import { TypeService } from '@services/type.service';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { RegionService } from '@services/region.service';
     SpreadsheetService,
     TimerService,
     TripService,
+    TypeService,
     WeekdayService
   ],
   bootstrap: [AppComponent]
