@@ -14,6 +14,7 @@ import { IDelivery } from "@interfaces/delivery.interface";
 import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { RegionService } from "./region.service";
+import { TypeService } from "./type.service";
 
 @Injectable()
 export class GigLoggerService {
@@ -31,11 +32,16 @@ export class GigLoggerService {
         private _shiftService: ShiftService,
         private _spreadsheetService: SpreadsheetService,
         private _tripService: TripService,
+        private _typeService: TypeService,
         private _weekdayService: WeekdayService
     ) {}
 
     public async getSheetData(sheetId: string) {
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
+    }
+
+    public async warmupLambda(sheetId: string) {
+        return this._http.get(`${this.apiUrl}${sheetId}/warmup`);
     }
 
     public async postSheetData(sheetData: ISheet, sheetId: string) {
@@ -50,6 +56,7 @@ export class GigLoggerService {
         await this._serviceService.loadServices(sheetData.services);
         await this._shiftService.loadShifts(sheetData.shifts);
         await this._tripService.loadTrips(sheetData.trips);
+        await this._typeService.load(sheetData.types);
         await this._weekdayService.loadWeekdays(sheetData.weekdays);
 
         await this.linkNameData();
@@ -228,6 +235,7 @@ export class GigLoggerService {
         let places = await this._placeService.getRemotePlaces();
 
         places.forEach(async place => {
+            // Addresses
             let placeAddresses = trips.filter(x => x.place === place.place && x.startAddress);
 
             placeAddresses.forEach(placeAddress => {
@@ -239,6 +247,20 @@ export class GigLoggerService {
             });
 
             place.addresses = [...new Set(place.addresses)].sort();
+
+            // Types
+            let placeTypes = trips.filter(x => x.place === place.place && x.type);
+
+            placeTypes.forEach(placeType => {
+                if (!place.types) {
+                    place.types = [];
+                }
+
+                place.types.push(placeType.type);
+            });
+
+            place.types = [...new Set(place.types)].sort();
+
             await this._placeService.update(place);
         });
     }

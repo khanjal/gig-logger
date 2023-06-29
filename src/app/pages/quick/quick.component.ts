@@ -73,21 +73,24 @@ export class QuickComponent implements OnInit {
     sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
     sheetData.trips = await this._tripService.getUnsavedLocalTrips();
 
-    (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet.id)).subscribe(async (data) => {
-      await this._tripService.saveUnsavedTrips();
-      await this._shiftService.saveUnsavedShifts();
+    (await this._gigLoggerService.warmupLambda(this.defaultSheet.id)).subscribe(async () => { // Warmup lambda to use less time to save.
+      (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet!.id)).subscribe(async () => {
+        await this._tripService.saveUnsavedTrips();
+        await this._shiftService.saveUnsavedShifts();
 
-      console.log('Saved!');
-      console.timeEnd("saving");
+        console.log('Saved!');
+        console.timeEnd("saving");
 
-      this._viewportScroller.scrollToAnchor("savedLocalTrips");
-      this._snackBar.open("Trip(s) Saved to Spreadsheet");
+        this._viewportScroller.scrollToAnchor("savedLocalTrips");
+        this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-      (await this._gigLoggerService.getSheetData(this.defaultSheet!.id)).subscribe(async (data) => {
-            this._snackBar.open("Refreshing Spreadsheet Data");    
-            await this._gigLoggerService.loadData(<ISheet>data);
-            await this.load();
-            this.saving = false;
+        (await this._gigLoggerService.getSheetData(this.defaultSheet!.id)).subscribe(async (data) => {
+              this._snackBar.open("Refreshing Spreadsheet Data");    
+              await this._gigLoggerService.loadData(<ISheet>data);
+              await this.load();
+              this.saving = false;
+              }
+            );
           }
         );
       }
