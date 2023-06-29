@@ -4,5 +4,6 @@ export interface IPlace extends IAmount {
     id?: number;
     place: string;
     addresses: string[];
+    types: string[];
     visits: number;
 }
