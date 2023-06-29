@@ -22,6 +22,9 @@ public enum SheetEnum {
     [Description("Trips")]
     Trips,
 
+    [Description("Types")]
+    Types,
+
     [Description("Weekdays")]
     Weekdays,
 }

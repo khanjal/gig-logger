@@ -5,6 +5,7 @@ import { IRegion } from "./region.interface";
 import { IService } from "./service.interface";
 import { IShift } from "./shift.interface";
 import { ITrip } from "./trip.interface";
+import { IType } from "./type.interface";
 import { IWeekday } from "./weekday.interface";
 
 export interface ISheet {
@@ -15,5 +16,6 @@ export interface ISheet {
     services: IService[];
     shifts: IShift[];
     trips: ITrip[];
+    types: IType[];
     weekdays: IWeekday[]
 }

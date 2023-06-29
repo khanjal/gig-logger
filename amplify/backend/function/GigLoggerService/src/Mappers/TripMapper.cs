@@ -30,6 +30,7 @@ public static class TripMapper
                 Date = HeaderParser.GetStringValue("Date", value, headers),
                 Service = HeaderParser.GetStringValue("Service", value, headers),
                 Number = HeaderParser.GetIntValue("#", value, headers),
+                Type = HeaderParser.GetStringValue("Type", value, headers),
                 Place = HeaderParser.GetStringValue("Place", value, headers),
                 Pickup = HeaderParser.GetStringValue("Pickup", value, headers),
                 Dropoff = HeaderParser.GetStringValue("Dropoff", value, headers),
@@ -76,6 +77,9 @@ public static class TripMapper
                         break;
                     case "#":
                         objectList.Add(trip.Number);
+                        break;
+                    case "Type":
+                        objectList.Add(trip.Type);
                         break;
                     case "Place":
                         objectList.Add(trip.Place);

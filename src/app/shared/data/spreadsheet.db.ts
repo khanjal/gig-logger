@@ -7,6 +7,7 @@ import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { IType } from '@interfaces/type.interface';
 import { IWeekday } from '@interfaces/weekday.interface';
 import Dexie, { Table } from 'dexie';
 
@@ -22,6 +23,7 @@ export class AppDB extends Dexie {
     services!: Table<IService, number>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
+    types!: Table<IType, number>;
     weekdays!: Table<IWeekday, number>;
 
     constructor() {
@@ -36,6 +38,7 @@ export class AppDB extends Dexie {
             services: '++id, service',
             shifts: '++id, date, service, number, key, [date+service+number]',
             trips: '++id, date, service, number, key, [date+service+number]',
+            types: '++id, type',
             weekdays: '++id, day'
         });
     }
