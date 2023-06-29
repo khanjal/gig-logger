@@ -95,6 +95,30 @@
         </button>
     </mat-form-field>
 
+    <!-- Type -->
+    <mat-form-field class="field-full-width" appearance="outline">
+        <mat-label>Type</mat-label>
+        <input type="text"
+            name="type"
+            placeholder="Pick one or enter new"
+            aria-label="Type"
+            matInput
+            formControlName="type"
+            [matAutocomplete]="autoType"
+            focus-scroll
+            #type>
+        <mat-autocomplete autoActiveFirstOption #autoType="matAutocomplete">
+            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" class="mat-option">
+                    {{ type.type }} ({{ type.visits }})
+                </mat-option>
+            <!-- </cdk-virtual-scroll-viewport> -->
+        </mat-autocomplete>
+        <button type="button" *ngIf="type.value" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </mat-form-field>
+
     <!-- Pay -->
     <mat-form-field class="field-third-width" appearance="outline">
         <mat-label>Pay</mat-label>

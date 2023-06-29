@@ -12,6 +12,7 @@ import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { IType } from '@interfaces/type.interface';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { NameService } from '@services/name.service';
@@ -20,6 +21,7 @@ import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
+import { TypeService } from '@services/type.service';
 import { WeekdayService } from '@services/weekday.service';
 import { Observable, startWith, mergeMap } from 'rxjs';
 import { AddressHelper } from 'src/app/shared/helpers/address.helper';
@@ -40,6 +42,7 @@ export class QuickFormComponent implements OnInit {
     service: new FormControl(''),
     region: new FormControl(''),
     place: new FormControl(''),
+    type: new FormControl(''),
     name: new FormControl(''),
     distance: new FormControl(),
     startOdometer: new FormControl(),
@@ -77,8 +80,8 @@ export class QuickFormComponent implements OnInit {
   selectedPlace: IPlace | undefined;
 
   filteredRegions: Observable<IRegion[]> | undefined;
-
   filteredServices: Observable<IService[]> | undefined;
+  filteredTypes: Observable<IType[]> | undefined;
   
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
@@ -98,6 +101,7 @@ export class QuickFormComponent implements OnInit {
       private _serviceService: ServiceService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
+      private _typeService: TypeService,
       private _weekdayService: WeekdayService,
       private _viewportScroller: ViewportScroller
     ) {}
@@ -131,6 +135,11 @@ export class QuickFormComponent implements OnInit {
     this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterService(value || ''))
+    );
+
+    this.filteredTypes = this.quickForm.controls.type.valueChanges.pipe(
+      startWith(''),
+      mergeMap(async value => await this._filterType(value || ''))
     );
   }
 
@@ -453,14 +462,29 @@ export class QuickFormComponent implements OnInit {
   }
 
   async selectPlace(place: string) {
-    if (place) {
-      this.selectedPlace = await this._placeService.getRemotePlace(place);
-
-      // Auto assign to start address if only one and if there is no start address already.
-      if (this.selectedPlace?.addresses.length === 1 && !this.quickForm.value.startAddress) {
-        this.quickForm.controls.startAddress.setValue(this.selectedPlace?.addresses[0]);
-      }
+    if (!place) {
+      return;
     }
+
+    this.selectedPlace = await this._placeService.getRemotePlace(place);
+
+    // TODO: Auto select most used address.
+    // Auto assign to start address if only one and if there is no start address already.
+    if (this.selectedPlace?.addresses.length === 1 && !this.quickForm.value.startAddress) {
+      this.quickForm.controls.startAddress.setValue(this.selectedPlace?.addresses[0]);
+    }
+
+    // TODO: Auto select most used type.
+    // Auto assign to type if only one and if there is no type already.
+    if (this.selectedPlace?.types.length === 1 && !this.quickForm.value.type) {
+      this.quickForm.controls.type.setValue(this.selectedPlace?.types[0]);
+    }
+  }
+
+  async countAddress(address: string): Promise<number> {
+    let foundAddress = await this._addressService.findRemoteAddress(address);
+    console.log(foundAddress);
+    return foundAddress?.visits ?? 0;
   }
 
   toggleAdvancedPay() {
@@ -533,5 +557,11 @@ export class QuickFormComponent implements OnInit {
     const filterValue = value;
 
     return await this._serviceService.filterRemoteServices(filterValue);
+  }
+
+  private async _filterType(value: string): Promise<IType[]> {
+    const filterValue = value;
+
+    return await this._typeService.filter(filterValue);
   }
 }
