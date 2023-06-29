@@ -21,4 +21,5 @@ export interface ITrip extends IAmount {
     service: string;
     startAddress: string;
     startOdometer: number;
+    type: string;
 }

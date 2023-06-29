@@ -23,6 +23,9 @@ public class SheetEntity {
     [JsonPropertyName("trips")]
     public List<TripEntity> Trips { get; set; } = new List<TripEntity>();
 
+    [JsonPropertyName("types")]
+    public List<TypeEntity> Types { get; set; } = new List<TypeEntity>();
+
     [JsonPropertyName("weekdays")]
     public List<WeekdayEntity> Weekdays { get; set; } = new List<WeekdayEntity>();
 
