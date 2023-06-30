@@ -238,6 +238,7 @@ export class QuickFormComponent implements OnInit {
     
     trip.name = this.quickForm.value.name ?? "";
     trip.place = this.quickForm.value.place ?? "";
+    trip.type = this.quickForm.value.type ?? "";
     trip.note = this.quickForm.value.note ?? "";
     trip.orderNumber = this.quickForm.value.orderNumber?.toLocaleUpperCase() ?? "";
     trip.saved = false;
@@ -259,6 +260,7 @@ export class QuickFormComponent implements OnInit {
   private async loadForm() {
     this.selectedShift = (await this._shiftService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
     this.quickForm.controls.service.setValue(this.data.service);
+    this.quickForm.controls.type.setValue(this.data.type);
 
     this.quickForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
     this.quickForm.controls.tip.setValue(this.data.tip);
