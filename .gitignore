@@ -35,12 +35,11 @@ npm-debug.log
 yarn-error.log  
 testem.log  
 /typings  
-  
+
 # System Files  
 .DS_Store  
 Thumbs.db  
 src/app/shared/data/keys/jwt.keys.json
-src/environments/environment.ts
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend

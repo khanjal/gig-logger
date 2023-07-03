@@ -15,11 +15,11 @@ import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { RegionService } from "./region.service";
 import { TypeService } from "./type.service";
+import { environment } from "src/environments/environment";
 
 @Injectable()
 export class GigLoggerService {
-    apiUrl = "https://atftzfc4p0.execute-api.us-east-1.amazonaws.com/staging/sheet/";
-
+    private apiUrl= environment.gigLoggerApi;
 
     constructor(
         private _http: HttpClient,
@@ -37,6 +37,7 @@ export class GigLoggerService {
     ) {}
 
     public async getSheetData(sheetId: string) {
+        console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
