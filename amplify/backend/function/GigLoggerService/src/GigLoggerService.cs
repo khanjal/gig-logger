@@ -19,6 +19,12 @@ using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
 // https://nodogmablog.bryanhogan.net/2022/10/dependency-injection-with-the-lambda-annotations-library-for-net-part-1-lambda-applications/
 // https://blog.steadycoding.com/using-singletons-in-net-core-in-aws-lambda/
 
+// C# Context Info
+// https://docs.aws.amazon.com/lambda/latest/dg/csharp-context.html
+
+// How to use API Gateway stage variables to call specific Lambda alias?
+// https://www.youtube.com/watch?v=mwD5wiP1FJ8
+
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -33,6 +39,8 @@ namespace GigLoggerService
         readonly ServiceProvider _serviceProvider;
         public SpreadsheetsResource.ValuesResource _googleSheetValues;
         public SpreadsheetsResource.SheetsResource _googleSheetSheets;
+        public SheetsService _googleSheetService;
+        public string _googleSheetName;
         public SheetEntity _sheet = new();
         public string _spreadsheetId = "";
 
@@ -57,6 +65,7 @@ namespace GigLoggerService
 #pragma warning disable CS1998
         public async Task<APIGatewayProxyResponse> LambdaHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            context.Logger.LogLine($"Invoked Arn: {context.InvokedFunctionArn}");
             var response = new APIGatewayProxyResponse {
                 Headers = new Dictionary<string, string> {
                     { "Access-Control-Allow-Origin", "*" },
@@ -70,6 +79,8 @@ namespace GigLoggerService
             {
                 var googleSheetsService = scope.ServiceProvider.GetRequiredService<GoogleSheetsHelper>();
                 _googleSheetValues = googleSheetsService.Service.Spreadsheets.Values;
+                _googleSheetSheets = googleSheetsService.Service.Spreadsheets.Sheets;
+                _googleSheetService = googleSheetsService.Service;
             }
 
             // using var scope = ServiceProvider.CreateScope();
@@ -81,15 +92,17 @@ namespace GigLoggerService
 
             switch (request.HttpMethod) {
                 case "GET":
-                    context.Logger.LogLine($"Get Request: {request.Path}\n");
+                    // context.Logger.LogLine($"Get Request: {request.Path}\n");
+                    context.Logger.LogLine("Get Request");
                     _spreadsheetId = request.PathParameters["id"];
                     action = request.PathParameters["action"];
+                    context.Logger.LogLine($"Action: {action}");
 
                     if (action == null) {
                         response.Body = "{ \"message\": \"Choose an action for " + request.PathParameters["id"] +"\" }";
                     }
 
-                    Console.Write(JsonSerializer.Serialize(request.PathParameters));
+                    // Console.Write(JsonSerializer.Serialize(request.PathParameters));
 
                     switch (action)
                     {
@@ -112,7 +125,8 @@ namespace GigLoggerService
                     response.Headers["Content-Type"] = "application/json";
                     break;
                 case "POST":
-                    context.Logger.LogLine($"Post Request: {request.Path}\n");
+                    // context.Logger.LogLine($"Post Request: {request.Path}\n");
+                    context.Logger.LogLine("Post Request");
 
                     _spreadsheetId = request.PathParameters["id"];
                     action = request.PathParameters["action"];
@@ -120,7 +134,8 @@ namespace GigLoggerService
                     if (!String.IsNullOrEmpty(contentType)) {
                         context.Logger.LogLine($"Content type: {contentType}");
                     }
-                    context.Logger.LogLine($"Body: {request.Body}");
+                    // context.Logger.LogLine($"Body: {request.Body}");
+                    context.Logger.LogLine($"Action: {action}");
 
                     switch (action)
                     {
@@ -253,6 +268,7 @@ namespace GigLoggerService
         // var googleRequest = _googleSheetValues.Get;
         // var googleResponse = googleRequest.Execute();
         // matchedValues = googleResponse.ValueRanges;
+        Console.WriteLine($"Google Sheet Name: {_googleSheetName}");
     }
 
     private void LoadBatchData(List<SheetEnum> sheets)
@@ -307,6 +323,25 @@ namespace GigLoggerService
         }
 
         return values;
+    }
+
+    private void NewSheet() {
+        // var service = new SheetsService(new BaseClientService.Initializer()
+        //     {
+        //         HttpClientInitializer = credential,
+        //         ApplicationName = ApplicationName,
+        //     });
+
+        var sheet = new AddSheetRequest();
+        sheet.Properties = new SheetProperties();
+
+        sheet.Properties.Title = "Test";
+        BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
+        batchUpdateSpreadsheetRequest.Requests = new List<Request>();
+        batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddSheet = sheet });
+
+        var batchUpdateRequest = _googleSheetService.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _spreadsheetId);
+        // batchUpdateRequest.Execute();
     }
 
     private void LoadData(string sheetRange)
