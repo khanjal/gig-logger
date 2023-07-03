@@ -34,14 +34,28 @@ export class NameService {
 
             if (remoteName) {
                 name.id = remoteName.id;
-                name.addresses.push(...remoteName.addresses);
                 name.bonus += remoteName.bonus;
                 name.cash += remoteName.cash;
-                name.notes.push(...remoteName.notes);
                 name.pay += remoteName.pay;
                 name.tip += remoteName.tip;
                 name.total += remoteName.total;
                 name.visits += remoteName.visits;
+
+                if (!name.addresses) {
+                    name.addresses = [];
+                }
+
+                if (remoteName.addresses) {
+                    name.addresses.push(...remoteName.addresses);
+                }
+
+                if (!name.notes) {
+                    name.notes = [];
+                }
+
+                if (remoteName.notes) {
+                    name.notes.push(...remoteName.notes);
+                }
             }
             else {
                 name.id = undefined;

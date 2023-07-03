@@ -40,12 +40,26 @@ export class AddressService {
                 address.id = remoteAddress.id;
                 address.bonus += remoteAddress.bonus;
                 address.cash += remoteAddress.cash;
-                address.names.push(...remoteAddress.names);
-                address.notes.push(...remoteAddress.notes);
                 address.pay += remoteAddress.pay;
                 address.tip += remoteAddress.tip;
                 address.total += remoteAddress.total;
                 address.visits += remoteAddress.visits;
+
+                if (!address.names) {
+                    address.names = [];
+                }
+
+                if (remoteAddress.names) {
+                    address.names.push(...remoteAddress.names);
+                }
+
+                if (!address.notes) {
+                    address.notes = [];
+                }
+
+                if (remoteAddress.notes) {
+                    address.notes.push(...remoteAddress.notes);
+                }
             }
             else {
                 address.id = undefined;

@@ -41,6 +41,11 @@ export class GigLoggerService {
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
+    public async getSecondarySheetData(sheetId: string) {
+        console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
+        return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
+    }
+
     public async warmupLambda(sheetId: string) {
         return this._http.get(`${this.apiUrl}${sheetId}/warmup`);
     }
@@ -71,6 +76,8 @@ export class GigLoggerService {
     public async appendData(sheetData: ISheet) {
         await this._addressService.updateAddresses(sheetData.addresses);
         await this._nameService.updateNames(sheetData.names);
+
+        await this.linkDeliveries(sheetData.trips);
     }
 
     public async linkDeliveries(trips: ITrip[]) {
