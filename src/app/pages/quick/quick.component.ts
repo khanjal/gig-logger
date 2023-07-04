@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
 import { AddressHelper } from '@helpers/address.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripService } from '@services/trip.service';
@@ -16,7 +15,6 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ViewportScroller } from '@angular/common';
-import { TimerService } from '@services/timer.service';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 
@@ -42,11 +40,9 @@ export class QuickComponent implements OnInit {
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
-      private _router: Router, 
       private _gigLoggerService: GigLoggerService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
-      private _timerService: TimerService,
       private _tripService: TripService,
       private _weekdayService: WeekdayService,
       private _viewportScroller: ViewportScroller
@@ -74,25 +70,21 @@ export class QuickComponent implements OnInit {
     sheetData.trips = await this._tripService.getUnsavedLocalTrips();
 
     (await this._gigLoggerService.warmupLambda(this.defaultSheet.id)).subscribe(async () => { // Warmup lambda to use less time to save.
-      (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet!.id)).subscribe(async () => {
-        await this._tripService.saveUnsavedTrips();
-        await this._shiftService.saveUnsavedShifts();
+      (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet!.id))
+        .subscribe(async () => {
+          await this._tripService.saveUnsavedTrips();
+          await this._shiftService.saveUnsavedShifts();
 
-        console.log('Saved!');
-        console.timeEnd("saving");
+          console.log('Saved!');
+          console.timeEnd("saving");
 
-        this._viewportScroller.scrollToAnchor("savedLocalTrips");
-        this._snackBar.open("Trip(s) Saved to Spreadsheet");
+          this._viewportScroller.scrollToAnchor("savedLocalTrips");
+          this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-        (await this._gigLoggerService.getSheetData(this.defaultSheet!.id)).subscribe(async (data) => {
-              this._snackBar.open("Refreshing Spreadsheet Data");    
-              await this._gigLoggerService.loadData(<ISheet>data);
-              await this.load();
-              this.saving = false;
-              }
-            );
-          }
-        );
+          await this._sheetService.loadSpreadsheetData();
+          await this.load();
+          this.saving = false;
+        });
       }
     );
   }
@@ -292,21 +284,12 @@ export class QuickComponent implements OnInit {
     }
 
     this.reloading = true;
-    // await this._googleService.loadRemoteData();
-    // await this._googleService.loadSecondarySheetData();
 
-    (await this._gigLoggerService.getSheetData(sheetId)).subscribe(async (data) => {
-        await this._gigLoggerService.loadData(<ISheet>data);
-        console.log("Done");
-        await this.load();
-        this.reloading = false;
-        this._viewportScroller.scrollToAnchor("addTrip");
-        this._snackBar.open("Spreadsheet(s) Data Loaded");
-      }
-    );
-    //await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
-    
-    // window.location.reload();
+    await this._sheetService.loadSpreadsheetData();
+    await this.load();
+
+    this.reloading = false;
+    this._viewportScroller.scrollToAnchor("addTrip");
   }
 
   public getShortAddress(address: string): string {
