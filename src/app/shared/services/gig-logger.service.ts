@@ -16,6 +16,7 @@ import { ITrip } from "@interfaces/trip.interface";
 import { RegionService } from "./region.service";
 import { TypeService } from "./type.service";
 import { environment } from "src/environments/environment";
+import { map } from "rxjs";
 
 @Injectable()
 export class GigLoggerService {
@@ -30,18 +31,17 @@ export class GigLoggerService {
         private _regionService: RegionService,
         private _serviceService: ServiceService,
         private _shiftService: ShiftService,
-        private _spreadsheetService: SpreadsheetService,
         private _tripService: TripService,
         private _typeService: TypeService,
         private _weekdayService: WeekdayService
     ) {}
 
-    public async getSheetData(sheetId: string) {
+    public getSheetData(sheetId: string) {
         console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
-    public async getSecondarySheetData(sheetId: string) {
+    public getSecondarySheetData(sheetId: string) {
         console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
     }
