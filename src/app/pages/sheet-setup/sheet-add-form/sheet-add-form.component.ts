@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -21,6 +22,7 @@ export class SheetAddFormComponent {
   saving: boolean = false;
 
   constructor(
+    private _snackBar: MatSnackBar,
     private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService
   ) { }
@@ -82,11 +84,24 @@ export class SheetAddFormComponent {
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
         // await this._googleService.loadRemoteData();
+        this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
         (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
+            this._snackBar.open("Loading Primary Spreadsheet Data");
             await this._gigLoggerService.loadData(<ISheet>data);
+            this._snackBar.open("Loaded Primary Spreadsheet Data");
+
             this.saving = false;
           }
         );
+      }
+      else {
+            this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
+            (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
+              this._snackBar.open("Loading Secondary Spreadsheet Data");
+              await this._gigLoggerService.appendData(<ISheet>data);
+              this._snackBar.open("Loaded Secondary Spreadsheet Data");
+            });
+        this.saving = false;
       }
     }
     else {
