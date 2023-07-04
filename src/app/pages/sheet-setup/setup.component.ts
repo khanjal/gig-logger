@@ -5,7 +5,6 @@ import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component
 import { TimerService } from '@services/timer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigLoggerService } from '@services/gig-logger.service';
-import { ISheet } from '@interfaces/sheet.interface';
 
 @Component({
   selector: 'app-setup',
@@ -43,14 +42,11 @@ export class SetupComponent {
     }
 
     this.reloading = true;
-
-    (await this._gigLoggerService.getSheetData(this.defaultSheet.id)).subscribe(async (data) => {
-        await this._gigLoggerService.loadData(<ISheet>data);
-        this.reloading = false;
-      }
-    );
-    // await this._googleSheetService.loadRemoteData();
+    await this._spreadsheetService.loadSpreadsheetData();
+    this.reloading = false;
   }
+
+
 
   public async setDefault(spreadsheet: ISpreadsheet) {
     this.setting = true;
@@ -112,18 +108,13 @@ export class SetupComponent {
       return;
     }
 
-    // Load default spreadsheet data.
-    (await this._gigLoggerService.getSheetData(this.defaultSheet.id)).subscribe(async (data) => {
-        await this._gigLoggerService.loadData(<ISheet>data);
-        this.deleting = false;
-        this.reloading = false;
-        this.setting = false;
+    this._snackBar.open("Connecting to Spreadsheet");
 
-        this._snackBar.open("Databases and Spreadsheet(s) Loaded");
+    await this.reload();
 
-        await this.load();
-      }
-    );
+    this.deleting = false;
+    this.reloading = false;
+    this.setting = false;
   }
 
   public async deleteLocalData() {

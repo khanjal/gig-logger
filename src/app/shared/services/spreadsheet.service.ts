@@ -2,9 +2,20 @@ import { liveQuery } from 'dexie';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { GigLoggerService } from './gig-logger.service';
+import { ISheet } from '@interfaces/sheet.interface';
+import { Injectable } from '@angular/core';
+import { Observable, firstValueFrom, from, mergeMap, of, toArray } from 'rxjs';
 
+@Injectable()
 export class SpreadsheetService {
     spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
+
+    constructor(
+        private _snackBar: MatSnackBar,
+        private _gigLoggerService: GigLoggerService,
+    ) { }
     
     public async add(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.add(spreadsheet);
@@ -58,5 +69,34 @@ export class SpreadsheetService {
     public deleteData() {
         this.deleteLocalData();
         this.deleteRemoteData();
+    }
+
+    public async loadSpreadsheetData() {
+        // Load primary spreadsheet data.
+        let primarySpreadsheet = await this.getDefaultSheet();
+
+        console.log("Loading default data");
+        this._snackBar.open(`Connecting to ${primarySpreadsheet.name} Spreadsheet`);
+
+        let data = await firstValueFrom(this._gigLoggerService.getSheetData(primarySpreadsheet.id));
+        this._snackBar.open("Loading Primary Spreadsheet Data");
+        await this._gigLoggerService.loadData(<ISheet>data);
+        this._snackBar.open("Loaded Primary Spreadsheet Data");
+
+        await this.appendSpreadsheetData();
+
+        console.log("Done")
+    }
+
+    public async appendSpreadsheetData() {
+        // Append secondary spreadsheets.
+        let secondarySpreadsheets = (await this.getSpreadsheets()).filter(x => x.default !== "true");
+        secondarySpreadsheets.forEach(async secondarySpreadsheet => {
+            this._snackBar.open(`Connecting to ${secondarySpreadsheet.name} Spreadsheet`);
+            let data = await firstValueFrom(this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
+            this._snackBar.open("Loading Secondary Spreadsheet Data");
+            await this._gigLoggerService.appendData(<ISheet>data);
+            this._snackBar.open("Loaded Secondary Spreadsheet Data");
+        });
     }
 }
