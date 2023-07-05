@@ -9,7 +9,7 @@ public class AddressEntity : AmountEntity
     public string Address { get; set; }
 
     [JsonPropertyName("visits")]
-    public string Visits { get; set; }
+    public int Visits { get; set; }
 
     [JsonPropertyName("distance")]
     public decimal Miles { get; set; }
