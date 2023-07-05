@@ -36,6 +36,12 @@ export class AddressHelper {
         return address;
     }
 
+    static sortAddressAsc(addresses: IAddress[]): IAddress[] {
+        addresses.sort((a,b) => a.address.localeCompare(b.address));
+
+        return addresses;
+    }
+
     static translateSheetData(rows: GoogleSpreadsheetRow[]): IAddress[] {
         let addresses: IAddress[] = [];
 
