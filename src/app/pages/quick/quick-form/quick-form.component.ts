@@ -472,14 +472,20 @@ export class QuickFormComponent implements OnInit {
 
     // TODO: Auto select most used address.
     // Auto assign to start address if only one and if there is no start address already.
-    if (this.selectedPlace?.addresses.length === 1 && !this.quickForm.value.startAddress) {
+    if (!this.quickForm.value.startAddress && this.selectedPlace?.addresses.length === 1) {
       this.quickForm.controls.startAddress.setValue(this.selectedPlace?.addresses[0]);
     }
 
-    // TODO: Auto select most used type.
-    // Auto assign to type if only one and if there is no type already.
-    if (this.selectedPlace?.types.length === 1 && !this.quickForm.value.type) {
-      this.quickForm.controls.type.setValue(this.selectedPlace?.types[0]);
+    // Auto assign to most used type if there is no type already.
+    if (!this.quickForm.value.type && this.selectedPlace?.types?.length) {
+      //Set the most used type as default.
+      let type = this.selectedPlace?.types.reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
+
+      if (type) {
+        this.quickForm.controls.type.setValue(type.type);
+      }
+
+      // this.quickForm.controls.type.setValue(this.selectedPlace?.types[0].type);
     }
   }
 
