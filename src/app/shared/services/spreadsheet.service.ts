@@ -78,7 +78,7 @@ export class SpreadsheetService {
         console.log("Loading default data");
         this._snackBar.open(`Connecting to ${primarySpreadsheet.name} Spreadsheet`);
 
-        let data = await firstValueFrom(this._gigLoggerService.getSheetData(primarySpreadsheet.id));
+        let data = await firstValueFrom(await this._gigLoggerService.getSheetData(primarySpreadsheet.id));
         this._snackBar.open("Loading Primary Spreadsheet Data");
         await this._gigLoggerService.loadData(<ISheet>data);
         this._snackBar.open("Loaded Primary Spreadsheet Data");
@@ -91,9 +91,11 @@ export class SpreadsheetService {
     public async appendSpreadsheetData() {
         // Append secondary spreadsheets.
         let secondarySpreadsheets = (await this.getSpreadsheets()).filter(x => x.default !== "true");
+        console.log(secondarySpreadsheets.length);
         secondarySpreadsheets.forEach(async secondarySpreadsheet => {
+            console.log(secondarySpreadsheet.name);
             this._snackBar.open(`Connecting to ${secondarySpreadsheet.name} Spreadsheet`);
-            let data = await firstValueFrom(this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
+            let data = await firstValueFrom(await this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
             this._snackBar.open("Loading Secondary Spreadsheet Data");
             await this._gigLoggerService.appendData(<ISheet>data);
             this._snackBar.open("Loaded Secondary Spreadsheet Data");
