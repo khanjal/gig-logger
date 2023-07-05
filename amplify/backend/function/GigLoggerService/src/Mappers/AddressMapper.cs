@@ -24,7 +24,7 @@ public static class AddressMapper
             {
                 Id = id,
                 Address = HeaderParser.GetStringValue("Address", value, headers),
-                Visits = HeaderParser.GetStringValue("Visits", value, headers),
+                Visits = HeaderParser.GetIntValue("Visits", value, headers),
                 Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
                 Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
                 Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
