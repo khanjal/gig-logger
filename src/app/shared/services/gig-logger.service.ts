@@ -17,6 +17,9 @@ import { RegionService } from "./region.service";
 import { TypeService } from "./type.service";
 import { environment } from "src/environments/environment";
 import { map } from "rxjs";
+import { IType } from "@interfaces/type.interface";
+import { IAddress } from "@interfaces/address.interface";
+import { AddressHelper } from "@helpers/address.helper";
 
 @Injectable()
 export class GigLoggerService {
@@ -36,12 +39,12 @@ export class GigLoggerService {
         private _weekdayService: WeekdayService
     ) {}
 
-    public getSheetData(sheetId: string) {
+    public async getSheetData(sheetId: string) {
         console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
-    public getSecondarySheetData(sheetId: string) {
+    public async getSecondarySheetData(sheetId: string) {
         console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
     }
@@ -244,30 +247,48 @@ export class GigLoggerService {
 
         places.forEach(async place => {
             // Addresses
-            let placeAddresses = trips.filter(x => x.place === place.place && x.startAddress);
+            let tripPlaceAddresses = trips.filter(x => x.place === place.place && x.startAddress);
 
-            placeAddresses.forEach(placeAddress => {
+            tripPlaceAddresses.forEach(tripPlaceAddress => {
                 if (!place.addresses) {
                     place.addresses = [];
                 }
 
-                place.addresses.push(placeAddress.startAddress);
+                let placeAddress = place.addresses.find(x => x.address === tripPlaceAddress.startAddress);
+
+                if (placeAddress) {
+                    placeAddress.visits++;
+                }
+                else {
+                    let address: IAddress = {} as IAddress;
+                    address.address = tripPlaceAddress.startAddress;
+                    address.visits = 1;
+                    place.addresses.push(address);    
+                }
             });
 
-            place.addresses = [...new Set(place.addresses)].sort();
+            place.addresses = AddressHelper.sortAddressAsc(place.addresses);
 
             // Types
-            let placeTypes = trips.filter(x => x.place === place.place && x.type);
+            let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);
 
-            placeTypes.forEach(placeType => {
+            tripPlaceTypes.forEach(tripPlaceType => {
                 if (!place.types) {
                     place.types = [];
                 }
+                
+                let placeType = place.types.find(x => x.type === tripPlaceType.type);
 
-                place.types.push(placeType.type);
+                if (placeType) {
+                    placeType.visits++;
+                }
+                else {
+                    let type: IType = {} as IType;
+                    type.type = tripPlaceType.type;
+                    type.visits = 1;
+                    place.types.push(type);    
+                }
             });
-
-            place.types = [...new Set(place.types)].sort();
 
             await this._placeService.update(place);
         });
