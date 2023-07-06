@@ -3,23 +3,9 @@ import { NumberHelper } from "./number.helper";
 import { IAddress } from "@interfaces/address.interface";
 
 export class AddressHelper {
-    static getShortAddress(address: string): string {
-        if (address) {
-            let addressArray = address.split(", ");
-            let addressString = addressArray[0];
-
-            if (addressArray[1]) {
-                addressString = `${ addressString }, ${ addressArray[1] }`;
-            }
-            return addressString;
-        }
-        
-        return "";
-    }
-
-    static getPlaceAddress(place: string, address: string): string {
-        if (!place || !address) {
-            return address;
+    static getShortAddress(address: string, place: string = "", length: number = 2): string {
+        if (!address) {
+            return "";
         }
 
         let addressArray = address.split(", ");
@@ -28,12 +14,11 @@ export class AddressHelper {
             return address;
         }
 
-        if (addressArray[0].toLocaleLowerCase() === place.toLocaleLowerCase())
-        {
-            return addressArray.slice(1, addressArray.length).join(", ");
+        if (place && addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase())) {
+            return addressArray.slice(1, length).join(", ");
         }
 
-        return address;
+        return addressArray.slice(0, length+1).join(", ");
     }
 
     static sortAddressAsc(addresses: IAddress[]): IAddress[] {
