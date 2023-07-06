@@ -291,9 +291,4 @@ export class QuickComponent implements OnInit {
     this.reloading = false;
     this._viewportScroller.scrollToAnchor("addTrip");
   }
-
-  public getShortAddress(address: string): string {
-    return AddressHelper.getShortAddress(address);
-  }
-
 }
