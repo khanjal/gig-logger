@@ -534,10 +534,6 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
   }
 
-  public getPlaceAddress(address: string) {
-    return AddressHelper.getPlaceAddress(this.quickForm.value.place ?? "", address);
-  }
-
   private async _filterAddress(value: string): Promise<IAddress[]> {
     let addresses = await this._addressService.getRemoteAddresses();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
