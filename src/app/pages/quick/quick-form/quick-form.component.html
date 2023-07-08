@@ -231,7 +231,7 @@
             Unknown Address ({{delivery.visits}})
         </div>
         <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
-            {{ delivery.address | shortaddress }} ({{ delivery?.visits }})
+            {{ delivery.address | shortaddress:'':1 }} ({{ delivery?.visits }})
             
         </a>
         <div class="note" *ngIf="delivery.units.length > 0">
