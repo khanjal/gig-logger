@@ -217,7 +217,7 @@
             #startAddress />
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
-                {{ address.address | shortaddress:'':1 }} ({{ address.visits }})
+                {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
             </mat-option>
         </mat-autocomplete>
         <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
@@ -269,7 +269,7 @@
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
                 <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
-                    {{ address.address | shortaddress:'':1 }} ({{ address.visits }})
+                    {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
