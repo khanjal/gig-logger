@@ -31,7 +31,7 @@
                 </ng-container>
                 <ng-container matColumnDef="address">
                     <mat-header-cell *matHeaderCellDef> Address </mat-header-cell>
-                    <mat-cell *matCellDef="let trip"> {{trip.endAddress | truncate:20}} </mat-cell>
+                    <mat-cell *matCellDef="let trip"> {{trip.endAddress | shortaddress | truncate:20}} </mat-cell>
                 </ng-container>
 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
