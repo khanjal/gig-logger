@@ -7,7 +7,7 @@
             <mat-table [dataSource]="tripGroup.trips">
                 <ng-container matColumnDef="service">
                     <mat-header-cell *matHeaderCellDef> Service </mat-header-cell>
-                    <mat-cell *matCellDef="let trip"> {{trip.service}}{{ trip.number ? '-' : ''}}{{ trip.number}} </mat-cell>
+                    <mat-cell *matCellDef="let trip"> {{trip.service}}-{{ trip.number ? trip.number : 0}} </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="place">
                     <mat-header-cell *matHeaderCellDef> Place </mat-header-cell>
@@ -31,7 +31,7 @@
                 </ng-container>
                 <ng-container matColumnDef="address">
                     <mat-header-cell *matHeaderCellDef> Address </mat-header-cell>
-                    <mat-cell *matCellDef="let trip"> {{trip.endAddress | truncate:20}} </mat-cell>
+                    <mat-cell *matCellDef="let trip"> {{trip.endAddress | shortaddress | truncate:20}} </mat-cell>
                 </ng-container>
 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
 import { AddressHelper } from '@helpers/address.helper';
-import { GoogleSheetService } from '@services/googleSheet.service';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
@@ -17,7 +15,8 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ViewportScroller } from '@angular/common';
-import { TimerService } from '@services/timer.service';
+import { GigLoggerService } from '@services/gig-logger.service';
+import { ISheet } from '@interfaces/sheet.interface';
 
 @Component({
   selector: 'app-quick',
@@ -41,11 +40,9 @@ export class QuickComponent implements OnInit {
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
-      private _router: Router, 
-      private _googleService: GoogleSheetService,
+      private _gigLoggerService: GigLoggerService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
-      private _timerService: TimerService,
       private _tripService: TripService,
       private _weekdayService: WeekdayService,
       private _viewportScroller: ViewportScroller
@@ -57,26 +54,45 @@ export class QuickComponent implements OnInit {
   }
 
   async saveAllTrips() {
+    if (!this.defaultSheet?.id) {
+      this._snackBar.open("Please Reload Manually");
+      return;
+    }
+
     console.time("saving");
     console.log('Saving...');
     
     this.saving = true;
-    await this._googleService.commitUnsavedShifts();
-    await this._googleService.commitUnsavedTrips();
-    await this.reload();
-    this.saving = false;
+    // await this._googleService.commitUnsavedShifts();
+    // await this._googleService.commitUnsavedTrips();
+    let sheetData = {} as ISheet;
+    sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
+    sheetData.trips = await this._tripService.getUnsavedLocalTrips();
 
-    console.log('Saved!');
-    console.timeEnd("saving");
+    (await this._gigLoggerService.warmupLambda(this.defaultSheet.id)).subscribe(async () => { // Warmup lambda to use less time to save.
+      (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet!.id))
+        .subscribe(async () => {
+          await this._tripService.saveUnsavedTrips();
+          await this._shiftService.saveUnsavedShifts();
 
-    this._viewportScroller.scrollToAnchor("savedLocalTrips");
-    this._snackBar.open("Trip(s) Saved to Spreadsheet");
+          console.log('Saved!');
+          console.timeEnd("saving");
+
+          this._viewportScroller.scrollToAnchor("savedLocalTrips");
+          this._snackBar.open("Trip(s) Saved to Spreadsheet");
+
+          await this._sheetService.loadSpreadsheetData();
+          await this.load();
+          this.saving = false;
+        });
+      }
+    );
   }
 
   public async load() {
     this.sheetTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)));
     this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
-    this.savedTrips = (await this._tripService.queryLocalTrips("saved", "true")).reverse();
+    this.savedTrips = (await this._tripService.getSavedLocalTrips()).reverse();
 
     // console.log(this.form);
 
@@ -86,7 +102,7 @@ export class QuickComponent implements OnInit {
 
   async saveLocalTrip(trip: ITrip) {
     this.saving = true;
-    await this._googleService.commitUnsavedTrips();
+    // await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
   }
@@ -207,10 +223,12 @@ export class QuickComponent implements OnInit {
     let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
     if (shift) {
       shift.end = dropOffTime;
+      shift.time = DateHelper.getDuration(shift.start, shift.end);
       await this._shiftService.updateLocalShift(shift);
     }
 
     trip.dropoffTime = dropOffTime;
+    trip.duration = DateHelper.getDuration(trip.pickupTime, trip.dropoffTime);
     await this._tripService.updateLocalTrip(trip);
   }
 
@@ -235,12 +253,12 @@ export class QuickComponent implements OnInit {
   }
 
   async clearSavedLocalData() {
-    let savedShifts = await this._shiftService.queryLocalShifts("saved", "true");
+    let savedShifts = await this._shiftService.getSavedLocalShifts();
     savedShifts.forEach(shift => {
       this._shiftService.deleteLocal(shift.id!);
     });
 
-    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    let savedTrips = await this._tripService.getSavedLocalTrips();
     savedTrips.forEach(trip => {
       this._tripService.deleteLocal(trip.id!);
     });
@@ -249,10 +267,10 @@ export class QuickComponent implements OnInit {
   }
 
   async unsaveLocalData() {
-    let savedTrips = await this._tripService.queryLocalTrips("saved", "true");
+    let savedTrips = await this._tripService.getSavedLocalTrips();
 
     savedTrips.forEach(async trip => {
-      trip.saved = "false";
+      trip.saved = false;
       await this._tripService.updateLocalTrip(trip);
     });
 
@@ -260,20 +278,17 @@ export class QuickComponent implements OnInit {
   }
 
   async reload() {
-    this.reloading = true;
-    await this._googleService.loadRemoteData();
-    await this._googleService.loadSecondarySheetData();
-    await this._timerService.delay(15000); // TODO: Find a better solution to stop this from continuing when it's not yet done.
+    let sheetId = this.defaultSheet?.id;
+    if (!sheetId) {
+      return;
+    }
 
-    console.log("Done");
+    this.reloading = true;
+
+    await this._sheetService.loadSpreadsheetData();
     await this.load();
+
     this.reloading = false;
     this._viewportScroller.scrollToAnchor("addTrip");
-    // window.location.reload();
   }
-
-  public getShortAddress(address: string): string {
-    return AddressHelper.getShortAddress(address);
-  }
-
 }
