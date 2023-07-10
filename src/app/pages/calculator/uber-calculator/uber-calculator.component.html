@@ -1,0 +1,36 @@
+<h2>Uber</h2>
+<form class="uber-form" [formGroup]="uberForm">
+    <h3>Paid To You</h3>
+    <mat-form-field class="field-width" appearance="outline">
+        <mat-label>Paid Fare</mat-label>
+        <input matInput type="number" name="paidFare" placeholder="14.2" formControlName="paidFare" value="" required>
+    </mat-form-field>
+    <mat-form-field  class="field-width" appearance="outline">
+        <mat-label>Paid Promotion</mat-label>
+        <input matInput type="number" name="paidPromotion" placeholder=".82" formControlName="paidPromotion" value="">
+    </mat-form-field>
+
+    <h3>Paid To Uber</h3>
+    <mat-form-field class="field-width" appearance="outline">
+        <mat-label>Cust 1 Service Fee</mat-label>
+        <input matInput type="number" name="customer1Price" placeholder="10.98" formControlName="customer1Price" value="" required>
+    </mat-form-field>
+
+    <mat-form-field class="field-width" appearance="outline">
+        <mat-label>Cust 2 Service Fee</mat-label>
+        <input matInput type="number" name="customer2Price" placeholder="6.89" formControlName="customer2Price" value="" required>
+    </mat-form-field>
+</form>
+
+<span *ngIf="customer1Fare">Customer 1 
+    <p>Ratio: {{customer1Ratio | percent}} Pay: {{customer1Fare | currency}} Bonus: {{customer1Boost | currency}}</p>
+</span>
+
+<span *ngIf="customer2Fare">Customer 2 
+    <p>Ratio: {{customer2Ratio | percent}} Pay: {{customer2Fare | currency}} Bonus: {{customer2Boost | currency}}</p>
+</span>
+
+<div class="row-flex">
+    <button mat-stroked-button color="primary" type="button" (click)="calculate()" ><mat-icon>input</mat-icon> Calculate</button>
+    <button mat-stroked-button color="warn" type="button" (click)="reset()"><mat-icon>refresh</mat-icon> Reset</button>
+</div>

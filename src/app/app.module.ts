@@ -8,7 +8,6 @@ import { PagesModule } from './pages/pages.module';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
-import { GoogleSheetService } from '@services/googleSheet.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
 import { AddressService } from '@services/address.service';
@@ -19,6 +18,9 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { WeekdayService } from '@services/weekday.service';
 import { TimerService } from '@services/timer.service';
 import { DeliveryService } from '@services/delivery.service';
+import { GigLoggerService } from '@services/gig-logger.service';
+import { RegionService } from '@services/region.service';
+import { TypeService } from '@services/type.service';
 
 @NgModule({
   declarations: [
@@ -37,13 +39,15 @@ import { DeliveryService } from '@services/delivery.service';
     AddressService,
     DeliveryService,
     NameService,
-    GoogleSheetService,
+    GigLoggerService,
     PlaceService,
+    RegionService,
     ServiceService,
     ShiftService,
     SpreadsheetService,
     TimerService,
     TripService,
+    TypeService,
     WeekdayService
   ],
   bootstrap: [AppComponent]

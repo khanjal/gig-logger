@@ -1,10 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { GoogleSheetService } from '@services/googleSheet.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { TimerService } from '@services/timer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GigLoggerService } from '@services/gig-logger.service';
 
 @Component({
   selector: 'app-setup',
@@ -18,10 +18,11 @@ export class SetupComponent {
   reloading: boolean = false;
   setting: boolean = false;
   spreadsheets: ISpreadsheet[] | undefined;
+  defaultSheet: ISpreadsheet | undefined;
 
   constructor(
     private _snackBar: MatSnackBar,
-    private _googleSheetService: GoogleSheetService,
+    private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService,
     private _timerService: TimerService
   ) { }
@@ -32,13 +33,20 @@ export class SetupComponent {
 
   public async load() {
     this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
+    this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
   }
 
   public async reload() {
+    if (!this.defaultSheet?.id) {
+      return;
+    }
+
     this.reloading = true;
-    await this._googleSheetService.loadRemoteData();
+    await this._spreadsheetService.loadSpreadsheetData();
     this.reloading = false;
   }
+
+
 
   public async setDefault(spreadsheet: ISpreadsheet) {
     this.setting = true;
@@ -95,17 +103,18 @@ export class SetupComponent {
       await this._spreadsheetService.update(spreadsheet);
     });
 
-    // Load default spreadsheet data.
-    await this._googleSheetService.loadRemoteData();
-    
-    //await this._timerService.delay(10000);
+    if (!this.defaultSheet?.id) {
+      this._snackBar.open("Please Reload Manually");
+      return;
+    }
+
+    this._snackBar.open("Connecting to Spreadsheet");
+
+    await this.reload();
+
     this.deleting = false;
     this.reloading = false;
     this.setting = false;
-
-    this._snackBar.open("Databases and Spreadsheet(s) Loaded");
-
-    await this.load();
   }
 
   public async deleteLocalData() {

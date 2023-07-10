@@ -59,7 +59,7 @@ export class ShiftHelper {
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
         shift.date = DateHelper.getDateString();
         shift.number = shiftNumber ?? 0;
-        shift.saved = "false";
+        shift.saved = false;
         shift.start = new Date().toLocaleTimeString();
         shift.total = 0;
         shift.trips = 0;
@@ -90,7 +90,7 @@ export class ShiftHelper {
             shift.key = row['Key'];
             shift.date = row['Date'];
             shift.end = row['End'];
-            shift.saved = "true";
+            shift.saved = true;
             shift.service = row['Service'];
             shift.number = NumberHelper.getNumberFromString(row['#']);
             shift.start = row['Start'];
