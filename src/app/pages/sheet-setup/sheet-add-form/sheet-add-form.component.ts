@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { GoogleSheetService } from 'src/app/shared/services/googleSheet.service';
 
 @Component({
   selector: 'sheet-add-form',
@@ -13,13 +15,15 @@ export class SheetAddFormComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   
   sheetForm = new FormGroup({
-    sheetId: new FormControl('')
+    sheetId: new FormControl(''),
+    sheetName: new FormControl('')
   });
 
   saving: boolean = false;
 
   constructor(
-    private _googleService: GoogleSheetService,
+    private _snackBar: MatSnackBar,
+    private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService
   ) { }
 
@@ -45,19 +49,23 @@ export class SheetAddFormComponent {
     // console.log(spreadsheetId);
     await this.setupForm(spreadsheetId);
 
-    this.saving = false;
     this.sheetForm.reset();
     this.parentReload.emit();
   }
 
   public async setupForm(id: string) {
-    let sheetTitle = await this._googleService.getSheetTitle(id);
+    // let sheetTitle = await this._googleService.getSheetTitle(id);
+    let sheetName = this.sheetForm.value.sheetName;
 
-    if(sheetTitle != "") {
-      console.log(sheetTitle);
+    if (!sheetName) {
+      sheetName = `${id.substring(0, 10)}...`;
+    }
+  
+    if(sheetName != "") {
+      console.log(sheetName);
       let spreadsheet = {} as ISpreadsheet;
       spreadsheet.id = id;
-      spreadsheet.name = sheetTitle;
+      spreadsheet.name = sheetName;
       spreadsheet.default = "false";
 
       // Check for default spreadsheet
@@ -75,7 +83,25 @@ export class SheetAddFormComponent {
       
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
-        await this._googleService.loadRemoteData();
+        // await this._googleService.loadRemoteData();
+        this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
+        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
+            this._snackBar.open("Loading Primary Spreadsheet Data");
+            await this._gigLoggerService.loadData(<ISheet>data);
+            this._snackBar.open("Loaded Primary Spreadsheet Data");
+
+            this.saving = false;
+          }
+        );
+      }
+      else {
+            this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
+            (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
+              this._snackBar.open("Loading Secondary Spreadsheet Data");
+              await this._gigLoggerService.appendData(<ISheet>data);
+              this._snackBar.open("Loaded Secondary Spreadsheet Data");
+            });
+        this.saving = false;
       }
     }
     else {

@@ -8,6 +8,7 @@ export interface ITrip extends IAmount {
     endUnit: string;
     endOdometer: number;
     dropoffTime: string;
+    duration: string;
     key: string;
     name: string;
     note: string;
@@ -15,8 +16,10 @@ export interface ITrip extends IAmount {
     orderNumber: string;
     pickupTime: string;
     place: string;
-    saved: string;
+    region: string;
+    saved: boolean;
     service: string;
     startAddress: string;
     startOdometer: number;
+    type: string;
 }

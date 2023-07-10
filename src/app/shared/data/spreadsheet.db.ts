@@ -3,9 +3,11 @@ import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IRating } from '@interfaces/rating.interface';
+import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { IType } from '@interfaces/type.interface';
 import { IWeekday } from '@interfaces/weekday.interface';
 import Dexie, { Table } from 'dexie';
 
@@ -17,9 +19,11 @@ export class AppDB extends Dexie {
     names!: Table<IName, number>;
     places!: Table<IPlace, number>;
     ratings!: Table<IRating, number>;
+    regions!: Table<IRegion, number>;
     services!: Table<IService, number>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
+    types!: Table<IType, number>;
     weekdays!: Table<IWeekday, number>;
 
     constructor() {
@@ -30,9 +34,11 @@ export class AppDB extends Dexie {
             names: '++id, name',
             places: '++id, place',
             ratings: '++id, date, time',
+            regions: '++id, region',
             services: '++id, service',
             shifts: '++id, date, service, number, key, [date+service+number]',
             trips: '++id, date, service, number, key, [date+service+number]',
+            types: '++id, type',
             weekdays: '++id, day'
         });
     }

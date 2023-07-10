@@ -4,11 +4,14 @@ export interface IShift extends IAmount {
     id?: number;
     date: string;
     distance: number;
+    active: string;
     end: string;
     key: string;
-    saved: string;
+    region: string;
+    saved: boolean;
     service: string;
     number: number;
     start: string;
+    time: string;
     trips: number;
 }
