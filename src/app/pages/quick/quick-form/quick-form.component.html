@@ -200,7 +200,7 @@
     <!-- Pickup Address List -->
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedPlace.addresses">
-            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place:3 }}</a> ({{ address.visits }})
+            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place }}</a> ({{ address.visits }})
         </div>
     </div>
 
@@ -234,23 +234,23 @@
             {{ delivery.address | shortaddress:'':1 }} ({{ delivery?.visits }})
             
         </a>
-        <div class="note" *ngIf="delivery.units.length > 0">
-            <span>{{delivery.units.join(", ")}}</span>
+        <div class="tab" *ngIf="delivery.units.length > 0">
+            <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
         </div>
-        <div class="note" *ngIf="delivery.services.length > 0">
+        <div class="tab" *ngIf="delivery.services.length > 0">
             <span>{{delivery.services.join(", ")}}</span>
         </div>
-        <div class="note" *ngIf="delivery.places.length > 0">
+        <div class="tab" *ngIf="delivery.places.length > 0">
             <span>{{delivery.places.join(", ")}}</span>
         </div>
-        <div class="note" *ngIf="delivery.dates.length > 0">
+        <div class="tab" *ngIf="delivery.dates.length > 0">
             <span class="margin-right"><b>First</b> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><b>Last</b> {{delivery.dates.slice(-1)}}</span>
         </div>
-        <div class="note">
-            <span class="bold">Pay:</span> {{delivery.pay | currency}} <span class="bold">Tip:</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash:</span> {{delivery.cash | currency}}</span>
+        <div class="tab">
+            <span class="bold">Pay</span> {{delivery.pay | currency}} <span class="bold">Tip</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash</span> {{delivery.cash | currency}}</span>
         </div>
-        <div class="note-line" *ngIf="delivery.notes.length > 0">
-            <span class="note-line" *ngFor="let note of delivery.notes">"{{note.text}}" - {{note.date}}</span>
+        <div class="tab-itallic" *ngIf="delivery.notes.length > 0">
+            <span class="tab-itallic" *ngFor="let note of delivery.notes">"{{note.text}}" - {{note.date}}</span>
         </div>
     </div>
 
@@ -290,27 +290,27 @@
             </a>
             <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
         </div>
-        <div class="note" *ngIf="delivery.units.length > 0">
-            <span>{{delivery.units.join(", ")}}</span>
+        <div class="tab" *ngIf="delivery.units.length > 0">
+            <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
         </div>
-        <div class="note" *ngIf="delivery.services.length > 0">
+        <div class="tab" *ngIf="delivery.services.length > 0">
             <span>{{delivery.services.join(", ")}}</span>
         </div>
-        <div class="note" *ngIf="delivery.places.length > 0">
+        <div class="tab" *ngIf="delivery.places.length > 0">
             <span>{{delivery.places.join(", ")}}</span>
         </div>
-        <div class="note" *ngIf="delivery.dates.length > 0">
+        <div class="tab" *ngIf="delivery.dates.length > 0">
             <span class="margin-right"><b>First</b> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><b>Last</b> {{delivery.dates.slice(-1)}}</span>
         </div>
-        <div class="note">
-            <span class="bold">Pay:</span> {{delivery.pay | currency}} 
-            <span class="bold">Tip:</span> {{delivery.tip | currency}} 
+        <div class="tab">
+            <span class="bold">Pay</span> {{delivery.pay | currency}} 
+            <span class="bold">Tip</span> {{delivery.tip | currency}} 
             <span *ngIf="delivery.cash">
-                <span class="bold">Cash:</span> {{delivery.cash | currency}}
+                <span class="bold">Cash</span> {{delivery.cash | currency}}
             </span>
         </div>
-        <div class="note-line" *ngFor="let note of delivery.notes">
-            <span class="note-line" *ngIf="note">"{{note.text}}" - {{note.date}}</span>
+        <div class="tab" *ngFor="let note of delivery.notes">
+            <span class="tab-itallic" *ngIf="note">"{{note.text}}" - {{note.date}}</span>
         </div>
     </div>
 
