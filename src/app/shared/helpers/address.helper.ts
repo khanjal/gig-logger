@@ -14,8 +14,10 @@ export class AddressHelper {
             return this.abbrvAddress(address);
         }
 
-        if (place && addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase())) {
-            return this.abbrvAddress(addressArray.slice(1, length).join(", "));
+        if (place && 
+            (addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase()) || 
+            (place.toLocaleLowerCase().startsWith(addressArray[0].toLocaleLowerCase())))) {
+            return this.abbrvAddress(addressArray.slice(1, length+1).join(", "));
         }
 
         return this.abbrvAddress(addressArray.slice(0, length+1).join(", "));
@@ -84,6 +86,21 @@ export class AddressHelper {
         });
 
         return abbreviatedAddress;
+    }
+
+    static abbrvDirection(addressPart: string): string {
+        switch (addressPart.toLowerCase()) {
+            case "north":
+                return 'N';
+            case "east":
+                return 'E';
+            case "south":
+                return 'S';
+            case "west":
+                return 'W';
+            default:
+                return addressPart;
+        }
     }
 
     static sortAddressAsc(addresses: IAddress[]): IAddress[] {
