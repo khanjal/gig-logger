@@ -200,7 +200,7 @@
     <!-- Pickup Address List -->
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedPlace.addresses">
-            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place:3 }}</a> ({{ address.visits }})
+            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place }}</a> ({{ address.visits }})
         </div>
     </div>
 
