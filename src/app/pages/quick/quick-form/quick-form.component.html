@@ -200,7 +200,7 @@
     <!-- Pickup Address List -->
     <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
         <div *ngFor="let address of selectedPlace.addresses">
-            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place }}</a> ({{ address.visits }})
+            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.visits }})
         </div>
     </div>
 
@@ -225,13 +225,13 @@
         </button>
     </mat-form-field>
 
-    <!-- Name List/Notes -->
+    <!-- Address List/Notes -->
     <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
         <div class="title name" *ngIf="!delivery.address">
             Unknown Address ({{delivery.visits}})
         </div>
         <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
-            {{ delivery.address | shortaddress:'':1 }} ({{ delivery?.visits }})
+            {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
             
         </a>
         <div class="tab" *ngIf="delivery.units.length > 0">
@@ -278,14 +278,14 @@
         </button>
     </mat-form-field>
 
-    <!-- Address List/Notes -->
+    <!-- Name List/Notes -->
     <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
         <div class="bold">
             <div class="title name" *ngIf="!delivery.name">
                 Unknown Name ({{delivery.visits}})
             </div>
             <a mat-button color="primary" class="address-link" [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''" (mousedown)="selectName(delivery.name)" *ngIf="delivery.name">
-                {{ delivery.name }} ({{ delivery.visits }})
+                {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
                 
             </a>
             <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
