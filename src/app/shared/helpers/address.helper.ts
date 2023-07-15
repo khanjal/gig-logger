@@ -1,5 +1,5 @@
-import { NumberHelper } from "./number.helper";
 import { IAddress } from "@interfaces/address.interface";
+import { StringHelper } from "./string.helper";
 
 export class AddressHelper {
     static getShortAddress(address: string, place: string = "", length: number = 2): string {
@@ -7,19 +7,30 @@ export class AddressHelper {
             return "";
         }
 
+        // Abbreviate address.
+        address = this.abbrvAddress(address);
+
         let addressArray = address.split(", ");
 
+        // If there's only one address element just return it.
         if (addressArray.length === 1) {
-            return this.abbrvAddress(address);
+            return address;
         }
 
+        // Check if first element starts with place name.
         if (place && 
             (addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase()) || 
-            (place.toLocaleLowerCase().startsWith(addressArray[0].toLocaleLowerCase())))) {
-            return this.abbrvAddress(addressArray.slice(1, length+1).join(", "));
+            (place.toLocaleLowerCase().startsWith(addressArray[0].toLocaleLowerCase())))) 
+        {
+            return addressArray.slice(1, length+1).join(", ");
         }
 
-        return this.abbrvAddress(addressArray.slice(0, length+1).join(", "));
+        // Truncate the first element to 10 since it's probably a place name if more than 3 elements.
+        if (length > 1) {
+            addressArray[0] = StringHelper.truncate(addressArray[0], 15);
+        }
+
+        return addressArray.slice(0, length+1).join(", ");
     }
 
     static abbrvAddress(address: string): string {
@@ -84,7 +95,7 @@ export class AddressHelper {
             }
         });
 
-        return abbreviatedAddress;
+        return abbreviatedAddress.trim();
     }
 
     static abbrvDirection(addressPart: string): string {
