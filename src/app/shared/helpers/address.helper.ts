@@ -1,4 +1,3 @@
-import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { NumberHelper } from "./number.helper";
 import { IAddress } from "@interfaces/address.interface";
 
@@ -105,40 +104,6 @@ export class AddressHelper {
 
     static sortAddressAsc(addresses: IAddress[]): IAddress[] {
         addresses.sort((a,b) => a.address.localeCompare(b.address));
-
-        return addresses;
-    }
-
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): IAddress[] {
-        let addresses: IAddress[] = [];
-
-        rows.forEach(row => {
-            // console.log(row);
-            // console.log(row.rowIndex);
-            let address: IAddress = {} as IAddress;
-            address.id = row.rowIndex;
-            address.address = row['Address'];
-            address.names =  [];
-            address.notes = [];
-            address.visits = NumberHelper.getNumberFromString(row['Visits']);
-
-            // Amount data
-            address.pay = NumberHelper.getNumberFromString(row['Pay']);
-            address.tip = NumberHelper.getNumberFromString(row['Tip']);
-            address.bonus = NumberHelper.getNumberFromString(row['Bonus']);
-            address.total = NumberHelper.getNumberFromString(row['Total']);
-            address.cash = NumberHelper.getNumberFromString(row['Cash']);
-
-            // console.log(addressModel);
-
-            if (address.address) {
-                addresses.push(address);
-            }
-            
-        });
-        // console.log(addresses);
-        console.log(addresses.length);
-        // console.log(addresses);
 
         return addresses;
     }
