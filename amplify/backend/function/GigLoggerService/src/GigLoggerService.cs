@@ -25,6 +25,9 @@ using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
 // How to use API Gateway stage variables to call specific Lambda alias?
 // https://www.youtube.com/watch?v=mwD5wiP1FJ8
 
+// How to add a sheet in google sheets API v4 in C#?
+// https://stackoverflow.com/questions/37623191/how-to-add-a-sheet-in-google-sheets-api-v4-in-c
+
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
