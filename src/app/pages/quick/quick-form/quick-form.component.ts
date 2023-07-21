@@ -3,6 +3,7 @@ import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NameHelper } from '@helpers/name.helper';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
@@ -536,13 +537,13 @@ export class QuickFormComponent implements OnInit {
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
     let addresses = await this._addressService.getRemoteAddresses();
-    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    addresses = AddressHelper.sortAddressAsc(addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase())));
     return (addresses).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
     let names = await this._nameService.getRemoteNames();
-    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    names = NameHelper.sortNameAsc(names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())));
 
     return (names).slice(0,100);
   }
