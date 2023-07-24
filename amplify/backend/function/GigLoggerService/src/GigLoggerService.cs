@@ -234,6 +234,10 @@ namespace GigLoggerService
 
             var data = GetSheetData(sheetEnum.DisplayName());
 
+            if (data == null) {
+                continue;
+            }
+
             // Check to make sure all fields exist for trips and shifts.
             switch (sheetEnum)
             {
@@ -320,7 +324,8 @@ namespace GigLoggerService
         }
         catch (System.Exception)
         {
-            _sheet.Errors.Add($"Failed to load sheet data");
+            // If something is wrong with the sheet run a check.
+            CheckSpreadSheet();
             return;
         }
         
@@ -346,7 +351,7 @@ namespace GigLoggerService
         }
         catch (System.Exception)
         {
-            _sheet.Errors.Add($"Failed to load {sheetRange}");
+            _sheet.Errors.Add($"Failed to find sheet: {sheetRange}");
             return null;
         }
 
