@@ -12,6 +12,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
+using System.Linq;
 
 // https://aws.amazon.com/blogs/developer/introducing-net-core-support-for-aws-amplify-backend-functions/
 // https://code-maze.com/google-sheets-api-with-net-core/
@@ -252,9 +253,10 @@ namespace GigLoggerService
 
     private void CheckSheetHeaders(IList<IList<object>> data, SheetModel sheetModel)
     {
+        // Console.Write(JsonSerializer.Serialize(data[0]));
         foreach (var sheetHeader in sheetModel.Headers)
         {
-            if(!data[0].Contains(sheetHeader.Name)) {
+            if(!data[0].Any(x => x.ToString().Trim() == sheetHeader.Name)) {
                 _sheet.Errors.Add($"Sheet {sheetModel.Name} missing {sheetHeader.Name}");
             }
         }
