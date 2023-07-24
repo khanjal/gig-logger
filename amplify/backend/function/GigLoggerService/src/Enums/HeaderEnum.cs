@@ -123,7 +123,7 @@ public enum HeaderEnum {
     [Description("O")]
     TimeOmit,
 
-    [Description("Begin")]
+    [Description("Start")]
     TimeStart,
 
     [Description("Time")]
