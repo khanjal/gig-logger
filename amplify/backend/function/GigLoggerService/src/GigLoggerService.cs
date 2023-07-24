@@ -231,9 +231,32 @@ namespace GigLoggerService
         {
             SheetEnum sheetEnum = (SheetEnum)Enum.Parse(typeof(SheetEnum), name);
 
-            GetSheetData(sheetEnum.DisplayName());
+            var data = GetSheetData(sheetEnum.DisplayName());
+
+            // Check to make sure all fields exist for trips and shifts.
+            switch (sheetEnum)
+            {
+                case SheetEnum.Shifts:
+                    CheckSheetHeaders(data, SheetHelper.GetShiftSheet());
+                    break;
+                case SheetEnum.Trips:
+                    CheckSheetHeaders(data, SheetHelper.GetTripSheet());
+                    break;
+                default:
+                    break;
+            }
 
             Console.WriteLine(name);
+        }
+    }
+
+    private void CheckSheetHeaders(IList<IList<object>> data, SheetModel sheetModel)
+    {
+        foreach (var sheetHeader in sheetModel.Headers)
+        {
+            if(!data[0].Contains(sheetHeader.Name)) {
+                _sheet.Errors.Add($"Sheet {sheetModel.Name} missing {sheetHeader.Name}");
+            }
         }
     }
 
