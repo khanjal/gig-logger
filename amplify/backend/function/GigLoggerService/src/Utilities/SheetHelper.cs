@@ -49,25 +49,6 @@ public static class SheetHelper {
         sheet.Headers.Add(new SheetHeaderModel{
             Name = HeaderEnum.Bonus.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.Bonus.DisplayName()}\",ISBLANK(A1:A), \"\",true,L1:L + SUMIF({SheetEnum.Trips.DisplayName()}!X:X,AG1:AG,{SheetEnum.Trips.DisplayName()}!K:K)))"});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.AddressStart.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.AddressEnd.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.OrderNumber.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Note.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{
-            Name = HeaderEnum.Region.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.Region.DisplayName()}\",ISBLANK($A:$A), \"\",true,IFERROR(VLOOKUP($X:$X,SORT(QUERY({SheetEnum.Shifts.DisplayName()}!O:AG,\"SELECT AG, O\"),2,true),2,0),\"\")))"});
-        sheet.Headers.Add(new SheetHeaderModel{
-            Name = HeaderEnum.Key.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.Key.DisplayName()}\",ISBLANK(B1:B), \"\",true,IF(ISBLANK(C1:C), A1:A & \"-0-\" & B1:B, A1:A & \"-\" & C1:C & \"-\" & B1:B)))"});
-        sheet.Headers.Add(new SheetHeaderModel{
-            Name = HeaderEnum.Day.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.Day.DisplayName()}\",ISBLANK(A1:A), \"\",true,DAY(A:A)))"});
-        sheet.Headers.Add(new SheetHeaderModel{
-            Name = HeaderEnum.Month.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.Month.DisplayName()}\",ISBLANK(A1:A), \"\",true,MONTH(A:A)))"});
-        sheet.Headers.Add(new SheetHeaderModel{
-            Name = HeaderEnum.Year.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.Year.DisplayName()}\",ISBLANK(A1:A), \"\",true,YEAR(A:A)))"});
 
         return sheet;
     }
