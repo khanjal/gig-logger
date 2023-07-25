@@ -1,6 +1,16 @@
 using System.ComponentModel;
 
 public enum SheetEnum {
+
+    // Core
+
+    [Description("Shifts")]
+    Shifts,
+
+    [Description("Trips")]
+    Trips,
+
+    // Ancilary
     [Description("Addresses")]
     Addresses,
 
@@ -16,15 +26,23 @@ public enum SheetEnum {
     [Description("Services")]
     Services,
 
-    [Description("Shifts")]
-    Shifts,
-
-    [Description("Trips")]
-    Trips,
-
     [Description("Types")]
     Types,
 
+    // Stats
+
+    [Description("Daily")]
+    Daily,
+
+    [Description("Monthly")]
+    Monthly,
+
     [Description("Weekdays")]
     Weekdays,
+
+    [Description("Weekly")]
+    Weekly,
+
+    [Description("Yearly")]
+    Yearly,
 }
