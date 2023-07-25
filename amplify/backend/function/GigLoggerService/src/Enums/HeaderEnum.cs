@@ -1,6 +1,9 @@
 using System.ComponentModel;
 
 public enum HeaderEnum {
+    [Description("Address")]
+    Address,
+
     [Description("Start Address")]
     AddressStart,
 
@@ -95,25 +98,6 @@ public enum HeaderEnum {
     [Description("Service")]
     Service,
 
-    [Description("S Bonus")]
-    ShiftBonus,
-
-    
-    [Description("S Cash")]
-    ShiftCash,
-
-    [Description("S Miles")]
-    ShiftDistance,
-
-    [Description("S Pay")]
-    ShiftPay,
-
-    [Description("S Tips")]
-    ShiftTip,
-
-    [Description("S Trip")]
-    ShiftTrips,
-
     [Description("Active")]
     TimeActive,
 
@@ -137,6 +121,31 @@ public enum HeaderEnum {
 
     [Description("Total")]
     Total,
+
+    [Description("T Bonus")]
+    TotalBonus,
+
+    
+    [Description("T Cash")]
+    TotalCash,
+
+    [Description("T Dist")]
+    TotalDistance,
+
+    [Description("T Pay")]
+    TotalPay,
+
+    [Description("T Time")]
+    TotalTime,
+
+    [Description("T Active")]
+    TotalTimeActive,
+
+    [Description("T Tips")]
+    TotalTip,
+
+    [Description("T Trips")]
+    TotalTrips,
 
     [Description("Trips")]
     Trips,
