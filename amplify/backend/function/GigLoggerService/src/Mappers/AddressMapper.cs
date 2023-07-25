@@ -23,14 +23,14 @@ public static class AddressMapper
             AddressEntity address = new AddressEntity()
             {
                 Id = id,
-                Address = HeaderParser.GetStringValue("Address", value, headers),
-                Visits = HeaderParser.GetIntValue("Visits", value, headers),
-                Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
-                Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
-                Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
-                Total = HeaderParser.GetDecimalValue("Total", value, headers),
-                Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
-                Miles = HeaderParser.GetDecimalValue("Miles", value, headers),
+                Address = HeaderParser.GetStringValue(HeaderEnum.Address.DisplayName(), value, headers),
+                Visits = HeaderParser.GetIntValue(HeaderEnum.Visits.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.Pay.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.Tip.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.Bonus.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.Total.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.Cash.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.Distance.DisplayName(), value, headers),
             };
             
             addresses.Add(address);

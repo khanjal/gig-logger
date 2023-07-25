@@ -24,11 +24,11 @@ public static class SheetHelper {
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TimeActive.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TimeTotal.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TimeOmit.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.ShiftTrips.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.ShiftPay.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.ShiftTip.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.ShiftBonus.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.ShiftCash.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Trips.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Pay.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Tip.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Bonus.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Cash.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Region.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Note.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{
@@ -68,7 +68,7 @@ public static class SheetHelper {
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Dropoff.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Duration.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Pay.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Tip.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Tips.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.Bonus.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{
             Name = HeaderEnum.Total.DisplayName(), 

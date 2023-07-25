@@ -86,7 +86,7 @@ public static class ShiftMapper
                     case "Pay":
                         objectList.Add(shift.Pay);
                         break;
-                    case "Tip":
+                    case "Tips":
                         objectList.Add(shift.Tip);
                         break;
                     case "Bonus":

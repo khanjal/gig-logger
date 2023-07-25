@@ -12,5 +12,5 @@ public class NameEntity : AmountEntity
     public int Visits { get; set; }
 
     [JsonPropertyName("distance")]
-    public int Miles { get; set; }
+    public int Distance { get; set; }
 }
