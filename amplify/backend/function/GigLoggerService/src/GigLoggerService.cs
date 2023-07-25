@@ -322,10 +322,11 @@ namespace GigLoggerService
             var googleResponse = googleRequest.Execute();
             matchedValues = googleResponse.ValueRanges;
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
-            // If something is wrong with the sheet run a check.
-            CheckSpreadSheet();
+            Console.WriteLine(ex);
+            var message = ex.Message.Split(". ");
+            _sheet.Errors.Add($"{message.LastOrDefault().Trim()}");
             return;
         }
         
