@@ -12,7 +12,7 @@ public class WeekdayEntity : AmountEntity
     public int Trips { get; set; }
 
     [JsonPropertyName("distance")]
-    public decimal Miles { get; set; }
+    public decimal Distance { get; set; }
 
     [JsonPropertyName("days")]
     public int Days { get; set; }
