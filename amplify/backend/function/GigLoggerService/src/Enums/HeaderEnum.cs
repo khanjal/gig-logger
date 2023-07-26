@@ -13,8 +13,17 @@ public enum HeaderEnum {
     [Description("Curr Amt")]
     AmountCurrent,
 
+    [Description("Prev Amt")]
+    AmountPrevious,
+
     [Description("$/Day")]
     AmountPerDay,
+
+    [Description("$/Mile")]
+    AmountPerDistance,
+
+    [Description("$/Prev")]
+    AmountPerPreviousDay,
 
     [Description("$/Time")]
     AmountPerTime,
@@ -124,13 +133,15 @@ public enum HeaderEnum {
 
     [Description("T Bonus")]
     TotalBonus,
-
     
     [Description("T Cash")]
     TotalCash,
 
     [Description("T Dist")]
     TotalDistance,
+
+    [Description("G Total")]
+    TotalGrand,
 
     [Description("T Pay")]
     TotalPay,
@@ -142,7 +153,7 @@ public enum HeaderEnum {
     TotalTimeActive,
 
     [Description("T Tips")]
-    TotalTip,
+    TotalTips,
 
     [Description("T Trips")]
     TotalTrips,

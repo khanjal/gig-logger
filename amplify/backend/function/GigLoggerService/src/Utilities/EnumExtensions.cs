@@ -28,4 +28,27 @@ public static class EnumExtensions
 
         return displayName;
     }
+
+    public static T GetValueFromName<T>(this string name) where T : Enum
+    {
+        var type = typeof(T);
+
+        foreach (var field in type.GetFields())
+        {
+            if (Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
+            {
+                if (attribute.Description == name)
+                {
+                    return (T)field.GetValue(null);
+                }
+            }
+
+            if (field.Name == name)
+            {
+                return (T)field.GetValue(null);
+            }
+        }
+
+        return default;
+    }
 }
