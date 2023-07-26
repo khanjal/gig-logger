@@ -31,15 +31,15 @@ public static class ShiftMapper
                 Number = HeaderParser.GetIntValue(HeaderEnum.Number.DisplayName(), value, headers),
                 Active = HeaderParser.GetStringValue(HeaderEnum.TotalTimeActive.DisplayName(), value, headers),
                 Time = HeaderParser.GetStringValue(HeaderEnum.TotalTime.DisplayName(), value, headers),
-                Trips = HeaderParser.GetIntValue("T Trip", value, headers),
-                Omit = HeaderParser.GetStringValue("O", value, headers),
-                Region = HeaderParser.GetStringValue("Region", value, headers),
-                Note = HeaderParser.GetStringValue("Note", value, headers),
-                Pay = HeaderParser.GetDecimalValue("T Pay", value, headers),
-                Tip = HeaderParser.GetDecimalValue("T Tip", value, headers),
-                Bonus = HeaderParser.GetDecimalValue("T Bonus", value, headers),
-                Total = HeaderParser.GetDecimalValue("G Total", value, headers),
-                Cash = HeaderParser.GetDecimalValue("T Cash", value, headers),
+                Trips = HeaderParser.GetIntValue(HeaderEnum.Trips.DisplayName(), value, headers),
+                Omit = HeaderParser.GetStringValue(HeaderEnum.TimeOmit.DisplayName(), value, headers),
+                Region = HeaderParser.GetStringValue(HeaderEnum.Region.DisplayName(), value, headers),
+                Note = HeaderParser.GetStringValue(HeaderEnum.Note.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.TotalPay.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TotalTips.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.TotalBonus.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TotalGrand.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.TotalCash.DisplayName(), value, headers),
                 Saved = true
             };
             
@@ -57,48 +57,50 @@ public static class ShiftMapper
 
             foreach (var header in shiftHeaders)
             {
-                switch (header.ToString().Trim())
+                var headerEnum = header.ToString().Trim().GetValueFromName<HeaderEnum>();
+
+                switch (headerEnum)
                 {
-                    case "Date":
+                    case HeaderEnum.Date:
                         objectList.Add(shift.Date);
                         break;
-                    case "Start":
+                    case HeaderEnum.TimeStart:
                         objectList.Add(shift.Start);
                         break;
-                    case "End":
+                    case HeaderEnum.TimeEnd:
                         objectList.Add(shift.End);
                         break;
-                    case "Service":
+                    case HeaderEnum.Service:
                         objectList.Add(shift.Service);
                         break;
-                    case "#":
+                    case HeaderEnum.Number:
                         objectList.Add(shift.Number);
                         break;
-                    case "Active":
+                    case HeaderEnum.TimeActive:
                         objectList.Add(shift.Active);
                         break;
-                    case "Time":
+                    case HeaderEnum.TimeTotal:
                         objectList.Add(shift.Time);
                         break;
-                    case "Omit":
+                    case HeaderEnum.TimeOmit:
                         objectList.Add(shift.Omit);
                         break;
-                    case "Pay":
+                    case HeaderEnum.Pay:
                         objectList.Add(shift.Pay);
                         break;
-                    case "Tips":
+                    case HeaderEnum.Tips:
                         objectList.Add(shift.Tip);
                         break;
-                    case "Bonus":
+                    case HeaderEnum.Bonus:
                         objectList.Add(shift.Bonus);
                         break;
-                    case "Cash":
+                    case HeaderEnum.Cash:
                         objectList.Add(shift.Cash);
                         break;
-                    case "Region":
+                    case HeaderEnum.Region:
                         objectList.Add(shift.Region);
                         break;
-                    case "Note":
+                    case HeaderEnum.Note:
                         objectList.Add(shift.Note);
                         break;
                     default:
