@@ -91,9 +91,9 @@ export class SpreadsheetService {
     public async appendSpreadsheetData() {
         // Append secondary spreadsheets.
         let secondarySpreadsheets = (await this.getSpreadsheets()).filter(x => x.default !== "true");
-        console.log(secondarySpreadsheets.length);
+        // console.log(secondarySpreadsheets.length);
         secondarySpreadsheets.forEach(async secondarySpreadsheet => {
-            console.log(secondarySpreadsheet.name);
+            // console.log(secondarySpreadsheet.name);
             this._snackBar.open(`Connecting to ${secondarySpreadsheet.name} Spreadsheet`);
             let data = await firstValueFrom(await this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
             this._snackBar.open("Loading Secondary Spreadsheet Data");
