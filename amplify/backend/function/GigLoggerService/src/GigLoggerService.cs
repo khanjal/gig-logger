@@ -118,7 +118,7 @@ namespace GigLoggerService
                             CheckSpreadSheet();
                             break;
                         case "generate":
-                            NewSheet();
+                            GenerateSheets();
                             break;
                         case "warmup":
                             WarmupLambda();
@@ -360,34 +360,51 @@ namespace GigLoggerService
         return values;
     }
 
-    private void NewSheet() {
-        // var service = new SheetsService(new BaseClientService.Initializer()
-        //     {
-        //         HttpClientInitializer = credential,
-        //         ApplicationName = ApplicationName,
-        //     });
+    private void GenerateSheets() {
         var sheets = SheetHelper.GetSheets();
 
-        BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
+        var batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
         batchUpdateSpreadsheetRequest.Requests = new List<Request>();
         
         sheets.ForEach(sheet => {
             var random = new Random();
-            var sheetId = random.Next(9999);
-            
+            // var sheetId = (int?)(DateTimeOffset.Now.ToUnixTimeMilliseconds() % 1000000000);
+            var sheetId = random.Next();
 
             var sheetRequest = new AddSheetRequest();
             sheetRequest.Properties = new SheetProperties();
 
+            // TODO: Make requst helper to build these requests.
+
+            // Create Sheet With Properties
             sheetRequest.Properties.SheetId = sheetId;
-            sheetRequest.Properties.Title = $"{sheet.Name} {DateTime.Now}";
+            sheetRequest.Properties.Title = $"{sheet.Name} {sheetId}";
             sheetRequest.Properties.TabColor = SheetHelper.GetColor(sheet.TabColor);
             sheetRequest.Properties.GridProperties = new GridProperties { FrozenColumnCount = sheet.FreezeColumnCount, FrozenRowCount = sheet.FreezeRowCount };
             
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddSheet = sheetRequest });
 
+            // Append more columns if the default amount isn't enough
+            var defaultColumns = 26;
+            if (sheet.Headers.Count > defaultColumns) {
+                var appendDimensionRequest = new AppendDimensionRequest();
+                appendDimensionRequest.Dimension = "COLUMNS";
+                appendDimensionRequest.Length = sheet.Headers.Count - defaultColumns;
+                appendDimensionRequest.SheetId = sheetId;
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendDimension = appendDimensionRequest });
+            }
+
+            // Create Sheet Headers
+            var appendCellsRequest = new AppendCellsRequest();
+            appendCellsRequest.Fields = "*";
+            appendCellsRequest.Rows = SheetHelper.HeadersToRowData(sheet.Headers);
+            appendCellsRequest.SheetId = sheetId;
+
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendCells = appendCellsRequest });
+
+            // Protect sheet if necessary
             if (sheet.ProtectSheet) {
-                AddProtectedRangeRequest addProtectedRangeRequest = new AddProtectedRangeRequest();
+                var addProtectedRangeRequest = new AddProtectedRangeRequest();
                 addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Range = new GridRange { SheetId = sheetId }, WarningOnly = true };
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
             }
