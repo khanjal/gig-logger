@@ -17,7 +17,6 @@ public static class SheetHelper {
         sheet.TabColor = ColorEnum.Orange;
         sheet.FreezeColumnCount = 1;
         sheet.FreezeRowCount = 1;
-        sheet.ProtectSheet = true;
 
         sheet.Headers = new List<SheetHeaderModel>();
 
@@ -89,7 +88,8 @@ public static class SheetHelper {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.Trips.DisplayName();
         sheet.TabColor = ColorEnum.Pink;
-        sheet.FreezeRowCount = 2;
+        sheet.FreezeColumnCount = 1;
+        sheet.FreezeRowCount = 1;
 
         sheet.Headers = new List<SheetHeaderModel>();
 
@@ -163,5 +163,53 @@ public static class SheetHelper {
             default:
                 return null;
         }
+    }
+
+    public static IList<IList<object>> HeadersToList(List<SheetHeaderModel> headers)
+    {
+        var rangeData = new List<IList<object>>();
+        var objectList = new List<object>();
+
+        foreach (var header in headers)
+        {
+            if (!string.IsNullOrEmpty(header.Formula)) {
+                objectList.Add(header.Formula);
+            }
+            else {
+                objectList.Add(header.Name);
+            }
+        }
+
+        rangeData.Add(objectList);
+        
+        return rangeData;
+    }
+
+    public static IList<RowData> HeadersToRowData(List<SheetHeaderModel> headers)
+    {
+        var rows = new List<RowData>();
+        var row = new RowData();
+        var cells = new List<CellData>();
+
+        foreach (var header in headers)
+        {
+            var cell = new CellData();
+            var value = new ExtendedValue();
+
+            if (!string.IsNullOrEmpty(header.Formula)) {
+                value.FormulaValue = header.Formula;
+            }
+            else {
+                value.StringValue = header.Name;
+            }
+
+            cell.UserEnteredValue = value;
+            cells.Add(cell);
+        }
+
+        row.Values = cells;
+        rows.Add(row);
+
+        return rows;
     }
 }
