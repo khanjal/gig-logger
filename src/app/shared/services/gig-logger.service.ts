@@ -40,12 +40,12 @@ export class GigLoggerService {
     ) {}
 
     public async getSheetData(sheetId: string) {
-        console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
+        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
+        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
     }
 
