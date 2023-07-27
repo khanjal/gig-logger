@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using Google.Apis.Sheets.v4.Data;
 
 public static class SheetHelper {
     public static List<SheetModel> GetSheets() {
         var sheets = new List<SheetModel>();
         
         sheets.Add(GetTripSheet());
-        
+        sheets.Add(GetShiftSheet());
 
         return sheets;
     }
@@ -13,6 +14,10 @@ public static class SheetHelper {
     public static SheetModel GetShiftSheet() {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.Shifts.DisplayName();
+        sheet.TabColor = ColorEnum.Orange;
+        sheet.FreezeColumnCount = 1;
+        sheet.FreezeRowCount = 1;
+        sheet.ProtectSheet = true;
 
         sheet.Headers = new List<SheetHeaderModel>();
 
@@ -83,6 +88,8 @@ public static class SheetHelper {
     public static SheetModel GetTripSheet() {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.Trips.DisplayName();
+        sheet.TabColor = ColorEnum.Pink;
+        sheet.FreezeRowCount = 2;
 
         sheet.Headers = new List<SheetHeaderModel>();
 
@@ -126,5 +133,35 @@ public static class SheetHelper {
             Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.Year.DisplayName()}\",ISBLANK(A1:A), \"\",true,YEAR(A:A)))"});
 
         return sheet;
+    }
+
+    // https://www.rapidtables.com/convert/color/hex-to-rgb.html
+    public static Color GetColor(ColorEnum colorEnum) {
+        switch (colorEnum)
+        {
+            case ColorEnum.Black:
+                return new Color{ Red = 0, Green = 0, Blue = 0 };
+            case ColorEnum.Blue:
+                return new Color{ Red = 0, Green = 0, Blue = 1 };
+            case ColorEnum.Green:
+                return new Color{ Red = 0, Green = (float?)0.5, Blue = 0 };
+            case ColorEnum.Lime:
+                return new Color{ Red = 0, Green = 1, Blue = 0 };
+            case ColorEnum.Orange:
+                return new Color{ Red = 1, Green = (float?)0.6, Blue = 0 };
+            case ColorEnum.Magenta:
+            case ColorEnum.Pink:
+                return new Color{ Red = 1, Green = 0, Blue = 1 };
+            case ColorEnum.Purple:
+                return new Color{ Red = (float?)0.5, Green = 0, Blue = (float?)0.5 };
+            case ColorEnum.Red:
+                return new Color{ Red = 1, Green = 0, Blue = 0 };
+            case ColorEnum.White:
+                return new Color{ Red = 1, Green = 1, Blue = 1 };
+            case ColorEnum.Yellow:
+                return new Color{ Red = 1, Green = 1, Blue = 0 };
+            default:
+                return null;
+        }
     }
 }

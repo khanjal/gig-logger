@@ -118,6 +118,7 @@ namespace GigLoggerService
                             CheckSpreadSheet();
                             break;
                         case "generate":
+                            NewSheet();
                             break;
                         case "warmup":
                             WarmupLambda();
@@ -365,17 +366,35 @@ namespace GigLoggerService
         //         HttpClientInitializer = credential,
         //         ApplicationName = ApplicationName,
         //     });
+        var sheets = SheetHelper.GetSheets();
 
-        var sheet = new AddSheetRequest();
-        sheet.Properties = new SheetProperties();
-
-        sheet.Properties.Title = "Test";
         BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
         batchUpdateSpreadsheetRequest.Requests = new List<Request>();
-        batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddSheet = sheet });
+        
+        sheets.ForEach(sheet => {
+            var random = new Random();
+            var sheetId = random.Next(9999);
+            
+
+            var sheetRequest = new AddSheetRequest();
+            sheetRequest.Properties = new SheetProperties();
+
+            sheetRequest.Properties.SheetId = sheetId;
+            sheetRequest.Properties.Title = $"{sheet.Name} {DateTime.Now}";
+            sheetRequest.Properties.TabColor = SheetHelper.GetColor(sheet.TabColor);
+            sheetRequest.Properties.GridProperties = new GridProperties { FrozenColumnCount = sheet.FreezeColumnCount, FrozenRowCount = sheet.FreezeRowCount };
+            
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddSheet = sheetRequest });
+
+            if (sheet.ProtectSheet) {
+                AddProtectedRangeRequest addProtectedRangeRequest = new AddProtectedRangeRequest();
+                addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Range = new GridRange { SheetId = sheetId }, WarningOnly = true };
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
+            }
+        });
 
         var batchUpdateRequest = _googleSheetService.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _spreadsheetId);
-        // batchUpdateRequest.Execute();
+        batchUpdateRequest.Execute();
     }
 
     private void LoadData(string sheetRange)
