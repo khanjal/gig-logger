@@ -3,46 +3,44 @@ using System.ComponentModel;
 public enum SheetEnum {
 
     // Core
-
     [Description("Shifts")]
-    Shifts,
+    SHIFTS,
 
     [Description("Trips")]
-    Trips,
+    TRIPS,
 
-    // Ancilary
+    // Auxillary
     [Description("Addresses")]
-    Addresses,
+    ADDRESSES,
 
     [Description("Names")]
-    Names,
+    NAMES,
 
     [Description("Places")]
-    Places,
+    PLACES,
 
     [Description("Regions")]
-    Regions,
+    REGIONS,
 
     [Description("Services")]
-    Services,
+    SERVICES,
 
     [Description("Types")]
-    Types,
+    TYPES,
 
-    // Stats
-
+    // Period stats
     [Description("Daily")]
-    Daily,
+    DAILY,
 
     [Description("Monthly")]
-    Monthly,
+    MONTHLY,
 
     [Description("Weekdays")]
-    Weekdays,
+    WEEKDAYS,
 
     [Description("Weekly")]
-    Weekly,
+    WEEKLY,
 
     [Description("Yearly")]
-    Yearly,
+    YEARLY,
 }

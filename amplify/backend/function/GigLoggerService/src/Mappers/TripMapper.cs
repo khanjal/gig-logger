@@ -26,30 +26,30 @@ public static class TripMapper
             TripEntity trip = new()
             {
                 Id = id,
-                Key = HeaderParser.GetStringValue(HeaderEnum.Key.DisplayName(), value, headers),
-                Date = HeaderParser.GetStringValue(HeaderEnum.Date.DisplayName(), value, headers),
-                Service = HeaderParser.GetStringValue(HeaderEnum.Service.DisplayName(), value, headers),
-                Number = HeaderParser.GetIntValue(HeaderEnum.Number.DisplayName(), value, headers),
-                Type = HeaderParser.GetStringValue(HeaderEnum.Type.DisplayName(), value, headers),
-                Place = HeaderParser.GetStringValue(HeaderEnum.Place.DisplayName(), value, headers),
-                Pickup = HeaderParser.GetStringValue(HeaderEnum.Pickup.DisplayName(), value, headers),
-                Dropoff = HeaderParser.GetStringValue(HeaderEnum.Dropoff.DisplayName(), value, headers),
-                Duration = HeaderParser.GetStringValue(HeaderEnum.Duration.DisplayName(), value, headers),
-                Pay = HeaderParser.GetDecimalValue(HeaderEnum.Pay.DisplayName(), value, headers),
-                Tip = HeaderParser.GetDecimalValue(HeaderEnum.Tip.DisplayName(), value, headers),
-                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.Bonus.DisplayName(), value, headers),
-                Total = HeaderParser.GetDecimalValue(HeaderEnum.Total.DisplayName(), value, headers),
-                Cash = HeaderParser.GetDecimalValue(HeaderEnum.Cash.DisplayName(), value, headers),
-                OdometerStart = HeaderParser.GetDecimalValue(HeaderEnum.OdometerStart.DisplayName(), value, headers),
-                OdometerEnd = HeaderParser.GetDecimalValue(HeaderEnum.OdometerEnd.DisplayName(), value, headers),
-                Distance = HeaderParser.GetDecimalValue(HeaderEnum.Distance.DisplayName(), value, headers),
-                Name = HeaderParser.GetStringValue(HeaderEnum.Name.DisplayName(), value, headers),
-                StartAddress = HeaderParser.GetStringValue(HeaderEnum.AddressStart.DisplayName(), value, headers),
-                EndAddress = HeaderParser.GetStringValue(HeaderEnum.AddressEnd.DisplayName(), value, headers),
-                EndUnit = HeaderParser.GetStringValue(HeaderEnum.UnitEnd.DisplayName(), value, headers),
-                OrderNumber = HeaderParser.GetStringValue(HeaderEnum.OrderNumber.DisplayName(), value, headers),
-                Region = HeaderParser.GetStringValue(HeaderEnum.Region.DisplayName(), value, headers),
-                Note = HeaderParser.GetStringValue(HeaderEnum.Note.DisplayName(), value, headers),
+                Key = HeaderParser.GetStringValue(HeaderEnum.KEY.DisplayName(), value, headers),
+                Date = HeaderParser.GetStringValue(HeaderEnum.DATE.DisplayName(), value, headers),
+                Service = HeaderParser.GetStringValue(HeaderEnum.SERVICE.DisplayName(), value, headers),
+                Number = HeaderParser.GetIntValue(HeaderEnum.NUMBER.DisplayName(), value, headers),
+                Type = HeaderParser.GetStringValue(HeaderEnum.TYPE.DisplayName(), value, headers),
+                Place = HeaderParser.GetStringValue(HeaderEnum.PLACE.DisplayName(), value, headers),
+                Pickup = HeaderParser.GetStringValue(HeaderEnum.PICKUP.DisplayName(), value, headers),
+                Dropoff = HeaderParser.GetStringValue(HeaderEnum.DROPOFF.DisplayName(), value, headers),
+                Duration = HeaderParser.GetStringValue(HeaderEnum.DURATION.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
+                OdometerStart = HeaderParser.GetDecimalValue(HeaderEnum.ODOMETER_START.DisplayName(), value, headers),
+                OdometerEnd = HeaderParser.GetDecimalValue(HeaderEnum.ODOMETER_END.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
+                Name = HeaderParser.GetStringValue(HeaderEnum.NAME.DisplayName(), value, headers),
+                StartAddress = HeaderParser.GetStringValue(HeaderEnum.ADDRESS_START.DisplayName(), value, headers),
+                EndAddress = HeaderParser.GetStringValue(HeaderEnum.ADDRESS_END.DisplayName(), value, headers),
+                EndUnit = HeaderParser.GetStringValue(HeaderEnum.UNIT_END.DisplayName(), value, headers),
+                OrderNumber = HeaderParser.GetStringValue(HeaderEnum.ORDER_NUMBER.DisplayName(), value, headers),
+                Region = HeaderParser.GetStringValue(HeaderEnum.REGION.DisplayName(), value, headers),
+                Note = HeaderParser.GetStringValue(HeaderEnum.NOTE.DisplayName(), value, headers),
                 Saved = true
             };
             
@@ -71,70 +71,70 @@ public static class TripMapper
 
                 switch (headerEnum)
                 {
-                    case HeaderEnum.Date:
+                    case HeaderEnum.DATE:
                         objectList.Add(trip.Date);
                         break;
-                    case HeaderEnum.Key:
+                    case HeaderEnum.KEY:
                         objectList.Add(trip.Service);
                         break;
-                    case HeaderEnum.Number:
+                    case HeaderEnum.NUMBER:
                         objectList.Add(trip.Number);
                         break;
-                    case HeaderEnum.Type:
+                    case HeaderEnum.TYPE:
                         objectList.Add(trip.Type);
                         break;
-                    case HeaderEnum.Place:
+                    case HeaderEnum.PLACE:
                         objectList.Add(trip.Place);
                         break;
-                    case HeaderEnum.Pickup:
+                    case HeaderEnum.PICKUP:
                         objectList.Add(trip.Pickup);
                         break;
-                    case HeaderEnum.Dropoff:
+                    case HeaderEnum.DROPOFF:
                         objectList.Add(trip.Dropoff);
                         break;
-                    case HeaderEnum.Duration:
+                    case HeaderEnum.DURATION:
                         objectList.Add(trip.Duration);
                         break;
-                    case HeaderEnum.Pay:
+                    case HeaderEnum.PAY:
                         objectList.Add(trip.Pay);
                         break;
-                    case HeaderEnum.Tip:
+                    case HeaderEnum.TIP:
                         objectList.Add(trip.Tip);
                         break;
-                    case HeaderEnum.Bonus:
+                    case HeaderEnum.BONUS:
                         objectList.Add(trip.Bonus);
                         break;
-                    case HeaderEnum.Cash:
+                    case HeaderEnum.CASH:
                         objectList.Add(trip.Cash);
                         break;
-                    case HeaderEnum.OdometerStart:
+                    case HeaderEnum.ODOMETER_START:
                         objectList.Add(trip.OdometerStart);
                         break;
-                    case HeaderEnum.OdometerEnd:
+                    case HeaderEnum.ODOMETER_END:
                         objectList.Add(trip.OdometerEnd);
                         break;
-                    case HeaderEnum.Distance:
+                    case HeaderEnum.DISTANCE:
                         objectList.Add(trip.Distance);
                         break;
-                    case HeaderEnum.Name:
+                    case HeaderEnum.NAME:
                         objectList.Add(trip.Name);
                         break;
-                    case HeaderEnum.AddressStart:
+                    case HeaderEnum.ADDRESS_START:
                         objectList.Add(trip.StartAddress);
                         break;
-                    case HeaderEnum.AddressEnd:
+                    case HeaderEnum.ADDRESS_END:
                         objectList.Add(trip.EndAddress);
                         break;
-                    case HeaderEnum.UnitEnd:
+                    case HeaderEnum.UNIT_END:
                         objectList.Add(trip.EndUnit);
                         break;
-                    case HeaderEnum.OrderNumber:
+                    case HeaderEnum.ORDER_NUMBER:
                         objectList.Add(trip.OrderNumber);
                         break;
                     // case "Region":
                     //     objectList.Add(trip.Region);
                     //     break;
-                    case HeaderEnum.Note:
+                    case HeaderEnum.NOTE:
                         objectList.Add(trip.Note);
                         break;
                     default:
