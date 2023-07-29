@@ -103,7 +103,7 @@ public static class SheetHelper {
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.DURATION.DisplayName(),
             Note = "Minutes task took to complete."});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.PAY.DisplayName()});
-        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TIPS.DisplayName()});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TIP.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.BONUS.DisplayName()});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TOTAL.DisplayName(), 
             Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(A1:A), \"\",I1:I+J1:J+K1:K)))"});
