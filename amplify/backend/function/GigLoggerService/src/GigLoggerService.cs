@@ -115,10 +115,8 @@ namespace GigLoggerService
                             LoadSpreadSheetData(action);
                             break;
                         case "check":
-                            CheckSpreadSheet();
-                            break;
                         case "generate":
-                            GenerateSheets();
+                            CheckSpreadSheet();
                             break;
                         case "warmup":
                             WarmupLambda();
@@ -229,31 +227,66 @@ namespace GigLoggerService
 
     private void CheckSpreadSheet()
     {
+        var spreadsheet = _googleSheetService.Spreadsheets.Get(_spreadsheetId).Execute();
+        // Console.WriteLine(JsonSerializer.Serialize(spreadsheet));
+        _sheet.Name = spreadsheet.Properties.Title;
+        // Console.WriteLine(_sheet.Name);
+
+        var spreadsheetSheets = spreadsheet.Sheets.Select(x => x.Properties.Title).ToList();
+        var sheetData = new List<SheetModel>();
+        // Console.WriteLine(JsonSerializer.Serialize(spreadsheetSheets));
+        
+        // Loop through all sheets to see if they exist.
         foreach (var name in Enum.GetNames<SheetEnum>())
         {
             SheetEnum sheetEnum = (SheetEnum)Enum.Parse(typeof(SheetEnum), name);
 
-            var data = GetSheetData(sheetEnum.DisplayName());
-
-            if (data == null) {
+            if(spreadsheetSheets.Contains(name)) {
                 continue;
             }
 
-            // Check to make sure all fields exist for trips and shifts.
+            // Get data for each missing sheet.
+            Console.WriteLine(name);
+
             switch (sheetEnum)
             {
                 case SheetEnum.Shifts:
-                    CheckSheetHeaders(data, SheetHelper.GetShiftSheet());
+                    sheetData.Add(SheetHelper.GetShiftSheet());
                     break;
                 case SheetEnum.Trips:
-                    CheckSheetHeaders(data, SheetHelper.GetTripSheet());
+                    sheetData.Add(SheetHelper.GetTripSheet());
+                    break;
+                case SheetEnum.Types:
+                    sheetData.Add(SheetHelper.GetTypeSheet());
                     break;
                 default:
                     break;
             }
 
-            Console.WriteLine(name);
+            // var data = GetSheetData(sheetEnum.DisplayName());
+
+            // if (data == null) {
+            //     continue;
+            // }
+
+            // Check to make sure all fields exist for trips and shifts.
+            // switch (sheetEnum)
+            // {
+            //     case SheetEnum.Shifts:
+            //         CheckSheetHeaders(data, SheetHelper.GetShiftSheet());
+            //         break;
+            //     case SheetEnum.Trips:
+            //         CheckSheetHeaders(data, SheetHelper.GetTripSheet());
+            //         break;
+            //     default:
+            //         break;
+            // }
+
+            // Console.WriteLine(name);
         }
+
+        // Generate missing sheets.
+        GenerateSheets(sheetData);
     }
 
     private void CheckSheetHeaders(IList<IList<object>> data, SheetModel sheetModel)
@@ -270,7 +303,8 @@ namespace GigLoggerService
     private void LoadSpreadSheetData(string action)
     {
         var sheets = new List<SheetEnum>();
-        LoadSpreadSheetProperties();
+        // LoadSpreadSheetProperties();
+        CheckSpreadSheet();
 
         switch (action)
         {
@@ -360,8 +394,8 @@ namespace GigLoggerService
         return values;
     }
 
-    private void GenerateSheets() {
-        var sheets = SheetHelper.GetSheets();
+    private void GenerateSheets(List<SheetModel> sheets) {
+        // var sheets = SheetHelper.GetSheets();
 
         var batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
         batchUpdateSpreadsheetRequest.Requests = new List<Request>();
@@ -378,7 +412,8 @@ namespace GigLoggerService
 
             // Create Sheet With Properties
             sheetRequest.Properties.SheetId = sheetId;
-            sheetRequest.Properties.Title = $"{sheet.Name} {sheetId}";
+            // sheetRequest.Properties.Title = $"{sheet.Name} {sheetId}";
+            sheetRequest.Properties.Title = sheet.Name;
             sheetRequest.Properties.TabColor = SheetHelper.GetColor(sheet.TabColor);
             sheetRequest.Properties.GridProperties = new GridProperties { FrozenColumnCount = sheet.FreezeColumnCount, FrozenRowCount = sheet.FreezeRowCount };
             
@@ -397,7 +432,7 @@ namespace GigLoggerService
             // Create Sheet Headers
             var appendCellsRequest = new AppendCellsRequest();
             appendCellsRequest.Fields = "*";
-            appendCellsRequest.Rows = SheetHelper.HeadersToRowData(sheet.Headers);
+            appendCellsRequest.Rows = SheetHelper.HeadersToRowData(sheet);
             appendCellsRequest.SheetId = sheetId;
 
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendCells = appendCellsRequest });
@@ -432,6 +467,7 @@ namespace GigLoggerService
 
             Enum.TryParse<SheetEnum>(sheetRange, out sheetEnum);
             
+            // TODO: Check sheet headers to make sure all columns exist (error) and in right order (warning)
             switch (sheetEnum)
             {
                 case SheetEnum.Addresses:

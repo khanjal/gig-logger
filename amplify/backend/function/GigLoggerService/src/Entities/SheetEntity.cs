@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 public class SheetEntity {
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
     [JsonPropertyName("addresses")]
     public List<AddressEntity> Addresses { get; set; } = new List<AddressEntity>();
 
@@ -28,6 +31,9 @@ public class SheetEntity {
 
     [JsonPropertyName("weekdays")]
     public List<WeekdayEntity> Weekdays { get; set; } = new List<WeekdayEntity>();
+
+    [JsonPropertyName("warnings")]
+    public List<string> Warnings { get; set; } = new List<string>();
 
     [JsonPropertyName("errors")]
     public List<string> Errors { get; set; } = new List<string>();
