@@ -144,7 +144,7 @@ public static class SheetHelper {
         sheet.Headers = new List<SheetHeaderModel>();
 
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TYPE.DisplayName(),
-            Formula = "={\""+HeaderEnum.TRIPS.DisplayName()+"\";SORT(UNIQUE("+SheetEnum.TRIPS.DisplayName()+"!D2:D))}"});
+            Formula = "={\""+HeaderEnum.TYPE.DisplayName()+"\";SORT(UNIQUE("+SheetEnum.TRIPS.DisplayName()+"!D2:D))}"});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TRIPS.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TRIPS.DisplayName()}\",ISBLANK($A:$A), \"\",true,COUNTIF({SheetEnum.TRIPS.DisplayName()}!D:D,$A:$A)))"});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.PAY.DisplayName(),
