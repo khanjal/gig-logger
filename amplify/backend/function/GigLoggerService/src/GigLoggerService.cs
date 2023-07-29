@@ -232,7 +232,7 @@ namespace GigLoggerService
         _sheet.Name = spreadsheet.Properties.Title;
         // Console.WriteLine(_sheet.Name);
 
-        var spreadsheetSheets = spreadsheet.Sheets.Select(x => x.Properties.Title).ToList();
+        var spreadsheetSheets = spreadsheet.Sheets.Select(x => x.Properties.Title.ToUpper()).ToList();
         var sheetData = new List<SheetModel>();
         // Console.WriteLine(JsonSerializer.Serialize(spreadsheetSheets));
         
@@ -286,16 +286,27 @@ namespace GigLoggerService
         }
 
         // Generate missing sheets.
-        GenerateSheets(sheetData);
+
+        if(sheetData.Count > 0) {
+            GenerateSheets(sheetData);
+        }
     }
 
     private void CheckSheetHeaders(IList<IList<object>> data, SheetModel sheetModel)
     {
+        var headerArray =  new string[sheetModel.Headers.Count];
+        data[0].CopyTo(headerArray, 0);
+        var index = 0;
         // Console.Write(JsonSerializer.Serialize(data[0]));
         foreach (var sheetHeader in sheetModel.Headers)
         {
-            if(!data[0].Any(x => x.ToString().Trim() == sheetHeader.Name)) {
+            if(!data.Any(x => x.ToString().Trim() == sheetHeader.Name)) {
                 _sheet.Errors.Add($"Sheet {sheetModel.Name} missing {sheetHeader.Name}");
+            }
+            else {
+                if(index < headerArray.Count() && sheetHeader.Name != headerArray[index]) {
+                    _sheet.Warnings.Add($"Sheet {sheetModel.Name} header {sheetHeader.Name} does not match {headerArray[index]}");
+                }
             }
         }
     }
@@ -465,7 +476,7 @@ namespace GigLoggerService
         private void MapData(string sheetRange, IList<IList<object>> values) {
             SheetEnum sheetEnum;
 
-            Enum.TryParse<SheetEnum>(sheetRange, out sheetEnum);
+            Enum.TryParse<SheetEnum>(sheetRange.ToUpper(), out sheetEnum);
             
             // TODO: Check sheet headers to make sure all columns exist (error) and in right order (warning)
             switch (sheetEnum)
@@ -491,6 +502,7 @@ namespace GigLoggerService
                 break;
 
                 case SheetEnum.SHIFTS:
+                    CheckSheetHeaders(values, SheetHelper.GetShiftSheet());
                     _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
                 break;
 
