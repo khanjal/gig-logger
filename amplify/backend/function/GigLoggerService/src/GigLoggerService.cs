@@ -262,40 +262,19 @@ namespace GigLoggerService
                 default:
                     break;
             }
-
-            // var data = GetSheetData(sheetEnum.DisplayName());
-
-            // if (data == null) {
-            //     continue;
-            // }
-
-            // Check to make sure all fields exist for trips and shifts.
-            // switch (sheetEnum)
-            // {
-            //     case SheetEnum.Shifts:
-            //         CheckSheetHeaders(data, SheetHelper.GetShiftSheet());
-            //         break;
-            //     case SheetEnum.Trips:
-            //         CheckSheetHeaders(data, SheetHelper.GetTripSheet());
-            //         break;
-            //     default:
-            //         break;
-            // }
-
-            // Console.WriteLine(name);
         }
 
-        // Generate missing sheets.
-
+        // If any sheets are missing generate them.
         if(sheetData.Count > 0) {
             GenerateSheets(sheetData);
         }
     }
 
-    private void CheckSheetHeaders(IList<IList<object>> data, SheetModel sheetModel)
+    private void CheckSheetHeaders(IList<IList<object>> values, SheetModel sheetModel)
     {
-        var headerArray =  new string[sheetModel.Headers.Count];
-        data[0].CopyTo(headerArray, 0);
+        var data = values[0];
+        var headerArray =  new string[data.Count];
+        data.CopyTo(headerArray, 0);
         var index = 0;
         // Console.Write(JsonSerializer.Serialize(data[0]));
         foreach (var sheetHeader in sheetModel.Headers)
@@ -304,10 +283,11 @@ namespace GigLoggerService
                 _sheet.Errors.Add($"Sheet {sheetModel.Name} missing {sheetHeader.Name}");
             }
             else {
-                if(index < headerArray.Count() && sheetHeader.Name != headerArray[index]) {
-                    _sheet.Warnings.Add($"Sheet {sheetModel.Name} header {sheetHeader.Name} does not match {headerArray[index]}");
+                if(index < headerArray.Count() && sheetHeader.Name != headerArray[index].Trim()) {
+                    _sheet.Warnings.Add($"Sheet {sheetModel.Name} header {sheetHeader.Name} does not match {headerArray[index].Trim()}");
                 }
             }
+            index++;
         }
     }
 
@@ -339,14 +319,6 @@ namespace GigLoggerService
         }
 
         LoadBatchData(sheets);
-    }
-
-    private void LoadSpreadSheetProperties()
-    {
-        // var googleRequest = _googleSheetValues.Get;
-        // var googleResponse = googleRequest.Execute();
-        // matchedValues = googleResponse.ValueRanges;
-        Console.WriteLine($"Google Sheet Name: {_googleSheetName}");
     }
 
     private void LoadBatchData(List<SheetEnum> sheets)
@@ -474,6 +446,10 @@ namespace GigLoggerService
         }
 
         private void MapData(string sheetRange, IList<IList<object>> values) {
+            if (values == null) {
+                return;
+            }
+
             SheetEnum sheetEnum;
 
             Enum.TryParse<SheetEnum>(sheetRange.ToUpper(), out sheetEnum);
@@ -507,10 +483,12 @@ namespace GigLoggerService
                 break;
 
                 case SheetEnum.TRIPS:
+                    CheckSheetHeaders(values, SheetHelper.GetTripSheet());
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
                 break;
 
                 case SheetEnum.TYPES:
+                    CheckSheetHeaders(values, SheetHelper.GetTypeSheet());
                     _sheet.Types = TypeMapper.MapFromRangeData(values);
                 break;
 
