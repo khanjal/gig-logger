@@ -2,179 +2,179 @@ using System.ComponentModel;
 
 public enum HeaderEnum {
     [Description("Address")]
-    Address,
+    ADDRESS,
 
     [Description("Start Address")]
-    AddressStart,
+    ADDRESS_START,
 
     [Description("End Address")]
-    AddressEnd,
+    ADDRESS_END,
 
     [Description("Curr Amt")]
-    AmountCurrent,
+    AMOUNT_CURRENT,
 
     [Description("Prev Amt")]
-    AmountPrevious,
+    AMOUNT_PREVIOUS,
 
     [Description("$/Day")]
-    AmountPerDay,
+    AMOUNT_PER_DAY,
 
     [Description("$/Mile")]
-    AmountPerDistance,
+    AMOUNT_PER_DISTANCE,
 
     [Description("$/Prev")]
-    AmountPerPreviousDay,
+    AMOUNT_PER_PREVIOUS_DAY,
 
     [Description("$/Time")]
-    AmountPerTime,
+    AMOUNT_PER_TIME,
 
     [Description("$/Trip")]
-    AmountPerTrip,
+    AMOUNT_PER_TRIP,
 
     [Description("Average")]
-    Average,
+    AVERAGE,
 
     [Description("Bonus")]
-    Bonus,
+    BONUS,
 
     [Description("Cash")]
-    Cash,
+    CASH,
 
     [Description("Date")]
-    Date,
+    DATE,
 
     [Description("Begin")]
-    DateBegin,
+    DATE_BEGIN,
 
     [Description("End")]
-    DateEnd,
+    DATE_END,
 
     [Description("Day")]
-    Day,
+    DAY,
 
     [Description("Days")]
-    Days,
+    DAYS,
 
     [Description("Dist")]
-    Distance,
+    DISTANCE,
 
     [Description("Dropoff")]
-    Dropoff,
+    DROPOFF,
 
     [Description("Duration")]
-    Duration,
+    DURATION,
 
     [Description("Key")]
-    Key,
+    KEY,
 
     [Description("Month")]
-    Month,
+    MONTH,
 
     [Description("Name")]
-    Name,
+    NAME,
     
     [Description("Note")]
-    Note,
+    NOTE,
 
     [Description("#")]
-    Number,
+    NUMBER,
 
     [Description("# Days")]
-    NumberOfDays,
+    NUMBER_OF_DAYS,
 
     [Description("Odo End")]
-    OdometerEnd,
+    ODOMETER_END,
 
     [Description("Odo Start")]
-    OdometerStart,
+    ODOMETER_START,
     
     [Description("Order #")]
-    OrderNumber,
+    ORDER_NUMBER,
 
     [Description("Pay")]
-    Pay,
+    PAY,
 
     [Description("Pickup")]
-    Pickup,
+    PICKUP,
 
     [Description("Place")]
-    Place,
+    PLACE,
 
     [Description("Region")]
-    Region,
+    REGION,
 
     [Description("Service")]
-    Service,
+    SERVICE,
 
     [Description("Active")]
-    TimeActive,
+    TIME_ACTIVE,
 
     [Description("End")]
-    TimeEnd,
+    TIME_END,
 
     [Description("O")]
-    TimeOmit,
+    TIME_OMIT,
 
     [Description("Start")]
-    TimeStart,
+    TIME_START,
 
     [Description("Time")]
-    TimeTotal,
+    TIME_TOTAL,
 
     [Description("Tip")]
-    Tip,
+    TIP,
 
     [Description("Tips")]
-    Tips,
+    TIPS,
 
     [Description("Total")]
-    Total,
+    TOTAL,
 
     [Description("T Bonus")]
-    TotalBonus,
+    TOTAL_BONUS,
     
     [Description("T Cash")]
-    TotalCash,
+    TOTAL_CASH,
 
     [Description("T Dist")]
-    TotalDistance,
+    TOTAL_DISTANCE,
 
     [Description("G Total")]
-    TotalGrand,
+    TOTAL_GRAND,
 
     [Description("T Pay")]
-    TotalPay,
+    TOTAL_PAY,
 
     [Description("T Time")]
-    TotalTime,
+    TOTAL_TIME,
 
     [Description("T Active")]
-    TotalTimeActive,
+    TOTAL_TIME_ACTIVE,
 
     [Description("T Tips")]
-    TotalTips,
+    TOTAL_TIPS,
 
     [Description("T Trips")]
-    TotalTrips,
+    TOTAL_TRIPS,
 
     [Description("Trips")]
-    Trips,
+    TRIPS,
     
     [Description("Trips/Day")]
-    TripsPerDay,
+    TRIPS_PER_DAY,
 
     [Description("Trips/Hour")]
-    TripsPerHour,
+    TRIPS_PER_HOUR,
 
     [Description("Type")]
-    Type,
+    TYPE,
     
     [Description("End Unit")]
-    UnitEnd,
+    UNIT_END,
 
     [Description("Visits")]
-    Visits,
+    VISITS,
     
     [Description("Year")]
-    Year,
+    YEAR,
 }

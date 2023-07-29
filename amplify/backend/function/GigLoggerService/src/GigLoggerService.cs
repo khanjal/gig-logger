@@ -196,7 +196,7 @@ namespace GigLoggerService
     private void SaveTripData(SheetEntity sheetData)
     {
         // Create & save trip rows.
-        var tripRange = $"{SheetEnum.Trips.DisplayName()}!A1:ZZ1";
+        var tripRange = $"{SheetEnum.TRIPS.DisplayName()}!A1:ZZ1";
         var tripHeaders = GetSheetData(tripRange)[0];
         var trips = TripMapper.MapToRangeData(sheetData.Trips, tripHeaders);
         // context.Logger.LogDebug(JsonSerializer.Serialize(trips));
@@ -207,7 +207,7 @@ namespace GigLoggerService
         }
 
          // Create & save shift rows.
-        var shiftRange = $"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1";
+        var shiftRange = $"{SheetEnum.SHIFTS.DisplayName()}!A1:ZZ1";
         var shiftHeaders = GetSheetData(shiftRange)[0];
         var shifts = ShiftMapper.MapToRangeData(sheetData.Shifts, shiftHeaders);
         // context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
@@ -250,13 +250,13 @@ namespace GigLoggerService
 
             switch (sheetEnum)
             {
-                case SheetEnum.Shifts:
+                case SheetEnum.SHIFTS:
                     sheetData.Add(SheetHelper.GetShiftSheet());
                     break;
-                case SheetEnum.Trips:
+                case SheetEnum.TRIPS:
                     sheetData.Add(SheetHelper.GetTripSheet());
                     break;
-                case SheetEnum.Types:
+                case SheetEnum.TYPES:
                     sheetData.Add(SheetHelper.GetTypeSheet());
                     break;
                 default:
@@ -309,21 +309,21 @@ namespace GigLoggerService
         switch (action)
         {
             case "primary":
-                sheets.Add(SheetEnum.Addresses);
-                sheets.Add(SheetEnum.Names);
-                sheets.Add(SheetEnum.Places);
-                sheets.Add(SheetEnum.Regions);
-                sheets.Add(SheetEnum.Services);
-                sheets.Add(SheetEnum.Shifts);
-                sheets.Add(SheetEnum.Trips);
-                sheets.Add(SheetEnum.Types);
-                sheets.Add(SheetEnum.Weekdays);
+                sheets.Add(SheetEnum.ADDRESSES);
+                sheets.Add(SheetEnum.NAMES);
+                sheets.Add(SheetEnum.PLACES);
+                sheets.Add(SheetEnum.REGIONS);
+                sheets.Add(SheetEnum.SERVICES);
+                sheets.Add(SheetEnum.SHIFTS);
+                sheets.Add(SheetEnum.TRIPS);
+                sheets.Add(SheetEnum.TYPES);
+                sheets.Add(SheetEnum.WEEKDAYS);
             break;
             
             case "secondary":
-                sheets.Add(SheetEnum.Addresses);
-                sheets.Add(SheetEnum.Names);
-                sheets.Add(SheetEnum.Trips);
+                sheets.Add(SheetEnum.ADDRESSES);
+                sheets.Add(SheetEnum.NAMES);
+                sheets.Add(SheetEnum.TRIPS);
             break;
         }
 
@@ -470,39 +470,39 @@ namespace GigLoggerService
             // TODO: Check sheet headers to make sure all columns exist (error) and in right order (warning)
             switch (sheetEnum)
             {
-                case SheetEnum.Addresses:
+                case SheetEnum.ADDRESSES:
                     _sheet.Addresses = AddressMapper.MapFromRangeData(values);
                     break;
 
-                case SheetEnum.Names:
+                case SheetEnum.NAMES:
                     _sheet.Names = NameMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Places:
+                case SheetEnum.PLACES:
                     _sheet.Places = PlaceMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Regions:
+                case SheetEnum.REGIONS:
                     _sheet.Regions = RegionMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Services:
+                case SheetEnum.SERVICES:
                     _sheet.Services = ServiceMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Shifts:
+                case SheetEnum.SHIFTS:
                     _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Trips:
+                case SheetEnum.TRIPS:
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Types:
+                case SheetEnum.TYPES:
                     _sheet.Types = TypeMapper.MapFromRangeData(values);
                 break;
 
-                case SheetEnum.Weekdays:
+                case SheetEnum.WEEKDAYS:
                     _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
                 break;
             }

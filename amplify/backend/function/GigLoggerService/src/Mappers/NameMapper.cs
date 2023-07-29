@@ -23,14 +23,14 @@ public static class NameMapper
             NameEntity name = new()
             {
                 Id = id,
-                Name = HeaderParser.GetStringValue(HeaderEnum.Name.DisplayName(), value, headers),
-                Visits = HeaderParser.GetIntValue(HeaderEnum.Visits.DisplayName(), value, headers),
-                Pay = HeaderParser.GetDecimalValue(HeaderEnum.Pay.DisplayName(), value, headers),
-                Tip = HeaderParser.GetDecimalValue(HeaderEnum.Tip.DisplayName(), value, headers),
-                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.Bonus.DisplayName(), value, headers),
-                Total = HeaderParser.GetDecimalValue(HeaderEnum.Total.DisplayName(), value, headers),
-                Cash = HeaderParser.GetDecimalValue(HeaderEnum.Cash.DisplayName(), value, headers),
-                Distance = HeaderParser.GetIntValue(HeaderEnum.Distance.DisplayName(), value, headers),
+                Name = HeaderParser.GetStringValue(HeaderEnum.NAME.DisplayName(), value, headers),
+                Visits = HeaderParser.GetIntValue(HeaderEnum.VISITS.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
+                Distance = HeaderParser.GetIntValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
             };
             
             names.Add(name);

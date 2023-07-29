@@ -23,14 +23,14 @@ public static class TypeMapper
             TypeEntity type = new()
             {
                 Id = id,
-                Type = HeaderParser.GetStringValue(HeaderEnum.Type.DisplayName(), value, headers),
-                Trips = HeaderParser.GetIntValue(HeaderEnum.Trips.DisplayName(), value, headers),
-                Pay = HeaderParser.GetDecimalValue(HeaderEnum.Pay.DisplayName(), value, headers),
-                Tip = HeaderParser.GetDecimalValue(HeaderEnum.Tip.DisplayName(), value, headers),
-                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.Bonus.DisplayName(), value, headers),
-                Total = HeaderParser.GetDecimalValue(HeaderEnum.Total.DisplayName(), value, headers),
-                Cash = HeaderParser.GetDecimalValue(HeaderEnum.Cash.DisplayName(), value, headers),
-                Distance = HeaderParser.GetDecimalValue(HeaderEnum.Distance.DisplayName(), value, headers),
+                Type = HeaderParser.GetStringValue(HeaderEnum.TYPE.DisplayName(), value, headers),
+                Trips = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
             };
             
             types.Add(type);
