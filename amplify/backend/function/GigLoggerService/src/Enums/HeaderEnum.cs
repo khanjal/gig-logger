@@ -55,6 +55,12 @@ public enum HeaderEnum {
     [Description("Days")]
     DAYS,
 
+    [Description("D/V")]
+    DAYS_PER_VISIT,
+
+    [Description("Since")]
+    DAYS_SINCE_VISIT,
+
     [Description("Dist")]
     DISTANCE,
 
@@ -171,6 +177,12 @@ public enum HeaderEnum {
     
     [Description("End Unit")]
     UNIT_END,
+
+    [Description("First Visit")]
+    VISIT_FIRST,
+
+    [Description("Last Visit")]
+    VISIT_LAST,
 
     [Description("Visits")]
     VISITS,

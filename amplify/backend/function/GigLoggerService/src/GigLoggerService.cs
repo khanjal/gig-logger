@@ -250,6 +250,9 @@ namespace GigLoggerService
 
             switch (sheetEnum)
             {
+                case SheetEnum.PLACES:
+                    sheetData.Add(SheetHelper.GetPlaceSheet());
+                    break;
                 case SheetEnum.SHIFTS:
                     sheetData.Add(SheetHelper.GetShiftSheet());
                     break;
