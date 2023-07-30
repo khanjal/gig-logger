@@ -11,6 +11,50 @@ public static class SheetHelper {
         return sheets;
     }
 
+    public static SheetModel GetPlaceSheet() {
+        var sheet = new SheetModel();
+        sheet.Name = SheetEnum.PLACES.DisplayName();
+        sheet.TabColor = ColorEnum.BLUE;
+        sheet.FreezeColumnCount = 1;
+        sheet.FreezeRowCount = 1;
+        sheet.ProtectSheet = true;
+
+        sheet.Headers = new List<SheetHeaderModel>();
+
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.PLACE.DisplayName(),
+            Formula = "={\""+HeaderEnum.PLACE.DisplayName()+"\";SORT(UNIQUE("+SheetEnum.TRIPS.DisplayName()+"!E2:E))}"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TRIPS.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TRIPS.DisplayName()}\",ISBLANK($A:$A), \"\",true,COUNTIF({SheetEnum.TRIPS.DisplayName()}!E:E,$A:$A)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.PAY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.PAY.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!E:E,$A:$A, {SheetEnum.TRIPS.DisplayName()}!I:I)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TIP.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TIP.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!E:E,$A:$A, {SheetEnum.TRIPS.DisplayName()}!J:J)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.BONUS.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.BONUS.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!E:E,$A:$A, {SheetEnum.TRIPS.DisplayName()}!K:K)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.TOTAL.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK($A:$A), \"\",true,C1:C+D1:D+E1:E))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.CASH.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.CASH.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!E:E,$A:$A, {SheetEnum.TRIPS.DisplayName()}!M:M)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.AMOUNT_PER_TRIP.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK($A:$A), \"\", F:F = 0, 0,true,F:F/IF(B:B=0,1,B:B)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.DISTANCE.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!E:E,$A:$A, {SheetEnum.TRIPS.DisplayName()}!P:P)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\", H:H = 0, 0,true,F:F/IF(I:I=0,1,I:I)))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.VISIT_FIRST.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.VISIT_FIRST.DisplayName()}\",ISBLANK($A:$A), \"\",true,IFERROR(VLOOKUP($A:$A,SORT(QUERY({SheetEnum.TRIPS.DisplayName()}!A:E,\"SELECT E, A\"),2,true),2,0),\"\")))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.VISIT_LAST.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.VISIT_LAST.DisplayName()}\",ISBLANK($A:$A), \"\",true,IFERROR(VLOOKUP($A:$A,SORT(QUERY({SheetEnum.TRIPS.DisplayName()}!A:E,\"SELECT E, A\"),2,false),2,0),\"\")))"});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.DAYS_PER_VISIT.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.DAYS_PER_VISIT.DisplayName()}\",ISBLANK($A:$A), \"\", true, DAYS(K:K,J:J)/B:B))",
+            Note = $"Average days between visits.{(char)10}{(char)10}Doesn't take into account active time vs all time."});
+        sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.DAYS_SINCE_VISIT.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.DAYS_SINCE_VISIT.DisplayName()}\",ISBLANK($A:$A), \"\", true, DAYS(TODAY(),K:K)))",
+            Note = "Days since last visit."});
+
+        return sheet;
+    }
+
     public static SheetModel GetShiftSheet() {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.SHIFTS.DisplayName();
@@ -160,7 +204,7 @@ public static class SheetHelper {
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.AMOUNT_PER_TRIP.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK($A:$A), \"\", F:F = 0, 0,true,F:F/IF(B:B=0,1,B:B)))"});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!D:D,$A:$A, {SheetEnum.TRIPS.DisplayName()}!M:M)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({SheetEnum.TRIPS.DisplayName()}!D:D,$A:$A, {SheetEnum.TRIPS.DisplayName()}!P:P)))"});
         sheet.Headers.Add(new SheetHeaderModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\", H:H = 0, 0,true,F:F/IF(I:I=0,1,I:I)))"});
 
