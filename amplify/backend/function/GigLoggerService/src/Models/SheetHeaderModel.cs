@@ -1,5 +1,7 @@
-public class SheetHeaderModel {
+public class SheetCellModel {
     public string Name { get; set; }
+    public string Column { get; set; }
+    public string Range { get; set; }
     public string Formula { get; set; }
     public FormatEnum Format { get; set; }
     public bool Border { get; set; }

@@ -115,8 +115,10 @@ namespace GigLoggerService
                             LoadSpreadSheetData(action);
                             break;
                         case "check":
-                        case "generate":
                             CheckSpreadSheet();
+                            break;
+                        case "generate":
+                            GenerateSheets(SheetHelper.GetSheets());
                             break;
                         case "warmup":
                             WarmupLambda();
@@ -246,26 +248,28 @@ namespace GigLoggerService
             }
 
             // Get data for each missing sheet.
-            Console.WriteLine(name);
+            // Console.WriteLine(name);
 
             switch (sheetEnum)
             {
                 case SheetEnum.PLACES:
-                    sheetData.Add(SheetHelper.GetPlaceSheet());
+                    sheetData.Add(PlaceMapper.GetSheet());
                     break;
                 case SheetEnum.SHIFTS:
-                    sheetData.Add(SheetHelper.GetShiftSheet());
+                    sheetData.Add(ShiftMapper.GetSheet());
                     break;
                 case SheetEnum.TRIPS:
-                    sheetData.Add(SheetHelper.GetTripSheet());
+                    sheetData.Add(TripMapper.GetSheet());
                     break;
                 case SheetEnum.TYPES:
-                    sheetData.Add(SheetHelper.GetTypeSheet());
+                    sheetData.Add(TypeMapper.GetSheet());
                     break;
                 default:
                     break;
             }
         }
+
+        // Console.Write(JsonSerializer.Serialize(sheetData));
 
         // If any sheets are missing generate them.
         if(sheetData.Count > 0) {
@@ -481,17 +485,17 @@ namespace GigLoggerService
                 break;
 
                 case SheetEnum.SHIFTS:
-                    CheckSheetHeaders(values, SheetHelper.GetShiftSheet());
+                    CheckSheetHeaders(values, ShiftMapper.GetSheet());
                     _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
                 break;
 
                 case SheetEnum.TRIPS:
-                    CheckSheetHeaders(values, SheetHelper.GetTripSheet());
+                    CheckSheetHeaders(values, TripMapper.GetSheet());
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
                 break;
 
                 case SheetEnum.TYPES:
-                    CheckSheetHeaders(values, SheetHelper.GetTypeSheet());
+                    CheckSheetHeaders(values, TypeMapper.GetSheet());
                     _sheet.Types = TypeMapper.MapFromRangeData(values);
                 break;
 
