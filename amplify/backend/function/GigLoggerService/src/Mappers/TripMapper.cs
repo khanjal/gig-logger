@@ -148,4 +148,57 @@ public static class TripMapper
         Console.Write(JsonSerializer.Serialize(rangeData));
         return rangeData;
     }
+
+    public static SheetModel GetSheet() {
+        var sheet = new SheetModel();
+        sheet.Name = SheetEnum.TRIPS.DisplayName();
+        sheet.TabColor = ColorEnum.RED;
+        sheet.FreezeColumnCount = 1;
+        sheet.FreezeRowCount = 1;
+
+        sheet.Headers = new List<SheetCellModel>();
+
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NUMBER.DisplayName(),
+            Note = "Shift Number 1-9 Leave blank if there is only shift for that service for that day."});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
+            Note = "Pickup, Shop, Order, Curbside, Canceled"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PLACE.DisplayName(),
+            Note = "Location of pickup (delivery)."});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PICKUP.DisplayName(),
+            Note = "Time when request/ride picked up."});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DROPOFF.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DURATION.DisplayName(),
+            Note = "Minutes task took to complete."});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(), 
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(A1:A), \"\",I1:I+J1:J+K1:K)))"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ODOMETER_START.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ODOMETER_END.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
+            Note = "How many miles/km the request took."});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NAME.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_START.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_END.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.UNIT_END.DisplayName(),
+            Note = "Apartment, Unit, Room, Suite"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ORDER_NUMBER.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.REGION.DisplayName()}\",ISBLANK($A:$A), \"\",true,IFERROR(VLOOKUP($X:$X,SORT(QUERY({SheetEnum.SHIFTS.DisplayName()}!O:AG,\"SELECT AG, O\"),2,true),2,0),\"\")))"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.KEY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK(B1:B), \"\",true,IF(ISBLANK(C1:C), A1:A & \"-0-\" & B1:B, A1:A & \"-\" & C1:C & \"-\" & B1:B)))"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK(A1:A), \"\",true,DAY(A:A)))"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.MONTH.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.MONTH.DisplayName()}\",ISBLANK(A1:A), \"\",true,MONTH(A:A)))"});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.YEAR.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.YEAR.DisplayName()}\",ISBLANK(A1:A), \"\",true,YEAR(A:A)))"});
+
+        return sheet;
+    }
 }

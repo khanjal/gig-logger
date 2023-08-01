@@ -19,7 +19,7 @@ public enum HeaderEnum {
     [Description("$/Day")]
     AMOUNT_PER_DAY,
 
-    [Description("$/Mile")]
+    [Description("$/Dist")]
     AMOUNT_PER_DISTANCE,
 
     [Description("$/Prev")]
