@@ -140,10 +140,14 @@ public static class SheetHelper {
             case FormatEnum.ACCOUNTING:
                 cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0.00" };
                 break;
+            case FormatEnum.DATE:
+                cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "mm/dd/yyyy" };
+                break;
             case FormatEnum.NUMBER:
                 cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0" };
                 break;
             case FormatEnum.TIME:
+                cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "hh:mm:ss am/pm" };
                 break;
             default:
                 break;

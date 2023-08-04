@@ -90,6 +90,14 @@ public static class TypeMapper
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\", H:H = 0, 0,true,F:F/IF(I:I=0,1,I:I)))",
             Format = FormatEnum.ACCOUNTING});
+        // K - First Visit
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_FIRST.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.VISIT_FIRST.DisplayName()}\",ISBLANK($A:$A), \"\", true, IFERROR(VLOOKUP($A:$A,SORT(QUERY({SheetEnum.TRIPS}!A:D,\"SELECT D, A\"),2,true),2,0),\"\")))",
+            Format = FormatEnum.DATE});
+        // L - Last Visit
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_LAST.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.VISIT_LAST.DisplayName()}\",ISBLANK($A:$A), \"\", true, IFERROR(VLOOKUP($A:$A,SORT(QUERY({SheetEnum.TRIPS}!A:D,\"SELECT D, A\"),2,false),2,0),\"\")))",
+            Format = FormatEnum.DATE});
 
         return sheet;
     }
