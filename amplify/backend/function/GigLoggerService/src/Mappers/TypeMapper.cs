@@ -41,7 +41,8 @@ public static class TypeMapper
     public static SheetModel GetSheet() {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.TYPES.DisplayName();
-        sheet.TabColor = ColorEnum.BLUE;
+        sheet.TabColor = ColorEnum.CYAN;
+        sheet.CellColor = ColorEnum.LIGHT_CYAN;
         sheet.FreezeColumnCount = 1;
         sheet.FreezeRowCount = 1;
         sheet.ProtectSheet = true;
@@ -55,31 +56,40 @@ public static class TypeMapper
             Formula = "={\""+HeaderEnum.TYPE.DisplayName()+"\";SORT(UNIQUE("+tripSheet.GetRange(HeaderEnum.TYPE)+"))}"});
         // B - Trips
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TRIPS.DisplayName()}\",ISBLANK($A:$A), \"\",true,COUNTIF({tripSheet.GetRange(HeaderEnum.TYPE)},$A:$A)))"});
+            Formula = string.Format(SheetHelper.ArrayFormulaCountIf(), HeaderEnum.TRIPS.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE)),
+            Format = FormatEnum.NUMBER});
         // C - Pay
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.PAY.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({tripSheet.GetRange(HeaderEnum.TYPE)},$A:$A, {tripSheet.GetRange(HeaderEnum.PAY)})))"});
+            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.PAY.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.PAY)),
+            Format = FormatEnum.ACCOUNTING});
         // D - Tip
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TIP.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({tripSheet.GetRange(HeaderEnum.TYPE)},$A:$A, {tripSheet.GetRange(HeaderEnum.TIP)})))"});
+            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.TIP.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.TIP)),
+            Format = FormatEnum.ACCOUNTING});
         // E - Bonus
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.BONUS.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({tripSheet.GetRange(HeaderEnum.TYPE)},$A:$A, {tripSheet.GetRange(HeaderEnum.BONUS)})))"});
+            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.BONUS.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.BONUS)),
+            Format = FormatEnum.ACCOUNTING});
         // F - Total
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK($A:$A), \"\",true,C1:C+D1:D+E1:E))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK($A:$A), \"\",true,C1:C+D1:D+E1:E))",
+            Format = FormatEnum.ACCOUNTING});
         // G - Cash
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.CASH.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({tripSheet.GetRange(HeaderEnum.TYPE)},$A:$A, {tripSheet.GetRange(HeaderEnum.CASH)})))"});
+            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.CASH.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.CASH)),
+            Format = FormatEnum.ACCOUNTING});
         // H - Amt/Trip
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TRIP.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK($A:$A), \"\", F:F = 0, 0,true,F:F/IF(B:B=0,1,B:B)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK($A:$A), \"\", F:F = 0, 0,true,F:F/IF(B:B=0,1,B:B)))",
+            Format = FormatEnum.ACCOUNTING});
         // I - Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\",true,SUMIF({tripSheet.GetRange(HeaderEnum.TYPE)},$A:$A, {tripSheet.GetRange(HeaderEnum.DISTANCE)})))"});
+            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.DISTANCE.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.DISTANCE)),
+            Format = FormatEnum.NUMBER});
         // J - Amt/Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\", H:H = 0, 0,true,F:F/IF(I:I=0,1,I:I)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\", H:H = 0, 0,true,F:F/IF(I:I=0,1,I:I)))",
+            Format = FormatEnum.ACCOUNTING});
 
         return sheet;
     }

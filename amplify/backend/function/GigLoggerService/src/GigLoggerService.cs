@@ -427,6 +427,36 @@ namespace GigLoggerService
 
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendCells = appendCellsRequest });
 
+            // Format Column Cells
+            sheet.Headers.ForEach(header => {
+                if(header.Format == null) {
+                    return;
+                }
+
+                var repeatCellRequest = new RepeatCellRequest();
+                repeatCellRequest.Fields = "*";
+                repeatCellRequest.Range = new GridRange{ 
+                                                SheetId = sheetId,
+                                                StartColumnIndex = header.Index,
+                                                EndColumnIndex = header.Index + 1,
+                                                StartRowIndex = 1,
+                                            };
+                repeatCellRequest.Cell = new CellData {
+                    UserEnteredFormat = SheetHelper.GetCellFormat((FormatEnum)header.Format)
+                };
+
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = repeatCellRequest });
+            });
+
+            // Add alternating colors
+            var addBandingRequest = new AddBandingRequest();
+            addBandingRequest.BandedRange = new BandedRange {
+                BandedRangeId = 1,
+                Range = new GridRange { SheetId = sheetId },
+                RowProperties = new BandingProperties { HeaderColor = SheetHelper.GetColor(sheet.TabColor), FirstBandColor = SheetHelper.GetColor(ColorEnum.WHITE), SecondBandColor = SheetHelper.GetColor(ColorEnum.LIGHT_CYAN)}
+            };
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddBanding = addBandingRequest });
+
             // Protect sheet if necessary
             if (sheet.ProtectSheet) {
                 var addProtectedRangeRequest = new AddProtectedRangeRequest();
@@ -435,6 +465,7 @@ namespace GigLoggerService
             }
         });
 
+        // Console.WriteLine(JsonSerializer.Serialize(batchUpdateSpreadsheetRequest.Requests));
         var batchUpdateRequest = _googleSheetService.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _spreadsheetId);
         batchUpdateRequest.Execute();
     }
