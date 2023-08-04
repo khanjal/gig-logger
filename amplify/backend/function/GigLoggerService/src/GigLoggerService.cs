@@ -255,6 +255,9 @@ namespace GigLoggerService
                 case SheetEnum.PLACES:
                     sheetData.Add(PlaceMapper.GetSheet());
                     break;
+                case SheetEnum.SERVICES:
+                    sheetData.Add(ServiceMapper.GetSheet());
+                    break;
                 case SheetEnum.SHIFTS:
                     sheetData.Add(ShiftMapper.GetSheet());
                     break;
@@ -451,7 +454,7 @@ namespace GigLoggerService
             // Add alternating colors
             var addBandingRequest = new AddBandingRequest();
             addBandingRequest.BandedRange = new BandedRange {
-                BandedRangeId = 1,
+                BandedRangeId = sheetId,
                 Range = new GridRange { SheetId = sheetId },
                 RowProperties = new BandingProperties { HeaderColor = SheetHelper.GetColor(sheet.TabColor), FirstBandColor = SheetHelper.GetColor(ColorEnum.WHITE), SecondBandColor = SheetHelper.GetColor(ColorEnum.LIGHT_CYAN)}
             };
@@ -512,6 +515,7 @@ namespace GigLoggerService
                 break;
 
                 case SheetEnum.SERVICES:
+                    CheckSheetHeaders(values, ServiceMapper.GetSheet());
                     _sheet.Services = ServiceMapper.MapFromRangeData(values);
                 break;
 
