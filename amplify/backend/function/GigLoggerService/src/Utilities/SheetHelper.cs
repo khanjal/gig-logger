@@ -2,6 +2,15 @@ using System.Collections.Generic;
 using Google.Apis.Sheets.v4.Data;
 
 public static class SheetHelper {
+
+    public static string ArrayFormulaCountIf() {
+        return "=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{0}\",ISBLANK($A:$A), \"\",true,COUNTIF({1},$A:$A)))";
+    }
+
+    public static string ArrayFormulaSumIf() {
+        return "=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{0}\",ISBLANK($A:$A), \"\",true,SUMIF({1},$A:$A, {2})))";
+    }
+
     public static List<SheetModel> GetSheets() {
         var sheets = new List<SheetModel>();
         
@@ -19,8 +28,12 @@ public static class SheetHelper {
                 return new Color{ Red = 0, Green = 0, Blue = 0 };
             case ColorEnum.BLUE:
                 return new Color{ Red = 0, Green = 0, Blue = 1 };
+            case ColorEnum.CYAN:
+                return new Color{ Red = (float?)0.3, Green = (float?)0.8, Blue = (float?)0.9 };
             case ColorEnum.GREEN:
                 return new Color{ Red = 0, Green = (float?)0.5, Blue = 0 };
+            case ColorEnum.LIGHT_CYAN:
+                return new Color{ Red = (float?)0.9, Green = (float?)1, Blue = (float?)1 };
             case ColorEnum.LIME:
                 return new Color{ Red = 0, Green = 1, Blue = 0 };
             case ColorEnum.ORANGE:
@@ -84,7 +97,12 @@ public static class SheetHelper {
         foreach (var header in sheet.Headers)
         {
             var cell = new CellData();
-            cell.UserEnteredFormat = new CellFormat();
+            cell.UserEnteredFormat = new CellFormat {
+                TextFormat = new TextFormat {
+                    Bold = true
+                }
+            };
+
             var value = new ExtendedValue();
 
             if (!string.IsNullOrEmpty(header.Formula)) {
@@ -112,5 +130,25 @@ public static class SheetHelper {
         rows.Add(row);
 
         return rows;
+    }
+
+    public static CellFormat GetCellFormat(FormatEnum format) {
+        var cellFormat = new CellFormat();
+
+        switch (format)
+        {
+            case FormatEnum.ACCOUNTING:
+                cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0.00" };
+                break;
+            case FormatEnum.NUMBER:
+                cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0" };
+                break;
+            case FormatEnum.TIME:
+                break;
+            default:
+                break;
+        }
+
+        return cellFormat;
     }
 }
