@@ -92,11 +92,11 @@ public static class TypeMapper
             Format = FormatEnum.ACCOUNTING});
         // K - First Visit
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_FIRST.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.VISIT_FIRST.DisplayName()}\",ISBLANK($A:$A), \"\", true, IFERROR(VLOOKUP($A:$A,SORT(QUERY({SheetEnum.TRIPS}!A:D,\"SELECT D, A\"),2,true),2,0),\"\")))",
+            Formula = SheetHelper.ArrayFormulaVisit(HeaderEnum.VISIT_FIRST.DisplayName(), SheetEnum.TRIPS.DisplayName(), tripSheet.GetColumn(HeaderEnum.DATE), tripSheet.GetColumn(HeaderEnum.TYPE), true),
             Format = FormatEnum.DATE});
         // L - Last Visit
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_LAST.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.VISIT_LAST.DisplayName()}\",ISBLANK($A:$A), \"\", true, IFERROR(VLOOKUP($A:$A,SORT(QUERY({SheetEnum.TRIPS}!A:D,\"SELECT D, A\"),2,false),2,0),\"\")))",
+            Formula = SheetHelper.ArrayFormulaVisit(HeaderEnum.VISIT_LAST.DisplayName(), SheetEnum.TRIPS.DisplayName(), tripSheet.GetColumn(HeaderEnum.DATE), tripSheet.GetColumn(HeaderEnum.TYPE), false),
             Format = FormatEnum.DATE});
 
         return sheet;
