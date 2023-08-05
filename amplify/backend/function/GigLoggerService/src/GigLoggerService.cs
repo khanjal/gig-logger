@@ -258,6 +258,9 @@ namespace GigLoggerService
                 case SheetEnum.SERVICES:
                     sheetData.Add(ServiceMapper.GetSheet());
                     break;
+                case SheetEnum.REGIONS:
+                    sheetData.Add(RegionMapper.GetSheet());
+                    break;
                 case SheetEnum.SHIFTS:
                     sheetData.Add(ShiftMapper.GetSheet());
                     break;
@@ -511,6 +514,7 @@ namespace GigLoggerService
                 break;
 
                 case SheetEnum.REGIONS:
+                    CheckSheetHeaders(values, RegionMapper.GetSheet());
                     _sheet.Regions = RegionMapper.MapFromRangeData(values);
                 break;
 

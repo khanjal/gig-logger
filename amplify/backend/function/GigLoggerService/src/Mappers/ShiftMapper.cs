@@ -143,41 +143,60 @@ public static class ShiftMapper
             Note = $"Omit time from non service specific totals. Mainly useful if you multi app so you can get a more accurate $/hour calculation.{(char)10}{(char)10}Active time is still counted for the day from omitted shifts.{(char)10}{(char)10}IE: Omit Uber if you have it also running during DoorDash."});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
             Note = $"Requests/Deliveries/Trips{(char)10}{(char)10}Use this column if you don't track requests or need to increase the number."});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName()});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName()});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName()});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
+            Format = FormatEnum.ACCOUNTING,
             Note = "Distance not accounted for on the Requests sheet."});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName()});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName(), 
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(F:F),SUMIF({sheetTripsName}!X:X,AG1:AG,{sheetTripsName}!H:H),F1:F)))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(F:F),SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD,{sheetTripsName}!H:H),F1:F)))",
             Note = "Total Active time from Requests and Shifts sheets."});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_TIME.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TIME.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(H:H=false,IF(ISBLANK(G:G),Q:Q,G:G),0)))"});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_TRIPS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TRIPS.DisplayName()}\",ISBLANK(A1:A), \"\",true, I1:I + COUNTIF({sheetTripsName}!X:X,AG1:AG)))",
-            Note = "Number of requests during a shift."});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TRIPS.DisplayName()}\",ISBLANK(A1:A), \"\",true, I1:I + COUNTIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD)))",
+            Note = "Number of requests during a shift.",
+            Format = FormatEnum.NUMBER});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_PAY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_PAY.DisplayName()}\",ISBLANK(A1:A), \"\",true,J1:J + SUMIF({sheetTripsName}!X:X,AG1:AG,Trips!I:I)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_PAY.DisplayName()}\",ISBLANK(A1:A), \"\",true,J1:J + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD,{tripSheet.GetRange(HeaderEnum.PAY)})))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_TIPS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TIPS.DisplayName()}\",ISBLANK(A1:A), \"\",true,K1:K + SUMIF({sheetTripsName}!X:X,AG1:AG,{sheetTripsName}!J:J)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_TIPS.DisplayName()}\",ISBLANK(A1:A), \"\",true,K1:K + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD,{tripSheet.GetRange(HeaderEnum.TIP)})))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_BONUS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_BONUS.DisplayName()}\",ISBLANK(A1:A), \"\",true,L1:L + SUMIF({sheetTripsName}!X:X,AG1:AG,{sheetTripsName}!K:K)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_BONUS.DisplayName()}\",ISBLANK(A1:A), \"\",true,L1:L + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD,{tripSheet.GetRange(HeaderEnum.BONUS)})))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_GRAND.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_GRAND.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(A1:A), \"\", T1:T+U1:U+V1:V)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_GRAND.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(A1:A), \"\", T1:T+U1:U+V1:V)))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_CASH.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_CASH.DisplayName()}\",ISBLANK(A1:A), \"\",true,SUMIF({sheetTripsName}!X:X,AG1:AG,{sheetTripsName}!M:M)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_CASH.DisplayName()}\",ISBLANK(A1:A), \"\",true,SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD,{tripSheet.GetRange(HeaderEnum.CASH)})))",
+            Format = FormatEnum.ACCOUNTING});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TRIP.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK(A1:A), \"\", AC1:AC = 0, \"\", true,IF(ISBLANK(S1:S), \"\", W1:W/IF(S1:S=0,1,S1:S))))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TIME.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.AMOUNT_PER_TIME.DisplayName()}\",ISBLANK(A1:A), \"\", AD1:AD = 0, \"\", true,IF(ISBLANK(S1:S), \"\", W1:W/IF(S1:S=0,1,S1:S))))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.AMOUNT_PER_TIME.DisplayName()}\",ISBLANK(A1:A), \"\", AD1:AD = 0, \"\", true,IF(ISBLANK(S1:S), \"\", W1:W/IF(S1:S=0,1,S1:S))))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_DISTANCE.DisplayName()}\",ISBLANK(A1:A), \"\",true,N1:N + SUMIF({sheetTripsName}!X:X,AG1:AG,{sheetTripsName}!P:P)))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL_DISTANCE.DisplayName()}\",ISBLANK(A1:A), \"\",true,N1:N + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},AD1:AD,{tripSheet.GetRange(HeaderEnum.DISTANCE)})))",
             Note = "Total Miles from Requests and Shifts"});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(W1:W), \"\", W1:W/IF(AA1:AA=0,1,AA1:AA))))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(W1:W), \"\", W1:W/IF(AA1:AA=0,1,AA1:AA))))",
+            Format = FormatEnum.ACCOUNTING});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS_PER_HOUR.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TRIPS_PER_HOUR.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(G1:G), \"\", (S1:S/(G1:G*24)))))",
+            Format = FormatEnum.ACCOUNTING});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.KEY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK(B1:B), \"\",true,IF(ISBLANK(C1:C), A1:A & \"-0-\" & B1:B, A1:A & \"-\" & C1:C & \"-\" & B1:B)))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK(D1:D), \"\",true,IF(ISBLANK(E1:E), A1:A & \"-0-\" & D1:D, A1:A & \"-\" & E1:E & \"-\" & D1:D)))",
             Note = "Used to connect requests to shifts."});
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK(A1:A), \"\",true,DAY(A:A)))"});
