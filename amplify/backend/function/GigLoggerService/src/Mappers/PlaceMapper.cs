@@ -42,19 +42,20 @@ public static class PlaceMapper
     public static SheetModel GetSheet() {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.PLACES.DisplayName();
-        sheet.TabColor = ColorEnum.BLUE;
+        sheet.TabColor = ColorEnum.CYAN;
+        sheet.CellColor = ColorEnum.LIGHT_CYAN;
         sheet.FreezeColumnCount = 1;
         sheet.FreezeRowCount = 1;
         sheet.ProtectSheet = true;
 
         var tripSheet = TripMapper.GetSheet();
         var sheetTripsName = SheetEnum.TRIPS.DisplayName();
-        var sheetTripsPlaceRange = tripSheet.Headers.GetHeader(HeaderEnum.PLACE).Range;
+        var sheetTripsPlaceRange = tripSheet.GetRange(HeaderEnum.PLACE, 2);
 
         sheet.Headers = new List<SheetCellModel>();
 
         sheet.Headers.Add(new SheetCellModel{Name = HeaderEnum.PLACE.DisplayName(),
-            Formula = "={\""+HeaderEnum.PLACE.DisplayName()+"\";SORT(UNIQUE("+sheetTripsName+"!E2:E))}"});
+            Formula = "={\""+HeaderEnum.PLACE.DisplayName()+"\";SORT(UNIQUE("+sheetTripsPlaceRange+"))}"});
         sheet.Headers.Add(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TRIPS.DisplayName()}\",ISBLANK($A:$A), \"\",true,COUNTIF({sheetTripsName}!E:E,$A:$A)))"});
         sheet.Headers.Add(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),

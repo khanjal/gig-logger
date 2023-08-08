@@ -8,7 +8,6 @@ public static class ListExtensions
         var column = SheetHelper.GetColumnName(headers.Count);
         header.Column = column;
         header.Index = headers.Count;
-        header.Range = $"{column}2:{column}";
         headers.Add(header);
     }
 
