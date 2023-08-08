@@ -16,19 +16,19 @@ public enum HeaderEnum {
     [Description("Prev Amt")]
     AMOUNT_PREVIOUS,
 
-    [Description("$/Day")]
+    [Description("Amt/Day")]
     AMOUNT_PER_DAY,
 
-    [Description("$/Dist")]
+    [Description("Amt/Dist")]
     AMOUNT_PER_DISTANCE,
 
-    [Description("$/Prev")]
+    [Description("Amt/Prev")]
     AMOUNT_PER_PREVIOUS_DAY,
 
-    [Description("$/Time")]
+    [Description("Amt/Hour")]
     AMOUNT_PER_TIME,
 
-    [Description("$/Trip")]
+    [Description("Amt/Trip")]
     AMOUNT_PER_TRIP,
 
     [Description("Average")]

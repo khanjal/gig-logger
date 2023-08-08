@@ -3,6 +3,7 @@ public class SheetCellModel {
     public int Index { get; set; }
     public string Column { get; set; }
     public string Range { get; set; }
+    public string HeaderlessRange { get; set; }
     public string Formula { get; set; }
     public FormatEnum? Format { get; set; }
     public bool Border { get; set; }

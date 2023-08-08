@@ -459,7 +459,7 @@ namespace GigLoggerService
             addBandingRequest.BandedRange = new BandedRange {
                 BandedRangeId = sheetId,
                 Range = new GridRange { SheetId = sheetId },
-                RowProperties = new BandingProperties { HeaderColor = SheetHelper.GetColor(sheet.TabColor), FirstBandColor = SheetHelper.GetColor(ColorEnum.WHITE), SecondBandColor = SheetHelper.GetColor(ColorEnum.LIGHT_CYAN)}
+                RowProperties = new BandingProperties { HeaderColor = SheetHelper.GetColor(sheet.TabColor), FirstBandColor = SheetHelper.GetColor(ColorEnum.WHITE), SecondBandColor = SheetHelper.GetColor(sheet.CellColor)}
             };
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddBanding = addBandingRequest });
 

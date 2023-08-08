@@ -7,8 +7,15 @@ public static class ObjectExtensions
         return $"{sheet.Headers.FirstOrDefault(x => x.Name == header.DisplayName()).Column}";
     }
 
-    public static string GetRange(this SheetModel sheet, HeaderEnum header)
+    public static string GetRange(this SheetModel sheet, HeaderEnum header, int row = 1)
     {
-        return $"{sheet.Name}!{sheet.Headers.FirstOrDefault(x => x.Name == header.DisplayName()).Range}";
+        var column = GetColumn(sheet, header);
+        return $"{sheet.Name}!{column}{row}:{column}";
+    }
+
+    public static string GetLocalRange(this SheetModel sheet, HeaderEnum header, int row = 1)
+    {
+        var column = GetColumn(sheet, header);
+        return $"{column}{row}:{column}";
     }
 }
