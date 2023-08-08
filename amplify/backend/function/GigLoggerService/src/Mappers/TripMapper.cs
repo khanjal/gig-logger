@@ -152,52 +152,91 @@ public static class TripMapper
     public static SheetModel GetSheet() {
         var sheet = new SheetModel();
         sheet.Name = SheetEnum.TRIPS.DisplayName();
-        sheet.TabColor = ColorEnum.RED;
+        sheet.TabColor = ColorEnum.DARK_YELLOW;
+        sheet.CellColor = ColorEnum.LIGHT_YELLOW;
         sheet.FreezeColumnCount = 1;
         sheet.FreezeRowCount = 1;
 
         sheet.Headers = new List<SheetCellModel>();
 
+        // These may change if columns are added to Shifts
+        var shiftSheetKeyColumn = "Q";
+        var shiftSheetRegionColumn = "O";
+
+        // Date
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName()});
+        var dateRange = sheet.GetLocalRange(HeaderEnum.DATE);
+        // Service
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName()});
+        // #
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NUMBER.DisplayName(),
             Note = "Shift Number 1-9 Leave blank if there is only shift for that service for that day."});
+        // Type
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
             Note = "Pickup, Shop, Order, Curbside, Canceled"});
+        // Place
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PLACE.DisplayName(),
             Note = "Location of pickup (delivery)."});
+        // Pickup
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PICKUP.DisplayName(),
             Note = "Time when request/ride picked up."});
+        // Dropoff
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DROPOFF.DisplayName()});
+        // Duration
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DURATION.DisplayName(),
-            Note = "Minutes task took to complete."});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName()});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName()});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName()});
+            Note = "Hours/Minutes task took to complete.",
+            Format = FormatEnum.DURATION});
+        // Pay
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Tip
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Bonus
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Total
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(), 
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK(A1:A), \"\",true,IF(ISBLANK(A1:A), \"\",I1:I+J1:J+K1:K)))"});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName()});
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.PAY)}+{sheet.GetLocalRange(HeaderEnum.TIP)}+{sheet.GetLocalRange(HeaderEnum.BONUS)}))",
+            Format = FormatEnum.ACCOUNTING});
+        // Cash
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Odo Start
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ODOMETER_START.DisplayName()});
+        // Odo End
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ODOMETER_END.DisplayName()});
+        // Distance
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
             Note = "How many miles/km the request took."});
+        // Name
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NAME.DisplayName()});
+        // Start Address
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_START.DisplayName()});
+        // End Address
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_END.DisplayName()});
+        // End Unit
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.UNIT_END.DisplayName(),
             Note = "Apartment, Unit, Room, Suite"});
+        // Order Number
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ORDER_NUMBER.DisplayName()});
+        // Note
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.REGION.DisplayName()}\",ISBLANK($A:$A), \"\",true,IFERROR(VLOOKUP($X:$X,SORT(QUERY({SheetEnum.SHIFTS.DisplayName()}!O:AG,\"SELECT AG, O\"),2,true),2,0),\"\")))"});
+        // Key
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.KEY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK(B1:B), \"\",true,IF(ISBLANK(C1:C), A1:A & \"-0-\" & B1:B, A1:A & \"-\" & C1:C & \"-\" & B1:B)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.SERVICE)}), \"\",true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.NUMBER)}), {dateRange} & \"-0-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}, {dateRange} & \"-\" & {sheet.GetLocalRange(HeaderEnum.NUMBER)} & \"-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)})))"});
+        // Region
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.REGION.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IFERROR(VLOOKUP({sheet.GetLocalRange(HeaderEnum.KEY)},SORT(QUERY({SheetEnum.SHIFTS.DisplayName()}!{shiftSheetRegionColumn}:{shiftSheetKeyColumn},\"SELECT {shiftSheetKeyColumn}, {shiftSheetRegionColumn}\"),2,true),2,0),\"\")))"});
+        // Day
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK(A1:A), \"\",true,DAY(A:A)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({dateRange}), \"\",true,DAY({dateRange})))"});
+        // Month
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.MONTH.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.MONTH.DisplayName()}\",ISBLANK(A1:A), \"\",true,MONTH(A:A)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.MONTH.DisplayName()}\",ISBLANK({dateRange}), \"\",true,MONTH({dateRange})))"});
+        // Year
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.YEAR.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW(A1:A)=1,\"{HeaderEnum.YEAR.DisplayName()}\",ISBLANK(A1:A), \"\",true,YEAR(A:A)))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.YEAR.DisplayName()}\",ISBLANK({dateRange}), \"\",true,YEAR({dateRange})))"});
 
         return sheet;
     }

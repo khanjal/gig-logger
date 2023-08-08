@@ -53,7 +53,7 @@ public static class TypeMapper
 
         // A - Type
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
-            Formula = "={\""+HeaderEnum.TYPE.DisplayName()+"\";SORT(UNIQUE("+tripSheet.GetRange(HeaderEnum.TYPE)+"))}"});
+            Formula = "={\""+HeaderEnum.TYPE.DisplayName()+"\";SORT(UNIQUE("+tripSheet.GetRange(HeaderEnum.TYPE, 2)+"))}"});
         // B - Trips
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
             Formula = string.Format(SheetHelper.ArrayFormulaCountIf(), HeaderEnum.TRIPS.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE)),

@@ -34,10 +34,16 @@ public static class SheetHelper {
                 return new Color{ Red = 0, Green = 0, Blue = 1 };
             case ColorEnum.CYAN:
                 return new Color{ Red = (float?)0.3, Green = (float?)0.8, Blue = (float?)0.9 };
+            case ColorEnum.DARK_YELLOW:
+                return new Color{ Red = (float?)0.9686274509803922, Green = (float?)0.796078431372549, Blue = (float?)0.30196078431372547 };
             case ColorEnum.GREEN:
                 return new Color{ Red = 0, Green = (float?)0.5, Blue = 0 };
             case ColorEnum.LIGHT_CYAN:
                 return new Color{ Red = (float?)0.9, Green = (float?)1, Blue = (float?)1 };
+            case ColorEnum.LIGHT_RED:
+                return new Color{ Red = (float?)1, Green = (float?)0.9, Blue = (float?)0.85 };
+            case ColorEnum.LIGHT_YELLOW:
+                return new Color{ Red = (float?)0.996078431372549, Green = (float?)0.9725490196078431, Blue = (float?)0.8901960784313725 };
             case ColorEnum.LIME:
                 return new Color{ Red = 0, Green = 1, Blue = 0 };
             case ColorEnum.ORANGE:
@@ -136,6 +142,7 @@ public static class SheetHelper {
         return rows;
     }
 
+    // https://developers.google.com/sheets/api/guides/formats
     public static CellFormat GetCellFormat(FormatEnum format) {
         var cellFormat = new CellFormat();
 
@@ -146,6 +153,9 @@ public static class SheetHelper {
                 break;
             case FormatEnum.DATE:
                 cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "mm/dd/yyyy" };
+                break;
+            case FormatEnum.DURATION:
+                cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "[h]:mm" };
                 break;
             case FormatEnum.NUMBER:
                 cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0" };

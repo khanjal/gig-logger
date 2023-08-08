@@ -53,7 +53,7 @@ public static class ServiceMapper
 
         // A - Service
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName(),
-            Formula = "={\""+HeaderEnum.SERVICE.DisplayName()+"\";SORT(UNIQUE({"+shiftSheet.GetRange(HeaderEnum.SERVICE)+"}))}"});
+            Formula = "={\""+HeaderEnum.SERVICE.DisplayName()+"\";SORT(UNIQUE({"+shiftSheet.GetRange(HeaderEnum.SERVICE, 2)+"}))}"});
         // B - Trips
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
             Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.TRIPS.DisplayName(), shiftSheet.GetRange(HeaderEnum.SERVICE), shiftSheet.GetRange(HeaderEnum.TOTAL_TRIPS)),
