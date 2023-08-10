@@ -169,4 +169,19 @@ public static class SheetHelper {
 
         return cellFormat;
     }
+
+    public static DataValidationRule GetDataValidation(ValidationEnum validation) {
+        var dataValidation = new DataValidationRule();
+
+        switch (validation)
+        {
+            case ValidationEnum.BOOLEAN:
+                dataValidation.Condition = new BooleanCondition  { Type = "BOOLEAN" };
+                break;
+            default:
+                break;
+        }
+
+        return dataValidation;
+    }
 }

@@ -171,6 +171,10 @@ public static class TripMapper
         // #
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NUMBER.DisplayName(),
             Note = "Shift Number 1-9 Leave blank if there is only shift for that service for that day."});
+        // X
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.EXCLUDE.DisplayName(),
+            Note = "Exclude this trip from being included in shift.",
+            Validation = ValidationEnum.BOOLEAN});
         // Type
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
             Note = "Pickup, Shop, Order, Curbside, Canceled"});
