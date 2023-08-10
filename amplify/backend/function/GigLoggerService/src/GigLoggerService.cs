@@ -435,7 +435,7 @@ namespace GigLoggerService
 
             // Format Column Cells
             sheet.Headers.ForEach(header => {
-                if(header.Format == null) {
+                if(header.Format == null && header.Validation == null) {
                     return;
                 }
 
@@ -447,9 +447,15 @@ namespace GigLoggerService
                                                 EndColumnIndex = header.Index + 1,
                                                 StartRowIndex = 1,
                                             };
-                repeatCellRequest.Cell = new CellData {
-                    UserEnteredFormat = SheetHelper.GetCellFormat((FormatEnum)header.Format)
-                };
+                repeatCellRequest.Cell = new CellData();
+
+                if (header.Format != null) {
+                    repeatCellRequest.Cell.UserEnteredFormat = SheetHelper.GetCellFormat((FormatEnum)header.Format);
+                }
+
+                if (header.Validation != null) {
+                    repeatCellRequest.Cell.DataValidation = SheetHelper.GetDataValidation((ValidationEnum)header.Validation);
+                }
 
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = repeatCellRequest });
             });

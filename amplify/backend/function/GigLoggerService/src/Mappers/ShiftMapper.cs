@@ -152,7 +152,8 @@ public static class ShiftMapper
             Format = FormatEnum.DURATION});
         // Omit
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIME_OMIT.DisplayName(),
-            Note = $"Omit time from non service specific totals. Mainly useful if you multi app so you can get a more accurate $/hour calculation.{(char)10}{(char)10}Active time is still counted for the day from omitted shifts.{(char)10}{(char)10}IE: Omit Uber if you have it also running during DoorDash."});
+            Note = $"Omit time from non service specific totals. Mainly useful if you multi app so you can get a more accurate $/hour calculation.{(char)10}{(char)10}Active time is still counted for the day from omitted shifts.{(char)10}{(char)10}IE: Omit Uber if you have it also running during DoorDash.",
+            Validation = ValidationEnum.BOOLEAN});
         // Trips
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
             Note = $"Requests/Deliveries/Trips{(char)10}{(char)10}Use this column if you don't track requests or need to increase the number."});

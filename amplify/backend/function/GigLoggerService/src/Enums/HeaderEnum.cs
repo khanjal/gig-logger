@@ -69,6 +69,8 @@ public enum HeaderEnum {
 
     [Description("Duration")]
     DURATION,
+    [Description("X")]
+    EXCLUDE,
 
     [Description("Key")]
     KEY,
