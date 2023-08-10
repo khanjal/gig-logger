@@ -228,7 +228,8 @@ public static class TripMapper
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
         // Key
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.KEY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.SERVICE)}), \"\",true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.NUMBER)}), {dateRange} & \"-0-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}, {dateRange} & \"-\" & {sheet.GetLocalRange(HeaderEnum.NUMBER)} & \"-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)})))"});
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.SERVICE)}), \"\",true,IF({sheet.GetLocalRange(HeaderEnum.EXCLUDE)},{dateRange} & \"-X-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)},IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.NUMBER)}), {dateRange} & \"-0-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}, {dateRange} & \"-\" & {sheet.GetLocalRange(HeaderEnum.NUMBER)} & \"-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}))))",
+            Note = "Used to connect trips to shifts."});
         // Region
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.REGION.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IFERROR(VLOOKUP({sheet.GetLocalRange(HeaderEnum.KEY)},SORT(QUERY({SheetEnum.SHIFTS.DisplayName()}!{shiftSheetRegionColumn}:{shiftSheetKeyColumn},\"SELECT {shiftSheetKeyColumn}, {shiftSheetRegionColumn}\"),2,true),2,0),\"\")))"});

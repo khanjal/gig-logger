@@ -293,11 +293,11 @@ namespace GigLoggerService
         foreach (var sheetHeader in sheetModel.Headers)
         {
             if(!data.Any(x => x.ToString().Trim() == sheetHeader.Name)) {
-                _sheet.Errors.Add($"Sheet {sheetModel.Name} missing {sheetHeader.Name}");
+                _sheet.Errors.Add($"Sheet [{sheetModel.Name}]: Missing [{sheetHeader.Name}]");
             }
             else {
                 if(index < headerArray.Count() && sheetHeader.Name != headerArray[index].Trim()) {
-                    _sheet.Warnings.Add($"Sheet {sheetModel.Name} header {sheetHeader.Name} does not match {headerArray[index].Trim()}");
+                    _sheet.Warnings.Add($"Sheet [{sheetModel.Name}]: Expected [{sheetHeader.Name}] but found [{headerArray[index].Trim()}]");
                 }
             }
             index++;
