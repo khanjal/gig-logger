@@ -18,8 +18,8 @@ public static class SheetHelper {
     public static List<SheetModel> GetSheets() {
         var sheets = new List<SheetModel>();
         
-        sheets.Add(TripMapper.GetSheet());
         sheets.Add(ShiftMapper.GetSheet());
+        sheets.Add(TripMapper.GetSheet());
 
         return sheets;
     }
