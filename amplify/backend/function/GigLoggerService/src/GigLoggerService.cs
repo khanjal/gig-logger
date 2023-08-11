@@ -252,6 +252,12 @@ namespace GigLoggerService
 
             switch (sheetEnum)
             {
+                case SheetEnum.ADDRESSES:
+                    sheetData.Add(AddressMapper.GetSheet());
+                    break;
+                case SheetEnum.NAMES:
+                    sheetData.Add(NameMapper.GetSheet());
+                    break;
                 case SheetEnum.PLACES:
                     sheetData.Add(PlaceMapper.GetSheet());
                     break;
@@ -508,14 +514,17 @@ namespace GigLoggerService
             switch (sheetEnum)
             {
                 case SheetEnum.ADDRESSES:
+                    CheckSheetHeaders(values, AddressMapper.GetSheet());
                     _sheet.Addresses = AddressMapper.MapFromRangeData(values);
                     break;
 
                 case SheetEnum.NAMES:
+                    CheckSheetHeaders(values, NameMapper.GetSheet());
                     _sheet.Names = NameMapper.MapFromRangeData(values);
                 break;
 
                 case SheetEnum.PLACES:
+                    CheckSheetHeaders(values, PlaceMapper.GetSheet());
                     _sheet.Places = PlaceMapper.MapFromRangeData(values);
                 break;
 
