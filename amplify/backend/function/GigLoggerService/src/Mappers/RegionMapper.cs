@@ -39,67 +39,19 @@ public static class RegionMapper
     }
 
     public static SheetModel GetSheet() {
-        var sheet = new SheetModel();
-        sheet.Name = SheetEnum.REGIONS.DisplayName();
-        sheet.TabColor = ColorEnum.CYAN;
-        sheet.CellColor = ColorEnum.LIGHT_CYAN;
-        sheet.FreezeColumnCount = 1;
-        sheet.FreezeRowCount = 1;
-        sheet.ProtectSheet = true;
+        var sheet = new SheetModel
+        {
+            Name = SheetEnum.REGIONS.DisplayName(),
+            TabColor = ColorEnum.CYAN,
+            CellColor = ColorEnum.LIGHT_CYAN,
+            FreezeColumnCount = 1,
+            FreezeRowCount = 1,
+            ProtectSheet = true
+        };
 
         var shiftSheet = ShiftMapper.GetSheet();
-        var shiftSheetRegionRange = shiftSheet.GetRange(HeaderEnum.REGION, 2);
-
-        sheet.Headers = new List<SheetCellModel>();
-
-        // A - Service
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayForumlaUnique(shiftSheetRegionRange,HeaderEnum.REGION.DisplayName())});
-        var regionRange = sheet.GetLocalRange(HeaderEnum.REGION);
-        // B - Trips
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaSumIf(regionRange, HeaderEnum.TRIPS.DisplayName(), shiftSheetRegionRange, shiftSheet.GetRange(HeaderEnum.TOTAL_TRIPS)),
-            Format = FormatEnum.NUMBER});
-        // C - Pay
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaSumIf(regionRange, HeaderEnum.PAY.DisplayName(), shiftSheetRegionRange, shiftSheet.GetRange(HeaderEnum.TOTAL_PAY)),
-            Format = FormatEnum.ACCOUNTING});
-        // D - Tip
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIPS.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaSumIf(regionRange, HeaderEnum.TIPS.DisplayName(), shiftSheetRegionRange, shiftSheet.GetRange(HeaderEnum.TOTAL_TIPS)),
-            Format = FormatEnum.ACCOUNTING});
-        // E - Bonus
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaSumIf(regionRange, HeaderEnum.BONUS.DisplayName(), shiftSheetRegionRange, shiftSheet.GetRange(HeaderEnum.TOTAL_BONUS)),
-            Format = FormatEnum.ACCOUNTING});
-        // F - Total
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaTotal(regionRange, HeaderEnum.TOTAL.DisplayName(), sheet.GetLocalRange(HeaderEnum.PAY), sheet.GetLocalRange(HeaderEnum.TIPS), sheet.GetLocalRange(HeaderEnum.BONUS)),
-            Format = FormatEnum.ACCOUNTING});
-        // G - Cash
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaSumIf(regionRange, HeaderEnum.CASH.DisplayName(), shiftSheetRegionRange, shiftSheet.GetRange(HeaderEnum.TOTAL_CASH)),
-            Format = FormatEnum.ACCOUNTING});
-        // H - Amt/Trip
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TRIP.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({regionRange})=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK({regionRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.TRIPS)}=0,1,{sheet.GetLocalRange(HeaderEnum.TRIPS)})))",
-            Format = FormatEnum.ACCOUNTING});
-        // I - Dist
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaSumIf(regionRange, HeaderEnum.DISTANCE.DisplayName(), shiftSheetRegionRange, shiftSheet.GetRange(HeaderEnum.TOTAL_DISTANCE)),
-            Format = FormatEnum.NUMBER});
-        // J - Amt/Dist
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({regionRange})=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK({regionRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.DISTANCE)}=0,1,{sheet.GetLocalRange(HeaderEnum.DISTANCE)})))",
-            Format = FormatEnum.ACCOUNTING});
-        // K - First Visit
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_FIRST.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaVisit(regionRange, HeaderEnum.VISIT_FIRST.DisplayName(), SheetEnum.TRIPS.DisplayName(), shiftSheet.GetColumn(HeaderEnum.DATE), shiftSheet.GetColumn(HeaderEnum.REGION), true),
-            Format = FormatEnum.DATE});
-        // L - Last Visit
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_LAST.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayFormulaVisit(regionRange, HeaderEnum.VISIT_LAST.DisplayName(), SheetEnum.TRIPS.DisplayName(), shiftSheet.GetColumn(HeaderEnum.DATE), shiftSheet.GetColumn(HeaderEnum.REGION), false),
-            Format = FormatEnum.DATE});
+        
+        sheet.Headers = SheetHelper.GetCommonShiftGroupSheetHeaders(shiftSheet, HeaderEnum.REGION);
 
         return sheet;
     }

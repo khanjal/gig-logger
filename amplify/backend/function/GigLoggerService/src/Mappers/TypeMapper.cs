@@ -39,65 +39,19 @@ public static class TypeMapper
     }
 
     public static SheetModel GetSheet() {
-        var sheet = new SheetModel();
-        sheet.Name = SheetEnum.TYPES.DisplayName();
-        sheet.TabColor = ColorEnum.CYAN;
-        sheet.CellColor = ColorEnum.LIGHT_CYAN;
-        sheet.FreezeColumnCount = 1;
-        sheet.FreezeRowCount = 1;
-        sheet.ProtectSheet = true;
+        var sheet = new SheetModel
+        {
+            Name = SheetEnum.TYPES.DisplayName(),
+            TabColor = ColorEnum.CYAN,
+            CellColor = ColorEnum.LIGHT_CYAN,
+            FreezeColumnCount = 1,
+            FreezeRowCount = 1,
+            ProtectSheet = true
+        };
 
         var tripSheet = TripMapper.GetSheet();
 
-        sheet.Headers = new List<SheetCellModel>();
-
-        // A - Type
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
-            Formula = "={\""+HeaderEnum.TYPE.DisplayName()+"\";SORT(UNIQUE("+tripSheet.GetRange(HeaderEnum.TYPE, 2)+"))}"});
-        // B - Trips
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
-            Formula = string.Format(SheetHelper.ArrayFormulaCountIf(), HeaderEnum.TRIPS.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE)),
-            Format = FormatEnum.NUMBER});
-        // C - Pay
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
-            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.PAY.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.PAY)),
-            Format = FormatEnum.ACCOUNTING});
-        // D - Tip
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName(),
-            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.TIP.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.TIP)),
-            Format = FormatEnum.ACCOUNTING});
-        // E - Bonus
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
-            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.BONUS.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.BONUS)),
-            Format = FormatEnum.ACCOUNTING});
-        // F - Total
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK($A:$A), \"\",true,C1:C+D1:D+E1:E))",
-            Format = FormatEnum.ACCOUNTING});
-        // G - Cash
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),
-            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.CASH.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.CASH)),
-            Format = FormatEnum.ACCOUNTING});
-        // H - Amt/Trip
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TRIP.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_TRIP.DisplayName()}\",ISBLANK($A:$A), \"\", F:F = 0, 0,true,F:F/IF(B:B=0,1,B:B)))",
-            Format = FormatEnum.ACCOUNTING});
-        // I - Dist
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
-            Formula = string.Format(SheetHelper.ArrayFormulaSumIf(), HeaderEnum.DISTANCE.DisplayName(), tripSheet.GetRange(HeaderEnum.TYPE), tripSheet.GetRange(HeaderEnum.DISTANCE)),
-            Format = FormatEnum.NUMBER});
-        // J - Amt/Dist
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW($A:$A)=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK($A:$A), \"\", H:H = 0, 0,true,F:F/IF(I:I=0,1,I:I)))",
-            Format = FormatEnum.ACCOUNTING});
-        // K - First Visit
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_FIRST.DisplayName(),
-            Formula = SheetHelper.ArrayFormulaVisit(HeaderEnum.VISIT_FIRST.DisplayName(), SheetEnum.TRIPS.DisplayName(), tripSheet.GetColumn(HeaderEnum.DATE), tripSheet.GetColumn(HeaderEnum.TYPE), true),
-            Format = FormatEnum.DATE});
-        // L - Last Visit
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_LAST.DisplayName(),
-            Formula = SheetHelper.ArrayFormulaVisit(HeaderEnum.VISIT_LAST.DisplayName(), SheetEnum.TRIPS.DisplayName(), tripSheet.GetColumn(HeaderEnum.DATE), tripSheet.GetColumn(HeaderEnum.TYPE), false),
-            Format = FormatEnum.DATE});
+        sheet.Headers = SheetHelper.GetCommonTripGroupSheetHeaders(tripSheet, HeaderEnum.TYPE);
 
         return sheet;
     }
