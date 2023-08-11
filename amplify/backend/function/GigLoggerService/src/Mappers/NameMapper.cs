@@ -24,7 +24,7 @@ public static class NameMapper
             {
                 Id = id,
                 Name = HeaderParser.GetStringValue(HeaderEnum.NAME.DisplayName(), value, headers),
-                Visits = HeaderParser.GetIntValue(HeaderEnum.VISITS.DisplayName(), value, headers),
+                Visits = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
                 Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
                 Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
                 Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
@@ -36,5 +36,23 @@ public static class NameMapper
             names.Add(name);
         }
         return names;
+    }
+
+    public static SheetModel GetSheet() {
+        var sheet = new SheetModel
+        {
+            Name = SheetEnum.NAMES.DisplayName(),
+            TabColor = ColorEnum.CYAN,
+            CellColor = ColorEnum.LIGHT_CYAN,
+            FreezeColumnCount = 1,
+            FreezeRowCount = 1,
+            ProtectSheet = true
+        };
+
+        var tripSheet = TripMapper.GetSheet();
+
+        sheet.Headers = SheetHelper.GetCommonTripGroupSheetHeaders(tripSheet, HeaderEnum.NAME);
+
+        return sheet;
     }
 }

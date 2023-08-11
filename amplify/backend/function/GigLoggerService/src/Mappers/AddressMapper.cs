@@ -20,11 +20,11 @@ public static class AddressMapper
                 continue;
             }
 
-            AddressEntity address = new AddressEntity()
+            AddressEntity address = new()
             {
                 Id = id,
                 Address = HeaderParser.GetStringValue(HeaderEnum.ADDRESS.DisplayName(), value, headers),
-                Visits = HeaderParser.GetIntValue(HeaderEnum.VISITS.DisplayName(), value, headers),
+                Visits = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
                 Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
                 Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
                 Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
@@ -36,5 +36,23 @@ public static class AddressMapper
             addresses.Add(address);
         }
         return addresses;
+    }
+
+    public static SheetModel GetSheet() {
+        var sheet = new SheetModel
+        {
+            Name = SheetEnum.ADDRESSES.DisplayName(),
+            TabColor = ColorEnum.CYAN,
+            CellColor = ColorEnum.LIGHT_CYAN,
+            FreezeColumnCount = 1,
+            FreezeRowCount = 1,
+            ProtectSheet = true
+        };
+
+        var tripSheet = TripMapper.GetSheet();
+
+        sheet.Headers = SheetHelper.GetCommonTripGroupSheetHeaders(tripSheet, HeaderEnum.ADDRESS_END);
+
+        return sheet;
     }
 }
