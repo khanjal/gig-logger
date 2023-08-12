@@ -5,6 +5,8 @@ public enum ColorEnum {
     DARK_YELLOW,
     GREEN,
     LIGHT_CYAN,
+    LIGHT_GRAY,
+    LIGHT_GREEN,
     LIGHT_RED,
     LIGHT_YELLOW,
     LIME,
