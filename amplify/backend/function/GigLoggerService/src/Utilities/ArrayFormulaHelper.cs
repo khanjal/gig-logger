@@ -23,4 +23,8 @@ public static class ArrayFormulaHelper {
     public static string ArrayForumlaUnique(string keyRange, string headerText) {
         return "={\""+headerText+"\";SORT(UNIQUE({"+keyRange+"}))}";
     }
+
+    public static string ArrayForumlaUniqueFilter(string keyRange, string headerText) {
+        return "={\""+headerText+"\";SORT(UNIQUE(FILTER("+keyRange+","+keyRange+"<>\"\")),3,1,2,1)}";
+    }
 }

@@ -186,7 +186,7 @@ public static class ShiftMapper
 
         // T Active
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName(), 
-            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.TIME_ACTIVE)}),SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},{keyRange},{sheetTripsName}!{sheet.GetLocalRange(HeaderEnum.TIME_OMIT)}),{sheet.GetLocalRange(HeaderEnum.TIME_ACTIVE)})))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.TIME_ACTIVE)}),SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},{keyRange},{tripSheet.GetRange(HeaderEnum.DURATION)}),{sheet.GetLocalRange(HeaderEnum.TIME_ACTIVE)})))",
             Note = "Total Active time from Requests and Shifts sheets.",
             Format = FormatEnum.DURATION});
         // T Time
@@ -204,7 +204,7 @@ public static class ShiftMapper
             Format = FormatEnum.ACCOUNTING});
         // T Tips
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_TIPS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL_TIPS.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.TIPS)} + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},{keyRange},{tripSheet.GetRange(HeaderEnum.TIP)})))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL_TIPS.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.TIPS)} + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},{keyRange},{tripSheet.GetRange(HeaderEnum.TIPS)})))",
             Format = FormatEnum.ACCOUNTING});
         // T Bonus
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_BONUS.DisplayName(),

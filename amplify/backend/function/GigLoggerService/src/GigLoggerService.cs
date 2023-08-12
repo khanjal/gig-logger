@@ -255,17 +255,23 @@ namespace GigLoggerService
                 case SheetEnum.ADDRESSES:
                     sheetData.Add(AddressMapper.GetSheet());
                     break;
+                case SheetEnum.DAILY:
+                    sheetData.Add(DailyMapper.GetSheet());
+                    break;
+                case SheetEnum.MONTHLY:
+                    sheetData.Add(MonthlyMapper.GetSheet());
+                    break;
                 case SheetEnum.NAMES:
                     sheetData.Add(NameMapper.GetSheet());
                     break;
                 case SheetEnum.PLACES:
                     sheetData.Add(PlaceMapper.GetSheet());
                     break;
-                case SheetEnum.SERVICES:
-                    sheetData.Add(ServiceMapper.GetSheet());
-                    break;
                 case SheetEnum.REGIONS:
                     sheetData.Add(RegionMapper.GetSheet());
+                    break;
+                case SheetEnum.SERVICES:
+                    sheetData.Add(ServiceMapper.GetSheet());
                     break;
                 case SheetEnum.SHIFTS:
                     sheetData.Add(ShiftMapper.GetSheet());
@@ -275,6 +281,12 @@ namespace GigLoggerService
                     break;
                 case SheetEnum.TYPES:
                     sheetData.Add(TypeMapper.GetSheet());
+                    break;
+                case SheetEnum.WEEKLY:
+                    sheetData.Add(WeeklyMapper.GetSheet());
+                    break;
+                case SheetEnum.YEARLY:
+                    sheetData.Add(YearlyMapper.GetSheet());
                     break;
                 default:
                     break;
@@ -517,45 +529,53 @@ namespace GigLoggerService
                     CheckSheetHeaders(values, AddressMapper.GetSheet());
                     _sheet.Addresses = AddressMapper.MapFromRangeData(values);
                     break;
-
+                case SheetEnum.DAILY:
+                    CheckSheetHeaders(values, DailyMapper.GetSheet());
+                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    break;
+                case SheetEnum.MONTHLY:
+                    CheckSheetHeaders(values, MonthlyMapper.GetSheet());
+                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    break;
                 case SheetEnum.NAMES:
                     CheckSheetHeaders(values, NameMapper.GetSheet());
                     _sheet.Names = NameMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.PLACES:
                     CheckSheetHeaders(values, PlaceMapper.GetSheet());
                     _sheet.Places = PlaceMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.REGIONS:
                     CheckSheetHeaders(values, RegionMapper.GetSheet());
                     _sheet.Regions = RegionMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.SERVICES:
                     CheckSheetHeaders(values, ServiceMapper.GetSheet());
                     _sheet.Services = ServiceMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.SHIFTS:
                     CheckSheetHeaders(values, ShiftMapper.GetSheet());
                     _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.TRIPS:
                     CheckSheetHeaders(values, TripMapper.GetSheet());
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.TYPES:
                     CheckSheetHeaders(values, TypeMapper.GetSheet());
                     _sheet.Types = TypeMapper.MapFromRangeData(values);
-                break;
-
+                    break;
                 case SheetEnum.WEEKDAYS:
                     _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
-                break;
+                    break;
+                case SheetEnum.WEEKLY:
+                    CheckSheetHeaders(values, WeeklyMapper.GetSheet());
+                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    break;
+                case SheetEnum.YEARLY:
+                    CheckSheetHeaders(values, YearlyMapper.GetSheet());
+                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    break;
             }
         }
 

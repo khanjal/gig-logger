@@ -180,14 +180,17 @@ public enum HeaderEnum {
     [Description("End Unit")]
     UNIT_END,
 
-    [Description("First Visit")]
+    [Description("First Trip")]
     VISIT_FIRST,
 
-    [Description("Last Visit")]
+    [Description("Last Trip")]
     VISIT_LAST,
 
     [Description("Visits")]
     VISITS,
+
+    [Description("Week")]
+    WEEK,
     
     [Description("Year")]
     YEAR,
