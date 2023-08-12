@@ -193,15 +193,15 @@ public static class TripMapper
         // Pay
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
             Format = FormatEnum.ACCOUNTING});
-        // Tip
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIP.DisplayName(),
+        // Tips
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIPS.DisplayName(),
             Format = FormatEnum.ACCOUNTING});
         // Bonus
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
             Format = FormatEnum.ACCOUNTING});
         // Total
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(), 
-            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.PAY)}+{sheet.GetLocalRange(HeaderEnum.TIP)}+{sheet.GetLocalRange(HeaderEnum.BONUS)}))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.PAY)}+{sheet.GetLocalRange(HeaderEnum.TIPS)}+{sheet.GetLocalRange(HeaderEnum.BONUS)}))",
             Format = FormatEnum.ACCOUNTING});
         // Cash
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),

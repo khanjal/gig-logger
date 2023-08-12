@@ -32,14 +32,14 @@ public enum SheetEnum {
     [Description("Daily")]
     DAILY,
 
-    [Description("Monthly")]
-    MONTHLY,
-
     [Description("Weekdays")]
     WEEKDAYS,
 
     [Description("Weekly")]
     WEEKLY,
+
+    [Description("Monthly")]
+    MONTHLY,
 
     [Description("Yearly")]
     YEARLY,
