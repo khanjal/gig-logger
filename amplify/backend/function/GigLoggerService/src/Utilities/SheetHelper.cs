@@ -153,10 +153,13 @@ public static class SheetHelper {
         switch (format)
         {
             case FormatEnum.ACCOUNTING:
-                cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "$ #,##0.00" };
+                cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "_(\"$\"* #,##0.00_);_(\"$\"* \\(#,##0.00\\);_(\"$\"* \"-\"??_);_(@_)" };
                 break;
             case FormatEnum.DATE:
                 cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "mm/dd/yyyy" };
+                break;
+            case FormatEnum.DISTANCE:
+                cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0.0" };
                 break;
             case FormatEnum.DURATION:
                 cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "[h]:mm" };
@@ -166,6 +169,9 @@ public static class SheetHelper {
                 break;
             case FormatEnum.TIME:
                 cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "hh:mm:ss am/pm" };
+                break;
+            case FormatEnum.WEEKDAY:
+                cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "ddd" };
                 break;
             default:
                 break;
@@ -231,7 +237,7 @@ public static class SheetHelper {
         // I - Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
             Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.DISTANCE.DisplayName(), sheetKeyRange, shiftSheet.GetRange(HeaderEnum.TOTAL_DISTANCE)),
-            Format = FormatEnum.ACCOUNTING});
+            Format = FormatEnum.DISTANCE});
         // J - Amt/Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK({keyRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.DISTANCE)}=0,1,{sheet.GetLocalRange(HeaderEnum.DISTANCE)})))",
@@ -280,13 +286,27 @@ public static class SheetHelper {
         // A - [Key]
         switch (keyEnum)
         {
+            case HeaderEnum.DAY:
             case HeaderEnum.WEEK:
             case HeaderEnum.MONTH:
             case HeaderEnum.YEAR:
-                // A - [Key]
-                sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
-                    Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilter(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
-                keyRange = sheet.GetLocalRange(keyEnum);
+                switch (keyEnum)
+                {
+                    case HeaderEnum.DAY:
+                        // A - [Key]
+                        sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
+                            Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilterSort(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+                        keyRange = sheet.GetLocalRange(keyEnum);
+                    break;
+                    case HeaderEnum.WEEK:
+                    case HeaderEnum.MONTH:
+                    case HeaderEnum.YEAR:
+                        // A - [Key]
+                        sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
+                            Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilter(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+                        keyRange = sheet.GetLocalRange(keyEnum);
+                    break;
+                }
                 // B - Trips
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
                     Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.TRIPS.DisplayName(), sheetKeyRange, refSheet.GetRange(HeaderEnum.TRIPS)),
@@ -335,7 +355,7 @@ public static class SheetHelper {
         // I - Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
             Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.DISTANCE.DisplayName(), sheetKeyRange, refSheet.GetRange(HeaderEnum.DISTANCE)),
-            Format = FormatEnum.ACCOUNTING});
+            Format = FormatEnum.DISTANCE});
         // J - Amt/Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK({keyRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.DISTANCE)}=0,1,{sheet.GetLocalRange(HeaderEnum.DISTANCE)})))",
