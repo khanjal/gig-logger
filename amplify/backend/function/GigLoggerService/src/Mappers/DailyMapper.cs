@@ -19,6 +19,10 @@ public static class DailyMapper
         sheet.Headers = SheetHelper.GetCommonShiftGroupSheetHeaders(shiftSheet, HeaderEnum.DATE);
         var sheetKeyRange = sheet.GetLocalRange(HeaderEnum.DATE);
 
+        // Day
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\",true,WEEKDAY({sheetKeyRange})))",
+            Format = FormatEnum.WEEKDAY});
         // Week
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.WEEK.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.WEEK.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\",true,WEEKNUM({sheetKeyRange},2)&\"-\"&YEAR({sheetKeyRange})))"});

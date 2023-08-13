@@ -282,6 +282,9 @@ namespace GigLoggerService
                 case SheetEnum.TYPES:
                     sheetData.Add(TypeMapper.GetSheet());
                     break;
+                case SheetEnum.WEEKDAYS:
+                    sheetData.Add(WeekdayMapper.GetSheet());
+                    break;
                 case SheetEnum.WEEKLY:
                     sheetData.Add(WeeklyMapper.GetSheet());
                     break;
@@ -566,6 +569,7 @@ namespace GigLoggerService
                     _sheet.Types = TypeMapper.MapFromRangeData(values);
                     break;
                 case SheetEnum.WEEKDAYS:
+                    CheckSheetHeaders(values, WeekdayMapper.GetSheet());                
                     _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
                     break;
                 case SheetEnum.WEEKLY:

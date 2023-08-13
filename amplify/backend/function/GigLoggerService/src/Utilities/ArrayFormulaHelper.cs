@@ -25,6 +25,10 @@ public static class ArrayFormulaHelper {
     }
 
     public static string ArrayForumlaUniqueFilter(string keyRange, string headerText) {
-        return "={\""+headerText+"\";SORT(UNIQUE(FILTER("+keyRange+","+keyRange+"<>\"\")),3,1,2,1)}";
+        return "={\""+headerText+"\";UNIQUE(FILTER("+keyRange+","+keyRange+"<>\"\"))}";
+    }
+
+    public static string ArrayForumlaUniqueFilterSort(string keyRange, string headerText) {
+        return "={\""+headerText+"\";SORT(UNIQUE(FILTER("+keyRange+","+keyRange+"<>\"\")))}";
     }
 }
