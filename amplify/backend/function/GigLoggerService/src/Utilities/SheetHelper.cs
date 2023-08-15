@@ -290,31 +290,37 @@ public static class SheetHelper {
             case HeaderEnum.WEEK:
             case HeaderEnum.MONTH:
             case HeaderEnum.YEAR:
-                switch (keyEnum)
-                {
-                    case HeaderEnum.DAY:
-                        // A - [Key]
-                        sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
-                            Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilterSort(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
-                        keyRange = sheet.GetLocalRange(keyEnum);
-                    break;
-                    case HeaderEnum.WEEK:
-                    case HeaderEnum.MONTH:
-                    case HeaderEnum.YEAR:
-                        // A - [Key]
-                        sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
-                            Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilter(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
-                        keyRange = sheet.GetLocalRange(keyEnum);
-                    break;
+                if(keyEnum == HeaderEnum.DAY) {
+                    // A - [Key]
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
+                        Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilterSort(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+                    keyRange = sheet.GetLocalRange(keyEnum);
                 }
+                else {
+                    // A - [Key]
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
+                        Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilter(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+                    keyRange = sheet.GetLocalRange(keyEnum);
+                }
+
                 // B - Trips
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
                     Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.TRIPS.DisplayName(), sheetKeyRange, refSheet.GetRange(HeaderEnum.TRIPS)),
                     Format = FormatEnum.NUMBER});
-                // C - Days
-                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAYS.DisplayName(),
-                    Formula = ArrayFormulaHelper.ArrayFormulaCountIf(keyRange, HeaderEnum.DAYS.DisplayName(), sheetKeyRange),
-                    Format = FormatEnum.NUMBER});
+                
+                if (keyEnum == HeaderEnum.YEAR) {
+                    // C - Days
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAYS.DisplayName(),
+                        Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.DAYS.DisplayName(), sheetKeyRange, refSheet.GetRange(HeaderEnum.DAYS)),
+                        Format = FormatEnum.NUMBER});
+                }
+                else {
+                    // C - Days
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAYS.DisplayName(),
+                        Formula = ArrayFormulaHelper.ArrayFormulaCountIf(keyRange, HeaderEnum.DAYS.DisplayName(), sheetKeyRange),
+                        Format = FormatEnum.NUMBER});
+                }
+                
                 break;
             default:
                 // A - [Key]
@@ -378,17 +384,31 @@ public static class SheetHelper {
                     Formula = ArrayFormulaHelper.ArrayFormulaVisit(keyRange, HeaderEnum.VISIT_LAST.DisplayName(), SheetEnum.TRIPS.DisplayName(), refSheet.GetColumn(HeaderEnum.DATE), refSheet.GetColumn(keyEnum), false),
                     Format = FormatEnum.DATE});
                 break;
+            case HeaderEnum.DAY: 
             case HeaderEnum.WEEK: 
             case HeaderEnum.MONTH: 
             case HeaderEnum.YEAR: 
-                // K - Time
+                // Time
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIME_TOTAL.DisplayName(),
                     Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.TIME_TOTAL.DisplayName(), sheetKeyRange, refSheet.GetRange(HeaderEnum.TIME_TOTAL)),
                     Format = FormatEnum.DURATION});
-                // L - Amt/Time
+                // Amt/Time
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
                     Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.AMOUNT_PER_TIME.DisplayName()}\",ISBLANK({keyRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.TIME_TOTAL)}=0,1,{sheet.GetLocalRange(HeaderEnum.TIME_TOTAL)}*24)))",
                     Format = FormatEnum.ACCOUNTING});
+
+                // Amt/Day
+                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DAY.DisplayName(),
+                    Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.AMOUNT_PER_DAY.DisplayName()}\",ISBLANK({keyRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.DAYS)}=0,1,{sheet.GetLocalRange(HeaderEnum.DAYS)})))",
+                    Format = FormatEnum.ACCOUNTING});
+
+                if (keyEnum != HeaderEnum.DAY) {
+                    // Average
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AVERAGE.DisplayName(),
+                        Formula = "=ARRAYFORMULA(IFS(ROW("+keyRange+")=1,\""+HeaderEnum.AVERAGE.DisplayName()+"\",ISBLANK("+keyRange+"), \"\",true, DAVERAGE(transpose({"+sheet.GetLocalRange(HeaderEnum.TOTAL)+",TRANSPOSE(if(ROW("+sheet.GetLocalRange(HeaderEnum.TOTAL)+") <= TRANSPOSE(ROW("+sheet.GetLocalRange(HeaderEnum.TOTAL)+")),"+sheet.GetLocalRange(HeaderEnum.TOTAL)+",))}),sequence(rows("+sheet.GetLocalRange(HeaderEnum.TOTAL)+"),1),{if(,,);if(,,)})))",                    
+                        Format = FormatEnum.ACCOUNTING});    
+                }
+                                
                 break;
         }
 
