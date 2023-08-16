@@ -400,7 +400,7 @@ public static class SheetHelper {
                     Formula = ArrayFormulaHelper.ArrayFormulaSumIf(keyRange, HeaderEnum.TIME_TOTAL.DisplayName(), sheetKeyRange, refSheet.GetRange(HeaderEnum.TIME_TOTAL)),
                     Format = FormatEnum.DURATION});
                 // Amt/Time
-                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
+                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TIME.DisplayName(),
                     Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.AMOUNT_PER_TIME.DisplayName()}\",ISBLANK({keyRange}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)} = 0, 0,true,{sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.TIME_TOTAL)}=0,1,{sheet.GetLocalRange(HeaderEnum.TIME_TOTAL)}*24)))",
                     Format = FormatEnum.ACCOUNTING});
 

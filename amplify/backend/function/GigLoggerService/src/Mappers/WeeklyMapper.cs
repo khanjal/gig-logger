@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public static class WeeklyMapper
 {
-public static List<WeeklyEntity> MapFromRangeData(IList<IList<object>> values)
+    public static List<WeeklyEntity> MapFromRangeData(IList<IList<object>> values)
     {
         var weeklyList = new List<WeeklyEntity>();
         var headers = new Dictionary<int, string>();
