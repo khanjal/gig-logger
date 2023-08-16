@@ -281,7 +281,7 @@ public static class SheetHelper {
             Headers = new List<SheetCellModel>()
         };
         var sheetKeyRange = refSheet.GetRange(keyEnum);
-        var keyRange = "";
+        var keyRange = "A1:A"; // This should be the default but could cause issues if not the first field.
 
         // A - [Key]
         switch (keyEnum)
@@ -323,10 +323,17 @@ public static class SheetHelper {
                 
                 break;
             default:
-                // A - [Key]
-                sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
-                    Formula = ArrayFormulaHelper.ArrayForumlaUnique(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
-                keyRange = sheet.GetLocalRange(keyEnum);
+                if (keyEnum == HeaderEnum.ADDRESS_END) {
+                    // A - [Key]
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS.DisplayName(),
+                        Formula = "={\""+HeaderEnum.ADDRESS.DisplayName()+"\";SORT(UNIQUE({"+refSheet.GetRange(HeaderEnum.ADDRESS_END,2)+";"+refSheet.GetRange(HeaderEnum.ADDRESS_START,2)+"}))}"});
+                }
+                else {
+                    // A - [Key]
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
+                        Formula = ArrayFormulaHelper.ArrayForumlaUnique(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+                    keyRange = sheet.GetLocalRange(keyEnum);
+                }
                 // B - Trips
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
                     Formula = ArrayFormulaHelper.ArrayFormulaCountIf(keyRange, HeaderEnum.TRIPS.DisplayName(), sheetKeyRange),
@@ -369,7 +376,7 @@ public static class SheetHelper {
 
         switch (keyEnum)
         {
-            case HeaderEnum.ADDRESS:
+            case HeaderEnum.ADDRESS_END:
             case HeaderEnum.NAME:
             case HeaderEnum.PLACE:
             case HeaderEnum.REGION:

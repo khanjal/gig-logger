@@ -2,6 +2,52 @@ using System.Collections.Generic;
 
 public static class WeeklyMapper
 {
+public static List<WeeklyEntity> MapFromRangeData(IList<IList<object>> values)
+    {
+        var weeklyList = new List<WeeklyEntity>();
+        var headers = new Dictionary<int, string>();
+        var id = 0;
+
+        foreach (var value in values)
+        {
+            id++;
+            if (id == 1) {
+                headers = HeaderParser.ParserHeader(value);
+                continue;
+            }
+
+            if (value[0].ToString() == "") {
+                continue;
+            }
+
+            WeeklyEntity weekly = new()
+            {
+                Id = id,
+                Week = HeaderParser.GetStringValue(HeaderEnum.WEEK.DisplayName(), value, headers),
+                Trips = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
+                Days = HeaderParser.GetIntValue(HeaderEnum.DAYS.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
+                AmountPerTrip = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_TRIP.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
+                AmountPerDistance = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(), value, headers),
+                Time = HeaderParser.GetStringValue(HeaderEnum.TIME_TOTAL.DisplayName(), value, headers),
+                AmountPerTime = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_TIME.DisplayName(), value, headers),
+                Average = HeaderParser.GetDecimalValue(HeaderEnum.AVERAGE.DisplayName(), value, headers),
+                AmountPerDay = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_DAY.DisplayName(), value, headers),
+                Number = HeaderParser.GetIntValue(HeaderEnum.NUMBER.DisplayName(), value, headers),
+                Year = HeaderParser.GetIntValue(HeaderEnum.YEAR.DisplayName(), value, headers),
+                Begin = HeaderParser.GetStringValue(HeaderEnum.DATE_BEGIN.DisplayName(), value, headers),
+                End = HeaderParser.GetStringValue(HeaderEnum.DATE_END.DisplayName(), value, headers),
+            };
+            
+            weeklyList.Add(weekly);
+        }
+        return weeklyList;
+    }
 
     public static SheetModel GetSheet() {
         var sheet = new SheetModel

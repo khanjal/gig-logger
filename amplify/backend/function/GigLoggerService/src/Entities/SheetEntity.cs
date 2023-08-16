@@ -8,6 +8,9 @@ public class SheetEntity {
     [JsonPropertyName("addresses")]
     public List<AddressEntity> Addresses { get; set; } = new List<AddressEntity>();
 
+    [JsonPropertyName("daily")]
+    public List<DailyEntity> Daily { get; set; } = new List<DailyEntity>();
+
     [JsonPropertyName("names")]
     public List<NameEntity> Names { get; set; } = new List<NameEntity>();
 
@@ -31,6 +34,9 @@ public class SheetEntity {
 
     [JsonPropertyName("weekdays")]
     public List<WeekdayEntity> Weekdays { get; set; } = new List<WeekdayEntity>();
+    
+    [JsonPropertyName("weekly")]
+    public List<WeeklyEntity> Weekly { get; set; } = new List<WeeklyEntity>();
 
     [JsonPropertyName("warnings")]
     public List<string> Warnings { get; set; } = new List<string>();
