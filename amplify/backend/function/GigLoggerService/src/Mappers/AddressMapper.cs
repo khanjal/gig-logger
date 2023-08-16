@@ -51,7 +51,7 @@ public static class AddressMapper
 
         var tripSheet = TripMapper.GetSheet();
 
-        sheet.Headers = SheetHelper.GetCommonTripGroupSheetHeaders(tripSheet, HeaderEnum.ADDRESS);
+        sheet.Headers = SheetHelper.GetCommonTripGroupSheetHeaders(tripSheet, HeaderEnum.ADDRESS_END);
 
         return sheet;
     }
