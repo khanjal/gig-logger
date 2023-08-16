@@ -318,6 +318,8 @@ namespace GigLoggerService
             }
             else {
                 if(index < headerArray.Count() && sheetHeader.Name != headerArray[index].Trim()) {
+                    // Console.Write(JsonSerializer.Serialize(headerArray));
+                    // Console.Write(JsonSerializer.Serialize(sheetModel.Headers));
                     _sheet.Warnings.Add($"Sheet [{sheetModel.Name}]: Expected [{sheetHeader.Name}] but found [{headerArray[index].Trim()}]");
                 }
             }
@@ -542,7 +544,7 @@ namespace GigLoggerService
                     break;
                 case SheetEnum.MONTHLY:
                     CheckSheetHeaders(values, MonthlyMapper.GetSheet());
-                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    _sheet.Monthly = MonthlyMapper.MapFromRangeData(values);
                     break;
                 case SheetEnum.NAMES:
                     CheckSheetHeaders(values, NameMapper.GetSheet());
@@ -582,7 +584,7 @@ namespace GigLoggerService
                     break;
                 case SheetEnum.YEARLY:
                     CheckSheetHeaders(values, YearlyMapper.GetSheet());
-                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    _sheet.Yearly = YearlyMapper.MapFromRangeData(values);
                     break;
             }
         }
