@@ -7,7 +7,7 @@ public static class ObjectExtensions
         return $"{sheet.Headers.FirstOrDefault(x => x.Name == header.DisplayName()).Column}";
     }
 
-     public static string GetIndex(this SheetModel sheet, HeaderEnum header)
+    public static string GetIndex(this SheetModel sheet, HeaderEnum header)
     {
         return $"{sheet.Headers.FirstOrDefault(x => x.Name == header.DisplayName()).Index}";
     }

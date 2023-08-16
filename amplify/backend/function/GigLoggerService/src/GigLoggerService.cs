@@ -335,6 +335,8 @@ namespace GigLoggerService
         {
             case "primary":
                 sheets.Add(SheetEnum.ADDRESSES);
+                sheets.Add(SheetEnum.DAILY);
+                sheets.Add(SheetEnum.MONTHLY);
                 sheets.Add(SheetEnum.NAMES);
                 sheets.Add(SheetEnum.PLACES);
                 sheets.Add(SheetEnum.REGIONS);
@@ -343,6 +345,8 @@ namespace GigLoggerService
                 sheets.Add(SheetEnum.TRIPS);
                 sheets.Add(SheetEnum.TYPES);
                 sheets.Add(SheetEnum.WEEKDAYS);
+                sheets.Add(SheetEnum.WEEKLY);
+                sheets.Add(SheetEnum.YEARLY);
             break;
             
             case "secondary":
@@ -378,6 +382,7 @@ namespace GigLoggerService
         {
             Console.WriteLine(ex);
             var message = ex.Message.Split(". ");
+            // "Quota exceeded for quota metric 'Read requests' and limit 'Read requests per minute per user' of service ..."
             _sheet.Errors.Add($"{message.LastOrDefault().Trim()}");
             return;
         }
@@ -525,7 +530,6 @@ namespace GigLoggerService
 
             Enum.TryParse<SheetEnum>(sheetRange.ToUpper(), out sheetEnum);
             
-            // TODO: Check sheet headers to make sure all columns exist (error) and in right order (warning)
             switch (sheetEnum)
             {
                 case SheetEnum.ADDRESSES:
@@ -534,7 +538,7 @@ namespace GigLoggerService
                     break;
                 case SheetEnum.DAILY:
                     CheckSheetHeaders(values, DailyMapper.GetSheet());
-                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    _sheet.Daily = DailyMapper.MapFromRangeData(values);
                     break;
                 case SheetEnum.MONTHLY:
                     CheckSheetHeaders(values, MonthlyMapper.GetSheet());
@@ -574,7 +578,7 @@ namespace GigLoggerService
                     break;
                 case SheetEnum.WEEKLY:
                     CheckSheetHeaders(values, WeeklyMapper.GetSheet());
-                    //_sheet.Addresses = AddressMapper.MapFromRangeData(values);
+                    _sheet.Weekly = WeeklyMapper.MapFromRangeData(values);
                     break;
                 case SheetEnum.YEARLY:
                     CheckSheetHeaders(values, YearlyMapper.GetSheet());
