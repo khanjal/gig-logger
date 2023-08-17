@@ -43,7 +43,7 @@ export class CurrentAverageComponent implements OnInit {
     // Load weekly average
     this.currentWeekAmount = 0;
     let dailyTotal = await this._weekdayService.getDailyTotal();
-    let prevTotal = await this._weekdayService.getPreviousTotal();
+    let prevTotal = await this._weekdayService.getPreviousTotal(); // TODO change this to the weekly rolling average (previous week)
 
     // Add unsaved trip amounts.
     let unsavedTrips = (await this._tripService.getUnsavedLocalTrips());
