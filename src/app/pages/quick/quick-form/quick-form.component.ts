@@ -471,7 +471,6 @@ export class QuickFormComponent implements OnInit {
 
     this.selectedPlace = await this._placeService.getRemotePlace(place);
 
-    // TODO: Auto select most used address.
     // Auto assign to most used start address if there is no start address already.
     if (!this.quickForm.value.startAddress && this.selectedPlace?.addresses?.length) {
       //Set the most used type as default.
