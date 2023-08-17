@@ -4,6 +4,24 @@ import { liveQuery } from "dexie";
 
 export class WeekdayService {
     weekdays$ = liveQuery(() => spreadsheetDB.weekdays.toArray());
+
+    public async getDailyTotal() {
+        var total = 0;
+
+        await spreadsheetDB.weekdays
+            .each (x => total += x.dailyAverage);
+
+        return total;
+    }
+
+    public async getPreviousTotal() {
+        var total = 0;
+
+        await spreadsheetDB.weekdays
+            .each (x => total += x.dailyPrevAverage);
+
+        return total;
+    }
     
     public async loadWeekdays(weekdays: IWeekday[]) {
         await spreadsheetDB.weekdays.clear();

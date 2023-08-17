@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigLoggerService } from './gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
-import { Observable, firstValueFrom, from, mergeMap, of, toArray } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class SpreadsheetService {
