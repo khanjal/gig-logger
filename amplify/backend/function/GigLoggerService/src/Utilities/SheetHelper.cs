@@ -188,11 +188,40 @@ public static class SheetHelper {
             case ValidationEnum.BOOLEAN:
                 dataValidation.Condition = new BooleanCondition  { Type = "BOOLEAN" };
                 break;
-            default:
+            case ValidationEnum.RANGE_ADDRESS:
+            case ValidationEnum.RANGE_NAME:
+            case ValidationEnum.RANGE_PLACE:
+            case ValidationEnum.RANGE_REGION:
+            case ValidationEnum.RANGE_SERVICE:
+            case ValidationEnum.RANGE_TYPE:
+                var values = new List<ConditionValue> { new ConditionValue { UserEnteredValue = $"={GetSheetForRange(validation).DisplayName()}!A2:A" } };
+                dataValidation.Condition = new BooleanCondition  { Type = "ONE_OF_RANGE", Values = values };
+                dataValidation.ShowCustomUi = true;
+                dataValidation.Strict = false;
                 break;
         }
 
         return dataValidation;
+    }
+
+    private static SheetEnum GetSheetForRange(ValidationEnum validationEnum) {
+        switch (validationEnum)
+        {
+            case ValidationEnum.RANGE_ADDRESS:
+                return SheetEnum.ADDRESSES;
+            case ValidationEnum.RANGE_NAME:
+                return SheetEnum.NAMES;
+            case ValidationEnum.RANGE_PLACE:
+                return SheetEnum.PLACES;
+            case ValidationEnum.RANGE_REGION:
+                return SheetEnum.REGIONS;
+            case ValidationEnum.RANGE_SERVICE:
+                return SheetEnum.SERVICES;
+            case ValidationEnum.RANGE_TYPE:
+                return SheetEnum.TYPES;
+            default:
+                return SheetEnum.YEARLY;
+        }
     }
 
     public static List<SheetCellModel> GetCommonShiftGroupSheetHeaders(SheetModel shiftSheet, HeaderEnum keyEnum) {
