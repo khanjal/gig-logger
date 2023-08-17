@@ -138,7 +138,8 @@ public static class ShiftMapper
         // End Time
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIME_END.DisplayName()});
         // Service
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName(),
+            Validation = ValidationEnum.RANGE_SERVICE});
         // #
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NUMBER.DisplayName(),
             Note = $"Shift Number 1-9{(char)10}{(char)10}Leave blank if there is only shift for that service for that day."});
@@ -174,7 +175,8 @@ public static class ShiftMapper
             Format = FormatEnum.ACCOUNTING,
             Note = "Distance not accounted for on the Requests sheet."});
         // Region
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
+            Validation = ValidationEnum.RANGE_REGION});
         // Note
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
         // Key

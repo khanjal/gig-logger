@@ -167,7 +167,8 @@ public static class TripMapper
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName()});
         var dateRange = sheet.GetLocalRange(HeaderEnum.DATE);
         // Service
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName(),
+            Validation = ValidationEnum.RANGE_SERVICE});
         // #
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NUMBER.DisplayName(),
             Note = "Shift Number 1-9 Leave blank if there is only shift for that service for that day."});
@@ -177,10 +178,12 @@ public static class TripMapper
             Validation = ValidationEnum.BOOLEAN});
         // Type
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
-            Note = "Pickup, Shop, Order, Curbside, Canceled"});
+            Note = "Pickup, Shop, Order, Curbside, Canceled",
+            Validation = ValidationEnum.RANGE_TYPE});
         // Place
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PLACE.DisplayName(),
-            Note = "Location of pickup (delivery)."});
+            Note = "Location of pickup (delivery).",
+            Validation = ValidationEnum.RANGE_PLACE});
         // Pickup
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PICKUP.DisplayName(),
             Note = "Time when request/ride picked up."});
@@ -214,11 +217,14 @@ public static class TripMapper
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
             Note = "How many miles/km the request took."});
         // Name
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NAME.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NAME.DisplayName(),
+            Validation = ValidationEnum.RANGE_NAME});
         // Start Address
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_START.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_START.DisplayName(),
+            Validation = ValidationEnum.RANGE_ADDRESS});
         // End Address
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_END.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_END.DisplayName(),
+            Validation = ValidationEnum.RANGE_ADDRESS});
         // End Unit
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.UNIT_END.DisplayName(),
             Note = "Apartment, Unit, Room, Suite"});
