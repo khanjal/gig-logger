@@ -423,6 +423,7 @@ namespace GigLoggerService
 
         var batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
         batchUpdateSpreadsheetRequest.Requests = new List<Request>();
+        var repeatCellRequests = new List<RepeatCellRequest>();
         
         sheets.ForEach(sheet => {
             var random = new Random();
@@ -485,7 +486,8 @@ namespace GigLoggerService
                     repeatCellRequest.Cell.DataValidation = SheetHelper.GetDataValidation((ValidationEnum)header.Validation);
                 }
 
-                batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = repeatCellRequest });
+                repeatCellRequests.Add(repeatCellRequest);
+                //batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = repeatCellRequest });
             });
 
             // Add alternating colors
@@ -504,6 +506,11 @@ namespace GigLoggerService
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
             }
         });
+        
+        repeatCellRequests.ForEach(request => {
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = request });
+        });
+        
 
         // Console.WriteLine(JsonSerializer.Serialize(batchUpdateSpreadsheetRequest.Requests));
         var batchUpdateRequest = _googleSheetService.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _spreadsheetId);
