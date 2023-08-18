@@ -44,6 +44,9 @@ public class SheetEntity {
     [JsonPropertyName("yearly")]
     public List<YearlyEntity> Yearly { get; set; } = new List<YearlyEntity>();
 
+    [JsonPropertyName("messages")]
+    public List<string> Messages { get; set; } = new List<string>();
+
     [JsonPropertyName("warnings")]
     public List<string> Warnings { get; set; } = new List<string>();
 

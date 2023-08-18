@@ -505,6 +505,8 @@ namespace GigLoggerService
                 addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Range = new GridRange { SheetId = sheetId }, WarningOnly = true };
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
             }
+
+            _sheet.Messages.Add($"Sheet [{sheet.Name}]: Added");
         });
         
         repeatCellRequests.ForEach(request => {
