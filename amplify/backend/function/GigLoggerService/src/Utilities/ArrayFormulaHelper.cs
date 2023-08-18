@@ -25,10 +25,10 @@ public static class ArrayFormulaHelper {
     }
 
     public static string ArrayForumlaUniqueFilter(string keyRange, string headerText) {
-        return "={\""+headerText+"\";UNIQUE(FILTER("+keyRange+","+keyRange+"<>\"\"))}";
+        return "={\""+headerText+"\";UNIQUE(IFERROR(FILTER("+keyRange+","+keyRange+"<>\"\")))}";
     }
 
     public static string ArrayForumlaUniqueFilterSort(string keyRange, string headerText) {
-        return "={\""+headerText+"\";SORT(UNIQUE(FILTER("+keyRange+","+keyRange+"<>\"\")))}";
+        return "={\""+headerText+"\";SORT(UNIQUE(IFERROR(FILTER("+keyRange+","+keyRange+"<>\"\"))))}";
     }
 }
