@@ -3,11 +3,11 @@ using System.ComponentModel;
 public enum SheetEnum {
 
     // Core
-    [Description("Shifts")]
-    SHIFTS,
-
     [Description("Trips")]
     TRIPS,
+
+    [Description("Shifts")]
+    SHIFTS,
 
     // Auxillary
     [Description("Addresses")]
