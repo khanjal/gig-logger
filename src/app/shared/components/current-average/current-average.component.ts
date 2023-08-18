@@ -37,8 +37,8 @@ export class CurrentAverageComponent implements OnInit {
     this.currentDayAmount = 0;
     let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    this.currentDayAmount = isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
-    this.dailyAverage = weekday.dailyPrevAverage;
+    this.currentDayAmount = !weekday || isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
+    this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
     this.currentWeekAmount = 0;
