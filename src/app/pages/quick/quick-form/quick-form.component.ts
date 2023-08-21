@@ -186,8 +186,10 @@ export class QuickFormComponent implements OnInit {
       currentAmount += trip.total;
     });
 
-    weekday.currentAmount = currentAmount;
-    await this._weekdayService.updateWeekday(weekday);
+    if (weekday) {
+      weekday.currentAmount = currentAmount;
+      await this._weekdayService.updateWeekday(weekday);
+    }
   }
 
   private async createShift(): Promise<IShift> {
@@ -356,8 +358,10 @@ export class QuickFormComponent implements OnInit {
     // Update weekday current amount.
     let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
-    await this._weekdayService.updateWeekday(weekday);
+    if (weekday) {
+      weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
+      await this._weekdayService.updateWeekday(weekday);
+    }
 
     this._snackBar.open("Trip Stored to Device");
 
