@@ -205,23 +205,16 @@ public static class SheetHelper {
     }
 
     private static SheetEnum GetSheetForRange(ValidationEnum validationEnum) {
-        switch (validationEnum)
+        return validationEnum switch
         {
-            case ValidationEnum.RANGE_ADDRESS:
-                return SheetEnum.ADDRESSES;
-            case ValidationEnum.RANGE_NAME:
-                return SheetEnum.NAMES;
-            case ValidationEnum.RANGE_PLACE:
-                return SheetEnum.PLACES;
-            case ValidationEnum.RANGE_REGION:
-                return SheetEnum.REGIONS;
-            case ValidationEnum.RANGE_SERVICE:
-                return SheetEnum.SERVICES;
-            case ValidationEnum.RANGE_TYPE:
-                return SheetEnum.TYPES;
-            default:
-                return SheetEnum.YEARLY;
-        }
+            ValidationEnum.RANGE_ADDRESS => SheetEnum.ADDRESSES,
+            ValidationEnum.RANGE_NAME => SheetEnum.NAMES,
+            ValidationEnum.RANGE_PLACE => SheetEnum.PLACES,
+            ValidationEnum.RANGE_REGION => SheetEnum.REGIONS,
+            ValidationEnum.RANGE_SERVICE => SheetEnum.SERVICES,
+            ValidationEnum.RANGE_TYPE => SheetEnum.TYPES,
+            _ => SheetEnum.YEARLY,
+        };
     }
 
     public static List<SheetCellModel> GetCommonShiftGroupSheetHeaders(SheetModel shiftSheet, HeaderEnum keyEnum) {
@@ -231,9 +224,24 @@ public static class SheetHelper {
         };
         var sheetKeyRange = shiftSheet.GetRange(keyEnum);
 
-        // A - [Key]
-        sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
-            Formula = ArrayFormulaHelper.ArrayForumlaUnique(shiftSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+        switch (keyEnum)
+        {
+            case HeaderEnum.REGION:
+                // A - [Key]
+                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
+                    Formula = "={\""+HeaderEnum.REGION.DisplayName()+"\";SORT(UNIQUE({"+TripMapper.GetSheet().GetRange(HeaderEnum.REGION,2)+";"+shiftSheet.GetRange(HeaderEnum.REGION,2)+"}))}"});
+                break;
+            case HeaderEnum.SERVICE:
+                // A - [Key]
+                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName(),
+                    Formula = "={\""+HeaderEnum.SERVICE.DisplayName()+"\";SORT(UNIQUE({"+TripMapper.GetSheet().GetRange(HeaderEnum.SERVICE,2)+";"+shiftSheet.GetRange(HeaderEnum.SERVICE,2)+"}))}"});
+                break;
+            default:
+                // A - [Key]
+                sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
+                    Formula = ArrayFormulaHelper.ArrayForumlaUnique(shiftSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
+                break;
+        }
         var keyRange = sheet.GetLocalRange(keyEnum);
         // B - Trips
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),

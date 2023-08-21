@@ -230,15 +230,15 @@ public static class TripMapper
             Note = "Apartment, Unit, Room, Suite"});
         // Order Number
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ORDER_NUMBER.DisplayName()});
+        // Region
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
+            Validation = ValidationEnum.RANGE_REGION});
         // Note
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
         // Key
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.KEY.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.SERVICE)}), \"\",true,IF({sheet.GetLocalRange(HeaderEnum.EXCLUDE)},{dateRange} & \"-X-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)},IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.NUMBER)}), {dateRange} & \"-0-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}, {dateRange} & \"-\" & {sheet.GetLocalRange(HeaderEnum.NUMBER)} & \"-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}))))",
             Note = "Used to connect trips to shifts."});
-        // Region
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.REGION.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IFERROR(VLOOKUP({sheet.GetLocalRange(HeaderEnum.KEY)},SORT(QUERY({SheetEnum.SHIFTS.DisplayName()}!{shiftSheetRegionColumn}:{shiftSheetKeyColumn},\"SELECT {shiftSheetKeyColumn}, {shiftSheetRegionColumn}\"),2,true),2,0),\"\")))"});
         // Day
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({dateRange}), \"\",true,DAY({dateRange})))"});
