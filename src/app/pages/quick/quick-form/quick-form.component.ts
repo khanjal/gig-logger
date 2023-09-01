@@ -58,7 +58,8 @@ export class QuickFormComponent implements OnInit {
     pickupTime: new FormControl(''),
     dropoffTime: new FormControl(''),
     orderNumber: new FormControl(''),
-    note: new FormControl('')
+    note: new FormControl(''),
+    exclude: new FormControl('')
   });
 
   isNewShift: boolean = true;
@@ -244,6 +245,7 @@ export class QuickFormComponent implements OnInit {
     trip.type = this.quickForm.value.type ?? "";
     trip.note = this.quickForm.value.note ?? "";
     trip.orderNumber = this.quickForm.value.orderNumber?.toLocaleUpperCase() ?? "";
+    trip.exclude = this.quickForm.value.exclude ? true : false;
     trip.saved = false;
     
     // Set form properties depending on edit/add
@@ -296,6 +298,10 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.endUnit.setValue(this.data.endUnit);
     this.quickForm.controls.orderNumber.setValue(this.data.orderNumber);
     this.showOrder = true;
+
+    if (this.data.exclude) {
+      this.quickForm.controls.exclude.setValue("true");
+    }
   }
 
   private async setDefaultShift() {
