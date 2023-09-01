@@ -160,10 +160,6 @@ public static class TripMapper
 
         sheet.Headers = new List<SheetCellModel>();
 
-        // These may change if columns are added to Shifts
-        var shiftSheetKeyColumn = "Q";
-        var shiftSheetRegionColumn = "O";
-
         // Date
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName()});
         var dateRange = sheet.GetLocalRange(HeaderEnum.DATE);

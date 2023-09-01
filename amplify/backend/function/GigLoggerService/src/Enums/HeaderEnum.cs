@@ -69,7 +69,7 @@ public enum HeaderEnum {
 
     [Description("Duration")]
     DURATION,
-    
+
     [Description("X")]
     EXCLUDE,
 
@@ -192,6 +192,9 @@ public enum HeaderEnum {
 
     [Description("Week")]
     WEEK,
+
+    [Description("Weekday")]
+    WEEKDAY,
     
     [Description("Year")]
     YEAR,
