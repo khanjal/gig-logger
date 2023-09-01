@@ -172,7 +172,7 @@ public static class ShiftMapper
             Format = FormatEnum.ACCOUNTING});
         // Distance
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
-            Format = FormatEnum.ACCOUNTING,
+            Format = FormatEnum.DISTANCE,
             Note = "Distance not accounted for on the Requests sheet."});
         // Region
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
@@ -231,7 +231,8 @@ public static class ShiftMapper
         // T Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL_DISTANCE.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL_DISTANCE.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.DISTANCE)} + SUMIF({tripSheet.GetRange(HeaderEnum.KEY)},{keyRange},{tripSheet.GetRange(HeaderEnum.DISTANCE)})))",
-            Note = "Total Miles/Kilometers from Requests and Shifts"});
+            Note = "Total Miles/Kilometers from Requests and Shifts",
+            Format = FormatEnum.DISTANCE});
         // Amt/Dist
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.TOTAL_GRAND)}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL_GRAND)}/IF({sheet.GetLocalRange(HeaderEnum.TOTAL_DISTANCE)}=0,1,{sheet.GetLocalRange(HeaderEnum.TOTAL_DISTANCE)}))))",
@@ -239,7 +240,7 @@ public static class ShiftMapper
         // Trips/Hour
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS_PER_HOUR.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TRIPS_PER_HOUR.DisplayName()}\",ISBLANK({dateRange}), \"\",true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.TOTAL_TIME)}), \"\", ({sheet.GetLocalRange(HeaderEnum.TOTAL_TRIPS)}/IF({sheet.GetLocalRange(HeaderEnum.TOTAL_TIME)}=0,1,({sheet.GetLocalRange(HeaderEnum.TOTAL_TIME)}*24))))))",
-            Format = FormatEnum.ACCOUNTING});
+            Format = FormatEnum.DISTANCE});
         // Day
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({dateRange}), \"\",true,DAY({dateRange})))"});

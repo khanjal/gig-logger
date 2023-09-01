@@ -332,6 +332,9 @@ public static class SheetHelper {
                     sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
                         Formula = ArrayFormulaHelper.ArrayForumlaUniqueFilterSort(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
                     keyRange = sheet.GetLocalRange(keyEnum);
+
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.WEEKDAY.DisplayName(),
+                        Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.WEEKDAY.DisplayName()}\",ISBLANK({keyRange}), \"\", true,TEXT({keyRange},\"ddd\")))",});
                 }
                 else {
                     // A - [Key]

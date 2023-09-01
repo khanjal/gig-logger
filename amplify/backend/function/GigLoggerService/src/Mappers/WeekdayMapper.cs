@@ -24,7 +24,8 @@ public static class WeekdayMapper
             WeekdayEntity weekday = new()
             {
                 Id = id,
-                Day = HeaderParser.GetStringValue(HeaderEnum.DAY.DisplayName(), value, headers),
+                Day = HeaderParser.GetIntValue(HeaderEnum.DAY.DisplayName(), value, headers),
+                Weekday = HeaderParser.GetStringValue(HeaderEnum.WEEKDAY.DisplayName(), value, headers),
                 Trips = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
                 Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
                 Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
