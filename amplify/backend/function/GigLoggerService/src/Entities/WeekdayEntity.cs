@@ -6,7 +6,10 @@ public class WeekdayEntity : AmountEntity
     public int Id { get; set; }
 
     [JsonPropertyName("day")]
-    public string Day { get; set; }
+    public int Day { get; set; }
+
+    [JsonPropertyName("weekday")]
+    public string Weekday { get; set; }
 
     [JsonPropertyName("trips")]
     public int Trips { get; set; }

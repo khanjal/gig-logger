@@ -47,7 +47,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       tripGroup.date = date;
       tripGroup.trips = trips;
       tripGroup.amount = trips.reduce((n, {total}) => n + total, 0);
-      tripGroup.average = weekday.dailyPrevAverage;
+      tripGroup.average = weekday?.dailyPrevAverage;
 
       // Double check that amount is a number
       tripGroup.amount = isNaN(tripGroup.amount) ? 0 : tripGroup.amount;
