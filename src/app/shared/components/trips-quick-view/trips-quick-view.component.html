@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card [ngClass]="trip.exclude ? 'strike' : ''">
     <div>
         <mat-card-header><h3>{{trip.date | date:'MMM d'}}, {{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}} ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</h3></mat-card-header>
         <mat-card-content>

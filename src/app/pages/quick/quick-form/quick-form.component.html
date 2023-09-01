@@ -342,7 +342,7 @@
         </button>
     </div>
 
-    <!-- Address 2/Order -->
+    <!-- Address 2/Order/Exclude -->
     <div *ngIf="showOrder">
         <mat-form-field class="field-third-width" appearance="outline">
             <mat-label>Apt/Unit/Room</mat-label>
@@ -352,6 +352,9 @@
             <mat-label>Order Number</mat-label>
             <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber" value="">
         </mat-form-field>
+        <mat-checkbox matCheckbox type="checkbox" class="field-full-width" name="exclude" formControlName="exclude" value="">
+            Exclude from trip count and shift totals
+        </mat-checkbox>
     </div>
 </form>
 
