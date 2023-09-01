@@ -30,6 +30,7 @@ public static class TripMapper
                 Date = HeaderParser.GetStringValue(HeaderEnum.DATE.DisplayName(), value, headers),
                 Service = HeaderParser.GetStringValue(HeaderEnum.SERVICE.DisplayName(), value, headers),
                 Number = HeaderParser.GetIntValue(HeaderEnum.NUMBER.DisplayName(), value, headers),
+                Exclude = HeaderParser.GetBoolValue(HeaderEnum.EXCLUDE.DisplayName(), value, headers),
                 Type = HeaderParser.GetStringValue(HeaderEnum.TYPE.DisplayName(), value, headers),
                 Place = HeaderParser.GetStringValue(HeaderEnum.PLACE.DisplayName(), value, headers),
                 Pickup = HeaderParser.GetStringValue(HeaderEnum.PICKUP.DisplayName(), value, headers),
