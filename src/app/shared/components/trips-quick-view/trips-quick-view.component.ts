@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { AddressHelper } from '@helpers/address.helper';
 import { ITrip } from '@interfaces/trip.interface';
 
 @Component({
