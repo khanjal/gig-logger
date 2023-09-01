@@ -35,7 +35,8 @@ export class CurrentAverageComponent implements OnInit {
   async load() {
     // Load daily average
     this.currentDayAmount = 0;
-    let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
+    // let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
+    let dayOfWeek = new Date(this.date).getDay() + 1;
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     this.currentDayAmount = !weekday || isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
@@ -47,7 +48,7 @@ export class CurrentAverageComponent implements OnInit {
 
     // Add unsaved trip amounts.
     let unsavedTrips = (await this._tripService.getUnsavedLocalTrips());
-    let unsavedTripsAmount = unsavedTrips.reduce((n, {total}) => n + total, 0);
+    let unsavedTripsAmount = unsavedTrips.filter(x => !x.exclude).reduce((n, {total}) => n + total, 0);
     this.currentWeekAmount = (isNaN(dailyTotal) ? 0 : dailyTotal) + unsavedTripsAmount;
     this.weeklyAverage = prevTotal;
   }
