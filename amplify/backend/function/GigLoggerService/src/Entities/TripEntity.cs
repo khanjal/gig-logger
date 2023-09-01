@@ -17,6 +17,9 @@ public class TripEntity : AmountEntity
     [JsonPropertyName("number")]
     public int Number { get; set; }
 
+    [JsonPropertyName("exclude")]
+    public bool Exclude { get; set; }
+
     [JsonPropertyName("type")]
     public string Type { get; set; }
 

@@ -33,7 +33,7 @@ public static class ShiftMapper
                 Active = HeaderParser.GetStringValue(HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName(), value, headers),
                 Time = HeaderParser.GetStringValue(HeaderEnum.TOTAL_TIME.DisplayName(), value, headers),
                 Trips = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
-                Omit = HeaderParser.GetStringValue(HeaderEnum.TIME_OMIT.DisplayName(), value, headers),
+                Omit = HeaderParser.GetBoolValue(HeaderEnum.TIME_OMIT.DisplayName(), value, headers),
                 Region = HeaderParser.GetStringValue(HeaderEnum.REGION.DisplayName(), value, headers),
                 Note = HeaderParser.GetStringValue(HeaderEnum.NOTE.DisplayName(), value, headers),
                 Pay = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_PAY.DisplayName(), value, headers),
