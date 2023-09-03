@@ -92,6 +92,8 @@ export class GigLoggerService {
         
             let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
                         ...await this._tripService.queryRemoteTrips("key", shift.key)];
+            trips = trips.filter(x => !x.exclude);
+            
             trips.forEach(trip => {
                 shift.trips++;
                 // TODO break shift total into pay/tip/bonus
@@ -105,13 +107,14 @@ export class GigLoggerService {
     public async calculateDailyTotal() {
         let currentAmount = 0;
         let date = new Date().toLocaleDateString();
-        let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+        // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+        let dayOfWeek = new Date(date).getDay() + 1;
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     
         let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
                             ...await this._tripService.queryRemoteTrips("date", date)];
     
-        todaysTrips.forEach(trip => {
+        todaysTrips.filter(x => !x.exclude).forEach(trip => {
         currentAmount += trip.total;
         });
     
