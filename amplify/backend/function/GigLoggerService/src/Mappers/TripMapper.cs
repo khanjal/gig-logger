@@ -132,9 +132,9 @@ public static class TripMapper
                     case HeaderEnum.ORDER_NUMBER:
                         objectList.Add(trip.OrderNumber);
                         break;
-                    // case "Region":
-                    //     objectList.Add(trip.Region);
-                    //     break;
+                    case HeaderEnum.REGION:
+                        objectList.Add(trip.Region);
+                        break;
                     case HeaderEnum.NOTE:
                         objectList.Add(trip.Note);
                         break;
