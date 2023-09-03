@@ -16,6 +16,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { IType } from '@interfaces/type.interface';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
+import { GigLoggerService } from '@services/gig-logger.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { RegionService } from '@services/region.service';
@@ -97,6 +98,7 @@ export class QuickFormComponent implements OnInit {
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
       private _deliveryService: DeliveryService,
+      private _gigLoggerService: GigLoggerService,
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _regionService: RegionService,
@@ -156,42 +158,9 @@ export class QuickFormComponent implements OnInit {
   }
 
   // TODO move this to a helper or service
-  private async calculateShiftTotals() {
-    let shifts = await this._shiftService.getPreviousWeekShifts();
+  
 
-    shifts.forEach(async shift => {
-      shift.trips = 0;
-      shift.total = 0;
-
-      let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
-                  ...await this._tripService.queryRemoteTrips("key", shift.key)];
-      trips.forEach(trip => {
-          shift.trips++;
-          shift.total += trip.total;
-      });
-
-      this._shiftService.updateShift(shift);
-    });
-  }
-
-  private async calculateDailyTotal() {
-    let currentAmount = 0;
-    let date = new Date().toLocaleDateString();
-    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-
-    let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
-                      ...await this._tripService.queryRemoteTrips("date", date)];
-
-    todaysTrips.forEach(trip => {
-      currentAmount += trip.total;
-    });
-
-    if (weekday) {
-      weekday.currentAmount = currentAmount;
-      await this._weekdayService.updateWeekday(weekday);
-    }
-  }
+  
 
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
@@ -357,17 +326,10 @@ export class QuickFormComponent implements OnInit {
     
     // Update shift total.
     // TODO: Break shift total into pay/tip/bonus/cash
-    shift.trips++;
-    shift.total += trip.pay + trip.tip + trip.bonus;
-    await this._shiftService.updateShift(shift);
+    await this._gigLoggerService.calculateShiftTotals();
     
     // Update weekday current amount.
-    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    if (weekday) {
-      weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
-      await this._weekdayService.updateWeekday(weekday);
-    }
+    await this._gigLoggerService.calculateDailyTotal();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -385,8 +347,8 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.updateLocalTrip(trip);
 
     // Update all shift totals from displayed shifts and daily total.
-    await this.calculateShiftTotals();
-    await this.calculateDailyTotal();
+    await this._gigLoggerService.calculateShiftTotals();
+    await this._gigLoggerService.calculateDailyTotal();
 
     this._snackBar.open("Trip Updated");
 
