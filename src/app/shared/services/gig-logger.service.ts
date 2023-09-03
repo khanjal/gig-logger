@@ -83,6 +83,44 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
+    public async calculateShiftTotals() {
+        let shifts = await this._shiftService.getPreviousWeekShifts();
+    
+        shifts.forEach(async shift => {
+            shift.trips = 0;
+            shift.total = 0;
+        
+            let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
+                        ...await this._tripService.queryRemoteTrips("key", shift.key)];
+            trips.forEach(trip => {
+                shift.trips++;
+                // TODO break shift total into pay/tip/bonus
+                shift.total += trip.total;
+            });
+        
+            this._shiftService.updateShift(shift);
+        });
+    }
+
+    public async calculateDailyTotal() {
+        let currentAmount = 0;
+        let date = new Date().toLocaleDateString();
+        let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+        let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    
+        let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
+                            ...await this._tripService.queryRemoteTrips("date", date)];
+    
+        todaysTrips.forEach(trip => {
+        currentAmount += trip.total;
+        });
+    
+        if (weekday) {
+            weekday.currentAmount = currentAmount;
+            await this._weekdayService.updateWeekday(weekday);
+        }
+    }
+
     public async linkDeliveries(trips: ITrip[]) {
         let deliveries: IDelivery[] = await this._deliveryService.getRemoteDeliveries();
         console.log('Linking Trip Data');
