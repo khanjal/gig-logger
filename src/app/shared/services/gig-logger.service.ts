@@ -40,12 +40,12 @@ export class GigLoggerService {
     ) {}
 
     public async getSheetData(sheetId: string) {
-        console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
+        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
+        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
     }
 
@@ -81,6 +81,47 @@ export class GigLoggerService {
         await this._nameService.updateNames(sheetData.names);
 
         await this.linkDeliveries(sheetData.trips);
+    }
+
+    public async calculateShiftTotals() {
+        let shifts = await this._shiftService.getPreviousWeekShifts();
+    
+        shifts.forEach(async shift => {
+            shift.trips = 0;
+            shift.total = 0;
+        
+            let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
+                        ...await this._tripService.queryRemoteTrips("key", shift.key)];
+            trips = trips.filter(x => !x.exclude);
+            
+            trips.forEach(trip => {
+                shift.trips++;
+                // TODO break shift total into pay/tip/bonus
+                shift.total += trip.total;
+            });
+        
+            this._shiftService.updateShift(shift);
+        });
+    }
+
+    public async calculateDailyTotal() {
+        let currentAmount = 0;
+        let date = new Date().toLocaleDateString();
+        // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
+        let dayOfWeek = new Date(date).getDay() + 1;
+        let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    
+        let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
+                            ...await this._tripService.queryRemoteTrips("date", date)];
+    
+        todaysTrips.filter(x => !x.exclude).forEach(trip => {
+        currentAmount += trip.total;
+        });
+    
+        if (weekday) {
+            weekday.currentAmount = currentAmount;
+            await this._weekdayService.updateWeekday(weekday);
+        }
     }
 
     public async linkDeliveries(trips: ITrip[]) {

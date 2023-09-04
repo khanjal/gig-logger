@@ -12,5 +12,5 @@ public class ServiceEntity : AmountEntity
     public int Trips { get; set; }
 
     [JsonPropertyName("distance")]
-    public decimal Miles { get; set; }
+    public decimal Distance { get; set; }
 }

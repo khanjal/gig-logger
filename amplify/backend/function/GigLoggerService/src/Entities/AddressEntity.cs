@@ -12,5 +12,5 @@ public class AddressEntity : AmountEntity
     public int Visits { get; set; }
 
     [JsonPropertyName("distance")]
-    public decimal Miles { get; set; }
+    public decimal Distance { get; set; }
 }

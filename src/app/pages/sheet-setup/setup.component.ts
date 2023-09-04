@@ -5,6 +5,7 @@ import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component
 import { TimerService } from '@services/timer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigLoggerService } from '@services/gig-logger.service';
+import { CommonService } from '@services/common.service';
 
 @Component({
   selector: 'app-setup',
@@ -22,6 +23,7 @@ export class SetupComponent {
 
   constructor(
     private _snackBar: MatSnackBar,
+    private _commonService: CommonService,
     private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService,
     private _timerService: TimerService
@@ -34,6 +36,7 @@ export class SetupComponent {
   public async load() {
     this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
     this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    this.updateHeader();
   }
 
   public async reload() {
@@ -45,8 +48,6 @@ export class SetupComponent {
     await this._spreadsheetService.loadSpreadsheetData();
     this.reloading = false;
   }
-
-
 
   public async setDefault(spreadsheet: ISpreadsheet) {
     this.setting = true;
@@ -133,4 +134,8 @@ export class SetupComponent {
   public getDataSize() {
     // return LocalStorageHelper.formatBytes(LocalStorageHelper.getDataSize());
   }
+
+  private updateHeader(){
+    this._commonService.updateHeaderLink("New User");
+   }
 }

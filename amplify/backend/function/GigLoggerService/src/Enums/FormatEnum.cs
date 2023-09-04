@@ -1,7 +1,9 @@
 public enum FormatEnum {
-    Accounting,
-    Date,
-    Duration,
-    Number,
-    Time
+    ACCOUNTING,
+    DATE,
+    DISTANCE,
+    DURATION,
+    NUMBER,
+    TIME,
+    WEEKDAY
 }
