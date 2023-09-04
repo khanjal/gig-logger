@@ -79,13 +79,17 @@ export class SheetAddFormComponent {
       // Change this to check spreadsheet details to make sure it's a valid spreadsheet.
       // Add sheet & load data from it.
       await this._spreadsheetService.update(spreadsheet);
-
       
       if (spreadsheet.default === "true") {
         console.log("Loading default data");
         // await this._googleService.loadRemoteData();
         this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
         (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
+            // Update sheet name.
+            if (!this.sheetForm.value.sheetName) {
+              spreadsheet.name = (<ISheet>data).name;
+              await this._spreadsheetService.update(spreadsheet);
+            }
             this._snackBar.open("Loading Primary Spreadsheet Data");
             await this._gigLoggerService.loadData(<ISheet>data);
             this._snackBar.open("Loaded Primary Spreadsheet Data");

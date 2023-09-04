@@ -28,6 +28,16 @@ public static class HeaderParser {
         
     }
 
+    public static bool GetBoolValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
+        var columnId = GetHeaderKey(headers, columnName);
+
+        if (columnId > values.Count || columnId < 0) {
+            return false;
+        }
+
+        return values[columnId].ToString().Trim() == "TRUE";
+    }
+
     public static string GetStringValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
         var columnId = GetHeaderKey(headers, columnName);
 

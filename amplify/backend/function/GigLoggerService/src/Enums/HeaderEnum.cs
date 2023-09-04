@@ -1,161 +1,201 @@
 using System.ComponentModel;
 
 public enum HeaderEnum {
+    [Description("Address")]
+    ADDRESS,
+
     [Description("Start Address")]
-    AddressStart,
+    ADDRESS_START,
 
     [Description("End Address")]
-    AddressEnd,
+    ADDRESS_END,
 
     [Description("Curr Amt")]
-    AmountCurrent,
+    AMOUNT_CURRENT,
 
-    [Description("$/Day")]
-    AmountPerDay,
+    [Description("Prev Amt")]
+    AMOUNT_PREVIOUS,
 
-    [Description("$/Time")]
-    AmountPerTime,
+    [Description("Amt/Day")]
+    AMOUNT_PER_DAY,
 
-    [Description("$/Trip")]
-    AmountPerTrip,
+    [Description("Amt/Dist")]
+    AMOUNT_PER_DISTANCE,
+
+    [Description("Amt/Prev")]
+    AMOUNT_PER_PREVIOUS_DAY,
+
+    [Description("Amt/Hour")]
+    AMOUNT_PER_TIME,
+
+    [Description("Amt/Trip")]
+    AMOUNT_PER_TRIP,
 
     [Description("Average")]
-    Average,
+    AVERAGE,
 
     [Description("Bonus")]
-    Bonus,
+    BONUS,
 
     [Description("Cash")]
-    Cash,
+    CASH,
 
     [Description("Date")]
-    Date,
+    DATE,
 
     [Description("Begin")]
-    DateBegin,
+    DATE_BEGIN,
 
     [Description("End")]
-    DateEnd,
+    DATE_END,
 
     [Description("Day")]
-    Day,
+    DAY,
 
     [Description("Days")]
-    Days,
+    DAYS,
+
+    [Description("D/V")]
+    DAYS_PER_VISIT,
+
+    [Description("Since")]
+    DAYS_SINCE_VISIT,
 
     [Description("Dist")]
-    Distance,
+    DISTANCE,
 
     [Description("Dropoff")]
-    Dropoff,
+    DROPOFF,
 
     [Description("Duration")]
-    Duration,
+    DURATION,
+
+    [Description("X")]
+    EXCLUDE,
 
     [Description("Key")]
-    Key,
+    KEY,
 
     [Description("Month")]
-    Month,
+    MONTH,
 
     [Description("Name")]
-    Name,
+    NAME,
     
     [Description("Note")]
-    Note,
+    NOTE,
 
     [Description("#")]
-    Number,
+    NUMBER,
 
     [Description("# Days")]
-    NumberOfDays,
+    NUMBER_OF_DAYS,
 
     [Description("Odo End")]
-    OdometerEnd,
+    ODOMETER_END,
 
     [Description("Odo Start")]
-    OdometerStart,
+    ODOMETER_START,
     
     [Description("Order #")]
-    OrderNumber,
+    ORDER_NUMBER,
 
     [Description("Pay")]
-    Pay,
+    PAY,
 
     [Description("Pickup")]
-    Pickup,
+    PICKUP,
 
     [Description("Place")]
-    Place,
+    PLACE,
 
     [Description("Region")]
-    Region,
-
+    REGION,
 
     [Description("Service")]
-    Service,
-
-    [Description("S Bonus")]
-    ShiftBonus,
-
-    
-    [Description("S Cash")]
-    ShiftCash,
-
-    [Description("S Miles")]
-    ShiftDistance,
-
-    [Description("S Pay")]
-    ShiftPay,
-
-    [Description("S Tips")]
-    ShiftTip,
-
-    [Description("S Trip")]
-    ShiftTrips,
+    SERVICE,
 
     [Description("Active")]
-    TimeActive,
+    TIME_ACTIVE,
 
     [Description("End")]
-    TimeEnd,
+    TIME_END,
 
     [Description("O")]
-    TimeOmit,
+    TIME_OMIT,
 
-    [Description("Begin")]
-    TimeStart,
+    [Description("Start")]
+    TIME_START,
 
     [Description("Time")]
-    TimeTotal,
+    TIME_TOTAL,
 
     [Description("Tip")]
-    Tip,
+    TIP,
 
     [Description("Tips")]
-    Tips,
+    TIPS,
 
     [Description("Total")]
-    Total,
+    TOTAL,
+
+    [Description("T Bonus")]
+    TOTAL_BONUS,
+    
+    [Description("T Cash")]
+    TOTAL_CASH,
+
+    [Description("T Dist")]
+    TOTAL_DISTANCE,
+
+    [Description("G Total")]
+    TOTAL_GRAND,
+
+    [Description("T Pay")]
+    TOTAL_PAY,
+
+    [Description("T Time")]
+    TOTAL_TIME,
+
+    [Description("T Active")]
+    TOTAL_TIME_ACTIVE,
+
+    [Description("T Tips")]
+    TOTAL_TIPS,
+
+    [Description("T Trips")]
+    TOTAL_TRIPS,
 
     [Description("Trips")]
-    Trips,
+    TRIPS,
     
     [Description("Trips/Day")]
-    TripsPerDay,
+    TRIPS_PER_DAY,
 
     [Description("Trips/Hour")]
-    TripsPerHour,
+    TRIPS_PER_HOUR,
 
     [Description("Type")]
-    Type,
+    TYPE,
     
     [Description("End Unit")]
-    UnitEnd,
+    UNIT_END,
+
+    [Description("First Trip")]
+    VISIT_FIRST,
+
+    [Description("Last Trip")]
+    VISIT_LAST,
 
     [Description("Visits")]
-    Visits,
+    VISITS,
+
+    [Description("Week")]
+    WEEK,
+
+    [Description("Weekday")]
+    WEEKDAY,
     
     [Description("Year")]
-    Year,
+    YEAR,
 }

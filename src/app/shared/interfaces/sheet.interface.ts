@@ -9,6 +9,7 @@ import { IType } from "./type.interface";
 import { IWeekday } from "./weekday.interface";
 
 export interface ISheet {
+    name: string;
     addresses: IAddress[];
     names: IName[];
     places: IPlace[];
