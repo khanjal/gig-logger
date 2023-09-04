@@ -424,6 +424,7 @@ namespace GigLoggerService
         var batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
         batchUpdateSpreadsheetRequest.Requests = new List<Request>();
         var repeatCellRequests = new List<RepeatCellRequest>();
+        var protectCellRequests = new List<AddProtectedRangeRequest>();
         
         sheets.ForEach(sheet => {
             var random = new Random();
@@ -433,7 +434,7 @@ namespace GigLoggerService
             var sheetRequest = new AddSheetRequest();
             sheetRequest.Properties = new SheetProperties();
 
-            // TODO: Make requst helper to build these requests.
+            // TODO: Make request helper to build these requests.
 
             // Create Sheet With Properties
             sheetRequest.Properties.SheetId = sheetId;
@@ -462,20 +463,37 @@ namespace GigLoggerService
 
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendCells = appendCellsRequest });
 
-            // Format Column Cells
+            // Format/Protect Column Cells
             sheet.Headers.ForEach(header => {
+                var range = new GridRange{ 
+                                        SheetId = sheetId,
+                                        StartColumnIndex = header.Index,
+                                        EndColumnIndex = header.Index + 1,
+                                        StartRowIndex = 1,
+                                    };
+
+                // If whole sheet isn't protected then protect certain columns
+                if (!string.IsNullOrEmpty(header.Formula) && !sheet.ProtectSheet) {
+                    var addProtectedRangeRequest = new AddProtectedRangeRequest
+                    {
+                    ProtectedRange = new ProtectedRange { Range = range, WarningOnly = true }
+                    };
+                    // protectCellRequests.Add(addProtectedRangeRequest);
+                    batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
+                }
+
+                // If there's no format or validation then go to next header
                 if(header.Format == null && header.Validation == null) {
                     return;
                 }
 
+                // Set start/end for formatting
+                range.StartRowIndex = 1;
+                range.EndRowIndex = null;
+
                 var repeatCellRequest = new RepeatCellRequest();
                 repeatCellRequest.Fields = "*";
-                repeatCellRequest.Range = new GridRange{ 
-                                                SheetId = sheetId,
-                                                StartColumnIndex = header.Index,
-                                                EndColumnIndex = header.Index + 1,
-                                                StartRowIndex = 1,
-                                            };
+                repeatCellRequest.Range = range;
                 repeatCellRequest.Cell = new CellData();
 
                 if (header.Format != null) {
@@ -499,10 +517,26 @@ namespace GigLoggerService
             };
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddBanding = addBandingRequest });
 
-            // Protect sheet if necessary
+            // Protect sheet or header
+            var addProtectedRangeRequest = new AddProtectedRangeRequest();
             if (sheet.ProtectSheet) {
-                var addProtectedRangeRequest = new AddProtectedRangeRequest();
-                addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Range = new GridRange { SheetId = sheetId }, WarningOnly = true };
+                addProtectedRangeRequest = new AddProtectedRangeRequest
+                {
+                    ProtectedRange = new ProtectedRange { Range = new GridRange { SheetId = sheetId }, WarningOnly = true }
+                };
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
+            }
+            else {
+                 // Protect full header if sheet isn't protected.
+                var range = new GridRange{ 
+                                    SheetId = sheetId,
+                                    StartColumnIndex = 0,
+                                    EndColumnIndex = sheet.Headers.Count,
+                                    StartRowIndex = 0,
+                                    EndRowIndex = 1
+                                };
+                
+                addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Range = range, WarningOnly = true };
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
             }
 
@@ -512,7 +546,10 @@ namespace GigLoggerService
         repeatCellRequests.ForEach(request => {
             batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = request });
         });
-        
+
+        protectCellRequests.ForEach(request => {
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = request });
+        });
 
         // Console.WriteLine(JsonSerializer.Serialize(batchUpdateSpreadsheetRequest.Requests));
         var batchUpdateRequest = _googleSheetService.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _spreadsheetId);
