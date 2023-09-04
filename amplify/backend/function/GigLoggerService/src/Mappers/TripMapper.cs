@@ -75,11 +75,14 @@ public static class TripMapper
                     case HeaderEnum.DATE:
                         objectList.Add(trip.Date);
                         break;
-                    case HeaderEnum.KEY:
+                    case HeaderEnum.SERVICE:
                         objectList.Add(trip.Service);
                         break;
                     case HeaderEnum.NUMBER:
                         objectList.Add(trip.Number);
+                        break;
+                    case HeaderEnum.EXCLUDE:
+                        objectList.Add(trip.Exclude);
                         break;
                     case HeaderEnum.TYPE:
                         objectList.Add(trip.Type);
