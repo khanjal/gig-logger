@@ -33,7 +33,7 @@ public class ShiftEntity : AmountEntity
     public string Time { get; set; }
 
     [JsonPropertyName("omit")]
-    public string Omit { get; set; }
+    public bool Omit { get; set; }
 
     [JsonPropertyName("region")]
     public string Region { get; set; }
