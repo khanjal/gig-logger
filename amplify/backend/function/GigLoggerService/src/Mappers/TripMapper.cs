@@ -37,7 +37,7 @@ public static class TripMapper
                 Dropoff = HeaderParser.GetStringValue(HeaderEnum.DROPOFF.DisplayName(), value, headers),
                 Duration = HeaderParser.GetStringValue(HeaderEnum.DURATION.DisplayName(), value, headers),
                 Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
-                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIPS.DisplayName(), value, headers),
                 Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
                 Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
                 Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
@@ -102,7 +102,7 @@ public static class TripMapper
                     case HeaderEnum.PAY:
                         objectList.Add(trip.Pay);
                         break;
-                    case HeaderEnum.TIP:
+                    case HeaderEnum.TIPS:
                         objectList.Add(trip.Tip);
                         break;
                     case HeaderEnum.BONUS:
