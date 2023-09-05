@@ -476,7 +476,7 @@ namespace GigLoggerService
                 if (!string.IsNullOrEmpty(header.Formula) && !sheet.ProtectSheet) {
                     var addProtectedRangeRequest = new AddProtectedRangeRequest
                     {
-                    ProtectedRange = new ProtectedRange { Range = range, WarningOnly = true }
+                    ProtectedRange = new ProtectedRange { Description = "Editing this column will cause a #REF error.", Range = range, WarningOnly = true }
                     };
                     // protectCellRequests.Add(addProtectedRangeRequest);
                     batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
@@ -522,7 +522,7 @@ namespace GigLoggerService
             if (sheet.ProtectSheet) {
                 addProtectedRangeRequest = new AddProtectedRangeRequest
                 {
-                    ProtectedRange = new ProtectedRange { Range = new GridRange { SheetId = sheetId }, WarningOnly = true }
+                    ProtectedRange = new ProtectedRange { Description = "Editing this sheet will cause a #REF error.", Range = new GridRange { SheetId = sheetId }, WarningOnly = true }
                 };
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
             }
@@ -536,7 +536,7 @@ namespace GigLoggerService
                                     EndRowIndex = 1
                                 };
                 
-                addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Range = range, WarningOnly = true };
+                addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Description = "Editing the header could cause a #REF error or break sheet references.", Range = range, WarningOnly = true };
                 batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
             }
 
