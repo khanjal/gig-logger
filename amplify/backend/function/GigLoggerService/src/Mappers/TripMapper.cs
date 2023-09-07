@@ -149,7 +149,7 @@ public static class TripMapper
 
             rangeData.Add(objectList);
         }
-        Console.Write(JsonSerializer.Serialize(rangeData));
+        // Console.Write(JsonSerializer.Serialize(rangeData));
         return rangeData;
     }
 
