@@ -118,7 +118,7 @@ public enum HeaderEnum {
     [Description("Active")]
     TIME_ACTIVE,
 
-    [Description("End")]
+    [Description("Finish")]
     TIME_END,
 
     [Description("O")]
