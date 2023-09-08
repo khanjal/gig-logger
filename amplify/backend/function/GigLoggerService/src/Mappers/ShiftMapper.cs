@@ -72,7 +72,6 @@ public static class ShiftMapper
                     case HeaderEnum.TIME_START:
                         objectList.Add(shift.Start);
                         break;
-                    case HeaderEnum.DATE_END:
                     case HeaderEnum.TIME_END:
                         objectList.Add(shift.End);
                         break;
@@ -119,7 +118,7 @@ public static class ShiftMapper
 
             // Console.WriteLine("Map Shift");
             // Console.WriteLine(JsonSerializer.Serialize(objectList));
-            
+
             rangeData.Add(objectList);
         }
         
