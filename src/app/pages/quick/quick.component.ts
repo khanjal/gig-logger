@@ -222,8 +222,8 @@ export class QuickComponent implements OnInit {
 
     let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
     if (shift) {
-      shift.end = dropOffTime;
-      shift.time = DateHelper.getDuration(shift.start, shift.end);
+      shift.finish = dropOffTime;
+      shift.time = DateHelper.getDuration(shift.start, shift.finish);
       await this._shiftService.updateLocalShift(shift);
     }
 

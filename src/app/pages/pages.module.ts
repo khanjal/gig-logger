@@ -25,8 +25,6 @@ import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-qu
 import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CalculatorComponent } from './calculator/calculator.component';
 import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
-// import { StatsComponent } from './stats/stats.component';
-// import { WeeklyStatsComponent } from './stats/weekly-stats/weekly-stats.component';
 
 @NgModule({
   declarations: [
@@ -40,8 +38,6 @@ import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calcu
     SheetQuickViewComponent,
     CalculatorComponent,
     UberCalculatorComponent,
-    // StatsComponent,
-    // WeeklyStatsComponent
   ],
   imports: [
     CommonModule,
