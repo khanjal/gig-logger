@@ -4,6 +4,7 @@ import { ShiftsComponent } from './shifts/shifts.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,7 +24,9 @@ import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-fo
 import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-quick-view.component';
 import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CalculatorComponent } from './calculator/calculator.component';
-import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
+// import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
+// import { StatsComponent } from './stats/stats.component';
+// import { WeeklyStatsComponent } from './stats/weekly-stats/weekly-stats.component';
 
 @NgModule({
   declarations: [
@@ -35,14 +38,17 @@ import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calcu
     SetupComponent,
     SheetAddFormComponent,
     SheetQuickViewComponent,
-    CalculatorComponent,
-    UberCalculatorComponent
+    CalculatorComponent
+    // UberCalculatorComponent,
+    // StatsComponent,
+    // WeeklyStatsComponent
   ],
   imports: [
     CommonModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
