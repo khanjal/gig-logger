@@ -23,8 +23,8 @@ import { SetupComponent } from './sheet-setup/setup.component';
 import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-form.component';
 import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-quick-view.component';
 import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-// import { CalculatorComponent } from './calculator/calculator.component';
-// import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
+import { CalculatorComponent } from './calculator/calculator.component';
+import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
 // import { StatsComponent } from './stats/stats.component';
 // import { WeeklyStatsComponent } from './stats/weekly-stats/weekly-stats.component';
 
@@ -37,9 +37,9 @@ import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialog
     LoginComponent,
     SetupComponent,
     SheetAddFormComponent,
-    SheetQuickViewComponent
-    // CalculatorComponent,
-    // UberCalculatorComponent,
+    SheetQuickViewComponent,
+    CalculatorComponent,
+    UberCalculatorComponent,
     // StatsComponent,
     // WeeklyStatsComponent
   ],
