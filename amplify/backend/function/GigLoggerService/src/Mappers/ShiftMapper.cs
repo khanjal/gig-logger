@@ -30,7 +30,7 @@ public static class ShiftMapper
                 Key = HeaderParser.GetStringValue(HeaderEnum.KEY.DisplayName(), value, headers),
                 Date = HeaderParser.GetStringValue(HeaderEnum.DATE.DisplayName(), value, headers),
                 Start = HeaderParser.GetStringValue(HeaderEnum.TIME_START.DisplayName(), value, headers),
-                End = HeaderParser.GetStringValue(HeaderEnum.TIME_END.DisplayName(), value, headers),
+                Finish = HeaderParser.GetStringValue(HeaderEnum.TIME_END.DisplayName(), value, headers),
                 Service = HeaderParser.GetStringValue(HeaderEnum.SERVICE.DisplayName(), value, headers),
                 Number = HeaderParser.GetIntValue(HeaderEnum.NUMBER.DisplayName(), value, headers),
                 Active = HeaderParser.GetStringValue(HeaderEnum.TOTAL_TIME_ACTIVE.DisplayName(), value, headers),
@@ -73,7 +73,7 @@ public static class ShiftMapper
                         objectList.Add(shift.Start);
                         break;
                     case HeaderEnum.TIME_END:
-                        objectList.Add(shift.End);
+                        objectList.Add(shift.Finish);
                         break;
                     case HeaderEnum.SERVICE:
                         objectList.Add(shift.Service);
