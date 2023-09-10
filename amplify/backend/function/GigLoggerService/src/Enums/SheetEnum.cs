@@ -1,30 +1,46 @@
 using System.ComponentModel;
 
 public enum SheetEnum {
-    [Description("Addresses")]
-    Addresses,
 
-    [Description("Names")]
-    Names,
-
-    [Description("Places")]
-    Places,
-
-    [Description("Regions")]
-    Regions,
-
-    [Description("Services")]
-    Services,
+    // Core
+    [Description("Trips")]
+    TRIPS,
 
     [Description("Shifts")]
-    Shifts,
+    SHIFTS,
 
-    [Description("Trips")]
-    Trips,
+    // Auxillary
+    [Description("Addresses")]
+    ADDRESSES,
+
+    [Description("Names")]
+    NAMES,
+
+    [Description("Places")]
+    PLACES,
+
+    [Description("Regions")]
+    REGIONS,
+
+    [Description("Services")]
+    SERVICES,
 
     [Description("Types")]
-    Types,
+    TYPES,
+
+    // Period stats
+    [Description("Daily")]
+    DAILY,
 
     [Description("Weekdays")]
-    Weekdays,
+    WEEKDAYS,
+
+    [Description("Weekly")]
+    WEEKLY,
+
+    [Description("Monthly")]
+    MONTHLY,
+
+    [Description("Yearly")]
+    YEARLY,
 }

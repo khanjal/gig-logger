@@ -12,6 +12,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
+using System.Linq;
 
 // https://aws.amazon.com/blogs/developer/introducing-net-core-support-for-aws-amplify-backend-functions/
 // https://code-maze.com/google-sheets-api-with-net-core/
@@ -24,6 +25,9 @@ using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
 
 // How to use API Gateway stage variables to call specific Lambda alias?
 // https://www.youtube.com/watch?v=mwD5wiP1FJ8
+
+// How to add a sheet in google sheets API v4 in C#?
+// https://stackoverflow.com/questions/37623191/how-to-add-a-sheet-in-google-sheets-api-v4-in-c
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -114,6 +118,7 @@ namespace GigLoggerService
                             CheckSpreadSheet();
                             break;
                         case "generate":
+                            GenerateSheets(SheetHelper.GetSheets());
                             break;
                         case "warmup":
                             WarmupLambda();
@@ -193,7 +198,7 @@ namespace GigLoggerService
     private void SaveTripData(SheetEntity sheetData)
     {
         // Create & save trip rows.
-        var tripRange = $"{SheetEnum.Trips.DisplayName()}!A1:ZZ1";
+        var tripRange = $"{SheetEnum.TRIPS.DisplayName()}!A1:ZZ1";
         var tripHeaders = GetSheetData(tripRange)[0];
         var trips = TripMapper.MapToRangeData(sheetData.Trips, tripHeaders);
         // context.Logger.LogDebug(JsonSerializer.Serialize(trips));
@@ -204,7 +209,7 @@ namespace GigLoggerService
         }
 
          // Create & save shift rows.
-        var shiftRange = $"{SheetEnum.Shifts.DisplayName()}!A1:ZZ1";
+        var shiftRange = $"{SheetEnum.SHIFTS.DisplayName()}!A1:ZZ1";
         var shiftHeaders = GetSheetData(shiftRange)[0];
         var shifts = ShiftMapper.MapToRangeData(sheetData.Shifts, shiftHeaders);
         // context.Logger.LogDebug(JsonSerializer.Serialize(shifts));
@@ -224,51 +229,136 @@ namespace GigLoggerService
 
     private void CheckSpreadSheet()
     {
+        var spreadsheet = _googleSheetService.Spreadsheets.Get(_spreadsheetId).Execute();
+        // Console.WriteLine(JsonSerializer.Serialize(spreadsheet));
+        _sheet.Name = spreadsheet.Properties.Title;
+        // Console.WriteLine(_sheet.Name);
+
+        var spreadsheetSheets = spreadsheet.Sheets.Select(x => x.Properties.Title.ToUpper()).ToList();
+        var sheetData = new List<SheetModel>();
+        // Console.WriteLine(JsonSerializer.Serialize(spreadsheetSheets));
+        
+        // Loop through all sheets to see if they exist.
         foreach (var name in Enum.GetNames<SheetEnum>())
         {
             SheetEnum sheetEnum = (SheetEnum)Enum.Parse(typeof(SheetEnum), name);
 
-            GetSheetData(sheetEnum.DisplayName());
+            if(spreadsheetSheets.Contains(name)) {
+                continue;
+            }
 
-            Console.WriteLine(name);
+            // Get data for each missing sheet.
+            // Console.WriteLine(name);
+
+            switch (sheetEnum)
+            {
+                case SheetEnum.ADDRESSES:
+                    sheetData.Add(AddressMapper.GetSheet());
+                    break;
+                case SheetEnum.DAILY:
+                    sheetData.Add(DailyMapper.GetSheet());
+                    break;
+                case SheetEnum.MONTHLY:
+                    sheetData.Add(MonthlyMapper.GetSheet());
+                    break;
+                case SheetEnum.NAMES:
+                    sheetData.Add(NameMapper.GetSheet());
+                    break;
+                case SheetEnum.PLACES:
+                    sheetData.Add(PlaceMapper.GetSheet());
+                    break;
+                case SheetEnum.REGIONS:
+                    sheetData.Add(RegionMapper.GetSheet());
+                    break;
+                case SheetEnum.SERVICES:
+                    sheetData.Add(ServiceMapper.GetSheet());
+                    break;
+                case SheetEnum.SHIFTS:
+                    sheetData.Add(ShiftMapper.GetSheet());
+                    break;
+                case SheetEnum.TRIPS:
+                    sheetData.Add(TripMapper.GetSheet());
+                    break;
+                case SheetEnum.TYPES:
+                    sheetData.Add(TypeMapper.GetSheet());
+                    break;
+                case SheetEnum.WEEKDAYS:
+                    sheetData.Add(WeekdayMapper.GetSheet());
+                    break;
+                case SheetEnum.WEEKLY:
+                    sheetData.Add(WeeklyMapper.GetSheet());
+                    break;
+                case SheetEnum.YEARLY:
+                    sheetData.Add(YearlyMapper.GetSheet());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Console.Write(JsonSerializer.Serialize(sheetData));
+
+        // If any sheets are missing generate them.
+        if(sheetData.Count > 0) {
+            GenerateSheets(sheetData);
+        }
+    }
+
+    private void CheckSheetHeaders(IList<IList<object>> values, SheetModel sheetModel)
+    {
+        var data = values[0];
+        var headerArray =  new string[data.Count];
+        data.CopyTo(headerArray, 0);
+        var index = 0;
+        // Console.Write(JsonSerializer.Serialize(data[0]));
+        foreach (var sheetHeader in sheetModel.Headers)
+        {
+            if(!data.Any(x => x.ToString().Trim() == sheetHeader.Name)) {
+                _sheet.Errors.Add($"Sheet [{sheetModel.Name}]: Missing [{sheetHeader.Name}]");
+            }
+            else {
+                if(index < headerArray.Count() && sheetHeader.Name != headerArray[index].Trim()) {
+                    // Console.Write(JsonSerializer.Serialize(headerArray));
+                    // Console.Write(JsonSerializer.Serialize(sheetModel.Headers));
+                    _sheet.Warnings.Add($"Sheet [{sheetModel.Name}]: Expected [{sheetHeader.Name}] but found [{headerArray[index].Trim()}]");
+                }
+            }
+            index++;
         }
     }
 
     private void LoadSpreadSheetData(string action)
     {
         var sheets = new List<SheetEnum>();
-        LoadSpreadSheetProperties();
+        // LoadSpreadSheetProperties();
+        CheckSpreadSheet();
 
         switch (action)
         {
             case "primary":
-                sheets.Add(SheetEnum.Addresses);
-                sheets.Add(SheetEnum.Names);
-                sheets.Add(SheetEnum.Places);
-                sheets.Add(SheetEnum.Regions);
-                sheets.Add(SheetEnum.Services);
-                sheets.Add(SheetEnum.Shifts);
-                sheets.Add(SheetEnum.Trips);
-                sheets.Add(SheetEnum.Types);
-                sheets.Add(SheetEnum.Weekdays);
+                sheets.Add(SheetEnum.ADDRESSES);
+                sheets.Add(SheetEnum.DAILY);
+                sheets.Add(SheetEnum.MONTHLY);
+                sheets.Add(SheetEnum.NAMES);
+                sheets.Add(SheetEnum.PLACES);
+                sheets.Add(SheetEnum.REGIONS);
+                sheets.Add(SheetEnum.SERVICES);
+                sheets.Add(SheetEnum.SHIFTS);
+                sheets.Add(SheetEnum.TRIPS);
+                sheets.Add(SheetEnum.TYPES);
+                sheets.Add(SheetEnum.WEEKDAYS);
+                sheets.Add(SheetEnum.WEEKLY);
+                sheets.Add(SheetEnum.YEARLY);
             break;
             
             case "secondary":
-                sheets.Add(SheetEnum.Addresses);
-                sheets.Add(SheetEnum.Names);
-                sheets.Add(SheetEnum.Trips);
+                sheets.Add(SheetEnum.ADDRESSES);
+                sheets.Add(SheetEnum.NAMES);
+                sheets.Add(SheetEnum.TRIPS);
             break;
         }
 
         LoadBatchData(sheets);
-    }
-
-    private void LoadSpreadSheetProperties()
-    {
-        // var googleRequest = _googleSheetValues.Get;
-        // var googleResponse = googleRequest.Execute();
-        // matchedValues = googleResponse.ValueRanges;
-        Console.WriteLine($"Google Sheet Name: {_googleSheetName}");
     }
 
     private void LoadBatchData(List<SheetEnum> sheets)
@@ -290,9 +380,12 @@ namespace GigLoggerService
             var googleResponse = googleRequest.Execute();
             matchedValues = googleResponse.ValueRanges;
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
-            _sheet.Errors.Add($"Failed to load sheet data");
+            Console.WriteLine(ex);
+            var message = ex.Message.Split(". ");
+            // "Quota exceeded for quota metric 'Read requests' and limit 'Read requests per minute per user' of service ..."
+            _sheet.Errors.Add($"{message.LastOrDefault().Trim()}");
             return;
         }
         
@@ -318,30 +411,149 @@ namespace GigLoggerService
         }
         catch (System.Exception)
         {
-            _sheet.Errors.Add($"Failed to load {sheetRange}");
+            _sheet.Errors.Add($"Failed to find sheet: {sheetRange}");
             return null;
         }
 
         return values;
     }
 
-    private void NewSheet() {
-        // var service = new SheetsService(new BaseClientService.Initializer()
-        //     {
-        //         HttpClientInitializer = credential,
-        //         ApplicationName = ApplicationName,
-        //     });
+    private void GenerateSheets(List<SheetModel> sheets) {
+        // var sheets = SheetHelper.GetSheets();
 
-        var sheet = new AddSheetRequest();
-        sheet.Properties = new SheetProperties();
-
-        sheet.Properties.Title = "Test";
-        BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
+        var batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
         batchUpdateSpreadsheetRequest.Requests = new List<Request>();
-        batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddSheet = sheet });
+        var repeatCellRequests = new List<RepeatCellRequest>();
+        var protectCellRequests = new List<AddProtectedRangeRequest>();
+        
+        sheets.ForEach(sheet => {
+            var random = new Random();
+            // var sheetId = (int?)(DateTimeOffset.Now.ToUnixTimeMilliseconds() % 1000000000);
+            var sheetId = random.Next();
 
+            var sheetRequest = new AddSheetRequest();
+            sheetRequest.Properties = new SheetProperties();
+
+            // TODO: Make request helper to build these requests.
+
+            // Create Sheet With Properties
+            sheetRequest.Properties.SheetId = sheetId;
+            // sheetRequest.Properties.Title = $"{sheet.Name} {sheetId}";
+            sheetRequest.Properties.Title = sheet.Name;
+            sheetRequest.Properties.TabColor = SheetHelper.GetColor(sheet.TabColor);
+            sheetRequest.Properties.GridProperties = new GridProperties { FrozenColumnCount = sheet.FreezeColumnCount, FrozenRowCount = sheet.FreezeRowCount };
+            
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddSheet = sheetRequest });
+
+            // Append more columns if the default amount isn't enough
+            var defaultColumns = 26;
+            if (sheet.Headers.Count > defaultColumns) {
+                var appendDimensionRequest = new AppendDimensionRequest();
+                appendDimensionRequest.Dimension = "COLUMNS";
+                appendDimensionRequest.Length = sheet.Headers.Count - defaultColumns;
+                appendDimensionRequest.SheetId = sheetId;
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendDimension = appendDimensionRequest });
+            }
+
+            // Create Sheet Headers
+            var appendCellsRequest = new AppendCellsRequest();
+            appendCellsRequest.Fields = "*";
+            appendCellsRequest.Rows = SheetHelper.HeadersToRowData(sheet);
+            appendCellsRequest.SheetId = sheetId;
+
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AppendCells = appendCellsRequest });
+
+            // Format/Protect Column Cells
+            sheet.Headers.ForEach(header => {
+                var range = new GridRange{ 
+                                        SheetId = sheetId,
+                                        StartColumnIndex = header.Index,
+                                        EndColumnIndex = header.Index + 1,
+                                        StartRowIndex = 1,
+                                    };
+
+                // If whole sheet isn't protected then protect certain columns
+                if (!string.IsNullOrEmpty(header.Formula) && !sheet.ProtectSheet) {
+                    var addProtectedRangeRequest = new AddProtectedRangeRequest
+                    {
+                    ProtectedRange = new ProtectedRange { Description = "Editing this column will cause a #REF error.", Range = range, WarningOnly = true }
+                    };
+                    // protectCellRequests.Add(addProtectedRangeRequest);
+                    batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
+                }
+
+                // If there's no format or validation then go to next header
+                if(header.Format == null && header.Validation == null) {
+                    return;
+                }
+
+                // Set start/end for formatting
+                range.StartRowIndex = 1;
+                range.EndRowIndex = null;
+
+                var repeatCellRequest = new RepeatCellRequest();
+                repeatCellRequest.Fields = "*";
+                repeatCellRequest.Range = range;
+                repeatCellRequest.Cell = new CellData();
+
+                if (header.Format != null) {
+                    repeatCellRequest.Cell.UserEnteredFormat = SheetHelper.GetCellFormat((FormatEnum)header.Format);
+                }
+
+                if (header.Validation != null) {
+                    repeatCellRequest.Cell.DataValidation = SheetHelper.GetDataValidation((ValidationEnum)header.Validation);
+                }
+
+                repeatCellRequests.Add(repeatCellRequest);
+                //batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = repeatCellRequest });
+            });
+
+            // Add alternating colors
+            var addBandingRequest = new AddBandingRequest();
+            addBandingRequest.BandedRange = new BandedRange {
+                BandedRangeId = sheetId,
+                Range = new GridRange { SheetId = sheetId },
+                RowProperties = new BandingProperties { HeaderColor = SheetHelper.GetColor(sheet.TabColor), FirstBandColor = SheetHelper.GetColor(ColorEnum.WHITE), SecondBandColor = SheetHelper.GetColor(sheet.CellColor)}
+            };
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddBanding = addBandingRequest });
+
+            // Protect sheet or header
+            var addProtectedRangeRequest = new AddProtectedRangeRequest();
+            if (sheet.ProtectSheet) {
+                addProtectedRangeRequest = new AddProtectedRangeRequest
+                {
+                    ProtectedRange = new ProtectedRange { Description = "Editing this sheet will cause a #REF error.", Range = new GridRange { SheetId = sheetId }, WarningOnly = true }
+                };
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
+            }
+            else {
+                 // Protect full header if sheet isn't protected.
+                var range = new GridRange{ 
+                                    SheetId = sheetId,
+                                    StartColumnIndex = 0,
+                                    EndColumnIndex = sheet.Headers.Count,
+                                    StartRowIndex = 0,
+                                    EndRowIndex = 1
+                                };
+                
+                addProtectedRangeRequest.ProtectedRange = new ProtectedRange { Description = "Editing the header could cause a #REF error or break sheet references.", Range = range, WarningOnly = true };
+                batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = addProtectedRangeRequest });
+            }
+
+            _sheet.Messages.Add($"Sheet [{sheet.Name}]: Added");
+        });
+        
+        repeatCellRequests.ForEach(request => {
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { RepeatCell = request });
+        });
+
+        protectCellRequests.ForEach(request => {
+            batchUpdateSpreadsheetRequest.Requests.Add(new Request { AddProtectedRange = request });
+        });
+
+        // Console.WriteLine(JsonSerializer.Serialize(batchUpdateSpreadsheetRequest.Requests));
         var batchUpdateRequest = _googleSheetService.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _spreadsheetId);
-        // batchUpdateRequest.Execute();
+        batchUpdateRequest.Execute();
     }
 
     private void LoadData(string sheetRange)
@@ -358,47 +570,68 @@ namespace GigLoggerService
         }
 
         private void MapData(string sheetRange, IList<IList<object>> values) {
+            if (values == null) {
+                return;
+            }
+
             SheetEnum sheetEnum;
 
-            Enum.TryParse<SheetEnum>(sheetRange, out sheetEnum);
+            Enum.TryParse<SheetEnum>(sheetRange.ToUpper(), out sheetEnum);
             
             switch (sheetEnum)
             {
-                case SheetEnum.Addresses:
+                case SheetEnum.ADDRESSES:
+                    CheckSheetHeaders(values, AddressMapper.GetSheet());
                     _sheet.Addresses = AddressMapper.MapFromRangeData(values);
                     break;
-
-                case SheetEnum.Names:
+                case SheetEnum.DAILY:
+                    CheckSheetHeaders(values, DailyMapper.GetSheet());
+                    _sheet.Daily = DailyMapper.MapFromRangeData(values);
+                    break;
+                case SheetEnum.MONTHLY:
+                    CheckSheetHeaders(values, MonthlyMapper.GetSheet());
+                    _sheet.Monthly = MonthlyMapper.MapFromRangeData(values);
+                    break;
+                case SheetEnum.NAMES:
+                    CheckSheetHeaders(values, NameMapper.GetSheet());
                     _sheet.Names = NameMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Places:
+                    break;
+                case SheetEnum.PLACES:
+                    CheckSheetHeaders(values, PlaceMapper.GetSheet());
                     _sheet.Places = PlaceMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Regions:
+                    break;
+                case SheetEnum.REGIONS:
+                    CheckSheetHeaders(values, RegionMapper.GetSheet());
                     _sheet.Regions = RegionMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Services:
+                    break;
+                case SheetEnum.SERVICES:
+                    CheckSheetHeaders(values, ServiceMapper.GetSheet());
                     _sheet.Services = ServiceMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Shifts:
+                    break;
+                case SheetEnum.SHIFTS:
+                    CheckSheetHeaders(values, ShiftMapper.GetSheet());
                     _sheet.Shifts = ShiftMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Trips:
+                    break;
+                case SheetEnum.TRIPS:
+                    CheckSheetHeaders(values, TripMapper.GetSheet());
                     _sheet.Trips = TripMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Types:
+                    break;
+                case SheetEnum.TYPES:
+                    CheckSheetHeaders(values, TypeMapper.GetSheet());
                     _sheet.Types = TypeMapper.MapFromRangeData(values);
-                break;
-
-                case SheetEnum.Weekdays:
+                    break;
+                case SheetEnum.WEEKDAYS:
+                    CheckSheetHeaders(values, WeekdayMapper.GetSheet());                
                     _sheet.Weekdays = WeekdayMapper.MapFromRangeData(values);
-                break;
+                    break;
+                case SheetEnum.WEEKLY:
+                    CheckSheetHeaders(values, WeeklyMapper.GetSheet());
+                    _sheet.Weekly = WeeklyMapper.MapFromRangeData(values);
+                    break;
+                case SheetEnum.YEARLY:
+                    CheckSheetHeaders(values, YearlyMapper.GetSheet());
+                    _sheet.Yearly = YearlyMapper.MapFromRangeData(values);
+                    break;
             }
         }
 

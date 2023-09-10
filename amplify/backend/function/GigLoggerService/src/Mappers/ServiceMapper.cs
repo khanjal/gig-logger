@@ -23,18 +23,34 @@ public static class ServiceMapper
             ServiceEntity service = new()
             {
                 Id = id,
-                Service = HeaderParser.GetStringValue("Service", value, headers),
-                Trips = HeaderParser.GetIntValue("Trips", value, headers),
-                Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
-                Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
-                Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
-                Total = HeaderParser.GetDecimalValue("Total", value, headers),
-                Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
-                Miles = HeaderParser.GetDecimalValue("Miles", value, headers),
+                Service = HeaderParser.GetStringValue(HeaderEnum.SERVICE.DisplayName(), value, headers),
+                Trips = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIP.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
             };
             
             services.Add(service);
         }
         return services;
+    }
+
+    public static SheetModel GetSheet() {
+        var sheet = new SheetModel();
+        sheet.Name = SheetEnum.SERVICES.DisplayName();
+        sheet.TabColor = ColorEnum.CYAN;
+        sheet.CellColor = ColorEnum.LIGHT_CYAN;
+        sheet.FreezeColumnCount = 1;
+        sheet.FreezeRowCount = 1;
+        sheet.ProtectSheet = true;
+
+        var shiftSheet = ShiftMapper.GetSheet();
+
+        sheet.Headers = SheetHelper.GetCommonShiftGroupSheetHeaders(shiftSheet, HeaderEnum.SERVICE);
+
+        return sheet;
     }
 }

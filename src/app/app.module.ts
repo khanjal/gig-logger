@@ -21,6 +21,7 @@ import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { RegionService } from '@services/region.service';
 import { TypeService } from '@services/type.service';
+import { CommonService } from '@services/common.service';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { TypeService } from '@services/type.service';
   ],
   providers: [
     AddressService,
+    CommonService,
     DeliveryService,
     NameService,
     GigLoggerService,

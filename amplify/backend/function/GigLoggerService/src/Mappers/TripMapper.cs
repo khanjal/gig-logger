@@ -26,30 +26,31 @@ public static class TripMapper
             TripEntity trip = new()
             {
                 Id = id,
-                Key = HeaderParser.GetStringValue("Key", value, headers),
-                Date = HeaderParser.GetStringValue("Date", value, headers),
-                Service = HeaderParser.GetStringValue("Service", value, headers),
-                Number = HeaderParser.GetIntValue("#", value, headers),
-                Type = HeaderParser.GetStringValue("Type", value, headers),
-                Place = HeaderParser.GetStringValue("Place", value, headers),
-                Pickup = HeaderParser.GetStringValue("Pickup", value, headers),
-                Dropoff = HeaderParser.GetStringValue("Dropoff", value, headers),
-                Duration = HeaderParser.GetStringValue("Duration", value, headers),
-                Pay = HeaderParser.GetDecimalValue("Pay", value, headers),
-                Tip = HeaderParser.GetDecimalValue("Tip", value, headers),
-                Bonus = HeaderParser.GetDecimalValue("Bonus", value, headers),
-                Total = HeaderParser.GetDecimalValue("Total", value, headers),
-                Cash = HeaderParser.GetDecimalValue("Cash", value, headers),
-                OdometerStart = HeaderParser.GetDecimalValue("Odo Start", value, headers),
-                OdometerEnd = HeaderParser.GetDecimalValue("Odo End", value, headers),
-                Distance = HeaderParser.GetDecimalValue("Distance", value, headers),
-                Name = HeaderParser.GetStringValue("Name", value, headers),
-                StartAddress = HeaderParser.GetStringValue("Start Address", value, headers),
-                EndAddress = HeaderParser.GetStringValue("End Address", value, headers),
-                EndUnit = HeaderParser.GetStringValue("End Unit", value, headers),
-                OrderNumber = HeaderParser.GetStringValue("Order #", value, headers),
-                Region = HeaderParser.GetStringValue("Region", value, headers),
-                Note = HeaderParser.GetStringValue("Note", value, headers),
+                Key = HeaderParser.GetStringValue(HeaderEnum.KEY.DisplayName(), value, headers),
+                Date = HeaderParser.GetStringValue(HeaderEnum.DATE.DisplayName(), value, headers),
+                Service = HeaderParser.GetStringValue(HeaderEnum.SERVICE.DisplayName(), value, headers),
+                Number = HeaderParser.GetIntValue(HeaderEnum.NUMBER.DisplayName(), value, headers),
+                Exclude = HeaderParser.GetBoolValue(HeaderEnum.EXCLUDE.DisplayName(), value, headers),
+                Type = HeaderParser.GetStringValue(HeaderEnum.TYPE.DisplayName(), value, headers),
+                Place = HeaderParser.GetStringValue(HeaderEnum.PLACE.DisplayName(), value, headers),
+                Pickup = HeaderParser.GetStringValue(HeaderEnum.PICKUP.DisplayName(), value, headers),
+                Dropoff = HeaderParser.GetStringValue(HeaderEnum.DROPOFF.DisplayName(), value, headers),
+                Duration = HeaderParser.GetStringValue(HeaderEnum.DURATION.DisplayName(), value, headers),
+                Pay = HeaderParser.GetDecimalValue(HeaderEnum.PAY.DisplayName(), value, headers),
+                Tip = HeaderParser.GetDecimalValue(HeaderEnum.TIPS.DisplayName(), value, headers),
+                Bonus = HeaderParser.GetDecimalValue(HeaderEnum.BONUS.DisplayName(), value, headers),
+                Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
+                Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
+                OdometerStart = HeaderParser.GetDecimalValue(HeaderEnum.ODOMETER_START.DisplayName(), value, headers),
+                OdometerEnd = HeaderParser.GetDecimalValue(HeaderEnum.ODOMETER_END.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
+                Name = HeaderParser.GetStringValue(HeaderEnum.NAME.DisplayName(), value, headers),
+                StartAddress = HeaderParser.GetStringValue(HeaderEnum.ADDRESS_START.DisplayName(), value, headers),
+                EndAddress = HeaderParser.GetStringValue(HeaderEnum.ADDRESS_END.DisplayName(), value, headers),
+                EndUnit = HeaderParser.GetStringValue(HeaderEnum.UNIT_END.DisplayName(), value, headers),
+                OrderNumber = HeaderParser.GetStringValue(HeaderEnum.ORDER_NUMBER.DisplayName(), value, headers),
+                Region = HeaderParser.GetStringValue(HeaderEnum.REGION.DisplayName(), value, headers),
+                Note = HeaderParser.GetStringValue(HeaderEnum.NOTE.DisplayName(), value, headers),
                 Saved = true
             };
             
@@ -67,72 +68,77 @@ public static class TripMapper
 
             foreach (var header in tripHeaders)
             {
-                switch (header.ToString().Trim())
+                var headerEnum = header.ToString().Trim().GetValueFromName<HeaderEnum>();
+
+                switch (headerEnum)
                 {
-                    case "Date":
+                    case HeaderEnum.DATE:
                         objectList.Add(trip.Date);
                         break;
-                    case "Service":
+                    case HeaderEnum.SERVICE:
                         objectList.Add(trip.Service);
                         break;
-                    case "#":
+                    case HeaderEnum.NUMBER:
                         objectList.Add(trip.Number);
                         break;
-                    case "Type":
+                    case HeaderEnum.EXCLUDE:
+                        objectList.Add(trip.Exclude);
+                        break;
+                    case HeaderEnum.TYPE:
                         objectList.Add(trip.Type);
                         break;
-                    case "Place":
+                    case HeaderEnum.PLACE:
                         objectList.Add(trip.Place);
                         break;
-                    case "Pickup":
+                    case HeaderEnum.PICKUP:
                         objectList.Add(trip.Pickup);
                         break;
-                    case "Dropoff":
+                    case HeaderEnum.DROPOFF:
                         objectList.Add(trip.Dropoff);
                         break;
-                    case "Duration":
+                    case HeaderEnum.DURATION:
                         objectList.Add(trip.Duration);
                         break;
-                    case "Pay":
+                    case HeaderEnum.PAY:
                         objectList.Add(trip.Pay);
                         break;
-                    case "Tip":
+                    case HeaderEnum.TIPS:
                         objectList.Add(trip.Tip);
                         break;
-                    case "Bonus":
+                    case HeaderEnum.BONUS:
                         objectList.Add(trip.Bonus);
                         break;
-                    case "Cash":
+                    case HeaderEnum.CASH:
                         objectList.Add(trip.Cash);
                         break;
-                    case "Odo Start":
+                    case HeaderEnum.ODOMETER_START:
                         objectList.Add(trip.OdometerStart);
                         break;
-                    case "Odo End":
+                    case HeaderEnum.ODOMETER_END:
                         objectList.Add(trip.OdometerEnd);
                         break;
-                    case "Distance":
+                    case HeaderEnum.DISTANCE:
                         objectList.Add(trip.Distance);
                         break;
-                    case "Name":
+                    case HeaderEnum.NAME:
                         objectList.Add(trip.Name);
                         break;
-                    case "Start Address":
+                    case HeaderEnum.ADDRESS_START:
                         objectList.Add(trip.StartAddress);
                         break;
-                    case "End Address":
+                    case HeaderEnum.ADDRESS_END:
                         objectList.Add(trip.EndAddress);
                         break;
-                    case "End Unit":
+                    case HeaderEnum.UNIT_END:
                         objectList.Add(trip.EndUnit);
                         break;
-                    case "Order #":
+                    case HeaderEnum.ORDER_NUMBER:
                         objectList.Add(trip.OrderNumber);
                         break;
-                    // case "Region":
-                    //     objectList.Add(trip.Region);
-                    //     break;
-                    case "Note":
+                    case HeaderEnum.REGION:
+                        objectList.Add(trip.Region);
+                        break;
+                    case HeaderEnum.NOTE:
                         objectList.Add(trip.Note);
                         break;
                     default:
@@ -143,7 +149,106 @@ public static class TripMapper
 
             rangeData.Add(objectList);
         }
-        Console.Write(JsonSerializer.Serialize(rangeData));
+        // Console.Write(JsonSerializer.Serialize(rangeData));
         return rangeData;
+    }
+
+    public static SheetModel GetSheet() {
+        var sheet = new SheetModel();
+        sheet.Name = SheetEnum.TRIPS.DisplayName();
+        sheet.TabColor = ColorEnum.DARK_YELLOW;
+        sheet.CellColor = ColorEnum.LIGHT_YELLOW;
+        sheet.FreezeColumnCount = 1;
+        sheet.FreezeRowCount = 1;
+
+        sheet.Headers = new List<SheetCellModel>();
+
+        // Date
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName()});
+        var dateRange = sheet.GetLocalRange(HeaderEnum.DATE);
+        // Service
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName(),
+            Validation = ValidationEnum.RANGE_SERVICE});
+        // #
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NUMBER.DisplayName(),
+            Note = "Shift Number 1-9 Leave blank if there is only shift for that service for that day."});
+        // X
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.EXCLUDE.DisplayName(),
+            Note = "Exclude this trip from being included in shift.",
+            Validation = ValidationEnum.BOOLEAN});
+        // Type
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TYPE.DisplayName(),
+            Note = "Pickup, Shop, Order, Curbside, Canceled",
+            Validation = ValidationEnum.RANGE_TYPE});
+        // Place
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PLACE.DisplayName(),
+            Note = "Location of pickup (delivery).",
+            Validation = ValidationEnum.RANGE_PLACE});
+        // Pickup
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PICKUP.DisplayName(),
+            Note = "Time when request/ride picked up."});
+        // Dropoff
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DROPOFF.DisplayName()});
+        // Duration
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DURATION.DisplayName(),
+            Note = "Hours/Minutes task took to complete.",
+            Format = FormatEnum.DURATION});
+        // Pay
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.PAY.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Tips
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TIPS.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Bonus
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.BONUS.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Total
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TOTAL.DisplayName(), 
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.TOTAL.DisplayName()}\",ISBLANK({dateRange}), \"\",true,{sheet.GetLocalRange(HeaderEnum.PAY)}+{sheet.GetLocalRange(HeaderEnum.TIPS)}+{sheet.GetLocalRange(HeaderEnum.BONUS)}))",
+            Format = FormatEnum.ACCOUNTING});
+        // Cash
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.CASH.DisplayName(),
+            Format = FormatEnum.ACCOUNTING});
+        // Odo Start
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ODOMETER_START.DisplayName()});
+        // Odo End
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ODOMETER_END.DisplayName()});
+        // Distance
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DISTANCE.DisplayName(),
+            Note = "How many miles/km the request took."});
+        // Name
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NAME.DisplayName(),
+            Validation = ValidationEnum.RANGE_NAME});
+        // Start Address
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_START.DisplayName(),
+            Validation = ValidationEnum.RANGE_ADDRESS});
+        // End Address
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS_END.DisplayName(),
+            Validation = ValidationEnum.RANGE_ADDRESS});
+        // End Unit
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.UNIT_END.DisplayName(),
+            Note = "Apartment, Unit, Room, Suite"});
+        // Order Number
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ORDER_NUMBER.DisplayName()});
+        // Region
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.REGION.DisplayName(),
+            Validation = ValidationEnum.RANGE_REGION});
+        // Note
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.NOTE.DisplayName()});
+        // Key
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.KEY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.KEY.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.SERVICE)}), \"\",true,IF({sheet.GetLocalRange(HeaderEnum.EXCLUDE)},{dateRange} & \"-X-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)},IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.NUMBER)}), {dateRange} & \"-0-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}, {dateRange} & \"-\" & {sheet.GetLocalRange(HeaderEnum.NUMBER)} & \"-\" & {sheet.GetLocalRange(HeaderEnum.SERVICE)}))))",
+            Note = "Used to connect trips to shifts."});
+        // Day
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({dateRange}), \"\",true,DAY({dateRange})))"});
+        // Month
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.MONTH.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.MONTH.DisplayName()}\",ISBLANK({dateRange}), \"\",true,MONTH({dateRange})))"});
+        // Year
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.YEAR.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.YEAR.DisplayName()}\",ISBLANK({dateRange}), \"\",true,YEAR({dateRange})))"});
+
+        return sheet;
     }
 }
