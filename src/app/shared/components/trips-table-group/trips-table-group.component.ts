@@ -41,13 +41,14 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     dates.forEach(async date => {
       let tripGroup = {} as ITripGroup;
       let trips = this.trips.filter(x => x.date === date);
-      let dayOfWeek = new Date(date).toLocaleDateString('en-us', {weekday: 'short'});
+      //let dayOfWeek = new Date(date).toLocaleDateString('en-us', {weekday: 'short'});
+      let dayOfWeek = new Date(date).getDay() + 1;
       let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
       tripGroup.date = date;
       tripGroup.trips = trips;
-      tripGroup.amount = trips.reduce((n, {total}) => n + total, 0);
-      tripGroup.average = weekday.dailyPrevAverage;
+      tripGroup.amount = trips.filter(x => !x.exclude).reduce((n, {total}) => n + total, 0);
+      tripGroup.average = weekday?.dailyPrevAverage ?? 0;
 
       // Double check that amount is a number
       tripGroup.amount = isNaN(tripGroup.amount) ? 0 : tripGroup.amount;

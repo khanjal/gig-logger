@@ -19,10 +19,34 @@
     <h1>Instructions</h1>
     <ol>
         <li>Create a new Google spreadsheet</li>
-        <li>Open <b>File > Share > Share with others</b></li>
-        <li>Add <b>srvsheets@gig-sheets.iam.gserviceaccount.com</b> as an <b>editor</b></li>
+        <li>Open <strong>File > Share > Share with others</strong></li>
+        <li>Add <strong>srvsheets@gig-sheets.iam.gserviceaccount.com</strong> as an <strong>editor</strong></li>
         <li>Do not share your Google sheeet ID with anyone!</li>
     </ol>
+    <h1>Sheets</h1>
+    <ul>
+        <li>Trips</li>
+        <ul>
+            <li>Shifts</li>
+            <ul>
+                <li>Daily</li>
+                <ul>
+                    <li>Weekdays</li>
+                    <li>Weekly</li>
+                    <li>Monthly</li>
+                    <ul>
+                        <li>Yearly</li>
+                    </ul>
+                </ul>
+            </ul>
+            <li>Addresses</li>
+            <li>Names</li>
+            <li>Places</li>
+            <li>Regions</li>
+            <li>Services</li>
+            <li>Types</li>
+        </ul>
+    </ul>
     <h1>FAQ</h1>
     <ul>
         <li>
@@ -56,6 +80,14 @@
         <li>
             <h2>How do I delete my data?</h2>
             <p>On the setup page you can click delete all data to remove your local and remote data. Your spreadsheet data will remain untouched.</p>
+        </li>
+        <li>
+            <h2>#REF - Array result was not expanded because it would overwrite data...</h2>
+            <p>This error will occur in the header if you have manually entered data into the column below Row 1. The easiest way to fix this is to delete everything in the column except the header.</p>
+        </li>
+        <li>
+            <h2>#REF - Unresolved sheet name...</h2>
+            <p>This error will occur in the header if you deleted a sheet that it was referencing. Even if the sheet it references is recreated, it will still be broken. To fix this you can refresh the header by clicking in it and hitting enter to make it update. You can also delete the sheet if it's a proteced with the lock symbol and have it regenerate, but this could break other sheets if it's being referenced.</p>
         </li>
         <li>
             <h2>I have an idea for a feature</h2>

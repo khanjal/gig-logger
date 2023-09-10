@@ -14,8 +14,8 @@ public class ShiftEntity : AmountEntity
     [JsonPropertyName("start")]
     public string Start { get; set; }
 
-    [JsonPropertyName("end")]
-    public string End { get; set; }
+    [JsonPropertyName("finish")]
+    public string Finish { get; set; }
 
     [JsonPropertyName("service")]
     public string Service { get; set; }
@@ -33,7 +33,7 @@ public class ShiftEntity : AmountEntity
     public string Time { get; set; }
 
     [JsonPropertyName("omit")]
-    public string Omit { get; set; }
+    public bool Omit { get; set; }
 
     [JsonPropertyName("region")]
     public string Region { get; set; }

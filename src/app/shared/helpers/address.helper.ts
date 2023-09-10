@@ -1,6 +1,5 @@
-import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { NumberHelper } from "./number.helper";
 import { IAddress } from "@interfaces/address.interface";
+import { StringHelper } from "./string.helper";
 
 export class AddressHelper {
     static getShortAddress(address: string, place: string = "", length: number = 2): string {
@@ -8,17 +7,30 @@ export class AddressHelper {
             return "";
         }
 
+        // Abbreviate address.
+        address = this.abbrvAddress(address);
+
         let addressArray = address.split(", ");
 
+        // If there's only one address element just return it.
         if (addressArray.length === 1) {
-            return this.abbrvAddress(address);
+            return address;
         }
 
-        if (place && addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase())) {
-            return this.abbrvAddress(addressArray.slice(1, length).join(", "));
+        // Check if first element starts with place name.
+        if (place && 
+            (addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase()) || 
+            (place.toLocaleLowerCase().startsWith(addressArray[0].toLocaleLowerCase())))) 
+        {
+            return addressArray.slice(1, length+1).join(", ");
         }
 
-        return this.abbrvAddress(addressArray.slice(0, length+1).join(", "));
+        // Truncate the first element to 10 since it's probably a place name if more than 3 elements.
+        if (length > 1) {
+            addressArray[0] = StringHelper.truncate(addressArray[0], 15);
+        }
+
+        return addressArray.slice(0, length+1).join(", ");
     }
 
     static abbrvAddress(address: string): string {
@@ -83,45 +95,30 @@ export class AddressHelper {
             }
         });
 
-        return abbreviatedAddress;
+        return abbreviatedAddress.trim();
+    }
+
+    static abbrvDirection(addressPart: string): string {
+        switch (addressPart.toLowerCase()) {
+            case "north":
+                return 'N';
+            case "east":
+                return 'E';
+            case "south":
+                return 'S';
+            case "west":
+                return 'W';
+            default:
+                return addressPart;
+        }
     }
 
     static sortAddressAsc(addresses: IAddress[]): IAddress[] {
+        if (!addresses) {
+            return [];
+        }
+        
         addresses.sort((a,b) => a.address.localeCompare(b.address));
-
-        return addresses;
-    }
-
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): IAddress[] {
-        let addresses: IAddress[] = [];
-
-        rows.forEach(row => {
-            // console.log(row);
-            // console.log(row.rowIndex);
-            let address: IAddress = {} as IAddress;
-            address.id = row.rowIndex;
-            address.address = row['Address'];
-            address.names =  [];
-            address.notes = [];
-            address.visits = NumberHelper.getNumberFromString(row['Visits']);
-
-            // Amount data
-            address.pay = NumberHelper.getNumberFromString(row['Pay']);
-            address.tip = NumberHelper.getNumberFromString(row['Tip']);
-            address.bonus = NumberHelper.getNumberFromString(row['Bonus']);
-            address.total = NumberHelper.getNumberFromString(row['Total']);
-            address.cash = NumberHelper.getNumberFromString(row['Cash']);
-
-            // console.log(addressModel);
-
-            if (address.address) {
-                addresses.push(address);
-            }
-            
-        });
-        // console.log(addresses);
-        console.log(addresses.length);
-        // console.log(addresses);
 
         return addresses;
     }

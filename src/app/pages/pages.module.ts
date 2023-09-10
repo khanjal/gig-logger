@@ -4,6 +4,7 @@ import { ShiftsComponent } from './shifts/shifts.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,13 +37,14 @@ import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calcu
     SheetAddFormComponent,
     SheetQuickViewComponent,
     CalculatorComponent,
-    UberCalculatorComponent
+    UberCalculatorComponent,
   ],
   imports: [
     CommonModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
