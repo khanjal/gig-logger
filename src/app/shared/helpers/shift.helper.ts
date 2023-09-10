@@ -1,6 +1,4 @@
-import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { DateHelper } from "@helpers/date.helper";
-import { NumberHelper } from "@helpers/number.helper";
 import { IShift } from "@interfaces/shift.interface";
 
 export class ShiftHelper {
@@ -75,37 +73,6 @@ export class ShiftHelper {
 
     static sortShiftsDesc(shifts: IShift[]): IShift[] {
         shifts.sort((a,b) => b.key.localeCompare(a.key));
-
-        return shifts;
-    }
-
-    static translateSheetData(rows: GoogleSpreadsheetRow[]): IShift[] {
-        let shifts: IShift[] = [];
-
-        rows.forEach(row => {
-            // console.log(row);
-            // console.log(row.rowIndex);
-            let shift: IShift = {} as IShift;
-            shift.id = row.rowIndex;
-            shift.key = row['Key'];
-            shift.date = row['Date'];
-            shift.end = row['End'];
-            shift.saved = true;
-            shift.service = row['Service'];
-            shift.number = NumberHelper.getNumberFromString(row['#']);
-            shift.start = row['Start'];
-            shift.total = NumberHelper.getNumberFromString(row['G Total']);
-            shift.trips = NumberHelper.getNumberFromString(row['T Trip']);
-            // console.log(shift);
-
-            if (shift.date) {
-                shifts.push(shift);
-            }
-            
-        });
-        // console.log(shifts);
-        console.log(shifts.length);
-        // console.log(shifts);
 
         return shifts;
     }

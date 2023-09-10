@@ -222,8 +222,8 @@ export class QuickComponent implements OnInit {
 
     let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
     if (shift) {
-      shift.end = dropOffTime;
-      shift.time = DateHelper.getDuration(shift.start, shift.end);
+      shift.finish = dropOffTime;
+      shift.time = DateHelper.getDuration(shift.start, shift.finish);
       await this._shiftService.updateLocalShift(shift);
     }
 
@@ -236,17 +236,10 @@ export class QuickComponent implements OnInit {
     await this._tripService.deleteLocal(trip.id!);
 
     // Update shift numbers.
-    // TODO break shift total into pay/tip/bonus
-    let shift = (await this._shiftService.queryShiftsByKey(trip.date, trip.service, trip.number))[0];
-    shift.trips--;
-    shift.total -= trip.pay + trip.tip + trip.bonus;
-    await this._shiftService.updateShift(shift);
+    this._gigLoggerService.calculateShiftTotals();
     
     // Update weekday current amount.
-    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    weekday.currentAmount -= trip.pay + trip.tip + trip.bonus;
-    await this._weekdayService.updateWeekday(weekday);
+    this._gigLoggerService.calculateDailyTotal();
 
     await this.load();
     await this.form?.load();

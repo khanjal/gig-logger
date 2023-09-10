@@ -35,20 +35,22 @@ export class CurrentAverageComponent implements OnInit {
   async load() {
     // Load daily average
     this.currentDayAmount = 0;
-    let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
+    // let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
+    let dayOfWeek = new Date(this.date).getDay() + 1;
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    this.currentDayAmount = isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
-    this.dailyAverage = weekday.dailyPrevAverage;
+    this.currentDayAmount = !weekday || isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
+    this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
     this.currentWeekAmount = 0;
-    let weekTotal = (await this._weekdayService.queryWeekdays("day", "Tot"))[0];
+    let dailyTotal = await this._weekdayService.getDailyTotal();
+    let prevTotal = await this._weekdayService.getPreviousTotal(); // TODO change this to the weekly rolling average (previous week)
 
     // Add unsaved trip amounts.
     let unsavedTrips = (await this._tripService.getUnsavedLocalTrips());
-    let unsavedTripsAmount = unsavedTrips.reduce((n, {total}) => n + total, 0);
-    this.currentWeekAmount = (isNaN(weekTotal.currentAmount) ? 0 : weekTotal.currentAmount) + unsavedTripsAmount;
-    this.weeklyAverage = weekTotal.dailyPrevAverage;
+    let unsavedTripsAmount = unsavedTrips.filter(x => !x.exclude).reduce((n, {total}) => n + total, 0);
+    this.currentWeekAmount = (isNaN(dailyTotal) ? 0 : dailyTotal) + unsavedTripsAmount;
+    this.weeklyAverage = prevTotal;
   }
 
   toggle() {

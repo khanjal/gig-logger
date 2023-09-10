@@ -3,6 +3,7 @@ import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NameHelper } from '@helpers/name.helper';
 import { TripHelper } from '@helpers/trip.helper';
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
@@ -15,6 +16,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { IType } from '@interfaces/type.interface';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
+import { GigLoggerService } from '@services/gig-logger.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { RegionService } from '@services/region.service';
@@ -57,7 +59,8 @@ export class QuickFormComponent implements OnInit {
     pickupTime: new FormControl(''),
     dropoffTime: new FormControl(''),
     orderNumber: new FormControl(''),
-    note: new FormControl('')
+    note: new FormControl(''),
+    exclude: new FormControl('')
   });
 
   isNewShift: boolean = true;
@@ -95,6 +98,7 @@ export class QuickFormComponent implements OnInit {
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
       private _deliveryService: DeliveryService,
+      private _gigLoggerService: GigLoggerService,
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _regionService: RegionService,
@@ -154,40 +158,9 @@ export class QuickFormComponent implements OnInit {
   }
 
   // TODO move this to a helper or service
-  private async calculateShiftTotals() {
-    let shifts = await this._shiftService.getPreviousWeekShifts();
+  
 
-    shifts.forEach(async shift => {
-      shift.trips = 0;
-      shift.total = 0;
-
-      let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
-                  ...await this._tripService.queryRemoteTrips("key", shift.key)];
-      trips.forEach(trip => {
-          shift.trips++;
-          shift.total += trip.total;
-      });
-
-      this._shiftService.updateShift(shift);
-    });
-  }
-
-  private async calculateDailyTotal() {
-    let currentAmount = 0;
-    let date = new Date().toLocaleDateString();
-    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-
-    let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
-                      ...await this._tripService.queryRemoteTrips("date", date)];
-
-    todaysTrips.forEach(trip => {
-      currentAmount += trip.total;
-    });
-
-    weekday.currentAmount = currentAmount;
-    await this._weekdayService.updateWeekday(weekday);
-  }
+  
 
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
@@ -241,6 +214,7 @@ export class QuickFormComponent implements OnInit {
     trip.type = this.quickForm.value.type ?? "";
     trip.note = this.quickForm.value.note ?? "";
     trip.orderNumber = this.quickForm.value.orderNumber?.toLocaleUpperCase() ?? "";
+    trip.exclude = this.quickForm.value.exclude ? true : false;
     trip.saved = false;
     
     // Set form properties depending on edit/add
@@ -293,6 +267,10 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.endUnit.setValue(this.data.endUnit);
     this.quickForm.controls.orderNumber.setValue(this.data.orderNumber);
     this.showOrder = true;
+
+    if (this.data.exclude) {
+      this.quickForm.controls.exclude.setValue("true");
+    }
   }
 
   private async setDefaultShift() {
@@ -348,15 +326,10 @@ export class QuickFormComponent implements OnInit {
     
     // Update shift total.
     // TODO: Break shift total into pay/tip/bonus/cash
-    shift.trips++;
-    shift.total += trip.pay + trip.tip + trip.bonus;
-    await this._shiftService.updateShift(shift);
+    await this._gigLoggerService.calculateShiftTotals();
     
     // Update weekday current amount.
-    let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    weekday.currentAmount += trip.pay + trip.tip + trip.bonus;
-    await this._weekdayService.updateWeekday(weekday);
+    await this._gigLoggerService.calculateDailyTotal();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -374,8 +347,8 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.updateLocalTrip(trip);
 
     // Update all shift totals from displayed shifts and daily total.
-    await this.calculateShiftTotals();
-    await this.calculateDailyTotal();
+    await this._gigLoggerService.calculateShiftTotals();
+    await this._gigLoggerService.calculateDailyTotal();
 
     this._snackBar.open("Trip Updated");
 
@@ -470,7 +443,6 @@ export class QuickFormComponent implements OnInit {
 
     this.selectedPlace = await this._placeService.getRemotePlace(place);
 
-    // TODO: Auto select most used address.
     // Auto assign to most used start address if there is no start address already.
     if (!this.quickForm.value.startAddress && this.selectedPlace?.addresses?.length) {
       //Set the most used type as default.
@@ -536,13 +508,13 @@ export class QuickFormComponent implements OnInit {
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
     let addresses = await this._addressService.getRemoteAddresses();
-    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    addresses = AddressHelper.sortAddressAsc(addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase())));
     return (addresses).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
     let names = await this._nameService.getRemoteNames();
-    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    names = NameHelper.sortNameAsc(names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())));
 
     return (names).slice(0,100);
   }
