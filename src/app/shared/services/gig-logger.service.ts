@@ -108,14 +108,15 @@ export class GigLoggerService {
         let currentAmount = 0;
         let date = new Date().toLocaleDateString();
         // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-        let dayOfWeek = new Date(date).getDay() + 1;
+        let dayOfWeek = new Date(date).getDay();
+        dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek; // TODO: Common function
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     
         let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
                             ...await this._tripService.queryRemoteTrips("date", date)];
     
         todaysTrips.filter(x => !x.exclude).forEach(trip => {
-        currentAmount += trip.total;
+            currentAmount += trip.total;
         });
     
         if (weekday) {
