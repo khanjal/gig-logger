@@ -64,12 +64,12 @@ public static class WeekdayMapper
 
         // Curr Amt
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_CURRENT.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.AMOUNT_CURRENT.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\", true,IFERROR(VLOOKUP(TODAY()-WEEKDAY(TODAY(),2)+{sheetKeyRange}-1,{SheetEnum.DAILY.DisplayName()}!{dailySheet.GetColumn(HeaderEnum.DATE)}:{dailySheet.GetColumn(HeaderEnum.TOTAL)},{dailySheet.GetIndex(HeaderEnum.TOTAL)}+1,false),0)))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.AMOUNT_CURRENT.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\", true,IFERROR(VLOOKUP(TODAY()-WEEKDAY(TODAY(),2)+{sheetKeyRange},{SheetEnum.DAILY.DisplayName()}!{dailySheet.GetColumn(HeaderEnum.DATE)}:{dailySheet.GetColumn(HeaderEnum.TOTAL)},{dailySheet.GetIndex(HeaderEnum.TOTAL)}+1,false),0)))",
             Format = FormatEnum.ACCOUNTING});
 
         // Prev Amt
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PREVIOUS.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.AMOUNT_PREVIOUS.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\", true,IFERROR(VLOOKUP(TODAY()-WEEKDAY(TODAY(),2)+{sheetKeyRange}-8,{SheetEnum.DAILY.DisplayName()}!{dailySheet.GetColumn(HeaderEnum.DATE)}:{dailySheet.GetColumn(HeaderEnum.TOTAL)},{dailySheet.GetIndex(HeaderEnum.TOTAL)}+1,false),0)))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.AMOUNT_PREVIOUS.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\", true,IFERROR(VLOOKUP(TODAY()-WEEKDAY(TODAY(),2)+{sheetKeyRange}-7,{SheetEnum.DAILY.DisplayName()}!{dailySheet.GetColumn(HeaderEnum.DATE)}:{dailySheet.GetColumn(HeaderEnum.TOTAL)},{dailySheet.GetIndex(HeaderEnum.TOTAL)}+1,false),0)))",
             Format = FormatEnum.ACCOUNTING});
 
         // Prev Avg =ARRAYFORMULA(IFS(ROW(A1:A)=1,"Prev/Day",ISBLANK(A1:A), "", C1:C = 0, 0,true,(G1:G-P1:P)/IF(C1:C=0,1,C1:C-IF(P1:P=0,0,-1))))
