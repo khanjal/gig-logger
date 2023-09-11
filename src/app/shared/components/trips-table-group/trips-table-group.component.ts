@@ -42,7 +42,8 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       let tripGroup = {} as ITripGroup;
       let trips = this.trips.filter(x => x.date === date);
       //let dayOfWeek = new Date(date).toLocaleDateString('en-us', {weekday: 'short'});
-      let dayOfWeek = new Date(date).getDay() + 1;
+      let dayOfWeek = new Date(date).getDay();
+      dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
       let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
       tripGroup.date = date;
