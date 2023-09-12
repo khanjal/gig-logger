@@ -20,6 +20,7 @@ import { map } from "rxjs";
 import { IType } from "@interfaces/type.interface";
 import { IAddress } from "@interfaces/address.interface";
 import { AddressHelper } from "@helpers/address.helper";
+import { DateHelper } from "@helpers/date.helper";
 
 @Injectable()
 export class GigLoggerService {
@@ -108,8 +109,7 @@ export class GigLoggerService {
         let currentAmount = 0;
         let date = new Date().toLocaleDateString();
         // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-        let dayOfWeek = new Date(date).getDay();
-        dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek; // TODO: Common function
+        let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     
         let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),

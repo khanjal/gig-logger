@@ -60,56 +60,55 @@ export class SheetAddFormComponent {
     if (!sheetName) {
       sheetName = `${id.substring(0, 10)}...`;
     }
+
+    if (sheetName == "") {
+      return;
+    }
   
-    if(sheetName != "") {
-      console.log(sheetName);
-      let spreadsheet = {} as ISpreadsheet;
-      spreadsheet.id = id;
-      spreadsheet.name = sheetName;
-      spreadsheet.default = "false";
+    // console.log(sheetName);
+    let spreadsheet = {} as ISpreadsheet;
+    spreadsheet.id = id;
+    spreadsheet.name = sheetName;
+    spreadsheet.default = "false";
 
-      // Check for default spreadsheet
-      let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    // Check for default spreadsheet
+    let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
 
-      if (!defaultSpreadsheet?.id || defaultSpreadsheet.id === spreadsheet.id) {
-        console.log("Setting default to true");
-        spreadsheet.default = "true";
-      }
+    if (!defaultSpreadsheet?.id || defaultSpreadsheet.id === spreadsheet.id) {
+      // console.log("Setting default to true");
+      spreadsheet.default = "true";
+    }
 
-      // Change this to check spreadsheet details to make sure it's a valid spreadsheet.
-      // Add sheet & load data from it.
-      await this._spreadsheetService.update(spreadsheet);
-      
-      if (spreadsheet.default === "true") {
-        console.log("Loading default data");
-        // await this._googleService.loadRemoteData();
-        this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
-        (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
-            // Update sheet name.
-            if (!this.sheetForm.value.sheetName) {
-              spreadsheet.name = (<ISheet>data).name;
-              await this._spreadsheetService.update(spreadsheet);
-            }
-            this._snackBar.open("Loading Primary Spreadsheet Data");
-            await this._gigLoggerService.loadData(<ISheet>data);
-            this._snackBar.open("Loaded Primary Spreadsheet Data");
-
-            this.saving = false;
+    // Change this to check spreadsheet details to make sure it's a valid spreadsheet.
+    // Add sheet & load data from it.
+    await this._spreadsheetService.update(spreadsheet);
+    
+    if (spreadsheet.default === "true") {
+      // console.log("Loading default data");
+      // await this._googleService.loadRemoteData();
+      this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
+      (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
+          // Update sheet name.
+          if (!this.sheetForm.value.sheetName) {
+            spreadsheet.name = (<ISheet>data).name;
+            await this._spreadsheetService.update(spreadsheet);
           }
-        );
-      }
-      else {
-            this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
-            (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
-              this._snackBar.open("Loading Secondary Spreadsheet Data");
-              await this._gigLoggerService.appendData(<ISheet>data);
-              this._snackBar.open("Loaded Secondary Spreadsheet Data");
-            });
-        this.saving = false;
-      }
+          this._snackBar.open("Loading Primary Spreadsheet Data");
+          await this._gigLoggerService.loadData(<ISheet>data);
+          this._snackBar.open("Loaded Primary Spreadsheet Data");
+
+          this.saving = false;
+        }
+      );
     }
     else {
-      // Error
+          this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
+          (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
+            this._snackBar.open("Loading Secondary Spreadsheet Data");
+            await this._gigLoggerService.appendData(<ISheet>data);
+            this._snackBar.open("Loaded Secondary Spreadsheet Data");
+          });
+      this.saving = false;
     }
   }
 }
