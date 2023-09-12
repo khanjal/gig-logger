@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DateHelper } from '@helpers/date.helper';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
@@ -36,8 +37,7 @@ export class CurrentAverageComponent implements OnInit {
     // Load daily average
     this.currentDayAmount = 0;
     // let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
-    let dayOfWeek = new Date(this.date).getDay();
-    dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek; // TODO: Common function
+    let dayOfWeek = DateHelper.getDayOfWeek(new Date(this.date));
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     this.currentDayAmount = !weekday || isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
