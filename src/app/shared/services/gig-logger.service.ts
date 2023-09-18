@@ -84,6 +84,11 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
+    public async calculateTotals() {
+        await this.calculateShiftTotals();
+        await this.calculateDailyTotal();
+    }
+
     public async calculateShiftTotals() {
         let shifts = await this._shiftService.getPreviousWeekShifts();
     
