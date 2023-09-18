@@ -324,12 +324,8 @@ export class QuickFormComponent implements OnInit {
     let trip = this.createTrip(shift);
     await this._tripService.addTrip(trip);
     
-    // Update shift total.
-    // TODO: Break shift total into pay/tip/bonus/cash
-    await this._gigLoggerService.calculateShiftTotals();
-    
-    // Update weekday current amount.
-    await this._gigLoggerService.calculateDailyTotal();
+    // Update shift numbers & weekday current amount.
+    await this._gigLoggerService.calculateTotals();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -346,9 +342,8 @@ export class QuickFormComponent implements OnInit {
 
     await this._tripService.updateLocalTrip(trip);
 
-    // Update all shift totals from displayed shifts and daily total.
-    await this._gigLoggerService.calculateShiftTotals();
-    await this._gigLoggerService.calculateDailyTotal();
+    // Update shift numbers & weekday current amount.
+    await this._gigLoggerService.calculateTotals();
 
     this._snackBar.open("Trip Updated");
 
