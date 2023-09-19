@@ -34,7 +34,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   min-width: 50%;
   padding: .5rem;
   margin:0 auto;
-  height: 90%;
 }
 
 @media (min-width: 768px) {
@@ -46,6 +45,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .focus-scroll {
   scroll-margin-top: 2rem;
+}
+
+.full-height {
+  height: 90%;
 }
 
 .row-grid {
