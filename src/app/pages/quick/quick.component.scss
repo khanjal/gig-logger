@@ -14,3 +14,24 @@
 .table {
     overflow-x: auto;
 }
+
+.button-bar {
+    margin: 0;
+    padding: 1rem .5rem;
+}
+
+button {
+    background-color: white;
+}
+
+.mat-card {
+    margin-bottom: 1rem;
+}
+
+.mat-card:nth-child(even){
+    background-color: lightcyan;
+}
+
+.mat-card:nth-child(odd){
+    background-color: lightyellow;
+}
