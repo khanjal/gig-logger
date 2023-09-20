@@ -232,6 +232,12 @@ export class QuickComponent implements OnInit {
     await this._tripService.updateLocalTrip(trip);
   }
 
+  async cloneUnsavedLocalTrip(trip: ITrip) {
+    delete trip.id;
+    await this._tripService.addTrip(trip);
+    await this.load();
+  }
+
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
