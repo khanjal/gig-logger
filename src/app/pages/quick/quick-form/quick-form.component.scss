@@ -20,7 +20,7 @@
 }
 
 .field-quarter-width {
-    width: 29%;
+    width: 28%;
     margin-right: 1rem;
 }
 
@@ -69,6 +69,14 @@ cdk-virtual-scroll-viewport {
     margin-left: .5rem;
 }
 
+button.mat-icon-button {
+    background-color: lightcyan;
+}
+
+button.mat-icon-button-highlighted {
+    background-color: lightgoldenrodyellow;
+}
+
 // ::-webkit-scrollbar {
 //     width: 10px;
 // }
@@ -80,11 +88,3 @@ cdk-virtual-scroll-viewport {
 // ::-webkit-scrollbar-thumb {
 //     background: transparent;
 // }
-
-button.mat-icon-button {
-    background-color: lightcyan;
-}
-
-button.mat-icon-button-highlighted {
-    background-color: lightgoldenrodyellow;
-}
