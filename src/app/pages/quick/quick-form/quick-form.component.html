@@ -1,368 +1,370 @@
-<h1>{{title}}</h1>
+<div class="container">
+    <h1>{{title}}</h1>
 
-<!-- <div class="row field-halfish-width">
-    <h1>{{ title }}</h1>
-</div>
-<div class="row field-quarter-width">
-    <button class="button-right" type="button" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
-        <mat-icon>close</mat-icon>
-    </button>
-</div> -->
+    <!-- <div class="row field-halfish-width">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="row field-quarter-width">
+        <button class="button-right" type="button" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div> -->
 
-<form class="quick-form" [formGroup]="quickForm">
-    <!-- Shift -->
-    <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
-        <mat-label>Shift/Batch/Group</mat-label>
-        <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)'>
-            <mat-option value="">New</mat-option>
-            <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.trips }} @ {{ shift.total | currency }})</mat-option>
-        </mat-select>
-    </mat-form-field>
+    <form class="quick-form" [formGroup]="quickForm">
+        <!-- Shift -->
+        <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
+            <mat-label>Shift/Batch/Group</mat-label>
+            <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)'>
+                <mat-option value="">New</mat-option>
+                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.trips }} @ {{ shift.total | currency }})</mat-option>
+            </mat-select>
+        </mat-form-field>
 
-    <!-- Service -->
-    <div *ngIf="isNewShift">
+        <!-- Service -->
+        <div *ngIf="isNewShift">
+            <mat-form-field class="field-full-width" appearance="outline">
+                <mat-label>Service</mat-label>
+                <input type="text"
+                    name="service"
+                    placeholder="Pick one or enter new"
+                    aria-label="Service"
+                    matInput
+                    formControlName="service"
+                    [matAutocomplete]="autoService"
+                    focus-scroll
+                    #service>
+                <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
+                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                        <mat-option *ngFor="let service of filteredServices | async" [value]="service.service" class="mat-option">
+                            {{ service.service }} ({{ service.visits }})
+                        </mat-option>
+                    <!-- </cdk-virtual-scroll-viewport> -->
+                </mat-autocomplete>
+                <button type="button" class="mat-icon-button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+
+        <!-- Region -->
+        <div *ngIf="isNewShift">
+            <mat-form-field class="field-full-width" appearance="outline">
+                <mat-label>Region</mat-label>
+                <input type="text"
+                    name="region"
+                    placeholder="Pick one or enter new"
+                    aria-label="Region"
+                    matInput
+                    formControlName="region"
+                    [matAutocomplete]="autoRegion"
+                    focus-scroll
+                    #region>
+                <mat-autocomplete autoActiveFirstOption #autoRegion="matAutocomplete">
+                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                        <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" class="mat-option">
+                            {{ region.region }} ({{ region.visits }})
+                        </mat-option>
+                    <!-- </cdk-virtual-scroll-viewport> -->
+                </mat-autocomplete>
+                <button type="button" class="mat-icon-button" *ngIf="region.value" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+
+        <!-- Place -->
         <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>Service</mat-label>
+            <mat-label>Place</mat-label>
             <input type="text"
-                name="service"
+                name="place"
                 placeholder="Pick one or enter new"
-                aria-label="Service"
                 matInput
-                formControlName="service"
-                [matAutocomplete]="autoService"
+                formControlName="place"
+                [matAutocomplete]="autoPlace"
+                (blur)="selectPlaceEvent($event)"
                 focus-scroll
-                #service>
-            <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
+                #place>
+            <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
                 <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                    <mat-option *ngFor="let service of filteredServices | async" [value]="service.service" class="mat-option">
-                        {{ service.service }} ({{ service.visits }})
+                    <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place"  (click)="selectPlace(place.place)" class="mat-option">
+                        {{place.place}} ({{ place.visits }})
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" *ngIf="service.value" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
+            <button type="button" class="mat-icon-button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
-    </div>
 
-    <!-- Region -->
-    <div *ngIf="isNewShift">
-        <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>Region</mat-label>
-            <input type="text"
-                name="region"
-                placeholder="Pick one or enter new"
-                aria-label="Region"
-                matInput
-                formControlName="region"
-                [matAutocomplete]="autoRegion"
-                focus-scroll
-                #region>
-            <mat-autocomplete autoActiveFirstOption #autoRegion="matAutocomplete">
-                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                    <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" class="mat-option">
-                        {{ region.region }} ({{ region.visits }})
-                    </mat-option>
-                <!-- </cdk-virtual-scroll-viewport> -->
-            </mat-autocomplete>
-            <button type="button" *ngIf="region.value" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
-                <mat-icon>clear</mat-icon>
-            </button>
-        </mat-form-field>
-    </div>
-
-    <!-- Place -->
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>Place</mat-label>
-        <input type="text"
-            name="place"
-            placeholder="Pick one or enter new"
-            matInput
-            formControlName="place"
-            [matAutocomplete]="autoPlace"
-            (blur)="selectPlaceEvent($event)"
-            focus-scroll
-            #place>
-        <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
-            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place"  (click)="selectPlace(place.place)" class="mat-option">
-                    {{place.place}} ({{ place.visits }})
-                </mat-option>
-            <!-- </cdk-virtual-scroll-viewport> -->
-        </mat-autocomplete>
-        <button type="button" *ngIf="place.value" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-form-field>
-
-    <!-- Type -->
-    <mat-form-field class="field-halfish-width" appearance="outline">
-        <mat-label>Type</mat-label>
-        <input type="text"
-            name="type"
-            placeholder="Pick one or enter new"
-            aria-label="Type"
-            matInput
-            formControlName="type"
-            [matAutocomplete]="autoType"
-            focus-scroll
-            #type>
-        <mat-autocomplete autoActiveFirstOption #autoType="matAutocomplete">
-            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" class="mat-option">
-                    {{ type.type }} ({{ type.visits }})
-                </mat-option>
-            <!-- </cdk-virtual-scroll-viewport> -->
-        </mat-autocomplete>
-        <button type="button" *ngIf="type.value" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-form-field>
-
-    <!-- Pay -->
-    <mat-form-field class="field-third-width" appearance="outline">
-        <mat-label>Pay</mat-label>
-        <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
-        <button type="button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
-            <mat-icon>account_balance</mat-icon>
-        </button>
-    </mat-form-field>
-
-    <!-- Distance -->
-    <mat-form-field class="field-third-width" appearance="outline">
-        <mat-label>Distance</mat-label>
-        <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
-        <button type="button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
-            <mat-icon>drive_eta</mat-icon>
-        </button>
-    </mat-form-field>
-
-    <!-- Tip/Bonus/Cash -->
-    <div *ngIf="showAdvancedPay">
-        <mat-form-field class="field-quarter-width" appearance="outline">
-            <mat-label>Tip</mat-label>
-            <input matInput type="number" name="tip" placeholder="3.5" formControlName="tip" value="">
-        </mat-form-field>
-        <mat-form-field class="field-quarter-width" appearance="outline">
-            <mat-label>Bonus</mat-label>
-            <input matInput type="number" name="bonus" placeholder="2" formControlName="bonus" value="">
-        </mat-form-field>
-        <mat-form-field class="field-quarter-width" appearance="outline">
-            <mat-label>Cash</mat-label>
-            <input matInput type="number" name="cash" placeholder="5" formControlName="cash" value="">
-        </mat-form-field>
-    </div>
-
-    <!-- Odometer -->
-    <div *ngIf="showOdometer">
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Start Odometer</mat-label>
-            <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer" value="">
-        </mat-form-field>
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>End Odometer</mat-label>
-            <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer" value="">
-        </mat-form-field>
-    </div>
-
-    <!-- Name -->
-    <div class="row-block">
+        <!-- Type -->
         <mat-form-field class="field-halfish-width" appearance="outline">
-            <mat-label>Name</mat-label>
+            <mat-label>Type</mat-label>
             <input type="text"
-                name="name"
+                name="type"
                 placeholder="Pick one or enter new"
-                aria-label="Name"
+                aria-label="Type"
                 matInput
-                formControlName="name"
-                [matAutocomplete]="autoName"
-                (blur)="showNameAddressesEvent($event)" 
+                formControlName="type"
+                [matAutocomplete]="autoType"
                 focus-scroll
-                #name>
-            <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
+                #type>
+            <mat-autocomplete autoActiveFirstOption #autoType="matAutocomplete">
                 <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                    <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
-                        {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
+                    <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" class="mat-option">
+                        {{ type.type }} ({{ type.visits }})
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
+            <button type="button" class="mat-icon-button" *ngIf="type.value" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
 
-    <!-- Pickup Address Button -->
-        <button type="button" class="button-right" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
-            <mat-icon>contact_mail</mat-icon>
-        </button>
-    </div>
+        <!-- Pay -->
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>Pay</mat-label>
+            <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
+            <button type="button" class="mat-icon-button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+                <mat-icon>account_balance</mat-icon>
+            </button>
+        </mat-form-field>
 
-    <!-- Pickup Address List -->
-    <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
-        <div *ngFor="let address of selectedPlace.addresses">
-            <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.visits }})
-        </div>
-    </div>
+        <!-- Distance -->
+        <mat-form-field class="field-third-width" appearance="outline">
+            <mat-label>Distance</mat-label>
+            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
+            <button type="button" class="mat-icon-button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
+                <mat-icon>drive_eta</mat-icon>
+            </button>
+        </mat-form-field>
 
-    <!-- Pickup Address -->
-    <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
-        <mat-label>Pickup Address</mat-label>
-        <input type="text"
-            name="startAddress"
-            placeholder="Pick one or enter new"
-            matInput
-            formControlName="startAddress"
-            [matAutocomplete]="autoAddress"
-            focus-scroll
-            #startAddress />
-        <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
-                {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
-            </mat-option>
-        </mat-autocomplete>
-        <button type="button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-form-field>
+        <!-- Tip/Bonus/Cash -->
+        <div *ngIf="showAdvancedPay">
+            <mat-form-field class="field-quarter-width" appearance="outline">
+                <mat-label>Tip</mat-label>
+                <input matInput type="number" name="tip" placeholder="3.5" formControlName="tip" value="">
+            </mat-form-field>
+            <mat-form-field class="field-quarter-width" appearance="outline">
+                <mat-label>Bonus</mat-label>
+                <input matInput type="number" name="bonus" placeholder="2" formControlName="bonus" value="">
+            </mat-form-field>
+            <mat-form-field class="field-quarter-width" appearance="outline">
+                <mat-label>Cash</mat-label>
+                <input matInput type="number" name="cash" placeholder="5" formControlName="cash" value="">
+            </mat-form-field>
+        </div>
 
-    <!-- Address List/Notes -->
-    <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
-        <div class="title name" *ngIf="!delivery.address">
-            Unknown Address ({{delivery.visits}})
+        <!-- Odometer -->
+        <div *ngIf="showOdometer">
+            <mat-form-field class="field-third-width" appearance="outline">
+                <mat-label>Start Odometer</mat-label>
+                <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer" value="">
+            </mat-form-field>
+            <mat-form-field class="field-third-width" appearance="outline">
+                <mat-label>End Odometer</mat-label>
+                <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer" value="">
+            </mat-form-field>
         </div>
-        <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
-            {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
-            
-        </a>
-        <div class="tab" *ngIf="delivery.units.length > 0">
-            <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
-        </div>
-        <div class="tab" *ngIf="delivery.services.length > 0">
-            <span>{{delivery.services.join(", ")}}</span>
-        </div>
-        <div class="tab" *ngIf="delivery.places.length > 0">
-            <span>{{delivery.places.join(", ")}}</span>
-        </div>
-        <div class="tab" *ngIf="delivery.dates.length > 0">
-            <span class="margin-right"><strong>First</strong> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><strong>Last</strong> {{delivery.dates.slice(-1)}}</span>
-        </div>
-        <div class="tab">
-            <span class="bold">Pay</span> {{delivery.pay | currency}} <span class="bold">Tip</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash</span> {{delivery.cash | currency}}</span>
-        </div>
-        <div class="tab-itallic" *ngIf="delivery.notes.length > 0">
-            <span class="tab-itallic" *ngFor="let note of delivery.notes">"{{note.text}}" - {{note.date}}</span>
-        </div>
-    </div>
 
-    <!-- Destination Address -->
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>Destination Address</mat-label>
-        <input type="text"
-            name="endAddress"
-            placeholder="Pick one or enter new"
-            matInput
-            formControlName="endAddress"
-            [matAutocomplete]="autoAddress"
-            (blur)="showAddressNamesEvent($event)"
-            focus-scroll
-            #endAddress />
-        <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
+        <!-- Name -->
+        <div class="row-block">
+            <mat-form-field class="field-halfish-width" appearance="outline">
+                <mat-label>Name</mat-label>
+                <input type="text"
+                    name="name"
+                    placeholder="Pick one or enter new"
+                    aria-label="Name"
+                    matInput
+                    formControlName="name"
+                    [matAutocomplete]="autoName"
+                    (blur)="showNameAddressesEvent($event)" 
+                    focus-scroll
+                    #name>
+                <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
+                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                        <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
+                            {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
+                        </mat-option>
+                    <!-- </cdk-virtual-scroll-viewport> -->
+                </mat-autocomplete>
+                <button type="button" class="mat-icon-button" *ngIf="name.value" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+
+        <!-- Pickup Address Button -->
+            <button type="button" class="button-right mat-icon-button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+                <mat-icon>contact_mail</mat-icon>
+            </button>
+        </div>
+
+        <!-- Pickup Address List -->
+        <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
+            <div *ngFor="let address of selectedPlace.addresses">
+                <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.visits }})
+            </div>
+        </div>
+
+        <!-- Pickup Address -->
+        <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
+            <mat-label>Pickup Address</mat-label>
+            <input type="text"
+                name="startAddress"
+                placeholder="Pick one or enter new"
+                matInput
+                formControlName="startAddress"
+                [matAutocomplete]="autoAddress"
+                focus-scroll
+                #startAddress />
+            <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
+                <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
                     {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                 </mat-option>
-            <!-- </cdk-virtual-scroll-viewport> -->
-        </mat-autocomplete>
-        <button type="button" *ngIf="endAddress.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-form-field>
+            </mat-autocomplete>
+            <button type="button" class="mat-icon-button" *ngIf="startAddress.value" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </mat-form-field>
 
-    <!-- Name List/Notes -->
-    <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
-        <div class="bold">
-            <div class="title name" *ngIf="!delivery.name">
-                Unknown Name ({{delivery.visits}})
+        <!-- Address List/Notes -->
+        <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
+            <div class="title name" *ngIf="!delivery.address">
+                Unknown Address ({{delivery.visits}})
             </div>
-            <a mat-button color="primary" class="address-link" [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''" (mousedown)="selectName(delivery.name)" *ngIf="delivery.name">
-                {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
+            <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
+                {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
                 
             </a>
-            <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
+            <div class="tab" *ngIf="delivery.units.length > 0">
+                <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
+            </div>
+            <div class="tab" *ngIf="delivery.services.length > 0">
+                <span>{{delivery.services.join(", ")}}</span>
+            </div>
+            <div class="tab" *ngIf="delivery.places.length > 0">
+                <span>{{delivery.places.join(", ")}}</span>
+            </div>
+            <div class="tab" *ngIf="delivery.dates.length > 0">
+                <span class="margin-right"><strong>First</strong> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><strong>Last</strong> {{delivery.dates.slice(-1)}}</span>
+            </div>
+            <div class="tab">
+                <span class="bold">Pay</span> {{delivery.pay | currency}} <span class="bold">Tip</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash</span> {{delivery.cash | currency}}</span>
+            </div>
+            <div class="tab-itallic" *ngIf="delivery.notes.length > 0">
+                <span class="tab-itallic" *ngFor="let note of delivery.notes">"{{note.text}}" - {{note.date}}</span>
+            </div>
         </div>
-        <div class="tab" *ngIf="delivery.units.length > 0">
-            <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
-        </div>
-        <div class="tab" *ngIf="delivery.services.length > 0">
-            <span>{{delivery.services.join(", ")}}</span>
-        </div>
-        <div class="tab" *ngIf="delivery.places.length > 0">
-            <span>{{delivery.places.join(", ")}}</span>
-        </div>
-        <div class="tab" *ngIf="delivery.dates.length > 0">
-            <span class="margin-right"><strong>First</strong> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><strong>Last</strong> {{delivery.dates.slice(-1)}}</span>
-        </div>
-        <div class="tab">
-            <span class="bold">Pay</span> {{delivery.pay | currency}} 
-            <span class="bold">Tip</span> {{delivery.tip | currency}} 
-            <span *ngIf="delivery.cash">
-                <span class="bold">Cash</span> {{delivery.cash | currency}}
-            </span>
-        </div>
-        <div class="tab" *ngFor="let note of delivery.notes">
-            <span class="tab-itallic" *ngIf="note">"{{note.text}}" - {{note.date}}</span>
-        </div>
-    </div>
 
-    <!-- Pickup Time -->
-    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
-        <mat-label>Pickup Time</mat-label>
-        <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
-    </mat-form-field>
-
-    <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
-
-    <!-- Dropoff Time -->
-    <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
-        <mat-label>Dropoff Time</mat-label>
-        <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
-    </mat-form-field>
-
-    <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
-    
-    <!-- Note -->
-    <div class="row-block">
-        <mat-form-field class="field-halfish-width" appearance="outline">
-            <mat-label>Note</mat-label>
-            <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
+        <!-- Destination Address -->
+        <mat-form-field class="field-full-width" appearance="outline">
+            <mat-label>Destination Address</mat-label>
+            <input type="text"
+                name="endAddress"
+                placeholder="Pick one or enter new"
+                matInput
+                formControlName="endAddress"
+                [matAutocomplete]="autoAddress"
+                (blur)="showAddressNamesEvent($event)"
+                focus-scroll
+                #endAddress />
+            <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
+                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                    <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
+                        {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
+                    </mat-option>
+                <!-- </cdk-virtual-scroll-viewport> -->
+            </mat-autocomplete>
+            <button type="button" class="mat-icon-button" *ngIf="endAddress.value" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
+                <mat-icon>clear</mat-icon>
+            </button>
         </mat-form-field>
 
-        <button type="button" class="button-right" matSuffix mat-icon-button aria-label="Toggle Address/Order" (click)="toggleOrder()">
-            <mat-icon>business</mat-icon>
-        </button>
-    </div>
+        <!-- Name List/Notes -->
+        <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
+            <div class="bold">
+                <div class="title name" *ngIf="!delivery.name">
+                    Unknown Name ({{delivery.visits}})
+                </div>
+                <a mat-button color="primary" class="address-link" [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''" (mousedown)="selectName(delivery.name)" *ngIf="delivery.name">
+                    {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
+                    
+                </a>
+                <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
+            </div>
+            <div class="tab" *ngIf="delivery.units.length > 0">
+                <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
+            </div>
+            <div class="tab" *ngIf="delivery.services.length > 0">
+                <span>{{delivery.services.join(", ")}}</span>
+            </div>
+            <div class="tab" *ngIf="delivery.places.length > 0">
+                <span>{{delivery.places.join(", ")}}</span>
+            </div>
+            <div class="tab" *ngIf="delivery.dates.length > 0">
+                <span class="margin-right"><strong>First</strong> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><strong>Last</strong> {{delivery.dates.slice(-1)}}</span>
+            </div>
+            <div class="tab">
+                <span class="bold">Pay</span> {{delivery.pay | currency}} 
+                <span class="bold">Tip</span> {{delivery.tip | currency}} 
+                <span *ngIf="delivery.cash">
+                    <span class="bold">Cash</span> {{delivery.cash | currency}}
+                </span>
+            </div>
+            <div class="tab" *ngFor="let note of delivery.notes">
+                <span class="tab-itallic" *ngIf="note">"{{note.text}}" - {{note.date}}</span>
+            </div>
+        </div>
 
-    <!-- Address 2/Order/Exclude -->
-    <div *ngIf="showOrder">
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Apt/Unit/Room</mat-label>
-            <input matInput type="text" name="endUnit" placeholder="104" formControlName="endUnit" value="">
+        <!-- Pickup Time -->
+        <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
+            <mat-label>Pickup Time</mat-label>
+            <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
         </mat-form-field>
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Order Number</mat-label>
-            <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber" value="">
-        </mat-form-field>
-        <mat-checkbox class="field-full-width" name="exclude" formControlName="exclude" value="">
-            Exclude from trip count and shift totals
-        </mat-checkbox>
-    </div>
-</form>
 
-<div class="row-flex" *ngIf="!data?.id">
-    <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
-    <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
-</div>
-<div class="row-flex" *ngIf="data?.id">
-    <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>save</mat-icon> Update</button>
-    <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
+        <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+
+        <!-- Dropoff Time -->
+        <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
+            <mat-label>Dropoff Time</mat-label>
+            <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
+        </mat-form-field>
+
+        <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+        
+        <!-- Note -->
+        <div class="row-block">
+            <mat-form-field class="field-halfish-width" appearance="outline">
+                <mat-label>Note</mat-label>
+                <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
+            </mat-form-field>
+
+            <button type="button" class="button-right mat-icon-button" matSuffix mat-icon-button aria-label="Toggle Address/Order" (click)="toggleOrder()">
+                <mat-icon>business</mat-icon>
+            </button>
+        </div>
+
+        <!-- Address 2/Order/Exclude -->
+        <div *ngIf="showOrder">
+            <mat-form-field class="field-third-width" appearance="outline">
+                <mat-label>Apt/Unit/Room</mat-label>
+                <input matInput type="text" name="endUnit" placeholder="104" formControlName="endUnit" value="">
+            </mat-form-field>
+            <mat-form-field class="field-third-width" appearance="outline">
+                <mat-label>Order Number</mat-label>
+                <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber" value="">
+            </mat-form-field>
+            <mat-checkbox class="field-full-width" name="exclude" formControlName="exclude" value="">
+                Exclude from trip count and shift totals
+            </mat-checkbox>
+        </div>
+    </form>
+
+    <div class="row-flex" *ngIf="!data?.id">
+        <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
+        <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
+    </div>
+    <div class="row-flex" *ngIf="data?.id">
+        <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>save</mat-icon> Update</button>
+        <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
+    </div>
 </div>

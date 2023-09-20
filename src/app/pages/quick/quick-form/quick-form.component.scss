@@ -1,3 +1,6 @@
+.container {
+    margin-bottom: 2rem;
+}
 
 .quick-form {
     background-color: white;
@@ -81,3 +84,7 @@ cdk-virtual-scroll-viewport {
 // ::-webkit-scrollbar-thumb {
 //     background: transparent;
 // }
+
+button.mat-icon-button {
+    background-color: lightcyan;
+}
