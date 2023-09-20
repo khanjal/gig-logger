@@ -35,3 +35,7 @@ button {
 .mat-card:nth-child(odd){
     background-color: lightyellow;
 }
+
+.mat-card-disabled {
+    background-color: lightgray !important;
+}
