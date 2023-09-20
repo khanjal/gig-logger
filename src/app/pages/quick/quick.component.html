@@ -18,7 +18,7 @@
                         <mat-icon>block</mat-icon>
                         <span>Exclude</span>
                     </button> -->
-                    <button mat-menu-item>
+                    <button mat-menu-item (click)="cloneUnsavedLocalTrip(trip)">
                         <mat-icon>content_copy</mat-icon>
                         <span>Copy</span>
                         </button>
@@ -36,7 +36,7 @@
     <div class="row-grid" *ngIf="savedTrips.length > 0" id="savedLocalTrips">
         <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
         <div class="row-block">
-            <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
+            <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing" (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
             <button mat-stroked-button class="button-right" color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmClearTripsDialog()"><mat-icon>delete</mat-icon> Clear</button>
         </div>
     </div>
