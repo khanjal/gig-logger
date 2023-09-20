@@ -6,6 +6,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -47,6 +48,7 @@ import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calcu
     MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatMenuModule,
     MatSelectModule,
     MatListModule,
     MatIconModule,
