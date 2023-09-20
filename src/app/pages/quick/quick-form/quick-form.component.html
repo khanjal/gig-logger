@@ -124,7 +124,7 @@
         <mat-form-field class="field-third-width" appearance="outline">
             <mat-label>Pay</mat-label>
             <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
-            <button type="button" class="mat-icon-button" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+            <button type="button" [ngClass]="showAdvancedPay ? 'mat-icon-button-highlighted' : 'mat-icon-button'" *ngIf="pay.value" matSuffix mat-icon-button aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
                 <mat-icon>account_balance</mat-icon>
             </button>
         </mat-form-field>
@@ -133,7 +133,7 @@
         <mat-form-field class="field-third-width" appearance="outline">
             <mat-label>Distance</mat-label>
             <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
-            <button type="button" class="mat-icon-button" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
+            <button type="button" [ngClass]="showOdometer ? 'mat-icon-button-highlighted' : 'mat-icon-button'" matSuffix mat-icon-button aria-label="Toggle Odometer" (click)="toggleOdometer()">
                 <mat-icon>drive_eta</mat-icon>
             </button>
         </mat-form-field>
@@ -193,7 +193,7 @@
             </mat-form-field>
 
         <!-- Pickup Address Button -->
-            <button type="button" class="button-right mat-icon-button" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+            <button type="button" class="button-right" [ngClass]="showPickupAddress ? 'mat-icon-button-highlighted' : 'mat-icon-button'" matSuffix mat-icon-button aria-label="Show Pickup Address" (click)="togglePickupAddress()">
                 <mat-icon>contact_mail</mat-icon>
             </button>
         </div>
@@ -338,7 +338,7 @@
                 <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
             </mat-form-field>
 
-            <button type="button" class="button-right mat-icon-button" matSuffix mat-icon-button aria-label="Toggle Address/Order" (click)="toggleOrder()">
+            <button type="button" class="button-right" [ngClass]="showOrder ? 'mat-icon-button-highlighted' : 'mat-icon-button'" matSuffix mat-icon-button aria-label="Toggle Address/Order" (click)="toggleOrder()">
                 <mat-icon>business</mat-icon>
             </button>
         </div>
