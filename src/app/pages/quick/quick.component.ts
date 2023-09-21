@@ -236,6 +236,8 @@ export class QuickComponent implements OnInit {
     delete trip.id;
     await this._tripService.addTrip(trip);
     await this.load();
+    this._viewportScroller.scrollToAnchor("unsavedTrips");
+    this._snackBar.open("Cloned Trip");
   }
 
   async deleteUnsavedLocalTrip(trip: ITrip) {

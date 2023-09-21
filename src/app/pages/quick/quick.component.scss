@@ -26,14 +26,26 @@ button {
 
 .mat-card {
     margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: lightcyan;
+    }
+
+    &:nth-child(odd){
+        background-color: lightyellow;
+    }
 }
 
-.mat-card:nth-child(even){
-    background-color: lightcyan;
-}
+.mat-card-reverse {
+    margin-bottom: 1rem;
 
-.mat-card:nth-child(odd){
-    background-color: lightyellow;
+    &:nth-child(even){
+        background-color: lightyellow;
+    }
+
+    &:nth-child(odd){
+        background-color: lightcyan;
+    }
 }
 
 .mat-card-disabled {
