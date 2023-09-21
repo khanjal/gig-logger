@@ -23,7 +23,7 @@ export class ConfirmDialogComponent {
     this.trueText = data.trueText;
     this.falseText = data.falseText;
   }
- 
+
   onConfirm(): void {
     // Close the dialog, return true
     this.dialogRef.close(true);

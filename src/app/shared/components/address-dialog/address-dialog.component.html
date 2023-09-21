@@ -1,0 +1,31 @@
+<div class="container full-height">
+    <div class="row-flex">
+        <h1 mat-dialog-title>
+            {{title}}
+        </h1>
+    </div>
+
+    <form class="quick-form" [formGroup]="addressForm">
+        <!-- Address -->
+        <mat-form-field class="field-full-width" appearance="outline">
+            <mat-label>Address</mat-label>
+            <input type="text"
+                name="address"
+                placeholder="Pick one or enter new"
+                matInput
+                formControlName="address"
+                focus-scroll
+                #startAddress />
+            <button type="button" class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="addressForm.controls.address.setValue('')">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </mat-form-field>
+    </form>
+
+    <div class="row-bottom" mat-dialog-actions>
+        <div class="row-flex">
+            <button mat-stroked-button (click)="onDismiss()"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
+            <button mat-stroked-button color="primary" (click)="onConfirm()"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
+        </div>
+    </div>
+</div>
