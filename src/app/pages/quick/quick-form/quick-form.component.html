@@ -124,7 +124,7 @@
         <mat-form-field class="field-third-width" appearance="outline">
             <mat-label>Pay</mat-label>
             <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
-            <button type="button" [color]="showAdvancedPay ? 'accent' : 'primary'" *ngIf="pay.value" matSuffix mat-mini-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+            <button type="button" class="field-button" [color]="showAdvancedPay ? 'accent' : 'primary'" *ngIf="pay.value" matSuffix mat-mini-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
                 <mat-icon>account_balance</mat-icon>
             </button>
         </mat-form-field>
@@ -133,7 +133,7 @@
         <mat-form-field class="field-third-width" appearance="outline">
             <mat-label>Distance</mat-label>
             <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
-            <button type="button" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-mini-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
+            <button type="button" class="field-button" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-mini-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
                 <mat-icon>drive_eta</mat-icon>
             </button>
         </mat-form-field>
