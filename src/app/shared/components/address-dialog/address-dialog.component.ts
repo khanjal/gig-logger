@@ -22,13 +22,11 @@ export class AddressDialogComponent {
     this.address = data.address;
     this.trueText = data.trueText;
     this.falseText = data.falseText;
-
-    console.log(this.address);
   }
 
   onConfirm(): void {
     // Close the dialog, return true
-    this.dialogRef.close(true);
+    this.dialogRef.close(this.address);
   }
 
   onDismiss(): void {
