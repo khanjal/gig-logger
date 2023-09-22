@@ -59,6 +59,7 @@
     "@angular/cli": "~15.2.1",
     "@angular/compiler-cli": "^15.2.1",
     "@types/google-spreadsheet": "^3.3.1",
+    "@types/google.maps": "^3.54.1",
     "@types/jasmine": "~4.0.0",
     "@types/node": "^18.15.0",
     "buffer": "^6.0.3",
