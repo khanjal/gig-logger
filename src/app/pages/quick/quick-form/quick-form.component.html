@@ -206,25 +206,32 @@
         </div>
 
         <!-- Pickup Address -->
-        <mat-form-field class="field-full-width" appearance="outline" *ngIf="showPickupAddress">
-            <mat-label>Pickup Address</mat-label>
-            <input type="text"
-                name="startAddress"
-                placeholder="Pick one or enter new"
-                matInput
-                formControlName="startAddress"
-                [matAutocomplete]="autoAddress"
-                focus-scroll
-                #startAddress />
-            <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-                <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
-                    {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
-                </mat-option>
-            </mat-autocomplete>
-            <button type="button" class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
-                <mat-icon>clear</mat-icon>
-            </button>
-        </mat-form-field>
+        <div class="row-block" *ngIf="showPickupAddress">
+            <mat-form-field class="field-full-width" appearance="outline">
+                <mat-label>Pickup Address</mat-label>
+                <input type="text"
+                    name="startAddress"
+                    placeholder="Pick one or enter new"
+                    matInput
+                    formControlName="startAddress"
+                    [matAutocomplete]="autoAddress"
+                    focus-scroll
+                    #startAddress />
+                <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
+                    <mat-option *ngFor="let address of filteredStartAddresses | async" [value]="address.address">
+                        {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
+                    </mat-option>
+                </mat-autocomplete>
+                <button type="button" class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+
+                <!-- Search Pickup Address Button -->
+                <button type="button" class="button-right" color="primary" matSuffix mat-mini-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
+                    <mat-icon>search</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
 
         <!-- Address List/Notes -->
         <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
@@ -256,28 +263,35 @@
         </div>
 
         <!-- Destination Address -->
-        <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>Destination Address</mat-label>
-            <input type="text"
-                name="endAddress"
-                placeholder="Pick one or enter new"
-                matInput
-                formControlName="endAddress"
-                [matAutocomplete]="autoAddress"
-                (blur)="showAddressNamesEvent($event)"
-                focus-scroll
-                #endAddress />
-            <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
-                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                    <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
-                        {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
-                    </mat-option>
-                <!-- </cdk-virtual-scroll-viewport> -->
-            </mat-autocomplete>
-            <button type="button" class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
-                <mat-icon>clear</mat-icon>
-            </button>
-        </mat-form-field>
+        <div class="row-block">
+            <mat-form-field class="field-full-width" appearance="outline">
+                <mat-label>Destination Address</mat-label>
+                <input type="text"
+                    name="endAddress"
+                    placeholder="Pick one or enter new"
+                    matInput
+                    formControlName="endAddress"
+                    [matAutocomplete]="autoAddress"
+                    (blur)="showAddressNamesEvent($event)"
+                    focus-scroll
+                    #endAddress />
+                <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
+                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                        <mat-option *ngFor="let address of filteredEndAddresses | async" [value]="address.address" (click)="showAddressNames(address.address)" class="mat-option">
+                            {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
+                        </mat-option>
+                    <!-- </cdk-virtual-scroll-viewport> -->
+                </mat-autocomplete>
+                <button type="button" class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+
+                <!-- Search Destination Address Button -->
+                <button type="button" class="button-right" color="primary" matSuffix mat-mini-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
+                    <mat-icon>search</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
 
         <!-- Name List/Notes -->
         <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
