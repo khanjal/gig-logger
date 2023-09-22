@@ -5,23 +5,7 @@
         </h1>
     </div>
 
-    <app-google-address addressType="geocode" [address]="address"></app-google-address>
-    <!-- <form class="quick-form" [formGroup]="addressForm">
-        Address
-        <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>Address</mat-label>
-            <input type="text"
-                name="address"
-                placeholder="Pick one or enter new"
-                matInput
-                formControlName="address"
-                focus-scroll
-                #address />
-            <button type="button" class="mat-icon-button" *ngIf="address.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="addressForm.controls.address.setValue('')">
-                <mat-icon>clear</mat-icon>
-            </button>
-        </mat-form-field>
-    </form> -->
+    <app-google-address addressType="geocode" [(address)]="address"></app-google-address>
 
     <div class="row-bottom" mat-dialog-actions>
         <div class="row-flex">

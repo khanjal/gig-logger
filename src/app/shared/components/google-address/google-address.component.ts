@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { GoogleAddress } from '@interfaces/google-address.interface';
 import { GoogleAddressService } from '@services/google-address.service';
@@ -12,15 +12,15 @@ import { GoogleAddressService } from '@services/google-address.service';
 // https://github.com/karthiktechblog/google-place-autocomplete
 
 export class GoogleAddressComponent {
-  showDetails = false;
   @Input() addressType!: string; // establishment or geocode
   @Input() address!: string;
-  place!: any;
+  @Output() addressChange = new EventEmitter<string>();
+  
   @ViewChild('address') addresstext!: ElementRef;
-  @ViewChild('pac-container') pacContainer: any;
   
   // establishmentAddress!: Object;
 
+  place!: any;
   formattedAddress!: string;
   // formattedEstablishmentAddress!: string;
 
@@ -32,38 +32,13 @@ export class GoogleAddressComponent {
 
   constructor(private googleAddressService: GoogleAddressService) { }
 
-  ngOnInit(): void {
-    
-    //this.initializeAddressForm();
-  }
-
-  initializeAddressForm() {
-    // const initialAddress : GoogleAddress =  {
-    //   addressLine1: '', addressLine2: '', city: '' , state: '', country: '', postalCode: ''
-    // };
-    // this.googleAddress = initialAddress;
-    
-    // this.addressForm = this.formBuilder.group({
-    //   addressLine1: new FormControl(this.googleAddress.addressLine1, [Validators.required,
-    //   Validators.maxLength(200)]),
-    //   addressLine2: new FormControl(this.googleAddress.addressLine2),
-    //   city: new FormControl(this.googleAddress.city, [Validators.required,
-    //   Validators.maxLength(100)]),
-    //   state: new FormControl(this.googleAddress?.state, [Validators.required,
-    //   Validators.maxLength(50)]),
-    //   postalCode: new FormControl(this.googleAddress.postalCode, [Validators.required,
-    //   Validators.maxLength(15)]),
-    //   country: new FormControl(this.googleAddress?.country, [Validators.required,
-    //   Validators.maxLength(50)])
-    // });
-  }
-
   ngAfterViewInit() {
     this.getPlaceAutocomplete();
-    console.log(this.addresstext);
-    const pacContainer = document.querySelector(".pac-container");
-    console.log(pacContainer);
   }
+
+  ngAfterContentChecked(): void {
+    this.addressForm.controls.address.setValue(this.address);
+ } 
 
   private getPlaceAutocomplete() {
     const autocomplete = new google.maps.places.Autocomplete(
@@ -75,13 +50,13 @@ export class GoogleAddressComponent {
     );
 
     google.maps.event.addListener(autocomplete, 'place_changed', () => {
-      this.addresstext.nativeElement.append(this.pacContainer);
       this.place = autocomplete.getPlace();
       this.formattedAddress = this.googleAddressService.getFormattedAddress(this.place);
-      this.addressForm.controls['address'].setValue(this.formattedAddress);
-      this.showDetails = true;
+      this.addressForm.controls.address.setValue(this.formattedAddress);
+      this.addressChange.emit(this.formattedAddress);
     });
 
-    // this.addressForm.controls.address.setValue(this.address);
+    // this.addresstext.nativeElement.focus();
+    // this.addresstext.nativeElement.select();
   }
 }
