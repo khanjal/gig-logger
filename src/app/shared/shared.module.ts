@@ -18,6 +18,11 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TripsTableGroupComponent } from './components/trips-table-group/trips-table-group.component';
+import { AddressDialogComponent } from './components/address-dialog/address-dialog.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { GoogleAddressComponent } from './components/google-address/google-address.component';
 
 @NgModule({
     declarations: [
@@ -31,15 +36,20 @@ import { TripsTableGroupComponent } from './components/trips-table-group/trips-t
         ShortAddressPipe,
         ConfirmDialogComponent,
         FocusScrollDirective,
-        TripsTableGroupComponent
+        TripsTableGroupComponent,
+        AddressDialogComponent,
+        GoogleAddressComponent
     ],
     imports: [
         CommonModule,
         MatButtonModule,
         MatCardModule,
+        MatFormFieldModule,
         MatIconModule,
+        MatInputModule,
         MatTableModule,
         MatToolbarModule,
+        ReactiveFormsModule,
         RouterModule
     ],
     exports: [
