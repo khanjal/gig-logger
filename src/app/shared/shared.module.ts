@@ -22,6 +22,7 @@ import { AddressDialogComponent } from './components/address-dialog/address-dial
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { GoogleAddressComponent } from './components/google-address/google-address.component';
 
 @NgModule({
     declarations: [
@@ -36,7 +37,8 @@ import { MatInputModule } from '@angular/material/input';
         ConfirmDialogComponent,
         FocusScrollDirective,
         TripsTableGroupComponent,
-        AddressDialogComponent
+        AddressDialogComponent,
+        GoogleAddressComponent
     ],
     imports: [
         CommonModule,
