@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { GoogleAddress } from '@interfaces/google-address.interface';
 import { GoogleAddressService } from '@services/google-address.service';
@@ -11,7 +11,7 @@ import { GoogleAddressService } from '@services/google-address.service';
 
 // https://github.com/karthiktechblog/google-place-autocomplete
 
-export class GoogleAddressComponent {
+export class GoogleAddressComponent implements OnInit {
   @Input() addressType!: string; // establishment or geocode
   @Input() address!: string;
   @Output() addressChange = new EventEmitter<string>();
@@ -31,14 +31,13 @@ export class GoogleAddressComponent {
   googleAddress!: GoogleAddress;
 
   constructor(private googleAddressService: GoogleAddressService) { }
+  async ngOnInit(): Promise<void> {
+    this.addressForm.controls.address.setValue(this.address);
+  }
 
   ngAfterViewInit() {
     this.getPlaceAutocomplete();
   }
-
-  ngAfterContentChecked(): void {
-    this.addressForm.controls.address.setValue(this.address);
- } 
 
   private getPlaceAutocomplete() {
     const autocomplete = new google.maps.places.Autocomplete(
