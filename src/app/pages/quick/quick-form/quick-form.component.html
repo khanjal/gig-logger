@@ -207,7 +207,7 @@
 
         <!-- Pickup Address -->
         <div class="row-block" *ngIf="showPickupAddress">
-            <mat-form-field class="field-full-width" appearance="outline">
+            <mat-form-field class="field-halfish-width" appearance="outline">
                 <mat-label>Pickup Address</mat-label>
                 <input type="text"
                     name="startAddress"
@@ -225,12 +225,12 @@
                 <button type="button" class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
-
-                <!-- Search Pickup Address Button -->
-                <button type="button" class="button-right" color="primary" matSuffix mat-mini-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
-                    <mat-icon>search</mat-icon>
-                </button>
             </mat-form-field>
+
+            <!-- Search Pickup Address Button -->
+            <button type="button" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
+                <mat-icon>search</mat-icon>
+            </button>
         </div>
 
         <!-- Address List/Notes -->
@@ -264,7 +264,7 @@
 
         <!-- Destination Address -->
         <div class="row-block">
-            <mat-form-field class="field-full-width" appearance="outline">
+            <mat-form-field class="field-halfish-width" appearance="outline">
                 <mat-label>Destination Address</mat-label>
                 <input type="text"
                     name="endAddress"
@@ -286,12 +286,12 @@
                 <button type="button" class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
-
-                <!-- Search Destination Address Button -->
-                <button type="button" class="button-right" color="primary" matSuffix mat-mini-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
-                    <mat-icon>search</mat-icon>
-                </button>
             </mat-form-field>
+
+            <!-- Search Destination Address Button -->
+            <button type="button" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
+                <mat-icon>search</mat-icon>
+            </button>
         </div>
 
         <!-- Name List/Notes -->
