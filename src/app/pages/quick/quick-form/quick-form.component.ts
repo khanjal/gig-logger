@@ -495,7 +495,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   searchDestinationAddress() {
-    this.autocomplete?.closePanel();
+    this.clearFocus("endAddress");
 
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = "Search Destination Address";
@@ -519,7 +519,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   searchPickupAddress() {
-    this.autocomplete?.closePanel();
+    this.clearFocus("startAddress");
 
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = "Search Pickup Address";
@@ -540,6 +540,12 @@ export class QuickFormComponent implements OnInit {
         this.quickForm.controls.startAddress.setValue(result);
       }
     });
+  }
+
+  private clearFocus(elementId: string) {
+    let input = document.getElementById(elementId);
+    input?.blur();
+    this.autocomplete?.closePanel();
   }
 
   setPickupTime() {
