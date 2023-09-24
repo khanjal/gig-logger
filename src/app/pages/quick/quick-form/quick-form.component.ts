@@ -495,7 +495,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   searchDestinationAddress() {
-    this.clearFocus("endAddress");
+    //this.clearFocus("endAddress");
 
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = "Search Destination Address";
@@ -519,7 +519,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   searchPickupAddress() {
-    this.clearFocus("startAddress");
+    //this.clearFocus("startAddress");
 
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = "Search Pickup Address";
