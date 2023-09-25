@@ -5,6 +5,15 @@ import { liveQuery } from "dexie";
 export class WeekdayService {
     weekdays$ = liveQuery(() => spreadsheetDB.weekdays.toArray());
 
+    public async getCurrentTotal() {
+        var total = 0;
+
+        await spreadsheetDB.weekdays
+            .each (x => total += x.currentAmount);
+
+        return total;
+    }
+
     public async getDailyTotal() {
         var total = 0;
 

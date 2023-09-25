@@ -167,6 +167,9 @@ public static class SheetHelper {
             case FormatEnum.NUMBER:
                 cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0" };
                 break;
+            case FormatEnum.TEXT:
+                cellFormat.NumberFormat = new NumberFormat { Type = "TEXT" };
+                break;
             case FormatEnum.TIME:
                 cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "hh:mm:ss am/pm" };
                 break;
@@ -334,7 +337,7 @@ public static class SheetHelper {
                     keyRange = sheet.GetLocalRange(keyEnum);
 
                     sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.WEEKDAY.DisplayName(),
-                        Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.WEEKDAY.DisplayName()}\",ISBLANK({keyRange}), \"\", true,TEXT({keyRange},\"ddd\")))",});
+                        Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.WEEKDAY.DisplayName()}\",ISBLANK({keyRange}), \"\", true,TEXT({keyRange}+1,\"ddd\")))",});
                 }
                 else {
                     // A - [Key]

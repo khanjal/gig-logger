@@ -3,13 +3,30 @@
     
     <quick-form (parentReload)="load()"></quick-form>
 
-    <h2 *ngIf="unsavedTrips.length > 0">Unsaved Local Trips</h2>
-    <div *ngFor="let trip of unsavedTrips">
+    <h2 *ngIf="unsavedTrips.length > 0" id="unsavedTrips">Unsaved Local Trips</h2>
+    <div *ngFor="let trip of unsavedTrips" [ngClass]="{'mat-card': unsavedTrips.length % 2 != 0, 'mat-card-reverse': unsavedTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true }">
         <trips-quick-view [trip]="trip"></trips-quick-view>
-        <div class="row-flex">
-            <button mat-stroked-button type="button" class="button-left" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
-            <button mat-stroked-button type="button" (click)="setDropoffTime(trip)" *ngIf="!trip.dropoffTime"><mat-icon>schedule</mat-icon> Set Dropoff</button>
-            <button mat-stroked-button class="button-right" color="warn" type="button" (click)="confirmDeleteTripDialog(trip)"><mat-icon>delete</mat-icon> Delete</button>
+        <div mat-card class="row-flex button-bar">
+                <button mat-stroked-button type="button" class="button-left" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
+                <button mat-stroked-button type="button" (click)="setDropoffTime(trip)" *ngIf="!trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+                <!-- <button mat-stroked-button class="button-right" color="warn" type="button" (click)="confirmDeleteTripDialog(trip)"><mat-icon>delete</mat-icon> Delete</button> -->
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Trip menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <!-- <button mat-menu-item>
+                        <mat-icon>block</mat-icon>
+                        <span>Exclude</span>
+                    </button> -->
+                    <button mat-menu-item (click)="cloneUnsavedLocalTrip(trip)">
+                        <mat-icon>content_copy</mat-icon>
+                        <span>Clone</span>
+                        </button>
+                    <button mat-menu-item (click)="confirmDeleteTripDialog(trip)">
+                        <mat-icon>delete</mat-icon>
+                        <span>Delete</span>
+                    </button>
+                </mat-menu>
         </div>
     </div>
     <div class="row-grid">
@@ -19,7 +36,7 @@
     <div class="row-grid" *ngIf="savedTrips.length > 0" id="savedLocalTrips">
         <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
         <div class="row-block">
-            <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
+            <button mat-stroked-button type="button" [class.spinner]="clearing" [disabled]="clearing" (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
             <button mat-stroked-button class="button-right" color="warn" type="button" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmClearTripsDialog()"><mat-icon>delete</mat-icon> Clear</button>
         </div>
     </div>

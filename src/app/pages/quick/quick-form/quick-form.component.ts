@@ -1,10 +1,13 @@
 import { ViewportScroller } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
 import { NameHelper } from '@helpers/name.helper';
 import { TripHelper } from '@helpers/trip.helper';
+import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
@@ -38,6 +41,7 @@ import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 export class QuickFormComponent implements OnInit {
   // @Input() data!: ITrip;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
   quickForm = new FormGroup({
     shift: new FormControl(''),
@@ -94,6 +98,7 @@ export class QuickFormComponent implements OnInit {
 
   constructor(
       public formDialogRef: MatDialogRef<QuickFormComponent>,
+      public dialog: MatDialog,
       @Inject(MAT_DIALOG_DATA) public data: ITrip,
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
@@ -158,10 +163,6 @@ export class QuickFormComponent implements OnInit {
   }
 
   // TODO move this to a helper or service
-  
-
-  
-
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
     if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
@@ -324,12 +325,8 @@ export class QuickFormComponent implements OnInit {
     let trip = this.createTrip(shift);
     await this._tripService.addTrip(trip);
     
-    // Update shift total.
-    // TODO: Break shift total into pay/tip/bonus/cash
-    await this._gigLoggerService.calculateShiftTotals();
-    
-    // Update weekday current amount.
-    await this._gigLoggerService.calculateDailyTotal();
+    // Update shift numbers & weekday current amount.
+    await this._gigLoggerService.calculateTotals();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -346,9 +343,8 @@ export class QuickFormComponent implements OnInit {
 
     await this._tripService.updateLocalTrip(trip);
 
-    // Update all shift totals from displayed shifts and daily total.
-    await this._gigLoggerService.calculateShiftTotals();
-    await this._gigLoggerService.calculateDailyTotal();
+    // Update shift numbers & weekday current amount.
+    await this._gigLoggerService.calculateTotals();
 
     this._snackBar.open("Trip Updated");
 
@@ -496,6 +492,58 @@ export class QuickFormComponent implements OnInit {
   
   compareShifts(o1: IShift, o2: IShift): boolean {
     return ShiftHelper.compareShifts(o1, o2);
+  }
+
+  searchDestinationAddress() {
+    //this.clearFocus("endAddress");
+
+    let dialogData: IAddressDialog = {} as IAddressDialog;
+    dialogData.title = "Search Destination Address";
+    dialogData.address = this.quickForm.value.endAddress ?? "";
+    dialogData.trueText = "OK";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(AddressDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
+
+      if(result) {
+        this.quickForm.controls.endAddress.setValue(result);
+      }
+    });
+  }
+
+  searchPickupAddress() {
+    //this.clearFocus("startAddress");
+
+    let dialogData: IAddressDialog = {} as IAddressDialog;
+    dialogData.title = "Search Pickup Address";
+    dialogData.address = this.quickForm.value.startAddress ?? "";
+    dialogData.trueText = "OK";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(AddressDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
+
+      if(result) {
+        this.quickForm.controls.startAddress.setValue(result);
+      }
+    });
+  }
+
+  private clearFocus(elementId: string) {
+    let input = document.getElementById(elementId);
+    input?.blur();
+    this.autocomplete?.closePanel();
   }
 
   setPickupTime() {
