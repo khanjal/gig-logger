@@ -20,6 +20,7 @@ import { map } from "rxjs";
 import { IType } from "@interfaces/type.interface";
 import { IAddress } from "@interfaces/address.interface";
 import { AddressHelper } from "@helpers/address.helper";
+import { DateHelper } from "@helpers/date.helper";
 
 @Injectable()
 export class GigLoggerService {
@@ -83,6 +84,11 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
+    public async calculateTotals() {
+        await this.calculateShiftTotals();
+        await this.calculateDailyTotal();
+    }
+
     public async calculateShiftTotals() {
         let shifts = await this._shiftService.getPreviousWeekShifts();
     
@@ -108,14 +114,14 @@ export class GigLoggerService {
         let currentAmount = 0;
         let date = new Date().toLocaleDateString();
         // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
-        let dayOfWeek = new Date(date).getDay() + 1;
+        let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     
         let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
                             ...await this._tripService.queryRemoteTrips("date", date)];
     
         todaysTrips.filter(x => !x.exclude).forEach(trip => {
-        currentAmount += trip.total;
+            currentAmount += trip.total;
         });
     
         if (weekday) {

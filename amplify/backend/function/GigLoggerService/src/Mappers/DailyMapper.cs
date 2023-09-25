@@ -63,7 +63,11 @@ public static class DailyMapper
 
         // Day
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DAY.DisplayName(),
-            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\",true,WEEKDAY({sheetKeyRange})))",
+            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.DAY.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\",true,WEEKDAY({sheetKeyRange},2)))",
+            Format = FormatEnum.NUMBER});
+        // Weekday
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.WEEKDAY.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({sheetKeyRange})=1,\"{HeaderEnum.WEEKDAY.DisplayName()}\",ISBLANK({sheetKeyRange}), \"\",true,WEEKDAY({sheetKeyRange},1)))",
             Format = FormatEnum.WEEKDAY});
         // Week
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.WEEK.DisplayName(),

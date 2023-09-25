@@ -22,6 +22,7 @@ import { GigLoggerService } from '@services/gig-logger.service';
 import { RegionService } from '@services/region.service';
 import { TypeService } from '@services/type.service';
 import { CommonService } from '@services/common.service';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { CommonService } from '@services/common.service';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FormsModule,
     HttpClientModule,
     MatIconModule,
     PagesModule,

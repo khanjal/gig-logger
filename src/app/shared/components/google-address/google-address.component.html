@@ -1,0 +1,14 @@
+<form [formGroup]="addressForm">
+    <mat-form-field class="field-full-width" appearance="outline">
+        <mat-label>Address</mat-label>
+        <input type="text"
+            name="address"
+            placeholder="Enter Address"
+            matInput
+            formControlName="address"
+            #address />
+        <button type="button" class="mat-icon-button" *ngIf="address.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="addressForm.controls.address.setValue('')">
+            <mat-icon>clear</mat-icon>
+        </button>
+    </mat-form-field>
+</form>

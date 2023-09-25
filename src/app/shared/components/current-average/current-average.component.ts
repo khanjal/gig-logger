@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DateHelper } from '@helpers/date.helper';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
@@ -36,20 +37,14 @@ export class CurrentAverageComponent implements OnInit {
     // Load daily average
     this.currentDayAmount = 0;
     // let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
-    let dayOfWeek = new Date(this.date).getDay() + 1;
+    let dayOfWeek = DateHelper.getDayOfWeek(new Date(this.date));
     let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
     this.currentDayAmount = !weekday || isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
-    this.currentWeekAmount = 0;
-    let dailyTotal = await this._weekdayService.getDailyTotal();
+    this.currentWeekAmount = await this._weekdayService.getCurrentTotal() ?? 0;
     let prevTotal = await this._weekdayService.getPreviousTotal(); // TODO change this to the weekly rolling average (previous week)
-
-    // Add unsaved trip amounts.
-    let unsavedTrips = (await this._tripService.getUnsavedLocalTrips());
-    let unsavedTripsAmount = unsavedTrips.filter(x => !x.exclude).reduce((n, {total}) => n + total, 0);
-    this.currentWeekAmount = (isNaN(dailyTotal) ? 0 : dailyTotal) + unsavedTripsAmount;
     this.weeklyAverage = prevTotal;
   }
 

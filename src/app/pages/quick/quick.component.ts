@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import { AddressHelper } from '@helpers/address.helper';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
@@ -69,6 +68,7 @@ export class QuickComponent implements OnInit {
     sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
     sheetData.trips = await this._tripService.getUnsavedLocalTrips();
 
+    // TODO: Look into sending to AWS SQS
     (await this._gigLoggerService.warmupLambda(this.defaultSheet.id)).subscribe(async () => { // Warmup lambda to use less time to save.
       (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet!.id))
         .subscribe(async () => {
@@ -232,14 +232,19 @@ export class QuickComponent implements OnInit {
     await this._tripService.updateLocalTrip(trip);
   }
 
+  async cloneUnsavedLocalTrip(trip: ITrip) {
+    delete trip.id;
+    await this._tripService.addTrip(trip);
+    await this.load();
+    this._viewportScroller.scrollToAnchor("unsavedTrips");
+    this._snackBar.open("Cloned Trip");
+  }
+
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
-    // Update shift numbers.
-    this._gigLoggerService.calculateShiftTotals();
-    
-    // Update weekday current amount.
-    this._gigLoggerService.calculateDailyTotal();
+    // Update shift numbers & weekday current amount.
+    await this._gigLoggerService.calculateTotals();
 
     await this.load();
     await this.form?.load();
@@ -279,6 +284,10 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
 
     await this._sheetService.loadSpreadsheetData();
+
+    // Update shift numbers & weekday current amount.
+    await this._gigLoggerService.calculateTotals();
+    
     await this.load();
 
     this.reloading = false;
