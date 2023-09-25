@@ -1,4 +1,4 @@
-<div class="container full-height">
+<div class="container">
     <div class="row-flex">
         <h1 mat-dialog-title>
             {{title}}
@@ -10,7 +10,7 @@
     <div class="row-bottom" mat-dialog-actions>
         <div class="row-flex">
             <button mat-stroked-button (click)="onDismiss()"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
-            <button mat-stroked-button color="primary" (click)="onConfirm()" cdkFocusInitial><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
+            <button mat-stroked-button color="primary" (click)="onConfirm()"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
         </div>
     </div>
 </div>
