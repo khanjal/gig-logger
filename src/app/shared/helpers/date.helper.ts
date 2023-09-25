@@ -56,6 +56,13 @@ export class DateHelper {
         return duration;
     }
 
+    static getDayOfWeek(date: Date = new Date()){
+        let dayOfWeek = new Date(date).getDay();
+        dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+        return dayOfWeek;
+    }
+
     static pad(number: number) {
         let numberString = number.toString();
         if (numberString.length < 2) {

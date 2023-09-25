@@ -1,32 +1,32 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { IAddressDialog } from '@interfaces/address-dialog.interface';
 
 @Component({
-  selector: 'app-confirm-dialog',
-  templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.scss']
+  selector: 'app-address-dialog',
+  templateUrl: './address-dialog.component.html',
+  styleUrls: ['./address-dialog.component.scss']
 })
-export class ConfirmDialogComponent {
+export class AddressDialogComponent {
   title!: string;
-  message!: string;
+  address!: string;
   trueIcon: string | undefined;
   trueText! :string;
   falseIcon: string | undefined;
   falseText! :string;
 
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: IConfirmDialog) {
+  constructor(public dialogRef: MatDialogRef<AddressDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: IAddressDialog) {
     // Update view with given values
     this.title = data.title;
-    this.message = data.message;
+    this.address = data.address;
     this.trueText = data.trueText;
     this.falseText = data.falseText;
   }
 
   onConfirm(): void {
     // Close the dialog, return true
-    this.dialogRef.close(true);
+    this.dialogRef.close(this.address);
   }
 
   onDismiss(): void {

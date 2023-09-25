@@ -47,6 +47,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   scroll-margin-top: 2rem;
 }
 
+.full-height {
+  height: 90%;
+}
+
 .row-grid {
   display: inline-grid;
   margin: .5rem auto;
@@ -63,8 +67,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  margin: 1rem 0;
+  margin: .5rem 0;
   align-items: center;
+}
+
+.row-bottom {
+  position: absolute;
+  bottom: 0rem;
+  width: 95%;
 }
 
 .button {
@@ -72,7 +82,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .button-left {
-  align-self: flex-start;
   float: left;
 }
 
@@ -90,4 +99,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .strike {
   background-color: lightgray; // Set in ngStyle in HTML in some files
   text-decoration: line-through;
+}
+
+.pac-container {
+  z-index: 99999999 !important;
+  position: fixed !important;
 }

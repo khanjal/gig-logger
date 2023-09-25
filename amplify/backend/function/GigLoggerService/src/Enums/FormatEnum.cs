@@ -4,6 +4,7 @@ public enum FormatEnum {
     DISTANCE,
     DURATION,
     NUMBER,
+    TEXT,
     TIME,
     WEEKDAY
 }

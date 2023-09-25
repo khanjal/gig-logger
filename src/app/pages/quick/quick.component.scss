@@ -14,3 +14,44 @@
 .table {
     overflow-x: auto;
 }
+
+.button-bar {
+    margin: 0;
+    padding: 1rem .5rem;
+}
+
+button {
+    background-color: white;
+}
+
+.mat-card {
+    margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: lightcyan;
+    }
+
+    &:nth-child(odd){
+        background-color: lightyellow;
+    }
+}
+
+.mat-card-reverse {
+    margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: lightyellow;
+    }
+
+    &:nth-child(odd){
+        background-color: lightcyan;
+    }
+}
+
+.mat-card-disabled {
+    background-color: lightgray !important;
+}
+
+.row-grid {
+    margin-bottom: 2rem;
+}
