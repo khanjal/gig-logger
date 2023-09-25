@@ -12,7 +12,6 @@ import { GoogleAddressService } from '@services/google-address.service';
 // https://github.com/karthiktechblog/google-place-autocomplete
 
 export class GoogleAddressComponent implements OnInit {
-  @Input() addressType!: string; // establishment or geocode
   @Input() address!: string;
   @Output() addressChange = new EventEmitter<string>();
   
@@ -44,18 +43,25 @@ export class GoogleAddressComponent implements OnInit {
       this.addresstext.nativeElement,
       {
         componentRestrictions: { country: 'US' },
-        types: [this.addressType]  // 'establishment' / 'address' / 'geocode' // we are checking all types
+        types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
       }
     );
 
     google.maps.event.addListener(autocomplete, 'place_changed', () => {
+      // $('.pac-container').remove(); // TODO remove existing pac-containers
       this.place = autocomplete.getPlace();
-      this.formattedAddress = this.googleAddressService.getFormattedAddress(this.place);
+      this.formatAddress();
       this.addressForm.controls.address.setValue(this.formattedAddress);
       this.addressChange.emit(this.formattedAddress);
     });
+  }
 
-    // this.addresstext.nativeElement.focus();
-    // this.addresstext.nativeElement.select();
+  private formatAddress() {
+    this.formattedAddress = this.googleAddressService.getFormattedAddress(this.place);
+    let name = this.place['name'];
+
+    if (!this.formattedAddress.startsWith(name)) {
+      this.formattedAddress = `${name}, ${this.formattedAddress}`;
+    }
   }
 }
