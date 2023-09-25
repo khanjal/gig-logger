@@ -527,7 +527,6 @@ export class QuickFormComponent implements OnInit {
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(AddressDialogComponent, {
-      height: "250px",
       width: "350px",
       data: dialogData
     });
