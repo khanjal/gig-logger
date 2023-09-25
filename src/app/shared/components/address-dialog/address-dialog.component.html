@@ -1,27 +1,16 @@
-<!-- <div class="row-flex">
-    <h1 mat-dialog-title>
-        {{title}}
-    </h1>
-</div> -->
-
-    <!-- <app-google-address addressType="geocode" [(address)]="address"></app-google-address> -->
-<!-- 
-<div class="row-flex" mat-dialog-actions>
+<div class="container">
     <div class="row-flex">
-        <button mat-stroked-button (click)="onDismiss()"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
-        <button mat-stroked-button color="primary" (click)="onConfirm()"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
+        <h1 mat-dialog-title>
+            {{title}}
+        </h1>
     </div>
-</div> -->
 
-<h1 mat-dialog-title>Hi </h1>
-<div mat-dialog-content>
-  <p>What's your favorite animal?</p>
-  <mat-form-field>
-    <mat-label>Favorite Animal</mat-label>
-    <input matInput >
-  </mat-form-field>
-</div>
-<div mat-dialog-actions>
-  <button mat-button>No Thanks</button>
-  <button mat-button cdkFocusInitial>Ok</button>
+    <app-google-address addressType="geocode" [(address)]="address"></app-google-address>
+
+    <div class="row-bottom" mat-dialog-actions>
+        <div class="row-flex">
+            <button mat-stroked-button (click)="onDismiss()"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
+            <button mat-stroked-button color="primary" (click)="onConfirm()"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
+        </div>
+    </div>
 </div>
