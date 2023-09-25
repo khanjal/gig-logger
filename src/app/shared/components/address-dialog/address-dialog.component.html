@@ -4,7 +4,7 @@
     </h1>
 </div> -->
 
-    <app-google-address addressType="geocode" [(address)]="address"></app-google-address>
+    <!-- <app-google-address addressType="geocode" [(address)]="address"></app-google-address> -->
 <!-- 
 <div class="row-flex" mat-dialog-actions>
     <div class="row-flex">
@@ -12,3 +12,16 @@
         <button mat-stroked-button color="primary" (click)="onConfirm()"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
     </div>
 </div> -->
+
+<h1 mat-dialog-title>Hi </h1>
+<div mat-dialog-content>
+  <p>What's your favorite animal?</p>
+  <mat-form-field>
+    <mat-label>Favorite Animal</mat-label>
+    <input matInput >
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button>No Thanks</button>
+  <button mat-button cdkFocusInitial>Ok</button>
+</div>
