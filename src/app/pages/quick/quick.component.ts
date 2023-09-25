@@ -131,7 +131,6 @@ export class QuickComponent implements OnInit {
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      height: "175px",
       width: "350px",
       data: dialogData
     });
@@ -155,7 +154,6 @@ export class QuickComponent implements OnInit {
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      height: "200px",
       width: "350px",
       data: dialogData
     });
@@ -179,7 +177,6 @@ export class QuickComponent implements OnInit {
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      height: "225px",
       width: "350px",
       data: dialogData
     });
@@ -203,7 +200,6 @@ export class QuickComponent implements OnInit {
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      height: "200px",
       width: "350px",
       data: dialogData
     });
