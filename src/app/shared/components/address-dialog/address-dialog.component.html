@@ -5,7 +5,7 @@
         </h1>
     </div>
 
-    <app-google-address addressType="geocode" [(address)]="address"></app-google-address>
+    <app-google-address [(address)]="address"></app-google-address>
 
     <div class="row-flex">
         <button mat-stroked-button (click)="onDismiss()"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
