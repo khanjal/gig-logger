@@ -1,26 +1,18 @@
-<!-- <div class="container">
+<div class="container">
     <div class="row-flex">
         <h1 mat-dialog-title>
             {{title}}
         </h1>
     </div>
 
-    <app-google-address addressType="geocode" [(address)]="address"></app-google-address>
+    <div class="row-block">
+        <app-google-address addressType="geocode" [(address)]="address"></app-google-address>
+    </div>
 
-    <div class="row-bottom" mat-dialog-actions>
+    <div class="row-flex" mat-dialog-actions>
         <div class="row-flex">
             <button mat-stroked-button (click)="onDismiss()"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
             <button mat-stroked-button color="primary" (click)="onConfirm()"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
         </div>
     </div>
-</div> -->
-
-<h1>Hi</h1>
-<div>
-  <label id="favorite-animal">What's your favorite animal?</label>
-  <input for="favorite-animal"  placeholder="Enter your name">
-</div>
-<div>
-  <button >OK</button>
-  <button >Cancel</button>
 </div>
