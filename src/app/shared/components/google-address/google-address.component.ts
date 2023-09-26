@@ -41,6 +41,10 @@ export class GoogleAddressComponent implements OnInit {
     setTimeout(() => this.addressInput?.nativeElement?.focus(), 500);
   }
 
+  onTextChange() {
+    this.addressChange.emit(this.addressForm.value.address || "");
+  }
+
   private getPlaceAutocomplete() {
     const autocomplete = new google.maps.places.Autocomplete(
       this.addressInput.nativeElement,
