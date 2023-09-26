@@ -15,7 +15,7 @@ export class GoogleAddressComponent implements OnInit {
   @Input() address!: string;
   @Output() addressChange = new EventEmitter<string>();
   
-  @ViewChild('address') addresstext!: ElementRef;
+  @ViewChild('address') addressInput!: ElementRef;
   
   // establishmentAddress!: Object;
 
@@ -30,17 +30,20 @@ export class GoogleAddressComponent implements OnInit {
   googleAddress!: GoogleAddress;
 
   constructor(private googleAddressService: GoogleAddressService) { }
+
   async ngOnInit(): Promise<void> {
     this.addressForm.controls.address.setValue(this.address);
   }
 
   ngAfterViewInit() {
     this.getPlaceAutocomplete();
+    
+    setTimeout(() => this.addressInput?.nativeElement?.focus(), 500);
   }
 
   private getPlaceAutocomplete() {
     const autocomplete = new google.maps.places.Autocomplete(
-      this.addresstext.nativeElement,
+      this.addressInput.nativeElement,
       {
         componentRestrictions: { country: 'US' },
         types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
