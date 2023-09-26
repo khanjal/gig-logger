@@ -98,4 +98,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .pac-container {
   z-index: 99999999 !important;
   position: fixed !important;
+
+  .pac-item {
+    line-height: 2.5rem;
+    vertical-align: middle;
+  
+    .pac-icon {
+      vertical-align: middle;
+    }
+
+    .pac-item-matched {
+      vertical-align: middle;
+    }
+
+    .pac-item-query {
+      vertical-align: middle;
+    }
+  }
 }
