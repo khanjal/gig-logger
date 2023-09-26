@@ -99,6 +99,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   z-index: 99999999 !important;
   position: fixed !important;
 
+  // https://developers.google.com/maps/documentation/javascript/place-autocomplete#style_autocomplete
   .pac-item {
     line-height: 2.5rem;
     vertical-align: middle;
