@@ -38,7 +38,7 @@ export class GoogleAddressComponent implements OnInit {
   ngAfterViewInit() {
     this.getPlaceAutocomplete();
     
-    setTimeout(() => this.addressInput?.nativeElement?.focus(), 0);
+    setTimeout(() => this.addressInput?.nativeElement?.focus(), 500);
   }
 
   private getPlaceAutocomplete() {
