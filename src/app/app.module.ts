@@ -23,6 +23,10 @@ import { RegionService } from '@services/region.service';
 import { TypeService } from '@services/type.service';
 import { CommonService } from '@services/common.service';
 import { FormsModule } from '@angular/forms';
+import { DailyService } from '@services/daily.service';
+import { MonthlyService } from '@services/monthly.service';
+import { WeeklyService } from '@services/weekly.service';
+import { YearlyService } from '@services/yearly.service';
 
 @NgModule({
   declarations: [
@@ -41,7 +45,9 @@ import { FormsModule } from '@angular/forms';
   providers: [
     AddressService,
     CommonService,
+    DailyService,
     DeliveryService,
+    MonthlyService,
     NameService,
     GigLoggerService,
     PlaceService,
@@ -52,7 +58,9 @@ import { FormsModule } from '@angular/forms';
     TimerService,
     TripService,
     TypeService,
-    WeekdayService
+    WeekdayService,
+    WeeklyService,
+    YearlyService
   ],
   bootstrap: [AppComponent]
 })
