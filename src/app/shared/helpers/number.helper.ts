@@ -5,6 +5,11 @@ export class NumberHelper {
     }
 
     static getDataSize(bytes: number = 0, decimals = 2) {
+        // console.log(bytes);
+        if (!bytes) {
+            return "";
+        } 
+
         let units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
         let i = 0
