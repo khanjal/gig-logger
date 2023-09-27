@@ -7,6 +7,7 @@ import { GigLoggerService } from './gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { NumberHelper } from '@helpers/number.helper';
 
 @Injectable()
 export class SpreadsheetService {
@@ -100,5 +101,19 @@ export class SpreadsheetService {
             await this._gigLoggerService.appendData(<ISheet>data);
             this._snackBar.open("Loaded Secondary Spreadsheet Data");
         });
+    }
+
+    public async showEstimatedQuota(): Promise<StorageEstimate | undefined> {
+        if (navigator.storage && navigator.storage.estimate) {
+            const estimation = await navigator.storage.estimate();
+            // console.log(`Quota: ${NumberHelper.getDataSize(estimation.quota)}`);
+            // console.log(`Usage: ${NumberHelper.getDataSize(estimation.usage)}`);
+
+            return estimation;
+        } else {
+            console.error("StorageManager not found");
+        }
+
+        return;
     }
 }
