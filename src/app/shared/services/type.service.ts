@@ -13,7 +13,7 @@ export class TypeService {
         return await spreadsheetDB.types.toArray();
     }
 
-    public async load(types: IType[]) {
+    public async loadTypes(types: IType[]) {
         await spreadsheetDB.types.clear();
         await spreadsheetDB.types.bulkAdd(types);
     }
