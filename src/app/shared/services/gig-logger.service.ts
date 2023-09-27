@@ -1,6 +1,20 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from "src/environments/environment";
+
+// Interfaces
 import { ISheet } from "@interfaces/sheet.interface";
+import { IDelivery } from "@interfaces/delivery.interface";
+import { INote } from "@interfaces/note.interface";
+import { ITrip } from "@interfaces/trip.interface";
+import { IType } from "@interfaces/type.interface";
+import { IAddress } from "@interfaces/address.interface";
+
+// Helpers
+import { AddressHelper } from "@helpers/address.helper";
+import { DateHelper } from "@helpers/date.helper";
+
+// Services
 import { AddressService } from "./address.service";
 import { DeliveryService } from "./delivery.service";
 import { NameService } from "./name.service";
@@ -9,16 +23,8 @@ import { ServiceService } from "./service.service";
 import { ShiftService } from "./shift.service";
 import { TripService } from "./trip.service";
 import { WeekdayService } from "./weekday.service";
-import { IDelivery } from "@interfaces/delivery.interface";
-import { INote } from "@interfaces/note.interface";
-import { ITrip } from "@interfaces/trip.interface";
 import { RegionService } from "./region.service";
 import { TypeService } from "./type.service";
-import { environment } from "src/environments/environment";
-import { IType } from "@interfaces/type.interface";
-import { IAddress } from "@interfaces/address.interface";
-import { AddressHelper } from "@helpers/address.helper";
-import { DateHelper } from "@helpers/date.helper";
 import { DailyService } from "./daily.service";
 import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
@@ -67,6 +73,7 @@ export class GigLoggerService {
     public async loadData(sheetData: ISheet) {
         await this._addressService.loadAddresses(sheetData.addresses);
         await this._dailyService.loadDaily(sheetData.daily);
+        await this._monthlyService.loadMonthly(sheetData.monthly);
         await this._nameService.loadNames(sheetData.names);
         await this._placeService.loadPlaces(sheetData.places);
         await this._regionService.loadRegions(sheetData.regions);
@@ -75,6 +82,8 @@ export class GigLoggerService {
         await this._tripService.loadTrips(sheetData.trips);
         await this._typeService.loadTypes(sheetData.types);
         await this._weekdayService.loadWeekdays(sheetData.weekdays);
+        await this._weeklyService.loadweekly(sheetData.weekly);
+        await this._yearlyService.loadYearly(sheetData.yearly);
 
         await this.linkNameData();
         await this.linkAddressData();
