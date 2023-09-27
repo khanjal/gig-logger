@@ -1,12 +1,8 @@
-export interface IWeekday {
+import { IPeriodicBase } from "./periodic-base.interface";
+
+export interface IWeekday extends IPeriodicBase {
     id: number;
     day: string;
-    trips: number;
-    pay: number;
-    tips: number;
-    bonus: number;
-    cash: number;
-    total: number;
     days: number;
     dailyAverage: number;
     dailyPrevAverage: number;
