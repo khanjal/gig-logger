@@ -19,6 +19,10 @@
 </div>
 
 <div class="container">
+    <app-sheet-quota></app-sheet-quota>
+</div>
+
+<div class="container">
     <div>
         <!-- <button mat-stroked-button color="warn" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteLocalData()"><mat-icon>delete</mat-icon> Delete Local Data</button> -->
         <button mat-stroked-button color="primary" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteAndReload()" *ngIf="spreadsheets?.length"><mat-icon>refresh</mat-icon> Delete & Reload</button>
