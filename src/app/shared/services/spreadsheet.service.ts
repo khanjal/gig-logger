@@ -103,13 +103,17 @@ export class SpreadsheetService {
         });
     }
 
-    public async showEstimatedQuota() {
+    public async showEstimatedQuota(): Promise<StorageEstimate | undefined> {
         if (navigator.storage && navigator.storage.estimate) {
             const estimation = await navigator.storage.estimate();
-            console.log(`Quota: ${NumberHelper.getDataSize(estimation.quota)}`);
-            console.log(`Usage: ${NumberHelper.getDataSize(estimation.usage)}`);
+            // console.log(`Quota: ${NumberHelper.getDataSize(estimation.quota)}`);
+            // console.log(`Usage: ${NumberHelper.getDataSize(estimation.usage)}`);
+
+            return estimation;
         } else {
             console.error("StorageManager not found");
         }
+
+        return;
     }
 }
