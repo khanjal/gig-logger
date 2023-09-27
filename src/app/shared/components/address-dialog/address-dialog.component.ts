@@ -25,7 +25,7 @@ export class AddressDialogComponent {
   }
 
   onConfirm(): void {
-    // Close the dialog, return true
+    // Close the dialog, return value
     this.cleanUp();
     this.dialogRef.close(this.address);
   }
