@@ -31,6 +31,7 @@ export class SetupComponent {
 
   async ngOnInit(): Promise<void> {
     this.load();
+    await this._spreadsheetService.showEstimatedQuota();
   }
 
   public async load() {
