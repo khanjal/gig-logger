@@ -25,12 +25,22 @@ export class AddressDialogComponent {
   }
 
   onConfirm(): void {
-    // Close the dialog, return true
+    // Close the dialog, return value
+    this.cleanUp();
     this.dialogRef.close(this.address);
   }
 
   onDismiss(): void {
     // Close the dialog, return false
+    this.cleanUp();
     this.dialogRef.close(false);
+  }
+
+  cleanUp(): void {
+    let pacConatiners = document.getElementsByClassName("pac-container");
+    
+    Array.from(pacConatiners).forEach(pacConatiner => {
+      pacConatiner.remove();
+    });
   }
 }
