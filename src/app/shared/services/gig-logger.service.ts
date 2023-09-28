@@ -53,12 +53,10 @@ export class GigLoggerService {
     ) {}
 
     public async getSheetData(sheetId: string) {
-        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
     }
 
@@ -100,11 +98,6 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
-    public async calculateTotals() {
-        await this.calculateShiftTotals();
-        await this.calculateDailyTotal();
-    }
-
     public async calculateShiftTotals() {
         let shifts = await this._shiftService.getPreviousWeekShifts();
     
@@ -124,6 +117,8 @@ export class GigLoggerService {
         
             this._shiftService.updateShift(shift);
         });
+
+        await this.calculateDailyTotal();
     }
 
     public async calculateDailyTotal() {
@@ -136,8 +131,8 @@ export class GigLoggerService {
         let todaysShifts = [... (await this._shiftService.queryLocalShifts("date", date)).filter(x => !x.saved),
                             ...await this._shiftService.queryRemoteShifts("date", date)];
     
-        let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
-                            ...await this._tripService.queryRemoteTrips("date", date)];
+        // let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
+        //                     ...await this._tripService.queryRemoteTrips("date", date)];
     
         // todaysTrips.filter(x => !x.exclude).forEach(trip => {
         //     currentAmount += trip.total;
