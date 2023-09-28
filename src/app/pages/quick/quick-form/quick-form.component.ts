@@ -326,7 +326,7 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.addTrip(trip);
     
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateTotals();
+    await this._gigLoggerService.calculateShiftTotals();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -344,7 +344,7 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.updateLocalTrip(trip);
 
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateTotals();
+    await this._gigLoggerService.calculateShiftTotals();
 
     this._snackBar.open("Trip Updated");
 
