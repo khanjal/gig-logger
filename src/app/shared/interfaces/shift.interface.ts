@@ -14,4 +14,10 @@ export interface IShift extends IAmount {
     start: string;
     time: string;
     trips: number;
+    totalTrips: number;
+    totalPay: number;
+    totalTips: number;
+    totalBonus: number;
+    grandTotal: number;
+    totalCash: number;
 }

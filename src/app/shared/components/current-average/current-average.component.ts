@@ -25,7 +25,6 @@ export class CurrentAverageComponent implements OnInit {
 
   constructor(
     private _snackBar: MatSnackBar,
-      private _tripService: TripService,
       private _weekdayService: WeekdayService
     ) {}
 

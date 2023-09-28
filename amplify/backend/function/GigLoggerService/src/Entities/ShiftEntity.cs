@@ -40,6 +40,24 @@ public class ShiftEntity : AmountEntity
 
     [JsonPropertyName("note")]
     public string Note { get; set; }
+
+    [JsonPropertyName("totalTrips")]
+    public int TotalTrips { get; set; }
+
+    [JsonPropertyName("totalPay")]
+    public decimal? TotalPay { get; set; }
+
+    [JsonPropertyName("totalTips")]
+    public decimal? TotalTips { get; set; }
+
+    [JsonPropertyName("totalBonus")]
+    public decimal? TotalBonus { get; set; }
+
+    [JsonPropertyName("grandTotal")]
+    public decimal? GrandTotal { get; set; }
+
+    [JsonPropertyName("totalCash")]
+    public decimal? TotalCash { get; set; }
     
     [JsonPropertyName("saved")]
     public bool Saved { get; set; }
