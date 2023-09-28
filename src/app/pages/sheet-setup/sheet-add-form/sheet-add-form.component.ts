@@ -102,12 +102,16 @@ export class SheetAddFormComponent {
       );
     }
     else {
-          this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
-          (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
-            this._snackBar.open("Loading Secondary Spreadsheet Data");
-            await this._gigLoggerService.appendData(<ISheet>data);
-            this._snackBar.open("Loaded Secondary Spreadsheet Data");
-          });
+      this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
+      (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
+        if (!this.sheetForm.value.sheetName) {
+          spreadsheet.name = (<ISheet>data).name;
+          await this._spreadsheetService.update(spreadsheet);
+        }
+        this._snackBar.open("Loading Secondary Spreadsheet Data");
+        await this._gigLoggerService.appendData(<ISheet>data);
+        this._snackBar.open("Loaded Secondary Spreadsheet Data");
+      });
       this.saving = false;
     }
   }
