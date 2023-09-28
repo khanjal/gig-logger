@@ -109,17 +109,17 @@ export class GigLoggerService {
         let shifts = await this._shiftService.getPreviousWeekShifts();
     
         shifts.forEach(async shift => {
-            shift.trips = 0;
-            shift.total = 0;
+            shift.totalTrips = shift.trips;
+            shift.grandTotal = shift.total;
         
             let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
                         ...await this._tripService.queryRemoteTrips("key", shift.key)];
             trips = trips.filter(x => !x.exclude);
             
             trips.forEach(trip => {
-                shift.trips++;
+                shift.totalTrips++;
                 // TODO break shift total into pay/tip/bonus
-                shift.total += trip.total;
+                shift.grandTotal += trip.total;
             });
         
             this._shiftService.updateShift(shift);
@@ -132,13 +132,20 @@ export class GigLoggerService {
         // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
         let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+
+        let todaysShifts = [... (await this._shiftService.queryLocalShifts("date", date)).filter(x => !x.saved),
+                            ...await this._shiftService.queryRemoteShifts("date", date)];
     
         let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
                             ...await this._tripService.queryRemoteTrips("date", date)];
     
-        todaysTrips.filter(x => !x.exclude).forEach(trip => {
-            currentAmount += trip.total;
-        });
+        // todaysTrips.filter(x => !x.exclude).forEach(trip => {
+        //     currentAmount += trip.total;
+        // });
+
+        todaysShifts.forEach(shift => {
+            currentAmount += shift.grandTotal;
+        })
     
         if (weekday) {
             weekday.currentAmount = currentAmount;
