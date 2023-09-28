@@ -13,6 +13,7 @@ import { IWeekly } from "./weekly.interface";
 import { IYearly } from "./yearly.interface";
 
 export interface ISheet {
+    id: string;
     name: string;
     addresses: IAddress[];
     daily: IDaily[];

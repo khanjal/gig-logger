@@ -2,7 +2,8 @@
     <div>
         <mat-card-header><mat-icon>{{ spreadsheet.default === "true" ? "star" : "" }}</mat-icon> <a href="https://docs.google.com/spreadsheets/d/{{ spreadsheet.id }}" target="_blank">{{ spreadsheet.name }}</a></mat-card-header>
         <mat-card-content>
-            
+            Size: {{ size }} / 6MB
+            <mat-progress-bar mode="determinate" [value]="percent"></mat-progress-bar>
         </mat-card-content>
     </div>
 </mat-card>

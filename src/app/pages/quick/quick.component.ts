@@ -240,7 +240,7 @@ export class QuickComponent implements OnInit {
     await this._tripService.deleteLocal(trip.id!);
 
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateTotals();
+    await this._gigLoggerService.calculateShiftTotals();
 
     await this.load();
     await this.form?.load();
@@ -282,7 +282,7 @@ export class QuickComponent implements OnInit {
     await this._sheetService.loadSpreadsheetData();
 
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateTotals();
+    await this._gigLoggerService.calculateShiftTotals();
     
     await this.load();
 

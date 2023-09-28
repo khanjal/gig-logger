@@ -27,6 +27,7 @@ import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialog
 import { CalculatorComponent } from './calculator/calculator.component';
 import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
 import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.compo
     MatListModule,
     MatIconModule,
     MatInputModule,
+    MatProgressBarModule,
     MatSnackBarModule,
     MatTableModule,
     ReactiveFormsModule,
