@@ -233,7 +233,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async loadForm() {
-    this.selectedShift = (await this._shiftService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
+    this.selectedShift = (await this._shiftService.queryShiftByKey(this.data.key));
     this.quickForm.controls.service.setValue(this.data.service);
     this.quickForm.controls.type.setValue(this.data.type);
 
