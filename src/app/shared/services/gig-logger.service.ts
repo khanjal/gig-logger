@@ -136,13 +136,6 @@ export class GigLoggerService {
         let todaysShifts = [... (await this._shiftService.queryLocalShifts("date", date)).filter(x => !x.saved),
                             ...await this._shiftService.queryRemoteShifts("date", date)];
     
-        // let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
-        //                     ...await this._tripService.queryRemoteTrips("date", date)];
-    
-        // todaysTrips.filter(x => !x.exclude).forEach(trip => {
-        //     currentAmount += trip.total;
-        // });
-
         todaysShifts.forEach(shift => {
             currentAmount += shift.grandTotal;
         })
