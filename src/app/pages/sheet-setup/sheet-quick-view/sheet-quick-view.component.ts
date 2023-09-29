@@ -14,7 +14,7 @@ export class SheetQuickViewComponent implements OnInit {
 
   async ngOnInit() {
     this.percent = (this.spreadsheet.size/6000000) * 100;
-    console.log(this.percent);
+    // console.log(this.percent);
     this.size = NumberHelper.getDataSize(this.spreadsheet.size);
   }
 }
