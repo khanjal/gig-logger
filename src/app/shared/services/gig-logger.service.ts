@@ -99,7 +99,6 @@ export class GigLoggerService {
     }
 
     public async calculateShiftTotals() {
-        // let shifts = await this._shiftService.getPreviousWeekShifts();
         let unsavedTrips = await this._tripService.getUnsavedLocalTrips();
 
         const keys = [...new Set(unsavedTrips.map(item => item.key))];
@@ -116,31 +115,14 @@ export class GigLoggerService {
             shift.grandTotal = shift.total;
 
             trips.forEach(trip => {
-                        shift.totalTrips++;
-                        // TODO break shift total into pay/tip/bonus
-                        shift.grandTotal += trip.total;
-                    });
-                
-                    this._shiftService.updateShift(shift);
+                shift.totalTrips++;
+                // TODO break shift total into pay/tip/bonus
+                shift.grandTotal += trip.total;
+            });
+        
+            this._shiftService.updateShift(shift);
         });
     
-        // shifts.forEach(async shift => {
-        //     shift.totalTrips = shift.trips;
-        //     shift.grandTotal = shift.total;
-        
-        //     let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
-        //                 ...await this._tripService.queryRemoteTrips("key", shift.key)];
-        //     trips = trips.filter(x => !x.exclude);
-            
-        //     trips.forEach(trip => {
-        //         shift.totalTrips++;
-        //         // TODO break shift total into pay/tip/bonus
-        //         shift.grandTotal += trip.total;
-        //     });
-        
-        //     this._shiftService.updateShift(shift);
-        // });
-
         await this.calculateDailyTotal();
     }
 
