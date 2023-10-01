@@ -121,22 +121,24 @@
         </mat-form-field>
 
         <!-- Pay -->
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Pay</mat-label>
-            <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
-            <button type="button" class="field-button" [color]="showAdvancedPay ? 'accent' : 'primary'" *ngIf="pay.value" matSuffix mat-mini-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+        <div class="row-block">
+            <mat-form-field class="field-quarter-width" appearance="outline">
+                <mat-label>Pay</mat-label>
+                <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
+            </mat-form-field>
+            <button type="button" class="button-middle" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
                 <mat-icon>account_balance</mat-icon>
             </button>
-        </mat-form-field>
 
-        <!-- Distance -->
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Distance</mat-label>
-            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
-            <button type="button" class="field-button" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-mini-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
+            <!-- Distance -->
+            <mat-form-field class="field-quarter-width" appearance="outline">
+                <mat-label>Distance</mat-label>
+                <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
+            </mat-form-field>
+            <button type="button" class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
                 <mat-icon>drive_eta</mat-icon>
             </button>
-        </mat-form-field>
+        </div>
 
         <!-- Tip/Bonus/Cash -->
         <div *ngIf="showAdvancedPay">
@@ -192,7 +194,7 @@
                 </button>
             </mat-form-field>
 
-        <!-- Pickup Address Button -->
+            <!-- Pickup Address Button -->
             <button type="button" class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
                 <mat-icon>contact_mail</mat-icon>
             </button>
