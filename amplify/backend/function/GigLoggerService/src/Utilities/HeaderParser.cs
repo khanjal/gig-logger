@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -36,6 +37,18 @@ public static class HeaderParser {
         }
 
         return values[columnId].ToString().Trim() == "TRUE";
+    }
+
+    public static string GetDateValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
+        var columnId = GetHeaderKey(headers, columnName);
+
+        if (columnId > values.Count || columnId < 0) {
+            return "";
+        }
+
+        var date = DateTime.Parse(values[columnId].ToString()).ToString("yyyy-MM-dd");
+
+        return date;
     }
 
     public static string GetStringValue(string columnName, IList<object> values, Dictionary<int, string> headers) {
