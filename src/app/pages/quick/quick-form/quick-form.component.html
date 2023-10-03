@@ -126,18 +126,18 @@
                 <mat-label>Pay</mat-label>
                 <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
             </mat-form-field>
-            <button type="button" class="button-middle" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-mini-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+            <button type="button" class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
                 <mat-icon>account_balance</mat-icon>
             </button>
 
             <!-- Distance -->
-            <mat-form-field class="field-quarter-width" appearance="outline">
+            <button type="button" class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
+                <mat-icon>drive_eta</mat-icon>
+            </button>
+            <mat-form-field class="field-quarter-width field-right" appearance="outline">
                 <mat-label>Distance</mat-label>
                 <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
             </mat-form-field>
-            <button type="button" class="button-middle" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-mini-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
-                <mat-icon>drive_eta</mat-icon>
-            </button>
         </div>
 
         <!-- Tip/Bonus/Cash -->
