@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DateHelper } from '@helpers/date.helper';
-import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
+import { WeeklyService } from '@services/weekly.service';
 
 @Component({
   selector: 'app-current-average',
@@ -25,7 +25,8 @@ export class CurrentAverageComponent implements OnInit {
 
   constructor(
     private _snackBar: MatSnackBar,
-      private _weekdayService: WeekdayService
+    private _weekdayService: WeekdayService,
+    private _weeklyService: WeeklyService
     ) {}
 
   async ngOnInit() {
@@ -42,8 +43,10 @@ export class CurrentAverageComponent implements OnInit {
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
+    let date = DateHelper.getDateString(7).toISOString().substring(0,10);
+    let weekly = await this._weeklyService.getLastWeekFromDay(date);
     this.currentWeekAmount = await this._weekdayService.getCurrentTotal() ?? 0;
-    let prevTotal = await this._weekdayService.getPreviousTotal(); // TODO change this to the weekly rolling average (previous week)
+    let prevTotal = weekly?.average ?? 0;
     this.weeklyAverage = prevTotal;
   }
 
