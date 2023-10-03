@@ -50,7 +50,7 @@ export class AppDB extends Dexie {
             trips: '++id, date, service, number, key, [date+service+number]',
             types: '++id, type',
             weekdays: '++id, day',
-            weekly: '++id, week',
+            weekly: '++id, week, begin, end',
             yearly: '++id, year'
         });
     }
