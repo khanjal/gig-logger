@@ -55,7 +55,7 @@ export class ShiftHelper {
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
-        shift.date = DateHelper.getDateString();
+        shift.date = DateHelper.getDateString().toLocaleDateString();
         shift.number = shiftNumber ?? 0;
         shift.saved = false;
         shift.start = new Date().toLocaleTimeString();
