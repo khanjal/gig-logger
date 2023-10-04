@@ -1,6 +1,8 @@
 # Gig-Logger
 For logging gig work
 
+![Architectual Diagram of Gig Logger](GigLogger.drawio.png?raw=true "Gig Logger Diagram")
+
 ## UI
 
 ### Setup
@@ -20,8 +22,7 @@ aws lambda add-permission
 --action lambda:InvokeFunction 
 ```
 
-### Push:
-
+### Update Lambda:
 
 ```amplify push```
 
