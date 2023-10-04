@@ -1,5 +1,5 @@
 <div class="container" id="addTrip">
-    <div><app-current-average class="button-right"></app-current-average></div>
+    <div><app-current-average class="field-right"></app-current-average></div>
     
     <quick-form (parentReload)="load()"></quick-form>
 
@@ -17,6 +17,10 @@
                     <!-- <button mat-menu-item>
                         <mat-icon>block</mat-icon>
                         <span>Exclude</span>
+                    </button> -->
+                    <!-- <button mat-menu-item (click)="cloneUnsavedLocalTrip(trip)">
+                        <mat-icon>pin_drop</mat-icon>
+                        <span>Next</span>
                     </button> -->
                     <button mat-menu-item (click)="cloneUnsavedLocalTrip(trip)">
                         <mat-icon>content_copy</mat-icon>
