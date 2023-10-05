@@ -1,3 +1,5 @@
+@import "color-vars";
+
 :host {
     display: flex;
     flex-direction: column;
@@ -24,11 +26,11 @@
     margin-bottom: 1rem;
 
     &:nth-child(even){
-        background-color: lightcyan;
+        background-color: $primary-light-color;
     }
 
     &:nth-child(odd){
-        background-color: lightyellow;
+        background-color: $accent-light-color;
     }
 }
 
@@ -36,11 +38,11 @@
     margin-bottom: 1rem;
 
     &:nth-child(even){
-        background-color: lightyellow;
+        background-color: $accent-light-color;
     }
 
     &:nth-child(odd){
-        background-color: lightcyan;
+        background-color: $primary-light-color;
     }
 }
 
