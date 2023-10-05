@@ -25,6 +25,7 @@ import { PlaceService } from '@services/place.service';
 import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
+import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
 import { TypeService } from '@services/type.service';
 import { WeekdayService } from '@services/weekday.service';
@@ -109,9 +110,9 @@ export class QuickFormComponent implements OnInit {
       private _regionService: RegionService,
       private _serviceService: ServiceService,
       private _shiftService: ShiftService,
+      private _timerService: TimerService,
       private _tripService: TripService,
       private _typeService: TypeService,
-      private _weekdayService: WeekdayService,
       private _viewportScroller: ViewportScroller
     ) {}
 
@@ -334,6 +335,8 @@ export class QuickFormComponent implements OnInit {
     this.parentReload.emit();
     
     // console.log(trip);
+    await this._timerService.delay(1000); // TODO: see if parent will scroll after done.
+    this._viewportScroller.scrollToAnchor("unsavedTrips");
   }
 
   public async editTrip() {
