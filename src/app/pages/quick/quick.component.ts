@@ -213,6 +213,20 @@ export class QuickComponent implements OnInit {
     });
   }
 
+  async setPickupTime(trip: ITrip) {
+    let pickupTime = DateHelper.getTimeString(new Date);
+
+    let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
+    if (shift) {
+      shift.finish = pickupTime;
+      shift.time = DateHelper.getDuration(shift.start, shift.finish);
+      await this._shiftService.updateLocalShift(shift);
+    }
+
+    trip.pickupTime = pickupTime;
+    await this._tripService.updateLocalTrip(trip);
+  }
+
   async setDropoffTime(trip: ITrip) {
     let dropOffTime = DateHelper.getTimeString(new Date);
 
@@ -234,6 +248,18 @@ export class QuickComponent implements OnInit {
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
     this._snackBar.open("Cloned Trip");
+  }
+
+  async nextUnsavedLocalTrip(trip: ITrip) {
+    delete trip.id;
+    trip.pickupTime = trip.dropoffTime;
+    trip.dropoffTime = '';
+    trip.name = '';
+    trip.endAddress = '';
+    await this._tripService.addTrip(trip);
+    await this.load();
+    this._viewportScroller.scrollToAnchor("unsavedTrips");
+    this._snackBar.open("Added Next Trip");
   }
 
   async deleteUnsavedLocalTrip(trip: ITrip) {
