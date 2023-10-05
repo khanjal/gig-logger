@@ -5,7 +5,7 @@
         <h1>{{ title }}</h1>
     </div>
     <div class="row field-quarter-width">
-        <button class="button-right" type="button" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
+        <button class="button-right" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </div> -->
@@ -40,7 +40,7 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="service.value" color="primary" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
+                <button class="mat-icon-button" *ngIf="service.value" color="primary" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
@@ -66,7 +66,7 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="region.value" color="primary" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
+                <button class="mat-icon-button" *ngIf="region.value" color="primary" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
@@ -91,7 +91,7 @@
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" class="mat-icon-button" *ngIf="place.value" color="primary" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
+            <button class="mat-icon-button" *ngIf="place.value" color="primary" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
@@ -115,7 +115,7 @@
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" class="mat-icon-button" *ngIf="type.value" color="primary" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
+            <button class="mat-icon-button" *ngIf="type.value" color="primary" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
@@ -126,12 +126,12 @@
                 <mat-label>Pay</mat-label>
                 <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
             </mat-form-field>
-            <button type="button" class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+            <button class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
                 <mat-icon>account_balance</mat-icon>
             </button>
 
             <!-- Distance -->
-            <button type="button" class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
+            <button class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
                 <mat-icon>drive_eta</mat-icon>
             </button>
             <mat-form-field class="field-quarter-width field-right" appearance="outline">
@@ -189,13 +189,13 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="name.value" color="primary" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
+                <button class="mat-icon-button" *ngIf="name.value" color="primary" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
 
             <!-- Pickup Address Button -->
-            <button type="button" class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+            <button class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
                 <mat-icon>contact_mail</mat-icon>
             </button>
         </div>
@@ -224,13 +224,13 @@
                         {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                     </mat-option>
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
+                <button class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
 
             <!-- Search Pickup Address Button -->
-            <button type="button" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
+            <button class="button-right" color="primary" matSuffix mat-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
                 <mat-icon>search</mat-icon>
             </button>
         </div>
@@ -285,13 +285,13 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
+                <button class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
 
             <!-- Search Destination Address Button -->
-            <button type="button" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
+            <button class="button-right" color="primary" matSuffix mat-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
                 <mat-icon>search</mat-icon>
             </button>
         </div>
@@ -338,7 +338,7 @@
             <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
         </mat-form-field>
 
-        <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+        <button mat-stroked-button (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
 
         <!-- Dropoff Time -->
         <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
@@ -346,7 +346,7 @@
             <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
         </mat-form-field>
 
-        <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+        <button mat-stroked-button (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
         
         <!-- Note -->
         <div class="row-block">
@@ -355,7 +355,7 @@
                 <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
             </mat-form-field>
 
-            <button type="button" class="button-right" [color]="showOrder ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Address/Order" (click)="toggleOrder()">
+            <button class="button-right" [color]="showOrder ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Address/Order" (click)="toggleOrder()">
                 <mat-icon>business</mat-icon>
             </button>
         </div>
@@ -377,11 +377,11 @@
     </form>
 
     <div class="row-flex" *ngIf="!data?.id">
-        <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
-        <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
+        <button mat-fab extended color="primary" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
+        <button mat-fab extended color="warn" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
     </div>
     <div class="row-flex" *ngIf="data?.id">
-        <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>save</mat-icon> Update</button>
-        <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
+        <button mat-fab extended color="primary" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>save</mat-icon> Update</button>
+        <button mat-fab extended color="warn" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
     </div>
 </div>
