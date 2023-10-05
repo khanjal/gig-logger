@@ -1,3 +1,5 @@
+@import "color-vars";
+
 h3 {
     margin: 1rem 0 0 0;
 }
@@ -34,11 +36,11 @@ mat-header-row {
 }
 
 mat-row:nth-child(even){
-    background-color: lightcyan;
+    background-color: $primary-light-color;
 }
 
 mat-row:nth-child(odd){
-    background-color: lightyellow;
+    background-color: $accent-light-color;
 }
 
 mat-cell,

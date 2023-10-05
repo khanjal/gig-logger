@@ -47,7 +47,6 @@
       "@models/*": ["./src/app/shared/models/*"],
       "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"]
-      
     },
     "typeRoots": [
       "node_modules/@types"
