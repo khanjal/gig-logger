@@ -30,22 +30,24 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
 
 @NgModule({
     declarations: [
         CurrentAverageComponent,
         HeaderComponent,
         ProfileComponent,
-        TripsTableSimpleComponent,
         TripsQuickViewComponent,
         NoSecondsPipe,
         TruncatePipe,
         ShortAddressPipe,
         ConfirmDialogComponent,
         FocusScrollDirective,
-        TripsTableGroupComponent,
         AddressDialogComponent,
-        GoogleAddressComponent
+        GoogleAddressComponent,
+        TripsTableBasicComponent,
+        TripsTableGroupComponent,
+        TripsTableSimpleComponent
     ],
     imports: [
         CommonModule,
@@ -64,8 +66,9 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
         HeaderComponent,
         NoSecondsPipe,
         ShortAddressPipe,
-        TripsTableSimpleComponent,
+        TripsTableBasicComponent,
         TripsTableGroupComponent,
+        TripsTableSimpleComponent,
         TripsQuickViewComponent,
         TruncatePipe,
         FocusScrollDirective
