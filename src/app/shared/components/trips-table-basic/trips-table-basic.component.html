@@ -1,10 +1,6 @@
 <div class="trips-container">
     <div class='table-responsive'>
         <mat-table [dataSource]="trips" multiTemplateDataRows>
-            <!-- <ng-container matColumnDef="saved">
-                <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                <mat-cell *matCellDef="let trip"><mat-icon>{{trip.saved ? 'check' : 'close'}}</mat-icon>  </mat-cell>
-            </ng-container> -->
             <ng-container matColumnDef="date">
                 <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
                 <mat-cell *matCellDef="let trip"> '{{trip.date | date:'YY MMM d'}} </mat-cell>
@@ -23,11 +19,16 @@
             </ng-container>
             <ng-container matColumnDef="secondary">
                 <td mat-cell [attr.colspan]="displayedColumns.length"
+                    *matCellDef="let trip"><span *ngIf="trip.endUnit"><strong>Apt/Unit:</strong> {{trip.endUnit}}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="ternary">
+                <td mat-cell [attr.colspan]="displayedColumns.length"
                     *matCellDef="let trip"><span *ngIf="trip.note"><em>"{{trip.note}}"</em></span></td>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; let i = dataIndex; columns: displayedColumns;" [ngClass]="{'alt-row': i % 2}"></mat-row>
-            <mat-row *matRowDef="let row; let i = dataIndex; columns: ['secondary'];" [ngClass]="{'alt-row': i % 2}"></mat-row>
+            <mat-row *matRowDef="let row; let i = dataIndex; columns: displayedColumns;" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
+            <mat-row *matRowDef="let row; let i = dataIndex; columns: ['secondary'];" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
+            <mat-row *matRowDef="let row; let i = dataIndex; columns: ['ternary'];" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
         </mat-table>
     </div>
 </div>

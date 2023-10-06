@@ -244,9 +244,9 @@
                 {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
                 
             </a>
-            <div class="tab" *ngIf="delivery.units.length > 0">
+            <!-- <div class="tab" *ngIf="delivery.units.length > 0">
                 <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
-            </div>
+            </div> -->
             <!-- <div class="tab" *ngIf="delivery.services.length > 0">
                 <span>{{delivery.services.join(", ")}}</span>
             </div>
@@ -309,9 +309,9 @@
                 </a>
                 <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
             </div>
-            <div class="tab" *ngIf="delivery.units.length > 0">
+            <!-- <div class="tab" *ngIf="delivery.units.length > 0">
                 <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
-            </div>
+            </div> -->
             <!-- <div class="tab" *ngIf="delivery.services.length > 0">
                 <span>{{delivery.services.join(", ")}}</span>
             </div>

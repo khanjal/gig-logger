@@ -27,16 +27,14 @@ mat-header-row {
     display: table-row;
 }
 
-mat-row{
-    background-color: $primary-light-color;
-}
+.alt-row {
+    &.odd {
+        background-color: $accent-light-color;
+    }
 
-.alt-row:nth-child(odd){
-    background-color: $primary-light-color;
-}
-
-.alt-row:nth-child(even){
-    background-color: $accent-light-color;
+    &.even {
+        background-color: $primary-light-color;
+    }
 }
 
 mat-cell,
