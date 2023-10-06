@@ -70,10 +70,4 @@ export class ShiftHelper {
 
         return shifts;
     }
-
-    static sortShiftsDesc(shifts: IShift[]): IShift[] {
-        shifts.sort((a,b) => b.key.localeCompare(a.key));
-
-        return shifts;
-    }
 }
