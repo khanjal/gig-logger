@@ -247,7 +247,7 @@
             <div class="tab" *ngIf="delivery.units.length > 0">
                 <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
             </div>
-            <div class="tab" *ngIf="delivery.services.length > 0">
+            <!-- <div class="tab" *ngIf="delivery.services.length > 0">
                 <span>{{delivery.services.join(", ")}}</span>
             </div>
             <div class="tab" *ngIf="delivery.places.length > 0">
@@ -261,7 +261,8 @@
             </div>
             <div class="tab-itallic" *ngIf="delivery.notes.length > 0">
                 <span class="tab-itallic" *ngFor="let note of delivery.notes">"{{note.text}}" - {{note.date}}</span>
-            </div>
+            </div> -->
+            <app-trips-table-basic class="table" [trips]="delivery.trips"></app-trips-table-basic>
         </div>
 
         <!-- Destination Address -->
@@ -311,7 +312,7 @@
             <div class="tab" *ngIf="delivery.units.length > 0">
                 <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
             </div>
-            <div class="tab" *ngIf="delivery.services.length > 0">
+            <!-- <div class="tab" *ngIf="delivery.services.length > 0">
                 <span>{{delivery.services.join(", ")}}</span>
             </div>
             <div class="tab" *ngIf="delivery.places.length > 0">
@@ -329,7 +330,8 @@
             </div>
             <div class="tab" *ngFor="let note of delivery.notes">
                 <span class="tab-itallic" *ngIf="note">"{{note.text}}" - {{note.date}}</span>
-            </div>
+            </div> -->
+            <app-trips-table-basic class="table" [trips]="delivery.trips"></app-trips-table-basic>
         </div>
 
         <!-- Pickup Time -->
