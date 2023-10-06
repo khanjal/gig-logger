@@ -173,8 +173,11 @@ export class GigLoggerService {
                 delivery.cash += trip.cash,
                 delivery.pay += trip.pay;
                 delivery.tip += trip.tip;
+                delivery.trips.push(trip);
                 delivery.total += trip.total;
                 delivery.visits++;
+                
+                sort(delivery.trips, '-key');
 
                 if (trip.date) {
                     delivery.dates.push(trip.date);
@@ -213,6 +216,7 @@ export class GigLoggerService {
                 delivery.places = trip.place ? [trip.place] : [];
                 delivery.services = trip.service? [trip.service] : [];
                 delivery.tip = trip.tip;
+                delivery.trips = [trip];
                 delivery.total = trip.total;
                 delivery.units = trip.endUnit ? [trip.endUnit] : [];
                 delivery.visits = 1;
