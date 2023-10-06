@@ -29,6 +29,7 @@ import { DailyService } from "./daily.service";
 import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
+import { sort } from "@helpers/sort.helper";
 
 @Injectable()
 export class GigLoggerService {
@@ -104,13 +105,13 @@ export class GigLoggerService {
         const keys = [...new Set(unsavedTrips.map(item => item.key))];
 
         keys.forEach(async key => {
-            console.log(key);
+            // console.log(key);
             let trips = [...(await this._tripService.queryLocalTrips("key", key)).filter(x => !x.saved),
                         ...await this._tripService.queryRemoteTrips("key", key)];
             trips = trips.filter(x => !x.exclude);
 
             let shift = await this._shiftService.queryShiftByKey(key);
-            console.log(shift);
+            // console.log(shift);
             shift.totalTrips = shift.trips;
             shift.grandTotal = shift.total;
 
@@ -330,7 +331,7 @@ export class GigLoggerService {
                 }
             });
 
-            place.addresses = AddressHelper.sortAddressAsc(place.addresses);
+            sort(place.addresses, 'address');
 
             // Types
             let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);

@@ -3,7 +3,6 @@ import {MatDialog} from '@angular/material/dialog';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
-import { TripHelper } from '@helpers/trip.helper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
@@ -16,6 +15,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ViewportScroller } from '@angular/common';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
+import { sort } from '@helpers/sort.helper';
 
 @Component({
   selector: 'app-quick',
@@ -90,7 +90,8 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    this.sheetTrips = TripHelper.sortTripsDesc((await this._tripService.getRemoteTripsPreviousDays(7)));
+    this.sheetTrips = await this._tripService.getRemoteTripsPreviousDays(7);
+    sort(this.sheetTrips, '-id');
     this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
     this.savedTrips = (await this._tripService.getSavedLocalTrips()).reverse();
 
@@ -251,12 +252,17 @@ export class QuickComponent implements OnInit {
   }
 
   async nextUnsavedLocalTrip(trip: ITrip) {
-    delete trip.id;
-    trip.pickupTime = trip.dropoffTime;
-    trip.dropoffTime = '';
-    trip.name = '';
-    trip.endAddress = '';
-    await this._tripService.addTrip(trip);
+    let nextTrip = {} as ITrip;
+    nextTrip.key = trip.key;
+    nextTrip.date = trip.date;
+    nextTrip.region = trip.region;
+    nextTrip.service = trip.service;
+    nextTrip.number = trip.number;
+    nextTrip.place = trip.place;
+    nextTrip.type = trip.type;
+    nextTrip.startAddress = trip.startAddress;
+    nextTrip.pickupTime = trip.dropoffTime;
+    await this._tripService.addTrip(nextTrip);
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
     this._snackBar.open("Added Next Trip");
