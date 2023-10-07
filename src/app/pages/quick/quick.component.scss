@@ -30,7 +30,7 @@
     }
 
     &:nth-child(odd){
-        background-color: $accent-light-color;
+        background-color: $tertiary-light-color;
     }
 }
 
@@ -38,7 +38,7 @@
     margin-bottom: 1rem;
 
     &:nth-child(even){
-        background-color: $accent-light-color;
+        background-color: $tertiary-light-color;
     }
 
     &:nth-child(odd){
