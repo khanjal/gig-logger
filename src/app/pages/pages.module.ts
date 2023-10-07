@@ -28,6 +28,7 @@ import { CalculatorComponent } from './calculator/calculator.component';
 import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
 import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatCardModule,
     MatCheckboxModule,
     MatDialogModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatMenuModule,
     MatSelectModule,
