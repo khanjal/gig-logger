@@ -12,7 +12,7 @@ export class AppDB extends Dexie {
     constructor() {
         super('localDB');
         this.version(1).stores({
-            spreadsheets: '++id, spreadsheetId, default',
+            spreadsheets: 'id, default',
             shifts: '++id, date, service, number, key, [date+service+number]',
             trips: '++id, date, service, number, key, [date+service+number]',
         });

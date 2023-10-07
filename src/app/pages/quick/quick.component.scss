@@ -1,3 +1,5 @@
+@import "color-vars";
+
 :host {
     display: flex;
     flex-direction: column;
@@ -20,19 +22,15 @@
     padding: 1rem .5rem;
 }
 
-button {
-    background-color: white;
-}
-
 .mat-card {
     margin-bottom: 1rem;
 
     &:nth-child(even){
-        background-color: lightcyan;
+        background-color: $primary-light-color;
     }
 
     &:nth-child(odd){
-        background-color: lightyellow;
+        background-color: $tertiary-light-color;
     }
 }
 
@@ -40,11 +38,11 @@ button {
     margin-bottom: 1rem;
 
     &:nth-child(even){
-        background-color: lightyellow;
+        background-color: $tertiary-light-color;
     }
 
     &:nth-child(odd){
-        background-color: lightcyan;
+        background-color: $primary-light-color;
     }
 }
 

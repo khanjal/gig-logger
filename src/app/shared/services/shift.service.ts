@@ -67,12 +67,15 @@ export class ShiftService {
         return await spreadsheetDB.shifts.where(field).equals(value).toArray();
     }
 
-    public async queryShiftsByKey(date: string, service: string, number: number): Promise<IShift[]> {
-        let localShifts = await localDB.shifts.where('[date+service+number]').equals([date, service, number]).toArray();
-        let remoteShifts = await spreadsheetDB.shifts.where('[date+service+number]').equals([date, service, number]).toArray();
+    public async queryShiftByKey(key: string): Promise<IShift> {
+        let remoteShift = (await spreadsheetDB.shifts.where('key').equals(key).toArray())[0];
 
-        let shifts = [...remoteShifts, ...localShifts];
-        return shifts;
+        if (remoteShift) {
+            return remoteShift;
+        }
+
+        let localShift = (await localDB.shifts.where('key').equals(key).toArray())[0];
+        return localShift;
     }
 
     public async saveUnsavedShifts() {

@@ -112,14 +112,4 @@ export class AddressHelper {
                 return addressPart;
         }
     }
-
-    static sortAddressAsc(addresses: IAddress[]): IAddress[] {
-        if (!addresses) {
-            return [];
-        }
-        
-        addresses.sort((a,b) => a.address.localeCompare(b.address));
-
-        return addresses;
-    }
 }

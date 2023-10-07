@@ -13,7 +13,7 @@ export class RegionService {
         return await spreadsheetDB.regions.toArray();
     }
 
-    public async load(regions: IRegion[]) {
+    public async loadRegions(regions: IRegion[]) {
         await spreadsheetDB.regions.clear();
         await spreadsheetDB.regions.bulkAdd(regions);
     }

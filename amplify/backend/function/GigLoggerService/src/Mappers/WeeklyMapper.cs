@@ -40,8 +40,8 @@ public static class WeeklyMapper
                 AmountPerDay = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_DAY.DisplayName(), value, headers),
                 Number = HeaderParser.GetIntValue(HeaderEnum.NUMBER.DisplayName(), value, headers),
                 Year = HeaderParser.GetIntValue(HeaderEnum.YEAR.DisplayName(), value, headers),
-                Begin = HeaderParser.GetStringValue(HeaderEnum.DATE_BEGIN.DisplayName(), value, headers),
-                End = HeaderParser.GetStringValue(HeaderEnum.DATE_END.DisplayName(), value, headers),
+                Begin = HeaderParser.GetDateValue(HeaderEnum.DATE_BEGIN.DisplayName(), value, headers),
+                End = HeaderParser.GetDateValue(HeaderEnum.DATE_END.DisplayName(), value, headers),
             };
             
             weeklyList.Add(weekly);
