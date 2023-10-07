@@ -43,6 +43,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 
+.section {
+  margin-bottom: 1rem;
+}
+
 .focus-scroll {
   scroll-margin-top: 2rem;
 }
@@ -59,7 +63,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .row-block {
   display: inline-block;
-  margin: .5rem auto;
   width: 100%;
 }
 
@@ -67,7 +70,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  margin: .5rem 0;
   align-items: center;
 }
 
@@ -77,6 +79,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .button-left {
   float: left;
+  margin-right: .5rem;
+}
+
+.button-middle {
+  margin-right: .5rem;
 }
 
 .button-right {
@@ -84,10 +91,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   float: right;
 }
 
+.field-right {
+  float: right;
+  margin-right: .5rem;
+}
+
 .custom-modalbox {
   .mat-mdc-dialog-container .mdc-dialog__surface  {
       padding: 1rem;
   }
+}
+
+div.mat-expansion-panel-body {
+  padding: 0;
 }
 
 .strike {

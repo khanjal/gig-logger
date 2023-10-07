@@ -7,6 +7,7 @@ import { GigLoggerService } from './gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { NumberHelper } from '@helpers/number.helper';
 
 @Injectable()
 export class SpreadsheetService {
@@ -19,6 +20,10 @@ export class SpreadsheetService {
     
     public async add(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.add(spreadsheet);
+    }
+
+    public async findSheet(id: string): Promise<ISpreadsheet | undefined> {
+        return await localDB.spreadsheets.where("id").anyOfIgnoreCase(id).first();
     }
 
     public async getDefaultSheet(): Promise<ISpreadsheet> {
@@ -79,6 +84,8 @@ export class SpreadsheetService {
         this._snackBar.open(`Connecting to ${primarySpreadsheet.name} Spreadsheet`);
 
         let data = await firstValueFrom(await this._gigLoggerService.getSheetData(primarySpreadsheet.id));
+        this.updateSheetSize(primarySpreadsheet.id, data);
+        
         this._snackBar.open("Loading Primary Spreadsheet Data");
         await this._gigLoggerService.loadData(<ISheet>data);
         this._snackBar.open("Loaded Primary Spreadsheet Data");
@@ -96,9 +103,32 @@ export class SpreadsheetService {
             // console.log(secondarySpreadsheet.name);
             this._snackBar.open(`Connecting to ${secondarySpreadsheet.name} Spreadsheet`);
             let data = await firstValueFrom(await this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
+            this.updateSheetSize(secondarySpreadsheet.id, data);
             this._snackBar.open("Loading Secondary Spreadsheet Data");
             await this._gigLoggerService.appendData(<ISheet>data);
             this._snackBar.open("Loaded Secondary Spreadsheet Data");
         });
+    }
+
+    public async showEstimatedQuota(): Promise<StorageEstimate | undefined> {
+        if (navigator.storage && navigator.storage.estimate) {
+            const estimation = await navigator.storage.estimate();
+            // console.log(`Quota: ${NumberHelper.getDataSize(estimation.quota)}`);
+            // console.log(`Usage: ${NumberHelper.getDataSize(estimation.usage)}`);
+
+            return estimation;
+        } else {
+            console.error("StorageManager not found");
+        }
+
+        return;
+    }
+
+    private async updateSheetSize(sheetId: string, data: any){
+        let sheet = await this.findSheet(sheetId);
+        if (!sheet) return;
+        sheet.size = new TextEncoder().encode(JSON.stringify(data)).length;
+        
+        this.update(sheet);
     }
 }

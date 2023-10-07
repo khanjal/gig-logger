@@ -1,11 +1,11 @@
-<div class="container">
+<div class="section">
     <h1>{{title}}</h1>
 
     <!-- <div class="row field-halfish-width">
         <h1>{{ title }}</h1>
     </div>
     <div class="row field-quarter-width">
-        <button class="button-right" type="button" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
+        <button class="button-right" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.place.setValue('')">
             <mat-icon>close</mat-icon>
         </button>
     </div> -->
@@ -16,7 +16,7 @@
             <mat-label>Shift/Batch/Group</mat-label>
             <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)'>
                 <mat-option value="">New</mat-option>
-                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.trips }} @ {{ shift.total | currency }})</mat-option>
+                <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.totalTrips }} @ {{ shift.grandTotal | currency }})</mat-option>
             </mat-select>
         </mat-form-field>
 
@@ -40,7 +40,7 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="service.value" color="primary" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
+                <button class="mat-icon-button" *ngIf="service.value" color="primary" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="quickForm.controls.service.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
@@ -66,7 +66,7 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="region.value" color="primary" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
+                <button class="mat-icon-button" *ngIf="region.value" color="primary" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
@@ -91,7 +91,7 @@
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" class="mat-icon-button" *ngIf="place.value" color="primary" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
+            <button class="mat-icon-button" *ngIf="place.value" color="primary" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
@@ -115,28 +115,30 @@
                     </mat-option>
                 <!-- </cdk-virtual-scroll-viewport> -->
             </mat-autocomplete>
-            <button type="button" class="mat-icon-button" *ngIf="type.value" color="primary" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
+            <button class="mat-icon-button" *ngIf="type.value" color="primary" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
 
         <!-- Pay -->
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Pay</mat-label>
-            <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
-            <button type="button" class="field-button" [color]="showAdvancedPay ? 'accent' : 'primary'" *ngIf="pay.value" matSuffix mat-mini-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+        <div class="row-block">
+            <mat-form-field class="field-quarter-width" appearance="outline">
+                <mat-label>Pay</mat-label>
+                <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
+            </mat-form-field>
+            <button class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
                 <mat-icon>account_balance</mat-icon>
             </button>
-        </mat-form-field>
 
-        <!-- Distance -->
-        <mat-form-field class="field-third-width" appearance="outline">
-            <mat-label>Distance</mat-label>
-            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
-            <button type="button" class="field-button" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-mini-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
+            <!-- Distance -->
+            <button class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
                 <mat-icon>drive_eta</mat-icon>
             </button>
-        </mat-form-field>
+            <mat-form-field class="field-quarter-width field-right" appearance="outline">
+                <mat-label>Distance</mat-label>
+                <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
+            </mat-form-field>
+        </div>
 
         <!-- Tip/Bonus/Cash -->
         <div *ngIf="showAdvancedPay">
@@ -187,22 +189,31 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="name.value" color="primary" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
+                <button class="mat-icon-button" *ngIf="name.value" color="primary" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
 
-        <!-- Pickup Address Button -->
-            <button type="button" class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+            <!-- Pickup Address Button -->
+            <button class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
                 <mat-icon>contact_mail</mat-icon>
             </button>
         </div>
 
         <!-- Pickup Address List -->
         <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
-            <div *ngFor="let address of selectedPlace.addresses">
-                <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.visits }})
-            </div>
+            <mat-accordion>
+                <mat-expansion-panel [expanded]="selectedPlace.addresses.length < 5">
+                    <mat-expansion-panel-header [expandedHeight]="'auto'">
+                        <mat-panel-title>
+                            Found {{ selectedPlace.addresses.length }} Previous Pickup Addresses
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let address of selectedPlace.addresses">
+                        <a mat-button color="primary" class="address-link"  [ngClass]="address.address === quickForm.value.startAddress? 'highlight' : ''" (click)="selectPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.visits }})
+                    </div>
+                </mat-expansion-panel>
+            </mat-accordion>
         </div>
 
         <!-- Pickup Address -->
@@ -222,44 +233,38 @@
                         {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                     </mat-option>
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
+                <button class="mat-icon-button" *ngIf="startAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Pickup Address" (click)="quickForm.controls.startAddress.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
 
             <!-- Search Pickup Address Button -->
-            <button type="button" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
+            <button class="button-right" color="primary" matSuffix mat-fab aria-label="Search Pickup Address" (click)="searchPickupAddress()">
                 <mat-icon>search</mat-icon>
             </button>
         </div>
 
         <!-- Address List/Notes -->
-        <div *ngFor="let delivery of selectedNameDeliveries"  class="selected-name-address field-full-width">
-            <div class="title name" *ngIf="!delivery.address">
-                Unknown Address ({{delivery.visits}})
-            </div>
-            <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
-                {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
-                
-            </a>
-            <div class="tab" *ngIf="delivery.units.length > 0">
-                <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
-            </div>
-            <div class="tab" *ngIf="delivery.services.length > 0">
-                <span>{{delivery.services.join(", ")}}</span>
-            </div>
-            <div class="tab" *ngIf="delivery.places.length > 0">
-                <span>{{delivery.places.join(", ")}}</span>
-            </div>
-            <div class="tab" *ngIf="delivery.dates.length > 0">
-                <span class="margin-right"><strong>First</strong> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><strong>Last</strong> {{delivery.dates.slice(-1)}}</span>
-            </div>
-            <div class="tab">
-                <span class="bold">Pay</span> {{delivery.pay | currency}} <span class="bold">Tip</span> {{delivery.tip | currency}} <span *ngIf="delivery.cash"><span class="bold">Cash</span> {{delivery.cash | currency}}</span>
-            </div>
-            <div class="tab-itallic" *ngIf="delivery.notes.length > 0">
-                <span class="tab-itallic" *ngFor="let note of delivery.notes">"{{note.text}}" - {{note.date}}</span>
-            </div>
+        <div  class="section" *ngIf="selectedNameDeliveries?.length">
+            <mat-accordion>
+                <mat-expansion-panel [expanded]="selectedNameDeliveries && selectedNameDeliveries.length < 5">
+                    <mat-expansion-panel-header [expandedHeight]="'auto'">
+                        <mat-panel-title>
+                            Found {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let delivery of selectedNameDeliveries"  class="field-full-width">
+                        <div class="title name" *ngIf="!delivery.address">
+                            Unknown Address ({{delivery.visits}})
+                        </div>
+                        <a mat-button color="primary" class="address-link" [ngClass]="delivery.address === quickForm.value.endAddress ? 'highlight' : ''" (mousedown)="selectDestinationAddress(delivery.address)" *ngIf="delivery.address">
+                            {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
+                            
+                        </a>
+                        <app-trips-table-basic class="table" [trips]="delivery.trips"></app-trips-table-basic>
+                    </div>
+                </mat-expansion-panel>
+            </mat-accordion>
         </div>
 
         <!-- Destination Address -->
@@ -283,51 +288,40 @@
                         </mat-option>
                     <!-- </cdk-virtual-scroll-viewport> -->
                 </mat-autocomplete>
-                <button type="button" class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
+                <button class="mat-icon-button" *ngIf="endAddress.value" color="primary" matSuffix mat-icon-button aria-label="Clear Destination Address" (click)="quickForm.controls.endAddress.setValue('')">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-form-field>
 
             <!-- Search Destination Address Button -->
-            <button type="button" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
+            <button class="button-right" color="primary" matSuffix mat-fab aria-label="Search Destination Address" (click)="searchDestinationAddress()">
                 <mat-icon>search</mat-icon>
             </button>
         </div>
 
         <!-- Name List/Notes -->
-        <div *ngFor="let delivery of selectedAddressDeliveries"  class="selected-name-address field-full-width">
-            <div class="bold">
-                <div class="title name" *ngIf="!delivery.name">
-                    Unknown Name ({{delivery.visits}})
-                </div>
-                <a mat-button color="primary" class="address-link" [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''" (mousedown)="selectName(delivery.name)" *ngIf="delivery.name">
-                    {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
-                    
-                </a>
-                <!-- <mat-icon class="delivery-details button-right" (click)="togglePickupAddress()">description</mat-icon> -->
-            </div>
-            <div class="tab" *ngIf="delivery.units.length > 0">
-                <span class="bold">Apt/Unit</span> {{delivery.units.join(", ")}}
-            </div>
-            <div class="tab" *ngIf="delivery.services.length > 0">
-                <span>{{delivery.services.join(", ")}}</span>
-            </div>
-            <div class="tab" *ngIf="delivery.places.length > 0">
-                <span>{{delivery.places.join(", ")}}</span>
-            </div>
-            <div class="tab" *ngIf="delivery.dates.length > 0">
-                <span class="margin-right"><strong>First</strong> {{delivery.dates[0]}}</span><span *ngIf="delivery.dates.length > 1"><strong>Last</strong> {{delivery.dates.slice(-1)}}</span>
-            </div>
-            <div class="tab">
-                <span class="bold">Pay</span> {{delivery.pay | currency}} 
-                <span class="bold">Tip</span> {{delivery.tip | currency}} 
-                <span *ngIf="delivery.cash">
-                    <span class="bold">Cash</span> {{delivery.cash | currency}}
-                </span>
-            </div>
-            <div class="tab" *ngFor="let note of delivery.notes">
-                <span class="tab-itallic" *ngIf="note">"{{note.text}}" - {{note.date}}</span>
-            </div>
+        <div  class="section" *ngIf="selectedAddressDeliveries?.length">
+            <mat-accordion>
+                <mat-expansion-panel [expanded]="selectedAddressDeliveries && selectedAddressDeliveries.length < 5">
+                    <mat-expansion-panel-header [expandedHeight]="'auto'">
+                        <mat-panel-title>
+                            Found {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let delivery of selectedAddressDeliveries"  class="field-full-width">
+                        <div class="bold">
+                            <div class="title name" *ngIf="!delivery.name">
+                                Unknown Name ({{delivery.visits}})
+                            </div>
+                            <a mat-button color="primary" class="address-link" [ngClass]="delivery.name === quickForm.value.name ? 'highlight' : ''" (mousedown)="selectName(delivery.name)" *ngIf="delivery.name">
+                                {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
+                                
+                            </a>
+                        </div>
+                        <app-trips-table-basic class="table" [trips]="delivery.trips"></app-trips-table-basic>
+                    </div>
+                </mat-expansion-panel>
+            </mat-accordion>
         </div>
 
         <!-- Pickup Time -->
@@ -336,7 +330,7 @@
             <input matInput type="text" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
         </mat-form-field>
 
-        <button mat-stroked-button type="button" (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+        <button mat-stroked-button (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
 
         <!-- Dropoff Time -->
         <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
@@ -344,7 +338,7 @@
             <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
         </mat-form-field>
 
-        <button mat-stroked-button type="button" (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+        <button mat-stroked-button (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
         
         <!-- Note -->
         <div class="row-block">
@@ -353,7 +347,7 @@
                 <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
             </mat-form-field>
 
-            <button type="button" class="button-right" [color]="showOrder ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Address/Order" (click)="toggleOrder()">
+            <button class="button-right" [color]="showOrder ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Address/Order" (click)="toggleOrder()">
                 <mat-icon>business</mat-icon>
             </button>
         </div>
@@ -375,11 +369,11 @@
     </form>
 
     <div class="row-flex" *ngIf="!data?.id">
-        <button mat-stroked-button type="button" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
-        <button mat-stroked-button color="warn" type="button" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
+        <button mat-fab extended color="primary" (click)="addTrip()" [disabled]="!quickForm.valid"><mat-icon>add</mat-icon> Store</button>
+        <button mat-fab extended color="warn" (click)="formReset()"><mat-icon>refresh</mat-icon> Reset</button>
     </div>
     <div class="row-flex" *ngIf="data?.id">
-        <button mat-stroked-button type="button" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>save</mat-icon> Update</button>
-        <button mat-stroked-button color="warn" type="button" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
+        <button mat-fab extended color="primary" (click)="editTrip()" [disabled]="!quickForm.valid"><mat-icon>save</mat-icon> Update</button>
+        <button mat-fab extended color="warn" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
     </div>
 </div>

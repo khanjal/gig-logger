@@ -1,26 +1,35 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from "src/environments/environment";
+
+// Interfaces
 import { ISheet } from "@interfaces/sheet.interface";
+import { IDelivery } from "@interfaces/delivery.interface";
+import { INote } from "@interfaces/note.interface";
+import { ITrip } from "@interfaces/trip.interface";
+import { IType } from "@interfaces/type.interface";
+import { IAddress } from "@interfaces/address.interface";
+
+// Helpers
+import { AddressHelper } from "@helpers/address.helper";
+import { DateHelper } from "@helpers/date.helper";
+
+// Services
 import { AddressService } from "./address.service";
 import { DeliveryService } from "./delivery.service";
 import { NameService } from "./name.service";
 import { PlaceService } from "./place.service";
 import { ServiceService } from "./service.service";
 import { ShiftService } from "./shift.service";
-import { SpreadsheetService } from "./spreadsheet.service";
 import { TripService } from "./trip.service";
 import { WeekdayService } from "./weekday.service";
-import { IDelivery } from "@interfaces/delivery.interface";
-import { INote } from "@interfaces/note.interface";
-import { ITrip } from "@interfaces/trip.interface";
 import { RegionService } from "./region.service";
 import { TypeService } from "./type.service";
-import { environment } from "src/environments/environment";
-import { map } from "rxjs";
-import { IType } from "@interfaces/type.interface";
-import { IAddress } from "@interfaces/address.interface";
-import { AddressHelper } from "@helpers/address.helper";
-import { DateHelper } from "@helpers/date.helper";
+import { DailyService } from "./daily.service";
+import { MonthlyService } from "./monthly.service";
+import { WeeklyService } from "./weekly.service";
+import { YearlyService } from "./yearly.service";
+import { sort } from "@helpers/sort.helper";
 
 @Injectable()
 export class GigLoggerService {
@@ -29,7 +38,9 @@ export class GigLoggerService {
     constructor(
         private _http: HttpClient,
         private _addressService: AddressService,
+        private _dailyService: DailyService,
         private _deliveryService: DeliveryService,
+        private _monthlyService: MonthlyService,
         private _nameService: NameService,
         private _placeService: PlaceService,
         private _regionService: RegionService,
@@ -37,16 +48,16 @@ export class GigLoggerService {
         private _shiftService: ShiftService,
         private _tripService: TripService,
         private _typeService: TypeService,
-        private _weekdayService: WeekdayService
+        private _weekdayService: WeekdayService,
+        private _weeklyService: WeeklyService,
+        private _yearlyService: YearlyService
     ) {}
 
     public async getSheetData(sheetId: string) {
-        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/primary`);
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        // console.log(this.apiUrl); // TODO: Remove this after confirming dev/test/prod are used.
         return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
     }
 
@@ -60,14 +71,18 @@ export class GigLoggerService {
 
     public async loadData(sheetData: ISheet) {
         await this._addressService.loadAddresses(sheetData.addresses);
+        await this._dailyService.loadDaily(sheetData.daily);
+        await this._monthlyService.loadMonthly(sheetData.monthly);
         await this._nameService.loadNames(sheetData.names);
         await this._placeService.loadPlaces(sheetData.places);
-        await this._regionService.load(sheetData.regions);
+        await this._regionService.loadRegions(sheetData.regions);
         await this._serviceService.loadServices(sheetData.services);
         await this._shiftService.loadShifts(sheetData.shifts);
         await this._tripService.loadTrips(sheetData.trips);
-        await this._typeService.load(sheetData.types);
+        await this._typeService.loadTypes(sheetData.types);
         await this._weekdayService.loadWeekdays(sheetData.weekdays);
+        await this._weeklyService.loadweekly(sheetData.weekly);
+        await this._yearlyService.loadYearly(sheetData.yearly);
 
         await this.linkNameData();
         await this.linkAddressData();
@@ -84,30 +99,32 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
-    public async calculateTotals() {
-        await this.calculateShiftTotals();
-        await this.calculateDailyTotal();
-    }
-
     public async calculateShiftTotals() {
-        let shifts = await this._shiftService.getPreviousWeekShifts();
-    
-        shifts.forEach(async shift => {
-            shift.trips = 0;
-            shift.total = 0;
-        
-            let trips = [...(await this._tripService.queryLocalTrips("key", shift.key)).filter(x => !x.saved),
-                        ...await this._tripService.queryRemoteTrips("key", shift.key)];
+        let unsavedTrips = await this._tripService.getUnsavedLocalTrips();
+
+        const keys = [...new Set(unsavedTrips.map(item => item.key))];
+
+        keys.forEach(async key => {
+            // console.log(key);
+            let trips = [...(await this._tripService.queryLocalTrips("key", key)).filter(x => !x.saved),
+                        ...await this._tripService.queryRemoteTrips("key", key)];
             trips = trips.filter(x => !x.exclude);
-            
+
+            let shift = await this._shiftService.queryShiftByKey(key);
+            // console.log(shift);
+            shift.totalTrips = shift.trips;
+            shift.grandTotal = shift.total;
+
             trips.forEach(trip => {
-                shift.trips++;
+                shift.totalTrips++;
                 // TODO break shift total into pay/tip/bonus
-                shift.total += trip.total;
+                shift.grandTotal += trip.total;
             });
         
             this._shiftService.updateShift(shift);
         });
+    
+        await this.calculateDailyTotal();
     }
 
     public async calculateDailyTotal() {
@@ -116,13 +133,13 @@ export class GigLoggerService {
         // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
         let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+
+        let todaysShifts = [... (await this._shiftService.queryLocalShifts("date", date)).filter(x => !x.saved),
+                            ...await this._shiftService.queryRemoteShifts("date", date)];
     
-        let todaysTrips = [... (await this._tripService.queryLocalTrips("date", date)).filter(x => !x.saved),
-                            ...await this._tripService.queryRemoteTrips("date", date)];
-    
-        todaysTrips.filter(x => !x.exclude).forEach(trip => {
-            currentAmount += trip.total;
-        });
+        todaysShifts.forEach(shift => {
+            currentAmount += shift.grandTotal;
+        })
     
         if (weekday) {
             weekday.currentAmount = currentAmount;
@@ -156,8 +173,11 @@ export class GigLoggerService {
                 delivery.cash += trip.cash,
                 delivery.pay += trip.pay;
                 delivery.tip += trip.tip;
+                delivery.trips.push(trip);
                 delivery.total += trip.total;
                 delivery.visits++;
+                
+                sort(delivery.trips, '-key');
 
                 if (trip.date) {
                     delivery.dates.push(trip.date);
@@ -196,6 +216,7 @@ export class GigLoggerService {
                 delivery.places = trip.place ? [trip.place] : [];
                 delivery.services = trip.service? [trip.service] : [];
                 delivery.tip = trip.tip;
+                delivery.trips = [trip];
                 delivery.total = trip.total;
                 delivery.units = trip.endUnit ? [trip.endUnit] : [];
                 delivery.visits = 1;
@@ -314,7 +335,7 @@ export class GigLoggerService {
                 }
             });
 
-            place.addresses = AddressHelper.sortAddressAsc(place.addresses);
+            sort(place.addresses, 'address');
 
             // Types
             let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);

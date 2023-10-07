@@ -48,7 +48,14 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
 
       tripGroup.date = date;
       tripGroup.trips = trips;
-      tripGroup.amount = trips.filter(x => !x.exclude).reduce((n, {total}) => n + total, 0);
+      
+      if (dayOfWeek > DateHelper.getDayOfWeek(new Date())) {
+        tripGroup.amount = weekday?.previousAmount ?? 0;
+      }
+      else {
+        tripGroup.amount = weekday?.currentAmount ?? 0;
+      }
+
       tripGroup.average = weekday?.dailyPrevAverage ?? 0;
 
       // Double check that amount is a number
