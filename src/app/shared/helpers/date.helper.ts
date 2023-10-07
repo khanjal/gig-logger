@@ -1,8 +1,8 @@
 export class DateHelper {
-    static getDateString(days: number = 0): string {
+    static getDateString(days: number = 0): Date {
         let currentDate = new Date();
         let date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-days);
-        let dateString = date.toLocaleDateString();
+        let dateString = date;
 
         return dateString;
     }
@@ -11,7 +11,7 @@ export class DateHelper {
         let dates: string[] = [];
 
         for (let index = 0; index < days; index++) {
-            dates.push(this.getDateString(index));
+            dates.push(this.getDateString(index).toLocaleDateString());
         }
 
         return dates;

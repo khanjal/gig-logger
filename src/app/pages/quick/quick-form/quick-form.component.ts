@@ -5,8 +5,7 @@ import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
-import { NameHelper } from '@helpers/name.helper';
-import { TripHelper } from '@helpers/trip.helper';
+import { sort } from '@helpers/sort.helper';
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
@@ -25,6 +24,7 @@ import { PlaceService } from '@services/place.service';
 import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
+import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
 import { TypeService } from '@services/type.service';
 import { WeekdayService } from '@services/weekday.service';
@@ -109,9 +109,9 @@ export class QuickFormComponent implements OnInit {
       private _regionService: RegionService,
       private _serviceService: ServiceService,
       private _shiftService: ShiftService,
+      private _timerService: TimerService,
       private _tripService: TripService,
       private _typeService: TypeService,
-      private _weekdayService: WeekdayService,
       private _viewportScroller: ViewportScroller
     ) {}
 
@@ -233,7 +233,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async loadForm() {
-    this.selectedShift = (await this._shiftService.queryShiftsByKey(this.data.date, this.data.service, this.data.number))[0];
+    this.selectedShift = (await this._shiftService.queryShiftByKey(this.data.key));
     this.quickForm.controls.service.setValue(this.data.service);
     this.quickForm.controls.type.setValue(this.data.type);
 
@@ -279,7 +279,7 @@ export class QuickFormComponent implements OnInit {
     // console.log(this.shifts);
 
     if (this.shifts.length > 0) {
-      this.shifts = ShiftHelper.sortShiftsDesc(this.shifts);
+      sort(this.shifts, '-key');
     }
 
     //Set default shift to last trip or latest shift.
@@ -295,8 +295,9 @@ export class QuickFormComponent implements OnInit {
       if (trips.length === 0) {
         await this._tripService.queryRemoteTrips("date", today)
       }
+      sort(trips, '-id');
 
-      let latestTrip = TripHelper.sortTripsDesc(trips)[0];
+      let latestTrip = trips[0];
       let shift = this.shifts.find(x => x.key === latestTrip?.key);
 
       // If a shift is found assign it.
@@ -326,7 +327,7 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.addTrip(trip);
     
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateTotals();
+    await this._gigLoggerService.calculateShiftTotals();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -334,6 +335,8 @@ export class QuickFormComponent implements OnInit {
     this.parentReload.emit();
     
     // console.log(trip);
+    await this._timerService.delay(1000); // TODO: see if parent will scroll after done.
+    this._viewportScroller.scrollToAnchor("unsavedTrips");
   }
 
   public async editTrip() {
@@ -344,7 +347,7 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.updateLocalTrip(trip);
 
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateTotals();
+    await this._gigLoggerService.calculateShiftTotals();
 
     this._snackBar.open("Trip Updated");
 
@@ -414,6 +417,7 @@ export class QuickFormComponent implements OnInit {
     if (!address) { return; }
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
+    sort(this.selectedAddressDeliveries, 'name');
   }
 
   showNameAddressesEvent(event: any) {
@@ -425,6 +429,7 @@ export class QuickFormComponent implements OnInit {
     if (!name) { return; }
     this.selectedName = await this._nameService.findRemoteName(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
+    sort(this.selectedNameDeliveries, 'address');
   }
 
   selectPlaceEvent(event: any) {
@@ -556,13 +561,15 @@ export class QuickFormComponent implements OnInit {
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
     let addresses = await this._addressService.getRemoteAddresses();
-    addresses = AddressHelper.sortAddressAsc(addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase())));
+    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    sort(addresses, 'address');
     return (addresses).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
     let names = await this._nameService.getRemoteNames();
-    names = NameHelper.sortNameAsc(names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())));
+    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+    sort(names, 'name');
 
     return (names).slice(0,100);
   }

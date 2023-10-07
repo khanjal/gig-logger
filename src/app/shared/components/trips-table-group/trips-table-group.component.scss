@@ -1,5 +1,7 @@
+@import "color-vars";
+
 h3 {
-    margin: 2rem 0 0 0;
+    margin: 1rem 0 0 0;
 }
 
 .span-icon {
@@ -10,7 +12,7 @@ h3 {
     display: block;
     margin: 0 auto;
     overflow: hidden;
-    padding-bottom: .5rem;
+    margin-bottom: 1rem;
 }
 
 .table-responsive {
@@ -34,11 +36,11 @@ mat-header-row {
 }
 
 mat-row:nth-child(even){
-    background-color: lightcyan;
+    background-color: $primary-light-color;
 }
 
 mat-row:nth-child(odd){
-    background-color: lightyellow;
+    background-color: $tertiary-light-color;
 }
 
 mat-cell,

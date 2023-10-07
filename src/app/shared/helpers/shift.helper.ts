@@ -55,7 +55,7 @@ export class ShiftHelper {
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
-        shift.date = DateHelper.getDateString();
+        shift.date = DateHelper.getDateString().toLocaleDateString();
         shift.number = shiftNumber ?? 0;
         shift.saved = false;
         shift.start = new Date().toLocaleTimeString();
@@ -67,12 +67,6 @@ export class ShiftHelper {
 
     static removeDuplicateShifts(shifts: IShift[]): IShift[] {
         shifts = shifts.filter((value, index, self) => self.map(x => x.key).indexOf(value.key) == index);
-
-        return shifts;
-    }
-
-    static sortShiftsDesc(shifts: IShift[]): IShift[] {
-        shifts.sort((a,b) => b.key.localeCompare(a.key));
 
         return shifts;
     }
