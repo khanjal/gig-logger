@@ -102,6 +102,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 
+div.mat-expansion-panel-body {
+  padding: 0;
+}
+
 .strike {
   background-color: lightgray; // Set in ngStyle in HTML in some files
   text-decoration: line-through;
