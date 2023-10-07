@@ -1,3 +1,5 @@
+// https://stackoverflow.com/a/68279093
+
 type sortArg<T> = keyof T | `-${string & keyof T}`;
 
 /**
