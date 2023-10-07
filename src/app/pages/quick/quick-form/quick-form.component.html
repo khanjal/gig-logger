@@ -203,7 +203,7 @@
         <!-- Pickup Address List -->
         <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel [expanded]="selectedPlace.addresses.length < 5">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
                             Found {{ selectedPlace.addresses.length }} Previous Pickup Addresses
@@ -247,7 +247,7 @@
         <!-- Address List/Notes -->
         <div  class="section" *ngIf="selectedNameDeliveries?.length">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel [expanded]="selectedNameDeliveries && selectedNameDeliveries.length < 5">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
                             Found {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
@@ -302,7 +302,7 @@
         <!-- Name List/Notes -->
         <div  class="section" *ngIf="selectedAddressDeliveries?.length">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel [expanded]="selectedAddressDeliveries && selectedAddressDeliveries.length < 5">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
                             Found {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
