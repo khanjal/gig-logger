@@ -15,7 +15,7 @@
             </ng-container>
             <ng-container matColumnDef="tips">
                 <mat-header-cell *matHeaderCellDef>Tips</mat-header-cell>
-                <mat-cell *matCellDef="let trip" [ngClass]="(trip.tip + trip.cash) == 0 ? 'no-tip' : ''"> {{trip.tip + trip.cash | currency}} </mat-cell>
+                <mat-cell *matCellDef="let trip" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.tip + trip.cash | currency}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="secondary">
                 <td mat-cell [attr.colspan]="displayedColumns.length"
