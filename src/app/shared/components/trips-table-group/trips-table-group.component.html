@@ -23,7 +23,7 @@
                 </ng-container>
                 <ng-container matColumnDef="total">
                     <mat-header-cell *matHeaderCellDef> Total </mat-header-cell>
-                    <mat-cell *matCellDef="let trip"> {{trip.total | currency}} </mat-cell>
+                    <mat-cell *matCellDef="let trip" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
