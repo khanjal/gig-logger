@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 //@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 //@import "~material-icons/iconfont/material-icons.css";
+@import "color-vars";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -132,4 +133,12 @@ div.mat-expansion-panel-body {
       vertical-align: middle;
     }
   }
+}
+
+.tip-none {
+  color: $warn-color;
+}
+
+.tip-good {
+  color: $primary-color;
 }
