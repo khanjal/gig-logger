@@ -1,5 +1,6 @@
 import { DateHelper } from "@helpers/date.helper";
 import { IShift } from "@interfaces/shift.interface";
+import { sort } from "./sort.helper";
 
 export class ShiftHelper {
     static compareShifts(o1: IShift, o2: IShift): boolean {
@@ -27,8 +28,9 @@ export class ShiftHelper {
         shifts = this.getUniqueShifts(shifts);
 
         let serviceShifts = shifts.filter(shift => shift.service == service);
+        sort(serviceShifts, '-number');
 
-        return serviceShifts.length+1;
+        return serviceShifts.length > 0 ? serviceShifts[0].number+1 : 1;
     }
 
     static getTodaysShifts():  IShift[] {
@@ -38,7 +40,7 @@ export class ShiftHelper {
         let todaysShifts: IShift[] = [];
 
         shifts.forEach(shift => {
-            if (new Date(shift.date).toLocaleDateString() == new Date().toLocaleDateString()) {
+            if (DateHelper.getISODateOnly(new Date(shift.date)) == DateHelper.getISODateOnly()) {
                 todaysShifts.push(shift);
             }
         });
@@ -55,7 +57,7 @@ export class ShiftHelper {
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
-        shift.date = DateHelper.getDateString().toLocaleDateString();
+        shift.date = DateHelper.getISODateOnly(DateHelper.getDateFromDays());
         shift.number = shiftNumber ?? 0;
         shift.saved = false;
         shift.start = new Date().toLocaleTimeString();
