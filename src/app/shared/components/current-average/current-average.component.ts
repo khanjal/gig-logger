@@ -11,7 +11,7 @@ import { WeeklyService } from '@services/weekly.service';
 })
 
 export class CurrentAverageComponent implements OnInit {
-  @Input() date: string = new Date().toLocaleDateString();
+  @Input() date: string = DateHelper.getISODateOnly();
 
   currentDayAmount: number = 0;
   dailyAverage: number | undefined;
