@@ -1,5 +1,5 @@
 export class DateHelper {
-    static getDateString(days: number = 0): Date {
+    static getDateFromDays(days: number = 0): Date {
         let currentDate = new Date();
         let date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-days);
         let dateString = date;
@@ -11,14 +11,17 @@ export class DateHelper {
         let dates: string[] = [];
 
         for (let index = 0; index < days; index++) {
-            dates.push(this.getDateString(index).toISOString().substring(0, 10));
+            dates.push(DateHelper.getISODateOnly(this.getDateFromDays(index)));
         }
 
         return dates;
     }
 
-    static getISODateOnly() {
-        return new Date().toISOString().substring(0, 10);
+    static getISODateOnly(date?: Date) {
+        if (!date) {
+            date = new Date();
+        }
+        return date.toISOString().substring(0, 10);
     }
 
     static getDays(): number {
