@@ -100,9 +100,10 @@ export class GigLoggerService {
     }
 
     public async calculateShiftTotals() {
-        let unsavedTrips = await this._tripService.getUnsavedLocalTrips();
+        let shifts = await this._shiftService.getPreviousWeekShifts();
+        // let unsavedTrips = await this._tripService.getUnsavedLocalTrips();
 
-        const keys = [...new Set(unsavedTrips.map(item => item.key))];
+        const keys = [...new Set(shifts.map(item => item.key))];
 
         keys.forEach(async key => {
             // console.log(key);
@@ -121,7 +122,13 @@ export class GigLoggerService {
                 shift.grandTotal += trip.total;
             });
         
-            this._shiftService.updateShift(shift);
+            // If there is an empty shift with no trips delete it, otherwise save it.
+            if (shift.trips === 0 && shift.totalTrips === 0 && shift.saved === false) {
+                this._shiftService.deleteLocal(shift.id!);
+            }
+            else {
+                this._shiftService.updateShift(shift);
+            }
         });
     
         await this.calculateDailyTotal();
@@ -129,7 +136,7 @@ export class GigLoggerService {
 
     public async calculateDailyTotal() {
         let currentAmount = 0;
-        let date = new Date().toLocaleDateString();
+        let date = DateHelper.getISODateOnly();
         // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
         let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
