@@ -11,10 +11,14 @@ export class DateHelper {
         let dates: string[] = [];
 
         for (let index = 0; index < days; index++) {
-            dates.push(this.getDateString(index).toLocaleDateString());
+            dates.push(this.getDateString(index).toISOString().substring(0, 10));
         }
 
         return dates;
+    }
+
+    static getISODateOnly() {
+        return new Date().toISOString().substring(0, 10);
     }
 
     static getDays(): number {
