@@ -28,7 +28,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
 
   async ngOnInit() {
     // console.log("TripsTableGroup: OnInit");
-    this.displayedColumns = ['service', 'place', 'pickup', 'dropoff', 'total', 'name', 'address'];
+    this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     await this.load();
   }
 
