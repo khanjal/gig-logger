@@ -3,10 +3,6 @@
     <h2 *ngIf="link">{{ title }} <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
     <div class='table-responsive'>
         <mat-table [dataSource]="trips">
-            <!-- <ng-container matColumnDef="saved">
-                <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                <mat-cell *matCellDef="let trip"><mat-icon>{{trip.saved ? 'check' : 'close'}}</mat-icon>  </mat-cell>
-            </ng-container> -->
             <ng-container matColumnDef="date">
                 <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
                 <mat-cell *matCellDef="let trip"> {{trip.date | date:'MMM d'}} </mat-cell>
