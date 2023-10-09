@@ -166,7 +166,7 @@ export class QuickFormComponent implements OnInit {
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
     if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
-      console.log("New Shift!");
+      // console.log("New Shift!");
       let shifts: IShift[] = [];
       let today: string = new Date().toLocaleDateString();
 
