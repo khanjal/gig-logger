@@ -156,7 +156,7 @@ public static class SheetHelper {
                 cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "_(\"$\"* #,##0.00_);_(\"$\"* \\(#,##0.00\\);_(\"$\"* \"-\"??_);_(@_)" };
                 break;
             case FormatEnum.DATE:
-                cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "mm/dd/yyyy" };
+                cellFormat.NumberFormat = new NumberFormat { Type = "DATE", Pattern = "yyyy-mm-dd" };
                 break;
             case FormatEnum.DISTANCE:
                 cellFormat.NumberFormat = new NumberFormat { Type = "NUMBER", Pattern = "#,##0.0" };
@@ -370,17 +370,22 @@ public static class SheetHelper {
                     // A - [Key]
                     sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.ADDRESS.DisplayName(),
                         Formula = "={\""+HeaderEnum.ADDRESS.DisplayName()+"\";SORT(UNIQUE({"+refSheet.GetRange(HeaderEnum.ADDRESS_END,2)+";"+refSheet.GetRange(HeaderEnum.ADDRESS_START,2)+"}))}"});
+
+                    // B - Trips
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
+                        Formula = $"=ARRAYFORMULA(IFS(ROW({keyRange})=1,\"{HeaderEnum.TRIPS.DisplayName()}\",ISBLANK({keyRange}), \"\",true,COUNTIF({refSheet.GetRange(HeaderEnum.ADDRESS_END,2)},{keyRange})+COUNTIF({refSheet.GetRange(HeaderEnum.ADDRESS_START,2)},{keyRange})))",
+                        Format = FormatEnum.NUMBER});
                 }
                 else {
                     // A - [Key]
                     sheet.Headers.AddColumn(new SheetCellModel{Name = keyEnum.DisplayName(),
                         Formula = ArrayFormulaHelper.ArrayForumlaUnique(refSheet.GetRange(keyEnum, 2),keyEnum.DisplayName())});
                     keyRange = sheet.GetLocalRange(keyEnum);
+                    // B - Trips
+                    sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
+                        Formula = ArrayFormulaHelper.ArrayFormulaCountIf(keyRange, HeaderEnum.TRIPS.DisplayName(), sheetKeyRange),
+                        Format = FormatEnum.NUMBER});
                 }
-                // B - Trips
-                sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.TRIPS.DisplayName(),
-                    Formula = ArrayFormulaHelper.ArrayFormulaCountIf(keyRange, HeaderEnum.TRIPS.DisplayName(), sheetKeyRange),
-                    Format = FormatEnum.NUMBER});
                 break;
         }
         
