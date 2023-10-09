@@ -166,9 +166,9 @@ export class QuickFormComponent implements OnInit {
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
     if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
-      console.log("New Shift!");
+      // console.log("New Shift!");
       let shifts: IShift[] = [];
-      let today: string = new Date().toLocaleDateString();
+      let today: string = DateHelper.getISODateOnly();
 
       shifts.push(...(await this._shiftService.queryLocalShifts("date", today)).filter(x => !x.saved));
       shifts.push(...await this._shiftService.queryRemoteShifts("date", today));
@@ -287,7 +287,7 @@ export class QuickFormComponent implements OnInit {
       // Remove duplicates
       this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
 
-      let today = new Date().toLocaleDateString();
+      let today = DateHelper.getISODateOnly();
 
       let trips = await this._tripService.queryLocalTrips("date", today);
 
