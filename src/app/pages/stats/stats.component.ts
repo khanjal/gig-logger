@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DateHelper } from '@helpers/date.helper';
 
 @Component({
@@ -8,36 +9,41 @@ import { DateHelper } from '@helpers/date.helper';
 })
 export class StatsComponent implements OnInit {
   date: string = "all";
+  dates: string[] = [];
+  selectedDate: string = "";
+
+  statForm = new FormGroup({
+    date: new FormControl('')
+  });
 
   async ngOnInit(): Promise<void> {
 
     this.setupDropdown();
-    
+  }
+
+  onDateSelected(date: string) {
+    this.date = date;
   }
 
   setupDropdown() {
     var date = new Date();
     // Today
-    let today = DateHelper.getISOFormat(DateHelper.getDateFromDays());
-    console.log(today);
+    this.dates.push(DateHelper.getISOFormat(DateHelper.getDateFromDays()));
     // Yesterday
-    let yesterday = DateHelper.getISOFormat(DateHelper.getDateFromDays(1));
-    console.log(yesterday);
+    this.dates.push(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)));
     // This week
-    let thisWeek = DateHelper.getISOFormat(DateHelper.getMonday());
-    console.log(thisWeek);
+    this.dates.push(DateHelper.getISOFormat(DateHelper.getMonday()));
     // Last Week
-    let lastWeek = DateHelper.getISOFormat(DateHelper.getMonday(DateHelper.getDateFromDays(7)));
-    console.log(lastWeek);
+    // this.dates.push(DateHelper.getISOFormat(DateHelper.getMonday(DateHelper.getDateFromDays(7))));
     // This month
-    var thisMonth = DateHelper.getISOFormat(new Date(date.getFullYear(), date.getMonth(), 1));
-    console.log(thisMonth);
+    this.dates.push(DateHelper.getISOFormat(new Date(date.getFullYear(), date.getMonth(), 1)));
+    // console.log(thisMonth);
     // last month
     var lastMonth = DateHelper.getISOFormat(new Date(date.getFullYear(), date.getMonth()-1, 1));
-    console.log(lastMonth);
+    // console.log(lastMonth);
     // this year
-    var thisYear = DateHelper.getISOFormat(new Date(date.getFullYear(), 0, 1));
-    console.log(thisYear);
+    this.dates.push(DateHelper.getISOFormat(new Date(date.getFullYear(), 0, 1)));
+    // console.log(thisYear);
     // all
   }
 }
