@@ -46,7 +46,7 @@
     </div>
 
     <div class="row-grid">
-        <app-trips-table-group class="table" title="{{defaultSheet?.name}} - Trips" link="{{defaultSheet?.id}}" [trips]="sheetTrips" *ngIf="sheetTrips.length > 0"></app-trips-table-group>
+        <app-trips-table-group class="table" title="{{defaultSheet?.name}} - Trips" link="{{defaultSheet?.id}}"></app-trips-table-group>
         <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
     </div>
 
