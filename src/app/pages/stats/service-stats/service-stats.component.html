@@ -1,0 +1,34 @@
+<div class="trips-container">
+    <div class='table-responsive'>
+        <mat-table [dataSource]="services">
+            <ng-container matColumnDef="service">
+                <mat-header-cell *matHeaderCellDef> Service </mat-header-cell>
+                <mat-cell *matCellDef="let service"> {{service.service}} </mat-cell>
+                <mat-footer-cell *matFooterCellDef> Total </mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="trips">
+                <mat-header-cell *matHeaderCellDef>Trips</mat-header-cell>
+                <mat-cell *matCellDef="let service"> {{service.visits}} </mat-cell>
+                <mat-footer-cell *matFooterCellDef> {{getTotalTrips()}} </mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="pay">
+                <mat-header-cell *matHeaderCellDef>Pay</mat-header-cell>
+                <mat-cell *matCellDef="let service"> {{service.pay | currency}} </mat-cell>
+                <mat-footer-cell *matFooterCellDef> {{getTotalPay() | currency}} </mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="tips">
+                <mat-header-cell *matHeaderCellDef>Tips</mat-header-cell>
+                <mat-cell *matCellDef="let service"> {{service.pay | currency}} </mat-cell>
+                <mat-footer-cell *matFooterCellDef> {{getTotalTips() | currency}} </mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="bonus">
+                <mat-header-cell *matHeaderCellDef>Bonus</mat-header-cell>
+                <mat-cell *matCellDef="let service"> {{service.bonus | currency}} </mat-cell>
+                <mat-footer-cell *matFooterCellDef> {{getTotalBonus() | currency}} </mat-footer-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+        </mat-table>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+@import "color-vars";
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: .5rem;
+}
+
+mat-table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    display: table;
+    border-collapse: collapse;
+}
+
+mat-row,
+mat-header-row,
+mat-footer-row {
+    display: table-row;
+}
+
+mat-row:nth-child(even){
+    background-color: $primary-light-color;
+}
+
+mat-row:nth-child(odd){
+    background-color: $tertiary-light-color;
+}
+
+mat-cell,
+mat-header-cell,
+mat-footer-cell {
+    padding-left: 0;
+    word-wrap: initial;
+    display: table-cell;
+    padding: 0px 5px;
+    line-break: unset;
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+mat-cell:first-child,
+mat-footer-cell:first-child,
+mat-header-cell:first-child {
+    padding-left: 0px !important;
+}
+
+mat-header-cell,
+mat-footer-cell {
+    font-weight: bold;
+}
