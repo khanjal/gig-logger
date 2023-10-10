@@ -1,4 +1,14 @@
 <div class="container">
     <h1>Stats</h1>
-    <app-service-stats></app-service-stats>
+    <form class="quick-form" [formGroup]="statForm">
+        <!-- Shift -->
+        <mat-form-field appearance="fill" class="field-full-width" appearance="outline">
+            <mat-label>Date</mat-label>
+            <mat-select #dateSelect name="date" formControlName="date" [(value)]="selectedDate" (selectionChange)='onDateSelected(dateSelect.value)'>
+                <mat-option value="">All</mat-option>
+                <mat-option *ngFor="let date of dates" [value]="date">{{date}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+    <app-service-stats [date]="date"></app-service-stats>
 </div>
