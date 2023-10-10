@@ -18,7 +18,7 @@ export class ServiceStatsComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.displayedColumns = ['service', 'trips', 'pay', 'tips', 'bonus'];
+    this.displayedColumns = ['service', 'trips', 'pay', 'tips', 'bonus', 'total', 'cash'];
     await this.getServices();
   }
 
@@ -27,19 +27,8 @@ export class ServiceStatsComponent implements OnInit {
     console.log(this.services);
   }
 
-  getTotalBonus() {
-    return this.services.map(s => s.bonus).reduce((acc, value) => acc + value, 0);
+  getTotal(property: string) {
+    return this.services.map((s:any) => s[property]).reduce((acc, value) => acc + value, 0);
   }
 
-  getTotalPay() {
-    return this.services.map(s => s.pay).reduce((acc, value) => acc + value, 0);
-  }
-
-  getTotalTips() {
-    return this.services.map(s => s.tip).reduce((acc, value) => acc + value, 0);
-  }
-
-  getTotalTrips() {
-    return this.services.map(s => s.visits).reduce((acc, value) => acc + value, 0);
-  }
 }
