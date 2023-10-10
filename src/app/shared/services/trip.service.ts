@@ -32,15 +32,15 @@ export class TripService {
     }
 
     public async getLocalTripsPreviousDays(days: number): Promise<ITrip[]> {
-        let dates = DateHelper.getDatesArray(days);
-        let trips = await localDB.trips.where("date").anyOf(dates).toArray();
+        let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
+        let trips = await localDB.trips.where("date").aboveOrEqual(date).toArray();
 
         return trips;
     }
 
     public async getRemoteTripsPreviousDays(days: number): Promise<ITrip[]> {
-        let dates = DateHelper.getDatesArray(days);
-        let trips = await spreadsheetDB.trips.where("date").anyOf(dates).toArray();
+        let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
+        let trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
 
         return trips;
     }
