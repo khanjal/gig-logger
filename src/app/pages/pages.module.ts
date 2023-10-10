@@ -29,6 +29,8 @@ import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calcu
 import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { StatsComponent } from './stats/stats.component';
+import { ServiceStatsComponent } from './stats/service-stats/service-stats.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
     CalculatorComponent,
     UberCalculatorComponent,
     SheetQuotaComponent,
+    StatsComponent,
+    ServiceStatsComponent
   ],
   imports: [
     CommonModule,
