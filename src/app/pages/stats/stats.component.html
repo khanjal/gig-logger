@@ -6,7 +6,7 @@
             <mat-label>Date</mat-label>
             <mat-select #dateSelect name="date" formControlName="date" [(value)]="selectedDate" (selectionChange)='onDateSelected(dateSelect.value)'>
                 <mat-option value="">All</mat-option>
-                <mat-option *ngFor="let date of dates" [value]="date">{{date}}</mat-option>
+                <mat-option *ngFor="let date of dates" [value]="date.value">{{date.key}}</mat-option>
             </mat-select>
         </mat-form-field>
     </form>
