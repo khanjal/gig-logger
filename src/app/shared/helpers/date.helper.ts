@@ -70,6 +70,13 @@ export class DateHelper {
         return dayOfWeek;
     }
 
+    static getMonday(date: Date = new Date()) {
+        var day = date.getDay() || 7;  
+        if( day !== 1 ) 
+            date.setHours(-24 * (day - 1)); 
+        return date;
+    }
+
     static pad(number: number) {
         let numberString = number.toString();
         if (numberString.length < 2) {
