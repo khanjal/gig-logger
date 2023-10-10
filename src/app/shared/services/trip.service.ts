@@ -45,6 +45,12 @@ export class TripService {
         return trips;
     }
 
+    public async getRemoteTripsPreviousDate(date: string): Promise<ITrip[]> {
+        let trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
+
+        return trips;
+    }
+
     public async queryLocalTrips(field: string, value: string | number): Promise<ITrip[]> {
         return await localDB.trips.where(field).equals(value).toArray();
     }
