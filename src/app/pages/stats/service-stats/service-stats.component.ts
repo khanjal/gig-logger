@@ -22,7 +22,6 @@ export class ServiceStatsComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    console.log(this.date);
     this.displayedColumns = ['service', 'trips', 'pay', 'tips', 'bonus', 'total', 'cash'];
 
     await this.load();
@@ -44,7 +43,6 @@ export class ServiceStatsComponent implements OnInit {
 
   async getServices() {
     this.services = await this._serviceService.getRemoteServices();
-    console.log(this.services);
   }
 
   async getShifts(date: string) {
