@@ -13,7 +13,7 @@ import { WeekdayService } from '@services/weekday.service';
 export class TripsTableGroupComponent implements OnInit, OnChanges {
   @Input() title: string = "";
   @Input() link: string = "";
-  days: number = 7;
+  days: number = 6;
   
   displayedColumns: string[] = [];
   tripGroups: ITripGroup[] = [];
