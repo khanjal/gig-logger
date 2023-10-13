@@ -31,6 +31,12 @@ export class TripService {
         return await spreadsheetDB.trips.toArray();
     }
 
+    public async getRemoteTripsBetweenDates(startDate: string, endDate: string): Promise<ITrip[]> {
+        let trips = await spreadsheetDB.trips.where("date").between(startDate, endDate, true, true).toArray();
+
+        return trips;
+    }
+
     public async getLocalTripsPreviousDays(days: number): Promise<ITrip[]> {
         let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
         let trips = await localDB.trips.where("date").aboveOrEqual(date).toArray();
