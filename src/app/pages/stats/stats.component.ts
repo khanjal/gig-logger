@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
 import { DateHelper } from '@helpers/date.helper';
 
 @Component({
@@ -8,12 +9,14 @@ import { DateHelper } from '@helpers/date.helper';
   styleUrls: ['./stats.component.scss']
 })
 export class StatsComponent implements OnInit {
+  readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   date: string = "all";
   dates: {key: string, value: string}[] = [];
   selectedDate: string = "";
 
-  statForm = new FormGroup({
-    date: new FormControl('')
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl(),
   });
 
   async ngOnInit(): Promise<void> {
