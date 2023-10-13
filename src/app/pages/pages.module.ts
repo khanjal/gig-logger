@@ -32,7 +32,7 @@ import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.compo
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { StatsComponent } from './stats/stats.component';
-import { ServiceStatsComponent } from './stats/service-stats/service-stats.component';
+import { StatsTableComponent } from './stats/stats-table/stats-table.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +48,7 @@ import { ServiceStatsComponent } from './stats/service-stats/service-stats.compo
     UberCalculatorComponent,
     SheetQuotaComponent,
     StatsComponent,
-    ServiceStatsComponent
+    StatsTableComponent
   ],
   imports: [
     CommonModule,
