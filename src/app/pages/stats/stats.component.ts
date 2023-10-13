@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
 import { DateHelper } from '@helpers/date.helper';
+import { IService } from '@interfaces/service.interface';
+import { IShift } from '@interfaces/shift.interface';
+import { ServiceService } from '@services/service.service';
+import { ShiftService } from '@services/shift.service';
 
 @Component({
   selector: 'app-stats',
@@ -10,36 +14,62 @@ import { DateHelper } from '@helpers/date.helper';
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  date: string = "all";
-  dates: {key: string, value: string}[] = [];
-  selectedDate: string = "";
+  services: IService[] = [];
 
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl(),
   });
 
+  constructor(
+    private _serviceService: ServiceService,
+    private _shiftService: ShiftService
+  ) {}
+
   async ngOnInit(): Promise<void> {
 
-    this.setupDropdown();
+    this.dateChanged();
   }
 
-  onDateSelected(date: string) {
-    this.date = date;
+  async dateChanged() {
+    if (this.range.valid && this.range.value.start && this.range.value.end) {
+      var startDate = DateHelper.getISOFormat(this.range.value.start);
+      var endDate = DateHelper.getISOFormat(this.range.value.end);
+
+      await this.getShiftsRange(startDate, endDate);
+    }
+    else {
+      this.services = await this._serviceService.getRemoteServices();
+    }
+    
+    console.log(this.services);
   }
 
-  setupDropdown() {
-    var date = new Date();
-    this.dates.push({key: "Today", value: DateHelper.getISOFormat(DateHelper.getDateFromDays())});
-    // Yesterday
-    // this.dates.push(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)));
-    this.dates.push({key: "This Week", value: DateHelper.getISOFormat(DateHelper.getMonday())});
-    // Last Week
-    // this.dates.push(DateHelper.getISOFormat(DateHelper.getMonday(DateHelper.getDateFromDays(7))));
-    this.dates.push({key: "This Month", value: DateHelper.getISOFormat(new Date(date.getFullYear(), date.getMonth(), 1))});
-    // last month
-    var lastMonth = DateHelper.getISOFormat(new Date(date.getFullYear(), date.getMonth()-1, 1));
-    // console.log(lastMonth);
-    this.dates.push({key: "This Year", value: DateHelper.getISOFormat(new Date(date.getFullYear(), 0, 1))});
+  async getShiftsRange(startDate: string, endDate: string) {
+    let shifts = await this._shiftService.getRemoteTripsBetweenDates(startDate, endDate);
+    
+    this.getServices(shifts);
+  }
+
+  getServices(shifts: IShift[]) {
+    let serviceList = shifts.map(s => s.service);
+    serviceList = [...new Set(serviceList)].sort();
+    let services: IService[] = [];
+
+    serviceList.forEach(serviceName => {
+      let service = {} as IService;
+
+      service.service = serviceName;
+      service.visits = shifts.filter(s => s.service === serviceName).map(s => s.totalTrips).reduce((acc, value) => acc + value, 0);
+      service.pay = shifts.filter(s => s.service === serviceName).map(s => s.totalPay).reduce((acc, value) => acc + value, 0);
+      service.tip = shifts.filter(s => s.service === serviceName).map(s => s.totalTips).reduce((acc, value) => acc + value, 0);
+      service.bonus = shifts.filter(s => s.service === serviceName).map(s => s.totalBonus).reduce((acc, value) => acc + value, 0);
+      service.total = shifts.filter(s => s.service === serviceName).map(s => s.grandTotal).reduce((acc, value) => acc + value, 0);
+      service.cash = shifts.filter(s => s.service === serviceName).map(s => s.totalCash).reduce((acc, value) => acc + value, 0);
+
+      services.push(service);
+    })
+
+    this.services = [...services]; // This refreshes the data for the table to display.
   }
 }
