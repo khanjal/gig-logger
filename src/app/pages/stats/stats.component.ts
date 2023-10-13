@@ -49,8 +49,6 @@ export class StatsComponent implements OnInit {
     // TODO see if there's a way to use stats from services, types, and places.
     await this.getShiftsRange(startDate, endDate); 
     await this.getTripsRange(startDate, endDate); 
-    
-    console.log(this.services);
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
