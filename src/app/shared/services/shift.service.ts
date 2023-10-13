@@ -65,6 +65,13 @@ export class ShiftService {
         return trips;
     }
 
+    public async getRemoteTripsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
+        let trips = await spreadsheetDB.shifts.where("date").between(startDate, endDate).toArray();
+
+        return trips;
+    }
+
+
     public async queryLocalShifts(field: string, value: string | number): Promise<IShift[]> {
         return await localDB.shifts.where(field).equals(value).toArray();
     }
