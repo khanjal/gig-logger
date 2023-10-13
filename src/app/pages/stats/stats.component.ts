@@ -4,6 +4,7 @@ import { CustomCalendarHeaderComponent } from '@components/custom-calendar-heade
 import { DateHelper } from '@helpers/date.helper';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
+import { IStatItem } from '@interfaces/stat-item.interface';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 
@@ -14,7 +15,7 @@ import { ShiftService } from '@services/shift.service';
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  services: IService[] = [];
+  services: IStatItem[] = [];
 
   range = new FormGroup({
     start: new FormControl(),
@@ -39,7 +40,7 @@ export class StatsComponent implements OnInit {
       await this.getShiftsRange(startDate, endDate);
     }
     else {
-      this.services = await this._serviceService.getRemoteServices();
+      // this.services = await this._serviceService.getRemoteServices();
     }
     
     console.log(this.services);
@@ -54,13 +55,13 @@ export class StatsComponent implements OnInit {
   getServices(shifts: IShift[]) {
     let serviceList = shifts.map(s => s.service);
     serviceList = [...new Set(serviceList)].sort();
-    let services: IService[] = [];
+    let services: IStatItem[] = [];
 
     serviceList.forEach(serviceName => {
-      let service = {} as IService;
+      let service = {} as IStatItem;
 
-      service.service = serviceName;
-      service.visits = shifts.filter(s => s.service === serviceName).map(s => s.totalTrips).reduce((acc, value) => acc + value, 0);
+      service.name = serviceName;
+      service.trips = shifts.filter(s => s.service === serviceName).map(s => s.totalTrips).reduce((acc, value) => acc + value, 0);
       service.pay = shifts.filter(s => s.service === serviceName).map(s => s.totalPay).reduce((acc, value) => acc + value, 0);
       service.tip = shifts.filter(s => s.service === serviceName).map(s => s.totalTips).reduce((acc, value) => acc + value, 0);
       service.bonus = shifts.filter(s => s.service === serviceName).map(s => s.totalBonus).reduce((acc, value) => acc + value, 0);

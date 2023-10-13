@@ -66,7 +66,7 @@ export class ShiftService {
     }
 
     public async getRemoteTripsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
-        let trips = await spreadsheetDB.shifts.where("date").between(startDate, endDate).toArray();
+        let trips = await spreadsheetDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
 
         return trips;
     }

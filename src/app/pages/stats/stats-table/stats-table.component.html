@@ -1,38 +1,38 @@
 <div class='table-responsive'>
-    <table mat-table [dataSource]="services">
-        <ng-container matColumnDef="service">
-            <th mat-header-cell *matHeaderCellDef> Service </th>
-            <td mat-cell *matCellDef="let service" sticky> {{service.service | truncate:10}} </td>
+    <table mat-table [dataSource]="items">
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> {{ name }} </th>
+            <td mat-cell *matCellDef="let item" sticky> {{item.name | truncate:10}} </td>
             <td mat-footer-cell *matFooterCellDef> Total </td>
         </ng-container>
         <ng-container matColumnDef="trips">
             <th mat-header-cell *matHeaderCellDef>Trips</th>
-            <td mat-cell *matCellDef="let service"> {{service.visits}} </td>
-            <td mat-footer-cell *matFooterCellDef> {{getTotal("visits")}} </td>
+            <td mat-cell *matCellDef="let item"> {{item.trips}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getTotal("trips")}} </td>
         </ng-container>
         <ng-container matColumnDef="pay">
             <th mat-header-cell *matHeaderCellDef>Pay</th>
-            <td mat-cell *matCellDef="let service"> {{service.pay | currency}} </td>
+            <td mat-cell *matCellDef="let item"> {{item.pay | currency}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("pay") | currency}} </td>
         </ng-container>
         <ng-container matColumnDef="tips">
             <th mat-header-cell *matHeaderCellDef>Tips</th>
-            <td mat-cell *matCellDef="let service"> {{service.tip | currency}} </td>
+            <td mat-cell *matCellDef="let item"> {{item.tip | currency}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("tip") | currency}} </td>
         </ng-container>
         <ng-container matColumnDef="bonus">
             <th mat-header-cell *matHeaderCellDef>Bonus</th>
-            <td mat-cell *matCellDef="let service"> {{service.bonus | currency}} </td>
+            <td mat-cell *matCellDef="let item"> {{item.bonus | currency}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("bonus") | currency}} </td>
         </ng-container>
         <ng-container matColumnDef="total">
             <th mat-header-cell *matHeaderCellDef>Total</th>
-            <td mat-cell *matCellDef="let service"> {{service.total | currency}} </td>
+            <td mat-cell *matCellDef="let item"> {{item.total | currency}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("total") | currency}} </td>
         </ng-container>
         <ng-container matColumnDef="cash">
             <th mat-header-cell *matHeaderCellDef>Cash</th>
-            <td mat-cell *matCellDef="let service"> {{service.cash | currency}} </td>
+            <td mat-cell *matCellDef="let item"> {{item.cash | currency}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("cash") | currency}} </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
