@@ -1,0 +1,10 @@
+<div class="mat-elevation-z3">
+    <button
+        *ngFor="let item of customPresets"
+        mat-button
+        color="primary"
+        (click)="selectRange(item)"
+    >
+        {{ item }}
+    </button>
+</div>  

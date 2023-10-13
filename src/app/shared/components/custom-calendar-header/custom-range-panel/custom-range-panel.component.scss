@@ -1,0 +1,22 @@
+$width: 296px;
+$height: 145px; //290px;
+
+:host {
+    position: absolute;
+    width: $width;
+    // left: -$width; // to render it on the right side, use "right: -$width" instead
+    bottom: -$height;
+}
+
+:host(.touch-ui) {
+    position: relative;
+    left: 0;
+    display: flex;
+    width: 100%;
+}
+
+button {
+    width: 35%;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
