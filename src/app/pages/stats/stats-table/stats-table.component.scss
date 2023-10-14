@@ -1,0 +1,62 @@
+@import "color-vars";
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: .5rem;
+}
+
+.mat-mdc-table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    display: table;
+    border-collapse: collapse;
+}
+
+.mat-mdc-row,
+.mat-mdc-header-row,
+.mat-mdc-footer-row {
+    display: table-row;
+    height: 1.5rem;
+}
+
+.mat-mdc-row:nth-child(even){
+    background-color: $primary-light-color;
+}
+
+.mat-mdc-row:nth-child(odd){
+    background-color: $tertiary-light-color;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell,
+.mat-mdc-footer-cell {
+    padding-left: 0;
+    word-wrap: initial;
+    display: table-cell;
+    padding: 0px 5px;
+    line-break: unset;
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.mat-mdc-cell:first-child,
+.mat-mdc-footer-cell:first-child,
+.mat-mdc-header-cell:first-child {
+    padding-left: 0px !important;
+}
+
+.mat-mdc-header-cell,
+.mat-mdc-footer-cell {
+    font-weight: bold;
+}
+
+td:first-child, th:first-child {
+    position:sticky;
+    left:0;
+    z-index:1;
+}

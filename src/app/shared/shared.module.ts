@@ -31,6 +31,8 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
+import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
+import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
 
 @NgModule({
     declarations: [
@@ -47,7 +49,9 @@ import { TripsTableBasicComponent } from './components/trips-table-basic/trips-t
         GoogleAddressComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
-        TripsTableSimpleComponent
+        TripsTableSimpleComponent,
+        CustomRangePanelComponent,
+        CustomCalendarHeaderComponent
     ],
     imports: [
         CommonModule,

@@ -31,7 +31,6 @@ export class QuickComponent implements OnInit {
   saving: boolean = false;
 
   savedTrips: ITrip[] = [];
-  sheetTrips: ITrip[] = [];
   unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
@@ -43,7 +42,6 @@ export class QuickComponent implements OnInit {
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
-      private _weekdayService: WeekdayService,
       private _viewportScroller: ViewportScroller
     ) { }
 
@@ -90,10 +88,9 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    this.sheetTrips = await this._tripService.getRemoteTripsPreviousDays(7);
-    sort(this.sheetTrips, '-id');
     this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
     this.savedTrips = (await this._tripService.getSavedLocalTrips()).reverse();
+    await this._gigLoggerService.calculateShiftTotals();
 
     // console.log(this.form);
 
@@ -271,9 +268,6 @@ export class QuickComponent implements OnInit {
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
 
-    // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateShiftTotals();
-
     await this.load();
     await this.form?.load();
   }
@@ -312,10 +306,6 @@ export class QuickComponent implements OnInit {
     this.reloading = true;
 
     await this._sheetService.loadSpreadsheetData();
-
-    // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateShiftTotals();
-    
     await this.load();
 
     this.reloading = false;

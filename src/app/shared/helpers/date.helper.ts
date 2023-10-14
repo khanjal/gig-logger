@@ -11,17 +11,17 @@ export class DateHelper {
         let dates: string[] = [];
 
         for (let index = 0; index < days; index++) {
-            dates.push(DateHelper.getISODateOnly(this.getDateFromDays(index)));
+            dates.push(DateHelper.getISOFormat(this.getDateFromDays(index)));
         }
 
         return dates;
     }
 
-    static getISODateOnly(date?: Date) {
+    static getISOFormat(date?: Date) {
         if (!date) {
             date = new Date();
         }
-        return date.toISOString().substring(0, 10);
+        return date.toLocaleDateString("sv-SE"); // Use Swedish (Sweden) since it has the format we want (yyyy-MM-dd).
     }
 
     static getDays(): number {
@@ -65,9 +65,16 @@ export class DateHelper {
 
     static getDayOfWeek(date: Date = new Date()){
         let dayOfWeek = new Date(date).getDay();
-        dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+        dayOfWeek+=1; // Increment one since Monday is 0 and we want it to start at 1
 
         return dayOfWeek;
+    }
+
+    static getMonday(date: Date = new Date()) {
+        var day = date.getDay() || 7;  
+        if( day !== 1 ) 
+            date.setHours(-24 * (day - 1)); 
+        return date;
     }
 
     static pad(number: number) {
