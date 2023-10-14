@@ -119,7 +119,7 @@ export class GigLoggerService {
             trips.forEach(trip => {
                 shift.totalTrips++;
                 // TODO break shift total into pay/tip/bonus
-                shift.grandTotal += trip.total;
+                shift.grandTotal += trip.total ?? 0;
             });
         
             // If there is an empty shift with no trips delete it, otherwise save it.
