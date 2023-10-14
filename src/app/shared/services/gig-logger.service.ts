@@ -111,15 +111,20 @@ export class GigLoggerService {
                         ...await this._tripService.queryRemoteTrips("key", key)];
             trips = trips.filter(x => !x.exclude);
 
-            let shift = await this._shiftService.queryShiftByKey(key);
+            let shift = shifts.find(s => s.key === key);
+
+            if (!shift) {
+                return;
+            }
+
             // console.log(shift);
             shift.totalTrips = shift.trips;
-            shift.grandTotal = shift.total;
+            shift.grandTotal = shift.pay + shift.tip + shift.bonus;
 
             trips.forEach(trip => {
-                shift.totalTrips++;
+                shift!.totalTrips++;
                 // TODO break shift total into pay/tip/bonus
-                shift.grandTotal += trip.total ?? 0;
+                shift!.grandTotal += trip.total ?? 0;
             });
         
             // If there is an empty shift with no trips delete it, otherwise save it.

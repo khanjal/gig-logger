@@ -3,14 +3,14 @@ import { DateAdapter } from '@angular/material/core';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 
 const customPresets = [
-  'today',
-  'last 7 days',
-  'this week',
-  'this month',
-  'this year',
-  'last week',
-  'last month',
-  'last year',
+  'Today',
+  'Last 7 days',
+  'This week',
+  'Last week',
+  'This month',
+  'Last month',
+  'This year',
+  'Last year',
 ] as const; // convert to readonly tuple of string literals
 
 // equivalent to "today" | "last 7 days" | ... | "last year"
@@ -46,32 +46,32 @@ export class CustomRangePanelComponent<D> {
     const year = this.dateAdapter.getYear(today);
 
     switch (rangeName) {
-      case 'today':
+      case 'Today':
         return [today, today];
-      case 'last 7 days': {
+      case 'Last 7 days': {
         const start = this.dateAdapter.addCalendarDays(today, -6);
         return [start, today];
       }
-      case 'this week': {
+      case 'This week': {
         return this.calculateWeek(today);
       }
-      case 'this month': {
+      case 'This month': {
         return this.calculateMonth(today);
       }
-      case 'this year': {
+      case 'This year': {
         const start = this.dateAdapter.createDate(year, 0, 1);
         const end = this.dateAdapter.createDate(year, 11, 31);
         return [start, end];
       }
-      case 'last week': {
+      case 'Last week': {
         const thisDayLastWeek = this.dateAdapter.addCalendarDays(today, -7);
         return this.calculateWeek(thisDayLastWeek);
       }
-      case 'last month': {
+      case 'Last month': {
         const thisDayLastMonth = this.dateAdapter.addCalendarMonths(today, -1);
         return this.calculateMonth(thisDayLastMonth);
       }
-      case 'last year': {
+      case 'Last year': {
         const start = this.dateAdapter.createDate(year - 1, 0, 1);
         const end = this.dateAdapter.createDate(year - 1, 11, 31);
         return [start, end];
@@ -98,7 +98,8 @@ export class CustomRangePanelComponent<D> {
 
   private calculateWeek(forDay: D): [start: D, end: D] {
     const deltaStart =
-      this.dateAdapter.getFirstDayOfWeek() -
+      // this.dateAdapter.getFirstDayOfWeek() -
+      1 - // Forcing Monday to be the first day of the week.
       this.dateAdapter.getDayOfWeek(forDay);
     const start = this.dateAdapter.addCalendarDays(forDay, deltaStart);
     const end = this.dateAdapter.addCalendarDays(start, 6);
