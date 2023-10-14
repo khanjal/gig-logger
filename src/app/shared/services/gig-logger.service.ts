@@ -101,41 +101,23 @@ export class GigLoggerService {
 
     public async calculateShiftTotals() {
         let shifts = await this._shiftService.getPreviousWeekShifts();
-        // let unsavedTrips = await this._tripService.getUnsavedLocalTrips();
 
-        const keys = [...new Set(shifts.map(item => item.key))];
+        shifts.forEach(async shift => {
+            let trips = (await this._tripService.queryTrips("key", shift.key));
+            let filteredTrips = trips.filter(x => !x.exclude);
 
-        keys.forEach(async key => {
-            // console.log(key);
-            let trips = [...(await this._tripService.queryLocalTrips("key", key)).filter(x => !x.saved),
-                        ...await this._tripService.queryRemoteTrips("key", key)];
-            trips = trips.filter(x => !x.exclude);
-
-            let shift = shifts.find(s => s.key === key);
-
-            if (!shift) {
-                return;
-            }
-
-            // console.log(shift);
-            shift.totalTrips = shift.trips;
+            shift.totalTrips = shift.trips + filteredTrips.length;
             shift.grandTotal = shift.pay + shift.tip + shift.bonus;
+            shift.grandTotal = filteredTrips.map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
-            trips.forEach(trip => {
-                shift!.totalTrips++;
-                // TODO break shift total into pay/tip/bonus
-                shift!.grandTotal += trip.total ?? 0;
-            });
-        
-            // If there is an empty shift with no trips delete it, otherwise save it.
-            if (shift.trips === 0 && shift.totalTrips === 0 && shift.saved === false) {
+            if (trips?.length === 0 && shift.trips === 0 && shift.totalTrips === 0 && shift.saved === false) {
                 this._shiftService.deleteLocal(shift.id!);
             }
             else {
-                this._shiftService.updateShift(shift);
+                await this._shiftService.updateShift(shift);
             }
         });
-    
+
         await this.calculateDailyTotal();
     }
 
