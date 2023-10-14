@@ -8,9 +8,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
@@ -29,6 +31,8 @@ import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calcu
 import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { StatsComponent } from './stats/stats.component';
+import { StatsTableComponent } from './stats/stats-table/stats-table.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +47,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
     CalculatorComponent,
     UberCalculatorComponent,
     SheetQuotaComponent,
+    StatsComponent,
+    StatsTableComponent
   ],
   imports: [
     CommonModule,
@@ -50,10 +56,12 @@ import {MatExpansionModule} from '@angular/material/expansion';
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatMenuModule,
+    MatNativeDateModule,
     MatSelectModule,
     MatListModule,
     MatIconModule,

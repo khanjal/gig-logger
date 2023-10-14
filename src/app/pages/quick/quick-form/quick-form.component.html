@@ -123,22 +123,22 @@
 
         <!-- Pay -->
         <div class="row-block">
+            <button class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
+                <mat-icon>account_balance</mat-icon>
+            </button>
             <mat-form-field class="field-quarter-width" appearance="outline">
                 <mat-label>Pay</mat-label>
                 <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
             </mat-form-field>
-            <button class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
-                <mat-icon>account_balance</mat-icon>
-            </button>
 
             <!-- Distance -->
-            <button class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
-                <mat-icon>drive_eta</mat-icon>
-            </button>
-            <mat-form-field class="field-quarter-width field-right" appearance="outline">
+            <mat-form-field class="field-quarter-width" appearance="outline">
                 <mat-label>Distance</mat-label>
                 <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
             </mat-form-field>
+            <button class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
+                <mat-icon>drive_eta</mat-icon>
+            </button>
         </div>
 
         <!-- Tip/Bonus/Cash -->
@@ -205,7 +205,7 @@
         <!-- Pickup Address List -->
         <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="!data.id">
+                <mat-expansion-panel [expanded]="!(selectedPlace.addresses.length > 5 && data.id)">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
                             Found {{ selectedPlace.addresses.length }} Previous Pickup Addresses
@@ -249,7 +249,7 @@
         <!-- Address List/Notes -->
         <div  class="section" *ngIf="selectedNameDeliveries?.length">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="selectedNameDeliveries && !data.id">
+                <mat-expansion-panel [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
                             Found {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
@@ -305,7 +305,7 @@
         <!-- Name List/Notes -->
         <div  class="section" *ngIf="selectedAddressDeliveries?.length">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="selectedAddressDeliveries && !data.id">
+                <mat-expansion-panel [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
                             Found {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
