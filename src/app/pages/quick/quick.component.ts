@@ -242,6 +242,7 @@ export class QuickComponent implements OnInit {
   async cloneUnsavedLocalTrip(trip: ITrip) {
     delete trip.id;
     await this._tripService.addTrip(trip);
+    await this._gigLoggerService.calculateShiftTotals();
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
     this._snackBar.open("Cloned Trip");
@@ -259,6 +260,7 @@ export class QuickComponent implements OnInit {
     nextTrip.startAddress = trip.startAddress;
     nextTrip.pickupTime = trip.dropoffTime;
     await this._tripService.addTrip(nextTrip);
+    await this._gigLoggerService.calculateShiftTotals();
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
     this._snackBar.open("Added Next Trip");
