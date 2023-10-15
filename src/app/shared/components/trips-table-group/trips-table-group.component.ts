@@ -51,7 +51,8 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
 
       tripGroup.date = date;
       tripGroup.trips = trips;
-      
+
+      // console.log(`${dayOfWeek} | ${DateHelper.getDayOfWeek(new Date())}`);
       if (dayOfWeek >= DateHelper.getDayOfWeek(new Date())) {
         tripGroup.amount = weekday?.previousAmount ?? 0;
       }

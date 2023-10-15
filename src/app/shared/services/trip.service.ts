@@ -65,6 +65,13 @@ export class TripService {
         return await spreadsheetDB.trips.where(field).equals(value).toArray();
     }
 
+    public async queryTrips(field: string, value: string | number): Promise<ITrip[]> {
+        let trips = [...(await this.queryLocalTrips(field, value)).filter(x => !x.saved),
+                    ...await this.queryRemoteTrips(field, value)];
+
+        return trips;
+    }
+
     public async saveUnsavedTrips() {
         let trips = await this.getUnsavedLocalTrips();
         trips.forEach(async trip => {
