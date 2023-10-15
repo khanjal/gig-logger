@@ -110,7 +110,7 @@ export class GigLoggerService {
             shift.grandTotal = shift.pay + shift.tip + shift.bonus;
             shift.grandTotal = filteredTrips.map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
-            if (trips?.length === 0 && shift.trips === 0 && shift.totalTrips === 0 && shift.saved === false) {
+            if (trips?.length === 0 && !shift.saved) {
                 this._shiftService.deleteLocal(shift.id!);
             }
             else {
