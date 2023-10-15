@@ -41,7 +41,7 @@ export class StatsComponent implements OnInit {
     var startDate = "2000-01-01";
     var endDate = DateHelper.getISOFormat();
 
-    console.log(`${this.range.valid} | ${this.range.value.start} | ${this.range.value.end}`);
+    // console.log(`${this.range.valid} | ${this.range.value.start} | ${this.range.value.end}`);
     if (this.range.valid && this.range.value.start && this.range.value.end) {
       startDate = DateHelper.getISOFormat(this.range.value.start);
       endDate = DateHelper.getISOFormat(this.range.value.end);
