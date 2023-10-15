@@ -124,7 +124,6 @@ export class GigLoggerService {
     public async calculateDailyTotal() {
         let currentAmount = 0;
         let date = DateHelper.getISOFormat();
-        // let dayOfWeek = new Date().toLocaleDateString('en-us', {weekday: 'short'});
         let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
         let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 

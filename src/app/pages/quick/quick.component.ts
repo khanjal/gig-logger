@@ -1,21 +1,24 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import { QuickFormComponent } from './quick-form/quick-form.component';
+import { ViewportScroller } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { DateHelper } from '@helpers/date.helper';
+
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { ISheet } from '@interfaces/sheet.interface';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { ITrip } from '@interfaces/trip.interface';
+
+import { GigLoggerService } from '@services/gig-logger.service';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ITrip } from '@interfaces/trip.interface';
-import { DateHelper } from '@helpers/date.helper';
-import { CurrentAverageComponent } from '@components/current-average/current-average.component';
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { WeekdayService } from '@services/weekday.service';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ViewportScroller } from '@angular/common';
-import { GigLoggerService } from '@services/gig-logger.service';
-import { ISheet } from '@interfaces/sheet.interface';
-import { sort } from '@helpers/sort.helper';
+
+import { CurrentAverageComponent } from '@components/current-average/current-average.component';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { QuickFormComponent } from './quick-form/quick-form.component';
+import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
 
 @Component({
   selector: 'app-quick',
@@ -25,6 +28,7 @@ import { sort } from '@helpers/sort.helper';
 export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
+  @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
   clearing: boolean = false;
   reloading: boolean = false;
@@ -96,6 +100,7 @@ export class QuickComponent implements OnInit {
 
     await this.average?.load();
     await this.form?.load();
+    await this.tripsTable?.load();
   }
 
   async saveLocalTrip(trip: ITrip) {
