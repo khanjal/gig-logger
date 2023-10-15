@@ -65,9 +65,13 @@ export class DateHelper {
 
     static getDayOfWeek(date: Date = new Date()){
         let dayOfWeek = new Date(date).getDay();
-        dayOfWeek+=1; // Increment one since Monday is 0 and we want it to start at 1
 
-        return dayOfWeek;
+        if (dayOfWeek === 0) {
+            return 7; // We want Sunday to be 7
+        }
+        else {
+            return dayOfWeek+=1; // Increment one since Monday is 0 and we want it to start at 1
+        }
     }
 
     static getMonday(date: Date = new Date()) {
