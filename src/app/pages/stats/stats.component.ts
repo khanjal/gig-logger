@@ -41,14 +41,22 @@ export class StatsComponent implements OnInit {
     var startDate = "2000-01-01";
     var endDate = DateHelper.getISOFormat();
 
+    console.log(`${this.range.valid} | ${this.range.value.start} | ${this.range.value.end}`);
     if (this.range.valid && this.range.value.start && this.range.value.end) {
       startDate = DateHelper.getISOFormat(this.range.value.start);
       endDate = DateHelper.getISOFormat(this.range.value.end);
+
+      // TODO see if there's a way to use stats from services, types, and places.
+      await this.getShiftsRange(startDate, endDate); 
+      await this.getTripsRange(startDate, endDate); 
     }
 
-    // TODO see if there's a way to use stats from services, types, and places.
-    await this.getShiftsRange(startDate, endDate); 
-    await this.getTripsRange(startDate, endDate); 
+    // Default if date range blank
+    if (this.range.valid && !this.range.value.start && !this.range.value.end) {
+      await this.getShiftsRange(startDate, endDate); 
+      await this.getTripsRange(startDate, endDate); 
+    }
+    
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
