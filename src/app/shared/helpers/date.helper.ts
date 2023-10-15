@@ -33,6 +33,10 @@ export class DateHelper {
         return Math.trunc(days) + 2;
     }
 
+    static getFirstDayOfWeek(): number {
+        return 1; // Forcing Monday to be the first day of the week.
+    }
+
     static getTimeString(date: Date): string {
         let timeString = date.toLocaleTimeString();
         return timeString;

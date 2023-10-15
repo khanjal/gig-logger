@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { MatDateRangePicker } from '@angular/material/datepicker';
+import { DateHelper } from '@helpers/date.helper';
 
 const customPresets = [
   'Today',
@@ -98,10 +99,14 @@ export class CustomRangePanelComponent<D> {
 
   private calculateWeek(forDay: D): [start: D, end: D] {
     const deltaStart =
-      // this.dateAdapter.getFirstDayOfWeek() -
-      1 - // Forcing Monday to be the first day of the week.
-      this.dateAdapter.getDayOfWeek(forDay);
+      //this.dateAdapter.getFirstDayOfWeek() -
+      DateHelper.getFirstDayOfWeek() -
+      DateHelper.getDayOfWeek(<Date>forDay);
+    console.log(forDay);
+    console.log(this.dateAdapter.getDayOfWeek(forDay));
+    console.log(deltaStart);
     const start = this.dateAdapter.addCalendarDays(forDay, deltaStart);
+    console.log(start);
     const end = this.dateAdapter.addCalendarDays(start, 6);
     return [start, end];
   }
