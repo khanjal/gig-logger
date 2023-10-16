@@ -379,11 +379,11 @@ export class QuickFormComponent implements OnInit {
       this.quickForm.controls.service.setValidators([Validators.required]);
 
       //Set the most used service as default.
-      let service = (await this._serviceService.getRemoteServices()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
+      let service = (await this._serviceService.getRemoteServices())?.reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IService);
       this.quickForm.controls.service.setValue(service.service);
 
       //Set the most used region as default.
-      let region = (await this._regionService.get()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
+      let region = (await this._regionService.get()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IRegion);
       this.quickForm.controls.region.setValue(region.region);
     }
     else {

@@ -86,6 +86,9 @@ export class QuickComponent implements OnInit {
           await this._sheetService.loadSpreadsheetData();
           await this.load();
           this.saving = false;
+        },
+        error => {
+          console.log(error);
         });
       }
     );
