@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
+import { DailyService } from '@services/daily.service';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
@@ -13,17 +14,18 @@ import { WeekdayService } from '@services/weekday.service';
 export class TripsTableGroupComponent implements OnInit, OnChanges {
   @Input() title: string = "";
   @Input() link: string = "";
-  days: number = 6;
+  @Input() days: number = 6;
   
   displayedColumns: string[] = [];
   tripGroups: ITripGroup[] = [];
   
   constructor(
+    private _dailyService: DailyService,
     private _tripService: TripService,
     private _weekdayService: WeekdayService
   ) {}
   
-  async ngOnChanges(changes: SimpleChanges) {
+  async ngOnChanges() {
     // console.log("TripsTableGroup: OnChanges");
     await this.load();
   }
@@ -47,24 +49,13 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       let tripGroup = {} as ITripGroup;
       let trips = sheetTrips.filter(x => x.date === date);
       let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
+      let day = (await this._dailyService.queryDaily("date", date))[0];
       let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
       tripGroup.date = date;
       tripGroup.trips = trips;
-
-      // console.log(`${dayOfWeek} | ${DateHelper.getDayOfWeek(new Date())}`);
-      if (dayOfWeek > DateHelper.getDayOfWeek(new Date())) {
-        tripGroup.amount = weekday?.previousAmount ?? 0;
-      }
-      else {
-        tripGroup.amount = weekday?.currentAmount ?? 0;
-      }
-
+      tripGroup.amount = day?.total ?? 0;
       tripGroup.average = weekday?.dailyPrevAverage ?? 0;
-
-      // Double check that amount is a number
-      tripGroup.amount = isNaN(tripGroup.amount) ? 0 : tripGroup.amount;
-      // console.log(tripGroup.amount);
 
       this.tripGroups.push(tripGroup);
     });
