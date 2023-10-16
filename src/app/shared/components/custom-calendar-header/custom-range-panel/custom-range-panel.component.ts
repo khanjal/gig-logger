@@ -102,11 +102,7 @@ export class CustomRangePanelComponent<D> {
       //this.dateAdapter.getFirstDayOfWeek() -
       DateHelper.getFirstDayOfWeek() -
       DateHelper.getDayOfWeek(<Date>forDay);
-    console.log(forDay);
-    console.log(this.dateAdapter.getDayOfWeek(forDay));
-    console.log(deltaStart);
     const start = this.dateAdapter.addCalendarDays(forDay, deltaStart);
-    console.log(start);
     const end = this.dateAdapter.addCalendarDays(start, 6);
     return [start, end];
   }
