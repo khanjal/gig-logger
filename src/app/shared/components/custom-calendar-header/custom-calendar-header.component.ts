@@ -1,5 +1,6 @@
 // https://stackblitz.com/edit/example-ng-date-range-picker-custom-ranges
 // https://dev.to/paullaros/using-angular-materials-calendar-with-date-ranges-and-range-presets-221j
+// https://qupaya.com/blog/angular-date-range-picker-with-custom-range-presets/
 
 import {
   ChangeDetectionStrategy,
