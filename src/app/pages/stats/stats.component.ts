@@ -41,100 +41,80 @@ export class StatsComponent implements OnInit {
     var startDate = "2000-01-01";
     var endDate = DateHelper.getISOFormat();
 
+    if (!(this.range.valid && 
+        ((!this.range.value.start && !this.range.value.end) ||
+        (this.range.value.start && this.range.value.end)))) {
+          return;
+    }
+
     // console.log(`${this.range.valid} | ${this.range.value.start} | ${this.range.value.end}`);
-    if (this.range.valid && this.range.value.start && this.range.value.end) {
+    if (this.range.value.start && this.range.value.end) {
       startDate = DateHelper.getISOFormat(this.range.value.start);
       endDate = DateHelper.getISOFormat(this.range.value.end);
-
-      // TODO see if there's a way to use stats from services, types, and places.
-      await this.getShiftsRange(startDate, endDate); 
-      await this.getTripsRange(startDate, endDate); 
     }
 
-    // Default if date range blank
-    if (this.range.valid && !this.range.value.start && !this.range.value.end) {
-      await this.getShiftsRange(startDate, endDate); 
-      await this.getTripsRange(startDate, endDate); 
-    }
-    
+    await this.getShiftsRange(startDate, endDate); 
+    await this.getTripsRange(startDate, endDate); 
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
     let shifts = await this._shiftService.getRemoteShiftsBetweenDates(startDate, endDate);
     
-    this.getServices(shifts);
+    this.services = this.getShiftList(shifts, "service");
   }
 
   async getTripsRange(startDate: string, endDate: string) {
-    let trips = await this._tripService.getRemoteTripsBetweenDates(startDate, endDate);
+    let trips = (await this._tripService.getRemoteTripsBetweenDates(startDate, endDate)).filter(x => !x.exclude);
     
-    this.getPlaces(trips);
-    this.getTypes(trips);
+    this.places = this.getTripList(trips, "place");
+    this.types = this.getTripList(trips, "type");
   }
 
-  getPlaces(trips: ITrip[]) {
-    let placeList = trips.map(s => s.place);
-    placeList = [...new Set(placeList)].sort();
+  getTripList(trips: ITrip[], name: string): IStatItem[] {
+    let itemList = trips.map((x:any) => x[name]);
+    itemList = [...new Set(itemList)].sort();
     let items: IStatItem[] = [];
 
-    placeList.forEach(name => {
+    itemList.forEach(itemName => {
       let item = {} as IStatItem;
+      let tripFilter = trips.filter((x:any) => x[name] === itemName);
 
-      item.name = name;
-      item.trips = trips.filter(s => s.place === name && !s.exclude).length;
-      item.pay = trips.filter(s => s.place === name && !s.exclude).map(s => s.pay).reduce((acc, value) => acc + value, 0);
-      item.tip = trips.filter(s => s.place === name && !s.exclude).map(s => s.tip).reduce((acc, value) => acc + value, 0);
-      item.bonus = trips.filter(s => s.place === name && !s.exclude).map(s => s.bonus).reduce((acc, value) => acc + value, 0);
-      item.total = trips.filter(s => s.place === name && !s.exclude).map(s => s.total).reduce((acc, value) => acc + value, 0);
-      item.cash = trips.filter(s => s.place === name && !s.exclude).map(s => s.cash).reduce((acc, value) => acc + value, 0);
+      item.name = itemName;
+      item.trips = tripFilter.length;
+      item.distance = tripFilter.map(x => x.distance).reduce((acc, value) => acc + value, 0);
+      item.pay = tripFilter.map(x => x.pay).reduce((acc, value) => acc + value, 0);
+      item.tip = tripFilter.map(x => x.tip).reduce((acc, value) => acc + value, 0);
+      item.bonus = tripFilter.map(x => x.bonus).reduce((acc, value) => acc + value, 0);
+      item.total = tripFilter.map(x => x.total).reduce((acc, value) => acc + value, 0);
+      item.cash = tripFilter.map(x => x.cash).reduce((acc, value) => acc + value, 0);
 
       items.push(item);
     })
 
-    this.places = [...items]; // This refreshes the data for the table to display.
+    return items;
   }
 
-  getTypes(trips: ITrip[]) {
-    let typeList = trips.map(s => s.type);
-    typeList = [...new Set(typeList)].sort();
+  getShiftList(shifts: IShift[], name: string): IStatItem[] {
+    let itemList = shifts.map((x:any) => x[name]);
+    itemList = [...new Set(itemList)].sort();
     let items: IStatItem[] = [];
 
-    typeList.forEach(name => {
+    itemList.forEach(itemName => {
       let item = {} as IStatItem;
+      let shiftFilter = shifts.filter((x:any) => x[name] === itemName);
 
-      item.name = name;
-      item.trips = trips.filter(s => s.type === name).length;
-      item.pay = trips.filter(s => s.type === name && !s.exclude).map(s => s.pay).reduce((acc, value) => acc + value, 0);
-      item.tip = trips.filter(s => s.type === name && !s.exclude).map(s => s.tip).reduce((acc, value) => acc + value, 0);
-      item.bonus = trips.filter(s => s.type === name && !s.exclude).map(s => s.bonus).reduce((acc, value) => acc + value, 0);
-      item.total = trips.filter(s => s.type === name && !s.exclude).map(s => s.total).reduce((acc, value) => acc + value, 0);
-      item.cash = trips.filter(s => s.type === name && !s.exclude).map(s => s.cash).reduce((acc, value) => acc + value, 0);
+      item.name = itemName;
+      item.trips = shiftFilter.length;
+      item.distance = shiftFilter.map(x => x.distance).reduce((acc, value) => acc + value, 0);
+      item.pay = shiftFilter.map(x => x.totalPay).reduce((acc, value) => acc + value, 0);
+      item.tip = shiftFilter.map(x => x.totalTips).reduce((acc, value) => acc + value, 0);
+      item.bonus = shiftFilter.map(x => x.totalBonus).reduce((acc, value) => acc + value, 0);
+      item.total = shiftFilter.map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
+      item.cash = shiftFilter.map(x => x.totalCash).reduce((acc, value) => acc + value, 0);
 
       items.push(item);
     })
 
-    this.types = [...items]; // This refreshes the data for the table to display.
-  }
-
-  getServices(shifts: IShift[]) {
-    let serviceList = shifts.map(s => s.service);
-    serviceList = [...new Set(serviceList)].sort();
-    let items: IStatItem[] = [];
-
-    serviceList.forEach(name => {
-      let item = {} as IStatItem;
-
-      item.name = name;
-      item.trips = shifts.filter(s => s.service === name).map(s => s.totalTrips).reduce((acc, value) => acc + value, 0);
-      item.pay = shifts.filter(s => s.service === name).map(s => s.totalPay).reduce((acc, value) => acc + value, 0);
-      item.tip = shifts.filter(s => s.service === name).map(s => s.totalTips).reduce((acc, value) => acc + value, 0);
-      item.bonus = shifts.filter(s => s.service === name).map(s => s.totalBonus).reduce((acc, value) => acc + value, 0);
-      item.total = shifts.filter(s => s.service === name).map(s => s.grandTotal).reduce((acc, value) => acc + value, 0);
-      item.cash = shifts.filter(s => s.service === name).map(s => s.totalCash).reduce((acc, value) => acc + value, 0);
-
-      items.push(item);
-    })
-
-    this.services = [...items];
+    return items;
   }
 }
