@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DefaultSheetGuard } from './default-sheet.guard';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 describe('DefaultSheetGuard', () => {
   let guard: DefaultSheetGuard;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ SpreadsheetService ]
+    });
     guard = TestBed.inject(DefaultSheetGuard);
   });
 

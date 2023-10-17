@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatDialogRef } from '@angular/material/dialog';
 import { AddressDialogComponent } from './address-dialog.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AddressDialogComponent', () => {
   let component: AddressDialogComponent;
@@ -8,7 +9,9 @@ describe('AddressDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AddressDialogComponent ]
+      declarations: [ AddressDialogComponent ],
+      imports: [ MatDialogRef ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();
 
