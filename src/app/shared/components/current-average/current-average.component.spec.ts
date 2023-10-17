@@ -1,14 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CurrentAverageComponent } from './current-average.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { WeekdayService } from '@services/weekday.service';
+import { WeeklyService } from '@services/weekly.service';
 
-describe('CurrentDayAverageComponent', () => {
+describe('CurrentAverageComponent', () => {
   let component: CurrentAverageComponent;
   let fixture: ComponentFixture<CurrentAverageComponent>;
+  const mockWeekdayService = jasmine.createSpyObj("WeekdayService", ["getCurrentTotal", "queryWeekdays"]);
+  const mockWeeklyService = jasmine.createSpyObj("WeeklyService", ["getLastWeekFromDay"]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CurrentAverageComponent ]
+      declarations: [ CurrentAverageComponent ],
+      imports: [ MatSnackBarModule ],
+      providers: [
+        { provide: WeekdayService, useValue: mockWeekdayService },
+        { provide: WeeklyService, useValue: mockWeeklyService }
+      ]
     })
     .compileComponents();
 

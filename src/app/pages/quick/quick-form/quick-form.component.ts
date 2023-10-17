@@ -27,9 +27,7 @@ import { ShiftService } from '@services/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
 import { TypeService } from '@services/type.service';
-import { WeekdayService } from '@services/weekday.service';
 import { Observable, startWith, mergeMap } from 'rxjs';
-import { AddressHelper } from 'src/app/shared/helpers/address.helper';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 
