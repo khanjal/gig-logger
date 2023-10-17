@@ -48,6 +48,11 @@
       "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"]
     },
+    "types": [
+      "jest",
+      "mocha",
+      "node"
+    ],
     "typeRoots": [
       "node_modules/@types"
     ],
