@@ -24,32 +24,36 @@ import { MatAutocomplete } from '@angular/material/autocomplete';
 describe('QuickFormComponent', () => {
   let component: QuickFormComponent;
   let fixture: ComponentFixture<QuickFormComponent>;
+  const mockAddressService = jasmine.createSpyObj("AddressService", ["getRemoteAddress", "getRemoteAddresses"]);
+  const mockDeliveryService = jasmine.createSpyObj("DeliveryService", ["queryRemoteDeliveries", "getRemoteAddresses"]);
+  const mockGigLoggerService = jasmine.createSpyObj("GigLoggerService", ["calculateShiftTotals"]);
+  const mockNameService = jasmine.createSpyObj("NameService", ["findRemoteName", "getRemoteNames"]);
+  const mockPlaceService = jasmine.createSpyObj("PlaceService", ["getRemotePlace", "getRemotePlaces"]);
+  const mockRegionService = jasmine.createSpyObj("RegionService", ["filter", "get"]);
+  const mockServiceService = jasmine.createSpyObj("ServiceService", ["filterRemoteServices", "getRemoteServices"]);
+  const mockShiftService = jasmine.createSpyObj("ShiftService", ["addNewShift", "getPreviousWeekShifts", "queryLocalShifts", "queryRemoteShifts", "queryShiftByKey"]);
+  const mockTimerService = jasmine.createSpyObj("TimerService", ["delay"]);
+  const mockTripService = jasmine.createSpyObj("TripService", ["addTrip", "queryLocalTrips", "queryRemoteTrips", "updateLocalTrip"]);
+  const mockTypeService = jasmine.createSpyObj("TypeService", ["filter"]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ QuickFormComponent, MatAutocomplete ],
       imports: [ MatDialogModule, MatSnackBarModule ],
       providers: [
-        {provide: MatDialogRef, useValue: {}},
-        {provide: MAT_DIALOG_DATA, useValue: []},
-        HttpClient,
-        HttpHandler,
-        AddressService,
-        DailyService,
-        DeliveryService,
-        GigLoggerService,
-        MonthlyService,
-        NameService,
-        PlaceService,
-        RegionService,
-        ServiceService,
-        ShiftService,
-        TimerService,
-        TripService,
-        TypeService,
-        WeekdayService,
-        WeeklyService,
-        YearlyService
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
+        { provide: AddressService, useValue: mockAddressService },
+        { provide: DeliveryService, useValue: mockDeliveryService },
+        { provide: GigLoggerService, useValue: mockGigLoggerService },
+        { provide: NameService, useValue: mockNameService },
+        { provide: PlaceService, useValue: mockPlaceService },
+        { provide: RegionService, useValue: mockRegionService },
+        { provide: ServiceService, useValue: mockServiceService },
+        { provide: ShiftService, useValue: mockShiftService },
+        { provide: TimerService, useValue: mockTimerService },
+        { provide: TripService, useValue: mockTripService },
+        { provide: TypeService, useValue: mockTypeService }
       ]
     })
     .compileComponents();
