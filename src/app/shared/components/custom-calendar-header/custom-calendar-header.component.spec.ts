@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CustomCalendarHeaderComponent } from './custom-calendar-header.component';
 
 describe('CustomCalendarHeaderComponent', () => {
-  let component: CustomCalendarHeaderComponent;
-  let fixture: ComponentFixture<CustomCalendarHeaderComponent>;
+  let component: CustomCalendarHeaderComponent<any>;
+  let fixture: ComponentFixture<CustomCalendarHeaderComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

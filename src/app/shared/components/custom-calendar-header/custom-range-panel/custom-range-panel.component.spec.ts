@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CustomRangePanelComponent } from './custom-range-panel.component';
 
 describe('CustomRangePanelComponent', () => {
-  let component: CustomRangePanelComponent;
-  let fixture: ComponentFixture<CustomRangePanelComponent>;
+  let component: CustomRangePanelComponent<any>;
+  let fixture: ComponentFixture<CustomRangePanelComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
