@@ -5,10 +5,13 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 
 describe('DefaultSheetGuard', () => {
   let guard: DefaultSheetGuard;
+  const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["getDefaultSheet"]);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ SpreadsheetService ]
+      providers: [ 
+        { provide: SpreadsheetService, useValue: mockSpreadsheetService}
+      ],
     });
     guard = TestBed.inject(DefaultSheetGuard);
   });
