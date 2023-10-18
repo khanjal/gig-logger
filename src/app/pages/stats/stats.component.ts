@@ -85,6 +85,9 @@ export class StatsComponent implements OnInit {
       item.total = tripFilter.map(x => x.total).reduce((acc, value) => acc + value, 0);
       item.cash = tripFilter.map(x => x.cash).reduce((acc, value) => acc + value, 0);
 
+      item.amountPerTrip = item.total / item.trips;
+      item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
+
       items.push(item);
     })
 
@@ -101,13 +104,16 @@ export class StatsComponent implements OnInit {
       let shiftFilter = shifts.filter((x:any) => x[name] === itemName);
 
       item.name = itemName;
-      item.trips = shiftFilter.length;
-      item.distance = shiftFilter.map(x => x.distance).reduce((acc, value) => acc + value, 0);
+      item.trips = shiftFilter.map(x => x.totalTrips).reduce((acc, value) => acc + value, 0);
+      item.distance = shiftFilter.map(x => x.totalDistance).reduce((acc, value) => acc + value, 0);
       item.pay = shiftFilter.map(x => x.totalPay).reduce((acc, value) => acc + value, 0);
       item.tip = shiftFilter.map(x => x.totalTips).reduce((acc, value) => acc + value, 0);
       item.bonus = shiftFilter.map(x => x.totalBonus).reduce((acc, value) => acc + value, 0);
       item.total = shiftFilter.map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
       item.cash = shiftFilter.map(x => x.totalCash).reduce((acc, value) => acc + value, 0);
+
+      item.amountPerTrip = item.total / item.trips;
+      item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
 
       items.push(item);
     })
