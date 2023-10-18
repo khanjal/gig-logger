@@ -4,8 +4,13 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jasmine"
-    ]
+      "google.maps",
+      "jasmine",
+      "node"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
   },
   "files": [
     "src/test.ts",
