@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
 import { DateHelper } from '@helpers/date.helper';
-import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { IStatItem } from '@interfaces/stat-item.interface';
 import { ITrip } from '@interfaces/trip.interface';
-import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
 
@@ -27,7 +25,6 @@ export class StatsComponent implements OnInit {
   });
 
   constructor(
-    private _serviceService: ServiceService,
     private _shiftService: ShiftService,
     private _tripService: TripService
   ) {}
