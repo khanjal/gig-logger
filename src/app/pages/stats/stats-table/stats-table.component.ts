@@ -13,8 +13,12 @@ export class StatsTableComponent implements OnInit {
   displayedColumns: string[] = [];
 
   async ngOnInit(): Promise<void> {
-    this.displayedColumns = ['name', 'trips', 'pay', 'tips', 'bonus', 'total', 'cash'];
+    this.displayedColumns = ['name', 'trips', 'distance', 'pay', 'tips', 'bonus', 'total', 'cash', 'time', 'amountPerTrip', 'amountPerDistance'];
+  }
 
+  getAverage(property: string) {
+    let total = this.items.map((s:any) => s[property]).reduce((acc, value) => acc + value, 0);
+    return total / this.items.map((s:any) => s[property]).length;
   }
 
   getTotal(property: string) {
