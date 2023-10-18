@@ -29,6 +29,9 @@ public class ShiftEntity : AmountEntity
     [JsonPropertyName("trips")]
     public int Trips { get; set; }
 
+    [JsonPropertyName("distance")]
+    public decimal? Distance { get; set; }
+
     [JsonPropertyName("time")]
     public string Time { get; set; }
 
@@ -43,6 +46,9 @@ public class ShiftEntity : AmountEntity
 
     [JsonPropertyName("totalTrips")]
     public int TotalTrips { get; set; }
+
+    [JsonPropertyName("totalDistance")]
+    public decimal? TotalDistance { get; set; }
 
     [JsonPropertyName("totalPay")]
     public decimal? TotalPay { get; set; }
