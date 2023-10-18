@@ -49,6 +49,7 @@
       "@services/*": ["./src/app/shared/services/*"]
     },
     "types": [
+      "google.maps",
       "jest",
       "mocha",
       "node"
