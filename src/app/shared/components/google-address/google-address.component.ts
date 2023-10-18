@@ -21,6 +21,7 @@ export class GoogleAddressComponent implements OnInit {
 
   place!: any;
   formattedAddress!: string;
+  google: any;
   // formattedEstablishmentAddress!: string;
 
   addressForm = new FormGroup({
@@ -46,7 +47,7 @@ export class GoogleAddressComponent implements OnInit {
   }
 
   private getPlaceAutocomplete() {
-    const autocomplete = new google.maps.places.Autocomplete(
+    const autocomplete = this.google.maps.places.Autocomplete(
       this.addressInput.nativeElement,
       {
         componentRestrictions: { country: 'US' },
@@ -54,7 +55,7 @@ export class GoogleAddressComponent implements OnInit {
       }
     );
 
-    google.maps.event.addListener(autocomplete, 'place_changed', () => {
+    this.google.maps.event.addListener(autocomplete, 'place_changed', () => {
       // $('.pac-container').remove(); // TODO remove existing pac-containers
       this.place = autocomplete.getPlace();
       this.formatAddress();

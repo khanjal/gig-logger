@@ -1,14 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SheetQuotaComponent } from './sheet-quota.component';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 describe('SheetQuotaComponent', () => {
   let component: SheetQuotaComponent;
   let fixture: ComponentFixture<SheetQuotaComponent>;
+  const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["showEstimatedQuota"]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SheetQuotaComponent ]
+      declarations: [ SheetQuotaComponent ],
+      providers: [ 
+        { provide: SpreadsheetService, useValue: mockSpreadsheetService }
+      ]
     })
     .compileComponents();
 

@@ -74,7 +74,7 @@ export class DateHelper {
             return 7; // We want Sunday to be 7
         }
         else {
-            return dayOfWeek+=1; // Increment one since Monday is 0 and we want it to start at 1
+            return dayOfWeek; // Increment one since Monday is 0 and we want it to start at 1
         }
     }
 
