@@ -51,6 +51,8 @@ public static class TripMapper
                 OrderNumber = HeaderParser.GetStringValue(HeaderEnum.ORDER_NUMBER.DisplayName(), value, headers),
                 Region = HeaderParser.GetStringValue(HeaderEnum.REGION.DisplayName(), value, headers),
                 Note = HeaderParser.GetStringValue(HeaderEnum.NOTE.DisplayName(), value, headers),
+                AmountPerTime = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_TIME.DisplayName(), value, headers),
+                AmountPerDistance = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(), value, headers),
                 Saved = true
             };
             
@@ -248,6 +250,14 @@ public static class TripMapper
         // Year
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.YEAR.DisplayName(),
             Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.YEAR.DisplayName()}\",ISBLANK({dateRange}), \"\",true,YEAR({dateRange})))"});
+        // Amt/Time
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_TIME.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.AMOUNT_PER_TIME.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.DURATION)}), \"\", true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.DURATION)}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.DURATION)}=0,1,({sheet.GetLocalRange(HeaderEnum.DURATION)}*24)))))",
+            Format = FormatEnum.ACCOUNTING});
+        // Amt/Dist
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(),
+            Formula = $"=ARRAYFORMULA(IFS(ROW({dateRange})=1,\"{HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName()}\",ISBLANK({sheet.GetLocalRange(HeaderEnum.DISTANCE)}), \"\", true,IF(ISBLANK({sheet.GetLocalRange(HeaderEnum.DISTANCE)}), \"\", {sheet.GetLocalRange(HeaderEnum.TOTAL)}/IF({sheet.GetLocalRange(HeaderEnum.DISTANCE)}=0,1,{sheet.GetLocalRange(HeaderEnum.DISTANCE)}))))",
+            Format = FormatEnum.ACCOUNTING});
 
         return sheet;
     }
