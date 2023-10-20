@@ -21,4 +21,7 @@ export interface IShift extends IAmount {
     totalBonus: number;
     grandTotal: number;
     totalCash: number;
+    amountPerDistance: number;
+    amountPerTime: number;
+    amountPerTrip: number;
 }
