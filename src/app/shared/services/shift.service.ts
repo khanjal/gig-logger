@@ -71,6 +71,19 @@ export class ShiftService {
         return shifts;
     }
 
+    public async getLocalShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
+        let shifts = await localDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
+
+        return shifts;
+    }
+
+    public async getShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
+        let shifts = [...await this.getRemoteShiftsBetweenDates(startDate, endDate), 
+            ...(await this.getLocalShiftsBetweenDates(startDate, endDate)).filter(x => !x.saved)];
+
+        return shifts;
+    }
+
     public async queryLocalShifts(field: string, value: string | number): Promise<IShift[]> {
         return await localDB.shifts.where(field).equals(value).toArray();
     }
