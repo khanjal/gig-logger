@@ -107,8 +107,8 @@ export class GigLoggerService {
             let filteredTrips = trips.filter(x => !x.exclude);
 
             shift.totalTrips = shift.trips + filteredTrips.length;
-            shift.grandTotal = shift.pay + shift.tip + shift.bonus;
-            shift.grandTotal = filteredTrips.map((x) => x.total).reduce((acc, value) => acc + value, 0);
+            shift.grandTotal = shift.total;
+            shift.grandTotal += (filteredTrips.filter(x => x.total).map((x) => x.total).reduce((acc, value) => acc + value, 0));
 
             if (trips?.length === 0 && !shift.saved) {
                 this._shiftService.deleteLocal(shift.id!);
