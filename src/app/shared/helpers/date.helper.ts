@@ -42,6 +42,17 @@ export class DateHelper {
         return timeString;
     }
 
+    static getStartOfWeekDate(date: Date): string {
+        const deltaStart =
+            DateHelper.getFirstDayOfWeek() -
+            DateHelper.getDayOfWeek(date);
+
+        let startDate = new Date();
+        startDate.setDate(startDate.getDate() + deltaStart);
+
+        return this.getISOFormat(startDate);
+    }
+
     static getDuration(start: string, end: string): string {
         if (!start || !end) {
             return "";
@@ -68,13 +79,13 @@ export class DateHelper {
     }
 
     static getDayOfWeek(date: Date = new Date()){
-        let dayOfWeek = new Date(date).getDay();
+        let dayOfWeek = new Date(date).getUTCDay();
 
         if (dayOfWeek === 0) {
             return 7; // We want Sunday to be 7
         }
         else {
-            return dayOfWeek; // Increment one since Monday is 0 and we want it to start at 1
+            return dayOfWeek;
         }
     }
 
