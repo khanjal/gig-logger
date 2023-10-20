@@ -55,13 +55,13 @@ export class StatsComponent implements OnInit {
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
-    let shifts = await this._shiftService.getRemoteShiftsBetweenDates(startDate, endDate);
+    let shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
     
     this.services = this.getShiftList(shifts, "service");
   }
 
   async getTripsRange(startDate: string, endDate: string) {
-    let trips = (await this._tripService.getRemoteTripsBetweenDates(startDate, endDate)).filter(x => !x.exclude);
+    let trips = (await this._tripService.getTripsBetweenDates(startDate, endDate)).filter(x => !x.exclude);
     
     this.places = this.getTripList(trips, "place");
     this.types = this.getTripList(trips, "type");
@@ -87,6 +87,7 @@ export class StatsComponent implements OnInit {
 
       item.amountPerTrip = item.total / item.trips;
       item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
+      item.amountPerTime = tripFilter.map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / item.trips;
 
       items.push(item);
     })
@@ -114,6 +115,7 @@ export class StatsComponent implements OnInit {
 
       item.amountPerTrip = item.total / item.trips;
       item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
+      item.amountPerTime = shiftFilter.map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / item.trips;
 
       items.push(item);
     })
