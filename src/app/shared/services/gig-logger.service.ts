@@ -30,6 +30,7 @@ import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
 import { sort } from "@helpers/sort.helper";
+import { DateAdapter } from "@angular/material/core";
 
 @Injectable()
 export class GigLoggerService {
@@ -122,22 +123,21 @@ export class GigLoggerService {
     }
 
     public async calculateDailyTotal() {
-        let currentAmount = 0;
-        let date = DateHelper.getISOFormat();
-        let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
-        let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+        let date = DateHelper.getStartOfWeekDate(new Date);
+        let shifts = await this._shiftService.getShiftsByStartDate(date);
+        let dates = [... new Set(shifts.flatMap(x => x.date))];
 
-        let todaysShifts = [... (await this._shiftService.queryLocalShifts("date", date)).filter(x => !x.saved),
-                            ...await this._shiftService.queryRemoteShifts("date", date)];
-    
-        todaysShifts.forEach(shift => {
-            currentAmount += shift.grandTotal;
-        })
-    
-        if (weekday) {
-            weekday.currentAmount = currentAmount;
-            await this._weekdayService.updateWeekday(weekday);
-        }
+        dates.forEach(async date => {
+            let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
+
+            let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
+            let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+
+            if (weekday && weekday.currentAmount != shiftTotal) {
+                weekday.currentAmount = shiftTotal;
+                await this._weekdayService.updateWeekday(weekday);
+            }
+        });
     }
 
     public async linkDeliveries(trips: ITrip[]) {
