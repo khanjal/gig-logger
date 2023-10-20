@@ -37,6 +37,19 @@ export class TripService {
         return trips;
     }
 
+    public async getLocalTripsBetweenDates(startDate: string, endDate: string): Promise<ITrip[]> {
+        let trips = await localDB.trips.where("date").between(startDate, endDate, true, true).toArray();
+
+        return trips;
+    }
+
+    public async getTripsBetweenDates(startDate: string, endDate: string): Promise<ITrip[]> {
+        let shifts = [...await this.getRemoteTripsBetweenDates(startDate, endDate), 
+            ...(await this.getLocalTripsBetweenDates(startDate, endDate)).filter(x => !x.saved)];
+
+        return shifts;
+    }
+
     public async getLocalTripsPreviousDays(days: number): Promise<ITrip[]> {
         let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
         let trips = await localDB.trips.where("date").aboveOrEqual(date).toArray();
