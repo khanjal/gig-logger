@@ -64,6 +64,15 @@ public class ShiftEntity : AmountEntity
 
     [JsonPropertyName("totalCash")]
     public decimal? TotalCash { get; set; }
+
+    [JsonPropertyName("amountPerTime")]
+    public decimal? AmountPerTime { get; set; }
+
+    [JsonPropertyName("amountPerDistance")]
+    public decimal? AmountPerDistance { get; set; }
+
+    [JsonPropertyName("amountPerTrip")]
+    public decimal? AmountPerTrip { get; set; }
     
     [JsonPropertyName("saved")]
     public bool Saved { get; set; }
