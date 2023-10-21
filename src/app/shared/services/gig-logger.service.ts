@@ -130,7 +130,7 @@ export class GigLoggerService {
         dates.forEach(async date => {
             let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
 
-            let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
+            let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
             let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
             if (weekday && weekday.currentAmount != shiftTotal) {

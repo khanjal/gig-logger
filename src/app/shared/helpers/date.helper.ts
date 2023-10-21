@@ -17,6 +17,10 @@ export class DateHelper {
         return dates;
     }
 
+    static getDateFromISO(date: string): Date {
+        return new Date(`${date}\n`);
+    }
+
     static getISOFormat(date?: Date) {
         if (!date) {
             date = new Date();
@@ -79,7 +83,7 @@ export class DateHelper {
     }
 
     static getDayOfWeek(date: Date = new Date()){
-        let dayOfWeek = new Date(date).getUTCDay();
+        let dayOfWeek = new Date(date).getDay();
 
         if (dayOfWeek === 0) {
             return 7; // We want Sunday to be 7
