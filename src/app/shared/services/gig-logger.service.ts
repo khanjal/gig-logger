@@ -104,12 +104,34 @@ export class GigLoggerService {
         let shifts = await this._shiftService.getPreviousWeekShifts();
 
         shifts.forEach(async shift => {
-            let trips = (await this._tripService.queryTrips("key", shift.key));
+            let trips = await this._tripService.queryTrips("key", shift.key);
             let filteredTrips = trips.filter(x => !x.exclude);
 
             shift.totalTrips = shift.trips + filteredTrips.length;
-            shift.grandTotal = shift.total;
-            shift.grandTotal += (filteredTrips.filter(x => x.total).map((x) => x.total).reduce((acc, value) => acc + value, 0));
+            shift.totalDistance = shift.distance ?? 0;
+            shift.totalPay = shift.pay ?? 0;
+            shift.totalTips = shift.tip ?? 0;
+            shift.totalBonus = shift.bonus ?? 0;
+            shift.grandTotal = shift.total ?? 0;
+            shift.cash = shift.cash ?? 0;
+
+            filteredTrips.forEach(filteredTrip => {
+                shift.totalDistance += filteredTrip.distance ?? 0;
+                shift.totalPay += filteredTrip.pay ?? 0;
+                shift.totalTips += filteredTrip.tip ?? 0;
+                shift.totalBonus += filteredTrip.bonus ?? 0;
+                shift.totalPay += filteredTrip.pay ?? 0;
+                shift.grandTotal += filteredTrip.total ?? 0;
+                shift.totalCash += filteredTrip.cash ?? 0;
+            });
+            
+            // shift.totalDistance = shift.distance ?? 0 + filteredTrips.filter(x => x.distance).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
+            // console.log(filteredTrips.filter(x => x.distance).map((x) => x.distance).reduce((acc, value) => acc + value, 0));
+            // shift.totalPay = shift.pay ?? 0 + filteredTrips.map((x) => x.pay).reduce((acc, value) => acc + value, 0);
+            // shift.totalTips = shift.tip ?? 0 + filteredTrips.filter(x => x.tip).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
+            // shift.totalBonus = shift.bonus ?? 0 + filteredTrips.filter(x => x.bonus).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
+            // shift.totalCash = shift.cash ?? 0 + filteredTrips.filter(x => x.cash).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
+            // shift.grandTotal = shift.total ?? 0 + filteredTrips.filter(x => x.total).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
             if (trips?.length === 0 && !shift.saved) {
                 this._shiftService.deleteLocal(shift.id!);
