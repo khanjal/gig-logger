@@ -48,8 +48,8 @@ export class DateHelper {
 
     static getStartOfWeekDate(date: Date): string {
         const deltaStart =
-            DateHelper.getFirstDayOfWeek() -
-            DateHelper.getDayOfWeek(date);
+            this.getFirstDayOfWeek() -
+            this.getDayOfWeek(date);
 
         let startDate = new Date();
         startDate.setDate(startDate.getDate() + deltaStart);
