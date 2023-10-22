@@ -39,8 +39,8 @@ export class ShiftService {
     }
 
     public async getPreviousWeekShifts(): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShiftsPreviousDays(7), 
-            ...(await this.getLocalShiftsPreviousDays(7)).filter(x => !x.saved)];
+        let shifts = [...await this.getRemoteShiftsPreviousDays(6), 
+            ...(await this.getLocalShiftsPreviousDays(6)).filter(x => !x.saved)];
 
         return shifts;
     }
