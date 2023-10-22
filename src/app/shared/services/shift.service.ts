@@ -61,7 +61,7 @@ export class ShiftService {
 
     public async getShiftsByStartDate(date: string): Promise<IShift[]> {
         let shifts = [...(await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray()),
-                    ...(await localDB.shifts.where("date").aboveOrEqual(date).toArray())];
+                    ...(await localDB.shifts.where("date").aboveOrEqual(date).toArray()).filter(x => !x.saved)];
 
         return shifts;
     }
