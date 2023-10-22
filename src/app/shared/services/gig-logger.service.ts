@@ -332,7 +332,9 @@ export class GigLoggerService {
                 }
             });
 
-            sort(place.addresses, 'address');
+            if (place.addresses) {
+                sort(place.addresses, 'address');
+            }
 
             // Types
             let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);
