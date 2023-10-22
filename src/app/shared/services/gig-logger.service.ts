@@ -104,12 +104,16 @@ export class GigLoggerService {
         let shifts = await this._shiftService.getPreviousWeekShifts();
 
         shifts.forEach(async shift => {
-            let trips = (await this._tripService.queryTrips("key", shift.key));
-            let filteredTrips = trips.filter(x => !x.exclude);
+            let trips = await this._tripService.queryTrips("key", shift.key);
+            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
 
-            shift.totalTrips = shift.trips + filteredTrips.length;
-            shift.grandTotal = shift.total;
-            shift.grandTotal += (filteredTrips.filter(x => x.total).map((x) => x.total).reduce((acc, value) => acc + value, 0));
+            shift.totalTrips = (shift.trips ?? 0) + filteredTrips.length;
+            shift.totalDistance = (shift.distance ?? 0) + filteredTrips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
+            shift.totalPay = (shift.pay ?? 0) + filteredTrips.filter(x => x.pay != undefined).map((x) => x.pay).reduce((acc, value) => acc + value, 0);
+            shift.totalTips = (shift.tip ?? 0) + filteredTrips.filter(x => x.tip != undefined).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
+            shift.totalBonus = (shift.bonus ?? 0) + filteredTrips.filter(x => x.bonus != undefined).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
+            shift.totalCash = (shift.cash ?? 0) + filteredTrips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
+            shift.grandTotal = (shift.total ?? 0) + filteredTrips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
             if (trips?.length === 0 && !shift.saved) {
                 this._shiftService.deleteLocal(shift.id!);
@@ -130,7 +134,7 @@ export class GigLoggerService {
         dates.forEach(async date => {
             let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
 
-            let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
+            let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
             let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
             if (weekday && weekday.currentAmount != shiftTotal) {
@@ -328,7 +332,9 @@ export class GigLoggerService {
                 }
             });
 
-            sort(place.addresses, 'address');
+            if (place.addresses) {
+                sort(place.addresses, 'address');
+            }
 
             // Types
             let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);
