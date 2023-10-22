@@ -48,7 +48,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     dates.forEach(async date => {
       let tripGroup = {} as ITripGroup;
       let trips = sheetTrips.filter(x => x.date === date);
-      let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
+      let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
       let day = (await this._dailyService.queryDaily("date", date))[0];
       let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
