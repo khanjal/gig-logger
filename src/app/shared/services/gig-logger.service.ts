@@ -30,7 +30,7 @@ import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
 import { sort } from "@helpers/sort.helper";
-import { DateAdapter } from "@angular/material/core";
+import { IShift } from "@interfaces/shift.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -100,8 +100,12 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
-    public async calculateShiftTotals() {
-        let shifts = await this._shiftService.getPreviousWeekShifts();
+    public async calculateShiftTotals(shifts: IShift[] = []) {
+        if (!shifts.length) {
+            shifts = await this._shiftService.getPreviousWeekShifts();
+        }
+
+        console.log(shifts);
 
         shifts.forEach(async shift => {
             let trips = await this._tripService.queryTrips("key", shift.key);
@@ -123,16 +127,41 @@ export class GigLoggerService {
             }
         });
 
-        await this.calculateDailyTotal();
+        let dates = [... new Set(shifts.map(x => x.date))];
+        console.log(dates);
+
+        await this.calculateDailyTotal(dates);
     }
 
-    public async calculateDailyTotal() {
-        let date = DateHelper.getStartOfWeekDate(new Date);
-        let shifts = await this._shiftService.getShiftsByStartDate(date);
-        let dates = [... new Set(shifts.flatMap(x => x.date))];
+    public async calculateDailyTotal(dates: string[] = []) {
+        let startDate = DateHelper.getStartOfWeekDate(new Date);
+        let shifts: IShift[] = [];
+
+        console.log(dates);
+
+        // if (!dates.length) {
+            shifts = await this._shiftService.getShiftsByStartDate(startDate);
+            dates = [... new Set(shifts.flatMap(x => x.date))];
+        // }
 
         dates.forEach(async date => {
-            let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
+            if (date < startDate) {
+                return;
+            }
+
+            console.log(date);
+
+            let shiftTotal = 0;
+
+            if (shifts.length) {
+                shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
+            }
+            else {
+                let shift = await this._shiftService.getShiftsByDate(date);
+                shiftTotal = shift.map(x=> x.grandTotal).reduce((acc, value) => acc + value, 0);
+            }
+
+            console.log(shiftTotal);
 
             let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
             let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
