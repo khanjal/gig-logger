@@ -1,14 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TripsTableGroupComponent } from './trips-table-group.component';
+import { DailyService } from '@services/daily.service';
+import { TripService } from '@services/trip.service';
+import { WeekdayService } from '@services/weekday.service';
 
 describe('TripsTableGroupComponent', () => {
   let component: TripsTableGroupComponent;
   let fixture: ComponentFixture<TripsTableGroupComponent>;
+  const mockDailyService = jasmine.createSpyObj("DailyService", ["queryDaily"]);
+  const mockTripService = jasmine.createSpyObj("TripService", ["getRemoteTripsPreviousDays"]);
+  const mockWeekdayService = jasmine.createSpyObj("WeekdayService", ["queryWeekdays"]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TripsTableGroupComponent ]
+      declarations: [ TripsTableGroupComponent ],
+      providers: [
+        { provide: DailyService, useValue: mockDailyService },
+        { provide: TripService, useValue: mockTripService },
+        { provide: WeekdayService, useValue: mockWeekdayService }
+      ]
     })
     .compileComponents();
 

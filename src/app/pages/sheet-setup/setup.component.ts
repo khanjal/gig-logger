@@ -99,10 +99,10 @@ export class SetupComponent {
     await this._timerService.delay(2000);
 
     // Add spreadsheets back to DB
-    this.spreadsheets?.forEach(async spreadsheet => {
+    for (const spreadsheet of this.spreadsheets) {
       console.log(`Adding spreadsheet: ${spreadsheet.name}`);
       await this._spreadsheetService.update(spreadsheet);
-    });
+    };
 
     if (!this.defaultSheet?.id) {
       this._snackBar.open("Please Reload Manually");

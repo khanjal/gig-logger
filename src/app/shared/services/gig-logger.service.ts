@@ -30,6 +30,7 @@ import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
 import { sort } from "@helpers/sort.helper";
+import { IShift } from "@interfaces/shift.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -99,16 +100,22 @@ export class GigLoggerService {
         await this.linkDeliveries(sheetData.trips);
     }
 
-    public async calculateShiftTotals() {
-        let shifts = await this._shiftService.getPreviousWeekShifts();
+    public async calculateShiftTotals(shifts: IShift[] = []) {
+        if (!shifts.length) {
+            shifts = await this._shiftService.getPreviousWeekShifts();
+        }
 
-        shifts.forEach(async shift => {
-            let trips = (await this._tripService.queryTrips("key", shift.key));
-            let filteredTrips = trips.filter(x => !x.exclude);
+        for (let shift of shifts) {
+            let trips = await this._tripService.queryTrips("key", shift.key);
+            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
 
-            shift.totalTrips = shift.trips + filteredTrips.length;
-            shift.grandTotal = shift.pay + shift.tip + shift.bonus;
-            shift.grandTotal = filteredTrips.map((x) => x.total).reduce((acc, value) => acc + value, 0);
+            shift.totalTrips = (shift.trips ?? 0) + filteredTrips.length;
+            shift.totalDistance = (shift.distance ?? 0) + filteredTrips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
+            shift.totalPay = (shift.pay ?? 0) + filteredTrips.filter(x => x.pay != undefined).map((x) => x.pay).reduce((acc, value) => acc + value, 0);
+            shift.totalTips = (shift.tip ?? 0) + filteredTrips.filter(x => x.tip != undefined).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
+            shift.totalBonus = (shift.bonus ?? 0) + filteredTrips.filter(x => x.bonus != undefined).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
+            shift.totalCash = (shift.cash ?? 0) + filteredTrips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
+            shift.grandTotal = (shift.total ?? 0) + filteredTrips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
             if (trips?.length === 0 && !shift.saved) {
                 this._shiftService.deleteLocal(shift.id!);
@@ -116,28 +123,34 @@ export class GigLoggerService {
             else {
                 await this._shiftService.updateShift(shift);
             }
-        });
+        };
 
-        await this.calculateDailyTotal();
+        let dates = [... new Set(shifts.map(x => x.date))];
+
+        await this.calculateDailyTotal(dates);
     }
 
-    public async calculateDailyTotal() {
-        let currentAmount = 0;
-        let date = DateHelper.getISOFormat();
-        let dayOfWeek = DateHelper.getDayOfWeek(new Date(date));
-        let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    public async calculateDailyTotal(dates: string[] = []) {
+        let startDate = DateHelper.getStartOfWeekDate(new Date);
+        let shifts: IShift[] = [];
 
-        let todaysShifts = [... (await this._shiftService.queryLocalShifts("date", date)).filter(x => !x.saved),
-                            ...await this._shiftService.queryRemoteShifts("date", date)];
-    
-        todaysShifts.forEach(shift => {
-            currentAmount += shift.grandTotal;
-        })
-    
-        if (weekday) {
-            weekday.currentAmount = currentAmount;
-            await this._weekdayService.updateWeekday(weekday);
-        }
+        shifts = await this._shiftService.getShiftsByStartDate(startDate);
+        dates = [... new Set(shifts.flatMap(x => x.date))];
+
+        for (const date of dates) {
+            if (date < startDate) {
+                return;
+            }
+
+            let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
+            let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
+            let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+
+            if (weekday && weekday.currentAmount != shiftTotal) {
+                weekday.currentAmount = shiftTotal;
+                await this._weekdayService.updateWeekday(weekday);
+            }
+        };
     }
 
     public async linkDeliveries(trips: ITrip[]) {
@@ -226,11 +239,11 @@ export class GigLoggerService {
         let names = await this._nameService.getRemoteNames();
         let trips = await this._tripService.getRemoteTrips();
 
-        names.forEach(async name => {
+        for (let name of names) {
             let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
             
             // Go through each trip and add addresses and notes
-            addressTrips.forEach(async trip => {
+            for (const trip of addressTrips) {
                 if (!name.addresses) {
                     name.addresses = [];
                 }
@@ -257,20 +270,20 @@ export class GigLoggerService {
                 
                 // console.table(name);
                 await this._nameService.update(name);
-            });
+            };
             // console.log(`Name: ${name.name}`);
-        });
+        };
     }
 
     private async linkAddressData () {
         let addresses = await this._addressService.getRemoteAddresses();
         let trips = await this._tripService.getRemoteTrips();
 
-        addresses.forEach(async address => {
+        for (let address of addresses) {
             let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
 
             // Go through each trip and add addresses and notes
-            nameTrips.forEach(async trip => {
+            for (let trip of nameTrips) {
                 if (!address.names) {
                     address.names = [];
                 }
@@ -297,20 +310,20 @@ export class GigLoggerService {
                 
                 // console.table(name);
                 await this._addressService.update(address)
-            });
+            };
             // console.log(`Address: ${address.address}`);
-        });
+        };
     }
 
     private async linkPlaceData() {
         let trips = await this._tripService.getRemoteTrips();
         let places = await this._placeService.getRemotePlaces();
 
-        places.forEach(async place => {
+        for (let place of places) {
             // Addresses
             let tripPlaceAddresses = trips.filter(x => x.place === place.place && x.startAddress);
 
-            tripPlaceAddresses.forEach(tripPlaceAddress => {
+            for (const tripPlaceAddress of tripPlaceAddresses) {
                 if (!place.addresses) {
                     place.addresses = [];
                 }
@@ -326,14 +339,16 @@ export class GigLoggerService {
                     address.visits = 1;
                     place.addresses.push(address);    
                 }
-            });
+            };
 
-            sort(place.addresses, 'address');
+            if (place.addresses) {
+                sort(place.addresses, 'address');
+            }
 
             // Types
             let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);
 
-            tripPlaceTypes.forEach(tripPlaceType => {
+            for (const tripPlaceType of tripPlaceTypes) {
                 if (!place.types) {
                     place.types = [];
                 }
@@ -349,9 +364,9 @@ export class GigLoggerService {
                     type.visits = 1;
                     place.types.push(type);    
                 }
-            });
+            };
 
             await this._placeService.update(place);
-        });
+        };
     }
 }

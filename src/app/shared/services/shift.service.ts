@@ -39,8 +39,8 @@ export class ShiftService {
     }
 
     public async getPreviousWeekShifts(): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShiftsPreviousDays(7), 
-            ...(await this.getLocalShiftsPreviousDays(7)).filter(x => !x.saved)];
+        let shifts = [...await this.getRemoteShiftsPreviousDays(6), 
+            ...(await this.getLocalShiftsPreviousDays(6)).filter(x => !x.saved)];
 
         return shifts;
     }
@@ -59,14 +59,35 @@ export class ShiftService {
         return shifts;
     }
 
-    public async getRemoteShiftsPreviousDate(date: string): Promise<IShift[]> {
-        let shifts = await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray();
+    public async getShiftsByDate(date: string): Promise<IShift[]> {
+        let shifts = [...(await spreadsheetDB.shifts.where("date").equals(date).toArray()),
+                    ...(await localDB.shifts.where("date").equals(date).toArray()).filter(x => !x.saved)];
+
+        return shifts;
+    }
+
+    public async getShiftsByStartDate(date: string): Promise<IShift[]> {
+        let shifts = [...(await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray()),
+                    ...(await localDB.shifts.where("date").aboveOrEqual(date).toArray()).filter(x => !x.saved)];
 
         return shifts;
     }
 
     public async getRemoteShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
         let shifts = await spreadsheetDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
+
+        return shifts;
+    }
+
+    public async getLocalShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
+        let shifts = await localDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
+
+        return shifts;
+    }
+
+    public async getShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
+        let shifts = [...await this.getRemoteShiftsBetweenDates(startDate, endDate), 
+            ...(await this.getLocalShiftsBetweenDates(startDate, endDate)).filter(x => !x.saved)];
 
         return shifts;
     }
@@ -92,10 +113,10 @@ export class ShiftService {
 
     public async saveUnsavedShifts() {
         let shifts = await this.getUnsavedLocalShifts();
-        shifts.forEach(async shift => {
+        for (let shift of shifts) {
             shift.saved = true;
             await this.updateLocalShift(shift);
-        });
+        };
     }
 
     public async updateShift(shift: IShift) {

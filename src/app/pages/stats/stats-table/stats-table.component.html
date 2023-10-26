@@ -10,6 +10,11 @@
             <td mat-cell *matCellDef="let item"> {{item.trips}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("trips")}} </td>
         </ng-container>
+        <ng-container matColumnDef="distance">
+            <th mat-header-cell *matHeaderCellDef>Distance</th>
+            <td mat-cell *matCellDef="let item"> {{item.distance | number}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getTotal("distance") | number}} </td>
+        </ng-container>
         <ng-container matColumnDef="pay">
             <th mat-header-cell *matHeaderCellDef>Pay</th>
             <td mat-cell *matCellDef="let item"> {{item.pay | currency}} </td>
@@ -34,6 +39,21 @@
             <th mat-header-cell *matHeaderCellDef>Cash</th>
             <td mat-cell *matCellDef="let item"> {{item.cash | currency}} </td>
             <td mat-footer-cell *matFooterCellDef> {{getTotal("cash") | currency}} </td>
+        </ng-container>
+        <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef>Amt/Time</th>
+            <td mat-cell *matCellDef="let item"> {{item.amountPerTime | currency}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getAverage("amountPerTime") | currency}} </td>
+        </ng-container>
+        <ng-container matColumnDef="amountPerTrip">
+            <th mat-header-cell *matHeaderCellDef>Amt/Trip</th>
+            <td mat-cell *matCellDef="let item"> {{item.amountPerTrip | currency}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getAverage("amountPerTrip") | currency}} </td>
+        </ng-container>
+        <ng-container matColumnDef="amountPerDistance">
+            <th mat-header-cell *matHeaderCellDef>Amt/Dist</th>
+            <td mat-cell *matCellDef="let item"> {{item.amountPerDistance | currency}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getAverage("amountPerDistance") | currency}} </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
