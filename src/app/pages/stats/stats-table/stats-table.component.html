@@ -41,9 +41,9 @@
             <td mat-footer-cell *matFooterCellDef> {{getTotal("cash") | currency}} </td>
         </ng-container>
         <ng-container matColumnDef="time">
-            <th mat-header-cell *matHeaderCellDef>Time</th>
-            <td mat-cell *matCellDef="let item"> {{item.time}} </td>
-            <td mat-footer-cell *matFooterCellDef> {{getTotal("time")}} </td>
+            <th mat-header-cell *matHeaderCellDef>Amt/Time</th>
+            <td mat-cell *matCellDef="let item"> {{item.amountPerTime | currency}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getAverage("amountPerTime") | currency}} </td>
         </ng-container>
         <ng-container matColumnDef="amountPerTrip">
             <th mat-header-cell *matHeaderCellDef>Amt/Trip</th>
