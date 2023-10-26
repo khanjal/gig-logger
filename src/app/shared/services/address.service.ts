@@ -33,7 +33,7 @@ export class AddressService {
     public async updateAddresses(addresses: IAddress[]) {
         let remoteAddresses = await this.getRemoteAddresses();
 
-        addresses.forEach(async address => {
+        for (let address of addresses) {
             let remoteAddress = remoteAddresses.find(x => x.address === address.address);
 
             if (remoteAddress) {
@@ -65,7 +65,7 @@ export class AddressService {
                 address.id = undefined;
             }
 
-        });
+        };
 
         await spreadsheetDB.addresses.bulkPut(addresses);
     }

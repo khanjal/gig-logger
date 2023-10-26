@@ -137,7 +137,7 @@ export class GigLoggerService {
         shifts = await this._shiftService.getShiftsByStartDate(startDate);
         dates = [... new Set(shifts.flatMap(x => x.date))];
 
-        dates.forEach(async date => {
+        for (const date of dates) {
             if (date < startDate) {
                 return;
             }
@@ -150,7 +150,7 @@ export class GigLoggerService {
                 weekday.currentAmount = shiftTotal;
                 await this._weekdayService.updateWeekday(weekday);
             }
-        });
+        };
     }
 
     public async linkDeliveries(trips: ITrip[]) {
@@ -239,11 +239,11 @@ export class GigLoggerService {
         let names = await this._nameService.getRemoteNames();
         let trips = await this._tripService.getRemoteTrips();
 
-        names.forEach(async name => {
+        for (let name of names) {
             let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
             
             // Go through each trip and add addresses and notes
-            addressTrips.forEach(async trip => {
+            for (const trip of addressTrips) {
                 if (!name.addresses) {
                     name.addresses = [];
                 }
@@ -270,20 +270,20 @@ export class GigLoggerService {
                 
                 // console.table(name);
                 await this._nameService.update(name);
-            });
+            };
             // console.log(`Name: ${name.name}`);
-        });
+        };
     }
 
     private async linkAddressData () {
         let addresses = await this._addressService.getRemoteAddresses();
         let trips = await this._tripService.getRemoteTrips();
 
-        addresses.forEach(async address => {
+        for (let address of addresses) {
             let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
 
             // Go through each trip and add addresses and notes
-            nameTrips.forEach(async trip => {
+            for (let trip of nameTrips) {
                 if (!address.names) {
                     address.names = [];
                 }
@@ -310,20 +310,20 @@ export class GigLoggerService {
                 
                 // console.table(name);
                 await this._addressService.update(address)
-            });
+            };
             // console.log(`Address: ${address.address}`);
-        });
+        };
     }
 
     private async linkPlaceData() {
         let trips = await this._tripService.getRemoteTrips();
         let places = await this._placeService.getRemotePlaces();
 
-        places.forEach(async place => {
+        for (let place of places) {
             // Addresses
             let tripPlaceAddresses = trips.filter(x => x.place === place.place && x.startAddress);
 
-            tripPlaceAddresses.forEach(tripPlaceAddress => {
+            for (const tripPlaceAddress of tripPlaceAddresses) {
                 if (!place.addresses) {
                     place.addresses = [];
                 }
@@ -339,7 +339,7 @@ export class GigLoggerService {
                     address.visits = 1;
                     place.addresses.push(address);    
                 }
-            });
+            };
 
             if (place.addresses) {
                 sort(place.addresses, 'address');
@@ -348,7 +348,7 @@ export class GigLoggerService {
             // Types
             let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);
 
-            tripPlaceTypes.forEach(tripPlaceType => {
+            for (const tripPlaceType of tripPlaceTypes) {
                 if (!place.types) {
                     place.types = [];
                 }
@@ -364,9 +364,9 @@ export class GigLoggerService {
                     type.visits = 1;
                     place.types.push(type);    
                 }
-            });
+            };
 
             await this._placeService.update(place);
-        });
+        };
     }
 }

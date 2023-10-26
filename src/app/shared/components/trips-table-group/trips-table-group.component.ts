@@ -45,7 +45,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     this.tripGroups = [];
     // console.log(this.trips);
     
-    dates.forEach(async date => {
+    for (const date of dates) {
       let tripGroup = {} as ITripGroup;
       let trips = sheetTrips.filter(x => x.date === date);
       let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
@@ -58,6 +58,6 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       tripGroup.average = weekday?.dailyPrevAverage ?? 0;
 
       this.tripGroups.push(tripGroup);
-    });
+    };
   }
 }
