@@ -87,10 +87,10 @@ export class TripService {
 
     public async saveUnsavedTrips() {
         let trips = await this.getUnsavedLocalTrips();
-        trips.forEach(async trip => {
+        for (let trip of trips) {
             trip.saved = true;
             await this.updateLocalTrip(trip);
-        });
+        };
     }
 
     public async loadTrips(trips: ITrip[]) {
