@@ -17,6 +17,10 @@ export class DateHelper {
         return dates;
     }
 
+    static getDateFromISO(date: string): Date {
+        return new Date(`${date}\n`);
+    }
+
     static getISOFormat(date?: Date) {
         if (!date) {
             date = new Date();
@@ -40,6 +44,17 @@ export class DateHelper {
     static getTimeString(date: Date): string {
         let timeString = date.toLocaleTimeString();
         return timeString;
+    }
+
+    static getStartOfWeekDate(date: Date): string {
+        const deltaStart =
+            this.getFirstDayOfWeek() -
+            this.getDayOfWeek(date);
+
+        let startDate = new Date();
+        startDate.setDate(startDate.getDate() + deltaStart);
+
+        return this.getISOFormat(startDate);
     }
 
     static getDuration(start: string, end: string): string {
@@ -74,7 +89,7 @@ export class DateHelper {
             return 7; // We want Sunday to be 7
         }
         else {
-            return dayOfWeek+=1; // Increment one since Monday is 0 and we want it to start at 1
+            return dayOfWeek;
         }
     }
 

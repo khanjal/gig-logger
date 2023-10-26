@@ -36,6 +36,7 @@ public static class ShiftMapper
                 Active = HeaderParser.GetStringValue(HeaderEnum.TIME_ACTIVE.DisplayName(), value, headers),
                 Time = HeaderParser.GetStringValue(HeaderEnum.TIME_TOTAL.DisplayName(), value, headers),
                 Trips = HeaderParser.GetIntValue(HeaderEnum.TRIPS.DisplayName(), value, headers),
+                Distance = HeaderParser.GetDecimalValue(HeaderEnum.DISTANCE.DisplayName(), value, headers),
                 Omit = HeaderParser.GetBoolValue(HeaderEnum.TIME_OMIT.DisplayName(), value, headers),
                 Region = HeaderParser.GetStringValue(HeaderEnum.REGION.DisplayName(), value, headers),
                 Note = HeaderParser.GetStringValue(HeaderEnum.NOTE.DisplayName(), value, headers),
@@ -45,11 +46,15 @@ public static class ShiftMapper
                 Total = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL.DisplayName(), value, headers),
                 Cash = HeaderParser.GetDecimalValue(HeaderEnum.CASH.DisplayName(), value, headers),
                 TotalTrips = HeaderParser.GetIntValue(HeaderEnum.TOTAL_TRIPS.DisplayName(), value, headers),
+                TotalDistance = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_DISTANCE.DisplayName(), value, headers),
                 TotalPay = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_PAY.DisplayName(), value, headers),
                 TotalTips = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_TIPS.DisplayName(), value, headers),
                 TotalBonus = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_BONUS.DisplayName(), value, headers),
                 GrandTotal = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_GRAND.DisplayName(), value, headers),
                 TotalCash = HeaderParser.GetDecimalValue(HeaderEnum.TOTAL_CASH.DisplayName(), value, headers),
+                AmountPerTime = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_TIME.DisplayName(), value, headers),
+                AmountPerDistance = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_DISTANCE.DisplayName(), value, headers),
+                AmountPerTrip = HeaderParser.GetDecimalValue(HeaderEnum.AMOUNT_PER_TRIP.DisplayName(), value, headers),
                 Saved = true
             };
             
