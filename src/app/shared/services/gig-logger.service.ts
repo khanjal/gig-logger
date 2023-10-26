@@ -105,9 +105,7 @@ export class GigLoggerService {
             shifts = await this._shiftService.getPreviousWeekShifts();
         }
 
-        console.log(shifts);
-
-        shifts.forEach(async shift => {
+        for (let shift of shifts) {
             let trips = await this._tripService.queryTrips("key", shift.key);
             let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
 
@@ -125,10 +123,9 @@ export class GigLoggerService {
             else {
                 await this._shiftService.updateShift(shift);
             }
-        });
+        };
 
         let dates = [... new Set(shifts.map(x => x.date))];
-        console.log(dates);
 
         await this.calculateDailyTotal(dates);
     }
@@ -137,32 +134,15 @@ export class GigLoggerService {
         let startDate = DateHelper.getStartOfWeekDate(new Date);
         let shifts: IShift[] = [];
 
-        console.log(dates);
-
-        // if (!dates.length) {
-            shifts = await this._shiftService.getShiftsByStartDate(startDate);
-            dates = [... new Set(shifts.flatMap(x => x.date))];
-        // }
+        shifts = await this._shiftService.getShiftsByStartDate(startDate);
+        dates = [... new Set(shifts.flatMap(x => x.date))];
 
         dates.forEach(async date => {
             if (date < startDate) {
                 return;
             }
 
-            console.log(date);
-
-            let shiftTotal = 0;
-
-            if (shifts.length) {
-                shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
-            }
-            else {
-                let shift = await this._shiftService.getShiftsByDate(date);
-                shiftTotal = shift.map(x=> x.grandTotal).reduce((acc, value) => acc + value, 0);
-            }
-
-            console.log(shiftTotal);
-
+            let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
             let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
             let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
