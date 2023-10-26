@@ -113,10 +113,10 @@ export class ShiftService {
 
     public async saveUnsavedShifts() {
         let shifts = await this.getUnsavedLocalShifts();
-        shifts.forEach(async shift => {
+        for (let shift of shifts) {
             shift.saved = true;
             await this.updateLocalShift(shift);
-        });
+        };
     }
 
     public async updateShift(shift: IShift) {
