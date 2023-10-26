@@ -340,9 +340,8 @@ export class QuickFormComponent implements OnInit {
   public async editTrip() {
     let shifts: IShift[] = [];
 
-    if (this.data.id) {
-      let trip = (await this._tripService.queryLocalTrips("id", this.data.id))[0];
-      shifts.push(await this._shiftService.queryShiftByKey(trip.key));
+    if (this.selectedShift) {
+      shifts.push(this.selectedShift);
     }
 
     let shift = await this.createShift();
@@ -351,7 +350,7 @@ export class QuickFormComponent implements OnInit {
     shifts.push(shift);
 
     if (shifts.length > 1) {
-      shifts.push(... new Set(shifts)); // Remove duplicates
+      shifts = [...new Set(shifts)]; // Remove duplicates
     }
 
     await this._tripService.updateLocalTrip(trip);

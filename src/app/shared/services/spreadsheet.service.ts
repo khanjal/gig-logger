@@ -99,7 +99,7 @@ export class SpreadsheetService {
         // Append secondary spreadsheets.
         let secondarySpreadsheets = (await this.getSpreadsheets()).filter(x => x.default !== "true");
         // console.log(secondarySpreadsheets.length);
-        secondarySpreadsheets.forEach(async secondarySpreadsheet => {
+        for (const secondarySpreadsheet of secondarySpreadsheets) {
             // console.log(secondarySpreadsheet.name);
             this._snackBar.open(`Connecting to ${secondarySpreadsheet.name} Spreadsheet`);
             let data = await firstValueFrom(await this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
@@ -107,7 +107,7 @@ export class SpreadsheetService {
             this._snackBar.open("Loading Secondary Spreadsheet Data");
             await this._gigLoggerService.appendData(<ISheet>data);
             this._snackBar.open("Loaded Secondary Spreadsheet Data");
-        });
+        };
     }
 
     public async showEstimatedQuota(): Promise<StorageEstimate | undefined> {
