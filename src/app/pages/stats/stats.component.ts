@@ -115,7 +115,7 @@ export class StatsComponent implements OnInit {
 
       item.amountPerTrip = item.total / item.trips;
       item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
-      item.amountPerTime = shiftFilter.map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / item.trips;
+      item.amountPerTime = shiftFilter.map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / shiftFilter.length;
 
       items.push(item);
     })
