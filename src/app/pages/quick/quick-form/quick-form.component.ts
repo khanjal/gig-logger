@@ -325,7 +325,7 @@ export class QuickFormComponent implements OnInit {
     await this._tripService.addTrip(trip);
     
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateShiftTotals();
+    await this._gigLoggerService.calculateShiftTotals([shift]);
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -338,14 +338,25 @@ export class QuickFormComponent implements OnInit {
   }
 
   public async editTrip() {
-    let shift = await this.createShift();
+    let shifts: IShift[] = [];
 
+    if (this.selectedShift) {
+      shifts.push(this.selectedShift);
+    }
+
+    let shift = await this.createShift();
     let trip = this.createTrip(shift);
+
+    shifts.push(shift);
+
+    if (shifts.length > 1) {
+      shifts = [...new Set(shifts)]; // Remove duplicates
+    }
 
     await this._tripService.updateLocalTrip(trip);
 
     // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateShiftTotals();
+    await this._gigLoggerService.calculateShiftTotals(shifts);
 
     this._snackBar.open("Trip Updated");
 
