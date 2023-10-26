@@ -1,14 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StatsComponent } from './stats.component';
+import { ShiftService } from '@services/shift.service';
+import { TripService } from '@services/trip.service';
 
 describe('StatsComponent', () => {
   let component: StatsComponent;
   let fixture: ComponentFixture<StatsComponent>;
+  const mockShiftService = jasmine.createSpyObj("ShiftService", ["getRemoteShiftsBetweenDates"]);
+  const mockTripService = jasmine.createSpyObj("TripService", ["getRemoteTripsBetweenDates"]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StatsComponent ]
+      declarations: [ StatsComponent ],
+      providers: [
+        { provide: ShiftService, useValue: mockShiftService },
+        { provide: TripService, useValue: mockTripService },
+      ]
     })
     .compileComponents();
 

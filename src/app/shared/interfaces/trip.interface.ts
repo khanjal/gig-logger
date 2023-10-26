@@ -23,4 +23,6 @@ export interface ITrip extends IAmount {
     startAddress: string;
     startOdometer: number;
     type: string;
+    amountPerDistance: number;
+    amountPerTime: number;
 }

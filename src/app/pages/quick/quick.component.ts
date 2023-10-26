@@ -97,7 +97,6 @@ export class QuickComponent implements OnInit {
   public async load() {
     this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
     this.savedTrips = (await this._tripService.getSavedLocalTrips()).reverse();
-    await this._gigLoggerService.calculateShiftTotals();
 
     // console.log(this.form);
 
@@ -297,10 +296,10 @@ export class QuickComponent implements OnInit {
   async unsaveLocalData() {
     let savedTrips = await this._tripService.getSavedLocalTrips();
 
-    savedTrips.forEach(async trip => {
+    for (let trip of savedTrips) {
       trip.saved = false;
       await this._tripService.updateLocalTrip(trip);
-    });
+    };
 
     await this.load();
   }
@@ -315,6 +314,7 @@ export class QuickComponent implements OnInit {
 
     await this._sheetService.loadSpreadsheetData();
     await this.load();
+    await this._gigLoggerService.calculateShiftTotals();
 
     this.reloading = false;
     this._viewportScroller.scrollToAnchor("addTrip");
