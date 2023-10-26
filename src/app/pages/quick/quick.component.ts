@@ -296,10 +296,10 @@ export class QuickComponent implements OnInit {
   async unsaveLocalData() {
     let savedTrips = await this._tripService.getSavedLocalTrips();
 
-    savedTrips.forEach(async trip => {
+    for (let trip of savedTrips) {
       trip.saved = false;
       await this._tripService.updateLocalTrip(trip);
-    });
+    };
 
     await this.load();
   }
