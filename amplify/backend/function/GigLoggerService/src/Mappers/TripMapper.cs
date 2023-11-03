@@ -166,7 +166,9 @@ public static class TripMapper
         sheet.Headers = new List<SheetCellModel>();
 
         // Date
-        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName()});
+        sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.DATE.DisplayName(),
+            Note = "Format: YYYY-MM-DD",
+            Format = FormatEnum.DATE});
         var dateRange = sheet.GetLocalRange(HeaderEnum.DATE);
         // Service
         sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.SERVICE.DisplayName(),
