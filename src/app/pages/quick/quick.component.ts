@@ -19,6 +19,7 @@ import { CurrentAverageComponent } from '@components/current-average/current-ave
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-quick',
@@ -29,6 +30,8 @@ export class QuickComponent implements OnInit {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
+
+  demoSheetId = environment.demoSheet;
 
   clearing: boolean = false;
   reloading: boolean = false;
@@ -274,6 +277,8 @@ export class QuickComponent implements OnInit {
 
   async deleteUnsavedLocalTrip(trip: ITrip) {
     await this._tripService.deleteLocal(trip.id!);
+    const shift = await this._shiftService.queryShiftByKey(trip.key);
+    await this._gigLoggerService.calculateShiftTotals([shift]);
 
     await this.load();
     await this.form?.load();
