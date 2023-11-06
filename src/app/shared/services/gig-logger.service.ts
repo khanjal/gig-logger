@@ -31,6 +31,7 @@ import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
 import { sort } from "@helpers/sort.helper";
 import { IShift } from "@interfaces/shift.interface";
+import { IWeekday } from "@interfaces/weekday.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -131,22 +132,35 @@ export class GigLoggerService {
     }
 
     public async calculateDailyTotal(dates: string[] = []) {
-        let startDate = DateHelper.getStartOfWeekDate(new Date);
+        let currentDate = DateHelper.getStartOfWeekDate(new Date);
+        let individualDates = true;
         let shifts: IShift[] = [];
 
-        shifts = await this._shiftService.getShiftsByStartDate(startDate);
-        dates = [... new Set(shifts.flatMap(x => x.date))];
+        if (!dates.length) {
+            shifts = await this._shiftService.getShiftsByStartDate(currentDate);
+            dates = [... new Set(shifts.flatMap(x => x.date))];
+            individualDates = false;
+        }
 
         for (const date of dates) {
-            if (date < startDate) {
+            if (date < currentDate) {
                 return;
+            }
+
+            if (individualDates) {
+                shifts = await this._shiftService.getShiftsByDate(date);
             }
 
             let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
             let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
             let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
-            if (weekday && weekday.currentAmount != shiftTotal) {
+            if (!weekday) {
+                weekday = {} as IWeekday;
+                weekday.day = dayOfWeek;
+            }
+
+            if (!weekday.currentAmount || weekday.currentAmount != shiftTotal) {
                 weekday.currentAmount = shiftTotal;
                 await this._weekdayService.updateWeekday(weekday);
             }
