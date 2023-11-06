@@ -294,10 +294,12 @@ public static class SheetHelper {
                 // K - First Visit
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_FIRST.DisplayName(),
                     Formula = ArrayFormulaHelper.ArrayFormulaVisit(keyRange, HeaderEnum.VISIT_FIRST.DisplayName(), SheetEnum.SHIFTS.DisplayName(), shiftSheet.GetColumn(HeaderEnum.DATE), shiftSheet.GetColumn(keyEnum), true),
+                    Note = "Format: YYYY-MM-DD",
                     Format = FormatEnum.DATE});
                 // L - Last Visit
                 sheet.Headers.AddColumn(new SheetCellModel{Name = HeaderEnum.VISIT_LAST.DisplayName(),
                     Formula = ArrayFormulaHelper.ArrayFormulaVisit(keyRange, HeaderEnum.VISIT_LAST.DisplayName(), SheetEnum.SHIFTS.DisplayName(), shiftSheet.GetColumn(HeaderEnum.DATE), shiftSheet.GetColumn(keyEnum), false),
+                    Note = "Format: YYYY-MM-DD",
                     Format = FormatEnum.DATE});
                 break;
             case HeaderEnum.DATE: 
