@@ -199,11 +199,11 @@ export class QuickFormComponent implements OnInit {
     trip.endUnit = this.quickForm.value.endUnit ?? "";
     trip.distance = this.quickForm.value.distance;
 
-    trip.pay = +this.quickForm.value.pay ?? 0;
+    trip.pay = this.quickForm.value.pay ?? 0;
     trip.tip = this.quickForm.value.tip;
     trip.bonus = this.quickForm.value.bonus;
     trip.cash = this.quickForm.value.cash;
-    trip.total = trip.pay + trip.tip + trip.bonus;
+    trip.total = (trip.pay ?? 0) + (trip.tip ?? 0) + (trip.bonus ?? 0);
 
     trip.startOdometer = this.quickForm.value.startOdometer;
     trip.endOdometer = this.quickForm.value.endOdometer;

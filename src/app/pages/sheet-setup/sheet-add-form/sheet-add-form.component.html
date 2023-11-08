@@ -11,5 +11,6 @@
 
 <div class="row-flex">
     <button mat-fab extended color="primary" (click)="addSheet()" [class.spinner]="saving" [disabled]="!sheetForm.valid || saving"><mat-icon>add</mat-icon> Add</button>
+    <button mat-fab extended color="accent" (click)="addDemo()" [class.spinner]="saving" [disabled]="saving" *ngIf="!defaultSpreadsheet"><mat-icon>adjust</mat-icon> Demo</button>
     <button mat-fab extended color="warn" (click)="sheetForm.reset()"><mat-icon>refresh</mat-icon> Reset</button>
 </div>

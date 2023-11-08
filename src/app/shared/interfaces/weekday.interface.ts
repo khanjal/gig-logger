@@ -2,7 +2,7 @@ import { IPeriodicBase } from "./periodic-base.interface";
 
 export interface IWeekday extends IPeriodicBase {
     id: number;
-    day: string;
+    day: number;
     days: number;
     dailyAverage: number;
     dailyPrevAverage: number;
