@@ -5,6 +5,7 @@ import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: 'sheet-add-form',
@@ -13,6 +14,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 })
 export class SheetAddFormComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  private demoSheetId = environment.demoSheet;
   
   sheetForm = new FormGroup({
     sheetId: new FormControl(''),
@@ -20,12 +22,21 @@ export class SheetAddFormComponent {
   });
 
   saving: boolean = false;
+  defaultSpreadsheet: ISpreadsheet | undefined;
 
   constructor(
     private _snackBar: MatSnackBar,
     private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService
   ) { }
+
+  async ngOnInit(): Promise<void> {
+    this.load();
+  }
+
+  async load() {
+    this.defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+  }
 
   public async addSheet() {
     this.saving = true;
@@ -53,6 +64,16 @@ export class SheetAddFormComponent {
     this.parentReload.emit();
   }
 
+  public async addDemo() {
+    this.saving = true;
+
+    this.sheetForm.controls.sheetId.setValue(this.demoSheetId);
+    this.sheetForm.controls.sheetName.setValue("Demo");
+
+    await this.addSheet();
+    await this.load();
+  }
+
   public async setupForm(id: string) {
     // let sheetTitle = await this._googleService.getSheetTitle(id);
     let sheetName = this.sheetForm.value.sheetName;
@@ -72,9 +93,7 @@ export class SheetAddFormComponent {
     spreadsheet.default = "false";
 
     // Check for default spreadsheet
-    let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
-
-    if (!defaultSpreadsheet?.id || defaultSpreadsheet.id === spreadsheet.id) {
+    if (!this.defaultSpreadsheet?.id || this.defaultSpreadsheet.id === spreadsheet.id) {
       // console.log("Setting default to true");
       spreadsheet.default = "true";
     }
@@ -114,7 +133,9 @@ export class SheetAddFormComponent {
       });
       this.saving = false;
     }
-  }
+
+    await this.load();
+  }          
 }
 
 
