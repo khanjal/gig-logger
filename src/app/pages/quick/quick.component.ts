@@ -227,7 +227,6 @@ export class QuickComponent implements OnInit {
     let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
-      shift.time = DateHelper.getDuration(shift.start, shift.finish);
       await this._shiftService.updateLocalShift(shift);
     }
 
@@ -241,12 +240,16 @@ export class QuickComponent implements OnInit {
     let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
-      shift.time = DateHelper.getDuration(shift.start, shift.finish);
       await this._shiftService.updateLocalShift(shift);
     }
 
     trip.dropoffTime = dropOffTime;
-    trip.duration = DateHelper.getDuration(trip.pickupTime, trip.dropoffTime);
+    let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
+    trip.duration = DateHelper.getDurationString(duration);
+
+    if (trip.total && trip.duration) {
+      trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
+    }
     await this._tripService.updateLocalTrip(trip);
   }
 
