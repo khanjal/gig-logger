@@ -225,7 +225,12 @@ export class QuickFormComponent implements OnInit {
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
 
-    trip.duration = DateHelper.getDuration(trip.pickupTime, trip.dropoffTime);
+    let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
+    trip.duration = DateHelper.getDurationString(duration);
+
+    if (trip.total && trip.duration) {
+      trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
+    }
 
     return trip;
   }

@@ -57,28 +57,32 @@ export class DateHelper {
         return this.getISOFormat(startDate);
     }
 
-    static getDuration(start: string, end: string): string {
+    static getDurationSeconds(start: string, end: string): number {
         if (!start || !end) {
-            return "";
+            return 0;
         }
 
         let startDate = Date.parse(new Date().toDateString() + ' ' + start);
         let endDate = Date.parse(new Date().toDateString() + ' ' + end);
 
-        let diff = endDate - startDate;
+        let diff = (endDate - startDate) / 1000;
 
         if (endDate < startDate) {
-            endDate += 86400000; // Add day if end less than start.
+            endDate += 86400; // Add day if end less than start.
             diff = endDate - startDate;
         }
 
-        const seconds = Math.floor((diff / 1000) % 60);
-        const minutes = Math.floor((diff / (60 * 1000)) % 60);
-        const hours = Math.floor((diff / (60* 60 * 1000)) % 60);
+        return diff;
+    }
+
+    static getDurationString(diff: number): string {
+        const seconds = Math.floor(diff % 60);
+        const minutes = Math.floor(diff / 60 ) % 60;
+        const hours = Math.floor((diff / (60* 60)) % 60);
 
         const duration = `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}.000`;
         // console.log(duration);
-        
+
         return duration;
     }
 
@@ -91,6 +95,10 @@ export class DateHelper {
         else {
             return dayOfWeek;
         }
+    }
+
+    static getHoursFromSeconds(seconds: number): number {
+        return seconds / 3600;
     }
 
     static getMonday(date: Date = new Date()) {
