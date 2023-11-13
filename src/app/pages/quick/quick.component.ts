@@ -247,10 +247,12 @@ export class QuickComponent implements OnInit {
     let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
     trip.duration = DateHelper.getDurationString(duration);
 
-    if (trip.total && trip.duration) {
+    if (trip.total && duration) {
       trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
     }
     await this._tripService.updateLocalTrip(trip);
+
+    await this._gigLoggerService.calculateShiftTotals([shift]);
   }
 
   async cloneUnsavedLocalTrip(trip: ITrip) {
