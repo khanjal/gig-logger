@@ -1,7 +1,17 @@
+@import "color-vars";
+
 .padding-right {
     padding-right: .5rem;
 }
 
 mat-card {
     background-color: transparent;
+}
+
+.primary {
+    color: $primary-color;
+}
+
+.warn {
+    color: $warn-color;
 }
