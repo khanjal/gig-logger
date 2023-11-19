@@ -113,7 +113,7 @@ export class StatsComponent implements OnInit {
       item.total = shiftFilter.filter(x => x.grandTotal).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
       item.cash = shiftFilter.filter(x => x.totalCash).map(x => x.totalCash).reduce((acc, value) => acc + value, 0);
 
-      item.amountPerTrip = item.total / item.trips;
+      item.amountPerTrip = item.total / (!item.trips ? 1 : item.trips);
       item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
       item.amountPerTime = shiftFilter.filter(x => x.amountPerTime).map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / shiftFilter.length;
 
