@@ -1,11 +1,8 @@
-import { IAmount } from "./amount.interface";
+import { IAmountPer } from "./amount-per.interface";
 
-export interface IStatItem extends IAmount {
+export interface IStatItem extends IAmountPer {
     name: string;
     time: string;
     trips: number;
     distance: number;
-    amountPerTrip: number;
-    amountPerDistance: number;
-    amountPerTime: number;
 }
