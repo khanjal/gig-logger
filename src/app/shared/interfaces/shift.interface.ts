@@ -1,6 +1,6 @@
-import { IAmount } from "./amount.interface";
+import { IAmountPer } from "./amount-per.interface";
 
-export interface IShift extends IAmount {
+export interface IShift extends IAmountPer {
     id?: number;
     date: string;
     distance: number;
@@ -21,7 +21,4 @@ export interface IShift extends IAmount {
     totalBonus: number;
     grandTotal: number;
     totalCash: number;
-    amountPerDistance: number;
-    amountPerTime: number;
-    amountPerTrip: number;
 }
