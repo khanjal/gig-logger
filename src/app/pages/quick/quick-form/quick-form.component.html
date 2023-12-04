@@ -203,7 +203,7 @@
         </div>
 
         <!-- Pickup Address List -->
-        <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
+        <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
             <mat-accordion>
                 <mat-expansion-panel [expanded]="!(selectedPlace.addresses.length > 5 && data.id)">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
@@ -275,7 +275,6 @@
                 <mat-label>Destination Address</mat-label>
                 <input type="text"
                     name="endAddress"
-                    id="endAddress"
                     placeholder="Pick one or enter new"
                     matInput
                     formControlName="endAddress"
