@@ -118,6 +118,12 @@ export class GigLoggerService {
             shift.totalCash = (shift.cash ?? 0) + filteredTrips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
             shift.grandTotal = (shift.total ?? 0) + filteredTrips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
+            let duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+            if (duration) {
+                shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
+                shift.time = DateHelper.getDurationString(duration);
+            }
+
             if (trips?.length === 0 && !shift.saved) {
                 this._shiftService.deleteLocal(shift.id!);
             }
