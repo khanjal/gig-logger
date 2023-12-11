@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SheetQuickViewComponent } from './sheet-quick-view.component';
 
-describe('SheetSetupTableComponent', () => {
+describe('SheetQuickViewComponent', () => {
   let component: SheetQuickViewComponent;
   let fixture: ComponentFixture<SheetQuickViewComponent>;
 
