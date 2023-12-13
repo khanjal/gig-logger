@@ -89,6 +89,7 @@ export class QuickComponent implements OnInit {
           await this._sheetService.loadSpreadsheetData();
           await this.load();
           this.saving = false;
+          this._viewportScroller.scrollToAnchor("savedLocalTrips");
         },
         error => {
           console.log(error);
