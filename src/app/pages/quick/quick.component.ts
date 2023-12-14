@@ -139,7 +139,10 @@ export class QuickComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(async result => {
-            await this.reload();
+
+            if (result) {
+                await this.reload();
+            }
         });
     }
   
@@ -157,9 +160,7 @@ export class QuickComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
+    dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.deleteUnsavedLocalTrip(trip);
       }
@@ -180,9 +181,7 @@ export class QuickComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
+    dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.saveAllTrips();
       }
@@ -203,9 +202,7 @@ export class QuickComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
+    dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.unsaveLocalData();
       }
@@ -226,9 +223,7 @@ export class QuickComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
+    dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.clearSavedLocalData();
       }
