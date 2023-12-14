@@ -47,7 +47,7 @@
 
     <div class="row-grid">
         <app-trips-table-group class="table" title="{{defaultSheet?.name}} - Trips" link="{{defaultSheet?.id}}" [days]=6></app-trips-table-group>
-        <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="reload()"><mat-icon>refresh</mat-icon> Reload</button>
+        <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="loadSheetDialog()"><mat-icon>refresh</mat-icon> Reload</button>
     </div>
 
 </div>
