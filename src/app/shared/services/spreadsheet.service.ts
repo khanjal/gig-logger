@@ -76,6 +76,12 @@ export class SpreadsheetService {
         this.deleteRemoteData();
     }
 
+    public async warmUpLambda() {
+        // Wake up lambda
+        console.log("Warming up lambda");
+        await this._gigLoggerService.warmupLambda("");
+    }
+
     public async loadSpreadsheetData() {
         // Load primary spreadsheet data.
         let primarySpreadsheet = await this.getDefaultSheet();
