@@ -20,6 +20,7 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
 import { environment } from 'src/environments/environment';
+import { LoadModalComponent } from '../../shared/components/load-modal/load-modal.component';
 
 @Component({
   selector: 'app-quick',
@@ -128,10 +129,22 @@ export class QuickComponent implements OnInit {
       await this.load();
       await this.form?.load();
     });
-  }
+    }
+
+    async loadSheetDialog() {
+        let dialogRef = this.dialog.open(LoadModalComponent, {
+            height: '400px',
+            width: '500px',
+            panelClass: 'custom-modalbox'
+        });
+
+        dialogRef.afterClosed().subscribe(async result => {
+            await this.reload();
+        });
+    }
   
   async confirmDeleteTripDialog(trip: ITrip) {
-    const message = `This may not be saved to your spreadsheet. Are you sure you want to delete this?`;
+    const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
@@ -323,7 +336,6 @@ export class QuickComponent implements OnInit {
 
     this.reloading = true;
 
-    await this._sheetService.loadSpreadsheetData();
     await this.load();
     await this._gigLoggerService.calculateShiftTotals();
 
