@@ -9,3 +9,7 @@
         <p>Elapsed Time: {{ currentTime }} seconds</p>
     </div>
 </div>
+
+<div class="row-grid">
+    <button mat-fab extended [disabled]="currentTime < 60" (click)="cancelLoad()"> Cancel</button>
+</div>
