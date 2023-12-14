@@ -23,12 +23,12 @@ export class LoadModalComponent {
         this.startTimer();
 
         time = this.currentTime;
-        this.appendToTerminal("Starting Lambda");
+        this.appendToTerminal("Starting Lambda...");
         await this._sheetService.warmUpLambda();
         this.appendToTerminal(`Lambda Started In ${this.currentTime - time}s`);
 
         time = this.currentTime;
-        this.appendToTerminal("Loading Spreadsheet Data");
+        this.appendToTerminal("Loading Spreadsheet Data...");
         await this._sheetService.loadSpreadsheetData();
         this.appendToTerminal(`Spreadsheet Data Loaded In ${this.currentTime - time}s`);
 
@@ -40,6 +40,10 @@ export class LoadModalComponent {
 
     appendToTerminal(text: string) {
         this.divMessages = `${this.divMessages}<p>${text}</p>`
+    }
+
+    cancelLoad() {
+        this.dialogRef.close(false);
     }
 
     startTimer() {
