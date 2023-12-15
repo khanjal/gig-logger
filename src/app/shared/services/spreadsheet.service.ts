@@ -7,7 +7,6 @@ import { GigLoggerService } from './gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { NumberHelper } from '@helpers/number.helper';
 
 @Injectable()
 export class SpreadsheetService {
@@ -79,7 +78,7 @@ export class SpreadsheetService {
     public async warmUpLambda() {
         // Wake up lambda
         console.log("Warming up lambda");
-        await this._gigLoggerService.warmupLambda("");
+        await firstValueFrom(await this._gigLoggerService.warmupLambda("none"));
     }
 
     public async loadSpreadsheetData() {
