@@ -47,7 +47,7 @@ export class LoadModalComponent {
     }
 
     startTimer() {
-        timer(1000, 1000)
+        timer(0, 1000)
             .pipe(
                 map((x: number) => {
                     return x;
