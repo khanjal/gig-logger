@@ -175,7 +175,7 @@ export class GigLoggerService {
 
     public async linkDeliveries(trips: ITrip[]) {
         let deliveries: IDelivery[] = await this._deliveryService.getRemoteDeliveries();
-        console.log('Linking Trip Data');
+        //console.log('Linking Trip Data');
 
         trips.forEach(async trip => {
             if (!trip.endAddress && !trip.name) {
