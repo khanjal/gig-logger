@@ -1,6 +1,6 @@
 <div class="terminal">
     <div>
-        <p>Please wait while spreadsheet data is loaded.</p>
+        <p>Please wait while local trip data is saved.</p>
         <p>Modal will automatically close when finished.</p>
     </div>
     <div [innerHTML]="divMessages">
@@ -11,5 +11,5 @@
 </div>
 
 <div class="row-grid">
-    <button mat-fab extended [disabled]="currentTime < 60" (click)="cancelLoad()"> Cancel</button>
+    <button mat-fab extended [disabled]="currentTime < 60" (click)="cancelSave()"> Cancel</button>
 </div>
