@@ -34,6 +34,7 @@ import { TripsTableBasicComponent } from './components/trips-table-basic/trips-t
 import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
 import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
 import { LoadModalComponent } from './components/load-modal/load-modal.component';
+import { SaveModalComponent } from './components/save-modal/save-modal.component';
 
 @NgModule({
     declarations: [
@@ -53,7 +54,8 @@ import { LoadModalComponent } from './components/load-modal/load-modal.component
         TripsTableSimpleComponent,
         CustomRangePanelComponent,
         CustomCalendarHeaderComponent,
-        LoadModalComponent
+        LoadModalComponent,
+        SaveModalComponent
     ],
     imports: [
         CommonModule,
