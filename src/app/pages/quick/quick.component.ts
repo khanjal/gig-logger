@@ -6,7 +6,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DateHelper } from '@helpers/date.helper';
 
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
@@ -19,8 +18,10 @@ import { CurrentAverageComponent } from '@components/current-average/current-ave
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { QuickFormComponent } from './quick-form/quick-form.component';
 import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
+import { LoadModalComponent } from '@components/load-modal/load-modal.component';
+import { SaveModalComponent } from '@components/save-modal/save-modal.component';
+
 import { environment } from 'src/environments/environment';
-import { LoadModalComponent } from '../../shared/components/load-modal/load-modal.component';
 
 @Component({
   selector: 'app-quick',
@@ -56,47 +57,6 @@ export class QuickComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
-  }
-
-  async saveAllTrips() {
-    if (!this.defaultSheet?.id) {
-      this._snackBar.open("Please Reload Manually");
-      return;
-    }
-
-    console.time("saving");
-    console.log('Saving...');
-    
-    this.saving = true;
-    // await this._googleService.commitUnsavedShifts();
-    // await this._googleService.commitUnsavedTrips();
-    let sheetData = {} as ISheet;
-    sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
-    sheetData.trips = await this._tripService.getUnsavedLocalTrips();
-
-    // TODO: Look into sending to AWS SQS
-    (await this._gigLoggerService.warmupLambda(this.defaultSheet.id)).subscribe(async () => { // Warmup lambda to use less time to save.
-      (await this._gigLoggerService.postSheetData(sheetData, this.defaultSheet!.id))
-        .subscribe(async () => {
-          await this._tripService.saveUnsavedTrips();
-          await this._shiftService.saveUnsavedShifts();
-
-          console.log('Saved!');
-          console.timeEnd("saving");
-
-          this._viewportScroller.scrollToAnchor("savedLocalTrips");
-          this._snackBar.open("Trip(s) Saved to Spreadsheet");
-
-          await this._sheetService.loadSpreadsheetData();
-          await this.load();
-          this.saving = false;
-          this._viewportScroller.scrollToAnchor("savedLocalTrips");
-        },
-        error => {
-          console.log(error);
-        });
-      }
-    );
   }
 
   public async load() {
@@ -145,6 +105,26 @@ export class QuickComponent implements OnInit {
             }
         });
     }
+
+    async saveSheetDialog() {
+        let dialogRef = this.dialog.open(SaveModalComponent, {
+            height: '400px',
+            width: '500px',
+            panelClass: 'custom-modalbox'
+        });
+
+        dialogRef.afterClosed().subscribe(async result => {
+
+            if (result) {
+                await this._tripService.saveUnsavedTrips();
+                await this._shiftService.saveUnsavedShifts();
+                this._snackBar.open("Trip(s) Saved to Spreadsheet");
+
+                await this.loadSheetDialog();
+                this._viewportScroller.scrollToAnchor("savedLocalTrips");
+            }
+        });
+    }
   
   async confirmDeleteTripDialog(trip: ITrip) {
     const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;
@@ -183,7 +163,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.saveAllTrips();
+        await this.saveSheetDialog();
       }
     });
   }
