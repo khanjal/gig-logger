@@ -7,7 +7,6 @@ import { GigLoggerService } from './gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { NumberHelper } from '@helpers/number.helper';
 
 @Injectable()
 export class SpreadsheetService {
@@ -76,11 +75,17 @@ export class SpreadsheetService {
         this.deleteRemoteData();
     }
 
+    public async warmUpLambda() {
+        // Wake up lambda
+        //console.log("Warming up lambda");
+        await firstValueFrom(await this._gigLoggerService.warmupLambda("none"));
+    }
+
     public async loadSpreadsheetData() {
         // Load primary spreadsheet data.
         let primarySpreadsheet = await this.getDefaultSheet();
 
-        console.log("Loading default data");
+        //console.log("Loading default data");
         this._snackBar.open(`Connecting to ${primarySpreadsheet.name} Spreadsheet`);
 
         let data = await firstValueFrom(await this._gigLoggerService.getSheetData(primarySpreadsheet.id));
@@ -92,7 +97,7 @@ export class SpreadsheetService {
 
         await this.appendSpreadsheetData();
 
-        console.log("Done")
+        //console.log("Done")
     }
 
     public async appendSpreadsheetData() {

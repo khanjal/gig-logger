@@ -1,0 +1,15 @@
+<div class="terminal">
+    <div>
+        <p>Please wait while spreadsheet data is loaded.</p>
+        <p>Modal will automatically close when finished.</p>
+    </div>
+    <div [innerHTML]="divMessages">
+    </div>
+    <div>
+        <p>Elapsed Time: {{ currentTime }} seconds</p>
+    </div>
+</div>
+
+<div class="row-grid">
+    <button mat-fab extended [disabled]="currentTime < 60" (click)="cancelLoad()"> Cancel</button>
+</div>

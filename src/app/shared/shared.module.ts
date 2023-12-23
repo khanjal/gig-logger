@@ -33,6 +33,8 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
 import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
 import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
+import { LoadModalComponent } from './components/load-modal/load-modal.component';
+import { SaveModalComponent } from './components/save-modal/save-modal.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +53,9 @@ import { CustomCalendarHeaderComponent } from './components/custom-calendar-head
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
         CustomRangePanelComponent,
-        CustomCalendarHeaderComponent
+        CustomCalendarHeaderComponent,
+        LoadModalComponent,
+        SaveModalComponent
     ],
     imports: [
         CommonModule,
