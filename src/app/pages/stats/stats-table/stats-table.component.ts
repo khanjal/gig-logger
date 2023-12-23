@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IStatItem } from '@interfaces/stat-item.interface';
 
 @Component({
   selector: 'app-stats-table',
   templateUrl: './stats-table.component.html',
-  styleUrls: ['./stats-table.component.scss']
+    styleUrls: ['./stats-table.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StatsTableComponent implements OnInit {
   @Input() items: IStatItem[] = [];
@@ -16,10 +17,11 @@ export class StatsTableComponent implements OnInit {
     this.displayedColumns = ['name', 'trips', 'distance', 'pay', 'tips', 'bonus', 'total', 'cash', 'time', 'amountPerTrip', 'amountPerDistance'];
   }
 
-  getAverage(property: string) {
-    let total = this.items.map((s:any) => s[property]).reduce((acc, value) => acc + value, 0);
-    return total / this.items.map((s:any) => s[property]).length;
-  }
+    getAverage(property: string) {
+        let total = this.items.map((s: any) => s[property]).reduce((acc, value) => acc + value, 0);
+        let quanity = this.items.filter((x: any) => x[property] > 0).length;
+        return total / quanity;
+    }
 
   getTotal(property: string) {
     return this.items.map((s:any) => s[property]).reduce((acc, value) => acc + value, 0);

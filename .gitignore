@@ -17,6 +17,7 @@
 *.launch  
 .settings/  
 *.sublime-workspace  
+*.vs/
   
 # IDE - VSCode  
 .editorconfig
@@ -62,3 +63,4 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 amplify/team-provider-info.json
+amplify/backend/function/GigLoggerService/src/src/aws-exports.js
