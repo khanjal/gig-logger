@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SheetQuickViewComponent } from './sheet-quick-view.component';
+import { SaveModalComponent } from './save-modal.component';
 
-describe('SheetQuickViewComponent', () => {
-  let component: SheetQuickViewComponent;
-  let fixture: ComponentFixture<SheetQuickViewComponent>;
+describe('SaveModalComponent', () => {
+  let component: SaveModalComponent;
+  let fixture: ComponentFixture<SaveModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SheetQuickViewComponent ]
+      declarations: [ SaveModalComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SheetQuickViewComponent);
+    fixture = TestBed.createComponent(SaveModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
