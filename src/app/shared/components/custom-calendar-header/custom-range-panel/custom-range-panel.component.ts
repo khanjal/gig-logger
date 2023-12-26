@@ -4,14 +4,16 @@ import { MatDateRangePicker } from '@angular/material/datepicker';
 import { DateHelper } from '@helpers/date.helper';
 
 const customPresets = [
-  'Today',
-  'Last 7 days',
-  'This week',
-  'Last week',
-  'This month',
-  'Last month',
-  'This year',
-  'Last year',
+    'Today',
+    'Yesterday',
+    'This week',
+    'Last week',
+    'This month',
+    'Last month',
+    'This year',
+    'Last year',
+    'Last 7 days',
+    'Last 30 days',
 ] as const; // convert to readonly tuple of string literals
 
 // equivalent to "today" | "last 7 days" | ... | "last year"
@@ -48,11 +50,11 @@ export class CustomRangePanelComponent<D> {
 
     switch (rangeName) {
       case 'Today':
-        return [today, today];
-      case 'Last 7 days': {
-        const start = this.dateAdapter.addCalendarDays(today, -6);
-        return [start, today];
-      }
+            return [today, today];
+        case 'Yesterday': {
+            const date = this.dateAdapter.addCalendarDays(today, -1);
+            return [date, date];
+        }
       case 'This week': {
         return this.calculateWeek(today);
       }
@@ -76,7 +78,15 @@ export class CustomRangePanelComponent<D> {
         const start = this.dateAdapter.createDate(year - 1, 0, 1);
         const end = this.dateAdapter.createDate(year - 1, 11, 31);
         return [start, end];
-      }
+        }
+        case 'Last 7 days': {
+            const start = this.dateAdapter.addCalendarDays(today, -6);
+            return [start, today];
+        }
+        case 'Last 30 days': {
+            const start = this.dateAdapter.addCalendarDays(today, -29);
+            return [start, today];
+        }
       default:
         // exhaustiveness check;
         // rangeName has type never, if every possible value is handled in the switch cases.
