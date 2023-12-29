@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { Observable } from 'rxjs';
 
@@ -10,9 +10,10 @@ export class DefaultSheetGuard {
   
   constructor(private _sheetService: SpreadsheetService, private _router: Router) {}
 
-  async canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Promise<Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree> {
+  async canActivate()
+    //route: ActivatedRouteSnapshot,
+      //state: RouterStateSnapshot): Promise<Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree> 
+      {
 
     if (!(await this.isDefaultSheet())) {
       this._router.navigate(['setup']);
@@ -22,14 +23,19 @@ export class DefaultSheetGuard {
     return true;
   }
 
-  private async isDefaultSheet(): Promise<boolean> {
-    let sheet = await this._sheetService.getDefaultSheet();
+    private async isDefaultSheet(): Promise<boolean> {
+        let sheet = await this._sheetService.getDefaultSheet();
 
-    if (sheet) {
-        return true;
+        if (sheet) {
+            return true;
+        }
+
+        return false;
     }
 
-    return false;
-}
   
 }
+
+export const canActivateSheet: CanActivateFn = (route, state) => {
+    return inject(DefaultSheetGuard).canActivate();
+};
