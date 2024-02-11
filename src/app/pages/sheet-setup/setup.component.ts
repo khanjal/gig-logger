@@ -4,8 +4,10 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { TimerService } from '@services/timer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { GigLoggerService } from '@services/gig-logger.service';
 import { CommonService } from '@services/common.service';
+import { MatDialog } from '@angular/material/dialog';
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-setup',
@@ -22,9 +24,9 @@ export class SetupComponent {
   defaultSheet: ISpreadsheet | undefined;
 
   constructor(
+    public dialog: MatDialog,
     private _snackBar: MatSnackBar,
     private _commonService: CommonService,
-    private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService,
     private _timerService: TimerService
   ) { }
@@ -140,5 +142,48 @@ export class SetupComponent {
 
   private updateHeader(){
     this._commonService.updateHeaderLink("New User");
-   }
+  }
+
+  async confirmDeleteAndReloadDialog() {
+    const message = `This will reload your data from the spreadsheet preserving your local unsaved data.`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Delete & Reload";
+    dialogData.message = message;
+    dialogData.trueText = "Delete & Reload";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.deleteAndReload();
+      }
+    });
+  }
+
+  async confirmDeleteAllDialog() {
+    const message = `This will delete everything except for what is saved in your spreadsheet. Are you sure?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Delete All";
+    dialogData.message = message;
+    dialogData.trueText = "Delete All";
+    dialogData.trueColor = "warning";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.deleteAllData();
+      }
+    });
+  }
 }
