@@ -16,5 +16,12 @@
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
+        <button class="mat-icon-button" *ngIf="addressInput.value" color="primary" matSuffix mat-icon-button aria-label="Clear Address" (click)="addressForm.controls.addressInput.setValue('')">
+            <mat-icon>clear</mat-icon>
+        </button>
     </mat-form-field>
+
+    <button class="button-right" color="primary" matSuffix mat-fab aria-label="Search Address" (click)="searchAddress()">
+        <mat-icon>search</mat-icon>
+    </button>
 </form>
