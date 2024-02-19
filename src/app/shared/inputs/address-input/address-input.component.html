@@ -1,0 +1,20 @@
+<form [formGroup]="addressForm">
+    <mat-form-field class="field-halfish-width" appearance="outline">
+        <mat-label>{{addressName}} Address</mat-label>
+        <input type="text"
+            name="addressInput"
+            placeholder="Pick one or enter new"
+            matInput
+            formControlName="addressInput"
+            [matAutocomplete]="autoAddress"
+            focus-scroll
+            #addressInput />
+        <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
+            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" class="mat-option">
+                    {{ address.address }} ({{ address.visits }})
+                </mat-option>
+            <!-- </cdk-virtual-scroll-viewport> -->
+        </mat-autocomplete>
+    </mat-form-field>
+</form>
