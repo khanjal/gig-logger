@@ -10,16 +10,19 @@ import { AddressService } from '@services/address.service';
 import { AsyncPipe } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
 
 @Component({
   selector: 'app-address-input',
   standalone: true,
-  imports: [AsyncPipe, BrowserModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule],
+  imports: [AsyncPipe, BrowserModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule],
   templateUrl: './address-input.component.html',
   styleUrl: './address-input.component.scss',
 })
 export class AddressInputComponent {
-  @Input() addressName : string = ""
+  @Input() addressName : string = "Main"
 
   filteredAddresses: any | undefined;
   selectedAddress: IAddress | undefined;
@@ -29,6 +32,7 @@ export class AddressInputComponent {
   
 
   constructor(
+    public dialog: MatDialog,
     private _addressService: AddressService,
   ) {}
 
@@ -41,27 +45,26 @@ export class AddressInputComponent {
   searchAddress() {
 
     let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = "Search ${{this.addressName}} Address";
+    dialogData.title = `Search ${this.addressName} Address`;
     dialogData.address = "";
     dialogData.trueText = "OK";
     dialogData.falseText = "Cancel";
 
-    // const dialogRef = this.dialog.open(AddressDialogComponent, {
-    //   width: "350px",
-    //   data: dialogData
-    // });
+    const dialogRef = this.dialog.open(AddressDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
 
-    // dialogRef.afterClosed().subscribe(async dialogResult => {
-    //   let result = dialogResult;
+    dialogRef.afterClosed().subscribe(async dialogResult => {
+      let result = dialogResult;
 
-    //   if(result) {
-    //     this.quickForm.controls.startAddress.setValue(result);
-    //   }
-    // });
+      if(result) {
+        this.addressForm.controls.addressInput.setValue(result);
+      }
+    });
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
-    console.log(value);
     let addresses = await this._addressService.getRemoteAddresses();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
     sort(addresses, 'address');
