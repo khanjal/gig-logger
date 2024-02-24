@@ -44,6 +44,7 @@
       "@guards/*": ["./src/app/shared/guards/*"],
       "@helpers/*": ["./src/app/shared/helpers/*"],
       "@interfaces/*": ["./src/app/shared/interfaces/*"],
+      "@inputs/*": ["./src/app/shared/inputs/*"],
       "@models/*": ["./src/app/shared/models/*"],
       "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"]
