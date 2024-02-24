@@ -245,7 +245,7 @@
         </div>
 
         <!-- Destination Address -->
-        <app-address-input addressName="Destination" [formAddress]="quickForm.value.endAddress" (addressEvent)="setDestinationAddress($event)"></app-address-input>
+        <app-search-input fieldName="Destination Address" [formData]="quickForm.value.endAddress" (outEvent)="setDestinationAddress($event)" [showGoogle]="true"></app-search-input>
         
         <!-- Name List/Notes -->
         <div  class="section" *ngIf="selectedAddressDeliveries?.length">
