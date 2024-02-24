@@ -3,7 +3,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { IAddress } from '@interfaces/address.interface';
-import { Observable, mergeMap, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { sort } from '@helpers/sort.helper';
 import { AddressService } from '@services/address.service';
@@ -25,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class AddressInputComponent {
   @Input() addressName: string = "Main";
+  @Input() formAddress: any;
   @Output() addressEvent = new EventEmitter<string>;
 
   filteredAddresses: any | undefined;
@@ -33,7 +34,6 @@ export class AddressInputComponent {
     addressInput: new FormControl('')
   });
   
-
   constructor(
     public dialog: MatDialog,
     private _addressService: AddressService,
@@ -45,8 +45,11 @@ export class AddressInputComponent {
     );
   }
 
-  searchAddress() {
+  async ngOnChanges(){
+    this.addressForm.controls.addressInput.setValue(this.formAddress);
+  }
 
+  searchAddress() {
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = `Search ${this.addressName} Address`;
     dialogData.address = "";
@@ -63,6 +66,7 @@ export class AddressInputComponent {
 
       if(result) {
         this.addressForm.controls.addressInput.setValue(result);
+        this.addressEvent.emit(result);
       }
     });
   }
