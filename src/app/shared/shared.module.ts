@@ -11,6 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 // Components
+import { AddressInputComponent } from '@inputs/address-input/address-input.component';
 import { GoogleAddressComponent } from './components/google-address/google-address.component';
 import { TripsTableGroupComponent } from './components/trips-table-group/trips-table-group.component';
 import { AddressDialogComponent } from './components/address-dialog/address-dialog.component';
@@ -35,6 +36,8 @@ import { CustomRangePanelComponent } from './components/custom-calendar-header/c
 import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
 import { LoadModalComponent } from './components/load-modal/load-modal.component';
 import { SaveModalComponent } from './components/save-modal/save-modal.component';
+import { PipesModule } from '@pipes/pipes.module';
+
 
 @NgModule({
     declarations: [
@@ -42,9 +45,6 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         HeaderComponent,
         ProfileComponent,
         TripsQuickViewComponent,
-        NoSecondsPipe,
-        TruncatePipe,
-        ShortAddressPipe,
         ConfirmDialogComponent,
         FocusScrollDirective,
         AddressDialogComponent,
@@ -57,7 +57,19 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         LoadModalComponent,
         SaveModalComponent
     ],
+    exports: [
+        AddressInputComponent,
+        CurrentAverageComponent,
+        HeaderComponent,
+        PipesModule,
+        TripsTableBasicComponent,
+        TripsTableGroupComponent,
+        TripsTableSimpleComponent,
+        TripsQuickViewComponent,
+        FocusScrollDirective
+    ],
     imports: [
+        AddressInputComponent,
         CommonModule,
         MatButtonModule,
         MatCardModule,
@@ -66,20 +78,9 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         MatInputModule,
         MatTableModule,
         MatToolbarModule,
+        PipesModule,
         ReactiveFormsModule,
         RouterModule
-    ],
-    exports: [
-        CurrentAverageComponent,
-        HeaderComponent,
-        NoSecondsPipe,
-        ShortAddressPipe,
-        TripsTableBasicComponent,
-        TripsTableGroupComponent,
-        TripsTableSimpleComponent,
-        TripsQuickViewComponent,
-        TruncatePipe,
-        FocusScrollDirective
     ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
