@@ -76,6 +76,8 @@ export class QuickFormComponent implements OnInit {
   filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
   selectedAddressDeliveries: IDelivery[] | undefined;
+
+  formDestinationAddress: IAddress | undefined;
   
   filteredNames: Observable<IName[]> | undefined;
   selectedName: IName | undefined;
@@ -428,6 +430,11 @@ export class QuickFormComponent implements OnInit {
 
   showAddressNamesEvent(event: any) {
     let address = event.target.value;
+    this.showAddressNames(address);
+  }
+
+  getDestinationAddress(address: string) {
+    console.log(address);
     this.showAddressNames(address);
   }
 
