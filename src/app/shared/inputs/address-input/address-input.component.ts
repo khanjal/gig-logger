@@ -13,13 +13,13 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
-import { SharedModule } from '../../shared.module';
 import { PipesModule } from '@pipes/pipes.module';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-address-input',
   standalone: true,
-  imports: [AsyncPipe, BrowserModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
+  imports: [AsyncPipe, BrowserModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
   templateUrl: './address-input.component.html',
   styleUrl: './address-input.component.scss',
 })
