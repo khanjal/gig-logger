@@ -36,6 +36,7 @@ import { CustomRangePanelComponent } from './components/custom-calendar-header/c
 import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
 import { LoadModalComponent } from './components/load-modal/load-modal.component';
 import { SaveModalComponent } from './components/save-modal/save-modal.component';
+import { PipesModule } from '@pipes/pipes.module';
 
 
 @NgModule({
@@ -44,9 +45,6 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         HeaderComponent,
         ProfileComponent,
         TripsQuickViewComponent,
-        NoSecondsPipe,
-        TruncatePipe,
-        ShortAddressPipe,
         ConfirmDialogComponent,
         FocusScrollDirective,
         AddressDialogComponent,
@@ -63,13 +61,11 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         AddressInputComponent,
         CurrentAverageComponent,
         HeaderComponent,
-        NoSecondsPipe,
-        ShortAddressPipe,
+        PipesModule,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
         TripsQuickViewComponent,
-        TruncatePipe,
         FocusScrollDirective
     ],
     imports: [
@@ -82,6 +78,7 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         MatInputModule,
         MatTableModule,
         MatToolbarModule,
+        PipesModule,
         ReactiveFormsModule,
         RouterModule
     ],
