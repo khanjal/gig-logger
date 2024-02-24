@@ -1,0 +1,29 @@
+<form [formGroup]="searchForm">
+    <mat-form-field class="field-halfish-width" appearance="outline">
+        <mat-label>{{fieldName}}</mat-label>
+        <input type="text"
+            name="searchInput"
+            placeholder="Pick one or enter new one"
+            matInput
+            formControlName="searchInput"
+            [matAutocomplete]="autoInput"
+            (blur)="returnDataEvent($event)"
+            (selectionchange)="returnDataEvent($event)"
+            focus-scroll
+            #searchInput />
+        <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
+            <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
+                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" class="mat-option">
+                    {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
+                </mat-option>
+            <!-- </cdk-virtual-scroll-viewport> -->
+        </mat-autocomplete>
+        <button class="mat-icon-button" *ngIf="searchInput.value" color="primary" matSuffix mat-icon-button aria-label="Clear Field" (click)="searchForm.controls.searchInput.setValue('')">
+            <mat-icon>clear</mat-icon>
+        </button>
+    </mat-form-field>
+
+    <button *ngIf="showGoogle" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Address" (click)="searchAddress()">
+        <mat-icon>search</mat-icon>
+    </button>
+</form>
