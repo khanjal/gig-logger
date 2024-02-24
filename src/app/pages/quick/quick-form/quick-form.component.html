@@ -170,31 +170,8 @@
         </div>
 
         <!-- Name -->
-        <div class="row-block">
-            <mat-form-field class="field-halfish-width" appearance="outline">
-                <mat-label>Name</mat-label>
-                <input type="text"
-                    name="name"
-                    placeholder="Pick one or enter new"
-                    aria-label="Name"
-                    matInput
-                    formControlName="name"
-                    [matAutocomplete]="autoName"
-                    (blur)="showNameAddressesEvent($event)" 
-                    (selectionchange)="showNameAddressesEvent($event)"
-                    focus-scroll
-                    #name>
-                <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
-                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                        <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="showNameAddresses(name.name)" class="mat-option">
-                            {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
-                        </mat-option>
-                    <!-- </cdk-virtual-scroll-viewport> -->
-                </mat-autocomplete>
-                <button class="mat-icon-button" *ngIf="name.value" color="primary" matSuffix mat-icon-button aria-label="Clear" (click)="quickForm.controls.name.setValue('')">
-                    <mat-icon>clear</mat-icon>
-                </button>
-            </mat-form-field>
+        <div class="row-flex">
+            <app-search-input class="field-halfish-width" fieldName="Name" searchType="Name" [formData]="quickForm.value.name" (outEvent)="setName($event)"></app-search-input>
 
             <!-- Pickup Address Button -->
             <button class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
@@ -245,7 +222,7 @@
         </div>
 
         <!-- Destination Address -->
-        <app-search-input fieldName="Destination Address" [formData]="quickForm.value.endAddress" (outEvent)="setDestinationAddress($event)" [showGoogle]="true"></app-search-input>
+        <app-search-input fieldName="Destination Address" searchType="Address" [formData]="quickForm.value.endAddress" (outEvent)="setDestinationAddress($event)" [showGoogle]="true"></app-search-input>
         
         <!-- Name List/Notes -->
         <div  class="section" *ngIf="selectedAddressDeliveries?.length">
