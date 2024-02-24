@@ -484,6 +484,7 @@ export class QuickFormComponent implements OnInit {
     }
   }
 
+  // TODO move to helper
   async countAddress(address: string): Promise<number> {
     let foundAddress = await this._addressService.findRemoteAddress(address);
     console.log(foundAddress);
@@ -516,52 +517,6 @@ export class QuickFormComponent implements OnInit {
   
   compareShifts(o1: IShift, o2: IShift): boolean {
     return ShiftHelper.compareShifts(o1, o2);
-  }
-
-  searchDestinationAddress() {
-    //this.clearFocus("endAddress");
-
-    let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = "Search Destination Address";
-    dialogData.address = this.quickForm.value.endAddress ?? "";
-    dialogData.trueText = "OK";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(AddressDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
-      if(result) {
-        this.quickForm.controls.endAddress.setValue(result);
-      }
-    });
-  }
-
-  searchPickupAddress() {
-    //this.clearFocus("startAddress");
-
-    let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = "Search Pickup Address";
-    dialogData.address = this.quickForm.value.startAddress ?? "";
-    dialogData.trueText = "OK";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(AddressDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
-      if(result) {
-        this.quickForm.controls.startAddress.setValue(result);
-      }
-    });
   }
 
   private clearFocus(elementId: string) {
