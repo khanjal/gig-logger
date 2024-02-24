@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -24,7 +24,8 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './address-input.component.scss',
 })
 export class AddressInputComponent {
-  @Input() addressName : string = "Main"
+  @Input() addressName: string = "Main";
+  @Output() addressEvent = new EventEmitter<string>;
 
   filteredAddresses: any | undefined;
   selectedAddress: IAddress | undefined;
@@ -64,6 +65,11 @@ export class AddressInputComponent {
         this.addressForm.controls.addressInput.setValue(result);
       }
     });
+  }
+
+  returnAddressEvent(event: any) {
+    let address: string = event.target.value;
+    this.addressEvent.emit(address);
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
