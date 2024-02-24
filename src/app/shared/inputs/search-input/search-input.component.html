@@ -16,6 +16,9 @@
                 <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" class="mat-option">
                     {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                 </mat-option>
+                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" class="mat-option">
+                    {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
+                </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
         <button class="mat-icon-button" *ngIf="searchInput.value" color="primary" matSuffix mat-icon-button aria-label="Clear Field" (click)="searchForm.controls.searchInput.setValue('')">
