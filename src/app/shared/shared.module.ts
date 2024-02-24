@@ -37,6 +37,7 @@ import { CustomCalendarHeaderComponent } from './components/custom-calendar-head
 import { LoadModalComponent } from './components/load-modal/load-modal.component';
 import { SaveModalComponent } from './components/save-modal/save-modal.component';
 import { PipesModule } from '@pipes/pipes.module';
+import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 
 
 @NgModule({
@@ -62,6 +63,7 @@ import { PipesModule } from '@pipes/pipes.module';
         CurrentAverageComponent,
         HeaderComponent,
         PipesModule,
+        SearchInputComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
@@ -80,7 +82,8 @@ import { PipesModule } from '@pipes/pipes.module';
         MatToolbarModule,
         PipesModule,
         ReactiveFormsModule,
-        RouterModule
+        RouterModule,
+        SearchInputComponent
     ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
