@@ -12,7 +12,7 @@
         <mat-autocomplete autoActiveFirstOption #autoAddress="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
                 <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" class="mat-option">
-                    {{ address.address }} ({{ address.visits }})
+                    {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
