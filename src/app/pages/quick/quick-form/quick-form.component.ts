@@ -432,6 +432,11 @@ export class QuickFormComponent implements OnInit {
     this.showAddressNames(address);
   }
 
+  setName(name: string) {
+    this.quickForm.controls.name.setValue(name);
+    this.showNameAddresses(name);
+  }
+
   async showAddressNames(address: string) {
     if (!address) { return; }
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
