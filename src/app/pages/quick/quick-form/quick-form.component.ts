@@ -72,10 +72,10 @@ export class QuickFormComponent implements OnInit {
   showOrder: boolean = false;
   showTimes: boolean = false;
 
-  filteredStartAddresses: Observable<IAddress[]> | undefined;
-  filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
   selectedAddressDeliveries: IDelivery[] | undefined;
+
+  formDestinationAddress: IAddress | undefined;
   
   filteredNames: Observable<IName[]> | undefined;
   selectedName: IName | undefined;
@@ -115,14 +115,6 @@ export class QuickFormComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.load();
-
-    this.filteredStartAddresses = this.quickForm.controls.startAddress.valueChanges.pipe(
-      mergeMap(async value => await this._filterAddress(value || ''))
-    );
-
-    this.filteredEndAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
-      mergeMap(async value => await this._filterAddress(value || ''))
-    );
 
     this.filteredNames = this.quickForm.controls.name.valueChanges.pipe(
       startWith(''),
@@ -431,6 +423,15 @@ export class QuickFormComponent implements OnInit {
     this.showAddressNames(address);
   }
 
+  setPickupAddress(address: string) {
+    this.quickForm.controls.startAddress.setValue(address);
+  }
+
+  setDestinationAddress(address: string) {
+    this.quickForm.controls.endAddress.setValue(address);
+    this.showAddressNames(address);
+  }
+
   async showAddressNames(address: string) {
     if (!address) { return; }
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
@@ -575,13 +576,6 @@ export class QuickFormComponent implements OnInit {
 
   setDropoffTime() {
     this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
-  }
-
-  private async _filterAddress(value: string): Promise<IAddress[]> {
-    let addresses = await this._addressService.getRemoteAddresses();
-    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-    sort(addresses, 'address');
-    return (addresses).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<IName[]> {

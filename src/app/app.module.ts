@@ -34,9 +34,9 @@ import { YearlyService } from '@services/yearly.service';
     AppComponent
   ],
   imports: [
-    BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    BrowserModule,
     FormsModule,
     HttpClientModule,
     MatIconModule,
