@@ -270,6 +270,8 @@
         </div>
 
         <!-- Destination Address -->
+        <app-address-input addressName="Destination" (addressEvent)="getDestinationAddress($event)"></app-address-input>
+        {{ formDestinationAddress }}
         <div class="row-block">
             <mat-form-field class="field-halfish-width" appearance="outline">
                 <mat-label>Destination Address</mat-label>
