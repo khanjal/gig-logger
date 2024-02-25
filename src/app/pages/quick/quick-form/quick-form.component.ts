@@ -77,16 +77,12 @@ export class QuickFormComponent implements OnInit {
 
   formDestinationAddress: IAddress | undefined;
   
-  filteredNames: Observable<IName[]> | undefined;
   selectedName: IName | undefined;
   selectedNameDeliveries: IDelivery[] | undefined;
   
-  filteredPlaces: Observable<IPlace[]> | undefined;
   selectedPlace: IPlace | undefined;
 
-  filteredRegions: Observable<IRegion[]> | undefined;
   filteredServices: Observable<IService[]> | undefined;
-  filteredTypes: Observable<IType[]> | undefined;
   
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
@@ -109,37 +105,17 @@ export class QuickFormComponent implements OnInit {
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
-      private _typeService: TypeService,
       private _viewportScroller: ViewportScroller
     ) {}
 
   async ngOnInit(): Promise<void> {
     this.load();
 
-    this.filteredNames = this.quickForm.controls.name.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterName(value || ''))
-    );
-
-    this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterPlace(value || ''))
-    );
-
-    this.filteredRegions = this.quickForm.controls.region.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterRegion(value || ''))
-    );
-
     this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterService(value || ''))
     );
 
-    this.filteredTypes = this.quickForm.controls.type.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterType(value || ''))
-    );
   }
 
   public async load() {
@@ -418,11 +394,6 @@ export class QuickFormComponent implements OnInit {
     this.showNameAddresses(name);
   }
 
-  showAddressNamesEvent(event: any) {
-    let address = event.target.value;
-    this.showAddressNames(address);
-  }
-
   setPickupAddress(address: string) {
     this.quickForm.controls.startAddress.setValue(address);
   }
@@ -436,6 +407,19 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.name.setValue(name);
     this.showNameAddresses(name);
   }
+  
+  setPlace(place: string) {
+    this.quickForm.controls.place.setValue(place);
+    this.selectPlace(place);
+  }
+
+  setRegion(region: string) {
+    this.quickForm.controls.region.setValue(region);
+  }
+  
+  setType(type: string) {
+    this.quickForm.controls.type.setValue(type);
+  }
 
   async showAddressNames(address: string) {
     if (!address) { return; }
@@ -444,21 +428,11 @@ export class QuickFormComponent implements OnInit {
     sort(this.selectedAddressDeliveries, 'name');
   }
 
-  showNameAddressesEvent(event: any) {
-    let name = event.target.value;
-    this.showNameAddresses(name);
-  }
-
   async showNameAddresses(name: string) {
     if (!name) { return; }
     this.selectedName = await this._nameService.findRemoteName(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
-  }
-
-  selectPlaceEvent(event: any) {
-    let place = event.target.value;
-    this.selectPlace(place);
   }
 
   async selectPlace(place: string) {
@@ -546,28 +520,10 @@ export class QuickFormComponent implements OnInit {
     return (names).slice(0,100);
   }
 
-  private async _filterPlace(value: string): Promise<IPlace[]> {
-    let places = await this._placeService.getRemotePlaces();
-    places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-
-    return places;
-  }
-
-  private async _filterRegion(value: string): Promise<IRegion[]> {
-    const filterValue = value;
-
-    return await this._regionService.filter(filterValue);
-  }
-
   private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
     return await this._serviceService.filterRemoteServices(filterValue);
   }
 
-  private async _filterType(value: string): Promise<IType[]> {
-    const filterValue = value;
-
-    return await this._typeService.filter(filterValue);
-  }
 }
