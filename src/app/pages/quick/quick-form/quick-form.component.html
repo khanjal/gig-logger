@@ -136,7 +136,7 @@
         </div>
 
         <!-- Pickup Address -->
-        <app-address-input *ngIf="showPickupAddress" addressName="Pickup" [formAddress]="quickForm.value.startAddress" (addressEvent)="setPickupAddress($event)"></app-address-input>
+        <app-search-input *ngIf="showPickupAddress" fieldName="Pickup Address" searchType="Address" [formData]="quickForm.value.startAddress" (outEvent)="setPickupAddress($event)" [showGoogle]="true"></app-search-input>
         
         <!-- Address List/Notes -->
         <div  class="section" *ngIf="selectedNameDeliveries?.length">

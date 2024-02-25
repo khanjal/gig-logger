@@ -118,7 +118,7 @@ export class SearchInputComponent {
   searchAddress() {
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = `Search ${this.fieldName}`;
-    dialogData.address = "";
+    dialogData.address = this.searchForm.value.searchInput ?? "";
     dialogData.trueText = "OK";
     dialogData.falseText = "Cancel";
 
