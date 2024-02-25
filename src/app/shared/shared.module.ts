@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { PipesModule } from '@pipes/pipes.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -22,16 +23,13 @@ import { TripsTableSimpleComponent } from '@components/trips-table-simple/trips-
 import { HeaderComponent } from './header/header.component';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 
-// Directives
-import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
-
+// Misc
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
 import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
 import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
 import { LoadModalComponent } from './components/load-modal/load-modal.component';
 import { SaveModalComponent } from './components/save-modal/save-modal.component';
-import { PipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [
@@ -40,7 +38,6 @@ import { PipesModule } from '@pipes/pipes.module';
         ProfileComponent,
         TripsQuickViewComponent,
         ConfirmDialogComponent,
-        FocusScrollDirective,
         AddressDialogComponent,
         GoogleAddressComponent,
         TripsTableBasicComponent,
@@ -59,8 +56,7 @@ import { PipesModule } from '@pipes/pipes.module';
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
-        TripsQuickViewComponent,
-        FocusScrollDirective
+        TripsQuickViewComponent
     ],
     imports: [
         CommonModule,

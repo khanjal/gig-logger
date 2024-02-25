@@ -1,7 +1,8 @@
 import { Directive, ElementRef, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[focus-scroll]'
+  selector: '[focus-scroll]',
+  standalone: true
 })
 export class FocusScrollDirective {
 

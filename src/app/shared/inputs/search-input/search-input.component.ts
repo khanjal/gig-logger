@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
+import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 import { sort } from '@helpers/sort.helper';
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -29,7 +30,7 @@ import { mergeMap, startWith, switchMap } from 'rxjs';
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, BrowserModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
+  imports: [AsyncPipe, BrowserModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss'
 })
