@@ -11,7 +11,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 // Components
-import { AddressInputComponent } from '@inputs/address-input/address-input.component';
 import { GoogleAddressComponent } from './components/google-address/google-address.component';
 import { TripsTableGroupComponent } from './components/trips-table-group/trips-table-group.component';
 import { AddressDialogComponent } from './components/address-dialog/address-dialog.component';
@@ -21,14 +20,10 @@ import { TripsQuickViewComponent } from '@components/trips-quick-view/trips-quic
 import { ProfileComponent } from '@components/profile/profile.component';
 import { TripsTableSimpleComponent } from '@components/trips-table-simple/trips-table-simple.component';
 import { HeaderComponent } from './header/header.component';
+import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 
 // Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
-
-// Pipes
-import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
-import { ShortAddressPipe } from '@pipes/short-address.pipe';
-import { TruncatePipe } from '@pipes/truncate.pipe';
 
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
@@ -37,8 +32,6 @@ import { CustomCalendarHeaderComponent } from './components/custom-calendar-head
 import { LoadModalComponent } from './components/load-modal/load-modal.component';
 import { SaveModalComponent } from './components/save-modal/save-modal.component';
 import { PipesModule } from '@pipes/pipes.module';
-import { SearchInputComponent } from '@inputs/search-input/search-input.component';
-
 
 @NgModule({
     declarations: [
@@ -59,7 +52,6 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
         SaveModalComponent
     ],
     exports: [
-        AddressInputComponent,
         CurrentAverageComponent,
         HeaderComponent,
         PipesModule,
@@ -71,7 +63,6 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
         FocusScrollDirective
     ],
     imports: [
-        AddressInputComponent,
         CommonModule,
         MatButtonModule,
         MatCardModule,
