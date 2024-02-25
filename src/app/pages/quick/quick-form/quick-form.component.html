@@ -48,79 +48,15 @@
 
         <!-- Region -->
         <div *ngIf="isNewShift">
-            <mat-form-field class="field-full-width" appearance="outline">
-                <mat-label>Region</mat-label>
-                <input type="text"
-                    name="region"
-                    placeholder="Pick one or enter new"
-                    aria-label="Region"
-                    matInput
-                    formControlName="region"
-                    [matAutocomplete]="autoRegion"
-                    focus-scroll
-                    #region>
-                <mat-autocomplete autoActiveFirstOption #autoRegion="matAutocomplete">
-                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                        <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" class="mat-option">
-                            {{ region.region }} ({{ region.visits }})
-                        </mat-option>
-                    <!-- </cdk-virtual-scroll-viewport> -->
-                </mat-autocomplete>
-                <button class="mat-icon-button" *ngIf="region.value" color="primary" matSuffix mat-icon-button aria-label="Clear Region Dropdown" (click)="quickForm.controls.region.setValue('')">
-                    <mat-icon>clear</mat-icon>
-                </button>
-            </mat-form-field>
+            <app-search-input fieldName="Region" searchType="Region" [formData]="quickForm.value.region" (outEvent)="setRegion($event)"></app-search-input>
         </div>
 
         <!-- Place -->
-        <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>Place</mat-label>
-            <input type="text"
-                name="place"
-                placeholder="Pick one or enter new"
-                matInput
-                formControlName="place"
-                [matAutocomplete]="autoPlace"
-                (blur)="selectPlaceEvent($event)"
-                (selectionchange)="selectPlaceEvent($event)"
-                focus-scroll
-                #place>
-            <mat-autocomplete autoActiveFirstOption #autoPlace="matAutocomplete">
-                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                    <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place"  (click)="selectPlace(place.place)" class="mat-option">
-                        {{place.place}} ({{ place.visits }})
-                    </mat-option>
-                <!-- </cdk-virtual-scroll-viewport> -->
-            </mat-autocomplete>
-            <button class="mat-icon-button" *ngIf="place.value" color="primary" matSuffix mat-icon-button aria-label="Clear Place" (click)="quickForm.controls.place.setValue('')">
-                <mat-icon>clear</mat-icon>
-            </button>
-        </mat-form-field>
-
+        <app-search-input fieldName="Place" searchType="Place" [formData]="quickForm.value.place" (outEvent)="setPlace($event)"></app-search-input>
+        
         <!-- Type -->
-        <mat-form-field class="field-halfish-width" appearance="outline">
-            <mat-label>Type</mat-label>
-            <input type="text"
-                name="type"
-                placeholder="Pick one or enter new"
-                aria-label="Type"
-                matInput
-                formControlName="type"
-                [matAutocomplete]="autoType"
-                focus-scroll
-                #type>
-            <mat-autocomplete autoActiveFirstOption #autoType="matAutocomplete">
-                <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                    <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" class="mat-option">
-                        {{ type.type }} ({{ type.visits }})
-                    </mat-option>
-                <!-- </cdk-virtual-scroll-viewport> -->
-            </mat-autocomplete>
-            <button class="mat-icon-button" *ngIf="type.value" color="primary" matSuffix mat-icon-button aria-label="Clear Type Dropdown" (click)="quickForm.controls.type.setValue('')">
-                <mat-icon>clear</mat-icon>
-            </button>
-        </mat-form-field>
-
+        <app-search-input fieldName="Type" searchType="Type" [formData]="quickForm.value.type" (outEvent)="setType($event)"></app-search-input>
+        
         <!-- Pay -->
         <div class="row-block">
             <button class="button-left" [color]="showAdvancedPay ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Advanced Pay" (click)="toggleAdvancedPay()">
@@ -171,12 +107,16 @@
 
         <!-- Name -->
         <div class="row-flex">
-            <app-search-input class="field-halfish-width" fieldName="Name" searchType="Name" [formData]="quickForm.value.name" (outEvent)="setName($event)"></app-search-input>
+            <div class="field-full-width">
+                <app-search-input fieldName="Name" searchType="Name" [formData]="quickForm.value.name" (outEvent)="setName($event)"></app-search-input>
+            </div>
 
-            <!-- Pickup Address Button -->
-            <button class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
-                <mat-icon>contact_mail</mat-icon>
-            </button>
+            <div class="button-right">
+                <!-- Pickup Address Button -->
+                <button class="button-right" [color]="showPickupAddress ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Show Pickup Address" (click)="togglePickupAddress()">
+                    <mat-icon>contact_mail</mat-icon>
+                </button>
+            </div>
         </div>
 
         <!-- Pickup Address List -->

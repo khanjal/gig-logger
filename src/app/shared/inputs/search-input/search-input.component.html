@@ -1,5 +1,5 @@
 <form [formGroup]="searchForm">
-    <mat-form-field class="field-halfish-width" appearance="outline">
+    <mat-form-field class="field-width" appearance="outline">
         <mat-label>{{fieldName}}</mat-label>
         <input type="text"
             name="searchInput"
@@ -18,6 +18,15 @@
                 </mat-option>
                 <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" class="mat-option">
                     {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
+                </mat-option>
+                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" class="mat-option">
+                    {{place.place}} ({{ place.visits }})
+                </mat-option>
+                <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" class="mat-option">
+                    {{ region.region }} ({{ region.visits }})
+                </mat-option>
+                <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" class="mat-option">
+                    {{ type.type }} ({{ type.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
