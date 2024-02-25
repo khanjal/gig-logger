@@ -422,14 +422,14 @@ export class QuickFormComponent implements OnInit {
   }
 
   async showAddressNames(address: string) {
-    if (!address) { return; }
+    if (!address) { this.selectedAddressDeliveries = []; return; }
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
 
   async showNameAddresses(name: string) {
-    if (!name) { return; }
+    if (!name) { this.selectedNameDeliveries = []; return; }
     this.selectedName = await this._nameService.findRemoteName(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
@@ -437,6 +437,7 @@ export class QuickFormComponent implements OnInit {
 
   async selectPlace(place: string) {
     if (!place) {
+      this.selectedPlace = undefined;
       return;
     }
 

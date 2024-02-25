@@ -109,9 +109,18 @@ export class SearchInputComponent {
     this.searchForm.controls.searchInput.setValue(this.formData);
   }
 
-
-  returnDataEvent(event: any) {
+  blurDataEvent(event: any) {
     let data: string = event.target.value;
+    this.outEvent.emit(data);
+  }
+
+  clearDataEvent() {
+    this.searchForm.controls.searchInput.setValue('')
+    this.outEvent.emit();
+  }
+  
+  clickDataEvent(event: any) {
+    let data: string = event.value;
     this.outEvent.emit(data);
   }
 
