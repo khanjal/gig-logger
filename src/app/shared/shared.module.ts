@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { PipesModule } from '@pipes/pipes.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -20,15 +21,9 @@ import { TripsQuickViewComponent } from '@components/trips-quick-view/trips-quic
 import { ProfileComponent } from '@components/profile/profile.component';
 import { TripsTableSimpleComponent } from '@components/trips-table-simple/trips-table-simple.component';
 import { HeaderComponent } from './header/header.component';
+import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 
-// Directives
-import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
-
-// Pipes
-import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
-import { ShortAddressPipe } from '@pipes/short-address.pipe';
-import { TruncatePipe } from '@pipes/truncate.pipe';
-
+// Misc
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
 import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
@@ -42,11 +37,7 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         HeaderComponent,
         ProfileComponent,
         TripsQuickViewComponent,
-        NoSecondsPipe,
-        TruncatePipe,
-        ShortAddressPipe,
         ConfirmDialogComponent,
-        FocusScrollDirective,
         AddressDialogComponent,
         GoogleAddressComponent,
         TripsTableBasicComponent,
@@ -57,6 +48,16 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         LoadModalComponent,
         SaveModalComponent
     ],
+    exports: [
+        CurrentAverageComponent,
+        HeaderComponent,
+        PipesModule,
+        SearchInputComponent,
+        TripsTableBasicComponent,
+        TripsTableGroupComponent,
+        TripsTableSimpleComponent,
+        TripsQuickViewComponent
+    ],
     imports: [
         CommonModule,
         MatButtonModule,
@@ -66,20 +67,10 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         MatInputModule,
         MatTableModule,
         MatToolbarModule,
+        PipesModule,
         ReactiveFormsModule,
-        RouterModule
-    ],
-    exports: [
-        CurrentAverageComponent,
-        HeaderComponent,
-        NoSecondsPipe,
-        ShortAddressPipe,
-        TripsTableBasicComponent,
-        TripsTableGroupComponent,
-        TripsTableSimpleComponent,
-        TripsQuickViewComponent,
-        TruncatePipe,
-        FocusScrollDirective
+        RouterModule,
+        SearchInputComponent
     ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },

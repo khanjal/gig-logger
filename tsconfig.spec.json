@@ -3,11 +3,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": [
-      "google.maps",
-      "jasmine",
-      "node"
-    ],
+    //"types": [
+    //  "google.maps",
+    //  "jasmine",
+    //  "node"
+    //],
     "typeRoots": [
       "node_modules/@types"
     ],
