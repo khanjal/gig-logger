@@ -27,7 +27,7 @@ export class GoogleAddressComponent implements OnInit {
     address: new FormControl('')
   });
 
-  googleAddress!: GoogleAddress;
+    googleAddress!: GoogleAddress;
 
   constructor(private googleAddressService: GoogleAddressService) { }
 
@@ -45,7 +45,8 @@ export class GoogleAddressComponent implements OnInit {
     this.addressChange.emit(this.addressForm.value.address || "");
   }
 
-  private getPlaceAutocomplete() {
+    private getPlaceAutocomplete() {
+        //@ts-ignore
     const autocomplete = new google.maps.places.Autocomplete(
       this.addressInput.nativeElement,
       {
@@ -54,6 +55,7 @@ export class GoogleAddressComponent implements OnInit {
       }
     );
 
+        //@ts-ignore
     google.maps.event.addListener(autocomplete, 'place_changed', () => {
       // $('.pac-container').remove(); // TODO remove existing pac-containers
       this.place = autocomplete.getPlace();
