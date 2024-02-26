@@ -72,21 +72,17 @@ export class QuickFormComponent implements OnInit {
   showOrder: boolean = false;
   showTimes: boolean = false;
 
-  filteredStartAddresses: Observable<IAddress[]> | undefined;
-  filteredEndAddresses: Observable<IAddress[]> | undefined;
   selectedAddress: IAddress | undefined;
   selectedAddressDeliveries: IDelivery[] | undefined;
+
+  formDestinationAddress: IAddress | undefined;
   
-  filteredNames: Observable<IName[]> | undefined;
   selectedName: IName | undefined;
   selectedNameDeliveries: IDelivery[] | undefined;
   
-  filteredPlaces: Observable<IPlace[]> | undefined;
   selectedPlace: IPlace | undefined;
 
-  filteredRegions: Observable<IRegion[]> | undefined;
   filteredServices: Observable<IService[]> | undefined;
-  filteredTypes: Observable<IType[]> | undefined;
   
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
@@ -109,45 +105,17 @@ export class QuickFormComponent implements OnInit {
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
-      private _typeService: TypeService,
       private _viewportScroller: ViewportScroller
     ) {}
 
   async ngOnInit(): Promise<void> {
     this.load();
 
-    this.filteredStartAddresses = this.quickForm.controls.startAddress.valueChanges.pipe(
-      mergeMap(async value => await this._filterAddress(value || ''))
-    );
-
-    this.filteredEndAddresses = this.quickForm.controls.endAddress.valueChanges.pipe(
-      mergeMap(async value => await this._filterAddress(value || ''))
-    );
-
-    this.filteredNames = this.quickForm.controls.name.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterName(value || ''))
-    );
-
-    this.filteredPlaces = this.quickForm.controls.place.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterPlace(value || ''))
-    );
-
-    this.filteredRegions = this.quickForm.controls.region.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterRegion(value || ''))
-    );
-
     this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterService(value || ''))
     );
 
-    this.filteredTypes = this.quickForm.controls.type.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterType(value || ''))
-    );
   }
 
   public async load() {
@@ -426,37 +394,50 @@ export class QuickFormComponent implements OnInit {
     this.showNameAddresses(name);
   }
 
-  showAddressNamesEvent(event: any) {
-    let address = event.target.value;
+  setPickupAddress(address: string) {
+    this.quickForm.controls.startAddress.setValue(address);
+  }
+
+  setDestinationAddress(address: string) {
+    this.quickForm.controls.endAddress.setValue(address);
     this.showAddressNames(address);
   }
 
+  setName(name: string) {
+    this.quickForm.controls.name.setValue(name);
+    this.showNameAddresses(name);
+  }
+  
+  setPlace(place: string) {
+    this.quickForm.controls.place.setValue(place);
+    this.selectPlace(place);
+  }
+
+  setRegion(region: string) {
+    this.quickForm.controls.region.setValue(region);
+  }
+  
+  setType(type: string) {
+    this.quickForm.controls.type.setValue(type);
+  }
+
   async showAddressNames(address: string) {
-    if (!address) { return; }
+    if (!address) { this.selectedAddressDeliveries = []; return; }
     this.selectedAddress = await this._addressService.getRemoteAddress(address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
 
-  showNameAddressesEvent(event: any) {
-    let name = event.target.value;
-    this.showNameAddresses(name);
-  }
-
   async showNameAddresses(name: string) {
-    if (!name) { return; }
+    if (!name) { this.selectedNameDeliveries = []; return; }
     this.selectedName = await this._nameService.findRemoteName(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
   }
 
-  selectPlaceEvent(event: any) {
-    let place = event.target.value;
-    this.selectPlace(place);
-  }
-
   async selectPlace(place: string) {
     if (!place) {
+      this.selectedPlace = undefined;
       return;
     }
 
@@ -483,6 +464,7 @@ export class QuickFormComponent implements OnInit {
     }
   }
 
+  // TODO move to helper
   async countAddress(address: string): Promise<number> {
     let foundAddress = await this._addressService.findRemoteAddress(address);
     console.log(foundAddress);
@@ -517,52 +499,6 @@ export class QuickFormComponent implements OnInit {
     return ShiftHelper.compareShifts(o1, o2);
   }
 
-  searchDestinationAddress() {
-    //this.clearFocus("endAddress");
-
-    let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = "Search Destination Address";
-    dialogData.address = this.quickForm.value.endAddress ?? "";
-    dialogData.trueText = "OK";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(AddressDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
-      if(result) {
-        this.quickForm.controls.endAddress.setValue(result);
-      }
-    });
-  }
-
-  searchPickupAddress() {
-    //this.clearFocus("startAddress");
-
-    let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = "Search Pickup Address";
-    dialogData.address = this.quickForm.value.startAddress ?? "";
-    dialogData.trueText = "OK";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(AddressDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
-      if(result) {
-        this.quickForm.controls.startAddress.setValue(result);
-      }
-    });
-  }
-
   private clearFocus(elementId: string) {
     let input = document.getElementById(elementId);
     input?.blur();
@@ -577,13 +513,6 @@ export class QuickFormComponent implements OnInit {
     this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
   }
 
-  private async _filterAddress(value: string): Promise<IAddress[]> {
-    let addresses = await this._addressService.getRemoteAddresses();
-    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-    sort(addresses, 'address');
-    return (addresses).slice(0,100);
-  }
-
   private async _filterName(value: string): Promise<IName[]> {
     let names = await this._nameService.getRemoteNames();
     names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
@@ -592,28 +521,10 @@ export class QuickFormComponent implements OnInit {
     return (names).slice(0,100);
   }
 
-  private async _filterPlace(value: string): Promise<IPlace[]> {
-    let places = await this._placeService.getRemotePlaces();
-    places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-
-    return places;
-  }
-
-  private async _filterRegion(value: string): Promise<IRegion[]> {
-    const filterValue = value;
-
-    return await this._regionService.filter(filterValue);
-  }
-
   private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
     return await this._serviceService.filterRemoteServices(filterValue);
   }
 
-  private async _filterType(value: string): Promise<IType[]> {
-    const filterValue = value;
-
-    return await this._typeService.filter(filterValue);
-  }
 }

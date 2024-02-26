@@ -17,7 +17,6 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/mater
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { QuickComponent } from './quick/quick.component';
-import { SharedModule } from '../shared/shared.module';
 import { QuickFormComponent } from './quick/quick-form/quick-form.component';
 import { LoginComponent } from './login/login.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -33,6 +32,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { StatsComponent } from './stats/stats.component';
 import { StatsTableComponent } from './stats/stats-table/stats-table.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
