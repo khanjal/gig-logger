@@ -1,5 +1,5 @@
 <form [formGroup]="searchForm">
-    <mat-form-field class="field-width" appearance="outline">
+    <mat-form-field [ngClass]="showGoogle ? 'field-button-width' : 'field-full-width'" appearance="outline">
         <mat-label>{{fieldName}}</mat-label>
         <input type="text"
             name="searchInput"
