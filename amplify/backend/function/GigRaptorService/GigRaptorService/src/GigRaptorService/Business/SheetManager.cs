@@ -9,6 +9,7 @@ public interface ISheetManager
     public Task<SheetEntity> AddData(SheetEntity sheetEntity);
     public Task<List<MessageEntity>> CheckSheets();
     public Task<SheetEntity> CreateSheet();
+    public Task<string?> GetName();
     public Task<SheetEntity> GetSheet(string sheet);
     public Task<SheetEntity> GetSheets();
 }
@@ -37,6 +38,11 @@ public class SheetManager : ISheetManager
     public async Task<SheetEntity> CreateSheet()
     {
         return await _googleSheetManger.CreateSheets();
+    }
+
+    public async Task<string?> GetName()
+    {
+        return await _googleSheetManger.GetSpreadsheetName();
     }
 
     public async Task<SheetEntity> GetSheet(string sheet)

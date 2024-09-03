@@ -46,6 +46,14 @@ public class SheetsController : ControllerBase
         return await _sheetmanager.CheckSheets();
     }
 
+    // GET api/sheets/health
+    [HttpGet("health/")]
+    public async Task<bool> health()
+    {
+        InitializeSheetmanger();
+        return !string.IsNullOrEmpty(await _sheetmanager.GetName());
+    }
+
     // POST api/sheets/create
     [HttpPost("create")]
     public async Task<SheetEntity> Post()

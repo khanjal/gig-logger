@@ -8,6 +8,7 @@
   "profile": "",
   "region": "",
   "configuration": "Release",
+  "function-handler": "GigRaptorService::GigRaptorService.LambdaEntryPoint::FunctionHandlerAsync",
   "s3-prefix": "GigRaptorService/",
   "template": "serverless.template",
   "template-parameters": ""
