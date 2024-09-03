@@ -1,0 +1,9 @@
+{
+  "resource": "/sheets",
+  "path": "/sheets/get/",
+  "httpMethod": "GET",
+  "isBase64Encoded": true,
+  "headers": {
+    "SheetId": "1E7cpE6DdOglWCSnuXKYt4_0jbH7b6moWpcGe-M-5sZk"
+  }
+}
