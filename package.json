@@ -62,7 +62,7 @@
     "@types/jasmine": "~4.0.0",
     "@types/jest": "^29.5.5",
     "@types/mocha": "^10.0.2",
-    "@types/node": "^18.18.5",
+    "@types/node": "^18.19.50",
     "buffer": "^6.0.3",
     "jasmine-core": "~4.2.0",
     "karma": "~6.4.0",
