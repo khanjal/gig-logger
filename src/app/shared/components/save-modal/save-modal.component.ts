@@ -26,22 +26,23 @@ export class SaveModalComponent {
 
     async ngOnInit(): Promise<void> {
         let time = 0;
+        let defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
 
         let sheetData = {} as ISheet;
+        sheetData.properties = {id: defaultSheet.id, name: ""};
         sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
         sheetData.trips = await this._tripService.getUnsavedLocalTrips();
-        let defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
 
         this.startTimer();
 
         time = this.currentTime;
-        this.appendToTerminal("Starting Lambda...");
+        this.appendToTerminal("Checking Google API Status...");
         await this._sheetService.warmUpLambda();
-        this.appendToTerminal(`Lambda Started In ${this.currentTime - time}s`);
+        this.appendToTerminal(`Status Checked In ${this.currentTime - time}s`);
 
         time = this.currentTime;
         this.appendToTerminal("Saving Trips Data...");
-        await firstValueFrom(await this._gigLoggerService.postSheetData(sheetData, defaultSheet!.id));
+        await firstValueFrom(await this._gigLoggerService.postSheetData(sheetData));
         this.appendToTerminal(`Local Trip Data Saved In ${this.currentTime - time}s`);
 
         this.appendToTerminal("Modal Closing In 5s");

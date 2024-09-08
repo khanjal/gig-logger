@@ -8,7 +8,7 @@
     "url" : "https://1al1hr5ub4.execute-api.us-east-1.amazonaws.com/{basePath}",
     "variables" : {
       "basePath" : {
-        "default" : "dev"
+        "default" : "prod"
       }
     }
   } ],
