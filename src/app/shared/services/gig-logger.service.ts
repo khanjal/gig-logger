@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 
@@ -32,6 +32,7 @@ import { YearlyService } from "./yearly.service";
 import { sort } from "@helpers/sort.helper";
 import { IShift } from "@interfaces/shift.interface";
 import { IWeekday } from "@interfaces/weekday.interface";
+import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -55,8 +56,15 @@ export class GigLoggerService {
         private _yearlyService: YearlyService
     ) {}
 
+    private setHeader() {
+        let headers = new HttpHeaders();
+        // headers = headers.set('Sheet-Id', sheetId);
+        headers = headers.set('Content-Type', "application/json");
+        return headers;
+    }
+
     public async getSheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}${sheetId}/primary`);
+        return this._http.get(`${this.apiUrl}/sheets/get/${sheetId}`);
     }
 
     public async getSecondarySheetData(sheetId: string) {
@@ -64,11 +72,15 @@ export class GigLoggerService {
     }
 
     public async warmupLambda(sheetId: string) {
-        return this._http.get(`${this.apiUrl}${sheetId}/warmup`);
+        return this._http.get(`${this.apiUrl}/sheets/check/${sheetId}`);
     }
 
-    public async postSheetData(sheetData: ISheet, sheetId: string) {
-        return this._http.post<any>(`${this.apiUrl}${sheetId}/trips`, JSON.stringify(sheetData));
+    public async postSheetData(sheetData: ISheet) {
+        return this._http.post<any>(`${this.apiUrl}/sheets/add`, JSON.stringify(sheetData), { headers: this.setHeader() });
+    }
+
+    public async createSheet(properties: ISheetProperties){
+        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties));
     }
 
     public async loadData(sheetData: ISheet) {

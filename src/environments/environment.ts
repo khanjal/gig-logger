@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  gigLoggerApi: "https://atftzfc4p0.execute-api.us-east-1.amazonaws.com/dev/sheet/",
+  gigLoggerApi: "https://1al1hr5ub4.execute-api.us-east-1.amazonaws.com/dev",
   demoSheet: "1JwzjAqs_fZhnR1XbARY__2OnWdrqUoxIBa1mtVQwHMU"
 };
 
