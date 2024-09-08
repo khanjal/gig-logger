@@ -78,7 +78,8 @@ export class SpreadsheetService {
     public async warmUpLambda() {
         // Wake up lambda
         //console.log("Warming up lambda");
-        await firstValueFrom(await this._gigLoggerService.warmupLambda("none"));
+        let defaultSheet = await this.getDefaultSheet();
+        await firstValueFrom(await this._gigLoggerService.warmupLambda(defaultSheet.id));
     }
 
     public async loadSpreadsheetData() {
