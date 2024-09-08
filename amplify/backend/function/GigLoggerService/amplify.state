@@ -1,6 +1,0 @@
-{
-  "pluginId": "amplify-dotnet-function-runtime-provider",
-  "functionRuntime": "dotnet6",
-  "useLegacyBuild": false,
-  "defaultEditorFile": "src\\GigLoggerService.cs"
-}

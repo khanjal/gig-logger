@@ -109,7 +109,7 @@ export class SheetAddFormComponent {
       (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
           // Update sheet name.
           if (!this.sheetForm.value.sheetName) {
-            spreadsheet.name = (<ISheet>data).name;
+            spreadsheet.name = (<ISheet>data).properties.name;
             await this._spreadsheetService.update(spreadsheet);
           }
           this._snackBar.open("Loading Primary Spreadsheet Data");
@@ -124,7 +124,7 @@ export class SheetAddFormComponent {
       this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
       (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
         if (!this.sheetForm.value.sheetName) {
-          spreadsheet.name = (<ISheet>data).name;
+          spreadsheet.name = (<ISheet>data).properties.name;
           await this._spreadsheetService.update(spreadsheet);
         }
         this._snackBar.open("Loading Secondary Spreadsheet Data");
