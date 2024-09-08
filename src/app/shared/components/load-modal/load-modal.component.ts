@@ -23,9 +23,9 @@ export class LoadModalComponent {
         this.startTimer();
 
         time = this.currentTime;
-        this.appendToTerminal("Starting Lambda...");
+        this.appendToTerminal("Checking Google API Status...");
         await this._sheetService.warmUpLambda();
-        this.appendToTerminal(`Lambda Started In ${this.currentTime - time}s`);
+        this.appendToTerminal(`Status Checked In ${this.currentTime - time}s`);
 
         time = this.currentTime;
         this.appendToTerminal("Loading Spreadsheet Data...");
