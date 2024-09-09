@@ -1,5 +1,6 @@
 ﻿using GigRaptorLib.Entities;
 using GigRaptorLib.Enums;
+using GigRaptorLib.Utilities;
 using GigRaptorLib.Utilities.Google;
 
 namespace  GigRaptorService.Business;
@@ -11,6 +12,7 @@ public interface ISheetManager
     public Task<SheetEntity> CreateSheet();
     public Task<string?> GetName();
     public Task<SheetEntity> GetSheet(string sheet);
+    public Task<SheetEntity> GetSheets(string[] sheets);
     public Task<SheetEntity> GetSheets();
 }
 public class SheetManager : ISheetManager
@@ -48,6 +50,21 @@ public class SheetManager : ISheetManager
     public async Task<SheetEntity> GetSheet(string sheet)
     {
         return await _googleSheetManger.GetSheet(sheet);
+    }
+
+    public async Task<SheetEntity> GetSheets(string[] sheets)
+    {
+        var sheetEnums = new List<SheetEnum>();
+        foreach (var sheet in sheets)
+        {
+            var foundEnum = Enum.TryParse(sheet, true, out SheetEnum sheetName);
+
+            if (foundEnum)
+            {
+                sheetEnums.Add(sheetName);
+            }
+        }
+        return await _googleSheetManger.GetSheets(sheetEnums);
     }
 
     public async Task<SheetEntity> GetSheets()

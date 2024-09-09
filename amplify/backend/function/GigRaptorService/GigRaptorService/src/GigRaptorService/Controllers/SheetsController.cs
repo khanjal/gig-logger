@@ -3,6 +3,7 @@ using GigRaptorService.Business;
 using GigRaptorService.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using System.Net.WebSockets;
 
 namespace GigRaptorService.Controllers;
 
@@ -41,6 +42,13 @@ public class SheetsController : ControllerBase
     {
         InitializeSheetmanger(sheetId);
         return await _sheetmanager.GetSheet(sheetName);
+    }
+
+    [HttpGet("get")]
+    public async Task<SheetEntity?> Get(string sheetId, [FromQuery] string[] sheetName)
+    {
+        InitializeSheetmanger(sheetId);
+        return await _sheetmanager.GetSheets(sheetName);
     }
 
     // GET api/sheets/check
