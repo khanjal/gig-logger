@@ -68,7 +68,7 @@ export class GigLoggerService {
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}${sheetId}/secondary`);
+        return this._http.get(`${this.apiUrl}/sheets/get?sheetId=${sheetId}&sheetName=names&sheetName=places&sheetName=trips`);
     }
 
     public async warmupLambda(sheetId: string) {
