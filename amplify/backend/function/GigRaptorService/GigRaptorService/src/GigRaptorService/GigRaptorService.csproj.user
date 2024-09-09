@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>Mock Lambda Test Tool</ActiveDebugProfile>
+    <ActiveDebugProfile>GigRaptorService</ActiveDebugProfile>
   </PropertyGroup>
 </Project>
