@@ -80,7 +80,7 @@ export class GigLoggerService {
     }
 
     public async createSheet(properties: ISheetProperties){
-        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties));
+        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties), { headers: this.setHeader() });
     }
 
     public async loadData(sheetData: ISheet) {

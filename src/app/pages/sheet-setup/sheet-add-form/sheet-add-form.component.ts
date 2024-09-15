@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -98,9 +99,11 @@ export class SheetAddFormComponent {
       spreadsheet.default = "true";
     }
 
-    // Change this to check spreadsheet details to make sure it's a valid spreadsheet.
     // Add sheet & load data from it.
     await this._spreadsheetService.update(spreadsheet);
+
+    // Make sure all sheets are created.
+    (await this._gigLoggerService.createSheet(<ISheetProperties>{id: spreadsheet.id})).subscribe();
     
     if (spreadsheet.default === "true") {
       // console.log("Loading default data");
