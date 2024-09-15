@@ -56,31 +56,39 @@ export class GigLoggerService {
         private _yearlyService: YearlyService
     ) {}
 
-    private setHeader() {
+    private setHeader(sheetId: string) {
         let headers = new HttpHeaders();
-        // headers = headers.set('Sheet-Id', sheetId);
+        headers = headers.set('Sheet-Id', sheetId);
         headers = headers.set('Content-Type', "application/json");
         return headers;
     }
 
     public async getSheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/get/${sheetId}`);
+        return this._http.get(`${this.apiUrl}/sheets/all`, { headers: this.setHeader(sheetId) });
+    }
+
+    public async getSheetSingle(sheetId: string, sheetName: string) {
+        return this._http.get(`${this.apiUrl}/sheets/single/${sheetName}`, { headers: this.setHeader(sheetId) });
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/get?sheetId=${sheetId}&sheetName=names&sheetName=places&sheetName=trips`);
+        return this._http.get(`${this.apiUrl}/sheets/multiple?sheetName=names&sheetName=places&sheetName=trips`, { headers: this.setHeader(sheetId) });
     }
 
     public async warmupLambda(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/check/${sheetId}`);
+        return this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) });
+    }
+
+    public async healthCheck(sheetId: string) {
+        return this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) });
     }
 
     public async postSheetData(sheetData: ISheet) {
-        return this._http.post<any>(`${this.apiUrl}/sheets/add`, JSON.stringify(sheetData), { headers: this.setHeader() });
+        return this._http.post<any>(`${this.apiUrl}/sheets/add`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) });
     }
 
     public async createSheet(properties: ISheetProperties){
-        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties), { headers: this.setHeader() });
+        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties), { headers: this.setHeader(properties.id) });
     }
 
     public async loadData(sheetData: ISheet) {

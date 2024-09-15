@@ -28,42 +28,42 @@ public class SheetsController : ControllerBase
         _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), sheetId);
     }
 
-    // GET api/sheets/get
-    [HttpGet("get/{sheetId}")]
-    public async Task<SheetEntity?> Get(string sheetId)
+    // GET api/sheets/all
+    [HttpGet("all")]
+    public async Task<SheetEntity?> GetAll()
     {
-        InitializeSheetmanger(sheetId);
+        InitializeSheetmanger();
         return await _sheetmanager.GetSheets();
     }
 
-    // GET api/sheets/get/shifts
-    [HttpGet("get/{sheetId}/{sheetName}")]
-    public async Task<SheetEntity?> Get(string sheetId, string sheetName)
+    // GET api/sheets/get/single
+    [HttpGet("single/{sheetName}")]
+    public async Task<SheetEntity?> GetSingle(string sheetName)
     {
-        InitializeSheetmanger(sheetId);
+        InitializeSheetmanger();
         return await _sheetmanager.GetSheet(sheetName);
     }
 
-    [HttpGet("get")]
-    public async Task<SheetEntity?> Get(string sheetId, [FromQuery] string[] sheetName)
+    [HttpGet("multiple")]
+    public async Task<SheetEntity?> GetMultiple([FromQuery] string[] sheetName)
     {
-        InitializeSheetmanger(sheetId);
+        InitializeSheetmanger();
         return await _sheetmanager.GetSheets(sheetName);
     }
 
     // GET api/sheets/check
-    [HttpGet("check/{sheetId}")]
-    public async Task<List<MessageEntity>> Check(string sheetId)
+    [HttpGet("check")]
+    public async Task<List<MessageEntity>> Check()
     {
-        InitializeSheetmanger(sheetId);
+        InitializeSheetmanger();
         return await _sheetmanager.CheckSheets();
     }
 
     // GET api/sheets/health
-    [HttpGet("health/{sheetId}")]
-    public async Task<bool> health(string sheetId)
+    [HttpGet("health")]
+    public async Task<bool> health()
     {
-        InitializeSheetmanger(sheetId);
+        InitializeSheetmanger();
         return !string.IsNullOrEmpty(await _sheetmanager.GetName());
     }
 
@@ -71,7 +71,7 @@ public class SheetsController : ControllerBase
     [HttpPost("create")]
     public async Task<SheetEntity> Create([FromBody] PropertyEntity properties)
     {
-        InitializeSheetmanger(properties.Id);
+        InitializeSheetmanger();
         return await _sheetmanager.CreateSheet();
     }
 
