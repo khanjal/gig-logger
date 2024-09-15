@@ -85,6 +85,8 @@ export class SpreadsheetService {
     public async loadSpreadsheetData() {
         // Load primary spreadsheet data.
         let primarySpreadsheet = await this.getDefaultSheet();
+        await firstValueFrom(await this._gigLoggerService.healthCheck(primarySpreadsheet.id));
+        await firstValueFrom(await this._gigLoggerService.getSheetSingle(primarySpreadsheet.id, "trips"));
 
         //console.log("Loading default data");
         this._snackBar.open(`Connecting to ${primarySpreadsheet.name} Spreadsheet`);
