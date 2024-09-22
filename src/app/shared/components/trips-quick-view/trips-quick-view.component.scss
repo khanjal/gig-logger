@@ -1,5 +1,9 @@
 @import "color-vars";
 
+.padding-left {
+    padding-left: .5rem;
+}
+
 .padding-right {
     padding-right: .5rem;
 }
@@ -15,3 +19,13 @@ mat-card {
 .warn {
     color: $warn-color;
 }
+
+.icon-display {
+    transform: scale(2);
+    padding: .5rem;
+ }
+
+ .section-container {
+    justify-content: flex-start;
+    margin-top: .5rem;
+ }

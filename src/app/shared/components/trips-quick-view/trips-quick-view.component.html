@@ -1,19 +1,67 @@
 <mat-card [ngClass]="trip.exclude ? 'strike' : ''">
     <div>
-        <mat-card-header><h3>{{trip.date | date:'MMM d'}}, <span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span> ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</h3></mat-card-header>
+        <mat-card-header><h3><strong>{{trip.date | date:'MMM d'}}, <span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span> ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</strong></h3></mat-card-header>
         <mat-card-content>
-            <div *ngIf="trip.region">{{trip.region}}</div>
-            <div><strong>{{trip.place | truncate:15}}<span *ngIf="trip.distance">(<span [ngClass]="{'primary': trip.amountPerDistance > 2, 'warn': trip.amountPerDistance < 1, 'rainbow-text-animated': trip.amountPerDistance > 5}">{{trip.distance}}</span>)</span></strong> {{ trip.startAddress | shortaddress:trip.place | truncate:40}}</div>
-            <div><strong>{{trip.name | truncate:15}}</strong> {{ trip.endAddress | shortaddress | truncate:25}}</div>
-            <div><span class="padding-right" *ngIf="trip.endUnit"><strong>Unit #</strong> {{trip.endUnit}}</span> <span *ngIf="trip.orderNumber"><strong>Order #</strong> {{trip.orderNumber}}</span></div>
-            <div>
-                <span class="padding-right" *ngIf="trip.pay"><strong>Pay</strong> {{trip.pay | currency}}</span> 
-                <span class="padding-right" *ngIf="trip.tip"><strong>Tip</strong> {{trip.tip | currency}}</span> 
-                <span class="padding-right" *ngIf="trip.bonus"><strong>Bonus</strong> {{trip.bonus | currency}}</span> 
-                <span class="padding-right" *ngIf="trip.cash"><strong>Cash</strong> {{trip.cash | currency}}</span>
-                <span class="padding-right" *ngIf="trip.total > trip.pay"><strong>Total</strong> {{trip.total | currency}}</span>
+            <div class="row-flex section-container" *ngIf="trip.region || trip.distance">
+                <div>
+                    <mat-icon class="icon-display">map</mat-icon>
+                </div>  
+                <div class="padding-left">
+                    <div *ngIf="trip.region">{{trip.region}}</div>
+                    <div *ngIf="trip.startOdometer || trip.distance">
+                        <strong>Distance:</strong> {{trip.startOdometer | number}}<span *ngIf="trip.endOdometer"> - {{trip.endOdometer | number}}</span>
+                        <span *ngIf="trip.distance"> (<span [ngClass]="{'primary': trip.amountPerDistance > 2, 'warn': trip.amountPerDistance < 1, 'rainbow-text-animated': trip.amountPerDistance > 5}">{{trip.distance}}</span>)</span>
+                    </div>
+                </div>
             </div>
-            <div *ngIf="trip.note">"{{trip.note}}"</div>
+            <div class="row-flex section-container" *ngIf="trip.place || trip.startAddress">
+                <div>
+                    <mat-icon class="icon-display">storefront</mat-icon>
+                </div>
+                <div class="padding-left">
+                    <strong>{{trip.place}}</strong> 
+                    <br/>
+                    {{ trip.startAddress | shortaddress:trip.place | truncate:40}}
+                </div>
+            </div>
+            
+            <div class="row-flex section-container" *ngIf="trip.name || trip.endAddress">
+                <div>
+                    <mat-icon class="icon-display">home</mat-icon>
+                </div>
+                <div class="padding-left">
+                    <strong>{{trip.name | truncate:25}}</strong> 
+                    <br/>
+                    {{ trip.endAddress | shortaddress | truncate:40}}
+                </div>
+            </div>
+            
+            <div class="row-flex section-container" *ngIf="trip.pay || trip.total">
+                <div>
+                    <mat-icon class="icon-display">payments</mat-icon>
+                </div>
+                <div class="padding-left">
+                    <span class="padding-right" *ngIf="trip.pay"><strong>Pay</strong> {{trip.pay | currency}}</span> 
+                    <span class="padding-right" *ngIf="trip.tip"><strong>Tip</strong> {{trip.tip | currency}}</span> 
+                    <span class="padding-right" *ngIf="trip.bonus"><strong>Bonus</strong> {{trip.bonus | currency}}</span> 
+                    <br/>
+                    <span class="padding-right" *ngIf="trip.total > trip.pay"><strong>Total</strong> {{trip.total | currency}}</span>
+                    <span class="padding-right" *ngIf="trip.cash"><strong>Cash</strong> {{trip.cash | currency}}</span>
+                </div>
+            </div>
+
+            <div class="row-flex section-container" *ngIf="trip.endUnit || trip.orderNumber || trip.note">
+                <div>
+                    <mat-icon class="icon-display">description</mat-icon>
+                </div>
+                <div class="padding-left">
+                    <div>
+                        <span class="padding-right" *ngIf="trip.endUnit"><strong>Unit #</strong> {{trip.endUnit}}</span> 
+                        <span *ngIf="trip.orderNumber"><strong>Order #</strong> {{trip.orderNumber}}</span>
+                    </div>
+                    <div *ngIf="trip.note">"{{trip.note}}"</div>
+                </div>
+            </div>
         </mat-card-content>
     </div>
 </mat-card>
