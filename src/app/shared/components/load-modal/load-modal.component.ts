@@ -30,7 +30,7 @@ export class LoadModalComponent {
         this.appendToTerminal(`${this.currentTask} ONLINE`);
 
         time = this.currentTime;
-        this.currentTask = "Loading Spreadsheet Data...";
+        this.currentTask = "Loading Sheet Data...";
         await this._sheetService.loadSpreadsheetData();
         this.appendToTerminal(`${this.currentTask} LOADED (${this.currentTime - time}s)`);
 
