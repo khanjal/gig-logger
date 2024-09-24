@@ -4,9 +4,11 @@
     <quick-form (parentReload)="load()"></quick-form>
 
     <h2 *ngIf="unsavedTrips.length > 0" id="unsavedTrips">Unsaved Local Trips</h2>
-    <div *ngFor="let trip of unsavedTrips" [ngClass]="{'mat-card': unsavedTrips.length % 2 != 0, 'mat-card-reverse': unsavedTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true }">
-        <trips-quick-view [trip]="trip"></trips-quick-view>
-        <div mat-card class="row-flex button-bar">
+
+    @for (trip of unsavedTrips; track $index) {
+        <div [ngClass]="{'mat-card': unsavedTrips.length % 2 != 0, 'mat-card-reverse': unsavedTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true }">
+            <trips-quick-view [trip]="trip"></trips-quick-view>
+            <div mat-card class="row-flex button-bar">
                 <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedLocalTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
                 <button mat-fab extended color="accent" (click)="setPickupTime(trip)" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
                 <button mat-fab extended color="accent" (click)="setDropoffTime(trip)" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
@@ -31,19 +33,23 @@
                         <span>Delete</span>
                     </button>
                 </mat-menu>
+            </div>
         </div>
-    </div>
+    }
+    
     <div class="row-grid">
         <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
     </div>
 
-    <div class="row-grid" *ngIf="savedTrips.length > 0" id="savedLocalTrips">
-        <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
-        <div class="row-block">
-            <button mat-fab extended [class.spinner]="clearing" [disabled]="clearing" (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
-            <button mat-fab extended class="button-right" color="warn" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmClearTripsDialog()"><mat-icon>delete</mat-icon> Clear</button>
+    @if (savedTrips.length > 0) {
+        <div class="row-grid" id="savedLocalTrips">
+            <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
+            <div class="row-block">
+                <button mat-fab extended [class.spinner]="clearing" [disabled]="clearing" (click)="confirmUnsaveTripsDialog()"><mat-icon>undo</mat-icon> Unsave Trips</button>
+                <button mat-fab extended class="button-right" color="warn" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmClearTripsDialog()"><mat-icon>delete</mat-icon> Clear</button>
+            </div>
         </div>
-    </div>
+    }
 
     <div class="row-grid">
         <app-trips-table-group class="table" title="{{ defaultSheet?.name }} - Trips" link="{{defaultSheet?.id}}" [days]=6></app-trips-table-group>
