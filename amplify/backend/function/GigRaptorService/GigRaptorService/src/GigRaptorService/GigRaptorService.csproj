@@ -14,7 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.0.0" />
-    <PackageReference Include="GigRaptorLib" Version="1.0.5" />
+    <PackageReference Include="RaptorLoggerEngine.Gig" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="serverless.template">

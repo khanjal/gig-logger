@@ -26,7 +26,7 @@ export class AddressHelper {
         }
 
         // Truncate the first element to 10 since it's probably a place name if more than 3 elements.
-        if (length > 1) {
+        if (length > 2) {
             addressArray[0] = StringHelper.truncate(addressArray[0], 15);
         }
 

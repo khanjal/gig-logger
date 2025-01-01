@@ -1,7 +1,7 @@
-﻿using GigRaptorLib.Entities;
-using GigRaptorLib.Enums;
-using GigRaptorLib.Utilities;
-using GigRaptorLib.Utilities.Google;
+﻿using RLE.Core.Entities;
+using RLE.Gig.Entities;
+using RLE.Gig.Enums;
+using RLE.Gig.Utilities.Google;
 
 namespace  GigRaptorService.Business;
 
@@ -17,14 +17,14 @@ public interface ISheetManager
 }
 public class SheetManager : ISheetManager
 {
-    private IGoogleSheetManager _googleSheetManger;
+    private IGigSheetManager _googleSheetManger;
     public SheetManager(string token, string sheetId) {
-        _googleSheetManger = new GoogleSheetManager(token, sheetId);
+        _googleSheetManger = new GigSheetManager(token, sheetId);
     }
 
     public SheetManager(Dictionary<string,string> credentials, string sheetId)
     {
-        _googleSheetManger = new GoogleSheetManager(credentials, sheetId);
+        _googleSheetManger = new GigSheetManager(credentials, sheetId);
     }
 
     public async Task<SheetEntity> AddData(SheetEntity sheetEntity)
@@ -71,6 +71,6 @@ public class SheetManager : ISheetManager
     {
         var sheetData = await _googleSheetManger.GetSheets();
 
-        return sheetData;
+        return sheetData ?? new SheetEntity();
     }
 }

@@ -1,9 +1,9 @@
-﻿using GigRaptorLib.Entities;
-using GigRaptorService.Business;
+﻿using GigRaptorService.Business;
 using GigRaptorService.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using System.Net.WebSockets;
+using RLE.Core.Entities;
+using RLE.Gig.Entities;
 
 namespace GigRaptorService.Controllers;
 
