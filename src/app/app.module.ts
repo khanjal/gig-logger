@@ -3,7 +3,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { PagesModule } from './pages/pages.module';
 import { SharedModule } from './shared/shared.module';
@@ -29,40 +29,34 @@ import { WeekdayService } from '@services/weekday.service';
 import { WeeklyService } from '@services/weekly.service';
 import { YearlyService } from '@services/yearly.service';
 
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    BrowserModule,
-    FormsModule,
-    HttpClientModule,
-    MatIconModule,
-    PagesModule,
-    SharedModule,
-  ],
-  providers: [
-    AddressService,
-    CommonService,
-    DailyService,
-    DeliveryService,
-    MonthlyService,
-    NameService,
-    GigLoggerService,
-    PlaceService,
-    RegionService,
-    ServiceService,
-    ShiftService,
-    SpreadsheetService,
-    TimerService,
-    TripService,
-    TypeService,
-    WeekdayService,
-    WeeklyService,
-    YearlyService
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent
+    ],
+    bootstrap: [AppComponent], imports: [AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        FormsModule,
+        MatIconModule,
+        PagesModule,
+        SharedModule], providers: [
+        AddressService,
+        CommonService,
+        DailyService,
+        DeliveryService,
+        MonthlyService,
+        NameService,
+        GigLoggerService,
+        PlaceService,
+        RegionService,
+        ServiceService,
+        ShiftService,
+        SpreadsheetService,
+        TimerService,
+        TripService,
+        TypeService,
+        WeekdayService,
+        WeeklyService,
+        YearlyService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }
