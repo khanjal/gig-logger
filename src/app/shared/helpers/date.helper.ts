@@ -101,6 +101,12 @@ export class DateHelper {
         return seconds / 3600;
     }
 
+    static getMinutesAndSeconds(seconds: number): string {
+        const minutes: number = Math.floor(seconds / 60);
+         return minutes.toString().padStart(2, '0') + ':' + 
+         Math.floor((seconds - minutes * 60)).toString().padStart(2, '0');
+    }
+
     static getMonday(date: Date = new Date()) {
         var day = date.getDay() || 7;  
         if( day !== 1 ) 

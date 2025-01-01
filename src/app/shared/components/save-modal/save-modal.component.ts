@@ -7,6 +7,7 @@ import { ShiftService } from '../../services/shift.service';
 import { TripService } from '../../services/trip.service';
 import { GigLoggerService } from '../../services/gig-logger.service';
 import { firstValueFrom, map, timer } from 'rxjs';
+import { DateHelper } from '@helpers/date.helper';
 
 @Component({
   selector: 'app-save-modal',
@@ -15,6 +16,8 @@ import { firstValueFrom, map, timer } from 'rxjs';
 })
 export class SaveModalComponent {
     currentTime = 0;
+    currentTimeString = "";
+    currentTask = "";
     divMessages = "";
 
     constructor(public dialogRef: MatDialogRef<SaveModalComponent>,
@@ -34,25 +37,24 @@ export class SaveModalComponent {
         sheetData.trips = await this._tripService.getUnsavedLocalTrips();
 
         this.startTimer();
-
         time = this.currentTime;
-        this.appendToTerminal("Checking Google API Status...");
+
+        this.currentTask = "Checking Google API Status..."
         await this._sheetService.warmUpLambda();
-        this.appendToTerminal(`Status Checked In ${this.currentTime - time}s`);
+        this.appendToTerminal(`${this.currentTask} ONLINE`);
 
-        time = this.currentTime;
-        this.appendToTerminal("Saving Trips Data...");
+        this.currentTask = "Saving Trips Data...";
         await firstValueFrom(await this._gigLoggerService.postSheetData(sheetData));
-        this.appendToTerminal(`Local Trip Data Saved In ${this.currentTime - time}s`);
+        this.appendToTerminal(`${this.currentTask} SAVED (${this.currentTime - time}s)`);
 
-        this.appendToTerminal("Modal Closing In 5s");
+        this.currentTask = "Modal Closing In 5s";
 
         await this._timerService.delay(5000);
         this.dialogRef.close(true);
     }
 
     appendToTerminal(text: string) {
-        this.divMessages = `${this.divMessages}<p>${text}</p>`
+        this.divMessages = `${this.divMessages}<p>${DateHelper.getMinutesAndSeconds(this.currentTime)} ${text}</p>`
     }
 
     cancelSave() {
@@ -66,6 +68,9 @@ export class SaveModalComponent {
                     return x;
                 })
             )
-            .subscribe(t => this.currentTime = t);
+            .subscribe(t => {
+                this.currentTime = t;
+                this.currentTimeString = DateHelper.getMinutesAndSeconds(t);
+            });
     }
 }
