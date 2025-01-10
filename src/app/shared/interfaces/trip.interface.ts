@@ -25,4 +25,6 @@ export interface ITrip extends IAmount {
     type: string;
     amountPerDistance: number;
     amountPerTime: number;
+    action: string;
+    actionTime: number;
 }

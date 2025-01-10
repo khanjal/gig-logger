@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,6 +10,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
 import { GigLoggerService } from '@services/gig-logger.service';
+import { PollingService } from '@services/polling.service';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -22,13 +23,14 @@ import { LoadModalComponent } from '@components/load-modal/load-modal.component'
 import { SaveModalComponent } from '@components/save-modal/save-modal.component';
 
 import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-quick',
   templateUrl: './quick.component.html',
   styleUrls: ['./quick.component.scss']
 })
-export class QuickComponent implements OnInit {
+export class QuickComponent implements OnInit, OnDestroy {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
@@ -51,12 +53,18 @@ export class QuickComponent implements OnInit {
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
-      private _viewportScroller: ViewportScroller
+      private _viewportScroller: ViewportScroller,
+      private _pollingService: PollingService
     ) { }
+
+  ngOnDestroy(): void {
+    this._pollingService.stopPolling();
+  }
 
   async ngOnInit(): Promise<void> {
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    await this._pollingService.startPolling();
   }
 
   public async load() {

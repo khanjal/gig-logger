@@ -21,4 +21,6 @@ export interface IShift extends IAmountPer {
     totalBonus: number;
     grandTotal: number;
     totalCash: number;
+    action: string;
+    actionTime: number;
 }

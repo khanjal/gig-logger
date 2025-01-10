@@ -15,7 +15,6 @@ import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
-import { IType } from '@interfaces/type.interface';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -26,7 +25,6 @@ import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
-import { TypeService } from '@services/type.service';
 import { Observable, startWith, mergeMap } from 'rxjs';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
@@ -185,12 +183,15 @@ export class QuickFormComponent implements OnInit {
     
     // Set form properties depending on edit/add
     if (this.data?.id) {
+      trip.action = this.data?.saved ? "UPDATE" : this.data?.action;
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
-    else {
+    else {    
+      trip.action = "NEW";
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
+    trip.actionTime = Date.now();
 
     let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
     trip.duration = DateHelper.getDurationString(duration);
@@ -257,7 +258,7 @@ export class QuickFormComponent implements OnInit {
     }
 
     //Set default shift to last trip or latest shift.
-    if (!this.data.id) {
+    if (!this.data?.id) {
       // Remove duplicates
       this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
 

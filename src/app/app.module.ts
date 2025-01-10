@@ -18,6 +18,7 @@ import { GigLoggerService } from '@services/gig-logger.service';
 import { MonthlyService } from '@services/monthly.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
+import { PollingService } from '@services/polling.service';
 import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
@@ -47,6 +48,7 @@ import { YearlyService } from '@services/yearly.service';
         NameService,
         GigLoggerService,
         PlaceService,
+        PollingService,
         RegionService,
         ServiceService,
         ShiftService,

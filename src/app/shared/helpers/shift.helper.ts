@@ -63,6 +63,8 @@ export class ShiftHelper {
         shift.start = new Date().toLocaleTimeString();
         shift.total = 0;
         shift.trips = 0;
+        shift.action = "NEW";
+        shift.actionTime = Date.now();
         
         return shift;
     }
