@@ -3,7 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - nvm install 18.19.1
+        - nvm use 18.19.1
+        - node -v
+        - npm install -g @angular/cli@18.2.1
     build:
       commands:
         - echo "${AWS_BRANCH}"
