@@ -1,36 +1,25 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IShift } from '@interfaces/shift.interface';
-import { localDB } from '@data/local.db';
 import { DateHelper } from '@helpers/date.helper';
 
 export class ShiftService {
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
-    localShifts$ = liveQuery(() => localDB.shifts.toArray());
 
     public async addNewShift(shift: IShift) {
-        await localDB.shifts.add(shift);
+        await spreadsheetDB.shifts.add(shift);
     }
 
-    public deleteLocal(shiftId: number) {
-        localDB.shifts.delete(shiftId);
+    public deleteShift(shiftId: number) {
+        spreadsheetDB.shifts.delete(shiftId);
     }
 
-    public async getAllShifts(): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShifts(), ...await this.getUnsavedLocalShifts()];
-        return shifts;
-    }
-
-    public async getRemoteShifts(): Promise<IShift[]> {
+    public async getShifts(): Promise<IShift[]> {
         return await spreadsheetDB.shifts.toArray();
     }
 
-    public async getSavedLocalShifts(): Promise<IShift[]> {
-        return (await localDB.shifts.toArray()).filter(x => x.saved);
-    }
-
-    public async getUnsavedLocalShifts(): Promise<IShift[]> {
-        return (await localDB.shifts.toArray()).filter(x => !x.saved);
+    public async getUnsavedShifts(): Promise<IShift[]> {
+        return (await spreadsheetDB.shifts.toArray()).filter(x => !x.saved);
     }
     
     public async loadShifts(shifts: IShift[]) {
@@ -39,20 +28,12 @@ export class ShiftService {
     }
 
     public async getPreviousWeekShifts(): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShiftsPreviousDays(6), 
-            ...(await this.getLocalShiftsPreviousDays(6)).filter(x => !x.saved)];
+        let shifts = [...await this.getShiftsPreviousDays(6)];
 
         return shifts;
     }
 
-    public async getLocalShiftsPreviousDays(days: number): Promise<IShift[]> {
-        let dates = DateHelper.getDatesArray(days);
-        let shifts = await localDB.shifts.where("date").anyOf(dates).toArray();
-
-        return shifts;
-    }
-
-    public async getRemoteShiftsPreviousDays(days: number): Promise<IShift[]> {
+    public async getShiftsPreviousDays(days: number): Promise<IShift[]> {
         let dates = DateHelper.getDatesArray(days);
         let shifts = await spreadsheetDB.shifts.where("date").anyOf(dates).toArray();
 
@@ -60,15 +41,13 @@ export class ShiftService {
     }
 
     public async getShiftsByDate(date: string): Promise<IShift[]> {
-        let shifts = [...(await spreadsheetDB.shifts.where("date").equals(date).toArray()),
-                    ...(await localDB.shifts.where("date").equals(date).toArray()).filter(x => !x.saved)];
+        let shifts = [...(await spreadsheetDB.shifts.where("date").equals(date).toArray())];
 
         return shifts;
     }
 
     public async getShiftsByStartDate(date: string): Promise<IShift[]> {
-        let shifts = [...(await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray()),
-                    ...(await localDB.shifts.where("date").aboveOrEqual(date).toArray()).filter(x => !x.saved)];
+        let shifts = [...(await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray())];
 
         return shifts;
     }
@@ -79,55 +58,31 @@ export class ShiftService {
         return shifts;
     }
 
-    public async getLocalShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
-        let shifts = await localDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
-
-        return shifts;
-    }
-
     public async getShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShiftsBetweenDates(startDate, endDate), 
-            ...(await this.getLocalShiftsBetweenDates(startDate, endDate)).filter(x => !x.saved)];
+        let shifts = [...await this.getRemoteShiftsBetweenDates(startDate, endDate)];
 
         return shifts;
     }
 
-    public async queryLocalShifts(field: string, value: string | number): Promise<IShift[]> {
-        return await localDB.shifts.where(field).equals(value).toArray();
-    }
-
-    public async queryRemoteShifts(field: string, value: string | number): Promise<IShift[]> {
+    public async queryShifts(field: string, value: string | number): Promise<IShift[]> {
         return await spreadsheetDB.shifts.where(field).equals(value).toArray();
     }
 
     public async queryShiftByKey(key: string): Promise<IShift> {
         let remoteShift = (await spreadsheetDB.shifts.where('key').equals(key).toArray())[0];
 
-        if (remoteShift) {
-            return remoteShift;
-        }
-
-        let localShift = (await localDB.shifts.where('key').equals(key).toArray())[0];
-        return localShift;
+        return remoteShift;
     }
 
     public async saveUnsavedShifts() {
-        let shifts = await this.getUnsavedLocalShifts();
+        let shifts = await this.getUnsavedShifts();
         for (let shift of shifts) {
             shift.saved = true;
-            await this.updateLocalShift(shift);
+            await this.updateShift(shift);
         };
     }
 
     public async updateShift(shift: IShift) {
-        (shift.saved ? await this.updateRemoteShift(shift) : await this.updateLocalShift(shift));
-    }
-
-    public async updateLocalShift(shift: IShift) {
-        await localDB.shifts.put(shift);
-    }
-
-    public async updateRemoteShift(shift: IShift) {
         await spreadsheetDB.shifts.put(shift);
     }
 }

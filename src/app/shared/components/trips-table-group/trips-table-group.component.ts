@@ -38,7 +38,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
 
   async load() {
     // console.log("TripsTableGroup: Loading");
-    let sheetTrips = await this._tripService.getRemoteTripsPreviousDays(this.days);
+    let sheetTrips = await this._tripService.getTripsPreviousDays(this.days);
     sort(sheetTrips, '-id');
     // Get unique dates in trips.
     let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
@@ -47,7 +47,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     
     for (const date of dates) {
       let tripGroup = {} as ITripGroup;
-      let trips = sheetTrips.filter(x => x.date === date);
+      let trips = sheetTrips.filter(x => x.date === date && x.saved);
       let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
       let day = (await this._dailyService.queryDaily("date", date))[0];
       let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];

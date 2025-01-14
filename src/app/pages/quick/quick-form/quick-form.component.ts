@@ -136,8 +136,7 @@ export class QuickFormComponent implements OnInit {
       let shifts: IShift[] = [];
       let today: string = DateHelper.getISOFormat();
 
-      shifts.push(...(await this._shiftService.queryLocalShifts("date", today)).filter(x => !x.saved));
-      shifts.push(...await this._shiftService.queryRemoteShifts("date", today));
+      shifts.push(...await this._shiftService.queryShifts("date", today));
       
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
       shift.region = this.quickForm.value.region ?? "";
@@ -264,12 +263,8 @@ export class QuickFormComponent implements OnInit {
 
       let today = DateHelper.getISOFormat();
 
-      let trips = await this._tripService.queryLocalTrips("date", today);
+      let trips = await this._tripService.queryTrips("date", today);
 
-      // Check for local trips first. If not use remote trips.
-      if (trips.length === 0) {
-        await this._tripService.queryRemoteTrips("date", today)
-      }
       sort(trips, '-id');
 
       let latestTrip = trips[0];
@@ -285,7 +280,7 @@ export class QuickFormComponent implements OnInit {
       }
 
       // Set place if only one in the list.
-      let places = await this._placeService.getRemotePlaces();
+      let places = await this._placeService.getPlaces();
       if (places.length === 1) {
         this.quickForm.controls.place.setValue(places[0].place);
         await this.selectPlace(places[0].place);
@@ -330,7 +325,7 @@ export class QuickFormComponent implements OnInit {
       shifts = [...new Set(shifts)]; // Remove duplicates
     }
 
-    await this._tripService.updateLocalTrip(trip);
+    await this._tripService.updateTrip(trip);
 
     // Update shift numbers & weekday current amount.
     await this._gigLoggerService.calculateShiftTotals(shifts);
@@ -365,7 +360,7 @@ export class QuickFormComponent implements OnInit {
       this.quickForm.controls.service.setValidators([Validators.required]);
 
       //Set the most used service as default.
-      let service = (await this._serviceService.getRemoteServices())?.reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IService);
+      let service = (await this._serviceService.getServices())?.reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IService);
       this.quickForm.controls.service.setValue(service.service);
 
       //Set the most used region as default.
@@ -423,14 +418,14 @@ export class QuickFormComponent implements OnInit {
 
   async showAddressNames(address: string) {
     if (!address) { this.selectedAddressDeliveries = []; return; }
-    this.selectedAddress = await this._addressService.getRemoteAddress(address);
+    this.selectedAddress = await this._addressService.getAddress(address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
 
   async showNameAddresses(name: string) {
     if (!name) { this.selectedNameDeliveries = []; return; }
-    this.selectedName = await this._nameService.findRemoteName(name);
+    this.selectedName = await this._nameService.findName(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
   }
@@ -441,7 +436,7 @@ export class QuickFormComponent implements OnInit {
       return;
     }
 
-    this.selectedPlace = await this._placeService.getRemotePlace(place);
+    this.selectedPlace = await this._placeService.getPlace(place);
 
     // Auto assign to most used start address if there is no start address already.
     if (!this.quickForm.value.startAddress && this.selectedPlace?.addresses?.length) {
@@ -466,7 +461,7 @@ export class QuickFormComponent implements OnInit {
 
   // TODO move to helper
   async countAddress(address: string): Promise<number> {
-    let foundAddress = await this._addressService.findRemoteAddress(address);
+    let foundAddress = await this._addressService.findAddress(address);
     console.log(foundAddress);
     return foundAddress?.visits ?? 0;
   }
@@ -514,7 +509,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async _filterName(value: string): Promise<IName[]> {
-    let names = await this._nameService.getRemoteNames();
+    let names = await this._nameService.getNames();
     names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
     sort(names, 'name');
 
@@ -524,7 +519,7 @@ export class QuickFormComponent implements OnInit {
   private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
-    return await this._serviceService.filterRemoteServices(filterValue);
+    return await this._serviceService.filterServices(filterValue);
   }
 
 }

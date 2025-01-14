@@ -60,8 +60,8 @@ export class QuickComponent implements OnInit {
   }
 
   public async load() {
-    this.unsavedTrips = (await this._tripService.getUnsavedLocalTrips()).reverse();
-    this.savedTrips = (await this._tripService.getSavedLocalTrips()).reverse();
+    this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
+    this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
 
     // console.log(this.form);
 
@@ -205,7 +205,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.clearSavedLocalData();
+        // await this.clearSavedLocalData();
       }
     });
   }
@@ -213,23 +213,23 @@ export class QuickComponent implements OnInit {
   async setPickupTime(trip: ITrip) {
     let pickupTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
+    let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
-      await this._shiftService.updateLocalShift(shift);
+      await this._shiftService.updateShift(shift);
     }
 
     trip.pickupTime = pickupTime;
-    await this._tripService.updateLocalTrip(trip);
+    await this._tripService.updateTrip(trip);
   }
 
   async setDropoffTime(trip: ITrip) {
     let dropOffTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.queryLocalShifts("key", trip.key))[0];
+    let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
-      await this._shiftService.updateLocalShift(shift);
+      await this._shiftService.updateShift(shift);
     }
 
     trip.dropoffTime = dropOffTime;
@@ -239,7 +239,7 @@ export class QuickComponent implements OnInit {
     if (trip.total && duration) {
       trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
     }
-    await this._tripService.updateLocalTrip(trip);
+    await this._tripService.updateTrip(trip);
 
     await this._gigLoggerService.calculateShiftTotals([shift]);
   }
@@ -270,7 +270,7 @@ export class QuickComponent implements OnInit {
   }
 
   async deleteUnsavedLocalTrip(trip: ITrip) {
-    await this._tripService.deleteLocal(trip.id!);
+    await this._tripService.deleteTrip(trip.id!);
     const shift = await this._shiftService.queryShiftByKey(trip.key);
     await this._gigLoggerService.calculateShiftTotals([shift]);
 
@@ -278,26 +278,26 @@ export class QuickComponent implements OnInit {
     await this.form?.load();
   }
 
-  async clearSavedLocalData() {
-    let savedShifts = await this._shiftService.getSavedLocalShifts();
-    savedShifts.forEach(shift => {
-      this._shiftService.deleteLocal(shift.id!);
-    });
+  // async clearSavedLocalData() {
+  //   let savedShifts = await this._shiftService.getSavedShifts();
+  //   savedShifts.forEach(shift => {
+  //     this._shiftService.deleteShift(shift.id!);
+  //   });
 
-    let savedTrips = await this._tripService.getSavedLocalTrips();
-    savedTrips.forEach(trip => {
-      this._tripService.deleteLocal(trip.id!);
-    });
+  //   let savedTrips = await this._tripService.getSavedLocalTrips();
+  //   savedTrips.forEach(trip => {
+  //     this._tripService.deleteLocal(trip.id!);
+  //   });
 
-    await this.load();
-  }
+  //   await this.load();
+  // }
 
   async unsaveLocalData() {
-    let savedTrips = await this._tripService.getSavedLocalTrips();
+    let savedTrips = await this._tripService.getSavedTrips();
 
     for (let trip of savedTrips) {
       trip.saved = false;
-      await this._tripService.updateLocalTrip(trip);
+      await this._tripService.updateTrip(trip);
     };
 
     await this.load();

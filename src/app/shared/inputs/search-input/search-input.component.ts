@@ -148,14 +148,14 @@ export class SearchInputComponent {
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
-    let addresses = await this._addressService.getRemoteAddresses();
+    let addresses = await this._addressService.getAddresses();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
     sort(addresses, 'address');
     return (addresses).slice(0,100);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
-    let names = await this._nameService.getRemoteNames();
+    let names = await this._nameService.getNames();
     names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
     sort(names, 'name');
 
@@ -163,7 +163,7 @@ export class SearchInputComponent {
   }
 
   private async _filterPlace(value: string): Promise<IPlace[]> {
-    let places = await this._placeService.getRemotePlaces();
+    let places = await this._placeService.getPlaces();
     places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
     return places;
@@ -178,7 +178,7 @@ export class SearchInputComponent {
   private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
-    return await this._serviceService.filterRemoteServices(filterValue);
+    return await this._serviceService.filterServices(filterValue);
   }
 
   private async _filterType(value: string): Promise<IType[]> {

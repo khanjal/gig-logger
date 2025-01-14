@@ -33,8 +33,8 @@ export class SaveModalComponent {
 
         let sheetData = {} as ISheet;
         sheetData.properties = {id: defaultSheet.id, name: ""};
-        sheetData.shifts = await this._shiftService.getUnsavedLocalShifts();
-        sheetData.trips = await this._tripService.getUnsavedLocalTrips();
+        sheetData.shifts = await this._shiftService.getUnsavedShifts();
+        sheetData.trips = await this._tripService.getUnsavedTrips();
 
         this.startTimer();
         time = this.currentTime;

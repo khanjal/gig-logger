@@ -145,7 +145,7 @@ export class GigLoggerService {
             }
 
             if (trips?.length === 0 && !shift.saved) {
-                this._shiftService.deleteLocal(shift.id!);
+                this._shiftService.deleteShift(shift.id!);
             }
             else {
                 await this._shiftService.updateShift(shift);
@@ -276,8 +276,8 @@ export class GigLoggerService {
     }
 
     private async linkNameData () {
-        let names = await this._nameService.getRemoteNames();
-        let trips = await this._tripService.getRemoteTrips();
+        let names = await this._nameService.getNames();
+        let trips = await this._tripService.getTrips();
 
         for (let name of names) {
             let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
@@ -316,8 +316,8 @@ export class GigLoggerService {
     }
 
     private async linkAddressData () {
-        let addresses = await this._addressService.getRemoteAddresses();
-        let trips = await this._tripService.getRemoteTrips();
+        let addresses = await this._addressService.getAddresses();
+        let trips = await this._tripService.getTrips();
 
         for (let address of addresses) {
             let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
@@ -356,8 +356,8 @@ export class GigLoggerService {
     }
 
     private async linkPlaceData() {
-        let trips = await this._tripService.getRemoteTrips();
-        let places = await this._placeService.getRemotePlaces();
+        let trips = await this._tripService.getTrips();
+        let places = await this._placeService.getPlaces();
 
         for (let place of places) {
             // Addresses
