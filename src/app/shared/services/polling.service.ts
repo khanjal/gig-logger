@@ -22,7 +22,8 @@ export class PollingService implements OnDestroy {
       ) { }
 
   async startPolling() {
-    this.verifyData();
+    await this.saveData();
+    await this.verifyData();
     this.timerSubscription = timer(0, INTERVAL) // Emit value immediately, then every 1 second
       .subscribe(async () => {
         // Functions to call
@@ -40,14 +41,14 @@ export class PollingService implements OnDestroy {
 
   async saveData() {
     // Get unsaved trips    
-    let unsavedTrips = (await this._tripService.getUnsavedLocalTrips());
+    let unsavedTrips = (await this._tripService.getUnsavedTrips());
     console.log('Unsaved trips:', unsavedTrips.length);
 
     // Save unsaved trips
     // await this._tripService.saveUnsavedTrips();
 
     // Get unsaved shifts
-    let unsavedShifts = (await this._shiftService.getUnsavedLocalShifts());
+    let unsavedShifts = (await this._shiftService.getUnsavedShifts());
     console.log('Unsaved shifts:', unsavedShifts.length);
 
     // Save unsaved shifts
