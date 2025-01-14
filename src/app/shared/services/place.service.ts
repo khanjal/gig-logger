@@ -5,11 +5,11 @@ import { IPlace } from '@interfaces/place.interface';
 export class PlaceService {
     places$ = liveQuery(() => spreadsheetDB.places.toArray());
     
-    public async filterRemotePlaces(place: string): Promise<IPlace[]> {
+    public async filterPlaces(place: string): Promise<IPlace[]> {
         return await spreadsheetDB.places.where("place").startsWithAnyOfIgnoreCase(place).toArray();
     }
 
-    public async getRemotePlaces(): Promise<IPlace[]> {
+    public async getPlaces(): Promise<IPlace[]> {
         return await spreadsheetDB.places.toArray();
     }
 
@@ -18,11 +18,11 @@ export class PlaceService {
         await spreadsheetDB.places.bulkAdd(places);
     }
 
-    public async getRemotePlace(place: string): Promise<IPlace | undefined> {
+    public async getPlace(place: string): Promise<IPlace | undefined> {
         return await spreadsheetDB.places.where("place").anyOfIgnoreCase(place).first();
     }
 
-    public async queryRemotePlaces(field: string, value: string | number): Promise<IPlace[]> {
+    public async queryPlaces(field: string, value: string | number): Promise<IPlace[]> {
         return await spreadsheetDB.places.where(field).equals(value).toArray();
     }
 
@@ -31,10 +31,10 @@ export class PlaceService {
     }
 
     public async updatePlaces(places: IPlace[]) {
-        let remotePlaces = await this.getRemotePlaces();
+        let existingPlaces = await this.getPlaces();
 
         places.forEach(place => {
-            let remotePlace = remotePlaces.find(x => x.place === place.place);
+            let remotePlace = existingPlaces.find(x => x.place === place.place);
 
             if (remotePlace) {
                 place.id = remotePlace.id;

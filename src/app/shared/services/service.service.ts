@@ -5,11 +5,11 @@ import { IService } from '@interfaces/service.interface';
 export class ServiceService {
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
     
-    public async filterRemoteServices(service: string): Promise<IService[]> {
+    public async filterServices(service: string): Promise<IService[]> {
         return await spreadsheetDB.services.where("service").startsWithAnyOfIgnoreCase(service).toArray();
     }
 
-    public async getRemoteServices(): Promise<IService[]> {
+    public async getServices(): Promise<IService[]> {
         return await spreadsheetDB.services.toArray();
     }
 
@@ -19,20 +19,20 @@ export class ServiceService {
     }
 
     public async updateServices(services: IService[]) {
-        let remoteServices = await this.getRemoteServices();
+        let existingServices = await this.getServices();
 
         services.forEach(async service => {
-            let remoteService = remoteServices.find(x => x.service === service.service);
+            let existingService = existingServices.find(x => x.service === service.service);
 
-            if (remoteService) {
-                console.log(remoteService);
-                service.id = remoteService.id;
-                service.bonus += remoteService.bonus;
-                service.cash += remoteService.cash;
-                service.pay += remoteService.pay;
-                service.tip += remoteService.tip;
-                service.total += remoteService.total;
-                service.visits += remoteService.visits;
+            if (existingService) {
+                console.log(existingService);
+                service.id = existingService.id;
+                service.bonus += existingService.bonus;
+                service.cash += existingService.cash;
+                service.pay += existingService.pay;
+                service.tip += existingService.tip;
+                service.total += existingService.total;
+                service.visits += existingService.visits;
             }
             else {
                 service.id = undefined;

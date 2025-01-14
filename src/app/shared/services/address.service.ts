@@ -5,19 +5,19 @@ import { IAddress } from '@interfaces/address.interface';
 export class AddressService {
     addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
-    public async filterRemoteAddress(address: string): Promise<IAddress[]> {
+    public async filterAddress(address: string): Promise<IAddress[]> {
         return await spreadsheetDB.addresses.where("address").startsWithAnyOfIgnoreCase(address).toArray();
     }
 
-    public async findRemoteAddress(address: string): Promise<IAddress | undefined> {
+    public async findAddress(address: string): Promise<IAddress | undefined> {
         return await spreadsheetDB.addresses.where("address").anyOfIgnoreCase(address).first();
     }
 
-    public async getRemoteAddress(address: string): Promise<IAddress | undefined> {
+    public async getAddress(address: string): Promise<IAddress | undefined> {
         return await spreadsheetDB.addresses.where("address").anyOfIgnoreCase(address).first();
     }
 
-    public async getRemoteAddresses(): Promise<IAddress[]> {
+    public async getAddresses(): Promise<IAddress[]> {
         return await spreadsheetDB.addresses.toArray();
     }
     
@@ -31,10 +31,10 @@ export class AddressService {
     }
 
     public async updateAddresses(addresses: IAddress[]) {
-        let remoteAddresses = await this.getRemoteAddresses();
+        let existingAddresses = await this.getAddresses();
 
         for (let address of addresses) {
-            let remoteAddress = remoteAddresses.find(x => x.address === address.address);
+            let remoteAddress = existingAddresses.find(x => x.address === address.address);
 
             if (remoteAddress) {
                 address.id = remoteAddress.id;
@@ -70,7 +70,7 @@ export class AddressService {
         await spreadsheetDB.addresses.bulkPut(addresses);
     }
 
-    public async queryRemoteAddresses(field: string, value: string | number): Promise<IAddress[]> {
+    public async queryAddresses(field: string, value: string | number): Promise<IAddress[]> {
         return await spreadsheetDB.addresses.where(field).equals(value).toArray();
     }
 }

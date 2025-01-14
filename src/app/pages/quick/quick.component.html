@@ -41,7 +41,7 @@
         <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
     </div>
 
-    @if (savedTrips.length > 0) {
+    <!-- @if (savedTrips.length > 0) {
         <div class="row-grid" id="savedLocalTrips">
             <trips-table-simple class="table" title="Saved Local Trips" [trips]="savedTrips"></trips-table-simple>
             <div class="row-block">
@@ -49,7 +49,7 @@
                 <button mat-fab extended class="button-right" color="warn" [class.spinner]="clearing" [disabled]="clearing"  (click)="confirmClearTripsDialog()"><mat-icon>delete</mat-icon> Clear</button>
             </div>
         </div>
-    }
+    } -->
 
     <div class="row-grid">
         <app-trips-table-group class="table" title="{{ defaultSheet?.name }} - Trips" link="{{defaultSheet?.id}}" [days]=6></app-trips-table-group>

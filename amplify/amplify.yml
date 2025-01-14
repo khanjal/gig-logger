@@ -10,7 +10,7 @@ frontend:
     build:
       commands:
         - echo "${AWS_BRANCH}"
-        - if [ "${AWS_BRANCH}" = "test" ]; then npm run build:stage; fi
+        - if [ "${AWS_BRANCH}" = "release" ]; then npm run build:stage; fi
         - if [ "${AWS_BRANCH}" = "main" ]; then npm run build:prod; fi
   artifacts:
     baseDirectory: dist/gig-worker

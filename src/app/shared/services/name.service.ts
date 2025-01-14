@@ -5,15 +5,15 @@ import { IName } from '@interfaces/name.interface';
 export class NameService {
     names$ = liveQuery(() => spreadsheetDB.names.toArray());
     
-    public async filterRemoteNames(name: string): Promise<IName[]> {
+    public async filterNames(name: string): Promise<IName[]> {
         return await spreadsheetDB.names.where("name").startsWithAnyOfIgnoreCase(name).toArray();
     }
 
-    public async findRemoteName(name: string): Promise<IName | undefined> {
+    public async findName(name: string): Promise<IName | undefined> {
         return await spreadsheetDB.names.where("name").anyOfIgnoreCase(name).first();
     }
 
-    public async getRemoteNames(): Promise<IName[]> {
+    public async getNames(): Promise<IName[]> {
         return await spreadsheetDB.names.toArray();
     }
 
@@ -27,10 +27,10 @@ export class NameService {
     }
 
     public async updateNames(names: IName[]) {
-        let remoteNames = await this.getRemoteNames();
+        let existingNames = await this.getNames();
 
         names.forEach(name => {
-            let remoteName = remoteNames.find(x => x.name === name.name);
+            let remoteName = existingNames.find(x => x.name === name.name);
 
             if (remoteName) {
                 name.id = remoteName.id;
