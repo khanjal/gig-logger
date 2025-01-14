@@ -13,8 +13,8 @@ describe('QuickComponent', () => {
   let fixture: ComponentFixture<QuickComponent>;
   const mockGigLoggerService = jasmine.createSpyObj("GigLoggerService", ["calculateShiftTotals"]);
   const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["loadSpreadsheetData", "querySpreadsheets"]);
-  const mockShiftService = jasmine.createSpyObj("ShiftService", ["deleteLocal", "getUnsavedLocalShifts", "queryLocalShifts", "saveUnsavedShifts", "updateLocalShift"]);
-  const mockTripService = jasmine.createSpyObj("TripService", ["addTrip", "deleteLocal", "getSavedLocalTrips", "getUnsavedLocalTrips", "saveUnsavedTrips", "updateLocalTrip"]);
+  const mockShiftService = jasmine.createSpyObj("ShiftService", ["deleteService", "getUnsavedShifts", "queryShifts", "saveUnsavedShifts", "updateShift"]);
+  const mockTripService = jasmine.createSpyObj("TripService", ["addTrip", "deleteTrip", "getSavedTrips", "getUnsavedTrips", "saveUnsavedTrips", "updateTrip"]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

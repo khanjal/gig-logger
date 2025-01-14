@@ -70,14 +70,14 @@ export class QuickComponent implements OnInit {
     await this.tripsTable?.load();
   }
 
-  async saveLocalTrip(trip: ITrip) {
+  async saveTrip(trip: ITrip) {
     this.saving = true;
     // await this._googleService.commitUnsavedTrips();
     await this.reload();
     this.saving = false;
   }
 
-  async editUnsavedLocalTrip(trip: ITrip) {
+  async editUnsavedTrip(trip: ITrip) {
     let dialogRef = this.dialog.open(QuickFormComponent, {
       data: trip,
       height: '600px',
@@ -121,7 +121,7 @@ export class QuickComponent implements OnInit {
                 this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
                 await this.loadSheetDialog();
-                this._viewportScroller.scrollToAnchor("savedLocalTrips");
+                this._viewportScroller.scrollToAnchor("savedTrips");
             }
         });
     }
@@ -142,7 +142,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.deleteUnsavedLocalTrip(trip);
+        await this.deleteUnsavedTrip(trip);
       }
     });
   }
@@ -184,28 +184,7 @@ export class QuickComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.unsaveLocalData();
-      }
-    });
-  }
-
-  async confirmClearTripsDialog() {
-    const message = `This will clear all local saved trips. Only clear these if you have confirmed they are in your spreadheet. Are you sure you want to clear?`;
-
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
-    dialogData.title = "Confirm Clear";
-    dialogData.message = message;
-    dialogData.trueText = "Clear";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        // await this.clearSavedLocalData();
+        await this.unsaveData();
       }
     });
   }
@@ -244,7 +223,7 @@ export class QuickComponent implements OnInit {
     await this._gigLoggerService.calculateShiftTotals([shift]);
   }
 
-  async cloneUnsavedLocalTrip(trip: ITrip) {
+  async cloneUnsavedTrip(trip: ITrip) {
     delete trip.id;
     await this._tripService.addTrip(trip);
     await this.load();
@@ -252,7 +231,7 @@ export class QuickComponent implements OnInit {
     this._snackBar.open("Cloned Trip");
   }
 
-  async nextUnsavedLocalTrip(trip: ITrip) {
+  async nextUnsavedTrip(trip: ITrip) {
     let nextTrip = {} as ITrip;
     nextTrip.key = trip.key;
     nextTrip.date = trip.date;
@@ -269,7 +248,7 @@ export class QuickComponent implements OnInit {
     this._snackBar.open("Added Next Trip");
   }
 
-  async deleteUnsavedLocalTrip(trip: ITrip) {
+  async deleteUnsavedTrip(trip: ITrip) {
     await this._tripService.deleteTrip(trip.id!);
     const shift = await this._shiftService.queryShiftByKey(trip.key);
     await this._gigLoggerService.calculateShiftTotals([shift]);
@@ -278,21 +257,7 @@ export class QuickComponent implements OnInit {
     await this.form?.load();
   }
 
-  // async clearSavedLocalData() {
-  //   let savedShifts = await this._shiftService.getSavedShifts();
-  //   savedShifts.forEach(shift => {
-  //     this._shiftService.deleteShift(shift.id!);
-  //   });
-
-  //   let savedTrips = await this._tripService.getSavedLocalTrips();
-  //   savedTrips.forEach(trip => {
-  //     this._tripService.deleteLocal(trip.id!);
-  //   });
-
-  //   await this.load();
-  // }
-
-  async unsaveLocalData() {
+  async unsaveData() {
     let savedTrips = await this._tripService.getSavedTrips();
 
     for (let trip of savedTrips) {
