@@ -12,6 +12,7 @@ const INTERVAL = 60000;
 export class PollingService implements OnDestroy {
 
   private timerSubscription: Subscription | undefined;
+  private processing = false;
 
   constructor(
         private _snackBar: MatSnackBar,
@@ -22,13 +23,25 @@ export class PollingService implements OnDestroy {
       ) { }
 
   async startPolling() {
+    // Do intial check to see if there are any unsaved trips or shifts
+    this.processing = true;
     await this.saveData();
     await this.verifyData();
+    this.processing = false;
+
     this.timerSubscription = timer(0, INTERVAL) // Emit value immediately, then every 1 second
       .subscribe(async () => {
+        console.log(`Processing: ${this.processing}`);
+
+        // If already processing, don't do anything
+        if (this.processing) {
+          return;
+        }
+        this.processing = true;
         // Functions to call
         await this.saveData();
         console.log('Timer tick');
+        this.processing = false;
       });
   }
 
