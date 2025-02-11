@@ -17,14 +17,14 @@ public interface ISheetManager
 }
 public class SheetManager : ISheetManager
 {
-    private IGigSheetManager _googleSheetManger;
+    private IGoogleSheetManager _googleSheetManger;
     public SheetManager(string token, string sheetId) {
-        _googleSheetManger = new GigSheetManager(token, sheetId);
+        _googleSheetManger = new GoogleSheetManager(token, sheetId);
     }
 
     public SheetManager(Dictionary<string,string> credentials, string sheetId)
     {
-        _googleSheetManger = new GigSheetManager(credentials, sheetId);
+        _googleSheetManger = new GoogleSheetManager(credentials, sheetId);
     }
 
     public async Task<SheetEntity> AddData(SheetEntity sheetEntity)

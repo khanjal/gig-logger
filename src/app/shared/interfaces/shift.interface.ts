@@ -2,6 +2,7 @@ import { IAmountPer } from "./amount-per.interface";
 
 export interface IShift extends IAmountPer {
     id?: number;
+    rowId: number;
     date: string;
     distance: number;
     active: string;

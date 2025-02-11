@@ -57,6 +57,8 @@ export class PollingService implements OnDestroy {
     let unsavedTrips = (await this._tripService.getUnsavedTrips());
     console.log('Unsaved trips:', unsavedTrips.length);
 
+    // Save new, updated, and then deleted trips
+
     // Save unsaved trips
     // await this._tripService.saveUnsavedTrips();
 

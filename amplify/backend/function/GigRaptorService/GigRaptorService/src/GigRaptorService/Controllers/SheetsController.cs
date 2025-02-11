@@ -82,4 +82,12 @@ public class SheetsController : ControllerBase
         InitializeSheetmanger(sheetEntity.Properties.Id);
         return await _sheetmanager.AddData(sheetEntity);
     }
+
+    // POST api/sheets/save
+    [HttpPost("save")]
+    public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
+    {
+        InitializeSheetmanger(sheetEntity.Properties.Id);
+        return await _sheetmanager.AddData(sheetEntity);
+    }
 }
