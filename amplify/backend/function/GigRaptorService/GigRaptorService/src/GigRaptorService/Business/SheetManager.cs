@@ -1,7 +1,7 @@
-﻿using RLE.Core.Entities;
-using RLE.Gig.Entities;
-using RLE.Gig.Enums;
-using RLE.Gig.Utilities.Google;
+﻿using RaptorSheets.Core.Entities;
+using RaptorSheets.Gig.Entities;
+using RaptorSheets.Gig.Enums;
+using RaptorSheets.Gig.Managers;
 
 namespace  GigRaptorService.Business;
 
@@ -14,6 +14,7 @@ public interface ISheetManager
     public Task<SheetEntity> GetSheet(string sheet);
     public Task<SheetEntity> GetSheets(string[] sheets);
     public Task<SheetEntity> GetSheets();
+    public Task SaveData(SheetEntity sheetEntity);
 }
 public class SheetManager : ISheetManager
 {
@@ -72,5 +73,34 @@ public class SheetManager : ISheetManager
         var sheetData = await _googleSheetManger.GetSheets();
 
         return sheetData ?? new SheetEntity();
+    }
+
+    public async Task SaveData(SheetEntity sheetEntity)
+    {
+        var addData = new SheetEntity
+        {
+            Shifts = sheetEntity.Shifts.Where(x => x.Action == "ADD").ToList(),
+            Trips = sheetEntity.Trips.Where(x => x.Action == "ADD").ToList()
+        };
+
+        await _googleSheetManger.AddSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], addData);
+
+        var editData = new SheetEntity
+        {
+            Shifts = sheetEntity.Shifts.Where(x => x.Action == "EDIT").ToList(),
+            Trips = sheetEntity.Trips.Where(x => x.Action == "EDIT").ToList()
+        };
+
+        await _googleSheetManger.UpdateSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], editData, RaptorSheets.Core.Enums.ActionTypeEnum.UPDATE);
+
+        var deleteData = new SheetEntity
+        {
+            Shifts = sheetEntity.Shifts.Where(x => x.Action == "DELETE").ToList(),
+            Trips = sheetEntity.Trips.Where(x => x.Action == "DELETE").ToList()
+        };
+
+        await _googleSheetManger.UpdateSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], deleteData, RaptorSheets.Core.Enums.ActionTypeEnum.DELETE);
+
+        return;
     }
 }

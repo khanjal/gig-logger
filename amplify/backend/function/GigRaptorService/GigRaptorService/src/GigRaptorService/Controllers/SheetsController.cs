@@ -2,8 +2,8 @@
 using GigRaptorService.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using RLE.Core.Entities;
-using RLE.Gig.Entities;
+using RaptorSheets.Core.Entities;
+using RaptorSheets.Gig.Entities;
 
 namespace GigRaptorService.Controllers;
 
