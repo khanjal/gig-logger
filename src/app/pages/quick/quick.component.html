@@ -3,10 +3,10 @@
     
     <quick-form (parentReload)="load()"></quick-form>
 
-    <h2 *ngIf="unsavedTrips.length > 0" id="unsavedTrips">Unsaved Trips</h2>
+    <h2 *ngIf="recentTrips.length > 0" id="unsavedTrips">Recent Trips</h2>
 
-    @for (trip of unsavedTrips; track $index) {
-        <div [ngClass]="{'mat-card': unsavedTrips.length % 2 != 0, 'mat-card-reverse': unsavedTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true }">
+    @for (trip of recentTrips; track $index) {
+        <div [ngClass]="{'mat-card': recentTrips.length % 2 != 0, 'mat-card-reverse': recentTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true }">
             <trips-quick-view [trip]="trip"></trips-quick-view>
             <div mat-card class="row-flex button-bar">
                 <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
@@ -38,7 +38,7 @@
     }
     
     <div class="row-grid">
-        <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()" *ngIf="unsavedTrips.length > 0"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
+        <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()" *ngIf="recentTrips.length > 0"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
     </div>
 
     <div class="row-grid">

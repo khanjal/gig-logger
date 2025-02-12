@@ -14,6 +14,10 @@ export class TripService {
         await spreadsheetDB.trips.delete(tripId);
     }
 
+    public async getMaxTripId(): Promise<number> {
+        return await spreadsheetDB.trips.orderBy("rowId").last().then(x => x?.rowId || 2);
+    }
+
     public async getTrips(): Promise<ITrip[]> {
         return await spreadsheetDB.trips.toArray();
     }

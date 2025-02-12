@@ -118,7 +118,7 @@ export class QuickFormComponent implements OnInit {
 
   public async load() {
     if (this.data?.id) {
-      this.title = `Edit Trip - ${ this.data.id }`;
+      this.title = `Edit Trip - #${ this.data.rowId }`;
       // Load form with passed in data.
       await this.loadForm()
     }
@@ -138,6 +138,7 @@ export class QuickFormComponent implements OnInit {
       
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
       shift.region = this.quickForm.value.region ?? "";
+      shift.rowId = await this._shiftService.getMaxShiftId() + 1;
       
       await this._shiftService.addNewShift(shift);
     }
@@ -148,7 +149,7 @@ export class QuickFormComponent implements OnInit {
     return shift;
   }
 
-  private createTrip(shift: IShift): ITrip {
+  private async createTrip(shift: IShift): Promise<ITrip> {
     let trip: ITrip = {} as ITrip;
 
     trip.id = this.data?.id;
@@ -183,12 +184,14 @@ export class QuickFormComponent implements OnInit {
     
     // Set form properties depending on edit/add
     if (this.data?.id) {
+      trip.rowId = this.data.rowId;
       trip.action = this.data?.saved ? "UPDATE" : this.data?.action;
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
-    else {    
-      trip.action = "NEW";
+    else {
+      trip.rowId = await this._tripService.getMaxTripId() + 1;
+      trip.action = "ADD";
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
     trip.actionTime = Date.now();
@@ -294,7 +297,7 @@ export class QuickFormComponent implements OnInit {
 
   public async addTrip() {
     let shift = await this.createShift();
-    let trip = this.createTrip(shift);
+    let trip = await this.createTrip(shift);
     await this._tripService.addTrip(trip);
     
     // Update shift numbers & weekday current amount.
@@ -318,7 +321,7 @@ export class QuickFormComponent implements OnInit {
     }
 
     let shift = await this.createShift();
-    let trip = this.createTrip(shift);
+    let trip = await this.createTrip(shift);
 
     shifts.push(shift);
 

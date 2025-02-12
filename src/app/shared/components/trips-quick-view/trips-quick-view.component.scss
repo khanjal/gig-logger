@@ -12,6 +12,14 @@ mat-card {
     background-color: transparent;
 }
 
+mat-card-header {
+    padding: .5em;
+}
+
+h3 {
+    padding-left: .5em;
+}
+
 .primary {
     color: $primary-color;
 }

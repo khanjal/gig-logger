@@ -1,8 +1,7 @@
 <mat-card [ngClass]="trip.exclude ? 'strike' : ''">
     <div>
-        <mat-card-header><h3><strong>{{trip.date | date:'MMM d'}}, <span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span> ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</strong></h3></mat-card-header>
+        <mat-card-header><mat-icon [ngClass]="{'warn': !trip.saved}">save</mat-icon> <h3><strong>#{{trip.rowId}} {{trip.date | date:'MMM d'}}, <span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span> ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</strong></h3></mat-card-header>
         <mat-card-content>
-            
             @if (trip.region || trip.distance) {
                 <div class="row-flex section-container">
                     <div>

@@ -14,6 +14,10 @@ export class ShiftService {
         spreadsheetDB.shifts.delete(shiftId);
     }
 
+    public async getMaxShiftId(): Promise<number> {
+        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 2);
+    }
+
     public async getShifts(): Promise<IShift[]> {
         return await spreadsheetDB.shifts.toArray();
     }

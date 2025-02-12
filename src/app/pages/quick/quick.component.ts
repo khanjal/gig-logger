@@ -42,7 +42,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   saving: boolean = false;
 
   savedTrips: ITrip[] = [];
-  unsavedTrips: ITrip[] = [];
+  recentTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
 
@@ -68,7 +68,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   public async load() {
-    this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
+    this.recentTrips = (await this._tripService.getTripsPreviousDays(1)).reverse();
     this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
 
     // console.log(this.form);
