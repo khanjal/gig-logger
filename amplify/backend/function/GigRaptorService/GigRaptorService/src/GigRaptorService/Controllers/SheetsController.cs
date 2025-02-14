@@ -88,6 +88,6 @@ public class SheetsController : ControllerBase
     public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
     {
         InitializeSheetmanger(sheetEntity.Properties.Id);
-        return await _sheetmanager.AddData(sheetEntity);
+        return await _sheetmanager.SaveData(sheetEntity);
     }
 }
