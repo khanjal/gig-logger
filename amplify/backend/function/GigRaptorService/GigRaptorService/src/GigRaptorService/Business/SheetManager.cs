@@ -30,7 +30,7 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetEntity> AddData(SheetEntity sheetEntity)
     {
-        return await _googleSheetManger.AddSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity);
+        return await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity, RaptorSheets.Core.Enums.ActionTypeEnum.APPEND);
     }
 
     public async Task<List<MessageEntity>> CheckSheets()
@@ -86,7 +86,7 @@ public class SheetManager : ISheetManager
         };
 
         if (addData.Shifts.Count > 0 || addData.Trips.Count > 0)
-            returnEntity.Messages.AddRange((await _googleSheetManger.AddSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], addData)).Messages);
+            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], addData, RaptorSheets.Core.Enums.ActionTypeEnum.APPEND)).Messages);
 
         var editData = new SheetEntity
         {
@@ -95,7 +95,7 @@ public class SheetManager : ISheetManager
         };
 
         if (editData.Shifts.Count > 0 || editData.Trips.Count > 0)
-            returnEntity.Messages.AddRange((await _googleSheetManger.UpdateSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], editData, RaptorSheets.Core.Enums.ActionTypeEnum.UPDATE)).Messages);
+            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], editData, RaptorSheets.Core.Enums.ActionTypeEnum.UPDATE)).Messages);
 
         var deleteData = new SheetEntity
         {
@@ -104,7 +104,7 @@ public class SheetManager : ISheetManager
         };
 
         if (deleteData.Shifts.Count > 0 || deleteData.Trips.Count > 0)
-            returnEntity.Messages.AddRange((await _googleSheetManger.UpdateSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], deleteData, RaptorSheets.Core.Enums.ActionTypeEnum.DELETE)).Messages);
+            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], deleteData, RaptorSheets.Core.Enums.ActionTypeEnum.DELETE)).Messages);
 
         return returnEntity;
     }
