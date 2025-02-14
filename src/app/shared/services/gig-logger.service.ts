@@ -35,6 +35,7 @@ import { DailyService } from "./daily.service";
 import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
+import { lastValueFrom } from "rxjs";
 
 @Injectable()
 export class GigLoggerService {
@@ -79,7 +80,7 @@ export class GigLoggerService {
 
     public async warmupLambda(sheetId: string) {
         try {
-            return await this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }).toPromise();
+            return lastValueFrom(this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }));
         } catch (error) {
             console.error('Error warming up Lambda:', error);
             // throw error;
@@ -92,7 +93,13 @@ export class GigLoggerService {
     }
 
     public async postSheetData(sheetData: ISheet) {
-        return this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) });
+        try {
+            return lastValueFrom(this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) }));
+        } catch (error) {
+            console.error('Error posting sheet data:', error);
+            // throw error;
+            return null;
+        }
     }
 
     public async createSheet(properties: ISheetProperties){

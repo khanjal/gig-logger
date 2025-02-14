@@ -101,6 +101,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async result => {
       await this.load();
       await this.form?.load();
+      this._viewportScroller.scrollToAnchor(trip.rowId.toString());
     });
     }
 

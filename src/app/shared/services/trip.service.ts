@@ -57,11 +57,23 @@ export class TripService {
 
     public async saveUnsavedTrips() {
         let trips = await this.getUnsavedTrips();
+        let rowId;
         for (let trip of trips) {
+            if (trip.action === ActionEnum.Delete) {
+                if (!rowId) {
+                    rowId = trip.rowId;
+                }
+                await this.deleteTrip(trip.id!);
+                continue;
+            }
             trip.action = ActionEnum.Saved;
             trip.saved = true;
             await this.updateTrip(trip);
         };
+
+        if (rowId) {
+            await this.updateTripRowIds(rowId);
+        }
     }
 
     public async loadTrips(trips: ITrip[]) {

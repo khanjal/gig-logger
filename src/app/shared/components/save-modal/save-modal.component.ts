@@ -40,9 +40,9 @@ export class SaveModalComponent {
         time = this.currentTime;
 
         this.currentTask = "Checking Google API Status..."
-        let response = await this._sheetService.warmUpLambda();
+        let warmupResponse = await this._sheetService.warmUpLambda();
         
-        if (!response) {
+        if (!warmupResponse) {
             this.appendToTerminal(`${this.currentTask} OFFLINE`);   
             this.currentTask = "Modal Closing In 5s";
 
@@ -53,8 +53,14 @@ export class SaveModalComponent {
         this.appendToTerminal(`${this.currentTask} ONLINE`);
 
         this.currentTask = "Saving Trips Data...";
-        await firstValueFrom(await this._gigLoggerService.postSheetData(sheetData));
-        this.appendToTerminal(`${this.currentTask} SAVED (${this.currentTime - time}s)`);
+        
+        let postResponse = await this._gigLoggerService.postSheetData(sheetData);
+        console.log(postResponse);
+        if (postResponse) {
+            this.appendToTerminal(`${this.currentTask} SAVED (${this.currentTime - time}s)`);
+        } else {
+            this.appendToTerminal(`${this.currentTask} FAILED (${this.currentTime - time}s)`);
+        }
 
         this.currentTask = "Modal Closing In 5s";
 

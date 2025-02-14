@@ -2,6 +2,7 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IShift } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
+import { ActionEnum } from '@enums/action.enum';
 
 export class ShiftService {
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
@@ -10,7 +11,7 @@ export class ShiftService {
         await spreadsheetDB.shifts.add(shift);
     }
 
-    public deleteShift(shiftId: number) {
+    public async deleteShift(shiftId: number) {
         spreadsheetDB.shifts.delete(shiftId);
     }
 
@@ -80,7 +81,16 @@ export class ShiftService {
 
     public async saveUnsavedShifts() {
         let shifts = await this.getUnsavedShifts();
+        let rowId;
         for (let shift of shifts) {
+            if (shift.action === ActionEnum.Delete) {
+                if (!rowId) {
+                    rowId = shift.rowId;
+                }
+                await this.deleteShift(shift.rowId);
+                continue;
+            }
+            shift.action = ActionEnum.Saved;
             shift.saved = true;
             await this.updateShift(shift);
         };
