@@ -2,6 +2,8 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
+import { max } from 'rxjs';
+import { ActionEnum } from '@enums/action.enum'; // Adjust the import path as necessary
 
 export class TripService {
     trips$ = liveQuery(() => spreadsheetDB.trips.toArray());
@@ -56,6 +58,7 @@ export class TripService {
     public async saveUnsavedTrips() {
         let trips = await this.getUnsavedTrips();
         for (let trip of trips) {
+            trip.action = ActionEnum.Saved;
             trip.saved = true;
             await this.updateTrip(trip);
         };
@@ -68,5 +71,21 @@ export class TripService {
 
     public async updateTrip(trip: ITrip) {
         await spreadsheetDB.trips.put(trip);
+    }
+
+    public async updateTripRowIds(rowId: number) {
+        let maxId = await this.getMaxTripId();
+        let nextRowId = rowId + 1;
+        
+        // Need to loop id until it finds a trip. Update that trip with a current row id. Then continue until it hits maxId
+        while (nextRowId <= maxId) {
+            let trip = await spreadsheetDB.trips.where("rowId").equals(nextRowId).first();
+            if (trip) {
+                trip.rowId = rowId;
+                await this.updateTrip(trip);
+                rowId++;
+            }
+            nextRowId++;
+        }
     }
 }

@@ -53,6 +53,12 @@ export class PollingService implements OnDestroy {
   }
 
   async saveData() {
+    let maxShiftId = await this._shiftService.getMaxShiftId();
+    let maxTripId = await this._tripService.getMaxTripId();
+
+    console.log('Max shift ID:', maxShiftId);
+    console.log('Max trip ID:', maxTripId);
+
     // Get unsaved trips    
     let unsavedTrips = (await this._tripService.getUnsavedTrips());
     console.log('Unsaved trips:', unsavedTrips.length);

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
+import { ActionEnum } from '@enums/action.enum';
 import { DateHelper } from '@helpers/date.helper';
 import { IShift } from '@interfaces/shift.interface';
 import { IStatItem } from '@interfaces/stat-item.interface';
@@ -61,7 +62,7 @@ export class StatsComponent implements OnInit {
   }
 
   async getTripsRange(startDate: string, endDate: string) {
-    let trips = (await this._tripService.getTripsBetweenDates(startDate, endDate)).filter(x => !x.exclude);
+    let trips = (await this._tripService.getTripsBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
     
     this.places = this.getTripList(trips, "place");
     this.types = this.getTripList(trips, "type");

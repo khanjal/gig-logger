@@ -2,6 +2,13 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 
+// Enums
+import { ActionEnum } from "@enums/action.enum";
+
+// Helpers
+import { DateHelper } from "@helpers/date.helper";
+import { sort } from "@helpers/sort.helper";
+
 // Interfaces
 import { ISheet } from "@interfaces/sheet.interface";
 import { IDelivery } from "@interfaces/delivery.interface";
@@ -9,10 +16,9 @@ import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { IType } from "@interfaces/type.interface";
 import { IAddress } from "@interfaces/address.interface";
-
-// Helpers
-import { AddressHelper } from "@helpers/address.helper";
-import { DateHelper } from "@helpers/date.helper";
+import { IShift } from "@interfaces/shift.interface";
+import { IWeekday } from "@interfaces/weekday.interface";
+import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 
 // Services
 import { AddressService } from "./address.service";
@@ -29,10 +35,6 @@ import { DailyService } from "./daily.service";
 import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
-import { sort } from "@helpers/sort.helper";
-import { IShift } from "@interfaces/shift.interface";
-import { IWeekday } from "@interfaces/weekday.interface";
-import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -76,7 +78,13 @@ export class GigLoggerService {
     }
 
     public async warmupLambda(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) });
+        try {
+            return await this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }).toPromise();
+        } catch (error) {
+            console.error('Error warming up Lambda:', error);
+            // throw error;
+            return null;
+        }
     }
 
     public async healthCheck(sheetId: string) {
@@ -84,7 +92,7 @@ export class GigLoggerService {
     }
 
     public async postSheetData(sheetData: ISheet) {
-        return this._http.post<any>(`${this.apiUrl}/sheets/add`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) });
+        return this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) });
     }
 
     public async createSheet(properties: ISheetProperties){
@@ -128,7 +136,7 @@ export class GigLoggerService {
 
         for (let shift of shifts) {
             let trips = await this._tripService.queryTrips("key", shift.key);
-            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
+            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude && x.action !== ActionEnum.Delete);
 
             shift.totalTrips = +(shift.trips ?? 0) + filteredTrips.length;
             shift.totalDistance = +(shift.distance ?? 0) + +filteredTrips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);

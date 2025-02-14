@@ -28,6 +28,7 @@ import { TripService } from '@services/trip.service';
 import { Observable, startWith, mergeMap } from 'rxjs';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
+import { ActionEnum } from '@enums/action.enum';
 
 @Component({
   selector: 'quick-form',
@@ -185,13 +186,13 @@ export class QuickFormComponent implements OnInit {
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.rowId = this.data.rowId;
-      trip.action = this.data?.saved ? "UPDATE" : this.data?.action;
+      trip.action = this.data?.saved ? ActionEnum.Update : this.data?.action;
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
     else {
       trip.rowId = await this._tripService.getMaxTripId() + 1;
-      trip.action = "ADD";
+      trip.action = ActionEnum.Add;
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
     trip.actionTime = Date.now();

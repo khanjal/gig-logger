@@ -5,6 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { DateHelper } from '@helpers/date.helper';
 
+import { ActionEnum } from '@enums/action.enum';
+
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -43,8 +45,10 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   savedTrips: ITrip[] = [];
   recentTrips: ITrip[] = [];
+  unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
+  actionEnum = ActionEnum;
 
   constructor(
       public dialog: MatDialog,
@@ -68,6 +72,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   public async load() {
+    this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
     this.recentTrips = (await this._tripService.getTripsPreviousDays(1)).reverse();
     this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
 
@@ -128,8 +133,8 @@ export class QuickComponent implements OnInit, OnDestroy {
                 await this._shiftService.saveUnsavedShifts();
                 this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-                await this.loadSheetDialog();
-                this._viewportScroller.scrollToAnchor("savedTrips");
+                await this.reload();
+                this._viewportScroller.scrollToAnchor("recentTrips");
             }
         });
     }
@@ -156,7 +161,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
   
   async confirmSaveTripsDialog() {
-    const message = `This will save all trips to your spreadsheet and you will have to make further changes there. Are you sure you want to save?`;
+    const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
@@ -172,6 +177,27 @@ export class QuickComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.saveSheetDialog();
+      }
+    });
+  }
+
+  async confirmLoadTripsDialog() {
+    const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Load";
+    dialogData.message = message;
+    dialogData.trueText = "Load";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.loadSheetDialog();
       }
     });
   }
@@ -233,6 +259,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   async cloneUnsavedTrip(trip: ITrip) {
     delete trip.id;
+    trip.rowId = await this._tripService.getMaxTripId() + 1;
     await this._tripService.addTrip(trip);
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
@@ -241,6 +268,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   async nextUnsavedTrip(trip: ITrip) {
     let nextTrip = {} as ITrip;
+    nextTrip.rowId = await this._tripService.getMaxTripId() + 1;
     nextTrip.key = trip.key;
     nextTrip.date = trip.date;
     nextTrip.region = trip.region;
@@ -257,7 +285,17 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   async deleteUnsavedTrip(trip: ITrip) {
-    await this._tripService.deleteTrip(trip.id!);
+    if (trip.action === ActionEnum.Add) {
+      await this._tripService.deleteTrip(trip.id!);
+      await this._tripService.updateTripRowIds(trip.rowId);
+    }
+    else {
+      trip.action = ActionEnum.Delete;
+      trip.actionTime = Date.now();
+      trip.saved = false;
+      await this._tripService.updateTrip(trip);
+    }
+
     const shift = await this._shiftService.queryShiftByKey(trip.key);
     await this._gigLoggerService.calculateShiftTotals([shift]);
 

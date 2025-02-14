@@ -89,4 +89,20 @@ export class ShiftService {
     public async updateShift(shift: IShift) {
         await spreadsheetDB.shifts.put(shift);
     }
+
+    public async updateShiftRowIds(rowId: number) {
+        let maxId = await this.getMaxShiftId();
+        let nextRowId = rowId + 1;
+        
+        // Need to loop id until it finds a trip. Update that trip with a current row id. Then continue until it hits maxId
+        while (nextRowId <= maxId) {
+            let shift = await spreadsheetDB.shifts.where("rowId").equals(nextRowId).first();
+            if (shift) {
+                shift.rowId = rowId;
+                await this.updateShift(shift);
+                rowId++;
+            }
+            nextRowId++;
+        }
+    }
 }
