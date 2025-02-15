@@ -16,7 +16,7 @@ import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { IType } from "@interfaces/type.interface";
 import { IAddress } from "@interfaces/address.interface";
-import { IShift } from "@interfaces/shift.interface";
+import { IShift, updateShiftAction } from "@interfaces/shift.interface";
 import { IWeekday } from "@interfaces/weekday.interface";
 import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 
@@ -157,6 +157,7 @@ export class GigLoggerService {
             if (duration) {
                 shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
                 shift.time = DateHelper.getDurationString(duration);
+                updateShiftAction(shift, ActionEnum.Update);
             }
 
             if (trips?.length === 0 && !shift.saved) {

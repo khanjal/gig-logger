@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IShift } from '@interfaces/shift.interface';
+import { clearShiftAction, IShift, updateShiftAction } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { ActionEnum } from '@enums/action.enum';
 
@@ -90,8 +90,7 @@ export class ShiftService {
                 await this.deleteShift(shift.rowId);
                 continue;
             }
-            shift.action = ActionEnum.Saved;
-            shift.saved = true;
+            clearShiftAction(shift);
             await this.updateShift(shift);
         };
     }

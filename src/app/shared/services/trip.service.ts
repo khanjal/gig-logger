@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ITrip } from '@interfaces/trip.interface';
+import { clearTripAction, ITrip, updateTripAction } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { max } from 'rxjs';
 import { ActionEnum } from '@enums/action.enum'; // Adjust the import path as necessary
@@ -66,8 +66,7 @@ export class TripService {
                 await this.deleteTrip(trip.id!);
                 continue;
             }
-            trip.action = ActionEnum.Saved;
-            trip.saved = true;
+            clearTripAction(trip);
             await this.updateTrip(trip);
         };
 

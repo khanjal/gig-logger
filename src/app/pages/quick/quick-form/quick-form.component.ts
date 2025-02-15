@@ -13,8 +13,8 @@ import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import { IShift, updateShiftAction } from '@interfaces/shift.interface';
+import { ITrip, updateTripAction } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -186,16 +186,15 @@ export class QuickFormComponent implements OnInit {
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.rowId = this.data.rowId;
-      trip.action = this.data?.saved ? ActionEnum.Update : this.data?.action;
+      updateTripAction(trip, this.data?.saved ? ActionEnum.Update : this.data?.action);
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
     else {
       trip.rowId = await this._tripService.getMaxTripId() + 1;
-      trip.action = ActionEnum.Add;
+      updateTripAction(trip, ActionEnum.Add);
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
-    trip.actionTime = Date.now();
 
     let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
     trip.duration = DateHelper.getDurationString(duration);
@@ -324,6 +323,10 @@ export class QuickFormComponent implements OnInit {
     let shift = await this.createShift();
     let trip = await this.createTrip(shift);
 
+    shift.finish = DateHelper.getTimeString(new Date);
+    updateShiftAction(shift, ActionEnum.Update);
+    this._shiftService.updateShift(shift);
+    
     shifts.push(shift);
 
     if (shifts.length > 1) {

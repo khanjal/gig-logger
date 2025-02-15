@@ -9,7 +9,7 @@ import { ActionEnum } from '@enums/action.enum';
 
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import { ITrip, updateTripAction } from '@interfaces/trip.interface';
 
 import { GigLoggerService } from '@services/gig-logger.service';
 import { PollingService } from '@services/polling.service';
@@ -26,6 +26,7 @@ import { SaveModalComponent } from '@components/save-modal/save-modal.component'
 
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { updateShiftAction } from '@interfaces/shift.interface';
 
 @Component({
   selector: 'app-quick',
@@ -230,6 +231,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
+      updateShiftAction(shift, ActionEnum.Update);
       await this._shiftService.updateShift(shift);
     }
 
@@ -243,6 +245,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
+      updateShiftAction(shift, ActionEnum.Update);
       await this._shiftService.updateShift(shift);
     }
 
@@ -261,6 +264,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   async cloneUnsavedTrip(trip: ITrip) {
     delete trip.id;
     trip.rowId = await this._tripService.getMaxTripId() + 1;
+    updateTripAction(trip, ActionEnum.Add);
     await this._tripService.addTrip(trip);
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
@@ -269,6 +273,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   async nextUnsavedTrip(trip: ITrip) {
     let nextTrip = {} as ITrip;
+    updateTripAction(nextTrip, ActionEnum.Add);
     nextTrip.rowId = await this._tripService.getMaxTripId() + 1;
     nextTrip.key = trip.key;
     nextTrip.date = trip.date;
@@ -291,8 +296,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       await this._tripService.updateTripRowIds(trip.rowId);
     }
     else {
-      trip.action = ActionEnum.Delete;
-      trip.actionTime = Date.now();
+      updateTripAction(trip, ActionEnum.Delete);
       trip.saved = false;
       await this._tripService.updateTrip(trip);
     }

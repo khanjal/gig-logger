@@ -25,3 +25,15 @@ export interface IShift extends IAmountPer {
     action: string;
     actionTime: number;
 }
+
+export function clearShiftAction(shift: IShift) {
+    shift.action = '';
+    shift.actionTime = 0;
+    shift.saved = true;
+}
+
+export function updateShiftAction(shift: IShift, action: string) {
+    shift.action = action;
+    shift.actionTime = Date.now();
+    shift.saved = false;
+}
