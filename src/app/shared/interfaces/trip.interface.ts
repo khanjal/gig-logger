@@ -2,6 +2,7 @@ import { IAmount } from "./amount.interface";
 
 export interface ITrip extends IAmount {
     id?: number;
+    rowId: number;
     date: string;
     distance: number;
     endAddress: string;
@@ -25,4 +26,18 @@ export interface ITrip extends IAmount {
     type: string;
     amountPerDistance: number;
     amountPerTime: number;
+    action: string;
+    actionTime: number;
+}
+
+export function clearTripAction(trip: ITrip) {
+    trip.action = '';
+    trip.actionTime = 0;
+    trip.saved = true;
+}
+
+export function updateTripAction(trip: ITrip, action: string) {
+    trip.action = action;
+    trip.actionTime = Date.now();
+    trip.saved = false;
 }

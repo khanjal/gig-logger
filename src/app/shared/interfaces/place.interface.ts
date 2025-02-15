@@ -4,6 +4,7 @@ import { IType } from "./type.interface";
 
 export interface IPlace extends IAmount {
     id?: number;
+    rowId: number;
     place: string;
     addresses: IAddress[];
     types: IType[];

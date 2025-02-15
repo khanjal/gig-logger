@@ -27,9 +27,17 @@ export class LoadModalComponent {
         time = this.currentTime;
 
         this.currentTask = "Checking Google API Status..."
-        await this._sheetService.warmUpLambda();
-        this.appendToTerminal(`${this.currentTask} ONLINE`);
+        let response = await this._sheetService.warmUpLambda();
 
+        if (!response) {
+            this.appendToTerminal(`${this.currentTask} OFFLINE`);   
+            this.currentTask = "Modal Closing In 5s";
+
+            await this._timerService.delay(5000);
+            this.dialogRef.close(false); 
+        }
+
+        this.appendToTerminal(`${this.currentTask} ONLINE`);
 
         this.currentTask = "Loading Sheet Data...";
         await this._sheetService.loadSpreadsheetData();

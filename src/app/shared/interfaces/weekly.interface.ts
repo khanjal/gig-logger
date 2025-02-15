@@ -1,6 +1,7 @@
 import { IPeriodicBase } from "./periodic-base.interface";
 
 export interface IWeekly extends IPeriodicBase {
+    rowId: number;
     week: string
     days: number
     average: number

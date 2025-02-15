@@ -13,8 +13,8 @@
     <UserSecretsId>e4bf42c1-9b3d-472f-948c-f2ff8cf7bbfa</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.0.0" />
-    <PackageReference Include="RaptorLoggerEngine.Gig" Version="1.0.0" />
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.0.3" />
+    <PackageReference Include="RaptorSheets.Gig" Version="1.0.3" />
   </ItemGroup>
   <ItemGroup>
     <None Update="serverless.template">

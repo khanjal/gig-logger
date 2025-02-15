@@ -1,7 +1,8 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IShift } from '@interfaces/shift.interface';
+import { clearShiftAction, IShift, updateShiftAction } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
+import { ActionEnum } from '@enums/action.enum';
 
 export class ShiftService {
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
@@ -10,8 +11,12 @@ export class ShiftService {
         await spreadsheetDB.shifts.add(shift);
     }
 
-    public deleteShift(shiftId: number) {
+    public async deleteShift(shiftId: number) {
         spreadsheetDB.shifts.delete(shiftId);
+    }
+
+    public async getMaxShiftId(): Promise<number> {
+        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 2);
     }
 
     public async getShifts(): Promise<IShift[]> {
@@ -76,13 +81,37 @@ export class ShiftService {
 
     public async saveUnsavedShifts() {
         let shifts = await this.getUnsavedShifts();
+        let rowId;
         for (let shift of shifts) {
-            shift.saved = true;
+            if (shift.action === ActionEnum.Delete) {
+                if (!rowId) {
+                    rowId = shift.rowId;
+                }
+                await this.deleteShift(shift.rowId);
+                continue;
+            }
+            clearShiftAction(shift);
             await this.updateShift(shift);
         };
     }
 
     public async updateShift(shift: IShift) {
         await spreadsheetDB.shifts.put(shift);
+    }
+
+    public async updateShiftRowIds(rowId: number) {
+        let maxId = await this.getMaxShiftId();
+        let nextRowId = rowId + 1;
+        
+        // Need to loop id until it finds a trip. Update that trip with a current row id. Then continue until it hits maxId
+        while (nextRowId <= maxId) {
+            let shift = await spreadsheetDB.shifts.where("rowId").equals(nextRowId).first();
+            if (shift) {
+                shift.rowId = rowId;
+                await this.updateShift(shift);
+                rowId++;
+            }
+            nextRowId++;
+        }
     }
 }

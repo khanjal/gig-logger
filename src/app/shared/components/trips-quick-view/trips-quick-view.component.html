@@ -1,8 +1,21 @@
-<mat-card [ngClass]="trip.exclude ? 'strike' : ''">
+<mat-card>
     <div>
-        <mat-card-header><h3><strong>{{trip.date | date:'MMM d'}}, <span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span> ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</strong></h3></mat-card-header>
-        <mat-card-content>
-            
+        <mat-card-header>
+            @if (!trip.saved && trip.action === 'ADD') {
+                <mat-icon class="warn">add</mat-icon> 
+            }
+            @else if (!trip.saved && trip.action === 'UPDATE') {
+                <mat-icon class="warn">edit</mat-icon>
+            }
+            @else if (!trip.saved && trip.action === 'DELETE') {
+                <mat-icon class="warn">delete</mat-icon> 
+            }
+            @else {
+                <mat-icon [ngClass]="{'warn': !trip.saved}">save</mat-icon> 
+            }
+            <h3><strong>#{{trip.rowId}} {{trip.date | date:'MMM d'}}, <span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{trip.dropoffTime === "" ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span> ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</strong></h3>
+        </mat-card-header>
+        <mat-card-content [ngClass]="trip.exclude || trip.action === 'DELETE' ? 'strike' : ''">
             @if (trip.region || trip.distance) {
                 <div class="row-flex section-container">
                     <div>

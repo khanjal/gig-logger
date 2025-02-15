@@ -13,9 +13,8 @@ import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IType } from '@interfaces/type.interface';
+import { IShift, updateShiftAction } from '@interfaces/shift.interface';
+import { ITrip, updateTripAction } from '@interfaces/trip.interface';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -26,10 +25,10 @@ import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
-import { TypeService } from '@services/type.service';
 import { Observable, startWith, mergeMap } from 'rxjs';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
+import { ActionEnum } from '@enums/action.enum';
 
 @Component({
   selector: 'quick-form',
@@ -120,7 +119,7 @@ export class QuickFormComponent implements OnInit {
 
   public async load() {
     if (this.data?.id) {
-      this.title = `Edit Trip - ${ this.data.id }`;
+      this.title = `Edit Trip - #${ this.data.rowId }`;
       // Load form with passed in data.
       await this.loadForm()
     }
@@ -140,6 +139,7 @@ export class QuickFormComponent implements OnInit {
       
       shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
       shift.region = this.quickForm.value.region ?? "";
+      shift.rowId = await this._shiftService.getMaxShiftId() + 1;
       
       await this._shiftService.addNewShift(shift);
     }
@@ -150,7 +150,7 @@ export class QuickFormComponent implements OnInit {
     return shift;
   }
 
-  private createTrip(shift: IShift): ITrip {
+  private async createTrip(shift: IShift): Promise<ITrip> {
     let trip: ITrip = {} as ITrip;
 
     trip.id = this.data?.id;
@@ -185,10 +185,14 @@ export class QuickFormComponent implements OnInit {
     
     // Set form properties depending on edit/add
     if (this.data?.id) {
+      trip.rowId = this.data.rowId;
+      updateTripAction(trip, this.data?.saved ? ActionEnum.Update : this.data?.action);
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
     else {
+      trip.rowId = await this._tripService.getMaxTripId() + 1;
+      updateTripAction(trip, ActionEnum.Add);
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
 
@@ -257,7 +261,7 @@ export class QuickFormComponent implements OnInit {
     }
 
     //Set default shift to last trip or latest shift.
-    if (!this.data.id) {
+    if (!this.data?.id) {
       // Remove duplicates
       this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
 
@@ -293,7 +297,7 @@ export class QuickFormComponent implements OnInit {
 
   public async addTrip() {
     let shift = await this.createShift();
-    let trip = this.createTrip(shift);
+    let trip = await this.createTrip(shift);
     await this._tripService.addTrip(trip);
     
     // Update shift numbers & weekday current amount.
@@ -317,8 +321,12 @@ export class QuickFormComponent implements OnInit {
     }
 
     let shift = await this.createShift();
-    let trip = this.createTrip(shift);
+    let trip = await this.createTrip(shift);
 
+    shift.finish = DateHelper.getTimeString(new Date);
+    updateShiftAction(shift, ActionEnum.Update);
+    this._shiftService.updateShift(shift);
+    
     shifts.push(shift);
 
     if (shifts.length > 1) {

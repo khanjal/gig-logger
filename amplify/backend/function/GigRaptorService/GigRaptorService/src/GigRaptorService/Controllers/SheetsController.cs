@@ -2,8 +2,8 @@
 using GigRaptorService.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using RLE.Core.Entities;
-using RLE.Gig.Entities;
+using RaptorSheets.Core.Entities;
+using RaptorSheets.Gig.Entities;
 
 namespace GigRaptorService.Controllers;
 
@@ -81,5 +81,13 @@ public class SheetsController : ControllerBase
     {
         InitializeSheetmanger(sheetEntity.Properties.Id);
         return await _sheetmanager.AddData(sheetEntity);
+    }
+
+    // POST api/sheets/save
+    [HttpPost("save")]
+    public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
+    {
+        InitializeSheetmanger(sheetEntity.Properties.Id);
+        return await _sheetmanager.SaveData(sheetEntity);
     }
 }

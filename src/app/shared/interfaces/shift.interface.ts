@@ -2,6 +2,7 @@ import { IAmountPer } from "./amount-per.interface";
 
 export interface IShift extends IAmountPer {
     id?: number;
+    rowId: number;
     date: string;
     distance: number;
     active: string;
@@ -21,4 +22,18 @@ export interface IShift extends IAmountPer {
     totalBonus: number;
     grandTotal: number;
     totalCash: number;
+    action: string;
+    actionTime: number;
+}
+
+export function clearShiftAction(shift: IShift) {
+    shift.action = '';
+    shift.actionTime = 0;
+    shift.saved = true;
+}
+
+export function updateShiftAction(shift: IShift, action: string) {
+    shift.action = action;
+    shift.actionTime = Date.now();
+    shift.saved = false;
 }

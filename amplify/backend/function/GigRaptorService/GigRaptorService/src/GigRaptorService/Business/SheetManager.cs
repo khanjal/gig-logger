@@ -1,7 +1,7 @@
-﻿using RLE.Core.Entities;
-using RLE.Gig.Entities;
-using RLE.Gig.Enums;
-using RLE.Gig.Utilities.Google;
+﻿using RaptorSheets.Core.Entities;
+using RaptorSheets.Gig.Entities;
+using RaptorSheets.Gig.Enums;
+using RaptorSheets.Gig.Managers;
 
 namespace  GigRaptorService.Business;
 
@@ -14,22 +14,23 @@ public interface ISheetManager
     public Task<SheetEntity> GetSheet(string sheet);
     public Task<SheetEntity> GetSheets(string[] sheets);
     public Task<SheetEntity> GetSheets();
+    public Task<SheetEntity> SaveData(SheetEntity sheetEntity);
 }
 public class SheetManager : ISheetManager
 {
-    private IGigSheetManager _googleSheetManger;
+    private IGoogleSheetManager _googleSheetManger;
     public SheetManager(string token, string sheetId) {
-        _googleSheetManger = new GigSheetManager(token, sheetId);
+        _googleSheetManger = new GoogleSheetManager(token, sheetId);
     }
 
     public SheetManager(Dictionary<string,string> credentials, string sheetId)
     {
-        _googleSheetManger = new GigSheetManager(credentials, sheetId);
+        _googleSheetManger = new GoogleSheetManager(credentials, sheetId);
     }
 
     public async Task<SheetEntity> AddData(SheetEntity sheetEntity)
     {
-        return await _googleSheetManger.AddSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity);
+        return await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity, RaptorSheets.Core.Enums.ActionTypeEnum.APPEND);
     }
 
     public async Task<List<MessageEntity>> CheckSheets()
@@ -72,5 +73,39 @@ public class SheetManager : ISheetManager
         var sheetData = await _googleSheetManger.GetSheets();
 
         return sheetData ?? new SheetEntity();
+    }
+
+    public async Task<SheetEntity> SaveData(SheetEntity sheetEntity)
+    {
+        var returnEntity = new SheetEntity { Messages = [] };
+
+        var addData = new SheetEntity
+        {
+            Shifts = sheetEntity.Shifts.Where(x => x.Action == "ADD").ToList(),
+            Trips = sheetEntity.Trips.Where(x => x.Action == "ADD").ToList()
+        };
+
+        if (addData.Shifts.Count > 0 || addData.Trips.Count > 0)
+            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], addData, RaptorSheets.Core.Enums.ActionTypeEnum.APPEND)).Messages);
+
+        var editData = new SheetEntity
+        {
+            Shifts = sheetEntity.Shifts.Where(x => x.Action == "UPDATE").ToList(),
+            Trips = sheetEntity.Trips.Where(x => x.Action == "UPDATE").ToList()
+        };
+
+        if (editData.Shifts.Count > 0 || editData.Trips.Count > 0)
+            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], editData, RaptorSheets.Core.Enums.ActionTypeEnum.UPDATE)).Messages);
+
+        var deleteData = new SheetEntity
+        {
+            Shifts = sheetEntity.Shifts.Where(x => x.Action == "DELETE").ToList(),
+            Trips = sheetEntity.Trips.Where(x => x.Action == "DELETE").ToList()
+        };
+
+        if (deleteData.Shifts.Count > 0 || deleteData.Trips.Count > 0)
+            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], deleteData, RaptorSheets.Core.Enums.ActionTypeEnum.DELETE)).Messages);
+
+        return returnEntity;
     }
 }

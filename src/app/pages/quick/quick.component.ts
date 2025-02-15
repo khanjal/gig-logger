@@ -1,15 +1,18 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { DateHelper } from '@helpers/date.helper';
 
+import { ActionEnum } from '@enums/action.enum';
+
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import { ITrip, updateTripAction } from '@interfaces/trip.interface';
 
 import { GigLoggerService } from '@services/gig-logger.service';
+import { PollingService } from '@services/polling.service';
 import { TripService } from '@services/trip.service';
 import { ShiftService } from '@services/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -22,13 +25,15 @@ import { LoadModalComponent } from '@components/load-modal/load-modal.component'
 import { SaveModalComponent } from '@components/save-modal/save-modal.component';
 
 import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
+import { updateShiftAction } from '@interfaces/shift.interface';
 
 @Component({
   selector: 'app-quick',
   templateUrl: './quick.component.html',
   styleUrls: ['./quick.component.scss']
 })
-export class QuickComponent implements OnInit {
+export class QuickComponent implements OnInit, OnDestroy {
   @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
@@ -40,9 +45,11 @@ export class QuickComponent implements OnInit {
   saving: boolean = false;
 
   savedTrips: ITrip[] = [];
+  recentTrips: ITrip[] = [];
   unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
+  actionEnum = ActionEnum;
 
   constructor(
       public dialog: MatDialog,
@@ -51,16 +58,23 @@ export class QuickComponent implements OnInit {
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
-      private _viewportScroller: ViewportScroller
+      private _viewportScroller: ViewportScroller,
+      private _pollingService: PollingService
     ) { }
+
+  ngOnDestroy(): void {
+    this._pollingService.stopPolling();
+  }
 
   async ngOnInit(): Promise<void> {
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    await this._pollingService.startPolling();
   }
 
   public async load() {
     this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
+    this.recentTrips = (await this._tripService.getTripsPreviousDays(1)).reverse();
     this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
 
     // console.log(this.form);
@@ -88,6 +102,7 @@ export class QuickComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async result => {
       await this.load();
       await this.form?.load();
+      this._viewportScroller.scrollToAnchor(trip.rowId.toString());
     });
     }
 
@@ -120,8 +135,8 @@ export class QuickComponent implements OnInit {
                 await this._shiftService.saveUnsavedShifts();
                 this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-                await this.loadSheetDialog();
-                this._viewportScroller.scrollToAnchor("savedTrips");
+                await this.reload();
+                this._viewportScroller.scrollToAnchor("recentTrips");
             }
         });
     }
@@ -148,7 +163,7 @@ export class QuickComponent implements OnInit {
   }
   
   async confirmSaveTripsDialog() {
-    const message = `This will save all trips to your spreadsheet and you will have to make further changes there. Are you sure you want to save?`;
+    const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
@@ -164,6 +179,27 @@ export class QuickComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.saveSheetDialog();
+      }
+    });
+  }
+
+  async confirmLoadTripsDialog() {
+    const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Load";
+    dialogData.message = message;
+    dialogData.trueText = "Load";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.loadSheetDialog();
       }
     });
   }
@@ -195,6 +231,7 @@ export class QuickComponent implements OnInit {
     let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
+      updateShiftAction(shift, ActionEnum.Update);
       await this._shiftService.updateShift(shift);
     }
 
@@ -208,6 +245,7 @@ export class QuickComponent implements OnInit {
     let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
+      updateShiftAction(shift, ActionEnum.Update);
       await this._shiftService.updateShift(shift);
     }
 
@@ -225,6 +263,8 @@ export class QuickComponent implements OnInit {
 
   async cloneUnsavedTrip(trip: ITrip) {
     delete trip.id;
+    trip.rowId = await this._tripService.getMaxTripId() + 1;
+    updateTripAction(trip, ActionEnum.Add);
     await this._tripService.addTrip(trip);
     await this.load();
     this._viewportScroller.scrollToAnchor("unsavedTrips");
@@ -233,6 +273,8 @@ export class QuickComponent implements OnInit {
 
   async nextUnsavedTrip(trip: ITrip) {
     let nextTrip = {} as ITrip;
+    updateTripAction(nextTrip, ActionEnum.Add);
+    nextTrip.rowId = await this._tripService.getMaxTripId() + 1;
     nextTrip.key = trip.key;
     nextTrip.date = trip.date;
     nextTrip.region = trip.region;
@@ -249,7 +291,16 @@ export class QuickComponent implements OnInit {
   }
 
   async deleteUnsavedTrip(trip: ITrip) {
-    await this._tripService.deleteTrip(trip.id!);
+    if (trip.action === ActionEnum.Add) {
+      await this._tripService.deleteTrip(trip.id!);
+      await this._tripService.updateTripRowIds(trip.rowId);
+    }
+    else {
+      updateTripAction(trip, ActionEnum.Delete);
+      trip.saved = false;
+      await this._tripService.updateTrip(trip);
+    }
+
     const shift = await this._shiftService.queryShiftByKey(trip.key);
     await this._gigLoggerService.calculateShiftTotals([shift]);
 
