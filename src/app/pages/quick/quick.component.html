@@ -4,42 +4,6 @@
     <quick-form (parentReload)="load()"></quick-form>
 
     @if (unsavedTrips.length > 0) {
-        <h2 id="unsavedTrips">Unsaved Trips</h2>
-
-        @for (trip of unsavedTrips; track $index) {
-            <div [id]="trip.rowId" [ngClass]="{'mat-card': unsavedTrips.length % 2 != 0, 'mat-card-reverse': unsavedTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                <trips-quick-view [trip]="trip"></trips-quick-view>
-                <div mat-card class="row-flex button-bar">
-                    <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
-                    <button mat-fab extended color="accent" (click)="setPickupTime(trip)" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
-                    <button mat-fab extended color="accent" (click)="setDropoffTime(trip)" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
-                    <button mat-fab color="primary" [matMenuTriggerFor]="menu" aria-label="Trip menu">
-                        <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu color="primary" #menu="matMenu">
-                        <!-- <button mat-menu-item>
-                            <mat-icon>block</mat-icon>
-                            <span>Exclude</span>
-                        </button> -->
-                        <button mat-menu-item (click)="nextUnsavedTrip(trip)">
-                            <mat-icon>pin_drop</mat-icon>
-                            <span>Next</span>
-                        </button>
-                        <button mat-menu-item (click)="cloneUnsavedTrip(trip)">
-                            <mat-icon>content_copy</mat-icon>
-                            <span>Clone</span>
-                        </button>
-                        @if (trip.action === actionEnum.Add) {
-                            <button mat-menu-item [attr.color]="'warn'" (click)="confirmDeleteTripDialog(trip)">
-                                <mat-icon color="warn">delete</mat-icon>
-                                <span>Delete</span>
-                            </button>
-                        }
-                    </mat-menu>
-                </div>
-            </div>
-        }
-    
         <div class="row-grid">
             <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
         </div>
@@ -54,32 +18,36 @@
     <h2 *ngIf="recentTrips.length > 0" id="recentTrips">Recent Trips</h2>
 
     @for (trip of recentTrips; track $index) {
-        <div [ngClass]="{'mat-card': recentTrips.length % 2 != 0, 'mat-card-reverse': recentTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+        <div [id]="trip.rowId" [ngClass]="{'mat-card': recentTrips.length % 2 != 0, 'mat-card-reverse': recentTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
             <trips-quick-view [trip]="trip"></trips-quick-view>
-            @if (trip.saved) {
-                <div mat-card class="row-flex button-bar">
-                    <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
-                    <button mat-fab extended color="accent" (click)="setPickupTime(trip)" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
-                    <button mat-fab extended color="accent" (click)="setDropoffTime(trip)" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
-                    <button mat-fab color="primary" [matMenuTriggerFor]="menu" aria-label="Trip menu">
-                        <mat-icon>more_vert</mat-icon>
+            <div mat-card class="row-flex button-bar">
+                <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
+                <button mat-fab extended color="accent" (click)="setPickupTime(trip)" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
+                <button mat-fab extended color="accent" (click)="setDropoffTime(trip)" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
+                <button mat-fab color="primary" [matMenuTriggerFor]="menu" aria-label="Trip menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu color="primary" #menu="matMenu">
+                    <!-- <button mat-menu-item>
+                        <mat-icon>block</mat-icon>
+                        <span>Exclude</span>
+                    </button> -->
+                    <button mat-menu-item (click)="nextUnsavedTrip(trip)">
+                        <mat-icon>pin_drop</mat-icon>
+                        <span>Next</span>
                     </button>
-                    <mat-menu color="primary" #menu="matMenu">
-                        <!-- <button mat-menu-item>
-                            <mat-icon>block</mat-icon>
-                            <span>Exclude</span>
-                        </button> -->
-                        <button mat-menu-item (click)="nextUnsavedTrip(trip)">
-                            <mat-icon>pin_drop</mat-icon>
-                            <span>Next</span>
+                    <button mat-menu-item (click)="cloneUnsavedTrip(trip)">
+                        <mat-icon>content_copy</mat-icon>
+                        <span>Clone</span>
+                    </button>
+                    @if (trip.action === actionEnum.Add) {
+                        <button mat-menu-item [attr.color]="'warn'" (click)="confirmDeleteTripDialog(trip)">
+                            <mat-icon color="warn">delete</mat-icon>
+                            <span>Delete</span>
                         </button>
-                        <button mat-menu-item (click)="cloneUnsavedTrip(trip)">
-                            <mat-icon>content_copy</mat-icon>
-                            <span>Clone</span>
-                        </button>
-                    </mat-menu>
-                </div>
-            }
+                    }
+                </mat-menu>
+            </div>
         </div>
     }
 

@@ -186,7 +186,7 @@ export class QuickFormComponent implements OnInit {
     // Set form properties depending on edit/add
     if (this.data?.id) {
       trip.rowId = this.data.rowId;
-      updateTripAction(trip, this.data?.saved ? ActionEnum.Update : this.data?.action);
+      updateTripAction(trip, ActionEnum.Update);
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
     }
@@ -310,7 +310,7 @@ export class QuickFormComponent implements OnInit {
     
     // console.log(trip);
     await this._timerService.delay(1000); // TODO: see if parent will scroll after done.
-    this._viewportScroller.scrollToAnchor("unsavedTrips");
+    this._viewportScroller.scrollToAnchor("recentTrips");
   }
 
   public async editTrip() {
