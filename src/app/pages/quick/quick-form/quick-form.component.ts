@@ -151,9 +151,8 @@ export class QuickFormComponent implements OnInit {
   }
 
   private async createTrip(shift: IShift): Promise<ITrip> {
-    let trip: ITrip = {} as ITrip;
+    let trip: ITrip = this.data ?? {} as ITrip;
 
-    trip.id = this.data?.id;
     trip.key = shift.key;
     
     trip.date = shift.date;
@@ -185,7 +184,6 @@ export class QuickFormComponent implements OnInit {
     
     // Set form properties depending on edit/add
     if (this.data?.id) {
-      trip.rowId = this.data.rowId;
       updateTripAction(trip, ActionEnum.Update);
       trip.pickupTime = this.quickForm.value.pickupTime ?? "";
       trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";

@@ -8,8 +8,7 @@
             <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
         </div>
     }
-
-    @if (unsavedTrips.length === 0) {
+    @else {
         <div class="row-grid">
             <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
