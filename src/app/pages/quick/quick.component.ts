@@ -69,13 +69,13 @@ export class QuickComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
-    await this._pollingService.startPolling();
+    // await this._pollingService.startPolling(); TODO - Look into this
   }
 
   public async load() {
     this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
     this.recentTrips = (await this._tripService.getTripsPreviousDays(1)).reverse();
-    this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
+    // this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
 
     // console.log(this.form);
 
