@@ -157,7 +157,6 @@ export class GigLoggerService {
             if (duration) {
                 shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
                 shift.time = DateHelper.getDurationString(duration);
-                updateShiftAction(shift, ActionEnum.Update);
             }
 
             if (trips?.length === 0 && !shift.saved) {
