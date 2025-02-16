@@ -236,6 +236,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     }
 
     trip.pickupTime = pickupTime;
+    updateTripAction(trip, ActionEnum.Update);
     await this._tripService.updateTrip(trip);
   }
 
@@ -256,6 +257,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     if (trip.total && duration) {
       trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
     }
+    updateTripAction(trip, ActionEnum.Update);
     await this._tripService.updateTrip(trip);
 
     await this._gigLoggerService.calculateShiftTotals([shift]);

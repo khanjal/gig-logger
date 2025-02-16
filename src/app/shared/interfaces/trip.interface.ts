@@ -1,3 +1,4 @@
+import { ActionEnum } from "@enums/action.enum";
 import { IAmount } from "./amount.interface";
 
 export interface ITrip extends IAmount {
@@ -37,7 +38,9 @@ export function clearTripAction(trip: ITrip) {
 }
 
 export function updateTripAction(trip: ITrip, action: string) {
-    trip.action = action;
+    if (trip.action != ActionEnum.Add) {
+        trip.action = action;
+    }
     trip.actionTime = Date.now();
     trip.saved = false;
 }
