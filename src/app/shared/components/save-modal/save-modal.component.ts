@@ -55,7 +55,7 @@ export class SaveModalComponent {
         this.currentTask = "Saving Trips Data...";
         
         let postResponse = await this._gigLoggerService.postSheetData(sheetData);
-        console.log(postResponse);
+        // console.log(postResponse);
         if (postResponse) {
             this.appendToTerminal(`${this.currentTask} SAVED (${this.currentTime - time}s)`);
         } else {
