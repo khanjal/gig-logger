@@ -342,6 +342,7 @@ export class QuickFormComponent implements OnInit {
   }
 
   public formReset() {
+    this.data = {} as ITrip;
     // Reset all selections
     this.selectedAddress = undefined;
     this.selectedAddressDeliveries = undefined;
