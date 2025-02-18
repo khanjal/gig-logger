@@ -252,6 +252,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     trip.pickupTime = pickupTime;
     updateTripAction(trip, ActionEnum.Update);
     await this._tripService.updateTrip(trip);
+    this.reload();
   }
 
   async setDropoffTime(trip: ITrip) {
@@ -274,7 +275,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     updateTripAction(trip, ActionEnum.Update);
     await this._tripService.updateTrip(trip);
 
-    await this._gigLoggerService.calculateShiftTotals([shift]);
+    this.reload();
   }
 
   async cloneUnsavedTrip(trip: ITrip) {

@@ -9,9 +9,9 @@
         </div>
     }
     
-    @if (!unsavedTrips.length) {
+    @if (!unsavedTrips.length || pollingEnabled) {
         <div class="row-grid">
-            <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
+            <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedTrips.length > 0"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
     
@@ -23,7 +23,7 @@
             No Recent Trips
         }
         <mat-slide-toggle class="field-right" (change)="changePolling()">
-            Atuo Save
+            Auto Save
         </mat-slide-toggle>
     </h2>
 
