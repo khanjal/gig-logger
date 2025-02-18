@@ -16,7 +16,7 @@ export class ShiftService {
     }
 
     public async getMaxShiftId(): Promise<number> {
-        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 2);
+        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 1);
     }
 
     public async getShifts(): Promise<IShift[]> {
@@ -73,14 +73,23 @@ export class ShiftService {
         return await spreadsheetDB.shifts.where(field).equals(value).toArray();
     }
 
+    public async queryShiftById(id: number): Promise<IShift> {
+        let shift = (await spreadsheetDB.shifts.where('id').equals(id).toArray())[0];
+
+        return shift;
+    }
+
     public async queryShiftByKey(key: string): Promise<IShift> {
         let remoteShift = (await spreadsheetDB.shifts.where('key').equals(key).toArray())[0];
 
         return remoteShift;
     }
 
-    public async saveUnsavedShifts() {
-        let shifts = await this.getUnsavedShifts();
+    public async saveUnsavedShifts(shifts?: IShift[]) {
+        if (!shifts || shifts.length === 0) {
+            shifts = await this.getUnsavedShifts();
+        }
+        
         let rowId;
         for (let shift of shifts) {
             if (shift.action === ActionEnum.Delete) {
@@ -90,8 +99,12 @@ export class ShiftService {
                 await this.deleteShift(shift.rowId);
                 continue;
             }
-            clearShiftAction(shift);
-            await this.updateShift(shift);
+
+            let originalShift = await this.queryShiftById(shift.id!);
+            if (originalShift.actionTime === shift.actionTime) {
+                clearShiftAction(shift);
+                await this.updateShift(shift);
+            }
         };
     }
 

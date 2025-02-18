@@ -35,7 +35,7 @@ import { DailyService } from "./daily.service";
 import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
-import { lastValueFrom } from "rxjs";
+import { firstValueFrom, lastValueFrom } from "rxjs";
 
 @Injectable()
 export class GigLoggerService {
@@ -78,12 +78,11 @@ export class GigLoggerService {
         return this._http.get(`${this.apiUrl}/sheets/multiple?sheetName=names&sheetName=places&sheetName=trips`, { headers: this.setHeader(sheetId) });
     }
 
-    public async warmupLambda(sheetId: string) {
+    public async warmupLambda(sheetId: string): Promise<any> {
         try {
-            return lastValueFrom(this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }));
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }));
         } catch (error) {
             console.error('Error warming up Lambda:', error);
-            // throw error;
             return null;
         }
     }
@@ -92,12 +91,11 @@ export class GigLoggerService {
         return this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) });
     }
 
-    public async postSheetData(sheetData: ISheet) {
+    public async postSheetData(sheetData: ISheet): Promise<any> {
         try {
-            return lastValueFrom(this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) }));
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) }));
         } catch (error) {
             console.error('Error posting sheet data:', error);
-            // throw error;
             return null;
         }
     }

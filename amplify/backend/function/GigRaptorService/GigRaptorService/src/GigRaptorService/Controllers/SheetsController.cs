@@ -75,14 +75,6 @@ public class SheetsController : ControllerBase
         return await _sheetmanager.CreateSheet();
     }
 
-    // POST api/sheets/add
-    [HttpPost("add")]
-    public async Task<SheetEntity> Add([FromBody] SheetEntity sheetEntity)
-    {
-        InitializeSheetmanger(sheetEntity.Properties.Id);
-        return await _sheetmanager.AddData(sheetEntity);
-    }
-
     // POST api/sheets/save
     [HttpPost("save")]
     public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)

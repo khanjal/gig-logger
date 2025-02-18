@@ -17,11 +17,15 @@ export class TripService {
     }
 
     public async getMaxTripId(): Promise<number> {
-        return await spreadsheetDB.trips.orderBy("rowId").last().then(x => x?.rowId || 2);
+        return await spreadsheetDB.trips.orderBy("rowId").last().then(x => x?.rowId || 1);
     }
 
     public async getTrips(): Promise<ITrip[]> {
         return await spreadsheetDB.trips.toArray();
+    }
+
+    public async queryTripById(id: number): Promise<ITrip> {
+        return (await spreadsheetDB.trips.where('id').equals(id).toArray())[0];
     }
 
     public async getSavedTrips(): Promise<ITrip[]> {
@@ -55,8 +59,11 @@ export class TripService {
         return await spreadsheetDB.trips.where(field).equals(value).toArray();
     }
 
-    public async saveUnsavedTrips() {
-        let trips = await this.getUnsavedTrips();
+    public async saveUnsavedTrips(trips?: ITrip[]) {
+        if (!trips || trips.length === 0) {
+            trips = await this.getUnsavedTrips();
+        }
+
         let rowId;
         for (let trip of trips) {
             if (trip.action === ActionEnum.Delete) {
@@ -66,8 +73,12 @@ export class TripService {
                 await this.deleteTrip(trip.id!);
                 continue;
             }
-            clearTripAction(trip);
-            await this.updateTrip(trip);
+
+            let originalTrip = await this.queryTripById(trip.id!);
+            if (originalTrip.actionTime === trip.actionTime) {
+                clearTripAction(trip);
+                await this.updateTrip(trip);
+            }
         };
 
         if (rowId) {

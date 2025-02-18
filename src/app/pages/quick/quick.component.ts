@@ -25,7 +25,7 @@ import { LoadModalComponent } from '@components/load-modal/load-modal.component'
 import { SaveModalComponent } from '@components/save-modal/save-modal.component';
 
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { updateShiftAction } from '@interfaces/shift.interface';
 
 @Component({
@@ -43,6 +43,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
+  pollingEnabled: boolean = false;
 
   savedTrips: ITrip[] = [];
   recentTrips: ITrip[] = [];
@@ -50,6 +51,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
+  parentReloadSubscription!: Subscription;
 
   constructor(
       public dialog: MatDialog,
@@ -69,7 +71,9 @@ export class QuickComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
-    // await this._pollingService.startPolling(); TODO - Look into this
+    this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
+      await this.reload();
+    });
   }
 
   public async load() {
@@ -87,11 +91,12 @@ export class QuickComponent implements OnInit, OnDestroy {
   async saveTrip(trip: ITrip) {
     this.saving = true;
     // await this._googleService.commitUnsavedTrips();
-    await this.reload();
+    await this.reload("recentTrips");
     this.saving = false;
   }
 
   async editUnsavedTrip(trip: ITrip) {
+    this.stopPolling();
     let dialogRef = this.dialog.open(QuickFormComponent, {
       data: trip,
       height: '600px',
@@ -103,6 +108,10 @@ export class QuickComponent implements OnInit, OnDestroy {
       await this.load();
       await this.form?.load();
       this._viewportScroller.scrollToAnchor(trip.rowId.toString());
+      
+      if (this.pollingEnabled) {
+        await this.startPolling();
+      }
     });
     }
 
@@ -116,7 +125,7 @@ export class QuickComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(async result => {
 
             if (result) {
-                await this.reload();
+                await this.reload("recentTrips");
             }
         });
     }
@@ -135,7 +144,7 @@ export class QuickComponent implements OnInit, OnDestroy {
                 await this._shiftService.saveUnsavedShifts();
                 this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-                await this.reload();
+                await this.reload("recentTrips");
                 this._viewportScroller.scrollToAnchor("recentTrips");
             }
         });
@@ -184,6 +193,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   async confirmLoadTripsDialog() {
+    this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -200,6 +210,10 @@ export class QuickComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.loadSheetDialog();
+      }
+
+      if (this.pollingEnabled) {
+        await this.startPolling();
       }
     });
   }
@@ -321,7 +335,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     await this.load();
   }
 
-  async reload() {
+  async reload(anchor?: string) {
     let sheetId = this.defaultSheet?.id;
     if (!sheetId) {
       return;
@@ -333,6 +347,30 @@ export class QuickComponent implements OnInit, OnDestroy {
     await this._gigLoggerService.calculateShiftTotals();
 
     this.reloading = false;
-    this._viewportScroller.scrollToAnchor("addTrip");
+
+    if (anchor) {
+      this._viewportScroller.scrollToAnchor(anchor);
+    }
+  }
+
+  async changePolling() {
+    this.pollingEnabled = !this.pollingEnabled;
+
+    if (this.pollingEnabled) {
+      await this.startPolling();
+    } else {
+      this.stopPolling();
+    }
+  }
+
+  async startPolling() {
+    console.log('Starting polling');
+    this._pollingService.stopPolling();
+    await this._pollingService.startPolling();
+  }
+
+  stopPolling() {
+    console.log('Stopping polling');
+    this._pollingService.stopPolling();
   }
 }

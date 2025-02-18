@@ -3,18 +3,29 @@
     
     <quick-form (parentReload)="load()"></quick-form>
 
-    @if (unsavedTrips.length > 0) {
+    @if (unsavedTrips.length > 0 && !pollingEnabled) {
         <div class="row-grid">
             <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
         </div>
     }
-    @else {
+    
+    @if (!unsavedTrips.length) {
         <div class="row-grid">
             <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
     
-    <h2 *ngIf="recentTrips.length > 0" id="recentTrips">Recent Trips</h2>
+    <h2 id="recentTrips">
+        @if (recentTrips.length > 0) {
+            Recent Trips
+        }
+        @else {
+            No Recent Trips
+        }
+        <mat-slide-toggle class="field-right" (change)="changePolling()">
+            Atuo Save
+        </mat-slide-toggle>
+    </h2>
 
     @for (trip of recentTrips; track $index) {
         <div [id]="trip.rowId" [ngClass]="{'mat-card': recentTrips.length % 2 != 0, 'mat-card-reverse': recentTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
