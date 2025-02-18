@@ -15,22 +15,17 @@
         </div>
     }
     
-    @if (recentTrips.length > 0) {
-        <h2 id="recentTrips">
+    <h2 id="recentTrips">
+        @if (recentTrips.length > 0) {
             Recent Trips
-            <mat-slide-toggle class="field-right" (change)="changePolling()">
-                Atuo Save
-            </mat-slide-toggle>
-        </h2>
-    }
-    @else {
-        <h2>
+        }
+        @else {
             No Recent Trips
-            <mat-slide-toggle class="field-right" (change)="changePolling()">
-                Polling
-            </mat-slide-toggle>
-        </h2>
-    }
+        }
+        <mat-slide-toggle class="field-right" (change)="changePolling()">
+            Atuo Save
+        </mat-slide-toggle>
+    </h2>
 
     @for (trip of recentTrips; track $index) {
         <div [id]="trip.rowId" [ngClass]="{'mat-card': recentTrips.length % 2 != 0, 'mat-card-reverse': recentTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">

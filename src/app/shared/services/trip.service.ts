@@ -17,7 +17,7 @@ export class TripService {
     }
 
     public async getMaxTripId(): Promise<number> {
-        return await spreadsheetDB.trips.orderBy("rowId").last().then(x => x?.rowId || 2);
+        return await spreadsheetDB.trips.orderBy("rowId").last().then(x => x?.rowId || 1);
     }
 
     public async getTrips(): Promise<ITrip[]> {

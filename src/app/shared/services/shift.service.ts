@@ -16,7 +16,7 @@ export class ShiftService {
     }
 
     public async getMaxShiftId(): Promise<number> {
-        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 2);
+        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 1);
     }
 
     public async getShifts(): Promise<IShift[]> {
