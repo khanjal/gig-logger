@@ -29,7 +29,8 @@ import { CalculatorComponent } from './calculator/calculator.component';
 import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
 import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { StatsComponent } from './stats/stats.component';
 import { StatsTableComponent } from './stats/stats-table/stats-table.component';
 import { SharedModule } from '../shared/shared.module';
@@ -67,6 +68,7 @@ import { SharedModule } from '../shared/shared.module';
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     MatTableModule,
     ReactiveFormsModule,
