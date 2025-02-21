@@ -321,7 +321,6 @@ export class QuickFormComponent implements OnInit {
     let shift = await this.createShift();
     let trip = await this.createTrip(shift);
 
-    shift.finish = DateHelper.getTimeString(new Date);
     updateShiftAction(shift, ActionEnum.Update);
     this._shiftService.updateShift(shift);
     

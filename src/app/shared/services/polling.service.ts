@@ -1,13 +1,13 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { timer, Subscription } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
 import { GigLoggerService } from './gig-logger.service';
 import { ShiftService } from './shift.service';
 import { TripService } from './trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 
-const INTERVAL = 15000;
+const INTERVAL = 60000;
 
 @Injectable()
 export class PollingService implements OnDestroy {
@@ -29,7 +29,7 @@ export class PollingService implements OnDestroy {
     // Do intial check to see if there are any unsaved trips or shifts
     this.enablePolling = true;
 
-    this.timerSubscription = timer(0, INTERVAL) // Emit value immediately, then every 1 second
+    this.timerSubscription = interval(INTERVAL) // Emit value immediately, then every 1 second
       .subscribe(async () => {
         console.log(`Processing: ${this.processing}`);
 
