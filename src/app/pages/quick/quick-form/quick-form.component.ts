@@ -308,7 +308,7 @@ export class QuickFormComponent implements OnInit {
     
     // console.log(trip);
     await this._timerService.delay(1000); // TODO: see if parent will scroll after done.
-    this._viewportScroller.scrollToAnchor("recentTrips");
+    this._viewportScroller.scrollToAnchor("todaysTrips");
   }
 
   public async editTrip() {

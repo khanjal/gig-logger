@@ -46,7 +46,8 @@ export class QuickComponent implements OnInit, OnDestroy {
   pollingEnabled: boolean = false;
 
   savedTrips: ITrip[] = [];
-  recentTrips: ITrip[] = [];
+  todaysTrips: ITrip[] = [];
+  yesrterdaysTrips: ITrip[] = [];
   unsavedTrips: ITrip[] = [];
 
   defaultSheet: ISpreadsheet | undefined;
@@ -78,8 +79,8 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   public async load() {
     this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
-    this.recentTrips = (await this._tripService.getTripsPreviousDays(1)).reverse();
-    // this.savedTrips = (await this._tripService.getSavedTrips()).reverse();
+    this.todaysTrips = (await this._tripService.getTripsByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
+    this.yesrterdaysTrips = (await this._tripService.getTripsByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)))).reverse();
 
     // console.log(this.form);
 
@@ -91,7 +92,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   async saveTrip(trip: ITrip) {
     this.saving = true;
     // await this._googleService.commitUnsavedTrips();
-    await this.reload("recentTrips");
+    await this.reload("todaysTrips");
     this.saving = false;
   }
 
@@ -125,7 +126,7 @@ export class QuickComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(async result => {
 
             if (result) {
-                await this.reload("recentTrips");
+                await this.reload("todaysTrips");
             }
         });
     }
@@ -144,8 +145,8 @@ export class QuickComponent implements OnInit, OnDestroy {
                 await this._shiftService.saveUnsavedShifts();
                 this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-                await this.reload("recentTrips");
-                this._viewportScroller.scrollToAnchor("recentTrips");
+                await this.reload("todaysTrips");
+                this._viewportScroller.scrollToAnchor("todaysTrips");
             }
         });
     }

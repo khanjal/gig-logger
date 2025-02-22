@@ -42,14 +42,14 @@ export class TripService {
         return trips;
     }
 
-    public async getTripsPreviousDays(days: number): Promise<ITrip[]> {
-        let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
-        let trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
+    public async getTripsByDate(date: string): Promise<ITrip[]> {
+        let trips = await spreadsheetDB.trips.where("date").equals(date).toArray();
 
         return trips;
     }
 
-    public async getTripsPreviousDate(date: string): Promise<ITrip[]> {
+    public async getTripsPreviousDays(days: number): Promise<ITrip[]> {
+        let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
         let trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
 
         return trips;
