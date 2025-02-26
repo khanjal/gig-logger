@@ -7,7 +7,6 @@ namespace  GigRaptorService.Business;
 
 public interface ISheetManager
 {
-    public Task<SheetEntity> AddData(SheetEntity sheetEntity);
     public Task<List<MessageEntity>> CheckSheets();
     public Task<SheetEntity> CreateSheet();
     public Task<string?> GetName();
@@ -26,11 +25,6 @@ public class SheetManager : ISheetManager
     public SheetManager(Dictionary<string,string> credentials, string sheetId)
     {
         _googleSheetManger = new GoogleSheetManager(credentials, sheetId);
-    }
-
-    public async Task<SheetEntity> AddData(SheetEntity sheetEntity)
-    {
-        return await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity, RaptorSheets.Core.Enums.ActionTypeEnum.APPEND);
     }
 
     public async Task<List<MessageEntity>> CheckSheets()
@@ -78,34 +72,7 @@ public class SheetManager : ISheetManager
     public async Task<SheetEntity> SaveData(SheetEntity sheetEntity)
     {
         var returnEntity = new SheetEntity { Messages = [] };
-
-        var addData = new SheetEntity
-        {
-            Shifts = sheetEntity.Shifts.Where(x => x.Action == "ADD").ToList(),
-            Trips = sheetEntity.Trips.Where(x => x.Action == "ADD").ToList()
-        };
-
-        if (addData.Shifts.Count > 0 || addData.Trips.Count > 0)
-            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], addData, RaptorSheets.Core.Enums.ActionTypeEnum.APPEND)).Messages);
-
-        var editData = new SheetEntity
-        {
-            Shifts = sheetEntity.Shifts.Where(x => x.Action == "UPDATE").ToList(),
-            Trips = sheetEntity.Trips.Where(x => x.Action == "UPDATE").ToList()
-        };
-
-        if (editData.Shifts.Count > 0 || editData.Trips.Count > 0)
-            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], editData, RaptorSheets.Core.Enums.ActionTypeEnum.UPDATE)).Messages);
-
-        var deleteData = new SheetEntity
-        {
-            Shifts = sheetEntity.Shifts.Where(x => x.Action == "DELETE").ToList(),
-            Trips = sheetEntity.Trips.Where(x => x.Action == "DELETE").ToList()
-        };
-
-        if (deleteData.Shifts.Count > 0 || deleteData.Trips.Count > 0)
-            returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], deleteData, RaptorSheets.Core.Enums.ActionTypeEnum.DELETE)).Messages);
-
+        returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity)).Messages);
         return returnEntity;
     }
 }
