@@ -320,7 +320,9 @@ export class QuickComponent implements OnInit, OnDestroy {
     }
 
     const shift = await this._shiftService.queryShiftByKey(trip.key);
-    await this._gigLoggerService.calculateShiftTotals([shift]);
+    if (shift) {
+      await this._gigLoggerService.calculateShiftTotals([shift]);
+    }
 
     await this.load();
     await this.form?.load();
