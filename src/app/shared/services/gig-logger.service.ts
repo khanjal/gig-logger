@@ -135,13 +135,16 @@ export class GigLoggerService {
     }
 
     public async calculateShiftTotals(shifts: IShift[] = []) {
+        // Filter out undefined shifts
+        shifts = shifts.filter(shift => shift !== undefined);
+    
         if (!shifts.length) {
             shifts = await this._shiftService.getPreviousWeekShifts();
         }
 
         for (let shift of shifts) {
-            let trips = await this._tripService.queryTrips("key", shift.key);
-            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude && x.action !== ActionEnum.Delete);
+            let trips = (await this._tripService.queryTrips("key", shift.key)).filter(x => x.action !== ActionEnum.Delete);
+            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
 
             shift.totalTrips = +(shift.trips ?? 0) + filteredTrips.length;
             shift.totalDistance = +(shift.distance ?? 0) + +filteredTrips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
@@ -157,15 +160,21 @@ export class GigLoggerService {
                 shift.time = DateHelper.getDurationString(duration);
             }
 
-            if (trips?.length === 0 && !shift.saved) {
-                this._shiftService.deleteShift(shift.id!);
+            if (trips?.length === 0) {
+                if (shift.saved) {
+                    updateShiftAction(shift, ActionEnum.Delete);
+                    await this._shiftService.updateShift(shift);
+                }
+                else {
+                    this._shiftService.deleteShift(shift.id!);
+                }
             }
             else {
                 await this._shiftService.updateShift(shift);
             }
         };
 
-        let dates = [... new Set(shifts.map(x => x.date))];
+        let dates = [... new Set(shifts.map(x => x?.date))];
 
         await this.calculateDailyTotal(dates);
     }

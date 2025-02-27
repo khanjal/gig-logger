@@ -10,7 +10,7 @@ namespace GigRaptorService.Controllers;
 [Route("[controller]")]
 public class SheetsController : ControllerBase
 {
-    private ISheetManager _sheetmanager;
+    private SheetManager? _sheetmanager;
 
     private void InitializeSheetmanger()
     {
@@ -33,7 +33,7 @@ public class SheetsController : ControllerBase
     public async Task<SheetEntity?> GetAll()
     {
         InitializeSheetmanger();
-        return await _sheetmanager.GetSheets();
+        return await _sheetmanager!.GetSheets();
     }
 
     // GET api/sheets/get/single
@@ -41,14 +41,14 @@ public class SheetsController : ControllerBase
     public async Task<SheetEntity?> GetSingle(string sheetName)
     {
         InitializeSheetmanger();
-        return await _sheetmanager.GetSheet(sheetName);
+        return await _sheetmanager!.GetSheet(sheetName);
     }
 
     [HttpGet("multiple")]
     public async Task<SheetEntity?> GetMultiple([FromQuery] string[] sheetName)
     {
         InitializeSheetmanger();
-        return await _sheetmanager.GetSheets(sheetName);
+        return await _sheetmanager!.GetSheets(sheetName);
     }
 
     // GET api/sheets/check
@@ -56,7 +56,7 @@ public class SheetsController : ControllerBase
     public async Task<List<MessageEntity>> Check()
     {
         InitializeSheetmanger();
-        return await _sheetmanager.CheckSheets();
+        return await _sheetmanager!.CheckSheets();
     }
 
     // GET api/sheets/health
@@ -64,7 +64,7 @@ public class SheetsController : ControllerBase
     public async Task<bool> health()
     {
         InitializeSheetmanger();
-        return !string.IsNullOrEmpty(await _sheetmanager.GetName());
+        return !string.IsNullOrEmpty(await _sheetmanager!.GetName());
     }
 
     // POST api/sheets/create
@@ -72,7 +72,7 @@ public class SheetsController : ControllerBase
     public async Task<SheetEntity> Create([FromBody] PropertyEntity properties)
     {
         InitializeSheetmanger();
-        return await _sheetmanager.CreateSheet();
+        return await _sheetmanager!.CreateSheet();
     }
 
     // POST api/sheets/save
@@ -80,6 +80,6 @@ public class SheetsController : ControllerBase
     public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
     {
         InitializeSheetmanger(sheetEntity.Properties.Id);
-        return await _sheetmanager.SaveData(sheetEntity);
+        return await _sheetmanager!.SaveData(sheetEntity);
     }
 }
