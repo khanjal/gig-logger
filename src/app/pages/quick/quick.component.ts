@@ -328,6 +328,17 @@ export class QuickComponent implements OnInit, OnDestroy {
     await this.form?.load();
   }
 
+  async restoreTrip(trip: ITrip) {
+    updateTripAction(trip, ActionEnum.Update);
+    await this._tripService.updateTrip(trip);
+
+    const shift = await this._shiftService.queryShiftByKey(trip.key);
+    if (shift) {
+      updateShiftAction(shift, ActionEnum.Update);
+      await this._shiftService.updateShift(shift);
+    }
+  }
+
   async unsaveData() {
     let savedTrips = await this._tripService.getSavedTrips();
 

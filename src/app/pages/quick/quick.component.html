@@ -50,10 +50,18 @@
                         <mat-icon>content_copy</mat-icon>
                         <span>Clone</span>
                     </button>
-                    <button mat-menu-item [attr.color]="'warn'" (click)="confirmDeleteTripDialog(trip)">
-                        <mat-icon color="warn">delete</mat-icon>
-                        <span>Delete</span>
-                    </button>
+                    @if (trip.action != actionEnum.Delete) {
+                        <button mat-menu-item [attr.color]="'warn'" (click)="confirmDeleteTripDialog(trip)">
+                            <mat-icon color="warn">delete</mat-icon>
+                            <span>Delete</span>
+                        </button>
+                    }
+                    @else {
+                        <button mat-menu-item [attr.color]="'primary'" (click)="restoreTrip(trip)">
+                            <mat-icon color="primary">restore</mat-icon>
+                            <span>Restore</span>
+                        </button>
+                    }
                 </mat-menu>
             </div>
         </div>
