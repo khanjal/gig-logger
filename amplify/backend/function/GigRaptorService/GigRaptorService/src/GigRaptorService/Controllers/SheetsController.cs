@@ -1,9 +1,9 @@
 ﻿using GigRaptorService.Business;
 using GigRaptorService.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
+using System.Text.Json;
 
 namespace GigRaptorService.Controllers;
 
@@ -14,13 +14,14 @@ public class SheetsController : ControllerBase
 
     private void InitializeSheetmanger()
     {
-        // TODO: Make this a middleware check too.
-        if (!Request.Headers.TryGetValue("Sheet-Id", out StringValues headerValues))
+        if (HttpContext.Items.TryGetValue("Sheet-Id", out var sheetId))
+        {
+            _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), sheetId?.ToString()!);
+        }
+        else
         {
             throw new Exception("SheetId must be provided.");
         }
-
-        _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), headerValues!.ToString().Trim());
     }
 
     private void InitializeSheetmanger(string sheetId)

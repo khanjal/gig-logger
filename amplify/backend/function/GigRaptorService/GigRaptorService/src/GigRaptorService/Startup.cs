@@ -42,6 +42,8 @@ public class Startup
 
         app.UseAuthorization();
 
+        app.UseMiddleware<Middleware.SheetIdMiddleware>();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
