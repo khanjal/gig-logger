@@ -1,9 +1,9 @@
-﻿using GigRaptorService.Business;
+﻿using GigRaptorService.Attributes;
+using GigRaptorService.Business;
 using GigRaptorService.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
-using System.Text.Json;
 
 namespace GigRaptorService.Controllers;
 
@@ -31,6 +31,7 @@ public class SheetsController : ControllerBase
 
     // GET api/sheets/all
     [HttpGet("all")]
+    [RequireSheetId]
     public async Task<SheetEntity?> GetAll()
     {
         InitializeSheetmanger();
@@ -39,6 +40,7 @@ public class SheetsController : ControllerBase
 
     // GET api/sheets/get/single
     [HttpGet("single/{sheetName}")]
+    [RequireSheetId]
     public async Task<SheetEntity?> GetSingle(string sheetName)
     {
         InitializeSheetmanger();
@@ -46,6 +48,7 @@ public class SheetsController : ControllerBase
     }
 
     [HttpGet("multiple")]
+    [RequireSheetId]
     public async Task<SheetEntity?> GetMultiple([FromQuery] string[] sheetName)
     {
         InitializeSheetmanger();
@@ -54,6 +57,7 @@ public class SheetsController : ControllerBase
 
     // GET api/sheets/check
     [HttpGet("check")]
+    [RequireSheetId]
     public async Task<List<MessageEntity>> Check()
     {
         InitializeSheetmanger();
@@ -62,6 +66,7 @@ public class SheetsController : ControllerBase
 
     // GET api/sheets/health
     [HttpGet("health")]
+    [RequireSheetId]
     public async Task<bool> health()
     {
         InitializeSheetmanger();
@@ -70,6 +75,7 @@ public class SheetsController : ControllerBase
 
     // POST api/sheets/create
     [HttpPost("create")]
+    [RequireSheetId]
     public async Task<SheetEntity> Create([FromBody] PropertyEntity properties)
     {
         InitializeSheetmanger();
@@ -78,6 +84,7 @@ public class SheetsController : ControllerBase
 
     // POST api/sheets/save
     [HttpPost("save")]
+    [RequireSheetId]
     public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
     {
         InitializeSheetmanger(sheetEntity.Properties.Id);
