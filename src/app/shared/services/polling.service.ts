@@ -7,7 +7,7 @@ import { TripService } from './trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 
-const INTERVAL = 300000;
+const INTERVAL = 60000;
 
 @Injectable()
 export class PollingService implements OnDestroy {
