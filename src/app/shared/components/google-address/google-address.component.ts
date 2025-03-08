@@ -1,19 +1,12 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { GoogleAddress } from '@interfaces/google-address.interface';
 import { GoogleAddressService } from '@services/google-address.service';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { NgIf } from '@angular/common';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 
 @Component({
-    selector: 'app-google-address',
-    templateUrl: './google-address.component.html',
-    styleUrls: ['./google-address.component.scss'],
-    standalone: true,
-    imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatIconButton, MatSuffix, MatIcon]
+  selector: 'app-google-address',
+  templateUrl: './google-address.component.html',
+  styleUrls: ['./google-address.component.scss']
 })
 
 // https://github.com/karthiktechblog/google-place-autocomplete

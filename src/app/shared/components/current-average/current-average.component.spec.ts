@@ -13,12 +13,13 @@ describe('CurrentAverageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatSnackBarModule, CurrentAverageComponent],
-    providers: [
+      declarations: [ CurrentAverageComponent ],
+      imports: [ MatSnackBarModule ],
+      providers: [
         { provide: WeekdayService, useValue: mockWeekdayService },
         { provide: WeeklyService, useValue: mockWeeklyService }
-    ]
-})
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(CurrentAverageComponent);

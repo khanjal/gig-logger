@@ -38,8 +38,9 @@ describe('TripFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatDialogModule, MatSnackBarModule, TripFormComponent, MatAutocomplete],
-    providers: [
+      declarations: [ TripFormComponent, MatAutocomplete ],
+      imports: [ MatDialogModule, MatSnackBarModule ],
+      providers: [
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: AddressService, useValue: mockAddressService },
@@ -53,8 +54,8 @@ describe('TripFormComponent', () => {
         { provide: TimerService, useValue: mockTimerService },
         { provide: TripService, useValue: mockTripService },
         { provide: TypeService, useValue: mockTypeService }
-    ]
-})
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(TripFormComponent);

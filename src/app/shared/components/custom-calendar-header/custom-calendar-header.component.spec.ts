@@ -10,13 +10,12 @@ describe('CustomCalendarHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [CustomCalendarHeaderComponent],
-    providers: [
+      declarations: [ CustomCalendarHeaderComponent ],
+      providers: [ 
         { provide: MAT_DATE_FORMATS, useValue: [] },
-        DateAdapter,
-        MatCalendar
-    ]
-})
+        DateAdapter, 
+        MatCalendar ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(CustomCalendarHeaderComponent);

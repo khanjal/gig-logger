@@ -16,15 +16,16 @@ describe('SheetSetupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatSnackBarModule, SetupComponent],
-    providers: [
+      declarations: [ SetupComponent ],
+      imports: [ MatSnackBarModule ],
+      providers: [ 
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: CommonService, useValue: mockCommonService },
         { provide: SpreadsheetService, useValue: mockSpreadsheetService },
         { provide: TimerService, useValue: mockTimerService }
-    ]
-})
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(SetupComponent);

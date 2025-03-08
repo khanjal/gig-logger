@@ -1,8 +1,8 @@
-import { ViewportScroller, NgFor, NgIf, NgClass, AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatDialogClose } from '@angular/material/dialog';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
 import { sort } from '@helpers/sort.helper';
@@ -29,25 +29,11 @@ import { Observable, startWith, mergeMap } from 'rxjs';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { ActionEnum } from '@enums/action.enum';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
-import { MatSelect } from '@angular/material/select';
-import { MatOption } from '@angular/material/core';
-import { MatInput } from '@angular/material/input';
-import { MatIconButton, MatFabButton, MatAnchor, MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { SearchInputComponent } from '../../../shared/inputs/search-input/search-input.component';
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
-import { TripsTableBasicComponent } from '../../../shared/components/trips-table-basic/trips-table-basic.component';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { ShortAddressPipe } from '../../../shared/pipes/short-address.pipe';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 
 @Component({
-    selector: 'trip-form',
-    templateUrl: './trip-form.component.html',
-    styleUrls: ['./trip-form.component.scss'],
-    standalone: true,
-    imports: [ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, NgIf, MatInput, MatAutocompleteTrigger, MatAutocomplete, MatIconButton, MatSuffix, MatIcon, SearchInputComponent, MatFabButton, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatAnchor, NgClass, TripsTableBasicComponent, MatButton, MatSlideToggle, MatDialogClose, AsyncPipe, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe]
+  selector: 'trip-form',
+  templateUrl: './trip-form.component.html',
+  styleUrls: ['./trip-form.component.scss']
 })
 export class TripFormComponent implements OnInit {
   // @Input() data!: ITrip;

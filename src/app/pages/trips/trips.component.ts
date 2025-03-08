@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ViewportScroller, NgClass, NgIf, CommonModule } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -27,18 +27,11 @@ import { SaveModalComponent } from '@components/save-modal/save-modal.component'
 import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
 import { updateShiftAction } from '@interfaces/shift.interface';
-import { MatFabButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { TripsQuickViewComponent } from '../../shared/components/trips-quick-view/trips-quick-view.component';
-import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 
 @Component({
-    selector: 'app-trip',
-    templateUrl: './trips.component.html',
-    styleUrls: ['./trips.component.scss'],
-    standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, NgClass, TripsQuickViewComponent, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, TripsTableGroupComponent]
+  selector: 'app-trip',
+  templateUrl: './trips.component.html',
+  styleUrls: ['./trips.component.scss']
 })
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) form:TripFormComponent | undefined;

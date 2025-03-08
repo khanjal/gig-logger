@@ -8,8 +8,8 @@ describe('ShiftsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [ShiftsComponent]
-})
+      declarations: [ ShiftsComponent ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(ShiftsComponent);

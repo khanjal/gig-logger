@@ -2,17 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { MatToolbar } from '@angular/material/toolbar';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { MatIcon } from '@angular/material/icon';
-import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss'],
-    standalone: true,
-    imports: [MatToolbar, RouterLink, MatIcon, NgIf, RouterOutlet]
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
 

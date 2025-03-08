@@ -3,10 +3,9 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { NumberHelper } from '@helpers/number.helper';
 
 @Component({
-    selector: 'app-sheet-quota',
-    templateUrl: './sheet-quota.component.html',
-    styleUrls: ['./sheet-quota.component.scss'],
-    standalone: true
+  selector: 'app-sheet-quota',
+  templateUrl: './sheet-quota.component.html',
+  styleUrls: ['./sheet-quota.component.scss']
 })
 export class SheetQuotaComponent {
 

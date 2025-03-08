@@ -4,14 +4,11 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { map, timer } from 'rxjs';
 import { TimerService } from '@services/timer.service';
 import { DateHelper } from '@helpers/date.helper';
-import { MatFabButton } from '@angular/material/button';
 
 @Component({
-    selector: 'app-load-modal',
-    templateUrl: './load-modal.component.html',
-    styleUrls: ['./load-modal.component.scss'],
-    standalone: true,
-    imports: [MatFabButton]
+  selector: 'app-load-modal',
+  templateUrl: './load-modal.component.html',
+  styleUrls: ['./load-modal.component.scss']
 })
 export class LoadModalComponent {
     currentTime = 0;

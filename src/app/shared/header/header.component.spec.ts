@@ -13,12 +13,13 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatSnackBarModule, HeaderComponent],
-    providers: [
+      declarations: [ HeaderComponent ],
+      imports: [ MatSnackBarModule ],
+      providers: [
         { provide: CommonService, usevalue: mockCommonService },
         { provide: SpreadsheetService, usevalue: mockSpreadsheetService }
-    ]
-})
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);

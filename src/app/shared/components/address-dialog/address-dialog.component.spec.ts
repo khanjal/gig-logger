@@ -8,12 +8,12 @@ describe('AddressDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [AddressDialogComponent],
-    providers: [
+      declarations: [ AddressDialogComponent ],
+      providers: [ 
         { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: MatDialogRef, useValue: {} },
-    ]
-})
+        {provide: MatDialogRef, useValue: {}},
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(AddressDialogComponent);

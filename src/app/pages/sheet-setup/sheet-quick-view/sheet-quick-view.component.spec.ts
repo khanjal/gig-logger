@@ -8,8 +8,8 @@ describe('SheetQuickViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [SheetQuickViewComponent]
-})
+      declarations: [ SheetQuickViewComponent ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(SheetQuickViewComponent);

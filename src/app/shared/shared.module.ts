@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
+import { PipesModule } from '@pipes/pipes.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -32,42 +32,46 @@ import { LoadModalComponent } from './components/load-modal/load-modal.component
 import { SaveModalComponent } from './components/save-modal/save-modal.component';
 
 @NgModule({
+    declarations: [
+        CurrentAverageComponent,
+        HeaderComponent,
+        ProfileComponent,
+        TripsQuickViewComponent,
+        ConfirmDialogComponent,
+        AddressDialogComponent,
+        GoogleAddressComponent,
+        TripsTableBasicComponent,
+        TripsTableGroupComponent,
+        TripsTableSimpleComponent,
+        CustomRangePanelComponent,
+        CustomCalendarHeaderComponent,
+        LoadModalComponent,
+        SaveModalComponent
+    ],
     exports: [
-    CurrentAverageComponent,
-    HeaderComponent,
-    SearchInputComponent,
-    TripsTableBasicComponent,
-    TripsTableGroupComponent,
-    TripsTableSimpleComponent,
-    TripsQuickViewComponent
-],
+        CurrentAverageComponent,
+        HeaderComponent,
+        PipesModule,
+        SearchInputComponent,
+        TripsTableBasicComponent,
+        TripsTableGroupComponent,
+        TripsTableSimpleComponent,
+        TripsQuickViewComponent
+    ],
     imports: [
-    CommonModule,
-    MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatTableModule,
-    MatToolbarModule,
-    ReactiveFormsModule,
-    RouterModule,
-    SearchInputComponent,
-    CurrentAverageComponent,
-    HeaderComponent,
-    ProfileComponent,
-    TripsQuickViewComponent,
-    ConfirmDialogComponent,
-    AddressDialogComponent,
-    GoogleAddressComponent,
-    TripsTableBasicComponent,
-    TripsTableGroupComponent,
-    TripsTableSimpleComponent,
-    CustomRangePanelComponent,
-    CustomCalendarHeaderComponent,
-    LoadModalComponent,
-    SaveModalComponent
-],
+        CommonModule,
+        MatButtonModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatTableModule,
+        MatToolbarModule,
+        PipesModule,
+        ReactiveFormsModule,
+        RouterModule,
+        SearchInputComponent
+    ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
         JwtHelperService

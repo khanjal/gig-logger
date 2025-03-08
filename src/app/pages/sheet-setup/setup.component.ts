@@ -8,18 +8,11 @@ import { CommonService } from '@services/common.service';
 import { MatDialog } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { MatIcon } from '@angular/material/icon';
-import { NgIf, NgFor } from '@angular/common';
-import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
-import { MatFabButton } from '@angular/material/button';
-import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 
 @Component({
-    selector: 'app-setup',
-    templateUrl: './setup.component.html',
-    styleUrls: ['./setup.component.scss'],
-    standalone: true,
-    imports: [MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, SheetQuotaComponent]
+  selector: 'app-setup',
+  templateUrl: './setup.component.html',
+  styleUrls: ['./setup.component.scss']
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;

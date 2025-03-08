@@ -1,9 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgModule } from '@angular/core';
+import { AppRoutingModule } from './app-routing.module';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
+import { PagesModule } from './pages/pages.module';
+import { SharedModule } from './shared/shared.module';
 
-import { SheetAddFormComponent } from './sheet-add-form.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { HttpClient, HttpHandler } from '@angular/common/http';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AppComponent } from './app.component';
+
 import { AddressService } from '@services/address.service';
 import { CommonService } from '@services/common.service';
 import { DailyService } from '@services/daily.service';
@@ -12,6 +18,7 @@ import { GigLoggerService } from '@services/gig-logger.service';
 import { MonthlyService } from '@services/monthly.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
+import { PollingService } from '@services/polling.service';
 import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
@@ -23,43 +30,35 @@ import { WeekdayService } from '@services/weekday.service';
 import { WeeklyService } from '@services/weekly.service';
 import { YearlyService } from '@services/yearly.service';
 
-describe('SheetSetupFormComponent', () => {
-  let component: SheetAddFormComponent;
-  let fixture: ComponentFixture<SheetAddFormComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ SheetAddFormComponent ],
-      imports: [ MatSnackBarModule ],
-      providers: [ 
-        HttpClient,
-        HttpHandler,
+@NgModule({ declarations: [
+        AppComponent
+    ],
+    bootstrap: [AppComponent], imports: [AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        FormsModule,
+        MatIconModule,
+        PagesModule,
+        SharedModule], providers: [
         AddressService,
+        CommonService,
         DailyService,
         DeliveryService,
-        GigLoggerService,
         MonthlyService,
         NameService,
+        GigLoggerService,
         PlaceService,
+        PollingService,
         RegionService,
         ServiceService,
         ShiftService,
         SpreadsheetService,
+        TimerService,
         TripService,
         TypeService,
         WeekdayService,
         WeeklyService,
-        YearlyService
-      ]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(SheetAddFormComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+        YearlyService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
+export class AppModule { }

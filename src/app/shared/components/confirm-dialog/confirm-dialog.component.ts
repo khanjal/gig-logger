@@ -1,16 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { MatButton } from '@angular/material/button';
-import { NgIf } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
 
 @Component({
-    selector: 'app-confirm-dialog',
-    templateUrl: './confirm-dialog.component.html',
-    styleUrls: ['./confirm-dialog.component.scss'],
-    standalone: true,
-    imports: [MatButton, NgIf, MatIcon]
+  selector: 'app-confirm-dialog',
+  templateUrl: './confirm-dialog.component.html',
+  styleUrls: ['./confirm-dialog.component.scss']
 })
 export class ConfirmDialogComponent {
   title!: string;

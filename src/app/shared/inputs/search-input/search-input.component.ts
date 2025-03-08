@@ -1,4 +1,4 @@
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { BrowserModule } from '@angular/platform-browser';
 import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 import { sort } from '@helpers/sort.helper';
@@ -17,7 +18,7 @@ import { IPlace } from '@interfaces/place.interface';
 import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
-
+import { PipesModule } from '@pipes/pipes.module';
 import { AddressService } from '@services/address.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
@@ -25,13 +26,11 @@ import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { TypeService } from '@services/type.service';
 import { mergeMap, startWith, switchMap } from 'rxjs';
-import { ShortAddressPipe } from '../../pipes/short-address.pipe';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ShortAddressPipe, TruncatePipe],
+  imports: [AsyncPipe, BrowserModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss'
 })

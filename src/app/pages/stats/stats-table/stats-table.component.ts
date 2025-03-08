@@ -1,16 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IStatItem } from '@interfaces/stat-item.interface';
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatFooterRowDef, MatFooterRow } from '@angular/material/table';
-import { DecimalPipe, CurrencyPipe } from '@angular/common';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 
 @Component({
-    selector: 'app-stats-table',
-    templateUrl: './stats-table.component.html',
+  selector: 'app-stats-table',
+  templateUrl: './stats-table.component.html',
     styleUrls: ['./stats-table.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatFooterRowDef, MatFooterRow, DecimalPipe, CurrencyPipe, TruncatePipe]
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StatsTableComponent implements OnInit {
   @Input() items: IStatItem[] = [];

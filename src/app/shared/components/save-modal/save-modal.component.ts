@@ -8,14 +8,11 @@ import { TripService } from '../../services/trip.service';
 import { GigLoggerService } from '../../services/gig-logger.service';
 import { firstValueFrom, map, timer } from 'rxjs';
 import { DateHelper } from '@helpers/date.helper';
-import { MatFabButton } from '@angular/material/button';
 
 @Component({
-    selector: 'app-save-modal',
-    templateUrl: './save-modal.component.html',
-    styleUrls: ['./save-modal.component.scss'],
-    standalone: true,
-    imports: [MatFabButton]
+  selector: 'app-save-modal',
+  templateUrl: './save-modal.component.html',
+  styleUrls: ['./save-modal.component.scss']
 })
 export class SaveModalComponent {
     currentTime = 0;
