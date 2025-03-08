@@ -3,16 +3,14 @@ import { ActionEnum } from '@enums/action.enum';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from "@services/shift.service";
 import { NgClass, DatePipe } from '@angular/common';
-import { MatCard, MatCardHeader } from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
-import { NoSecondsPipe } from '../../shared/pipes/no-seconds.pipe';
+import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
 
 @Component({
     selector: 'app-shifts',
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [NgClass, MatCard, MatCardHeader, MatIcon, DatePipe, NoSecondsPipe]
+    imports: [NgClass, ShiftsQuickViewComponent]
 })
 export class ShiftsComponent implements OnInit {
   shifts: IShift[] = [];

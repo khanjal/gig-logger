@@ -2,9 +2,12 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { clearTripAction, ITrip, updateTripAction } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
-import { max } from 'rxjs';
 import { ActionEnum } from '@enums/action.enum'; // Adjust the import path as necessary
+import { Injectable } from '@angular/core';
 
+@Injectable({
+    providedIn: 'root'
+  })
 export class TripService {
     trips$ = liveQuery(() => spreadsheetDB.trips.toArray());
     

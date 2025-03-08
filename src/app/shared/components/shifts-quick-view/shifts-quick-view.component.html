@@ -15,5 +15,65 @@
             }
             <h3><strong>#{{shift.rowId}} {{shift.date | date:'MMM d'}}, {{shift.start | noseconds}} ({{shift.service}} {{ shift.number == 0 ? "" : '#' + shift.number }})</strong></h3>
         </mat-card-header>
+        <mat-card-content [ngClass]="shift.action === 'DELETE' ? 'strike' : ''">
+            <div class="row-flex section-container">
+                <div>
+                    <mat-icon class="icon-display">schedule</mat-icon>
+                </div>  
+                <div class="padding-left">
+                    <div><strong>Time:</strong>&nbsp;<span [ngClass]="{'primary': shift.amountPerTime > 25, 'warn': shift.amountPerTime < 20, 'rainbow-text-animated': shift.amountPerTime > 30}">{{shift.start | noseconds}} {{!shift.time ? '' : '- ' + (shift.finish | noseconds)}}</span></div>
+                    <div *ngIf="shift.time"><strong>Duration:</strong> {{shift.time}}</div>
+                </div>
+            </div>
+            @if (shift.region || shift.totalDistance) {
+                <div class="row-flex section-container">
+                    <div>
+                        <mat-icon class="icon-display">map</mat-icon>
+                    </div>  
+                    <div class="padding-left">
+                        <div *ngIf="shift.region">{{shift.region}}</div>
+                        <div *ngIf="shift.totalDistance">
+                            <strong>Distance:</strong>
+                            <span *ngIf="shift.totalDistance"> (<span [ngClass]="{'primary': shift.amountPerDistance > 2, 'warn': shift.amountPerDistance < 1, 'rainbow-text-animated': shift.amountPerDistance > 5}">{{shift.totalDistance}}</span>)</span>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (shift.totalPay || shift.grandTotal) {
+                <div class="row-flex section-container">
+                    <div>
+                        <mat-icon class="icon-display">payments</mat-icon>
+                    </div>
+                    <div class="padding-left">
+                        <span class="padding-right" *ngIf="shift.totalPay"><strong>Pay</strong> {{shift.totalPay | currency}}</span> 
+                        <span class="padding-right" *ngIf="shift.totalTips"><strong>Tips</strong> {{shift.totalTips | currency}}</span> 
+                        <span class="padding-right" *ngIf="shift.totalBonus"><strong>Bonus</strong> {{shift.totalBonus | currency}}</span> 
+                        <br/>
+                        <span class="padding-right" *ngIf="shift.grandTotal > shift.totalPay"><strong>Total</strong> {{shift.grandTotal | currency}}</span>
+                        <span class="padding-right" *ngIf="shift.totalCash"><strong>Cash</strong> {{shift.totalCash | currency}}</span>
+                    </div>
+                </div>
+            }
+            @if (shift.pay || shift.total) {
+                <div class="row-flex section-container">
+                    <div>
+                        <mat-icon class="icon-display">payments</mat-icon>
+                    </div>
+                    <div class="padding-left">
+                        <span class="padding-right" *ngIf="shift.pay"><strong>Pay</strong> {{shift.pay | currency}}</span> 
+                        <span class="padding-right" *ngIf="shift.tip"><strong>Tip</strong> {{shift.tip | currency}}</span> 
+                        <span class="padding-right" *ngIf="shift.bonus"><strong>Bonus</strong> {{shift.bonus | currency}}</span> 
+                        <br/>
+                        <span class="padding-right" *ngIf="shift.total > shift.pay"><strong>Total</strong> {{shift.total | currency}}</span>
+                        <span class="padding-right" *ngIf="shift.cash"><strong>Cash</strong> {{shift.cash | currency}}</span>
+                    </div>
+                </div>
+            }
+
+            @if (shift.totalTrips) {
+                <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
+            }
+        </mat-card-content>
     </div>
+    
 </mat-card>

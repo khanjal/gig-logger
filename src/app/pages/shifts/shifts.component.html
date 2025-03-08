@@ -3,26 +3,7 @@
 
     @for (shift of shifts; track $index) {
         <div [id]="shift.rowId" [ngClass]="{'mat-card': shifts.length % 2 != 0, 'mat-card-reverse': shifts.length % 2 == 0, 'mat-card-disabled': shift.action == actionEnum.Delete}">
-            <!-- <shift-quick-view [shift]="shift"></shift-quick-view> -->
-            <mat-card>
-                <div>
-                    <mat-card-header>
-                        @if (!shift.saved && shift.action === 'ADD') {
-                            <mat-icon class="warn">add</mat-icon> 
-                        }
-                        @else if (!shift.saved && shift.action === 'UPDATE') {
-                            <mat-icon class="warn">edit</mat-icon>
-                        }
-                        @else if (!shift.saved && shift.action === 'DELETE') {
-                            <mat-icon class="warn">delete</mat-icon> 
-                        }
-                        @else {
-                            <mat-icon [ngClass]="{'warn': !shift.saved}">save</mat-icon> 
-                        }
-                        <h3><strong>#{{shift.rowId}} {{shift.date | date:'MMM d'}}, {{shift.start | noseconds}} ({{shift.service}} {{ shift.number == 0 ? "" : '#' + shift.number }})</strong></h3>
-                    </mat-card-header>
-                </div>
-            </mat-card>
+            <app-shifts-quick-view [shift]="shift"></app-shifts-quick-view>
         </div>
     }
 </div>

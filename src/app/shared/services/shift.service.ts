@@ -3,7 +3,11 @@ import { spreadsheetDB } from '@data/spreadsheet.db';
 import { clearShiftAction, IShift } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { ActionEnum } from '@enums/action.enum';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+    providedIn: 'root'
+  })
 export class ShiftService {
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
 
