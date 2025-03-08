@@ -118,7 +118,7 @@ export class TripFormComponent implements OnInit {
   }
 
   public async load() {
-    if (this.data?.id && !this.formDialogRef === undefined) { // Added check for dialog to prevent loading edit form in main area.
+    if (this.data?.id) {
       this.title = `Edit Trip - #${ this.data.rowId }`;
       // Load form with passed in data.
       await this.loadForm()
@@ -345,7 +345,6 @@ export class TripFormComponent implements OnInit {
   }
 
   public formReset() {
-    console.log("Resetting Form");
     this.data = {} as ITrip;
 
     // Reset all selections

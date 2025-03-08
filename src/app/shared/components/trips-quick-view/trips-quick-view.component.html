@@ -21,7 +21,7 @@
                     <mat-icon class="icon-display">schedule</mat-icon>
                 </div>  
                 <div class="padding-left">
-                    <div><strong>Time:</strong>&nbsp;<span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{!trip.duration ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span></div>
+                    <div><strong>{{ trip.type === "" ? "Time" : trip.type }}:</strong>&nbsp;<span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{!trip.duration ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span></div>
                     <div *ngIf="trip.duration"><strong>Duration:</strong> {{trip.duration}}</div>
                 </div>
             </div>

@@ -85,7 +85,6 @@ export class TripComponent implements OnInit, OnDestroy {
     // console.log(this.form);
 
     await this.average?.load();
-    await this.form?.load();
     await this.tripsTable?.load();
   }
 
@@ -304,7 +303,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
 
     await this.load();
-    //await this.form?.load();
   }
 
   async restoreTrip(trip: ITrip) {
