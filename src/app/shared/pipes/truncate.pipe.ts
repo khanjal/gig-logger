@@ -2,8 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { StringHelper } from '@helpers/string.helper';
 
 @Pipe({
-    name: 'truncate',
-    standalone: true
+    name: 'truncate'
 })
 export class TruncatePipe implements PipeTransform {
 

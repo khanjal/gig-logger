@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { PipesModule } from '@pipes/pipes.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -25,11 +24,14 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
 
 // Misc
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
-import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
-import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
-import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
-import { LoadModalComponent } from './components/load-modal/load-modal.component';
-import { SaveModalComponent } from './components/save-modal/save-modal.component';
+import { TripsTableBasicComponent } from '@components/trips-table-basic/trips-table-basic.component';
+import { CustomRangePanelComponent } from '@components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
+import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
+import { LoadModalComponent } from '@components/load-modal/load-modal.component';
+import { SaveModalComponent } from '@components/save-modal/save-modal.component';
+import { PipesModule } from '@pipes/pipes.module';
+import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
+import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-trips-table.component';
 
 @NgModule({
     declarations: [
@@ -40,6 +42,8 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         ConfirmDialogComponent,
         AddressDialogComponent,
         GoogleAddressComponent,
+        ShiftsQuickViewComponent,
+        ShiftTripsTableComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
@@ -51,12 +55,14 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
     exports: [
         CurrentAverageComponent,
         HeaderComponent,
-        PipesModule,
         SearchInputComponent,
+        ShiftsQuickViewComponent,
+        ShiftTripsTableComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
-        TripsQuickViewComponent
+        TripsQuickViewComponent,
+        PipesModule
     ],
     imports: [
         CommonModule,
@@ -70,8 +76,9 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         PipesModule,
         ReactiveFormsModule,
         RouterModule,
-        SearchInputComponent
-    ],
+        SearchInputComponent,
+        PipesModule
+],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
         JwtHelperService

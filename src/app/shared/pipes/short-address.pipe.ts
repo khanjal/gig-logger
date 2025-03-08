@@ -2,8 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { AddressHelper } from '@helpers/address.helper';
 
 @Pipe({
-    name: 'shortaddress',
-    standalone: true
+    name: 'shortaddress'
 })
 export class ShortAddressPipe implements PipeTransform {
 

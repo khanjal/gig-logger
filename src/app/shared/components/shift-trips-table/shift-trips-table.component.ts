@@ -9,10 +9,9 @@ import { TripService } from '@services/trip.service';
 
 @Component({
   selector: 'app-shift-trips-table',
-  standalone: true,
   templateUrl: './shift-trips-table.component.html',
   styleUrl: './shift-trips-table.component.scss',
-  imports: [CommonModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, TruncatePipe, NoSecondsPipe]
+  // imports: [CommonModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, TruncatePipe, NoSecondsPipe]
 })
 
 export class ShiftTripsTableComponent {
