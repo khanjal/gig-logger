@@ -31,16 +31,16 @@ import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { ActionEnum } from '@enums/action.enum';
 
 @Component({
-  selector: 'quick-form',
-  templateUrl: './quick-form.component.html',
-  styleUrls: ['./quick-form.component.scss']
+  selector: 'trip-form',
+  templateUrl: './trip-form.component.html',
+  styleUrls: ['./trip-form.component.scss']
 })
-export class QuickFormComponent implements OnInit {
+export class TripFormComponent implements OnInit {
   // @Input() data!: ITrip;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
-  quickForm = new FormGroup({
+  tripForm = new FormGroup({
     shift: new FormControl(''),
     service: new FormControl(''),
     region: new FormControl(''),
@@ -90,7 +90,7 @@ export class QuickFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-      public formDialogRef: MatDialogRef<QuickFormComponent>,
+      public formDialogRef: MatDialogRef<TripFormComponent>,
       public dialog: MatDialog,
       @Inject(MAT_DIALOG_DATA) public data: ITrip,
       private _snackBar: MatSnackBar,
@@ -110,7 +110,7 @@ export class QuickFormComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.load();
 
-    this.filteredServices = this.quickForm.controls.service.valueChanges.pipe(
+    this.filteredServices = this.tripForm.controls.service.valueChanges.pipe(
       startWith(''),
       mergeMap(async value => await this._filterService(value || ''))
     );
@@ -118,10 +118,13 @@ export class QuickFormComponent implements OnInit {
   }
 
   public async load() {
-    if (this.data?.id) {
+    if (this.data?.id && !this.formDialogRef === undefined) { // Added check for dialog to prevent loading edit form in main area.
       this.title = `Edit Trip - #${ this.data.rowId }`;
       // Load form with passed in data.
       await this.loadForm()
+    }
+    else {
+      this.data = {} as ITrip; // Reset data if not editing. Need to do this to prevent expanded form fields from showing.
     }
 
     await this.setDefaultShift();
@@ -130,21 +133,21 @@ export class QuickFormComponent implements OnInit {
   // TODO move this to a helper or service
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
-    if (!this.quickForm.value.shift || this.quickForm.value.shift == "new") {
+    if (!this.tripForm.value.shift || this.tripForm.value.shift == "new") {
       // console.log("New Shift!");
       let shifts: IShift[] = [];
       let today: string = DateHelper.getISOFormat();
 
       shifts.push(...await this._shiftService.queryShifts("date", today));
       
-      shift = ShiftHelper.createNewShift(this.quickForm.value.service ?? "", shifts);
-      shift.region = this.quickForm.value.region ?? "";
+      shift = ShiftHelper.createNewShift(this.tripForm.value.service ?? "", shifts);
+      shift.region = this.tripForm.value.region ?? "";
       shift.rowId = await this._shiftService.getMaxShiftId() + 1;
       
       await this._shiftService.addNewShift(shift);
     }
     else {
-      shift = <IShift><unknown>this.quickForm.value.shift;
+      shift = <IShift><unknown>this.tripForm.value.shift;
     }
 
     return shift;
@@ -160,33 +163,33 @@ export class QuickFormComponent implements OnInit {
     trip.region = shift.region;
     trip.number = shift.number ?? 0;
 
-    trip.startAddress = this.quickForm.value.startAddress ?? "";
-    trip.endAddress = this.quickForm.value.endAddress ?? "";
-    trip.endUnit = this.quickForm.value.endUnit ?? "";
-    trip.distance = this.quickForm.value.distance;
+    trip.startAddress = this.tripForm.value.startAddress ?? "";
+    trip.endAddress = this.tripForm.value.endAddress ?? "";
+    trip.endUnit = this.tripForm.value.endUnit ?? "";
+    trip.distance = this.tripForm.value.distance;
 
-    trip.pay = +(this.quickForm.value.pay ?? 0);
-    trip.tip = this.quickForm.value.tip;
-    trip.bonus = this.quickForm.value.bonus;
-    trip.cash = this.quickForm.value.cash;
+    trip.pay = +(this.tripForm.value.pay ?? 0);
+    trip.tip = this.tripForm.value.tip;
+    trip.bonus = this.tripForm.value.bonus;
+    trip.cash = this.tripForm.value.cash;
     trip.total = +(trip.pay ?? 0) + +(trip.tip ?? 0) + +(trip.bonus ?? 0);
 
-    trip.startOdometer = this.quickForm.value.startOdometer;
-    trip.endOdometer = this.quickForm.value.endOdometer;
+    trip.startOdometer = this.tripForm.value.startOdometer;
+    trip.endOdometer = this.tripForm.value.endOdometer;
     
-    trip.name = this.quickForm.value.name ?? "";
-    trip.place = this.quickForm.value.place ?? "";
-    trip.type = this.quickForm.value.type ?? "";
-    trip.note = this.quickForm.value.note ?? "";
-    trip.orderNumber = this.quickForm.value.orderNumber?.toLocaleUpperCase() ?? "";
-    trip.exclude = this.quickForm.value.exclude ? true : false;
+    trip.name = this.tripForm.value.name ?? "";
+    trip.place = this.tripForm.value.place ?? "";
+    trip.type = this.tripForm.value.type ?? "";
+    trip.note = this.tripForm.value.note ?? "";
+    trip.orderNumber = this.tripForm.value.orderNumber?.toLocaleUpperCase() ?? "";
+    trip.exclude = this.tripForm.value.exclude ? true : false;
     trip.saved = false;
     
     // Set form properties depending on edit/add
     if (this.data?.id) {
       updateTripAction(trip, ActionEnum.Update);
-      trip.pickupTime = this.quickForm.value.pickupTime ?? "";
-      trip.dropoffTime = this.quickForm.value.dropoffTime ?? "";
+      trip.pickupTime = this.tripForm.value.pickupTime ?? "";
+      trip.dropoffTime = this.tripForm.value.dropoffTime ?? "";
     }
     else {
       trip.rowId = await this._tripService.getMaxTripId() + 1;
@@ -211,43 +214,43 @@ export class QuickFormComponent implements OnInit {
 
   private async loadForm() {
     this.selectedShift = (await this._shiftService.queryShiftByKey(this.data.key));
-    this.quickForm.controls.service.setValue(this.data.service);
-    this.quickForm.controls.type.setValue(this.data.type);
+    this.tripForm.controls.service.setValue(this.data.service);
+    this.tripForm.controls.type.setValue(this.data.type);
 
-    this.quickForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
-    this.quickForm.controls.tip.setValue(this.data.tip);
-    this.quickForm.controls.bonus.setValue(this.data.bonus);
-    this.quickForm.controls.cash.setValue(this.data.cash);
+    this.tripForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
+    this.tripForm.controls.tip.setValue(this.data.tip);
+    this.tripForm.controls.bonus.setValue(this.data.bonus);
+    this.tripForm.controls.cash.setValue(this.data.cash);
     this.showAdvancedPay = true;
 
-    this.quickForm.controls.startOdometer.setValue(this.data.startOdometer);
-    this.quickForm.controls.endOdometer.setValue(this.data.endOdometer);
+    this.tripForm.controls.startOdometer.setValue(this.data.startOdometer);
+    this.tripForm.controls.endOdometer.setValue(this.data.endOdometer);
     this.showOdometer = true;
 
-    this.quickForm.controls.place.setValue(this.data.place);
+    this.tripForm.controls.place.setValue(this.data.place);
     this.selectPlace(this.data.place);
     this.showPickupAddress = true;
 
-    this.quickForm.controls.distance.setValue(this.data.distance);
-    this.quickForm.controls.name.setValue(this.data.name);
+    this.tripForm.controls.distance.setValue(this.data.distance);
+    this.tripForm.controls.name.setValue(this.data.name);
     this.showNameAddresses(this.data.name);
 
-    this.quickForm.controls.startAddress.setValue(this.data.startAddress);
-    this.quickForm.controls.endAddress.setValue(this.data.endAddress);
+    this.tripForm.controls.startAddress.setValue(this.data.startAddress);
+    this.tripForm.controls.endAddress.setValue(this.data.endAddress);
     this.showAddressNames(this.data.endAddress);
 
-    this.quickForm.controls.pickupTime.setValue(this.data.pickupTime);
-    this.quickForm.controls.dropoffTime.setValue(this.data.dropoffTime);
+    this.tripForm.controls.pickupTime.setValue(this.data.pickupTime);
+    this.tripForm.controls.dropoffTime.setValue(this.data.dropoffTime);
     this.showTimes = true;
 
-    this.quickForm.controls.note.setValue(this.data.note);
+    this.tripForm.controls.note.setValue(this.data.note);
 
-    this.quickForm.controls.endUnit.setValue(this.data.endUnit);
-    this.quickForm.controls.orderNumber.setValue(this.data.orderNumber);
+    this.tripForm.controls.endUnit.setValue(this.data.endUnit);
+    this.tripForm.controls.orderNumber.setValue(this.data.orderNumber);
     this.showOrder = true;
 
     if (this.data.exclude) {
-      this.quickForm.controls.exclude.setValue("true");
+      this.tripForm.controls.exclude.setValue("true");
     }
   }
 
@@ -285,13 +288,13 @@ export class QuickFormComponent implements OnInit {
       // Set place if only one in the list.
       let places = await this._placeService.getPlaces();
       if (places.length === 1) {
-        this.quickForm.controls.place.setValue(places[0].place);
+        this.tripForm.controls.place.setValue(places[0].place);
         await this.selectPlace(places[0].place);
       }
     }
 
     // Check to see if service should be displayed
-    await this.onShiftSelected(this.quickForm.value.shift ?? "");
+    await this.onShiftSelected(this.tripForm.value.shift ?? "");
   }
 
   public async addTrip() {
@@ -342,7 +345,9 @@ export class QuickFormComponent implements OnInit {
   }
 
   public formReset() {
+    console.log("Resetting Form");
     this.data = {} as ITrip;
+
     // Reset all selections
     this.selectedAddress = undefined;
     this.selectedAddressDeliveries = undefined;
@@ -356,7 +361,7 @@ export class QuickFormComponent implements OnInit {
     this.showOdometer = false;
     this.showOrder = false;
 
-    this.quickForm.reset();
+    this.tripForm.reset();
     this.setDefaultShift();
     this._viewportScroller.scrollToAnchor("addTrip");
   }
@@ -364,63 +369,63 @@ export class QuickFormComponent implements OnInit {
   public async onShiftSelected(value:string) {
     if (!value) {
       this.isNewShift = true;
-      this.quickForm.controls.service.setValidators([Validators.required]);
+      this.tripForm.controls.service.setValidators([Validators.required]);
 
       //Set the most used service as default.
       let service = (await this._serviceService.getServices())?.reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IService);
-      this.quickForm.controls.service.setValue(service.service);
+      this.tripForm.controls.service.setValue(service.service);
 
       //Set the most used region as default.
       let region = (await this._regionService.get()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IRegion);
-      this.quickForm.controls.region.setValue(region.region);
+      this.tripForm.controls.region.setValue(region.region);
     }
     else {
       this.isNewShift = false;
-      this.quickForm.controls.service.clearValidators();
+      this.tripForm.controls.service.clearValidators();
     }
 
-    this.quickForm.controls.service.updateValueAndValidity();
+    this.tripForm.controls.service.updateValueAndValidity();
   }
 
   selectPickupAddress(address: string) {
-    this.quickForm.controls.startAddress.setValue(address);
+    this.tripForm.controls.startAddress.setValue(address);
   }
 
   selectDestinationAddress(address: string) {
-    this.quickForm.controls.endAddress.setValue(address);
+    this.tripForm.controls.endAddress.setValue(address);
     this.showAddressNames(address);
   }
 
   selectName(name: string) {
-    this.quickForm.controls.name.setValue(name);
+    this.tripForm.controls.name.setValue(name);
     this.showNameAddresses(name);
   }
 
   setPickupAddress(address: string) {
-    this.quickForm.controls.startAddress.setValue(address);
+    this.tripForm.controls.startAddress.setValue(address);
   }
 
   setDestinationAddress(address: string) {
-    this.quickForm.controls.endAddress.setValue(address);
+    this.tripForm.controls.endAddress.setValue(address);
     this.showAddressNames(address);
   }
 
   setName(name: string) {
-    this.quickForm.controls.name.setValue(name);
+    this.tripForm.controls.name.setValue(name);
     this.showNameAddresses(name);
   }
   
   setPlace(place: string) {
-    this.quickForm.controls.place.setValue(place);
+    this.tripForm.controls.place.setValue(place);
     this.selectPlace(place);
   }
 
   setRegion(region: string) {
-    this.quickForm.controls.region.setValue(region);
+    this.tripForm.controls.region.setValue(region);
   }
   
   setType(type: string) {
-    this.quickForm.controls.type.setValue(type);
+    this.tripForm.controls.type.setValue(type);
   }
 
   async showAddressNames(address: string) {
@@ -446,22 +451,22 @@ export class QuickFormComponent implements OnInit {
     this.selectedPlace = await this._placeService.getPlace(place);
 
     // Auto assign to most used start address if there is no start address already.
-    if (!this.quickForm.value.startAddress && this.selectedPlace?.addresses?.length) {
+    if (!this.tripForm.value.startAddress && this.selectedPlace?.addresses?.length) {
       //Set the most used type as default.
       let address = this.selectedPlace?.addresses.reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
 
       if (address) {
-        this.quickForm.controls.startAddress.setValue(address.address);
+        this.tripForm.controls.startAddress.setValue(address.address);
       }
     }
 
     // Auto assign to most used type if there is no type already.
-    if (!this.quickForm.value.type && this.selectedPlace?.types?.length) {
+    if (!this.tripForm.value.type && this.selectedPlace?.types?.length) {
       //Set the most used type as default.
       let type = this.selectedPlace?.types.reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
 
       if (type) {
-        this.quickForm.controls.type.setValue(type.type);
+        this.tripForm.controls.type.setValue(type.type);
       }
     }
   }
@@ -508,11 +513,11 @@ export class QuickFormComponent implements OnInit {
   }
 
   setPickupTime() {
-    this.quickForm.controls.pickupTime.setValue(DateHelper.getTimeString(new Date));
+    this.tripForm.controls.pickupTime.setValue(DateHelper.getTimeString(new Date));
   }
 
   setDropoffTime() {
-    this.quickForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
+    this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
   }
 
   private async _filterName(value: string): Promise<IName[]> {

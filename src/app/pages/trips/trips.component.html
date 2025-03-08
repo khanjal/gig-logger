@@ -1,7 +1,7 @@
 <div class="container" id="addTrip">
     <div><app-current-average class="field-right"></app-current-average></div>
     
-    <quick-form (parentReload)="load()"></quick-form>
+    <trip-form (parentReload)="load()"></trip-form>
 
     @if (unsavedTrips.length > 0 && !pollingEnabled) {
         <div class="row-grid">
@@ -31,7 +31,7 @@
         <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
             <trips-quick-view [trip]="trip"></trips-quick-view>
             <div mat-card class="row-flex button-bar">
-                <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
+                <button mat-fab extended color="primary" class="button-left" (click)="editTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
                 <button mat-fab extended color="accent" (click)="setPickupTime(trip)" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
                 <button mat-fab extended color="accent" (click)="setDropoffTime(trip)" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
                 <button mat-fab color="primary" [matMenuTriggerFor]="menu" aria-label="Trip menu">
@@ -74,7 +74,7 @@
         <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
             <trips-quick-view [trip]="trip"></trips-quick-view>
             <div mat-card class="row-flex button-bar">
-                <button mat-fab extended color="primary" class="button-left" (click)="editUnsavedTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
+                <button mat-fab extended color="primary" class="button-left" (click)="editTrip(trip)"><mat-icon>edit</mat-icon> Edit</button>
                 <button mat-fab extended color="accent" (click)="setPickupTime(trip)" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
                 <button mat-fab extended color="accent" (click)="setDropoffTime(trip)" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
                 <button mat-fab color="primary" [matMenuTriggerFor]="menu" aria-label="Trip menu">

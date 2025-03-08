@@ -19,22 +19,22 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 
 import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { QuickFormComponent } from './quick-form/quick-form.component';
+import { TripFormComponent } from './trip-form/trip-form.component';
 import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
 import { LoadModalComponent } from '@components/load-modal/load-modal.component';
 import { SaveModalComponent } from '@components/save-modal/save-modal.component';
 
 import { environment } from 'src/environments/environment';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { updateShiftAction } from '@interfaces/shift.interface';
 
 @Component({
-  selector: 'app-quick',
-  templateUrl: './quick.component.html',
-  styleUrls: ['./quick.component.scss']
+  selector: 'app-trip',
+  templateUrl: './trips.component.html',
+  styleUrls: ['./trips.component.scss']
 })
-export class QuickComponent implements OnInit, OnDestroy {
-  @ViewChild(QuickFormComponent) form:QuickFormComponent | undefined;
+export class TripComponent implements OnInit, OnDestroy {
+  @ViewChild(TripFormComponent) form:TripFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
@@ -96,9 +96,9 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.saving = false;
   }
 
-  async editUnsavedTrip(trip: ITrip) {
+  async editTrip(trip: ITrip) {
     this.stopPolling();
-    let dialogRef = this.dialog.open(QuickFormComponent, {
+    let dialogRef = this.dialog.open(TripFormComponent, {
       data: trip,
       height: '600px',
       width: '500px',
@@ -167,7 +167,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.deleteUnsavedTrip(trip);
+        await this.deleteTrip(trip);
       }
     });
   }
@@ -215,27 +215,6 @@ export class QuickComponent implements OnInit, OnDestroy {
 
       if (this.pollingEnabled) {
         await this.startPolling();
-      }
-    });
-  }
-
-  async confirmUnsaveTripsDialog() {
-    const message = `This will revert all local saved trips to unsaved status. If you save these trips again they may cause duplicates. Do you want to reset to unsaved status?`;
-
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
-    dialogData.title = "Confirm Unsaved Status";
-    dialogData.message = message;
-    dialogData.trueText = "Set Unsaved";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.unsaveData();
       }
     });
   }
@@ -308,7 +287,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this._snackBar.open("Added Next Trip");
   }
 
-  async deleteUnsavedTrip(trip: ITrip) {
+  async deleteTrip(trip: ITrip) {
     if (trip.action === ActionEnum.Add) {
       await this._tripService.deleteTrip(trip.id!);
       await this._tripService.updateTripRowIds(trip.rowId);
@@ -325,7 +304,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     }
 
     await this.load();
-    await this.form?.load();
+    //await this.form?.load();
   }
 
   async restoreTrip(trip: ITrip) {
@@ -337,17 +316,6 @@ export class QuickComponent implements OnInit, OnDestroy {
       updateShiftAction(shift, ActionEnum.Update);
       await this._shiftService.updateShift(shift);
     }
-  }
-
-  async unsaveData() {
-    let savedTrips = await this._tripService.getSavedTrips();
-
-    for (let trip of savedTrips) {
-      trip.saved = false;
-      await this._tripService.updateTrip(trip);
-    };
-
-    await this.load();
   }
 
   async reload(anchor?: string) {

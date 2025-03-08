@@ -143,16 +143,15 @@ export class GigLoggerService {
         }
 
         for (let shift of shifts) {
-            let trips = (await this._tripService.queryTrips("key", shift.key)).filter(x => x.action !== ActionEnum.Delete);
-            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
+            let trips = (await this._tripService.queryTrips("key", shift.key)).filter(x => x.action !== ActionEnum.Delete && !x.exclude);
 
-            shift.totalTrips = +(shift.trips ?? 0) + filteredTrips.length;
-            shift.totalDistance = +(shift.distance ?? 0) + +filteredTrips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
-            shift.totalPay = +(shift.pay ?? 0) + +filteredTrips.filter(x => x.pay != undefined).map((x) => x.pay).reduce((acc, value) => acc + value, 0);
-            shift.totalTips = +(shift.tip ?? 0) + +filteredTrips.filter(x => x.tip != undefined).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
-            shift.totalBonus = +(shift.bonus ?? 0) + +filteredTrips.filter(x => x.bonus != undefined).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
-            shift.totalCash = +(shift.cash ?? 0) + +filteredTrips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
-            shift.grandTotal = +(shift.total ?? 0) + +filteredTrips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
+            shift.totalTrips = +(shift.trips ?? 0) + trips.length;
+            shift.totalDistance = +(shift.distance ?? 0) + +trips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
+            shift.totalPay = +(shift.pay ?? 0) + +trips.filter(x => x.pay != undefined).map((x) => x.pay).reduce((acc, value) => acc + value, 0);
+            shift.totalTips = +(shift.tip ?? 0) + +trips.filter(x => x.tip != undefined).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
+            shift.totalBonus = +(shift.bonus ?? 0) + +trips.filter(x => x.bonus != undefined).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
+            shift.totalCash = +(shift.cash ?? 0) + +trips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
+            shift.grandTotal = +(shift.total ?? 0) + +trips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
             let duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
             if (duration) {

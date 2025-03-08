@@ -47,7 +47,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     
     for (const date of dates) {
       let tripGroup = {} as ITripGroup;
-      let trips = sheetTrips.filter(x => x.date === date && x.saved);
+      let trips = sheetTrips.filter(x => x.date === date);
 
       if (trips.length === 0) {
         continue;

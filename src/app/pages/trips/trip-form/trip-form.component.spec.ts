@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { QuickFormComponent } from './quick-form.component';
+import { TripFormComponent } from './trip-form.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
@@ -21,9 +21,9 @@ import { WeeklyService } from '@services/weekly.service';
 import { YearlyService } from '@services/yearly.service';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 
-describe('QuickFormComponent', () => {
-  let component: QuickFormComponent;
-  let fixture: ComponentFixture<QuickFormComponent>;
+describe('TripFormComponent', () => {
+  let component: TripFormComponent;
+  let fixture: ComponentFixture<TripFormComponent>;
   const mockAddressService = jasmine.createSpyObj("AddressService", ["getRemoteAddress", "getRemoteAddresses"]);
   const mockDeliveryService = jasmine.createSpyObj("DeliveryService", ["queryRemoteDeliveries", "getRemoteAddresses"]);
   const mockGigLoggerService = jasmine.createSpyObj("GigLoggerService", ["calculateShiftTotals"]);
@@ -38,7 +38,7 @@ describe('QuickFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QuickFormComponent, MatAutocomplete ],
+      declarations: [ TripFormComponent, MatAutocomplete ],
       imports: [ MatDialogModule, MatSnackBarModule ],
       providers: [
         { provide: MatDialogRef, useValue: {} },
@@ -58,7 +58,7 @@ describe('QuickFormComponent', () => {
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(QuickFormComponent);
+    fixture = TestBed.createComponent(TripFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -16,8 +16,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
-import { QuickComponent } from './quick/quick.component';
-import { QuickFormComponent } from './quick/quick-form/quick-form.component';
+import { TripComponent } from './trips/trips.component';
+import { TripFormComponent } from './trips/trip-form/trip-form.component';
 import { LoginComponent } from './login/login.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatCardModule } from '@angular/material/card';
@@ -38,8 +38,8 @@ import { SharedModule } from '../shared/shared.module';
 @NgModule({
   declarations: [
     HomeComponent,
-    QuickComponent,
-    QuickFormComponent,
+    TripComponent,
+    TripFormComponent,
     ShiftsComponent,
     LoginComponent,
     SetupComponent,

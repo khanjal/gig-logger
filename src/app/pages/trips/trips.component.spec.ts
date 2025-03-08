@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { QuickComponent } from './quick.component';
+import { TripComponent } from './trips.component';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -8,9 +8,9 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
 
-describe('QuickComponent', () => {
-  let component: QuickComponent;
-  let fixture: ComponentFixture<QuickComponent>;
+describe('TripComponent', () => {
+  let component: TripComponent;
+  let fixture: ComponentFixture<TripComponent>;
   const mockGigLoggerService = jasmine.createSpyObj("GigLoggerService", ["calculateShiftTotals"]);
   const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["loadSpreadsheetData", "querySpreadsheets"]);
   const mockShiftService = jasmine.createSpyObj("ShiftService", ["deleteService", "getUnsavedShifts", "queryShifts", "saveUnsavedShifts", "updateShift"]);
@@ -18,7 +18,7 @@ describe('QuickComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QuickComponent ],
+      declarations: [ TripComponent ],
       imports: [ MatDialogModule, MatSnackBarModule ],
       providers: [
         { provide: MatDialogRef, useValue: {} },
@@ -31,7 +31,7 @@ describe('QuickComponent', () => {
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(QuickComponent);
+    fixture = TestBed.createComponent(TripComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
