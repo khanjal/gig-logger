@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
 import { DateHelper } from '@helpers/date.helper';
@@ -8,11 +8,16 @@ import { IStatItem } from '@interfaces/stat-item.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { ShiftService } from '@services/shift.service';
 import { TripService } from '@services/trip.service';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatDateRangeInput, MatStartDate, MatEndDate, MatDatepickerToggle, MatDateRangePicker } from '@angular/material/datepicker';
+import { StatsTableComponent } from './stats-table/stats-table.component';
 
 @Component({
-  selector: 'app-stats',
-  templateUrl: './stats.component.html',
-  styleUrls: ['./stats.component.scss']
+    selector: 'app-stats',
+    templateUrl: './stats.component.html',
+    styleUrls: ['./stats.component.scss'],
+    standalone: true,
+    imports: [MatFormField, MatLabel, MatDateRangeInput, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;

@@ -36,53 +36,50 @@ import { StatsTableComponent } from './stats/stats-table/stats-table.component';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    TripComponent,
-    TripFormComponent,
-    ShiftsComponent,
-    LoginComponent,
-    SetupComponent,
-    SheetAddFormComponent,
-    SheetQuickViewComponent,
-    CalculatorComponent,
-    UberCalculatorComponent,
-    SheetQuotaComponent,
-    StatsComponent,
-    StatsTableComponent
-  ],
-  imports: [
-    CommonModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatMenuModule,
-    MatNativeDateModule,
-    MatSelectModule,
-    MatListModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBarModule,
-    MatSlideToggleModule,
-    MatSnackBarModule,
-    MatTableModule,
-    ReactiveFormsModule,
-    ScrollingModule,
-    SharedModule
-  ],
-  exports: [
-  ],
-  providers: [
-      {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}},
-      {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},
-      {provide: MAT_DIALOG_DATA, useValue: {}},
-      {provide: MatDialogRef, useValue: {}}
-  ],
-  bootstrap: []
+    imports: [
+        CommonModule,
+        MatAutocompleteModule,
+        MatButtonModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDatepickerModule,
+        MatDialogModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatMenuModule,
+        MatNativeDateModule,
+        MatSelectModule,
+        MatListModule,
+        MatIconModule,
+        MatInputModule,
+        MatProgressBarModule,
+        MatSlideToggleModule,
+        MatSnackBarModule,
+        MatTableModule,
+        ReactiveFormsModule,
+        ScrollingModule,
+        SharedModule,
+        HomeComponent,
+        TripComponent,
+        TripFormComponent,
+        ShiftsComponent,
+        LoginComponent,
+        SetupComponent,
+        SheetAddFormComponent,
+        SheetQuickViewComponent,
+        CalculatorComponent,
+        UberCalculatorComponent,
+        SheetQuotaComponent,
+        StatsComponent,
+        StatsTableComponent
+    ],
+    exports: [],
+    providers: [
+        { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useValue: {} }
+    ],
+    bootstrap: []
 })
 export class PagesModule { }

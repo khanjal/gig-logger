@@ -3,11 +3,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DateHelper } from '@helpers/date.helper';
 import { WeekdayService } from '@services/weekday.service';
 import { WeeklyService } from '@services/weekly.service';
+import { NgIf, CurrencyPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-current-average',
-  templateUrl: './current-average.component.html',
-  styleUrls: ['./current-average.component.scss']
+    selector: 'app-current-average',
+    templateUrl: './current-average.component.html',
+    styleUrls: ['./current-average.component.scss'],
+    standalone: true,
+    imports: [NgIf, CurrencyPipe]
 })
 
 export class CurrentAverageComponent implements OnInit {

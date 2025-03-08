@@ -10,11 +10,11 @@ describe('SheetQuotaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SheetQuotaComponent ],
-      providers: [ 
+    imports: [SheetQuotaComponent],
+    providers: [
         { provide: SpreadsheetService, useValue: mockSpreadsheetService }
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(SheetQuotaComponent);

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'noseconds'
+    name: 'noseconds',
+    standalone: true
 })
 export class NoSecondsPipe implements PipeTransform {
 
