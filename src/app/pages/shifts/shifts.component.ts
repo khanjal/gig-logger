@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActionEnum } from '@enums/action.enum';
+import { IShift } from '@interfaces/shift.interface';
+import { ShiftService } from "@services/shift.service";
 
 @Component({
   selector: 'app-shifts',
@@ -6,11 +9,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./shifts.component.scss']
 })
 export class ShiftsComponent implements OnInit {
+  shifts: IShift[] = [];
+  actionEnum = ActionEnum;
 
-  constructor() { }
+  constructor(private _shiftService: ShiftService) { }
 
   async ngOnInit(): Promise<void> {
-    
+    this.shifts = (await this._shiftService.getPreviousWeekShifts()).reverse();
   }
 
 }
