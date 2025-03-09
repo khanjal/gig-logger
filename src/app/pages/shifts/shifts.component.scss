@@ -1,0 +1,49 @@
+@import "color-vars";
+
+.address-link {
+    overflow: visible;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: 1rem;
+}
+
+.table {
+    overflow-x: auto;
+}
+
+.button-bar {
+    margin: 0;
+    padding: 1rem .5rem;
+}
+
+.mat-card {
+    margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: $primary-light-color;
+    }
+
+    &:nth-child(odd){
+        background-color: $tertiary-light-color;
+    }
+}
+
+.mat-card-reverse {
+    margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: $tertiary-light-color;
+    }
+
+    &:nth-child(odd){
+        background-color: $primary-light-color;
+    }
+}
+
+.mat-card-disabled {
+    background-color: lightgray !important;
+}
+
+.row-grid {
+    margin-bottom: 2rem;
+}

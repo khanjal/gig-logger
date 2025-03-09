@@ -22,7 +22,7 @@
                 </div>  
                 <div class="padding-left">
                     <div><strong>Time:</strong>&nbsp;<span [ngClass]="{'primary': shift.amountPerTime > 25, 'warn': shift.amountPerTime < 20, 'rainbow-text-animated': shift.amountPerTime > 30}">{{shift.start | noseconds}} {{!shift.time ? '' : '- ' + (shift.finish | noseconds)}}</span></div>
-                    <div *ngIf="shift.time"><strong>Duration:</strong> {{shift.time}}</div>
+                    <div *ngIf="shift.time"><strong>Duration:</strong> {{shift.time | noseconds}}</div>
                 </div>
             </div>
             @if (shift.region || shift.totalDistance) {

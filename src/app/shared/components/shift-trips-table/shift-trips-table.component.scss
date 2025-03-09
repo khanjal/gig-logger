@@ -1,7 +1,7 @@
 @import "color-vars";
 
 h3 {
-    margin: 1rem 0 0 0;
+    margin: .5rem 0 0 0;
     font-weight: bold;
 }
 
@@ -9,7 +9,8 @@ h3 {
     display: block;
     margin: 0 auto;
     overflow: hidden;
-    margin-bottom: 1rem;
+    padding: .5rem;
+    background-color: white;
 }
 
 .table-responsive {
@@ -44,7 +45,6 @@ mat-cell,
 mat-header-cell {
     word-wrap: initial;
     display: table-cell;
-    padding: 0px 5px;
     line-break: unset;
     width: auto;
     white-space: nowrap;
