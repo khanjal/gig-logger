@@ -113,42 +113,42 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.startPolling();
       }
     });
-    }
+  }
 
-    async loadSheetDialog() {
-        let dialogRef = this.dialog.open(LoadModalComponent, {
-            height: '400px',
-            width: '500px',
-            panelClass: 'custom-modalbox'
-        });
+  async loadSheetDialog() {
+      let dialogRef = this.dialog.open(LoadModalComponent, {
+          height: '400px',
+          width: '500px',
+          panelClass: 'custom-modalbox'
+      });
 
-        dialogRef.afterClosed().subscribe(async result => {
+      dialogRef.afterClosed().subscribe(async result => {
 
-            if (result) {
-                await this.reload("todaysTrips");
-            }
-        });
-    }
+          if (result) {
+              await this.reload("todaysTrips");
+          }
+      });
+  }
 
-    async saveSheetDialog() {
-        let dialogRef = this.dialog.open(SaveModalComponent, {
-            height: '400px',
-            width: '500px',
-            panelClass: 'custom-modalbox'
-        });
+  async saveSheetDialog() {
+      let dialogRef = this.dialog.open(SaveModalComponent, {
+          height: '400px',
+          width: '500px',
+          panelClass: 'custom-modalbox'
+      });
 
-        dialogRef.afterClosed().subscribe(async result => {
+      dialogRef.afterClosed().subscribe(async result => {
 
-            if (result) {
-                await this._tripService.saveUnsavedTrips();
-                await this._shiftService.saveUnsavedShifts();
-                this._snackBar.open("Trip(s) Saved to Spreadsheet");
+          if (result) {
+              await this._tripService.saveUnsavedTrips();
+              await this._shiftService.saveUnsavedShifts();
+              this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-                await this.reload("todaysTrips");
-                this._viewportScroller.scrollToAnchor("todaysTrips");
-            }
-        });
-    }
+              await this.reload("todaysTrips");
+              this._viewportScroller.scrollToAnchor("todaysTrips");
+          }
+      });
+  }
   
   async confirmDeleteTripDialog(trip: ITrip) {
     const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;

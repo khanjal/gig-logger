@@ -10,7 +10,7 @@ h3 {
     margin: 0 auto;
     overflow: hidden;
     padding: .5rem;
-    background-color: white;
+    background-color: $background-color;
 }
 
 .table-responsive {
@@ -51,3 +51,9 @@ mat-header-cell {
     overflow: hidden;
     vertical-align: middle;
 }   
+
+mat-header-cell {
+    font-weight: bold;
+    color: $primary-color;
+    background-color: $background-color;
+}

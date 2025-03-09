@@ -106,7 +106,7 @@ div.mat-expansion-panel-body {
 }
 
 .strike {
-  background-color: lightgray; // Set in ngStyle in HTML in some files
+  background-color: $disabled-color; // Set in ngStyle in HTML in some files
   text-decoration: line-through;
 }
 
