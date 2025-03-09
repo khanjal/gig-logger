@@ -10,6 +10,9 @@
             @else if (!shift.saved && shift.action === 'DELETE') {
                 <mat-icon class="warn">delete</mat-icon> 
             }
+            @else if (duplicateShift) {
+                <mat-icon [ngClass]="{'warn': !shift.saved}">content_copy</mat-icon> 
+            }
             @else {
                 <mat-icon [ngClass]="{'warn': !shift.saved}">save</mat-icon> 
             }
