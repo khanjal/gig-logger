@@ -190,29 +190,19 @@
         </div>
 
         <!-- Pickup Time -->
-        <!-- <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
-            <mat-label>Pickup Time</mat-label>
-            <input matInput type="time" name="pickupTime" placeholder="" formControlName="pickupTime" value="">
-        </mat-form-field> -->
         <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
             <mat-label>Pickup Time</mat-label>
             <input matInput [ngxTimepicker]="pickupTimePicker" formControlName="pickupTime" readonly>
             <ngx-material-timepicker #pickupTimePicker></ngx-material-timepicker>
-            <!-- <mat-timepicker-toggle matSuffix [for]="pickupTimePicker"></mat-timepicker-toggle> -->
         </mat-form-field>
 
         <button mat-stroked-button (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
 
         <!-- Dropoff Time -->
-        <!-- <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
-            <mat-label>Dropoff Time</mat-label>
-            <input matInput type="text" name="dropoffTime" placeholder="" formControlName="dropoffTime" value="">
-        </mat-form-field> -->
         <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
             <mat-label>Dropoff Time</mat-label>
             <input matInput [ngxTimepicker]="dropoffTimePicker" formControlName="dropoffTime" readonly>
             <ngx-material-timepicker #dropoffTimePicker></ngx-material-timepicker>
-            <!-- <mat-timepicker-toggle matSuffix [for]="pickupTimePicker"></mat-timepicker-toggle> -->
         </mat-form-field>
 
         <button mat-stroked-button (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>

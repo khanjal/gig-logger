@@ -48,6 +48,10 @@ export class DateHelper {
     }
 
     static removeSeconds(time: string): string {
+        if (!time) {
+            return "";
+        }
+        
         let splitSpaces = time.split(" ");
         let splittedString = splitSpaces[0].split(":");
 
