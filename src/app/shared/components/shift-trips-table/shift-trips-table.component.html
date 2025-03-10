@@ -1,4 +1,4 @@
-<div class="trips-container">
+<mat-card class="trips-container">
     <h3>Trips</h3>
     <div class='table-responsive'>
         <mat-table [dataSource]="trips">
@@ -31,4 +31,4 @@
             <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
         </mat-table>
     </div>
-</div>
+</mat-card>

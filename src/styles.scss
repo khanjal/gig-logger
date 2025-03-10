@@ -4,7 +4,7 @@
 @import "color-vars";
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: $background-color; }
 
 .material-icons{
     font-family: 'Material Icons' !important;
@@ -108,6 +108,10 @@ div.mat-expansion-panel-body {
 .strike {
   background-color: $disabled-color; // Set in ngStyle in HTML in some files
   text-decoration: line-through;
+}
+
+.cdk-overlay-container {
+  z-index: 500 !important;
 }
 
 .pac-container {

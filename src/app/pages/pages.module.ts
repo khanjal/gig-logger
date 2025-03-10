@@ -34,6 +34,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { StatsComponent } from './stats/stats.component';
 import { StatsTableComponent } from './stats/stats-table/stats-table.component';
 import { SharedModule } from '../shared/shared.module';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { SharedModule } from '../shared/shared.module';
     MatSlideToggleModule,
     MatSnackBarModule,
     MatTableModule,
+    NgxMaterialTimepickerModule,
     ReactiveFormsModule,
     ScrollingModule,
     SharedModule

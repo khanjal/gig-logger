@@ -43,7 +43,25 @@ export class DateHelper {
 
     static getTimeString(date: Date): string {
         let timeString = date.toLocaleTimeString();
+        timeString = this.removeSeconds(timeString);
         return timeString;
+    }
+
+    static removeSeconds(time: string): string {
+        let splitSpaces = time.split(" ");
+        let splittedString = splitSpaces[0].split(":");
+
+        if (splittedString.length < 3) {
+            return time;
+        }
+
+        time = splittedString.slice(0,-1).join(':');
+
+        if(splitSpaces[1]) {
+            time = `${time} ${splitSpaces[1]}`;
+        }
+
+        return time;
     }
 
     static getStartOfWeekDate(date: Date): string {

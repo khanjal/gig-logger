@@ -29,6 +29,7 @@ import { Observable, startWith, mergeMap } from 'rxjs';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { ActionEnum } from '@enums/action.enum';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @Component({
   selector: 'trip-form',
@@ -239,8 +240,8 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.endAddress.setValue(this.data.endAddress);
     this.showAddressNames(this.data.endAddress);
 
-    this.tripForm.controls.pickupTime.setValue(this.data.pickupTime);
-    this.tripForm.controls.dropoffTime.setValue(this.data.dropoffTime);
+    this.tripForm.controls.pickupTime.setValue(DateHelper.removeSeconds(this.data.pickupTime));
+    this.tripForm.controls.dropoffTime.setValue(DateHelper.removeSeconds(this.data.dropoffTime));
     this.showTimes = true;
 
     this.tripForm.controls.note.setValue(this.data.note);
