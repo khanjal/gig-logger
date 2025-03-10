@@ -78,6 +78,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     SharedModule
   ],
   exports: [
+    NgxMatTimepickerModule
   ],
   providers: [
       {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}},
