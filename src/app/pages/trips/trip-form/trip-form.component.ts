@@ -29,7 +29,7 @@ import { Observable, startWith, mergeMap } from 'rxjs';
 import { DateHelper } from 'src/app/shared/helpers/date.helper';
 import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
 import { ActionEnum } from '@enums/action.enum';
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 @Component({
   selector: 'trip-form',
