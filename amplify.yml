@@ -7,6 +7,7 @@ frontend:
         - nvm use 22.12.0
         - node -v
         - npm install -g @angular/cli@18
+        - npm ci
     build:
       commands:
         - echo "${AWS_BRANCH}"
