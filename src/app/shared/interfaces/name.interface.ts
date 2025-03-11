@@ -5,6 +5,7 @@ export interface IName extends IAmount {
     id?: number;
     rowId: number;
     name: string;
+    saved: boolean;
     addresses: string[];
     notes: INote[];
     visits: number;

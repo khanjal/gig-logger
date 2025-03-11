@@ -37,18 +37,18 @@ export class AppDB extends Dexie {
     constructor() {
         super('spreadsheetDB');
         this.version(1).stores({
-            addresses: '++id, address',
+            addresses: '++id, address, saved',
             deliveries: '++id, address, name',
             daily: '++id, date',
             monthly: '++id, month',
-            names: '++id, name',
-            places: '++id, place',
+            names: '++id, name, saved',
+            places: '++id, place, saved',
             ratings: '++id, date, time',
-            regions: '++id, region',
-            services: '++id, service',
-            shifts: '++id, rowId, date, service, number, key, [date+service+number]',
-            trips: '++id, rowId, date, service, number, key, [date+service+number]',
-            types: '++id, type',
+            regions: '++id, region, saved',
+            services: '++id, service, saved',
+            shifts: '++id, rowId, date, service, number, key, [date+service+number], saved',
+            trips: '++id, rowId, date, service, number, key, [date+service+number], saved',
+            types: '++id, type, saved',
             weekdays: '++id, day',
             weekly: '++id, week, begin, end',
             yearly: '++id, year'
