@@ -96,8 +96,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
 }
 
 .custom-modalbox {
+  max-width: 100vw !important;
+  
   .mat-mdc-dialog-container .mdc-dialog__surface  {
-      padding: 1rem;
+    padding: 1rem;
   }
 }
 
