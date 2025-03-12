@@ -26,12 +26,12 @@ export class LoadModalComponent {
         this.startTimer();
         time = this.currentTime;
 
-        this.currentTask = "Checking Google API Status..."
+        this.currentTask = "Checking service status..."
         let response = await this._sheetService.warmUpLambda();
 
         if (!response) {
             this.appendToTerminal(`${this.currentTask} OFFLINE`);   
-            this.currentTask = "Modal Closing In 5s";
+            this.currentTask = "Modal closing in 5s";
 
             await this._timerService.delay(5000);
             this.dialogRef.close(false); 
@@ -39,11 +39,11 @@ export class LoadModalComponent {
 
         this.appendToTerminal(`${this.currentTask} ONLINE`);
 
-        this.currentTask = "Loading Sheet Data...";
+        this.currentTask = "Loading sheet data...";
         await this._sheetService.loadSpreadsheetData();
         this.appendToTerminal(`${this.currentTask} LOADED (${this.currentTime - time}s)`);
 
-        this.currentTask = "Modal Closing In 5s";
+        this.currentTask = "Modal closing in 5s";
 
         await this._timerService.delay(5000);
         this.dialogRef.close(true);

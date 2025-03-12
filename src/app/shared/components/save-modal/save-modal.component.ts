@@ -39,12 +39,12 @@ export class SaveModalComponent {
         this.startTimer();
         time = this.currentTime;
 
-        this.currentTask = "Checking Google API Status..."
+        this.currentTask = "Checking service status..."
         let warmupResponse = await this._sheetService.warmUpLambda();
         
         if (!warmupResponse) {
             this.appendToTerminal(`${this.currentTask} OFFLINE`);   
-            this.currentTask = "Modal Closing In 5s";
+            this.currentTask = "Modal closing in 5s";
 
             await this._timerService.delay(5000);
             this.dialogRef.close(false); 
@@ -52,7 +52,7 @@ export class SaveModalComponent {
 
         this.appendToTerminal(`${this.currentTask} ONLINE`);
 
-        this.currentTask = "Saving Trips Data...";
+        this.currentTask = "Saving changes...";
         
         let postResponse = await this._gigLoggerService.postSheetData(sheetData);
         // console.log(postResponse);
