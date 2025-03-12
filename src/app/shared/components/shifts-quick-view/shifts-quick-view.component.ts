@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { IShift, updateShiftAction } from '@interfaces/shift.interface';
@@ -20,6 +20,7 @@ import { ActionEnum } from '@enums/action.enum';
 })
 export class ShiftsQuickViewComponent {
   @Input() shift: IShift = {} as IShift;
+  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   duplicateShift: boolean = false;
 
@@ -41,6 +42,7 @@ export class ShiftsQuickViewComponent {
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
+    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -51,7 +53,8 @@ export class ShiftsQuickViewComponent {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         updateShiftAction(shift, ActionEnum.Delete);
-        // await this.saveSheetDialog();
+        await this.shiftService.updateShift(shift);
+        await this.saveSheetDialog();
       }
     });
   }
@@ -66,6 +69,7 @@ export class ShiftsQuickViewComponent {
     dialogRef.afterClosed().subscribe(async result => {
       if (result) {
           await this.shiftService.saveUnsavedShifts();
+          this.parentReload.emit(); // Emit the event to notify the parent to reload
       }
     });
   }

@@ -100,7 +100,7 @@ export class ShiftService {
                 if (!rowId) {
                     rowId = shift.rowId;
                 }
-                await this.deleteShift(shift.rowId);
+                await this.deleteShift(shift.id!);
                 continue;
             }
 
@@ -110,6 +110,10 @@ export class ShiftService {
                 await this.updateShift(shift);
             }
         };
+
+        if (rowId) {
+            await this.updateShiftRowIds(rowId);
+        }
     }
 
     public async updateShift(shift: IShift) {
@@ -120,7 +124,7 @@ export class ShiftService {
         let maxId = await this.getMaxShiftId();
         let nextRowId = rowId + 1;
         
-        // Need to loop id until it finds a trip. Update that trip with a current row id. Then continue until it hits maxId
+        // Need to loop id until it finds a shift. Update that shift with a current row id. Then continue until it hits maxId
         while (nextRowId <= maxId) {
             let shift = await spreadsheetDB.shifts.where("rowId").equals(nextRowId).first();
             if (shift) {

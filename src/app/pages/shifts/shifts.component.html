@@ -3,7 +3,7 @@
 
     @for (shift of shifts; track $index) {
         <div [id]="shift.rowId" [ngClass]="{'mat-card': shifts.length % 2 != 0, 'mat-card-reverse': shifts.length % 2 == 0, 'mat-card-disabled': shift.action == actionEnum.Delete}">
-            <app-shifts-quick-view [shift]="shift"></app-shifts-quick-view>
+            <app-shifts-quick-view [shift]="shift" (parentReload)="handleParentReload()"></app-shifts-quick-view>
         </div>
     }
 </div>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActionEnum } from '@enums/action.enum';
 import { IShift } from '@interfaces/shift.interface';
-import { ShiftService } from "@services/shift.service";
+import { ShiftService } from '@services/shift.service';
 
 @Component({
   selector: 'app-shifts',
@@ -15,7 +15,15 @@ export class ShiftsComponent implements OnInit {
   constructor(private _shiftService: ShiftService) { }
 
   async ngOnInit(): Promise<void> {
+    await this.reload();
+  }
+
+  async reload() {
     this.shifts = (await this._shiftService.getPreviousWeekShifts()).reverse();
   }
 
+  handleParentReload() {
+    this.shifts = []; // Clear the shifts array so that it'll refresh everything
+    this.reload();
+  }
 }
