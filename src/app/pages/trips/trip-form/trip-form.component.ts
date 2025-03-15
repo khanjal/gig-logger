@@ -416,8 +416,8 @@ export class TripFormComponent implements OnInit {
   }
   
   setPlace(place: string) {
-    this.tripForm.controls.place.setValue(place);
     this.selectPlace(place);
+    this.tripForm.controls.place.setValue(place);
   }
 
   setRegion(region: string) {
@@ -448,26 +448,39 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    this.selectedPlace = await this._placeService.getPlace(place);
-
-    // Auto assign to most used start address if there is no start address already.
-    if (!this.tripForm.value.startAddress && this.selectedPlace?.addresses?.length) {
-      //Set the most used type as default.
-      let address = this.selectedPlace?.addresses.reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
-
-      if (address) {
-        this.tripForm.controls.startAddress.setValue(address.address);
-      }
+    if (place === this.tripForm.value.place) {
+      return;
     }
 
-    // Auto assign to most used type if there is no type already.
-    if (!this.tripForm.value.type && this.selectedPlace?.types?.length) {
-      //Set the most used type as default.
-      let type = this.selectedPlace?.types.reduce((prev, current) => (prev.visits > current.visits) ? prev : current);
+    // Set this for a list of place addresses on the screen.
+    let selectedPlace = await this._placeService.getPlace(place);
+    if (selectedPlace) {
+      this.selectedPlace = selectedPlace;
+    }
 
-      if (type) {
-        this.tripForm.controls.type.setValue(type.type);
-      }
+    let recentTrips = (await this._tripService.getTrips()).reverse().filter(x => x.place === place);
+    let recentTrip = recentTrips[0];
+
+    if (!recentTrip) {
+      return;
+    }
+
+    // Auto assign to most recent start address.
+    if (recentTrip.startAddress) {
+      this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
+    }
+    else {
+      let recentAddress = recentTrips.filter(x => x.startAddress)[0];
+      this.tripForm.controls.startAddress.setValue(recentAddress.startAddress);
+    }
+
+    // Auto assign to most recent type.
+    if (recentTrip.type) {
+      this.tripForm.controls.type.setValue(recentTrip.type);
+    }
+    else {
+      let recentType = recentTrips.filter(x => x.type)[0];
+      this.tripForm.controls.type.setValue(recentType.type);
     }
   }
 

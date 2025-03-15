@@ -34,7 +34,7 @@
                         <div *ngIf="trip.region">{{trip.region}}</div>
                         <div *ngIf="trip.startOdometer || trip.distance">
                             <strong>Distance:</strong> {{trip.startOdometer | number}}<span *ngIf="trip.endOdometer"> - {{trip.endOdometer | number}}</span>
-                            <span *ngIf="trip.distance"> (<span [ngClass]="{'primary': trip.amountPerDistance > 2, 'warn': trip.amountPerDistance < 1, 'rainbow-text-animated': trip.amountPerDistance > 5}">{{trip.distance}}</span>)</span>
+                            <span *ngIf="trip.distance"> (<span [ngClass]="{'primary': trip.amountPerDistance > 2, 'warn': trip.amountPerDistance < 1, 'rainbow-text-animated': trip.amountPerDistance > 5}">{{trip.distance | number:'1.1'}}</span>)</span>
                         </div>
                     </div>
                 </div>
