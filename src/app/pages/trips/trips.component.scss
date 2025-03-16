@@ -50,6 +50,14 @@
     background-color: $disabled-color !important;
 }
 
+.mat-panel-header {
+    padding-left: .5rem;
+}
+
+.mat-panel-title {
+    margin-top: 1rem;
+}
+
 .row-grid {
     margin-bottom: 2rem;
 }
