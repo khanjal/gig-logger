@@ -1,12 +1,17 @@
+// Angular core imports
 import { ViewportScroller } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+// Angular material imports
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
-import { sort } from '@helpers/sort.helper';
-import { IAddressDialog } from '@interfaces/address-dialog.interface';
+
+// RxJS imports
+import { Observable, startWith, mergeMap } from 'rxjs';
+
+// Application-specific imports - Interfaces
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
@@ -15,6 +20,8 @@ import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift, updateShiftAction } from '@interfaces/shift.interface';
 import { ITrip, updateTripAction } from '@interfaces/trip.interface';
+
+// Application-specific imports - Services
 import { AddressService } from '@services/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
@@ -25,11 +32,14 @@ import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
-import { Observable, startWith, mergeMap } from 'rxjs';
-import { DateHelper } from 'src/app/shared/helpers/date.helper';
-import { ShiftHelper } from 'src/app/shared/helpers/shift.helper';
+
+// Application-specific imports - Helpers
+import { sort } from '@helpers/sort.helper';
+import { DateHelper } from '@helpers/date.helper';
+import { ShiftHelper } from '@helpers/shift.helper';
+
+// Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
-import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 @Component({
   selector: 'trip-form',
@@ -100,7 +110,6 @@ export class TripFormComponent implements OnInit {
       private _gigLoggerService: GigLoggerService,
       private _nameService: NameService,
       private _placeService: PlaceService,
-      private _regionService: RegionService,
       private _serviceService: ServiceService,
       private _shiftService: ShiftService,
       private _timerService: TimerService,
@@ -265,9 +274,6 @@ export class TripFormComponent implements OnInit {
 
     //Set default shift to last trip or latest shift.
     if (!this.data?.id) {
-      // Remove duplicates
-      this.shifts = ShiftHelper.removeDuplicateShifts(this.shifts);
-
       let today = DateHelper.getISOFormat();
 
       let trips = await this._tripService.queryTrips("date", today);
@@ -367,21 +373,41 @@ export class TripFormComponent implements OnInit {
   }
 
   public async onShiftSelected(value:string) {
-    if (!value) {
-      this.isNewShift = true;
-      this.tripForm.controls.service.setValidators([Validators.required]);
-
-      //Set the most used service as default.
-      let service = (await this._serviceService.getServices())?.reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IService);
-      this.tripForm.controls.service.setValue(service.service);
-
-      //Set the most used region as default.
-      let region = (await this._regionService.get()).reduce((prev, current) => (prev.visits > current.visits) ? prev : current, {} as IRegion);
-      this.tripForm.controls.region.setValue(region.region);
-    }
-    else {
+    if (value) {
       this.isNewShift = false;
       this.tripForm.controls.service.clearValidators();
+      this.tripForm.controls.service.updateValueAndValidity();
+
+      return;
+    }
+
+    this.isNewShift = true;
+    this.tripForm.controls.service.setValidators([Validators.required]);
+
+    // Get the most recent shift
+    let shifts = (await this._shiftService.getShifts()).reverse();
+    let shift = shifts[0];
+
+    if (!shift) {
+      return;
+    } 
+
+    //Set the most recent service as default.
+    if (shift.service) {
+      this.tripForm.controls.service.setValue(shift.service);
+    }
+    else {
+      let recentService = shifts.filter(x => x.service)[0];
+      this.tripForm.controls.service.setValue(recentService.service);
+    }
+
+    //Set the most recent region as default.
+    if (shift.region) {
+      this.tripForm.controls.region.setValue(shift.region);
+    }
+    else {
+      let recentRegion = shifts.filter(x => x.region)[0];
+      this.tripForm.controls.region.setValue(recentRegion.region);
     }
 
     this.tripForm.controls.service.updateValueAndValidity();
@@ -526,11 +552,15 @@ export class TripFormComponent implements OnInit {
   }
 
   setPickupTime() {
-    this.tripForm.controls.pickupTime.setValue(DateHelper.getTimeString(new Date));
+    this.tripForm.controls.pickupTime.setValue(this.getCurrentTime());
   }
 
   setDropoffTime() {
-    this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString(new Date));
+    this.tripForm.controls.dropoffTime.setValue(this.getCurrentTime());
+  }
+
+  getCurrentTime() {
+    return DateHelper.getTimeString(new Date);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
