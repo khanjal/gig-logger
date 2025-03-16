@@ -474,9 +474,11 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    if (place === this.tripForm.value.place) {
+    if (place === this.tripForm.value.place && !this.data.id) {
       return;
     }
+
+    this.selectedPlace = undefined;
 
     // Set this for a list of place addresses on the screen.
     let selectedPlace = await this._placeService.getPlace(place);
