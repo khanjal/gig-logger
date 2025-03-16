@@ -25,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/gig-worker'),
+      dir: require('path').join(__dirname, './coverage/raptor-gig'),
       subdir: '.',
       reporters: [
         { type: 'html' },

@@ -1,5 +1,5 @@
 {
-  "name": "gig-worker",
+  "name": "raptor-gig",
   "version": "0.0.0",
   "browser": {
     "child_process": false,
