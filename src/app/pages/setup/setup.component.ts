@@ -47,7 +47,7 @@ export class SetupComponent {
     }
 
     this.reloading = true;
-    await this._spreadsheetService.loadSpreadsheetData();
+    // await this._spreadsheetService.loadSpreadsheetData();
     this.reloading = false;
   }
 

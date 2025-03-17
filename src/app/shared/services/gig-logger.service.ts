@@ -88,7 +88,12 @@ export class GigLoggerService {
     }
 
     public async healthCheck(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) });
+        try {
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) }));
+        } catch (error) {
+            console.error('Error getting health check:', error);
+            return null;
+        }
     }
 
     public async postSheetData(sheetData: ISheet): Promise<any> {
