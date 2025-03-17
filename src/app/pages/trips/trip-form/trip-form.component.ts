@@ -1,6 +1,6 @@
 // Angular core imports
 import { ViewportScroller } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 // Angular material imports
@@ -16,7 +16,6 @@ import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
-import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
 import { IShift, updateShiftAction } from '@interfaces/shift.interface';
 import { ITrip, updateTripAction } from '@interfaces/trip.interface';
@@ -27,7 +26,6 @@ import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
-import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TimerService } from '@services/timer.service';
