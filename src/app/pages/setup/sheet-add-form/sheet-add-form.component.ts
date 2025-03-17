@@ -1,10 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ISheetProperties } from '@interfaces/sheet-properties.interface';
-import { ISheet } from '@interfaces/sheet.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { environment } from "src/environments/environment";
 
@@ -26,8 +22,6 @@ export class SheetAddFormComponent {
   defaultSpreadsheet: ISpreadsheet | undefined;
 
   constructor(
-    private _snackBar: MatSnackBar,
-    private _gigLoggerService: GigLoggerService,
     private _spreadsheetService: SpreadsheetService
   ) { }
 
@@ -59,7 +53,7 @@ export class SheetAddFormComponent {
     }
 
     // console.log(spreadsheetId);
-    await this.setupForm(spreadsheetId);
+    await this.setupSheet(spreadsheetId);
 
     this.sheetForm.reset();
     this.parentReload.emit();
@@ -75,8 +69,7 @@ export class SheetAddFormComponent {
     await this.load();
   }
 
-  public async setupForm(id: string) {
-    // let sheetTitle = await this._googleService.getSheetTitle(id);
+  public async setupSheet(id: string) {
     let sheetName = this.sheetForm.value.sheetName;
 
     if (!sheetName) {
@@ -99,46 +92,7 @@ export class SheetAddFormComponent {
       spreadsheet.default = "true";
     }
 
-    // Add sheet & load data from it.
+    // Add sheet
     await this._spreadsheetService.update(spreadsheet);
-
-    // Make sure all sheets are created.
-    (await this._gigLoggerService.createSheet(<ISheetProperties>{id: spreadsheet.id})).subscribe();
-    
-    if (spreadsheet.default === "true") {
-      // console.log("Loading default data");
-      // await this._googleService.loadRemoteData();
-      this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
-      (await this._gigLoggerService.getSheetData(spreadsheet.id)).subscribe(async (data) => {
-          // Update sheet name.
-          if (!this.sheetForm.value.sheetName) {
-            spreadsheet.name = (<ISheet>data).properties.name;
-            await this._spreadsheetService.update(spreadsheet);
-          }
-          this._snackBar.open("Loading Primary Spreadsheet Data");
-          await this._gigLoggerService.loadData(<ISheet>data);
-          this._snackBar.open("Loaded Primary Spreadsheet Data");
-
-          this.saving = false;
-        }
-      );
-    }
-    else {
-      this._snackBar.open(`Connecting to ${spreadsheet.name} Spreadsheet`);
-      (await this._gigLoggerService.getSecondarySheetData(spreadsheet.id)).subscribe(async (data) => {
-        if (!this.sheetForm.value.sheetName) {
-          spreadsheet.name = (<ISheet>data).properties.name;
-          await this._spreadsheetService.update(spreadsheet);
-        }
-        this._snackBar.open("Loading Secondary Spreadsheet Data");
-        await this._gigLoggerService.appendData(<ISheet>data);
-        this._snackBar.open("Loaded Secondary Spreadsheet Data");
-      });
-      this.saving = false;
-    }
-
-    await this.load();
   }          
 }
-
-

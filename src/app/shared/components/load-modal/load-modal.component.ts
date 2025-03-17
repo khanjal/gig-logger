@@ -31,7 +31,6 @@ export class LoadModalComponent {
 
         this.currentTask = "Checking service status..."
         let response = await this._sheetService.warmUpLambda();
-        console.log(response);
 
         if (!response) {
             this.processFailure("OFFLINE");

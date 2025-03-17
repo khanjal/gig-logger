@@ -8,6 +8,7 @@ import { CommonService } from '@services/common.service';
 import { MatDialog } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { LoadModalComponent } from '@components/load-modal/load-modal.component';
 
 @Component({
   selector: 'app-setup',
@@ -42,12 +43,13 @@ export class SetupComponent {
   }
 
   public async reload() {
+    await this.load();
     if (!this.defaultSheet?.id) {
       return;
     }
 
     this.reloading = true;
-    // await this._spreadsheetService.loadSpreadsheetData();
+    await this.loadSheetDialog();
     this.reloading = false;
   }
 
@@ -76,7 +78,7 @@ export class SetupComponent {
 
     this.deleting = false;
 
-    this.load();
+    this.reload();
   }
 
   public async deleteAllData() {
@@ -143,6 +145,21 @@ export class SetupComponent {
   private updateHeader(){
     this._commonService.updateHeaderLink("New User");
   }
+
+  async loadSheetDialog() {
+        let dialogRef = this.dialog.open(LoadModalComponent, {
+            height: '400px',
+            width: '500px',
+            panelClass: 'custom-modalbox'
+        });
+  
+        dialogRef.afterClosed().subscribe(async result => {
+  
+            if (result) {
+                await this.load();
+            }
+        });
+    }
 
   async confirmDeleteAndReloadDialog() {
     const message = `This will reload your data from the spreadsheet preserving your local unsaved data.`;
