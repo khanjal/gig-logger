@@ -164,6 +164,7 @@ export class SearchInputComponent {
 
   private async SetProperValue(value: string): Promise<string> {
     let properValue = "";
+    value = value.trim();
 
     switch (this.searchType) {
       case "Address":
