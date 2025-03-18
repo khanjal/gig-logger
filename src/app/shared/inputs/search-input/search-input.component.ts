@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, input, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,6 +36,7 @@ import { mergeMap, startWith, switchMap } from 'rxjs';
 })
 
 export class SearchInputComponent {
+  @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = "";
   @Input() formData: any; // Allows string, null, or undefined
   @Input() showGoogle: boolean = false;
@@ -51,8 +52,6 @@ export class SearchInputComponent {
   filteredRegions: any;
   filteredServices: any;
   filteredTypes: any;
-
-  enableBLur: boolean = true;
 
   constructor(
     public dialog: MatDialog,
@@ -112,29 +111,20 @@ export class SearchInputComponent {
   }
 
   clearDataEvent() {
-    this.enableBLur = false;
     this.emitEvent("");
+    this.inputElement.nativeElement.focus();
   }
   
   onBlurEvent(event: FocusEvent): void {
     const inputValue = (event.target as HTMLInputElement).value;
     this.emitEvent(inputValue);
-    // setTimeout(() => {
-    //   // Code to be executed after the delay
-    //   if (this.enableBLur) {
-    //     this.emitEvent(inputValue); // Handle the manually typed value
-    //   }
-    // }, 500);
-
-    // this.emitEvent(inputValue); // Handle the manually typed value
-  }
-
-  onKeyPressEvent(): void {
-    this.enableBLur = true;
   }
 
   onClickEvent(event: any): void {
-    this.enableBLur = false;
+    setTimeout(() => {
+      this.inputElement.nativeElement.blur();
+    }, 0);
+
     this.emitEvent(event.value);
   }
 
