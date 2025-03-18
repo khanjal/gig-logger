@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,21 +37,22 @@ import { mergeMap, startWith, switchMap } from 'rxjs';
 
 export class SearchInputComponent {
   @Input() fieldName: string = "";
-  @Input() formData: any;
+  @Input() formData: any; // Allows string, null, or undefined
   @Input() showGoogle: boolean = false;
   @Input() searchType: string | undefined;
   @Output() outEvent = new EventEmitter<string>;
-
-  filteredAddresses: any | undefined;
-  
+ 
   searchForm = new FormGroup({
     searchInput: new FormControl('')
   });
+  filteredAddresses: any | undefined;
   filteredNames: any;
   filteredPlaces: any;
   filteredRegions: any;
   filteredServices: any;
   filteredTypes: any;
+
+  enableBLur: boolean = true;
 
   constructor(
     public dialog: MatDialog,
@@ -110,18 +111,35 @@ export class SearchInputComponent {
     this.searchForm.controls.searchInput.setValue(this.formData);
   }
 
-  blurDataEvent(event: any) {
-    let data: string = event.target.value;
-    this.outEvent.emit(data);
-  }
-
   clearDataEvent() {
-    this.searchForm.controls.searchInput.setValue('')
-    this.outEvent.emit();
+    this.enableBLur = false;
+    this.emitEvent("");
   }
   
-  clickDataEvent(event: any) {
-    let data: string = event.value;
+  onBlurEvent(event: FocusEvent): void {
+    const inputValue = (event.target as HTMLInputElement).value;
+    this.emitEvent(inputValue);
+    // setTimeout(() => {
+    //   // Code to be executed after the delay
+    //   if (this.enableBLur) {
+    //     this.emitEvent(inputValue); // Handle the manually typed value
+    //   }
+    // }, 500);
+
+    // this.emitEvent(inputValue); // Handle the manually typed value
+  }
+
+  onKeyPressEvent(): void {
+    this.enableBLur = true;
+  }
+
+  onClickEvent(event: any): void {
+    this.enableBLur = false;
+    this.emitEvent(event.value);
+  }
+
+  emitEvent(data: string) {
+    this.searchForm.controls.searchInput.setValue(data);
     this.outEvent.emit(data);
   }
 
@@ -141,8 +159,7 @@ export class SearchInputComponent {
       let result = dialogResult;
 
       if(result) {
-        this.searchForm.controls.searchInput.setValue(result);
-        this.outEvent.emit(result);
+        this.emitEvent(result);
       }
     });
   }

@@ -7,29 +7,29 @@
             matInput
             formControlName="searchInput"
             [matAutocomplete]="autoInput"
-            (blur)="blurDataEvent($event)"
+            (blur)="onBlurEvent($event)"
             focus-scroll
             #searchInput />
         <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (click)="clickDataEvent(matOption)" class="mat-option" #matOption>
+                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (mousedown)="onClickEvent(matOption)" class="mat-option" #matOption>
                     {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
                 </mat-option>
-                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (click)="clickDataEvent(matOption)" class="mat-option" #matOption>
+                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (mousedown)="onClickEvent(matOption)" class="mat-option" #matOption>
                     {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
                 </mat-option>
-                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" (click)="clickDataEvent(matOption)" class="mat-option" #matOption>
+                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" (mousedown)="onClickEvent(matOption)" class="mat-option" #matOption>
                     {{place.place}} ({{ place.visits }})
                 </mat-option>
-                <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" (click)="clickDataEvent(matOption)" class="mat-option" #matOption>
+                <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" (mousedown)="onClickEvent(matOption)" class="mat-option" #matOption>
                     {{ region.region }} ({{ region.visits }})
                 </mat-option>
-                <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" (click)="clickDataEvent(matOption)" class="mat-option" #matOption>
+                <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" (mousedown)="onClickEvent(matOption)" class="mat-option" #matOption>
                     {{ type.type }} ({{ type.visits }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>
-        <button class="mat-icon-button" *ngIf="searchInput.value" color="primary" matSuffix mat-icon-button aria-label="Clear Field" (click)="clearDataEvent()">
+        <button class="mat-icon-button" *ngIf="searchInput.value" color="primary" matSuffix mat-icon-button aria-label="Clear Field" (mousedown)="clearDataEvent()">
             <mat-icon>clear</mat-icon>
         </button>
     </mat-form-field>

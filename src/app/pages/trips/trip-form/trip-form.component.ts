@@ -411,37 +411,23 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.service.updateValueAndValidity();
   }
 
-  selectPickupAddress(address: string) {
-    this.tripForm.controls.startAddress.setValue(address);
-  }
-
-  selectDestinationAddress(address: string) {
-    this.tripForm.controls.endAddress.setValue(address);
-    this.showAddressNames(address);
-  }
-
-  selectName(name: string) {
-    this.tripForm.controls.name.setValue(name);
-    this.showNameAddresses(name);
-  }
-
   setPickupAddress(address: string) {
     this.tripForm.controls.startAddress.setValue(address);
   }
 
-  setDestinationAddress(address: string) {
+  async setDestinationAddress(address: string) {
     this.tripForm.controls.endAddress.setValue(address);
-    this.showAddressNames(address);
+    await this.showAddressNames(address);
   }
 
-  setName(name: string) {
+  async setName(name: string) {
     this.tripForm.controls.name.setValue(name);
-    this.showNameAddresses(name);
+    await this.showNameAddresses(name);
   }
   
-  setPlace(place: string) {
-    this.selectPlace(place);
+  async setPlace(place: string) {
     this.tripForm.controls.place.setValue(place);
+    await this.selectPlace(place);
   }
 
   setRegion(region: string) {
@@ -472,17 +458,7 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    if (place === this.tripForm.value.place && !this.data.id) {
-      return;
-    }
-
-    this.selectedPlace = undefined;
-
-    // Set this for a list of place addresses on the screen.
-    let selectedPlace = await this._placeService.getPlace(place);
-    if (selectedPlace) {
-      this.selectedPlace = selectedPlace;
-    }
+    this.selectedPlace = await this._placeService.getPlace(place);
 
     let recentTrips = (await this._tripService.getTrips()).reverse().filter(x => x.place === place);
     let recentTrip = recentTrips[0];
