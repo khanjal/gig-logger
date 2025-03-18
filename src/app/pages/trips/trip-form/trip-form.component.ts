@@ -464,9 +464,7 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    // Set name to ensure proper casing
     place = this.selectedPlace.place;
-    this.tripForm.controls.place.setValue(this.selectedPlace.place);
 
     let recentTrips = (await this._tripService.getTrips()).reverse().filter(x => x.place === place);
     let recentTrip = recentTrips[0];

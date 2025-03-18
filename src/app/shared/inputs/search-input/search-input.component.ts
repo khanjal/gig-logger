@@ -64,7 +64,6 @@ export class SearchInputComponent {
   ) {}
 
   async ngOnInit(): Promise<void> {
-
     switch (this.searchType) {
       case "Address":
           this.filteredAddresses = this.searchForm.controls.searchInput.valueChanges.pipe(
@@ -110,30 +109,39 @@ export class SearchInputComponent {
     this.searchForm.controls.searchInput.setValue(this.formData);
   }
 
-  clearDataEvent() {
+  public clearDataEvent() {
+    this.searchForm.controls.searchInput.setValue("");
+    this.triggerFocus();
     this.emitEvent("");
-    this.inputElement.nativeElement.focus();
+    
   }
   
-  onBlurEvent(event: FocusEvent): void {
-    const inputValue = (event.target as HTMLInputElement).value;
+  public async onBlurEvent(event: FocusEvent): Promise<void> {
+    let inputValue = (event.target as HTMLInputElement).value;
+    inputValue = await this.SetProperValue(inputValue);    
+
     this.emitEvent(inputValue);
   }
 
-  onClickEvent(event: any): void {
+  public triggerBlur(): void {
     setTimeout(() => {
       this.inputElement.nativeElement.blur();
     }, 0);
-
-    this.emitEvent(event.value);
   }
 
-  emitEvent(data: string) {
+  private triggerFocus(): void {
+    setTimeout(() => {
+      this.inputElement.nativeElement.focus(); // Set focus back to the input
+    }, 0);
+  }
+
+  private emitEvent(data: string) {
+    // console.log("Emitting: ", data);
     this.searchForm.controls.searchInput.setValue(data);
     this.outEvent.emit(data);
   }
 
-  searchAddress() {
+  public searchAddress() {
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = `Search ${this.fieldName}`;
     dialogData.address = this.searchForm.value.searchInput ?? "";
@@ -152,6 +160,42 @@ export class SearchInputComponent {
         this.emitEvent(result);
       }
     });
+  }
+
+  private async SetProperValue(value: string): Promise<string> {
+    let properValue = "";
+
+    switch (this.searchType) {
+      case "Address":
+        properValue = (await this._filterAddress(value))[0]?.address ?? "";
+        break;
+      case "Name":
+        properValue =  (await this._filterName(value))[0]?.name ?? "";
+        break;
+      case "Place":
+        properValue = (await this._filterPlace(value))[0]?.place ?? "";
+        break;
+      case "Place":
+        properValue = (await this._filterPlace(value))[0]?.place ?? "";
+        break;
+      case "Region":
+        properValue = (await this._filterRegion(value))[0]?.region ?? "";
+        break;
+      case "Service":
+        properValue = (await this._filterService(value))[0]?.service ?? "";
+        break;
+      case "Type":
+        properValue = (await this._filterType(value))[0]?.type ?? "";
+        break;
+      default:
+        return value;
+    }
+
+    if (properValue.toLocaleLowerCase() === value.toLocaleLowerCase()) {
+      return properValue;
+    }
+
+    return value;
   }
 
   private async _filterAddress(value: string): Promise<IAddress[]> {
