@@ -12,20 +12,8 @@
             #searchInput />
         <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let address of filteredAddresses | async" [value]="address.address" (mousedown)="triggerBlur()" class="mat-option" #matOption>
-                    {{ address.address | shortaddress:'':1 | truncate:35 }} ({{ address.visits }})
-                </mat-option>
-                <mat-option *ngFor="let name of filteredNames | async" [value]="name.name" (mousedown)="triggerBlur()" class="mat-option" #matOption>
-                    {{ name.name }} (V: {{ name.visits }}, A: {{ name?.addresses?.length ?? 0 }})
-                </mat-option>
-                <mat-option *ngFor="let place of filteredPlaces | async" [value]="place.place" (mousedown)="triggerBlur()" class="mat-option" #matOption>
-                    {{place.place}} ({{ place.visits }})
-                </mat-option>
-                <mat-option *ngFor="let region of filteredRegions | async" [value]="region.region" (mousedown)="triggerBlur()" class="mat-option" #matOption>
-                    {{ region.region }} ({{ region.visits }})
-                </mat-option>
-                <mat-option *ngFor="let type of filteredTypes | async" [value]="type.type" (mousedown)="triggerBlur()" class="mat-option" #matOption>
-                    {{ type.type }} ({{ type.visits }})
+                <mat-option *ngFor="let item of filteredItems | async" [value]="item.name" (mousedown)="triggerBlur()" class="mat-option" #matOption>
+                    {{ item.name }} ({{ item.visits ?? 0 }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->
         </mat-autocomplete>

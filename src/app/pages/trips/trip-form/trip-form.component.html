@@ -20,36 +20,24 @@
             </mat-select>
         </mat-form-field>
 
-        <!-- Service -->
-        <div *ngIf="isNewShift">
-            <mat-form-field class="field-full-width" appearance="outline">
-                <mat-label>Service</mat-label>
-                <input type="text"
-                    name="service"
-                    placeholder="Pick one or enter new"
-                    aria-label="Service"
-                    matInput
-                    formControlName="service"
-                    [matAutocomplete]="autoService"
-                    focus-scroll
-                    #service>
-                <mat-autocomplete autoActiveFirstOption #autoService="matAutocomplete">
-                    <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                        <mat-option *ngFor="let service of filteredServices | async" [value]="service.service" class="mat-option">
-                            {{ service.service }} ({{ service.visits }})
-                        </mat-option>
-                    <!-- </cdk-virtual-scroll-viewport> -->
-                </mat-autocomplete>
-                <button class="mat-icon-button" *ngIf="service.value" color="primary" matSuffix mat-icon-button aria-label="Clear Service Dropdown" (click)="tripForm.controls.service.setValue('')">
-                    <mat-icon>clear</mat-icon>
-                </button>
-            </mat-form-field>
-        </div>
+        @if (isNewShift) {
+            <!-- Service -->
+            <app-search-input 
+                fieldName="Service" 
+                searchType="Service" 
+                [formData]="tripForm.value.service" 
+                [isRequired]="true"
+                (outEvent)="setService($event)">
+            </app-search-input>
 
-        <!-- Region -->
-        <div *ngIf="isNewShift">
-            <app-search-input fieldName="Region" searchType="Region" [formData]="tripForm.value.region" (outEvent)="setRegion($event)"></app-search-input>
-        </div>
+            <!-- Region -->
+            <app-search-input 
+                fieldName="Region" 
+                searchType="Region" 
+                [formData]="tripForm.value.region" 
+                (outEvent)="setRegion($event)">
+            </app-search-input>
+        }
 
         <!-- Place -->
         <app-search-input 

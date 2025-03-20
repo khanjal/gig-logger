@@ -434,6 +434,10 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.region.setValue(region);
   }
   
+  setService(service: string) {
+    this.tripForm.controls.service.setValue(service);
+  }
+
   setType(type: string) {
     this.tripForm.controls.type.setValue(type);
   }

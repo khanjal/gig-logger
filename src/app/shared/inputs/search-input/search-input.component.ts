@@ -1,31 +1,51 @@
+// Angular core imports
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, EventEmitter, input, Input, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+
+// Angular Material imports
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { BrowserModule } from '@angular/platform-browser';
+
+// Application-specific imports - Components
 import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
+
+// Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
+
+// Application-specific imports - Helpers
+import { AddressHelper } from '@helpers/address.helper';
 import { sort } from '@helpers/sort.helper';
+import { StringHelper } from '@helpers/string.helper';
+
+// Application-specific imports - Interfaces
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IRegion } from '@interfaces/region.interface';
+import { ISearchItem } from '@interfaces/search-item.interface';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
+
+// Application-specific imports - Pipes
 import { PipesModule } from '@pipes/pipes.module';
+
+// Application-specific imports - Services
 import { AddressService } from '@services/address.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
 import { RegionService } from '@services/region.service';
 import { ServiceService } from '@services/service.service';
 import { TypeService } from '@services/type.service';
-import { mergeMap, startWith, switchMap } from 'rxjs';
+
+// RxJS imports
+import { Observable, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-search-input',
@@ -41,17 +61,14 @@ export class SearchInputComponent {
   @Input() formData: any; // Allows string, null, or undefined
   @Input() showGoogle: boolean = false;
   @Input() searchType: string | undefined;
+  @Input() isRequired: boolean = false; // Default is not required
   @Output() outEvent = new EventEmitter<string>;
  
   searchForm = new FormGroup({
     searchInput: new FormControl('')
   });
-  filteredAddresses: any | undefined;
-  filteredNames: any;
-  filteredPlaces: any;
-  filteredRegions: any;
-  filteredServices: any;
-  filteredTypes: any;
+
+  filteredItems: Observable<ISearchItem[]> | undefined;
 
   constructor(
     public dialog: MatDialog,
@@ -64,56 +81,77 @@ export class SearchInputComponent {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    switch (this.searchType) {
-      case "Address":
-          this.filteredAddresses = this.searchForm.controls.searchInput.valueChanges.pipe(
-            switchMap(async value => await this._filterAddress(value || ''))
-          );
-        break;
-      case "Name": 
-        this.filteredNames = this.searchForm.controls.searchInput.valueChanges.pipe(
-          startWith(''),
-          mergeMap(async value => await this._filterName(value || ''))
-        );
-        break;
-      case "Place":
-        this.filteredPlaces = this.searchForm.controls.searchInput.valueChanges.pipe(
-          startWith(''),
-          mergeMap(async value => await this._filterPlace(value || ''))
-        );
-        break;
-      case "Region":
-        this.filteredRegions = this.searchForm.controls.searchInput.valueChanges.pipe(
-          startWith(''),
-          mergeMap(async value => await this._filterRegion(value || ''))
-        );
-        break;
-      case "Service":
-        this.filteredServices = this.searchForm.controls.searchInput.valueChanges.pipe(
-          startWith(''),
-          mergeMap(async value => await this._filterService(value || ''))
-        );
-        break;
-      case "Type":
-        this.filteredTypes = this.searchForm.controls.searchInput.valueChanges.pipe(
-          startWith(''),
-          mergeMap(async value => await this._filterType(value || ''))
-        );
-        break;
-      default:
-        break;
+    if (this.isRequired) {
+      this.searchForm.controls.searchInput.setValidators([Validators.required]);
     }
+
+    this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
+      startWith(''),
+      switchMap(async value => {
+        const trimmedValue = value?.trim() || '';
+        return await this._filterItems(trimmedValue);
+      })
+    );
+  }
+  
+  async ngOnChanges(): Promise<void> {
+    if (this.isRequired) {
+      this.searchForm.controls.searchInput.setValidators([Validators.required]);
+    } else {
+      this.searchForm.controls.searchInput.clearValidators();
+    }
+
+    this.searchForm.controls.searchInput.updateValueAndValidity(); // Ensure the form control is updated
+    this.searchForm.controls.searchInput.setValue(this.formData); // Set the initial value
   }
 
-  async ngOnChanges(){
-    this.searchForm.controls.searchInput.setValue(this.formData);
+  private async _filterItems(value: string): Promise<ISearchItem[]> {
+    switch (this.searchType) {
+      case 'Address':
+        return (await this._filterAddress(value)).map(item => ({
+          id: item.id,
+          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address), 35),
+          visits: item.visits
+        }));
+      case 'Name':
+        return (await this._filterName(value)).map(item => ({
+          id: item.id,
+          name: item.name,
+          visits: item.visits
+        }));
+      case 'Place':
+        return (await this._filterPlace(value)).map(item => ({
+          id: item.id,
+          name: item.place,
+          visits: item.visits
+        }));
+      case 'Region':
+        return (await this._filterRegion(value)).map(item => ({
+          id: item.id,
+          name: item.region,
+          visits: item.visits
+        }));
+      case 'Service':
+        return (await this._filterService(value)).map(item => ({
+          id: item.id,
+          name: item.service,
+          visits: item.visits
+        }));
+      case 'Type':
+        return (await this._filterType(value)).map(item => ({
+          id: item.id,
+          name: item.type,
+          visits: item.visits
+        }));
+      default:
+        return [];
+    }
   }
 
   public clearDataEvent() {
     this.searchForm.controls.searchInput.setValue("");
     this.triggerFocus();
     this.emitEvent("");
-    
   }
   
   public async onBlurEvent(event: FocusEvent): Promise<void> {
@@ -176,9 +214,6 @@ export class SearchInputComponent {
       case "Place":
         properValue = (await this._filterPlace(value))[0]?.place ?? "";
         break;
-      case "Place":
-        properValue = (await this._filterPlace(value))[0]?.place ?? "";
-        break;
       case "Region":
         properValue = (await this._filterRegion(value))[0]?.region ?? "";
         break;
@@ -203,6 +238,7 @@ export class SearchInputComponent {
     let addresses = await this._addressService.getAddresses();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
     sort(addresses, 'address');
+
     return (addresses).slice(0,100);
   }
 
