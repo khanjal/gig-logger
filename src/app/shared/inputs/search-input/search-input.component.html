@@ -12,7 +12,7 @@
             #searchInput />
         <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
             <!-- <cdk-virtual-scroll-viewport itemSize="20"> -->
-                <mat-option *ngFor="let item of filteredItems | async" [value]="item.name" (mousedown)="triggerBlur()" class="mat-option" #matOption>
+                <mat-option *ngFor="let item of filteredItems | async" [value]="item.name" (mousedown)="triggerBlur(item.value)" class="mat-option" #matOption>
                     {{ item.name }} ({{ item.visits ?? 0 }})
                 </mat-option>
             <!-- </cdk-virtual-scroll-viewport> -->

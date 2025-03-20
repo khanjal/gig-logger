@@ -110,37 +110,43 @@ export class SearchInputComponent {
       case 'Address':
         return (await this._filterAddress(value)).map(item => ({
           id: item.id,
-          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address), 35),
+          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
+          value: item.address,
           visits: item.visits
         }));
       case 'Name':
         return (await this._filterName(value)).map(item => ({
           id: item.id,
           name: item.name,
+          value: item.name,
           visits: item.visits
         }));
       case 'Place':
         return (await this._filterPlace(value)).map(item => ({
           id: item.id,
           name: item.place,
+          value: item.place,
           visits: item.visits
         }));
       case 'Region':
         return (await this._filterRegion(value)).map(item => ({
           id: item.id,
           name: item.region,
+          value: item.region,
           visits: item.visits
         }));
       case 'Service':
         return (await this._filterService(value)).map(item => ({
           id: item.id,
           name: item.service,
+          value: item.service,
           visits: item.visits
         }));
       case 'Type':
         return (await this._filterType(value)).map(item => ({
           id: item.id,
           name: item.type,
+          value: item.type,
           visits: item.visits
         }));
       default:
@@ -161,10 +167,11 @@ export class SearchInputComponent {
     this.emitEvent(inputValue);
   }
 
-  public triggerBlur(): void {
+  public triggerBlur(item: string): void {
+    this.searchForm.controls.searchInput.setValue(item);
     setTimeout(() => {
       this.inputElement.nativeElement.blur();
-    }, 0);
+    }, 100);
   }
 
   private triggerFocus(): void {
