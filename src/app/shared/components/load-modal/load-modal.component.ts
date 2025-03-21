@@ -55,16 +55,23 @@ export class LoadModalComponent {
         this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
 
         data.messages.forEach(message => {
-            if (message.level === 'INFO') {
-                this.appendToTerminal(message.message);
-            } else {
-                this.appendWarningToTerminal(message.message);
+            let messageLevel = message.level.toLowerCase();
+            if (messageLevel != 'info') {
+                this.enableAutoClose = false;
             }
+
+            this.appendToTerminal(message.message, messageLevel);
         });
 
         // Load data
         this.time = this.currentTime;
         this.appendToTerminal("Loading sheet data...");
+        
+        if (data.messages.filter(x => x.level.toLowerCase() == 'error').length > 0) {
+            this.processFailure("ERROR");
+            return;
+        }
+
         await this._sheetService.loadSpreadsheetData(<ISheet>data);
         this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
 
@@ -84,16 +91,16 @@ export class LoadModalComponent {
             this.dialogRef.close(true);
         }
         else {
-            this.appendWarningToTerminal('Modal autoclose disabled');
+            this.appendToTerminal('Modal autoclose disabled');
             this.stopTimer();
         }
     }
 
-    appendToTerminal(text: string) {
+    appendToTerminal(text: string, type: string = 'info') {
         this.divMessages.push({
             time: DateHelper.getMinutesAndSeconds(this.currentTime),
             text: text,
-            type: 'info'
+            type: type
         });
 
         this.scrollToBottom(); // Scroll to the bottom after adding a message
@@ -101,17 +108,6 @@ export class LoadModalComponent {
 
     appendToLastMessage(text: string) {
         this.divMessages[this.divMessages.length - 1].text += ` ${text}`;
-    }
-
-    appendWarningToTerminal(text: string) {
-        this.enableAutoClose = false;
-        this.divMessages.push({
-            time: DateHelper.getMinutesAndSeconds(this.currentTime),
-            text: text,
-            type: 'warning'
-        });
-
-        this.scrollToBottom(); // Scroll to the bottom after adding a warning
     }
 
     updateLastMessageType(type: string) {
@@ -124,8 +120,8 @@ export class LoadModalComponent {
 
     async processFailure(message: string) {
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
-        this.updateLastMessageType('warning');
-        this.appendWarningToTerminal('Modal autoclose disabled');
+        this.updateLastMessageType('error');
+        this.appendToTerminal('Modal autoclose disabled');
         this.stopTimer();
     }
 

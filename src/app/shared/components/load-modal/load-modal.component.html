@@ -1,12 +1,14 @@
 <div class="modal-container">
     <div class="terminal" #terminal>
         <div>
-            <p class="info">00:00 Please wait while your data is loaded.</p>
-            <p class="info">00:00 Modal will close when complete.</p>
+            <p class="info">00:00&nbsp;&nbsp;&nbsp;Please wait while your data is loaded.</p>
+            <p class="info">00:00&nbsp;&nbsp;&nbsp;Modal will close when complete.</p>
         </div>
         <div>
-            <p *ngFor="let message of divMessages" [ngClass]="message.type">
-                {{ message.time }} {{ message.text }}
+            <p *ngFor="let message of divMessages">
+                <span class="info">{{ message.time }}</span>
+                &nbsp;
+                <span [ngClass]="message.type">{{ message.text }}</span>
             </p>
         </div>
     </div>
