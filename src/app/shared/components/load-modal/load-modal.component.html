@@ -1,15 +1,18 @@
-<div class="terminal">
-    <div>
-        <p>00:00 Please wait while your data is loaded.</p>
-        <p>00:00 Modal will close when complete.</p>
+<div class="modal-container">
+    <div class="terminal" #terminal>
+        <div>
+            <p class="info">00:00 Please wait while your data is loaded.</p>
+            <p class="info">00:00 Modal will close when complete.</p>
+        </div>
+        <div>
+            <p *ngFor="let message of divMessages" [ngClass]="message.type">
+                {{ message.time }} {{ message.text }}
+            </p>
+        </div>
     </div>
-    <div [innerHTML]="divMessages">
-    </div>
-    <div>
-        <p>{{ currentTimeString }} {{ currentTask }}</p>
-    </div>
-</div>
 
-<div class="row-grid">
-    <button mat-fab extended [disabled]="currentTime < 60" (click)="cancelLoad()"> Cancel</button>
+    <!-- Button pinned at the bottom -->
+    <div class="button-container">
+        <button mat-fab extended [disabled]="currentTime < 60 && enableAutoClose" (click)="cancelLoad()">{{ enableAutoClose ? "Cancel" : "Close" }}</button>
+    </div>
 </div>

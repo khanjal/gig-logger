@@ -67,7 +67,12 @@ export class GigLoggerService {
     }
 
     public async getSheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/all`, { headers: this.setHeader(sheetId) });
+        try {
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, { headers: this.setHeader(sheetId) }));
+        } catch (error) {
+            console.error('Error getting sheet data:', error);
+            return null;
+        }
     }
 
     public async getSheetSingle(sheetId: string, sheetName: string) {

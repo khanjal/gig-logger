@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { map, timer } from 'rxjs';
@@ -12,11 +12,13 @@ import { ISheet } from '@interfaces/sheet.interface';
   styleUrls: ['./load-modal.component.scss']
 })
 export class LoadModalComponent {
+    @ViewChild('terminal') terminalElement!: ElementRef;
+    
     currentTime = 0;
     time = 0;
+    enableAutoClose = true;
     currentTimeString = "";
-    currentTask = "";
-    divMessages = "";
+    divMessages: { time: string, text: string; type: string }[] = [];
     timerDelay = 5000;
 
     constructor(public dialogRef: MatDialogRef<LoadModalComponent>,
@@ -29,7 +31,7 @@ export class LoadModalComponent {
         this.startTimer();
         this.time = this.currentTime;
 
-        this.currentTask = "Checking service status..."
+        this.appendToTerminal("Checking service status...");
         let response = await this._sheetService.warmUpLambda();
 
         if (!response) {
@@ -37,51 +39,89 @@ export class LoadModalComponent {
             return;
         }
 
-        this.appendToTerminal(`${this.currentTask} ONLINE (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`ONLINE (${this.currentTime - this.time}s)`);
 
         // Get data
         this.time = this.currentTime;
-        this.currentTask = "Getting sheet data...";
+        this.appendToTerminal("Getting sheet data...");
         let data = await this._sheetService.getSpreadsheetData(primarySpreadsheet);
 
         if (!data) {
             this.processFailure("ERROR");
             return;
         }
-        this.appendToTerminal(`${this.currentTask} DONE (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+        data.messages.forEach(message => {
+            if (message.level === 'INFO') {
+                this.appendToTerminal(message.message);
+            } else {
+                this.appendWarningToTerminal(message.message);
+            }
+        });
 
         // Load data
         this.time = this.currentTime;
-        this.currentTask = "Loading sheet data...";
+        this.appendToTerminal("Loading sheet data...");
         await this._sheetService.loadSpreadsheetData(<ISheet>data);
-        this.appendToTerminal(`${this.currentTask} LOADED (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
 
         let secondarySpreadsheets = (await this._sheetService.getSpreadsheets()).filter(x => x.default !== "true");
         for (const secondarySpreadsheet of secondarySpreadsheets) {
             this.time = this.currentTime;
-            this.currentTask = "Appending sheet data...";
+            this.appendToTerminal("Appending sheet data...");
             let data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
             
             await this._sheetService.appendSpreadsheetData(data);
-            this.appendToTerminal(`${this.currentTask} APPENDED (${this.currentTime - this.time}s)`);
+            this.appendToLastMessage(`APPENDED (${this.currentTime - this.time}s)`);
         }
 
-        this.currentTask = `Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`;
+        if (this.enableAutoClose) {
+            this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
+            await this._timerService.delay(this.timerDelay);
+            this.dialogRef.close(true);
+        }
 
-        await this._timerService.delay(this.timerDelay);
-        this.dialogRef.close(true);
+        
     }
 
     appendToTerminal(text: string) {
-        this.divMessages = `${this.divMessages}<p>${DateHelper.getMinutesAndSeconds(this.currentTime)} ${text}</p>`
+        this.divMessages.push({
+            time: DateHelper.getMinutesAndSeconds(this.currentTime),
+            text: text,
+            type: 'info'
+        });
+
+        this.scrollToBottom(); // Scroll to the bottom after adding a message
+    }
+
+    appendToLastMessage(text: string) {
+        this.divMessages[this.divMessages.length - 1].text += ` ${text}`;
+    }
+
+    appendWarningToTerminal(text: string) {
+        this.enableAutoClose = false;
+        this.divMessages.push({
+            time: DateHelper.getMinutesAndSeconds(this.currentTime),
+            text: text,
+            type: 'warning'
+        });
+
+        this.scrollToBottom(); // Scroll to the bottom after adding a warning
+    }
+
+    updateLastMessageType(type: string) {
+        this.divMessages[this.divMessages.length - 1].type = type;
+    }
+
+    updateLastMessageTime() {
+        this.divMessages[this.divMessages.length - 1].time = DateHelper.getMinutesAndSeconds(this.currentTime);
     }
 
     async processFailure(message: string) {
-        this.appendToTerminal(`${this.currentTask} ${message} (${this.currentTime - this.time}s)`);   
-        this.currentTask = `Modal closing ${this.currentTime + (this.timerDelay / 1000)}s`;
-
-        await this._timerService.delay(this.timerDelay);
-        this.dialogRef.close(false); 
+        this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
+        this.updateLastMessageType('warning');
+        this.appendWarningToTerminal('Modal autoclose disabled');
     }
 
     cancelLoad() {
@@ -98,6 +138,15 @@ export class LoadModalComponent {
             .subscribe(t => {
                 this.currentTime = t;
                 this.currentTimeString = DateHelper.getMinutesAndSeconds(t);
+                this.updateLastMessageTime();
             });
     }
+
+    private scrollToBottom() {
+        setTimeout(() => {
+          if (this.terminalElement) {
+            this.terminalElement.nativeElement.scrollTop = this.terminalElement.nativeElement.scrollHeight;
+          }
+        }, 0);
+      }
 }

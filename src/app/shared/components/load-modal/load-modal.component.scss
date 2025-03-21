@@ -1,7 +1,34 @@
+.modal-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Full height of the modal */
+    position: relative;
+}
+
 .terminal {
+    flex: 1;
+    max-height: 400px; /* Adjust as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc;
+    padding: 16px;
     background-color: black;
+    border-radius: 8px;
+    padding-bottom: 1rem;
+}
+
+.button-container {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff; /* Optional: Add a background to separate the button visually */
+    padding: 16px;
+    text-align: center; /* Center the button horizontally */
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for separation */
+}
+
+.info {
     color: lime;
-    font: Inconsolata, monospace;
-    height: 75%;
-    padding: 1rem;
+}
+
+.warning {
+    color: yellow;
 }
