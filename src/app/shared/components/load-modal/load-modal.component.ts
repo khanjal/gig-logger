@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { map, timer } from 'rxjs';
+import { map, Subscription, timer } from 'rxjs';
 import { TimerService } from '@services/timer.service';
 import { DateHelper } from '@helpers/date.helper';
 import { ISheet } from '@interfaces/sheet.interface';
@@ -13,6 +13,8 @@ import { ISheet } from '@interfaces/sheet.interface';
 })
 export class LoadModalComponent {
     @ViewChild('terminal') terminalElement!: ElementRef;
+    
+    private timerSubscription: Subscription | null = null; // Add a subscription for the timer
     
     currentTime = 0;
     time = 0;
@@ -81,8 +83,10 @@ export class LoadModalComponent {
             await this._timerService.delay(this.timerDelay);
             this.dialogRef.close(true);
         }
-
-        
+        else {
+            this.appendWarningToTerminal('Modal autoclose disabled');
+            this.stopTimer();
+        }
     }
 
     appendToTerminal(text: string) {
@@ -122,6 +126,7 @@ export class LoadModalComponent {
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
         this.updateLastMessageType('warning');
         this.appendWarningToTerminal('Modal autoclose disabled');
+        this.stopTimer();
     }
 
     cancelLoad() {
@@ -129,17 +134,22 @@ export class LoadModalComponent {
     }
 
     startTimer() {
-        timer(0, 1000)
+        this.timerSubscription = timer(0, 1000) // Emit values every second
             .pipe(
-                map((x: number) => {
-                    return x;
-                })
+                map((x: number) => x)
             )
             .subscribe(t => {
                 this.currentTime = t;
                 this.currentTimeString = DateHelper.getMinutesAndSeconds(t);
                 this.updateLastMessageTime();
             });
+    }
+
+    stopTimer() {
+        if (this.timerSubscription) {
+            this.timerSubscription.unsubscribe(); // Unsubscribe from the timer
+            this.timerSubscription = null; // Reset the subscription
+        }
     }
 
     private scrollToBottom() {

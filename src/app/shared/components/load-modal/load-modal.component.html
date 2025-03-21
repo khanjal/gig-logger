@@ -13,6 +13,6 @@
 
     <!-- Button pinned at the bottom -->
     <div class="button-container">
-        <button mat-fab extended [disabled]="currentTime < 60 && enableAutoClose" (click)="cancelLoad()">{{ enableAutoClose ? "Cancel" : "Close" }}</button>
+        <button mat-fab extended color="accent" [disabled]="currentTime < 60 && enableAutoClose" (click)="cancelLoad()">{{ enableAutoClose ? "Cancel" : "Close" }}</button>
     </div>
 </div>
