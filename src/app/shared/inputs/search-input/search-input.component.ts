@@ -124,7 +124,7 @@ export class SearchInputComponent {
   set value(val: string) {
     this.searchForm.controls.searchInput.setValue(val); // Update the FormControl value
     this.onChange(val); // Notify Angular forms of the change
-    this.outEvent.emit(val); // Emit the value to the parent component
+    this.outEvent.emit(val); // Emit the value to the parent component for advanced logic
   }
 
   // ControlValueAccessor methods
@@ -144,6 +144,7 @@ export class SearchInputComponent {
     // Handle the disabled state if needed
   }
 
+  // Event handlers
   onBlur(): void {
     this.onTouched(); // Notify Angular forms that the input was touched
   }
@@ -161,6 +162,7 @@ export class SearchInputComponent {
     this.value = inputValue; // Update the value and trigger onChange
   }
 
+  // Filter items based on the search type
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
@@ -210,6 +212,7 @@ export class SearchInputComponent {
     }
   }
 
+  // Open the address dialog
   public searchAddress() {
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = `Search ${this.fieldName}`;
@@ -231,6 +234,7 @@ export class SearchInputComponent {
     });
   }
 
+  // Set the proper cased value based on the search type
   private async setProperValue(value: string): Promise<string> {
     let properValue = "";
     value = value.trim();
@@ -265,6 +269,7 @@ export class SearchInputComponent {
     return value;
   }
 
+  // Filter items based on the search type
   private async _filterAddress(value: string): Promise<IAddress[]> {
     let addresses = await this._addressService.getAddresses();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
