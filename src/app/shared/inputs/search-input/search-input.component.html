@@ -5,7 +5,7 @@
             matInput
             type="text"
             [matAutocomplete]="autoInput"
-            [value]="value"
+            formControlName="searchInput"
             (input)="onInputChange($event)"
             (blur)="onBlur()"
             [required]="isRequired"

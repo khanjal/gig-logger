@@ -118,18 +118,18 @@ export class SearchInputComponent {
 
   // Getter and setter for the value
   get value(): string {
-    return this._value;
+    return this.searchForm.controls.searchInput.value || '';
   }
 
   set value(val: string) {
-    this._value = val;
+    this.searchForm.controls.searchInput.setValue(val); // Update the FormControl value
     this.onChange(val); // Notify Angular forms of the change
     this.outEvent.emit(val); // Emit the value to the parent component
   }
 
   // ControlValueAccessor methods
   writeValue(value: string): void {
-    this._value = value || '';
+    this.searchForm.controls.searchInput.setValue(value || ''); // Set the FormControl value
   }
 
   registerOnChange(fn: (value: string) => void): void {
