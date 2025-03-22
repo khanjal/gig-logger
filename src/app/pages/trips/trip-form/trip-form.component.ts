@@ -416,15 +416,13 @@ export class TripFormComponent implements OnInit {
   }
 
   async setDestinationAddress(address: string) {
+    this.tripForm.controls.endAddress.setValue(address);
     await this.showAddressNames(address);
   }
 
   async setName(name: string) {
+    this.tripForm.controls.name.setValue(name);
     await this.showNameAddresses(name);
-  }
-  
-  async setPlace(place: string) {
-    await this.selectPlace(place);
   }
 
   async showAddressNames(address: string) {
@@ -448,7 +446,6 @@ export class TripFormComponent implements OnInit {
     }
 
     this.selectedPlace = await this._placeService.getPlace(place);
-
     if (!this.selectedPlace) {
       return;
     }
