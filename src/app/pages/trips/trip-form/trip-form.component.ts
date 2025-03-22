@@ -416,30 +416,15 @@ export class TripFormComponent implements OnInit {
   }
 
   async setDestinationAddress(address: string) {
-    this.tripForm.controls.endAddress.setValue(address);
     await this.showAddressNames(address);
   }
 
   async setName(name: string) {
-    this.tripForm.controls.name.setValue(name);
     await this.showNameAddresses(name);
   }
   
   async setPlace(place: string) {
-    this.tripForm.controls.place.setValue(place);
     await this.selectPlace(place);
-  }
-
-  setRegion(region: string) {
-    this.tripForm.controls.region.setValue(region);
-  }
-  
-  setService(service: string) {
-    this.tripForm.controls.service.setValue(service);
-  }
-
-  setType(type: string) {
-    this.tripForm.controls.type.setValue(type);
   }
 
   async showAddressNames(address: string) {
@@ -499,7 +484,6 @@ export class TripFormComponent implements OnInit {
   // TODO move to helper
   async countAddress(address: string): Promise<number> {
     let foundAddress = await this._addressService.findAddress(address);
-    console.log(foundAddress);
     return foundAddress?.visits ?? 0;
   }
 

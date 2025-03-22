@@ -25,17 +25,15 @@
             <app-search-input 
                 fieldName="Service" 
                 searchType="Service" 
-                [formData]="tripForm.value.service" 
-                [isRequired]="true"
-                (outEvent)="setService($event)">
+                formControlName="service"
+                [isRequired]="true">
             </app-search-input>
 
             <!-- Region -->
             <app-search-input 
                 fieldName="Region" 
                 searchType="Region" 
-                [formData]="tripForm.value.region" 
-                (outEvent)="setRegion($event)">
+                formControlName="region">
             </app-search-input>
         }
 
@@ -43,12 +41,16 @@
         <app-search-input 
             fieldName="Place" 
             searchType="Place" 
-            [formData]="tripForm.value.place" 
+            formControlName="place"
             (outEvent)="setPlace($event)">
         </app-search-input>
         
         <!-- Type -->
-        <app-search-input fieldName="Type" searchType="Type" [formData]="tripForm.value.type" (outEvent)="setType($event)"></app-search-input>
+        <app-search-input 
+            fieldName="Type" 
+            searchType="Type" 
+            formControlName="type">
+        </app-search-input>
         
         <!-- Pay -->
         <div class="row-block">
@@ -104,7 +106,7 @@
                 <app-search-input 
                     fieldName="Name" 
                     searchType="Name" 
-                    [formData]="tripForm.value.name" 
+                    formControlName="name"
                     (outEvent)="setName($event)">
                 </app-search-input>
             </div>
@@ -134,7 +136,13 @@
         </div>
 
         <!-- Pickup Address -->
-        <app-search-input *ngIf="showPickupAddress" fieldName="Pickup Address" searchType="Address" [formData]="tripForm.value.startAddress" (outEvent)="setPickupAddress($event)" [showGoogle]="true"></app-search-input>
+        <app-search-input 
+            *ngIf="showPickupAddress" 
+            fieldName="Pickup Address" 
+            searchType="Address" 
+            formControlName="startAddress"
+            [showGoogle]="true">
+        </app-search-input>
         
         <!-- Address List/Notes -->
         <div  class="section" *ngIf="selectedNameDeliveries?.length">
@@ -163,9 +171,9 @@
         <app-search-input 
             fieldName="Destination Address" 
             searchType="Address" 
-            [formData]="tripForm.value.endAddress" 
-            (outEvent)="setDestinationAddress($event)" 
-            [showGoogle]="true">
+            formControlName="endAddress"
+            [showGoogle]="true"
+            (outEvent)="setDestinationAddress($event)">
         </app-search-input>
         
         <!-- Name List/Notes -->

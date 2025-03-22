@@ -1,7 +1,7 @@
 // Angular core imports
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 // Angular Material imports
@@ -52,18 +52,30 @@ import { Observable, startWith, switchMap } from 'rxjs';
   standalone: true,
   imports: [AsyncPipe, BrowserModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
   templateUrl: './search-input.component.html',
-  styleUrl: './search-input.component.scss'
+  styleUrl: './search-input.component.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => SearchInputComponent),
+      multi: true
+    }
+  ]
 })
 
 export class SearchInputComponent {
   @ViewChild('searchInput') inputElement!: ElementRef;
-  @Input() fieldName: string = "";
-  @Input() formData: any; // Allows string, null, or undefined
+  @Input() fieldName: string = '';
+  @Input() searchType: string = '';
   @Input() showGoogle: boolean = false;
-  @Input() searchType: string | undefined;
   @Input() isRequired: boolean = false; // Default is not required
   @Output() outEvent = new EventEmitter<string>;
  
+  private _value: string = '';
+
+  // Callbacks for ControlValueAccessor
+  private onChange: (value: string) => void = () => {};
+  private onTouched: () => void = () => {};
+
   searchForm = new FormGroup({
     searchInput: new FormControl('')
   });
@@ -102,7 +114,51 @@ export class SearchInputComponent {
     }
 
     this.searchForm.controls.searchInput.updateValueAndValidity(); // Ensure the form control is updated
-    this.searchForm.controls.searchInput.setValue(this.formData); // Set the initial value
+  }
+
+  // Getter and setter for the value
+  get value(): string {
+    return this._value;
+  }
+
+  set value(val: string) {
+    this._value = val;
+    this.onChange(val); // Notify Angular forms of the change
+    this.outEvent.emit(val); // Emit the value to the parent component
+  }
+
+  // ControlValueAccessor methods
+  writeValue(value: string): void {
+    this._value = value || '';
+  }
+
+  registerOnChange(fn: (value: string) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState?(isDisabled: boolean): void {
+    // Handle the disabled state if needed
+  }
+
+  onBlur(): void {
+    this.onTouched(); // Notify Angular forms that the input was touched
+  }
+
+  public onClear() {
+    this.value = '';
+  }
+
+  async onInputChange(event: Event): Promise<void> {
+    const inputValue = (event.target as HTMLInputElement).value;
+    this.value = await this.setProperValue(inputValue); // Update the value and trigger onChange
+  }
+
+  async onInputSelect(inputValue: string): Promise<void> {
+    this.value = inputValue; // Update the value and trigger onChange
   }
 
   private async _filterItems(value: string): Promise<ISearchItem[]> {
@@ -154,42 +210,10 @@ export class SearchInputComponent {
     }
   }
 
-  public clearDataEvent() {
-    this.searchForm.controls.searchInput.setValue("");
-    this.triggerFocus();
-    this.emitEvent("");
-  }
-  
-  public async onBlurEvent(event: FocusEvent): Promise<void> {
-    let inputValue = (event.target as HTMLInputElement).value;
-    inputValue = await this.SetProperValue(inputValue);    
-
-    this.emitEvent(inputValue);
-  }
-
-  public triggerBlur(item: string): void {
-    this.searchForm.controls.searchInput.setValue(item);
-    setTimeout(() => {
-      this.inputElement.nativeElement.blur();
-    }, 100);
-  }
-
-  private triggerFocus(): void {
-    setTimeout(() => {
-      this.inputElement.nativeElement.focus(); // Set focus back to the input
-    }, 0);
-  }
-
-  private emitEvent(data: string) {
-    // console.log("Emitting: ", data);
-    this.searchForm.controls.searchInput.setValue(data);
-    this.outEvent.emit(data);
-  }
-
   public searchAddress() {
     let dialogData: IAddressDialog = {} as IAddressDialog;
     dialogData.title = `Search ${this.fieldName}`;
-    dialogData.address = this.searchForm.value.searchInput ?? "";
+    dialogData.address = this.value ?? "";
     dialogData.trueText = "OK";
     dialogData.falseText = "Cancel";
 
@@ -202,12 +226,12 @@ export class SearchInputComponent {
       let result = dialogResult;
 
       if(result) {
-        this.emitEvent(result);
+        this.value = result;
       }
     });
   }
 
-  private async SetProperValue(value: string): Promise<string> {
+  private async setProperValue(value: string): Promise<string> {
     let properValue = "";
     value = value.trim();
 
