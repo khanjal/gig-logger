@@ -146,6 +146,7 @@ export class SearchInputComponent {
 
   // Event handlers
   onBlur(): void {
+    this.value = this.value.trim(); // Trim the value
     this.onTouched(); // Notify Angular forms that the input was touched
   }
 
@@ -237,7 +238,6 @@ export class SearchInputComponent {
   // Set the proper cased value based on the search type
   private async setProperValue(value: string): Promise<string> {
     let properValue = "";
-    value = value.trim();
 
     switch (this.searchType) {
       case "Address":
