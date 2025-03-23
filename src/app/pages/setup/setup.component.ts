@@ -49,7 +49,7 @@ export class SetupComponent {
     }
 
     this.reloading = true;
-    await this.loadSheetDialog();
+    await this.loadSheetDialog('load');
     this.reloading = false;
   }
 
@@ -146,11 +146,12 @@ export class SetupComponent {
     this._commonService.updateHeaderLink("New User");
   }
 
-  async loadSheetDialog() {
+  async loadSheetDialog(inputValue: string) {
         let dialogRef = this.dialog.open(LoadModalComponent, {
             height: '400px',
             width: '500px',
-            panelClass: 'custom-modalbox'
+            panelClass: 'custom-modalbox',
+            data: inputValue
         });
   
         dialogRef.afterClosed().subscribe(async result => {

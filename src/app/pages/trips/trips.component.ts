@@ -115,11 +115,12 @@ export class TripComponent implements OnInit, OnDestroy {
     });
   }
 
-  async loadSheetDialog() {
+  async loadSheetDialog(inputValue: string) {
       let dialogRef = this.dialog.open(LoadModalComponent, {
           height: '400px',
           width: '500px',
-          panelClass: 'custom-modalbox'
+          panelClass: 'custom-modalbox',
+          data: inputValue
       });
 
       dialogRef.afterClosed().subscribe(async result => {
@@ -130,11 +131,12 @@ export class TripComponent implements OnInit, OnDestroy {
       });
   }
 
-  async saveSheetDialog() {
-      let dialogRef = this.dialog.open(SaveModalComponent, {
+  async saveSheetDialog(inputValue: string) {
+      let dialogRef = this.dialog.open(LoadModalComponent, {
           height: '400px',
           width: '500px',
-          panelClass: 'custom-modalbox'
+          panelClass: 'custom-modalbox',
+          data: inputValue
       });
 
       dialogRef.afterClosed().subscribe(async result => {
@@ -187,7 +189,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.saveSheetDialog();
+        await this.saveSheetDialog('save');
       }
     });
   }
@@ -209,7 +211,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        await this.loadSheetDialog();
+        await this.loadSheetDialog('load');
       }
 
       if (this.pollingEnabled) {
