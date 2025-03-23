@@ -8,7 +8,7 @@ import { CommonService } from '@services/common.service';
 import { MatDialog } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { LoadModalComponent } from '@components/load-modal/load-modal.component';
+import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 
 @Component({
   selector: 'app-setup',
@@ -147,7 +147,7 @@ export class SetupComponent {
   }
 
   async loadSheetDialog(inputValue: string) {
-        let dialogRef = this.dialog.open(LoadModalComponent, {
+        let dialogRef = this.dialog.open(DataSyncModalComponent, {
             height: '400px',
             width: '500px',
             panelClass: 'custom-modalbox',

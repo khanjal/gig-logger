@@ -465,7 +465,7 @@ export class TripFormComponent implements OnInit {
     }
     else {
       let recentAddress = recentTrips.filter(x => x.startAddress)[0];
-      this.tripForm.controls.startAddress.setValue(recentAddress.startAddress);
+      this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? "");
     }
 
     // Auto assign to most recent type.
@@ -474,7 +474,7 @@ export class TripFormComponent implements OnInit {
     }
     else {
       let recentType = recentTrips.filter(x => x.type)[0];
-      this.tripForm.controls.type.setValue(recentType.type);
+      this.tripForm.controls.type.setValue(recentType?.type ?? "");
     }
   }
 

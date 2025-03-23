@@ -21,8 +21,7 @@ import { CurrentAverageComponent } from '@components/current-average/current-ave
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { TripFormComponent } from './trip-form/trip-form.component';
 import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
-import { LoadModalComponent } from '@components/load-modal/load-modal.component';
-import { SaveModalComponent } from '@components/save-modal/save-modal.component';
+import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 
 import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
@@ -116,7 +115,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async loadSheetDialog(inputValue: string) {
-      let dialogRef = this.dialog.open(LoadModalComponent, {
+      let dialogRef = this.dialog.open(DataSyncModalComponent, {
           height: '400px',
           width: '500px',
           panelClass: 'custom-modalbox',
@@ -132,7 +131,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async saveSheetDialog(inputValue: string) {
-      let dialogRef = this.dialog.open(LoadModalComponent, {
+      let dialogRef = this.dialog.open(DataSyncModalComponent, {
           height: '400px',
           width: '500px',
           panelClass: 'custom-modalbox',

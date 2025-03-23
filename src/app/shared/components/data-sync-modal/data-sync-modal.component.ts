@@ -20,11 +20,11 @@ import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
 
 @Component({
-  selector: 'app-load-modal',
-  templateUrl: './load-modal.component.html',
-  styleUrls: ['./load-modal.component.scss']
+  selector: 'app-data-sync-modal',
+  templateUrl: './data-sync-modal.component.html',
+  styleUrls: ['./data-sync-modal.component.scss']
 })
-export class LoadModalComponent {
+export class DataSyncModalComponent {
     @ViewChild('terminal') terminalElement!: ElementRef;
     
     private timerSubscription: Subscription | null = null; // Add a subscription for the timer
@@ -40,7 +40,7 @@ export class LoadModalComponent {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public type: string,
-        public dialogRef: MatDialogRef<LoadModalComponent>,
+        public dialogRef: MatDialogRef<DataSyncModalComponent>,
         private _gigLoggerService: GigLoggerService,
         private _sheetService: SpreadsheetService,
         private _shiftService: ShiftService,
@@ -70,7 +70,7 @@ export class LoadModalComponent {
                 await this.saveData();
                 break;
             case 'load':
-                this.loadData();
+                await this.loadData();
                 break;
             default:
                 this.appendToTerminal(`Invalid type: ${this.type}`, "error");

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoadModalComponent } from './load-modal.component';
+import { DataSyncModalComponent } from './data-sync-modal.component';
 
-describe('LoadModalComponent', () => {
-  let component: LoadModalComponent;
-  let fixture: ComponentFixture<LoadModalComponent>;
+describe('DataSyncModalComponent', () => {
+  let component: DataSyncModalComponent;
+  let fixture: ComponentFixture<DataSyncModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoadModalComponent ]
+      declarations: [ DataSyncModalComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LoadModalComponent);
+    fixture = TestBed.createComponent(DataSyncModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

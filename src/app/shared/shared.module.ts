@@ -27,8 +27,7 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TripsTableBasicComponent } from '@components/trips-table-basic/trips-table-basic.component';
 import { CustomRangePanelComponent } from '@components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
 import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
-import { LoadModalComponent } from '@components/load-modal/load-modal.component';
-import { SaveModalComponent } from '@components/save-modal/save-modal.component';
+import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 import { PipesModule } from '@pipes/pipes.module';
 import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
 import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-trips-table.component';
@@ -49,8 +48,7 @@ import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-tr
         TripsTableSimpleComponent,
         CustomRangePanelComponent,
         CustomCalendarHeaderComponent,
-        LoadModalComponent,
-        SaveModalComponent
+        DataSyncModalComponent
     ],
     exports: [
         CurrentAverageComponent,

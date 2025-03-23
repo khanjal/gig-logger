@@ -9,7 +9,7 @@ import { ShiftService } from '@services/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SaveModalComponent } from '@components/save-modal/save-modal.component';
+import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 
 @Component({
@@ -54,16 +54,17 @@ export class ShiftsQuickViewComponent {
       if(result) {
         updateShiftAction(shift, ActionEnum.Delete);
         await this.shiftService.updateShift(shift);
-        await this.saveSheetDialog();
+        await this.saveSheetDialog('save');
       }
     });
   }
 
-  async saveSheetDialog() {
-    let dialogRef = this.dialog.open(SaveModalComponent, {
+  async saveSheetDialog(inputValue: string) {
+    let dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',
         width: '500px',
-        panelClass: 'custom-modalbox'
+        panelClass: 'custom-modalbox',
+        data: inputValue
     });
 
     dialogRef.afterClosed().subscribe(async result => {
