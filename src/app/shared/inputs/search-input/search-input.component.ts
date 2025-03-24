@@ -100,7 +100,7 @@ export class SearchInputComponent {
     this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
       startWith(''),
       switchMap(async value => {
-        const trimmedValue = value?.trim() || '';
+        const trimmedValue = value || '';
         return await this._filterItems(trimmedValue);
       })
     );
