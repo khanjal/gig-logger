@@ -45,7 +45,7 @@ export class DateHelper {
         if (!date) {
             date = new Date();
         }
-        
+
         let timeString = date.toLocaleTimeString();
         timeString = this.removeSeconds(timeString);
         return timeString;
@@ -88,16 +88,14 @@ export class DateHelper {
             return 0;
         }
 
-        let startDate = Date.parse(new Date().toDateString() + ' ' + start);
-        let endDate = Date.parse(new Date().toDateString() + ' ' + end);
-
-        let diff = (endDate - startDate) / 1000;
+        let startDate = Date.parse(new Date().toDateString() + ' ' + start) / 1000;
+        let endDate = Date.parse(new Date().toDateString() + ' ' + end) / 1000;
 
         if (endDate < startDate) {
-            endDate += 86400; // Add day if end less than start.
-            diff = endDate - startDate;
+            startDate -= 86400; // Subtract a day if end less than start.
         }
 
+        let diff = (endDate - startDate);
         return diff;
     }
 
