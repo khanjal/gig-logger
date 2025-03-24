@@ -89,6 +89,7 @@ export class TripFormComponent implements OnInit {
   selectedNameDeliveries: IDelivery[] | undefined;
   
   selectedPlace: IPlace | undefined;
+  selectedPlaceAddresses: IAddress[] | undefined;
 
   filteredServices: Observable<IService[]> | undefined;
   
@@ -117,12 +118,6 @@ export class TripFormComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.load();
-
-    this.filteredServices = this.tripForm.controls.service.valueChanges.pipe(
-      startWith(''),
-      mergeMap(async value => await this._filterService(value || ''))
-    );
-
   }
 
   public async load() {
@@ -221,45 +216,51 @@ export class TripFormComponent implements OnInit {
   }
 
   private async loadForm() {
-    this.selectedShift = (await this._shiftService.queryShiftByKey(this.data.key));
-    this.tripForm.controls.service.setValue(this.data.service);
-    this.tripForm.controls.type.setValue(this.data.type);
+    if (!this.data) return;
+  
+    // Set basic form values
+    this.setFormValues({
+      service: this.data.service,
+      type: this.data.type,
+      pay: this.data.pay === 0 ? '' : this.data.pay,
+      tip: this.data.tip,
+      bonus: this.data.bonus,
+      cash: this.data.cash,
+      startOdometer: this.data.startOdometer,
+      endOdometer: this.data.endOdometer,
+      place: this.data.place,
+      distance: this.data.distance,
+      name: this.data.name,
+      startAddress: this.data.startAddress,
+      endAddress: this.data.endAddress,
+      pickupTime: DateHelper.removeSeconds(this.data.pickupTime),
+      dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime),
+      note: this.data.note,
+      endUnit: this.data.endUnit,
+      orderNumber: this.data.orderNumber,
+      exclude: this.data.exclude ? 'true' : ''
+    });
+  
+    // Toggle UI states
+    this.showAdvancedPay = !!(this.data.pay || this.data.tip || this.data.bonus || this.data.cash);
+    this.showOdometer = !!(this.data.startOdometer || this.data.endOdometer);
+    this.showPickupAddress = !!this.data.place;
+    this.showTimes = !!(this.data.pickupTime || this.data.dropoffTime);
+    this.showOrder = !!(this.data.endUnit || this.data.orderNumber);
+  
+    // Handle dependent logic
+    this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
+    await this.selectPlace(this.data.place);
+    await this.showNameAddresses(this.data.name);
+    await this.showAddressNames(this.data.endAddress);
+  }
 
-    this.tripForm.controls.pay.setValue(this.data.pay === 0 ? '' : this.data.pay); // Don't load in a 0
-    this.tripForm.controls.tip.setValue(this.data.tip);
-    this.tripForm.controls.bonus.setValue(this.data.bonus);
-    this.tripForm.controls.cash.setValue(this.data.cash);
-    this.showAdvancedPay = true;
-
-    this.tripForm.controls.startOdometer.setValue(this.data.startOdometer);
-    this.tripForm.controls.endOdometer.setValue(this.data.endOdometer);
-    this.showOdometer = true;
-
-    this.tripForm.controls.place.setValue(this.data.place);
-    this.selectPlace(this.data.place);
-    this.showPickupAddress = true;
-
-    this.tripForm.controls.distance.setValue(this.data.distance);
-    this.tripForm.controls.name.setValue(this.data.name);
-    this.showNameAddresses(this.data.name);
-
-    this.tripForm.controls.startAddress.setValue(this.data.startAddress);
-    this.tripForm.controls.endAddress.setValue(this.data.endAddress);
-    this.showAddressNames(this.data.endAddress);
-
-    this.tripForm.controls.pickupTime.setValue(DateHelper.removeSeconds(this.data.pickupTime));
-    this.tripForm.controls.dropoffTime.setValue(DateHelper.removeSeconds(this.data.dropoffTime));
-    this.showTimes = true;
-
-    this.tripForm.controls.note.setValue(this.data.note);
-
-    this.tripForm.controls.endUnit.setValue(this.data.endUnit);
-    this.tripForm.controls.orderNumber.setValue(this.data.orderNumber);
-    this.showOrder = true;
-
-    if (this.data.exclude) {
-      this.tripForm.controls.exclude.setValue("true");
-    }
+  private setFormValues(values: { [key: string]: any }): void {
+    Object.keys(values).forEach(key => {
+      if (this.tripForm.controls[key as keyof typeof this.tripForm.controls]) {
+        (this.tripForm.controls[key as keyof typeof this.tripForm.controls] as FormControl).setValue(values[key]);
+      }
+    });
   }
 
   private async setDefaultShift() {
@@ -312,7 +313,7 @@ export class TripFormComponent implements OnInit {
 
     this._snackBar.open("Trip Stored to Device");
 
-    this.formReset();
+    await this.formReset();
     this.parentReload.emit();
     
     // console.log(trip);
@@ -349,23 +350,23 @@ export class TripFormComponent implements OnInit {
     this.formDialogRef.close();
   }
 
-  public formReset() {
+  public async formReset() {
+    await this._timerService.delay(100); // Need a delay for blur events to fire.
+
     this.data = {} as ITrip;
+    this.tripForm.reset();
 
     // Reset all selections
-    this.selectedAddress = undefined;
-    this.selectedAddressDeliveries = undefined;
-    this.selectedName = undefined;
-    this.selectedNameDeliveries = undefined;
-    this.selectedPlace = undefined;
+    await this.setDestinationAddress("");
+    await this.setName("");
+    await this.selectPlace("");
 
     // Reset all show fields
     this.showAdvancedPay = false;
     this.showPickupAddress = false;
     this.showOdometer = false;
     this.showOrder = false;
-
-    this.tripForm.reset();
+   
     this.setDefaultShift();
     this._viewportScroller.scrollToAnchor("addTrip");
   }
@@ -450,6 +451,12 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
+    // TODO Filter addresses with visits > 0 and last visited within a year
+    // this.selectedPlaceAddresses = this.selectedPlace.addresses.filter(address => {
+    //     const lastVisitedDate = new Date(address.lastVisited); // Assuming `lastVisited` is a date string
+    //     return address.visits > 0 && lastVisitedDate >= oneYearAgo;
+    // });
+
     place = this.selectedPlace.place;
 
     let recentTrips = (await this._tripService.getTrips()).reverse().filter(x => x.place === place);
@@ -476,12 +483,10 @@ export class TripFormComponent implements OnInit {
       let recentType = recentTrips.filter(x => x.type)[0];
       this.tripForm.controls.type.setValue(recentType?.type ?? "");
     }
-  }
-
-  // TODO move to helper
-  async countAddress(address: string): Promise<number> {
-    let foundAddress = await this._addressService.findAddress(address);
-    return foundAddress?.visits ?? 0;
+    
+    if (!this.showPickupAddress) {
+      this.togglePickupAddress();
+    }
   }
 
   toggleAdvancedPay() {
@@ -512,36 +517,12 @@ export class TripFormComponent implements OnInit {
     return ShiftHelper.compareShifts(o1, o2);
   }
 
-  private clearFocus(elementId: string) {
-    let input = document.getElementById(elementId);
-    input?.blur();
-    this.autocomplete?.closePanel();
-  }
 
   setPickupTime() {
-    this.tripForm.controls.pickupTime.setValue(this.getCurrentTime());
+    this.tripForm.controls.pickupTime.setValue(DateHelper.getTimeString());
   }
 
   setDropoffTime() {
-    this.tripForm.controls.dropoffTime.setValue(this.getCurrentTime());
+    this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString());
   }
-
-  getCurrentTime() {
-    return DateHelper.getTimeString(new Date);
-  }
-
-  private async _filterName(value: string): Promise<IName[]> {
-    let names = await this._nameService.getNames();
-    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-    sort(names, 'name');
-
-    return (names).slice(0,100);
-  }
-
-  private async _filterService(value: string): Promise<IService[]> {
-    const filterValue = value;
-
-    return await this._serviceService.filterServices(filterValue);
-  }
-
 }

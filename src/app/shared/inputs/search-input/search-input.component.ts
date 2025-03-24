@@ -156,7 +156,7 @@ export class SearchInputComponent {
 
   async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
-    this.value = await this.setProperValue(inputValue); // Update the value and trigger onChange
+    this.value = inputValue; // Update the value and trigger onChange
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
@@ -235,7 +235,7 @@ export class SearchInputComponent {
     });
   }
 
-  // Set the proper cased value based on the search type
+  // TODO See if this is needed: Set the proper cased value based on the search type
   private async setProperValue(value: string): Promise<string> {
     let properValue = "";
 

@@ -41,7 +41,11 @@ export class DateHelper {
         return 1; // Forcing Monday to be the first day of the week.
     }
 
-    static getTimeString(date: Date): string {
+    static getTimeString(date?: Date): string {
+        if (!date) {
+            date = new Date();
+        }
+        
         let timeString = date.toLocaleTimeString();
         timeString = this.removeSeconds(timeString);
         return timeString;
