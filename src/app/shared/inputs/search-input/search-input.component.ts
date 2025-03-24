@@ -168,6 +168,17 @@ export class SearchInputComponent {
     }
   }
 
+  getViewportHeight(items: ISearchItem[] | null): number {
+    if (!items || items.length === 0) {
+      return 0; // No items, collapse the viewport
+    }
+  
+    const maxVisibleItems = 5; // Maximum number of items to show without scrolling
+    const itemHeight = 48; // Height of each item in pixels
+  
+    return Math.min(items.length, maxVisibleItems) * itemHeight;
+  }
+
   // Filter items based on the search type
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {

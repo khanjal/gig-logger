@@ -13,7 +13,12 @@
             #searchInput
          />
         <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
-            <cdk-virtual-scroll-viewport itemSize="20" class="virtual-scroll-viewport">
+            <!-- Dynamically adjust the height of the viewport -->
+            <cdk-virtual-scroll-viewport 
+                [itemSize]="48" 
+                [style.height.px]="getViewportHeight(filteredItems | async)" 
+                class="virtual-scroll-viewport"
+            >
                 <mat-option 
                     *cdkVirtualFor="let item of filteredItems | async" 
                     [value]="item.name" 
