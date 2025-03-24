@@ -161,6 +161,11 @@ export class SearchInputComponent {
 
   async onInputSelect(inputValue: string): Promise<void> {
     this.value = inputValue; // Update the value and trigger onChange
+
+    // Clear focus from the input field
+    if (this.inputElement) {
+      this.inputElement.nativeElement.blur();
+    }
   }
 
   // Filter items based on the search type
