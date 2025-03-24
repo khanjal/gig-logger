@@ -7,6 +7,6 @@ export interface IWeekly extends IPeriodicBase {
     average: number
     number: number
     year: number
-    begin: Date
-    end: Date
+    begin: string
+    end: string
 }
