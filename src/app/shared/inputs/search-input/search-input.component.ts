@@ -20,7 +20,6 @@ import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.dire
 
 // Application-specific imports - Helpers
 import { AddressHelper } from '@helpers/address.helper';
-import { sort } from '@helpers/sort.helper';
 import { StringHelper } from '@helpers/string.helper';
 
 // Application-specific imports - Interfaces
@@ -46,11 +45,12 @@ import { TypeService } from '@services/type.service';
 
 // RxJS imports
 import { Observable, startWith, switchMap } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, BrowserModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, PipesModule],
+  imports: [AsyncPipe, BrowserModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, PipesModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -278,17 +278,15 @@ export class SearchInputComponent {
   private async _filterAddress(value: string): Promise<IAddress[]> {
     let addresses = await this._addressService.getAddresses();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-    sort(addresses, 'address');
 
-    return (addresses).slice(0,100);
+    return addresses;
   }
 
   private async _filterName(value: string): Promise<IName[]> {
     let names = await this._nameService.getNames();
     names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-    sort(names, 'name');
 
-    return (names).slice(0,100);
+    return names;
   }
 
   private async _filterPlace(value: string): Promise<IPlace[]> {
