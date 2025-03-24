@@ -1,8 +1,7 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
-import { DailyService } from '@services/daily.service';
 import { TripService } from '@services/trip.service';
 import { WeekdayService } from '@services/weekday.service';
 
@@ -20,7 +19,6 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
   tripGroups: ITripGroup[] = [];
   
   constructor(
-    private _dailyService: DailyService,
     private _tripService: TripService,
     private _weekdayService: WeekdayService
   ) {}
@@ -54,12 +52,11 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       }
 
       let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
-      let day = (await this._dailyService.queryDaily("date", date))[0];
       let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
 
       tripGroup.date = date;
       tripGroup.trips = trips;
-      tripGroup.amount = day?.total ?? 0;
+      tripGroup.amount = trips.filter(x => !x.exclude).reduce((acc, trip) => acc + trip.total, 0);
       tripGroup.average = weekday?.dailyPrevAverage ?? 0;
 
       this.tripGroups.push(tripGroup);

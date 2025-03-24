@@ -242,11 +242,11 @@ export class TripFormComponent implements OnInit {
     });
   
     // Toggle UI states
-    this.showAdvancedPay = !!(this.data.pay || this.data.tip || this.data.bonus || this.data.cash);
-    this.showOdometer = !!(this.data.startOdometer || this.data.endOdometer);
-    this.showPickupAddress = !!this.data.place;
-    this.showTimes = !!(this.data.pickupTime || this.data.dropoffTime);
-    this.showOrder = !!(this.data.endUnit || this.data.orderNumber);
+    this.showAdvancedPay = true;
+    this.showOdometer = true;
+    this.showPickupAddress = true;
+    this.showTimes = true;
+    this.showOrder = true;
   
     // Handle dependent logic
     this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
