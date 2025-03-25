@@ -9,4 +9,6 @@ export interface IAddress extends IAmount {
     names: string[];
     notes: INote[];
     visits: number;
+    firstTrip: string;
+    lastTrip: string;
 }
