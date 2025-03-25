@@ -1,7 +1,7 @@
 <div class="container" id="addTrip">
     <div><app-current-average class="field-right"></app-current-average></div>
     
-    <trip-form (parentReload)="load()"></trip-form>
+    <trip-form (parentReload)="load()" id="tripForm"></trip-form>
 
     @if (unsavedTrips.length > 0 && !pollingEnabled) {
         <div class="row-grid">
@@ -120,4 +120,16 @@
     <div class="row-grid">
         <app-trips-table-group class="table" title="{{ defaultSheet?.name }} - Trips" link="{{defaultSheet?.id}}" [days]=6></app-trips-table-group>
     </div>
+
+    <!-- Floating "Back to Top" button -->
+    <button 
+        mat-fab 
+        color="primary" 
+        class="back-to-top" 
+        *ngIf="showBackToTop" 
+        (click)="scrollToTop()"
+        aria-label="Back to Top"
+    >
+        <mat-icon>arrow_upward</mat-icon>
+    </button>
 </div>

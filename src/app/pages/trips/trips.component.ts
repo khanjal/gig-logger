@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -43,6 +43,7 @@ export class TripComponent implements OnInit, OnDestroy {
   reloading: boolean = false;
   saving: boolean = false;
   pollingEnabled: boolean = false;
+  showBackToTop: boolean = false; // Controls the visibility of the "Back to Top" button
 
   savedTrips: ITrip[] = [];
   todaysTrips: ITrip[] = [];
@@ -61,7 +62,8 @@ export class TripComponent implements OnInit, OnDestroy {
       private _shiftService: ShiftService,
       private _tripService: TripService,
       private _viewportScroller: ViewportScroller,
-      private _pollingService: PollingService
+      private _pollingService: PollingService,
+      private viewportScroller: ViewportScroller
     ) { }
 
   ngOnDestroy(): void {
@@ -85,6 +87,22 @@ export class TripComponent implements OnInit, OnDestroy {
 
     await this.average?.load();
     await this.tripsTable?.load();
+  }
+
+  // Listen for scroll events
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const formElement = document.getElementById('tripForm');
+    const formHeight = formElement ? formElement.offsetHeight / 2 : 0;
+
+    // Show the button if scrolled past the form
+    this.showBackToTop = scrollPosition > formHeight;
+  }
+
+  // Scroll to the top of the page
+  scrollToTop(): void {
+    this.viewportScroller.scrollToPosition([0, 0]);
   }
 
   async saveTrip(trip: ITrip) {
