@@ -26,7 +26,7 @@ export class SheetAddFormComponent {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.load();
+    await this.load();
   }
 
   async load() {
@@ -70,6 +70,7 @@ export class SheetAddFormComponent {
   }
 
   public async setupSheet(id: string) {
+    await this.load();
     let sheetName = this.sheetForm.value.sheetName;
 
     if (!sheetName) {
@@ -88,7 +89,6 @@ export class SheetAddFormComponent {
 
     // Check for default spreadsheet
     if (!this.defaultSpreadsheet?.id || this.defaultSpreadsheet.id === spreadsheet.id) {
-      // console.log("Setting default to true");
       spreadsheet.default = "true";
     }
 

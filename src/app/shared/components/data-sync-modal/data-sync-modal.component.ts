@@ -171,6 +171,7 @@ export class DataSyncModalComponent {
     }
 
     private async processFailure(message: string) {
+        this.enableAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
         this.updateLastMessageType('error');
         this.appendToTerminal('Modal autoclose disabled');
