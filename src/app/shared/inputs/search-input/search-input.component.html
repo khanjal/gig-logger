@@ -24,6 +24,7 @@
                     [value]="item.name" 
                     (click)="onInputSelect(item.value)" 
                     class="mat-option" 
+                    disableRipple
                     #matOption>
                     {{ item.name }} ({{ item.visits ?? 0 }})
                 </mat-option>

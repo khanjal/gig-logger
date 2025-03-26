@@ -1,6 +1,6 @@
 // Angular core imports
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -68,7 +68,6 @@ export class SearchInputComponent {
   @Input() searchType: string = '';
   @Input() showGoogle: boolean = false;
   @Input() isRequired: boolean = false; // Default is not required
-  @Output() outEvent = new EventEmitter<string>;
  
   private _value: string = '';
 
@@ -124,7 +123,6 @@ export class SearchInputComponent {
   set value(val: string) {
     this.searchForm.controls.searchInput.setValue(val); // Update the FormControl value
     this.onChange(val); // Notify Angular forms of the change
-    this.outEvent.emit(val); // Emit the value to the parent component for advanced logic
   }
 
   // ControlValueAccessor methods

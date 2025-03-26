@@ -41,8 +41,7 @@
         <app-search-input 
             fieldName="Place" 
             searchType="Place" 
-            formControlName="place"
-            (outEvent)="selectPlace($event)">
+            formControlName="place">
         </app-search-input>
         
         <!-- Type -->
@@ -106,8 +105,7 @@
                 <app-search-input 
                     fieldName="Name" 
                     searchType="Name" 
-                    formControlName="name"
-                    (outEvent)="showNameAddresses($event)">
+                    formControlName="name">
                 </app-search-input>
             </div>
 
@@ -172,8 +170,7 @@
             fieldName="Destination Address" 
             searchType="Address" 
             formControlName="endAddress"
-            [showGoogle]="true"
-            (outEvent)="showAddressNames($event)">
+            [showGoogle]="true">
         </app-search-input>
         
         <!-- Name List/Notes -->

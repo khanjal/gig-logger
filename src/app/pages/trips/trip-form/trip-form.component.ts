@@ -26,7 +26,6 @@ import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { NameService } from '@services/name.service';
 import { PlaceService } from '@services/place.service';
-import { ServiceService } from '@services/service.service';
 import { ShiftService } from '@services/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/trip.service';
@@ -109,7 +108,6 @@ export class TripFormComponent implements OnInit {
       private _gigLoggerService: GigLoggerService,
       private _nameService: NameService,
       private _placeService: PlaceService,
-      private _serviceService: ServiceService,
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
@@ -118,6 +116,7 @@ export class TripFormComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.load();
+    this.setValueChanges();    
   }
 
   public async load() {
@@ -131,6 +130,20 @@ export class TripFormComponent implements OnInit {
     }
 
     await this.setDefaultShift();
+  }
+
+  public setValueChanges() {
+    this.tripForm.get('place')?.valueChanges.subscribe(value => {
+      this.selectPlace(value ?? '');
+    });
+
+    this.tripForm.get('name')?.valueChanges.subscribe(value => {
+      this.showNameAddresses(value ?? '');
+    });
+
+    this.tripForm.get('endAddress')?.valueChanges.subscribe(value => {
+      this.showAddressNames(value ?? '');
+    });
   }
 
   // TODO move this to a helper or service
