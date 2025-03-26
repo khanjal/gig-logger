@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -29,17 +29,26 @@ import { TypeService } from '@services/type.service';
 import { WeekdayService } from '@services/weekday.service';
 import { WeeklyService } from '@services/weekly.service';
 import { YearlyService } from '@services/yearly.service';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({ declarations: [
         AppComponent
     ],
-    bootstrap: [AppComponent], imports: [AppRoutingModule,
+    bootstrap: [AppComponent], 
+    imports: [AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
         FormsModule,
         MatIconModule,
         PagesModule,
-        SharedModule], providers: [
+        SharedModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+          enabled: !isDevMode(),
+          // Register the ServiceWorker as soon as the application is stable
+          // or after 30 seconds (whichever comes first).
+          registrationStrategy: 'registerWhenStable:30000'
+        })], 
+    providers: [
         AddressService,
         CommonService,
         DailyService,

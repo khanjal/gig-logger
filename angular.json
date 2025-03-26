@@ -37,7 +37,9 @@
                 "src/app/shared/styles"
               ]
             },
-            "scripts": []
+            "scripts": [],
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "production": {
