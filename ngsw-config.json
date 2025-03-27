@@ -8,7 +8,6 @@
       "resources": {
         "files": [
           "/favicon.ico",
-          "/index.csr.html",
           "/index.html",
           "/manifest.json",
           "/*.css",
@@ -22,8 +21,32 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+          "/assets/**/*"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "google-fonts-stylesheets",
+      "urls": [
+        "https://fonts.googleapis.com/icon?family=Material+Icons"
+      ],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "1d",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "google-fonts-webfonts",
+      "urls": [
+        "https://fonts.gstatic.com/s/materialicons/*"
+      ],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "30d",
+        "strategy": "performance"
       }
     }
   ]

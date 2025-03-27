@@ -116,7 +116,6 @@ export class TripFormComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.load();
-    this.setValueChanges();    
   }
 
   public async load() {
@@ -130,20 +129,6 @@ export class TripFormComponent implements OnInit {
     }
 
     await this.setDefaultShift();
-  }
-
-  public setValueChanges() {
-    this.tripForm.get('place')?.valueChanges.subscribe(value => {
-      this.selectPlace(value ?? '');
-    });
-
-    this.tripForm.get('name')?.valueChanges.subscribe(value => {
-      this.showNameAddresses(value ?? '');
-    });
-
-    this.tripForm.get('endAddress')?.valueChanges.subscribe(value => {
-      this.showAddressNames(value ?? '');
-    });
   }
 
   // TODO move this to a helper or service
@@ -263,9 +248,9 @@ export class TripFormComponent implements OnInit {
   
     // Handle dependent logic
     this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
-    await this.selectPlace(this.data.place);
-    await this.showNameAddresses(this.data.name);
-    await this.showAddressNames(this.data.endAddress);
+    await this.selectPlace();
+    await this.showNameAddresses();
+    await this.showAddressNames();
   }
 
   private setFormValues(values: { [key: string]: any }): void {
@@ -308,7 +293,7 @@ export class TripFormComponent implements OnInit {
       let places = await this._placeService.getPlaces();
       if (places.length === 1) {
         this.tripForm.controls.place.setValue(places[0].place);
-        await this.selectPlace(places[0].place);
+        await this.selectPlace();
       }
     }
 
@@ -372,7 +357,7 @@ export class TripFormComponent implements OnInit {
     // Reset all selections
     await this.setDestinationAddress("");
     await this.setName("");
-    await this.selectPlace("");
+    await this.selectPlace();
 
     // Reset all show fields
     this.showAdvancedPay = false;
@@ -431,29 +416,37 @@ export class TripFormComponent implements OnInit {
 
   async setDestinationAddress(address: string) {
     this.tripForm.controls.endAddress.setValue(address);
-    await this.showAddressNames(address);
+    await this.showAddressNames();
   }
 
   async setName(name: string) {
     this.tripForm.controls.name.setValue(name);
-    await this.showNameAddresses(name);
+    await this.showNameAddresses();
   }
 
-  async showAddressNames(address: string) {
+  async showAddressNames() {
+    let address = this.tripForm.value.endAddress;
+
     if (!address) { this.selectedAddressDeliveries = []; return; }
+
     this.selectedAddress = await this._addressService.getAddress(address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
 
-  async showNameAddresses(name: string) {
+  async showNameAddresses() {
+    let name = this.tripForm.value.name;
+
     if (!name) { this.selectedNameDeliveries = []; return; }
+
     this.selectedName = await this._nameService.findName(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
   }
 
-  async selectPlace(place: string) {
+  async selectPlace() {
+    let place = this.tripForm.value.place;
+
     if (!place) {
       this.selectedPlace = undefined;
       return;

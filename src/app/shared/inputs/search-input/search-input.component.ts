@@ -1,6 +1,6 @@
 // Angular core imports
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, forwardRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -68,6 +68,8 @@ export class SearchInputComponent {
   @Input() searchType: string = '';
   @Input() showGoogle: boolean = false;
   @Input() isRequired: boolean = false; // Default is not required
+
+  @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>(); // Emit changes to parent
  
   private _value: string = '';
 
@@ -146,6 +148,7 @@ export class SearchInputComponent {
   onBlur(): void {
     this.value = this.value.trim(); // Trim the value
     this.onTouched(); // Notify Angular forms that the input was touched
+    this.valueChanged.emit(); // Emit the event to the parent
   }
 
   public onClear() {

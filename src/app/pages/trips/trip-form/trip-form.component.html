@@ -41,7 +41,8 @@
         <app-search-input 
             fieldName="Place" 
             searchType="Place" 
-            formControlName="place">
+            formControlName="place"
+            (valueChanged)="selectPlace()">
         </app-search-input>
         
         <!-- Type -->
@@ -105,7 +106,8 @@
                 <app-search-input 
                     fieldName="Name" 
                     searchType="Name" 
-                    formControlName="name">
+                    formControlName="name"
+                    (valueChanged)="showNameAddresses()">
                 </app-search-input>
             </div>
 
@@ -170,7 +172,8 @@
             fieldName="Destination Address" 
             searchType="Address" 
             formControlName="endAddress"
-            [showGoogle]="true">
+            [showGoogle]="true"
+            (valueChanged)="showAddressNames()">
         </app-search-input>
         
         <!-- Name List/Notes -->
