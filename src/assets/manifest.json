@@ -1,7 +1,7 @@
 {
   "name": "Raptor Gig",
   "short_name": "RaptorGig",
-  "description": "A web app to log and manage your gigs and trips.",
+  "description": "An intuitive and powerful web application designed to help you log, track, and manage your gigs and trips effortlessly. Stay organized with detailed insights, shift tracking, and performance statistics tailored for gig workers.",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
