@@ -50,6 +50,60 @@
       "type": "image/png"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Trips",
+      "short_name": "Trips",
+      "description": "Manage your trips",
+      "url": "/trips",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Shifts",
+      "short_name": "Shifts",
+      "description": "Manage your shifts",
+      "url": "/shifts",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "short_name": "Stats",
+      "description": "View statistics",
+      "url": "/stats",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Configure settings",
+      "url": "/setup",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "screenshots": [
     {
      "src": "screenshots/narrow/add-trip.png",
