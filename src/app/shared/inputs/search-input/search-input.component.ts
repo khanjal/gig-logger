@@ -71,8 +71,6 @@ export class SearchInputComponent {
 
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>(); // Emit changes to parent
  
-  private _value: string = '';
-
   // Callbacks for ControlValueAccessor
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -148,7 +146,7 @@ export class SearchInputComponent {
   onBlur(): void {
     this.value = this.value.trim(); // Trim the value
     this.onTouched(); // Notify Angular forms that the input was touched
-    this.valueChanged.emit(); // Emit the event to the parent
+    this.valueChanged.emit(this.value); // Emit the event to the parent
   }
 
   public onClear() {
@@ -163,9 +161,11 @@ export class SearchInputComponent {
   async onInputSelect(inputValue: string): Promise<void> {
     this.value = inputValue; // Update the value and trigger onChange
 
-    // Clear focus from the input field
+    // Delay the blur to avoid race conditions
     if (this.inputElement) {
-      this.inputElement.nativeElement.blur();
+      setTimeout(() => {
+        this.inputElement.nativeElement.blur();
+      }, 100); // Delay by 100ms
     }
   }
 
