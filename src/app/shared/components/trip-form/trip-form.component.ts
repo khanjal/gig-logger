@@ -9,7 +9,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // RxJS imports
-import { Observable, startWith, mergeMap } from 'rxjs';
+import { Observable } from 'rxjs';
 
 // Application-specific imports - Interfaces
 import { IAddress } from '@interfaces/address.interface';
@@ -69,7 +69,7 @@ export class TripFormComponent implements OnInit {
     dropoffTime: new FormControl(''),
     orderNumber: new FormControl(''),
     note: new FormControl(''),
-    exclude: new FormControl('')
+    exclude: new FormControl('1000')
   });
 
   isNewShift: boolean = true;
@@ -99,7 +99,7 @@ export class TripFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-      public formDialogRef: MatDialogRef<TripFormComponent>,
+      public dialogRef: MatDialogRef<TripFormComponent>,
       public dialog: MatDialog,
       @Inject(MAT_DIALOG_DATA) public data: ITrip,
       private _snackBar: MatSnackBar,
@@ -345,7 +345,7 @@ export class TripFormComponent implements OnInit {
 
     this._snackBar.open("Trip Updated");
 
-    this.formDialogRef.close();
+    this.dialogRef.close();
   }
 
   public async formReset() {
@@ -530,5 +530,9 @@ export class TripFormComponent implements OnInit {
 
   setDropoffTime() {
     this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString());
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

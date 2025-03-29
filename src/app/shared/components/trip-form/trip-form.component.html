@@ -241,7 +241,7 @@
                 <mat-label>Order Number</mat-label>
                 <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber" value="">
             </mat-form-field>
-            <mat-slide-toggle class="field-full-width" name="exclude" formControlName="exclude" value="">
+            <mat-slide-toggle class="field-full-width" name="exclude" formControlName="exclude">
                 Exclude from calculations
             </mat-slide-toggle>
         </div>
@@ -253,6 +253,6 @@
     </div>
     <div class="row-flex" *ngIf="data?.id">
         <button mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid"><mat-icon>save</mat-icon> Update</button>
-        <button mat-fab extended color="warn" mat-dialog-close><mat-icon>cancel</mat-icon> Cancel</button>
+        <button mat-fab extended color="warn" (click)="close()"><mat-icon>cancel</mat-icon> Cancel</button>
     </div>
 </div>

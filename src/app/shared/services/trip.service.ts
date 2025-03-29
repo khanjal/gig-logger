@@ -14,6 +14,30 @@ export class TripService {
     public async addTrip(trip: ITrip) {
         await spreadsheetDB.trips.add(trip);
     }
+    
+    public async addNextTrip(trip: ITrip) {
+        let nextTrip = {} as ITrip;
+        updateTripAction(nextTrip, ActionEnum.Add);
+        nextTrip.rowId = await this.getMaxTripId() + 1;
+        nextTrip.key = trip.key;
+        nextTrip.date = trip.date;
+        nextTrip.region = trip.region;
+        nextTrip.service = trip.service;
+        nextTrip.number = trip.number;
+        nextTrip.place = trip.place;
+        nextTrip.type = trip.type;
+        nextTrip.startAddress = trip.startAddress;
+        nextTrip.pickupTime = trip.dropoffTime;
+        await this.addTrip(nextTrip);
+    }
+
+    async cloneTrip(trip: ITrip) {
+        let cloneTrip = trip;
+        delete cloneTrip.id;
+        cloneTrip.rowId = await this.getMaxTripId() + 1;
+        updateTripAction(cloneTrip, ActionEnum.Add);
+        await this.addTrip(cloneTrip);
+    }
 
     public async deleteTrip(tripId: number) {
         await spreadsheetDB.trips.delete(tripId);

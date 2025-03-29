@@ -17,7 +17,6 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/mater
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { TripComponent } from './trips/trips.component';
-import { TripFormComponent } from './trips/trip-form/trip-form.component';
 import { LoginComponent } from './login/login.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatCardModule } from '@angular/material/card';
@@ -40,7 +39,6 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
   declarations: [
     HomeComponent,
     TripComponent,
-    TripFormComponent,
     ShiftsComponent,
     LoginComponent,
     SetupComponent,

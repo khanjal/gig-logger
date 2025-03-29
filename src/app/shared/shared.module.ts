@@ -31,6 +31,12 @@ import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-mo
 import { PipesModule } from '@pipes/pipes.module';
 import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
 import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-trips-table.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { TripFormComponent } from '@components/trip-form/trip-form.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
     declarations: [
@@ -43,6 +49,7 @@ import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-tr
         GoogleAddressComponent,
         ShiftsQuickViewComponent,
         ShiftTripsTableComponent,
+        TripFormComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
@@ -56,6 +63,7 @@ import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-tr
         SearchInputComponent,
         ShiftsQuickViewComponent,
         ShiftTripsTableComponent,
+        TripFormComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
@@ -66,11 +74,16 @@ import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-tr
         CommonModule,
         MatButtonModule,
         MatCardModule,
+        MatExpansionModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatSlideToggleModule,
         MatTableModule,
         MatToolbarModule,
+        NgxMatTimepickerModule,
         PipesModule,
         ReactiveFormsModule,
         RouterModule,

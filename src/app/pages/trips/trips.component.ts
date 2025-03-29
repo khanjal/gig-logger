@@ -9,7 +9,7 @@ import { ActionEnum } from '@enums/action.enum';
 
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ITrip, updateTripAction } from '@interfaces/trip.interface';
+import { ITrip } from '@interfaces/trip.interface';
 
 import { GigLoggerService } from '@services/gig-logger.service';
 import { PollingService } from '@services/polling.service';
@@ -19,13 +19,12 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 
 import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { TripFormComponent } from './trip-form/trip-form.component';
+import { TripFormComponent } from '@components/trip-form/trip-form.component';
 import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 
 import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
-import { updateShiftAction } from '@interfaces/shift.interface';
 
 @Component({
   selector: 'app-trip',
@@ -83,8 +82,6 @@ export class TripComponent implements OnInit, OnDestroy {
     this.todaysTrips = (await this._tripService.getTripsByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
     this.yesrterdaysTrips = (await this._tripService.getTripsByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)))).reverse();
 
-    // console.log(this.form);
-
     await this.average?.load();
     await this.tripsTable?.load();
   }
@@ -103,33 +100,6 @@ export class TripComponent implements OnInit, OnDestroy {
   // Scroll to the top of the page
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
-  }
-
-  async saveTrip(trip: ITrip) {
-    this.saving = true;
-    // await this._googleService.commitUnsavedTrips();
-    await this.reload("todaysTrips");
-    this.saving = false;
-  }
-
-  async editTrip(trip: ITrip) {
-    this.stopPolling();
-    let dialogRef = this.dialog.open(TripFormComponent, {
-      data: trip,
-      height: '600px',
-      width: '500px',
-      panelClass: 'custom-modalbox'
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      await this.load();
-      await this.form?.load();
-      this._viewportScroller.scrollToAnchor(trip.rowId.toString());
-      
-      if (this.pollingEnabled) {
-        await this.startPolling();
-      }
-    });
   }
 
   async loadSheetDialog(inputValue: string) {
@@ -168,28 +138,7 @@ export class TripComponent implements OnInit, OnDestroy {
           }
       });
   }
-  
-  async confirmDeleteTripDialog(trip: ITrip) {
-    const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;
-
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
-    dialogData.title = "Confirm Delete";
-    dialogData.message = message;
-    dialogData.trueText = "Delete";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.deleteTrip(trip);
-      }
-    });
-  }
-  
+    
   async confirmSaveTripsDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
@@ -235,104 +184,6 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.startPolling();
       }
     });
-  }
-
-  async setPickupTime(trip: ITrip) {
-    let pickupTime = DateHelper.getTimeString(new Date);
-
-    let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
-    if (shift) {
-      shift.finish = pickupTime;
-      updateShiftAction(shift, ActionEnum.Update);
-      await this._shiftService.updateShift(shift);
-    }
-
-    trip.pickupTime = pickupTime;
-    updateTripAction(trip, ActionEnum.Update);
-    await this._tripService.updateTrip(trip);
-    this.reload();
-  }
-
-  async setDropoffTime(trip: ITrip) {
-    let dropOffTime = DateHelper.getTimeString(new Date);
-
-    let shift = (await this._shiftService.queryShifts("key", trip.key))[0];
-    if (shift) {
-      shift.finish = dropOffTime;
-      updateShiftAction(shift, ActionEnum.Update);
-      await this._shiftService.updateShift(shift);
-    }
-
-    trip.dropoffTime = dropOffTime;
-    let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
-    trip.duration = DateHelper.getDurationString(duration);
-
-    if (trip.total && duration) {
-      trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
-    }
-    updateTripAction(trip, ActionEnum.Update);
-    await this._tripService.updateTrip(trip);
-
-    this.reload();
-  }
-
-  async cloneUnsavedTrip(trip: ITrip) {
-    delete trip.id;
-    trip.rowId = await this._tripService.getMaxTripId() + 1;
-    updateTripAction(trip, ActionEnum.Add);
-    await this._tripService.addTrip(trip);
-    await this.load();
-    this._viewportScroller.scrollToAnchor("unsavedTrips");
-    this._snackBar.open("Cloned Trip");
-  }
-
-  async nextUnsavedTrip(trip: ITrip) {
-    let nextTrip = {} as ITrip;
-    updateTripAction(nextTrip, ActionEnum.Add);
-    nextTrip.rowId = await this._tripService.getMaxTripId() + 1;
-    nextTrip.key = trip.key;
-    nextTrip.date = trip.date;
-    nextTrip.region = trip.region;
-    nextTrip.service = trip.service;
-    nextTrip.number = trip.number;
-    nextTrip.place = trip.place;
-    nextTrip.type = trip.type;
-    nextTrip.startAddress = trip.startAddress;
-    nextTrip.pickupTime = trip.dropoffTime;
-    await this._tripService.addTrip(nextTrip);
-    await this.load();
-    this._viewportScroller.scrollToAnchor("unsavedTrips");
-    this._snackBar.open("Added Next Trip");
-  }
-
-  async deleteTrip(trip: ITrip) {
-    if (trip.action === ActionEnum.Add) {
-      await this._tripService.deleteTrip(trip.id!);
-      await this._tripService.updateTripRowIds(trip.rowId);
-    }
-    else {
-      updateTripAction(trip, ActionEnum.Delete);
-      trip.saved = false;
-      await this._tripService.updateTrip(trip);
-    }
-
-    const shift = await this._shiftService.queryShiftByKey(trip.key);
-    if (shift) {
-      await this._gigLoggerService.calculateShiftTotals([shift]);
-    }
-
-    await this.load();
-  }
-
-  async restoreTrip(trip: ITrip) {
-    updateTripAction(trip, ActionEnum.Update);
-    await this._tripService.updateTrip(trip);
-
-    const shift = await this._shiftService.queryShiftByKey(trip.key);
-    if (shift) {
-      updateShiftAction(shift, ActionEnum.Update);
-      await this._shiftService.updateShift(shift);
-    }
   }
 
   async reload(anchor?: string) {

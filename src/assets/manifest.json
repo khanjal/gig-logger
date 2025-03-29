@@ -106,7 +106,7 @@
   ],
   "screenshots": [
     {
-     "src": "screenshots/narrow/add-trip.png",
+      "src": "screenshots/narrow/add-trip.png",
       "sizes": "484x950",
       "type": "image/png",
       "form_factor": "narrow",
@@ -114,66 +114,74 @@
     },
     {
       "src": "screenshots/narrow/todays-trips.png",
-       "sizes": "484x950",
-       "type": "image/png",
-       "form_factor": "narrow",
-       "label": "Today's Trips"
-     },
-     {
+      "sizes": "484x950",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Today's Trips"
+    },
+    {
       "src": "screenshots/narrow/edit-trip.png",
-       "sizes": "484x950",
-       "type": "image/png",
-       "form_factor": "narrow",
-       "label": "Edit Trip"
-     },
-     {
+      "sizes": "484x950",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Edit Trip"
+    },
+    {
       "src": "screenshots/narrow/shifts.png",
-       "sizes": "484x950",
-       "type": "image/png",
-       "form_factor": "narrow",
-       "label": "Shifts"
-     },
-     {
+      "sizes": "484x950",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Shifts"
+    },
+    {
       "src": "screenshots/narrow/stats.png",
-       "sizes": "484x950",
-       "type": "image/png",
-       "form_factor": "narrow",
-       "label": "Stats"
-     },
-     {
+      "sizes": "484x950",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Stats"
+    },
+    {
       "src": "screenshots/wide/add-trip.png",
-       "sizes": "1024x890",
-       "type": "image/png",
-       "form_factor": "wide",
-       "label": "Add Trip"
-     },
-     {
-       "src": "screenshots/wide/todays-trips.png",
-        "sizes": "1024x890",
-        "type": "image/png",
-        "form_factor": "wide",
-        "label": "Today's Trips"
-      },
-      {
-       "src": "screenshots/wide/edit-trip.png",
-        "sizes": "1024x890",
-        "type": "image/png",
-        "form_factor": "wide",
-        "label": "Edit Trip"
-      },
-      {
-       "src": "screenshots/wide/shifts.png",
-        "sizes": "1024x890",
-        "type": "image/png",
-        "form_factor": "wide",
-        "label": "Shifts"
-      },
-      {
-       "src": "screenshots/wide/stats.png",
-        "sizes": "1024x890",
-        "type": "image/png",
-        "form_factor": "wide",
-        "label": "Stats"
-      }
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Add Trip"
+    },
+    {
+      "src": "screenshots/wide/todays-trips.png",
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Today's Trips"
+    },
+    {
+      "src": "screenshots/wide/edit-trip.png",
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Edit Trip"
+    },
+    {
+      "src": "screenshots/wide/shifts.png",
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Shifts"
+    },
+    {
+      "src": "screenshots/wide/stats.png",
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Stats"
+    }
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "orientation": "portrait",
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
   ]
 }
