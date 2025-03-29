@@ -69,7 +69,7 @@ export class TripFormComponent implements OnInit {
     dropoffTime: new FormControl(''),
     orderNumber: new FormControl(''),
     note: new FormControl(''),
-    exclude: new FormControl('1000')
+    exclude: new FormControl('')
   });
 
   isNewShift: boolean = true;
