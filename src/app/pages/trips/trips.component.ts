@@ -215,6 +215,10 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async startPolling() {
+    if (!this.pollingEnabled) {
+      return;
+    }
+    
     console.log('Starting polling');
     this._pollingService.stopPolling();
     await this._pollingService.startPolling();
