@@ -4,38 +4,26 @@ import { clearShiftAction, IShift } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
+import { GenericCrudService } from '@services/generic-crud.service';
 
 @Injectable({
     providedIn: 'root'
   })
-export class ShiftService {
+export class ShiftService extends GenericCrudService<IShift> {
+    constructor() {
+      super(spreadsheetDB.shifts); // Pass the table reference
+    }
+
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
-
-    public async addNewShift(shift: IShift) {
-        await spreadsheetDB.shifts.add(shift);
-    }
-
-    public async deleteShift(shiftId: number) {
-        spreadsheetDB.shifts.delete(shiftId);
-    }
 
     public async getMaxShiftId(): Promise<number> {
         return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 1);
-    }
-
-    public async getShifts(): Promise<IShift[]> {
-        return await spreadsheetDB.shifts.toArray();
     }
 
     public async getUnsavedShifts(): Promise<IShift[]> {
         return (await spreadsheetDB.shifts.toArray()).filter(x => !x.saved);
     }
     
-    public async loadShifts(shifts: IShift[]) {
-        await spreadsheetDB.shifts.clear();
-        await spreadsheetDB.shifts.bulkAdd(shifts);
-    }
-
     public async getPreviousWeekShifts(): Promise<IShift[]> {
         let shifts = [...await this.getShiftsPreviousDays(7)];
 
@@ -100,24 +88,20 @@ export class ShiftService {
                 if (!rowId) {
                     rowId = shift.rowId;
                 }
-                await this.deleteShift(shift.id!);
+                await this.delete(shift.id!);
                 continue;
             }
 
             let originalShift = await this.queryShiftById(shift.id!);
             if (originalShift.actionTime === shift.actionTime) {
                 clearShiftAction(shift);
-                await this.updateShift(shift);
+                await this.update([shift]);
             }
         };
 
         if (rowId) {
             await this.updateShiftRowIds(rowId);
         }
-    }
-
-    public async updateShift(shift: IShift) {
-        await spreadsheetDB.shifts.put(shift);
     }
 
     public async updateShiftRowIds(rowId: number) {
@@ -129,7 +113,7 @@ export class ShiftService {
             let shift = await spreadsheetDB.shifts.where("rowId").equals(nextRowId).first();
             if (shift) {
                 shift.rowId = rowId;
-                await this.updateShift(shift);
+                await this.update([shift]);
                 rowId++;
             }
             nextRowId++;

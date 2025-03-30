@@ -145,7 +145,7 @@ export class TripFormComponent implements OnInit {
       shift.region = this.tripForm.value.region ?? "";
       shift.rowId = await this._shiftService.getMaxShiftId() + 1;
       
-      await this._shiftService.addNewShift(shift);
+      await this._shiftService.add(shift);
     }
     else {
       shift = <IShift><unknown>this.tripForm.value.shift;
@@ -333,7 +333,7 @@ export class TripFormComponent implements OnInit {
     let trip = await this.createTrip(shift);
 
     updateShiftAction(shift, ActionEnum.Update);
-    this._shiftService.updateShift(shift);
+    this._shiftService.update([shift]);
     
     shifts.push(shift);
 
@@ -388,7 +388,7 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.service.setValidators([Validators.required]);
 
     // Get the most recent shift
-    let shifts = (await this._shiftService.getShifts()).reverse();
+    let shifts = (await this._shiftService.list()).reverse();
     let shift = shifts[0];
 
     if (!shift) {

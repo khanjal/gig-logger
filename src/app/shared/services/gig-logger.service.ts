@@ -126,7 +126,7 @@ export class GigLoggerService {
         await this._placeService.load(sheetData.places);
         await this._regionService.load(sheetData.regions);
         await this._serviceService.load(sheetData.services);
-        await this._shiftService.loadShifts(sheetData.shifts);
+        await this._shiftService.load(sheetData.shifts);
         await this._tripService.load(sheetData.trips);
         await this._typeService.load(sheetData.types);
         await this._weekdayService.load(sheetData.weekdays);
@@ -176,14 +176,14 @@ export class GigLoggerService {
             if (trips?.length === 0) {
                 if (shift.saved) {
                     updateShiftAction(shift, ActionEnum.Delete);
-                    await this._shiftService.updateShift(shift);
+                    await this._shiftService.update([shift]);
                 }
                 else {
-                    this._shiftService.deleteShift(shift.id!);
+                    this._shiftService.delete(shift.id!);
                 }
             }
             else {
-                await this._shiftService.updateShift(shift);
+                await this._shiftService.update([shift]);
             }
         };
 

@@ -40,7 +40,7 @@ export class TripsQuickViewComponent {
     const shift = await this._shiftService.queryShiftByKey(this.trip.key);
     if (shift) {
       updateShiftAction(shift, ActionEnum.Update);
-      await this._shiftService.updateShift(shift);
+      await this._shiftService.update([shift]);
     }
   }
 
@@ -84,7 +84,7 @@ export class TripsQuickViewComponent {
     if (shift) {
       shift.finish = dropOffTime;
       updateShiftAction(shift, ActionEnum.Update);
-      await this._shiftService.updateShift(shift);
+      await this._shiftService.update([shift]);
     }
 
     this.trip.dropoffTime = dropOffTime;
@@ -105,7 +105,7 @@ export class TripsQuickViewComponent {
     if (shift) {
       shift.finish = pickupTime;
       updateShiftAction(shift, ActionEnum.Update);
-      await this._shiftService.updateShift(shift);
+      await this._shiftService.update([shift]);
     }
 
     this.trip.pickupTime = pickupTime;

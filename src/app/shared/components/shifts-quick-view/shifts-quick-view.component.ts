@@ -53,7 +53,7 @@ export class ShiftsQuickViewComponent {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         updateShiftAction(shift, ActionEnum.Delete);
-        await this.shiftService.updateShift(shift);
+        await this.shiftService.update([shift]);
         await this.saveSheetDialog('save');
       }
     });
