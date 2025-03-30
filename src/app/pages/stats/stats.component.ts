@@ -62,7 +62,7 @@ export class StatsComponent implements OnInit {
   }
 
   async getTripsRange(startDate: string, endDate: string) {
-    let trips = (await this._tripService.getTripsBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
+    let trips = (await this._tripService.getBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
     
     this.places = this.getTripList(trips, "place");
     this.types = this.getTripList(trips, "type");

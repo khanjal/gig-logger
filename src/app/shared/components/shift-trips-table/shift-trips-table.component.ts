@@ -29,7 +29,7 @@ export class ShiftTripsTableComponent {
 
   async getTripsByShiftKey(shiftKey: string) {
     try {
-      this.trips = await this.tripService.queryTrips('key', shiftKey);
+      this.trips = await this.tripService.query('key', shiftKey);
     } catch (error) {
       console.error('Error fetching trips:', error);
     }

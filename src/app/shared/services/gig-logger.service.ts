@@ -36,6 +36,10 @@ import { MonthlyService } from "./monthly.service";
 import { WeeklyService } from "./weekly.service";
 import { YearlyService } from "./yearly.service";
 import { firstValueFrom, lastValueFrom } from "rxjs";
+import { IService } from "@interfaces/service.interface";
+import { IRegion } from "@interfaces/region.interface";
+import { IName } from "@interfaces/name.interface";
+import { IPlace } from "@interfaces/place.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -115,16 +119,16 @@ export class GigLoggerService {
     }
 
     public async loadData(sheetData: ISheet) {
-        await this._addressService.loadAddresses(sheetData.addresses);
+        await this._addressService.load(sheetData.addresses);
         await this._dailyService.loadDaily(sheetData.daily);
         await this._monthlyService.loadMonthly(sheetData.monthly);
-        await this._nameService.loadNames(sheetData.names);
-        await this._placeService.loadPlaces(sheetData.places);
-        await this._regionService.loadRegions(sheetData.regions);
-        await this._serviceService.loadServices(sheetData.services);
+        await this._nameService.load(sheetData.names);
+        await this._placeService.load(sheetData.places);
+        await this._regionService.load(sheetData.regions);
+        await this._serviceService.load(sheetData.services);
         await this._shiftService.loadShifts(sheetData.shifts);
-        await this._tripService.loadTrips(sheetData.trips);
-        await this._typeService.loadTypes(sheetData.types);
+        await this._tripService.load(sheetData.trips);
+        await this._typeService.load(sheetData.types);
         await this._weekdayService.loadWeekdays(sheetData.weekdays);
         await this._weeklyService.loadweekly(sheetData.weekly);
         await this._yearlyService.loadYearly(sheetData.yearly);
@@ -138,8 +142,8 @@ export class GigLoggerService {
     }
 
     public async appendData(sheetData: ISheet) {
-        await this._addressService.updateAddresses(sheetData.addresses);
-        await this._nameService.updateNames(sheetData.names);
+        await this._addressService.bulkUpdate(sheetData.addresses);
+        await this._nameService.bulkUpdate(sheetData.names);
 
         await this.linkDeliveries(sheetData.trips);
     }
@@ -153,7 +157,7 @@ export class GigLoggerService {
         }
 
         for (let shift of shifts) {
-            let trips = (await this._tripService.queryTrips("key", shift.key)).filter(x => x.action !== ActionEnum.Delete && !x.exclude);
+            let trips = (await this._tripService.query("key", shift.key)).filter(x => x.action !== ActionEnum.Delete && !x.exclude);
 
             shift.totalTrips = +(shift.trips ?? 0) + trips.length;
             shift.totalDistance = +(shift.distance ?? 0) + +trips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
@@ -307,8 +311,8 @@ export class GigLoggerService {
     }
 
     private async linkNameData () {
-        let names = await this._nameService.getNames();
-        let trips = await this._tripService.getTrips();
+        let names = await this._nameService.list();
+        let trips = await this._tripService.getAll();
 
         for (let name of names) {
             let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
@@ -340,15 +344,15 @@ export class GigLoggerService {
                 }                
                 
                 // console.table(name);
-                await this._nameService.update(name);
+                await this._nameService.update([name]);
             };
             // console.log(`Name: ${name.name}`);
         };
     }
 
     private async linkAddressData () {
-        let addresses = await this._addressService.getAddresses();
-        let trips = await this._tripService.getTrips();
+        let addresses = await this._addressService.list();
+        let trips = await this._tripService.getAll();
 
         for (let address of addresses) {
             let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
@@ -380,15 +384,15 @@ export class GigLoggerService {
                 }                
                 
                 // console.table(name);
-                await this._addressService.update(address)
+                await this._addressService.bulkUpdate([address])
             };
             // console.log(`Address: ${address.address}`);
         };
     }
 
     private async linkPlaceData() {
-        let trips = await this._tripService.getTrips();
-        let places = await this._placeService.getPlaces();
+        let trips = await this._tripService.getAll();
+        let places = await this._placeService.list();
 
         for (let place of places) {
             // Addresses
@@ -437,7 +441,56 @@ export class GigLoggerService {
                 }
             };
 
-            await this._placeService.update(place);
+            await this._placeService.update([place]);
         };
     }
+
+    async updateAncillaryInfo() {
+        // Delete all unsaved services, regions, places, types, names, and addresses
+        await this._addressService.deleteUnsaved();
+        await this._nameService.deleteUnsaved();
+        await this._placeService.deleteUnsaved();
+        await this._regionService.deleteUnsaved();
+        await this._serviceService.deleteUnsaved();
+        await this._typeService.deleteUnsaved();
+
+        let trips = await this._tripService.getPreviousDays(2);
+
+        for (let trip of trips) {
+            let endAddress = await this._addressService.find(trip.endAddress);
+            if (!endAddress && trip.endAddress) {
+                await this._addressService.add({ address: trip.endAddress! } as IAddress);
+            }
+
+            let name = await this._nameService.find(trip.name);
+            if (!name && trip.name) {
+                await this._nameService.add({ name: trip.name! } as IName);
+            }
+
+            let place = await this._placeService.find(trip.place);
+            if (!place && trip.place) {
+                await this._placeService.add({ place: trip.place! } as IPlace);
+            }
+
+            let region = await this._regionService.find(trip.region);
+            if (!region && trip.region) {
+                await this._regionService.add({ region: trip.region! } as IRegion);
+            }
+
+            let service = await this._serviceService.find(trip.service);
+            if (!service && trip.service) {
+                await this._serviceService.add({ service: trip.service! } as IService);
+            }
+
+            let startAddress = await this._addressService.find(trip.startAddress);
+            if (!startAddress && trip.startAddress) {
+                await this._addressService.add({ address: trip.startAddress! } as IAddress);
+            }
+
+            let type = await this._typeService.find(trip.type);
+            if (!type && trip.type) {
+                await this._typeService.add({ type: trip.type! } as IType);
+            }
+        }
+      }
 }

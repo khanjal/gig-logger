@@ -91,7 +91,7 @@ export class DataSyncModalComponent {
         let sheetData = {} as ISheet;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         sheetData.shifts = await this._shiftService.getUnsavedShifts();
-        sheetData.trips = await this._tripService.getUnsavedTrips();
+        sheetData.trips = await this._tripService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");
         

@@ -36,7 +36,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
 
   async load() {
     // console.log("TripsTableGroup: Loading");
-    let sheetTrips = await this._tripService.getTripsPreviousDays(this.days);
+    let sheetTrips = await this._tripService.getPreviousDays(this.days);
     sort(sheetTrips, '-id');
     // Get unique dates in trips.
     let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];

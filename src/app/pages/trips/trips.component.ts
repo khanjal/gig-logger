@@ -78,9 +78,9 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   public async load() {
-    this.unsavedTrips = (await this._tripService.getUnsavedTrips()).reverse();
-    this.todaysTrips = (await this._tripService.getTripsByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
-    this.yesrterdaysTrips = (await this._tripService.getTripsByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)))).reverse();
+    this.unsavedTrips = (await this._tripService.getUnsaved()).reverse();
+    this.todaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
+    this.yesrterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)))).reverse();
 
     await this.average?.load();
     await this.tripsTable?.load();
@@ -129,7 +129,7 @@ export class TripComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(async result => {
 
           if (result) {
-              await this._tripService.saveUnsavedTrips();
+              await this._tripService.saveUnsaved();
               await this._shiftService.saveUnsavedShifts();
               this._snackBar.open("Trip(s) Saved to Spreadsheet");
 

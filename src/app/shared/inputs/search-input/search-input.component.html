@@ -26,7 +26,7 @@
                     class="mat-option" 
                     disableRipple
                     #matOption>
-                    {{ item.name }} ({{ item.visits ?? 0 }})
+                    {{ item.name }} {{ item.saved ? '(' + (item.visits ?? 0) + ')' : '' }}
                 </mat-option>
             </cdk-virtual-scroll-viewport>
         </mat-autocomplete>

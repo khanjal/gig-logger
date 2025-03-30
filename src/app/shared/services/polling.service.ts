@@ -65,7 +65,7 @@ export class PollingService implements OnDestroy {
     sheetData.properties = {id: defaultSheet.id, name: ""};
 
     // Get unsaved    
-    sheetData.trips = await this._tripService.getUnsavedTrips();
+    sheetData.trips = await this._tripService.getUnsaved();
     sheetData.shifts = await this._shiftService.getUnsavedShifts();
     
     console.log('Unsaved trips:', sheetData.trips.length);
@@ -89,7 +89,7 @@ export class PollingService implements OnDestroy {
     }
 
     // Save unsaved data
-    await this._tripService.saveUnsavedTrips(sheetData.trips);
+    await this._tripService.saveUnsaved(sheetData.trips);
     await this._shiftService.saveUnsavedShifts(sheetData.shifts);
 
     this._snackBar.open("Trip(s) Saved to Spreadsheet");

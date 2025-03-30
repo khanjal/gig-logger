@@ -193,7 +193,7 @@ export class TripFormComponent implements OnInit {
       trip.dropoffTime = this.tripForm.value.dropoffTime ?? "";
     }
     else {
-      trip.rowId = await this._tripService.getMaxTripId() + 1;
+      trip.rowId = await this._tripService.getMaxId() + 1;
       updateTripAction(trip, ActionEnum.Add);
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
@@ -273,7 +273,7 @@ export class TripFormComponent implements OnInit {
     if (!this.data?.id) {
       let today = DateHelper.getISOFormat();
 
-      let trips = await this._tripService.queryTrips("date", today);
+      let trips = await this._tripService.query("date", today);
 
       sort(trips, '-id');
 
@@ -290,7 +290,7 @@ export class TripFormComponent implements OnInit {
       }
 
       // Set place if only one in the list.
-      let places = await this._placeService.getPlaces();
+      let places = await this._placeService.list();
       if (places.length === 1) {
         this.tripForm.controls.place.setValue(places[0].place);
         await this.selectPlace();
@@ -304,10 +304,13 @@ export class TripFormComponent implements OnInit {
   public async addTrip() {
     let shift = await this.createShift();
     let trip = await this.createTrip(shift);
-    await this._tripService.addTrip(trip);
+    await this._tripService.add(trip);
     
     // Update shift numbers & weekday current amount.
     await this._gigLoggerService.calculateShiftTotals([shift]);
+
+    // Update ancillary info
+    await this._gigLoggerService.updateAncillaryInfo();
 
     this._snackBar.open("Trip Stored to Device");
 
@@ -338,10 +341,13 @@ export class TripFormComponent implements OnInit {
       shifts = [...new Set(shifts)]; // Remove duplicates
     }
 
-    await this._tripService.updateTrip(trip);
+    await this._tripService.update([trip]);
 
     // Update shift numbers & weekday current amount.
     await this._gigLoggerService.calculateShiftTotals(shifts);
+
+    // Update ancillary info
+    await this._gigLoggerService.updateAncillaryInfo();
 
     this._snackBar.open("Trip Updated");
 
@@ -429,7 +435,7 @@ export class TripFormComponent implements OnInit {
 
     if (!address) { this.selectedAddressDeliveries = []; return; }
 
-    this.selectedAddress = await this._addressService.getAddress(address);
+    this.selectedAddress = await this._addressService.find(address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
@@ -439,7 +445,7 @@ export class TripFormComponent implements OnInit {
 
     if (!name) { this.selectedNameDeliveries = []; return; }
 
-    this.selectedName = await this._nameService.findName(name);
+    this.selectedName = await this._nameService.find(name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
   }
@@ -452,7 +458,7 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    this.selectedPlace = await this._placeService.getPlace(place);
+    this.selectedPlace = await this._placeService.find(place);
     if (!this.selectedPlace) {
       return;
     }
@@ -465,7 +471,7 @@ export class TripFormComponent implements OnInit {
 
     place = this.selectedPlace.place;
 
-    let recentTrips = (await this._tripService.getTrips()).reverse().filter(x => x.place === place);
+    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place);
     let recentTrip = recentTrips[0];
 
     if (!recentTrip) {

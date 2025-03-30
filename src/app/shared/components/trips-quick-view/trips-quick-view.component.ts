@@ -35,7 +35,7 @@ export class TripsQuickViewComponent {
 
   async restoreTrip() {
     updateTripAction(this.trip, ActionEnum.Update);
-    await this._tripService.updateTrip(this.trip);
+    await this._tripService.update([this.trip]);
 
     const shift = await this._shiftService.queryShiftByKey(this.trip.key);
     if (shift) {
@@ -66,13 +66,13 @@ export class TripsQuickViewComponent {
   }
 
   async cloneUnsavedTrip() {
-   await this._tripService.cloneTrip(this.trip);
+   await this._tripService.clone(this.trip);
    this.parentReload.emit();
    this._snackBar.open("Cloned Trip");
   }
 
   async nextUnsavedTrip() {
-    await this._tripService.addNextTrip(this.trip);
+    await this._tripService.addNext(this.trip);
     this.parentReload.emit();
     this._snackBar.open("Added Next Trip");
   }
@@ -95,7 +95,7 @@ export class TripsQuickViewComponent {
       this.trip.amountPerTime = this.trip.total / DateHelper.getHoursFromSeconds(duration);
     }
     updateTripAction(this.trip, ActionEnum.Update);
-    await this._tripService.updateTrip(this.trip);
+    await this._tripService.update([this.trip]);
   }
 
   async setPickupTime() {
@@ -110,19 +110,19 @@ export class TripsQuickViewComponent {
 
     this.trip.pickupTime = pickupTime;
     updateTripAction(this.trip, ActionEnum.Update);
-    await this._tripService.updateTrip(this.trip);
+    await this._tripService.update([this.trip]);
   }
 
   
   async deleteTrip() {
     if (this.trip.action === ActionEnum.Add) {
-      await this._tripService.deleteTrip(this.trip.id!);
-      await this._tripService.updateTripRowIds(this.trip.rowId);
+      await this._tripService.delete(this.trip.id!);
+      await this._tripService.updateRowIds(this.trip.rowId);
     }
     else {
       updateTripAction(this.trip, ActionEnum.Delete);
       this.trip.saved = false;
-      await this._tripService.updateTrip(this.trip);
+      await this._tripService.update([this.trip]);
     }
 
     const shift = await this._shiftService.queryShiftByKey(this.trip.key);

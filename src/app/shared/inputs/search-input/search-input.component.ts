@@ -187,6 +187,7 @@ export class SearchInputComponent {
         return (await this._filterAddress(value)).map(item => ({
           id: item.id,
           name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
+          saved: item.saved,
           value: item.address,
           visits: item.visits
         }));
@@ -194,6 +195,7 @@ export class SearchInputComponent {
         return (await this._filterName(value)).map(item => ({
           id: item.id,
           name: item.name,
+          saved: item.saved,
           value: item.name,
           visits: item.visits
         }));
@@ -201,6 +203,7 @@ export class SearchInputComponent {
         return (await this._filterPlace(value)).map(item => ({
           id: item.id,
           name: item.place,
+          saved: item.saved,
           value: item.place,
           visits: item.visits
         }));
@@ -208,6 +211,7 @@ export class SearchInputComponent {
         return (await this._filterRegion(value)).map(item => ({
           id: item.id,
           name: item.region,
+          saved: item.saved,
           value: item.region,
           visits: item.visits
         }));
@@ -215,6 +219,7 @@ export class SearchInputComponent {
         return (await this._filterService(value)).map(item => ({
           id: item.id,
           name: item.service,
+          saved: item.saved,
           value: item.service,
           visits: item.visits
         }));
@@ -222,6 +227,7 @@ export class SearchInputComponent {
         return (await this._filterType(value)).map(item => ({
           id: item.id,
           name: item.type,
+          saved: item.saved,
           value: item.type,
           visits: item.visits
         }));
@@ -288,21 +294,21 @@ export class SearchInputComponent {
 
   // Filter items based on the search type
   private async _filterAddress(value: string): Promise<IAddress[]> {
-    let addresses = await this._addressService.getAddresses();
+    let addresses = await this._addressService.list();
     addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
     return addresses;
   }
 
   private async _filterName(value: string): Promise<IName[]> {
-    let names = await this._nameService.getNames();
+    let names = await this._nameService.list();
     names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
     return names;
   }
 
   private async _filterPlace(value: string): Promise<IPlace[]> {
-    let places = await this._placeService.getPlaces();
+    let places = await this._placeService.list();
     places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
 
     return places;
@@ -317,7 +323,7 @@ export class SearchInputComponent {
   private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
-    return await this._serviceService.filterServices(filterValue);
+    return await this._serviceService.filter(filterValue);
   }
 
   private async _filterType(value: string): Promise<IType[]> {
