@@ -4,17 +4,17 @@ import { clearTripAction, ITrip, updateTripAction } from '@interfaces/trip.inter
 import { DateHelper } from '@helpers/date.helper';
 import { ActionEnum } from '@enums/action.enum'; // Adjust the import path as necessary
 import { Injectable } from '@angular/core';
-import { ICrudService } from '@interfaces/crud-service.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
 @Injectable({
     providedIn: 'root'
   })
-export class TripService {
-    trips$ = liveQuery(() => spreadsheetDB.trips.toArray());
-    
-    public async add(trip: ITrip) {
-        await spreadsheetDB.trips.add(trip);
+export class TripService  extends GenericCrudService<ITrip> {
+    constructor() {
+      super(spreadsheetDB.trips); // Pass the table reference
     }
+
+    trips$ = liveQuery(() => spreadsheetDB.trips.toArray());
     
     public async addNext(trip: ITrip) {
         let nextTrip = {} as ITrip;
@@ -38,10 +38,6 @@ export class TripService {
         cloneTrip.rowId = await this.getMaxId() + 1;
         updateTripAction(cloneTrip, ActionEnum.Add);
         await this.add(cloneTrip);
-    }
-
-    public async delete(tripId: number) {
-        await spreadsheetDB.trips.delete(tripId);
     }
 
     public async getMaxId(): Promise<number> {
@@ -83,10 +79,6 @@ export class TripService {
         return trips;
     }
 
-    public async query(field: string, value: string | number): Promise<ITrip[]> {
-        return await spreadsheetDB.trips.where(field).equals(value).toArray();
-    }
-
     public async saveUnsaved(trips?: ITrip[]) {
         if (!trips || trips.length === 0) {
             trips = await this.getUnsaved();
@@ -111,17 +103,6 @@ export class TripService {
 
         if (rowId) {
             await this.updateRowIds(rowId);
-        }
-    }
-
-    public async load(trips: ITrip[]) {
-        await spreadsheetDB.trips.clear();
-        await spreadsheetDB.trips.bulkAdd(trips);
-    }
-
-    public async update(trips: ITrip[]) {
-        for (const trip of trips) {
-            await spreadsheetDB.trips.put(trip);
         }
     }
 
