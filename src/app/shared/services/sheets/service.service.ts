@@ -58,7 +58,7 @@ export class ServiceService implements ICrudService<IService> {
         return (await this.list()).filter(x => !x.saved);
     }
 
-    public async bulkUpdate(services: IService[]) {
+    public async append(services: IService[]) {
         let existingServices = await this.list();
 
         services.forEach(async service => {

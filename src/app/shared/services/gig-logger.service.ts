@@ -142,8 +142,8 @@ export class GigLoggerService {
     }
 
     public async appendData(sheetData: ISheet) {
-        await this._addressService.bulkUpdate(sheetData.addresses);
-        await this._nameService.bulkUpdate(sheetData.names);
+        await this._addressService.append(sheetData.addresses);
+        await this._nameService.append(sheetData.names);
 
         await this.linkDeliveries(sheetData.trips);
     }
@@ -384,7 +384,7 @@ export class GigLoggerService {
                 }                
                 
                 // console.table(name);
-                await this._addressService.bulkUpdate([address])
+                await this._addressService.append([address])
             };
             // console.log(`Address: ${address.address}`);
         };

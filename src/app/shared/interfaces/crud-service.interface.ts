@@ -7,5 +7,5 @@ export interface ICrudService<T> {
     list(): Promise<T[]>;
     load(items: T[]): Promise<void>;
     query(field: string, value: string | number): Promise<T[]>;
-    bulkUpdate(items: T[]): Promise<void>;
+    append(items: T[]): Promise<void>;
   }

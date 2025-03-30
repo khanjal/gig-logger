@@ -58,7 +58,7 @@ export class AddressService implements ICrudService<IAddress> {
         return (await this.list()).filter(x => !x.saved);
     }
 
-    public async bulkUpdate(addresses: IAddress[]) {
+    public async append(addresses: IAddress[]) {
         let existingAddresses = await this.list();
 
         for (let address of addresses) {

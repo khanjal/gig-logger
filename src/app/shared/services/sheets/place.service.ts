@@ -58,7 +58,7 @@ export class PlaceService implements ICrudService<IPlace> {
         return (await this.list()).filter(x => !x.saved);
     }
 
-    public async bulkUpdate(places: IPlace[]) {
+    public async append(places: IPlace[]) {
         let existingPlaces = await this.list();
 
         places.forEach(place => {

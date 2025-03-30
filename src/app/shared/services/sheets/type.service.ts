@@ -58,7 +58,7 @@ export class TypeService implements ICrudService<IType> {
         return (await this.list()).filter(x => !x.saved);
     }
 
-    public async bulkUpdate(types: IType[]) {
+    public async append(types: IType[]) {
         let items = await this.list();
 
         types.forEach(async item => {

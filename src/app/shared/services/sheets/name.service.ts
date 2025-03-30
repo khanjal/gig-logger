@@ -2,8 +2,9 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IName } from '@interfaces/name.interface';
 import { ICrudService } from '@interfaces/crud-service.interface';
+import { ICrudAdvanced } from '@interfaces/crud-advanced.interface';
 
-export class NameService implements ICrudService<IName> {
+export class NameService implements ICrudAdvanced<IName> {
     names$ = liveQuery(() => spreadsheetDB.names.toArray());
     
     // Basic CRUD operations
@@ -58,7 +59,7 @@ export class NameService implements ICrudService<IName> {
         return (await this.list()).filter(x => !x.saved);
     }
 
-    public async bulkUpdate(names: IName[]) {
+    public async append(names: IName[]) {
         let existingNames = await this.list();
 
         names.forEach(name => {

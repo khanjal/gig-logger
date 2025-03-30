@@ -58,7 +58,7 @@ export class RegionService implements ICrudService<IRegion> {
         return (await this.list()).filter(x => !x.saved);
     }
 
-     public async bulkUpdate(regions: IRegion[]) {
+     public async append(regions: IRegion[]) {
         let items = await this.list();
 
         regions.forEach(async item => {
