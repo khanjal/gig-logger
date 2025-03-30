@@ -22,34 +22,32 @@ export class AddressService extends GenericCrudService<IAddress> {
     }
 
     public async append(addresses: IAddress[]) {
-        let existingAddresses = await this.list();
-
         for (let address of addresses) {
-            let remoteAddress = existingAddresses.find(x => x.address === address.address);
+            let existingAddress = await this.find('address', address.address);
 
-            if (remoteAddress) {
-                address.id = remoteAddress.id;
-                address.bonus += remoteAddress.bonus;
-                address.cash += remoteAddress.cash;
-                address.pay += remoteAddress.pay;
-                address.tip += remoteAddress.tip;
-                address.total += remoteAddress.total;
-                address.visits += remoteAddress.visits;
+            if (existingAddress) {
+                address = existingAddress;
+                address.bonus += existingAddress.bonus;
+                address.cash += existingAddress.cash;
+                address.pay += existingAddress.pay;
+                address.tip += existingAddress.tip;
+                address.total += existingAddress.total;
+                address.visits += existingAddress.visits;
 
                 if (!address.names) {
                     address.names = [];
                 }
 
-                if (remoteAddress.names) {
-                    address.names.push(...remoteAddress.names);
+                if (existingAddress.names) {
+                    address.names.push(...existingAddress.names);
                 }
 
                 if (!address.notes) {
                     address.notes = [];
                 }
 
-                if (remoteAddress.notes) {
-                    address.notes.push(...remoteAddress.notes);
+                if (existingAddress.notes) {
+                    address.notes.push(...existingAddress.notes);
                 }
             }
             else {
