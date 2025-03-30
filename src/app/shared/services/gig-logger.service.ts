@@ -120,8 +120,8 @@ export class GigLoggerService {
 
     public async loadData(sheetData: ISheet) {
         await this._addressService.load(sheetData.addresses);
-        await this._dailyService.loadDaily(sheetData.daily);
-        await this._monthlyService.loadMonthly(sheetData.monthly);
+        await this._dailyService.load(sheetData.daily);
+        await this._monthlyService.load(sheetData.monthly);
         await this._nameService.load(sheetData.names);
         await this._placeService.load(sheetData.places);
         await this._regionService.load(sheetData.regions);
@@ -129,9 +129,9 @@ export class GigLoggerService {
         await this._shiftService.loadShifts(sheetData.shifts);
         await this._tripService.load(sheetData.trips);
         await this._typeService.load(sheetData.types);
-        await this._weekdayService.loadWeekdays(sheetData.weekdays);
-        await this._weeklyService.loadweekly(sheetData.weekly);
-        await this._yearlyService.loadYearly(sheetData.yearly);
+        await this._weekdayService.load(sheetData.weekdays);
+        await this._weeklyService.load(sheetData.weekly);
+        await this._yearlyService.load(sheetData.yearly);
 
         await this.linkNameData();
         await this.linkAddressData();
@@ -214,7 +214,7 @@ export class GigLoggerService {
 
             let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
             let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
-            let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+            let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
 
             if (!weekday) {
                 weekday = {} as IWeekday;
@@ -223,7 +223,7 @@ export class GigLoggerService {
 
             if (!weekday.currentAmount || weekday.currentAmount != shiftTotal) {
                 weekday.currentAmount = shiftTotal;
-                await this._weekdayService.updateWeekday(weekday);
+                await this._weekdayService.update([weekday]);
             }
         };
     }
@@ -457,37 +457,37 @@ export class GigLoggerService {
         let trips = await this._tripService.getPreviousDays(2);
 
         for (let trip of trips) {
-            let endAddress = await this._addressService.find(trip.endAddress);
+            let endAddress = await this._addressService.find('address', trip.endAddress);
             if (!endAddress && trip.endAddress) {
                 await this._addressService.add({ address: trip.endAddress! } as IAddress);
             }
 
-            let name = await this._nameService.find(trip.name);
+            let name = await this._nameService.find('name', trip.name);
             if (!name && trip.name) {
                 await this._nameService.add({ name: trip.name! } as IName);
             }
 
-            let place = await this._placeService.find(trip.place);
+            let place = await this._placeService.find('place', trip.place);
             if (!place && trip.place) {
                 await this._placeService.add({ place: trip.place! } as IPlace);
             }
 
-            let region = await this._regionService.find(trip.region);
+            let region = await this._regionService.find('trip', trip.region);
             if (!region && trip.region) {
                 await this._regionService.add({ region: trip.region! } as IRegion);
             }
 
-            let service = await this._serviceService.find(trip.service);
+            let service = await this._serviceService.find('service', trip.service);
             if (!service && trip.service) {
                 await this._serviceService.add({ service: trip.service! } as IService);
             }
 
-            let startAddress = await this._addressService.find(trip.startAddress);
+            let startAddress = await this._addressService.find('address', trip.startAddress);
             if (!startAddress && trip.startAddress) {
                 await this._addressService.add({ address: trip.startAddress! } as IAddress);
             }
 
-            let type = await this._typeService.find(trip.type);
+            let type = await this._typeService.find('type', trip.type);
             if (!type && trip.type) {
                 await this._typeService.add({ type: trip.type! } as IType);
             }

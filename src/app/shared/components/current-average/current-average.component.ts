@@ -44,7 +44,7 @@ export class CurrentAverageComponent implements OnInit {
     this.currentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
 
     let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+    let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average

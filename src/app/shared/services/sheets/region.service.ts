@@ -1,52 +1,15 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IRegion } from '@interfaces/region.interface';
-import { ICrudService } from '@interfaces/crud-service.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
-export class RegionService implements ICrudService<IRegion> {
+export class RegionService extends GenericCrudService<IRegion> {
+    constructor() {
+      super(spreadsheetDB.regions); // Pass the table reference
+    }
+
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
     
-    // Basic CRUD operations
-    public async add(region: IRegion) {
-        await spreadsheetDB.regions.add(region);
-    }
-
-    public async delete(id: number) {
-        await spreadsheetDB.regions.delete(id);
-    }
-
-    public async filter(region: string): Promise<IRegion[]> {
-        return await spreadsheetDB.regions.where("region").startsWithAnyOfIgnoreCase(region).toArray();
-    }
-
-    public async find(region: string): Promise<IRegion | undefined> {
-        return await spreadsheetDB.regions.where("region").anyOfIgnoreCase(region).first();
-    }
-
-    public async get(id: number): Promise<IRegion | undefined> {
-        return await spreadsheetDB.regions.where("id").equals(id).first();
-    }
-
-    public async list(): Promise<IRegion[]> {
-        return await spreadsheetDB.regions.toArray();
-    }
-    
-    public async load(regions: IRegion[]) {
-        await spreadsheetDB.regions.clear();
-        await spreadsheetDB.regions.bulkAdd(regions);
-    }
-
-    public async query(field: string, value: string | number): Promise<IRegion[]> {
-        return await spreadsheetDB.regions.where(field).equals(value).toArray();
-    }
-
-    public async update(regions: IRegion[]) {
-        for (const region of regions) {
-            await spreadsheetDB.regions.put(region);
-        }
-    }
-
-    // Other operations
     public async deleteUnsaved() {
         let regions = await this.getUnsaved();
         regions.forEach(async region => {

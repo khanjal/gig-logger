@@ -1,52 +1,15 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IAddress } from '@interfaces/address.interface';
-import { ICrudService } from '@interfaces/crud-service.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
-export class AddressService implements ICrudService<IAddress> {
+export class AddressService extends GenericCrudService<IAddress> {
+    constructor() {
+      super(spreadsheetDB.addresses); // Pass the table reference
+    }
+
     addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
-    // Basic CRUD operations
-    public async add(address: IAddress) {
-        await spreadsheetDB.addresses.add(address);
-    }
-
-    public async delete(id: number) {
-        await spreadsheetDB.addresses.delete(id);
-    }
-
-    public async filter(address: string): Promise<IAddress[]> {
-        return await spreadsheetDB.addresses.where("address").startsWithAnyOfIgnoreCase(address).toArray();
-    }
-
-    public async find(address: string): Promise<IAddress | undefined> {
-        return await spreadsheetDB.addresses.where("address").anyOfIgnoreCase(address).first();
-    }
-
-    public async get(id: number): Promise<IAddress | undefined> {
-        return await spreadsheetDB.addresses.where("id").equals(id).first();
-    }
-
-    public async list(): Promise<IAddress[]> {
-        return await spreadsheetDB.addresses.toArray();
-    }
-    
-    public async load(addresses: IAddress[]) {
-        await spreadsheetDB.addresses.clear();
-        await spreadsheetDB.addresses.bulkAdd(addresses);
-    }
-
-    public async query(field: string, value: string | number): Promise<IAddress[]> {
-        return await spreadsheetDB.addresses.where(field).equals(value).toArray();
-    }
-
-    public async update(addresses: IAddress[]) {
-        for (const address of addresses) {
-            await spreadsheetDB.addresses.put(address);
-        }
-    }
-
-    // Other operations
     public async deleteUnsaved() {
         let addresses = await this.getUnsaved();
         addresses.forEach(async address => {

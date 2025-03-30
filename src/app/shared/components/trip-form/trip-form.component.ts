@@ -435,7 +435,7 @@ export class TripFormComponent implements OnInit {
 
     if (!address) { this.selectedAddressDeliveries = []; return; }
 
-    this.selectedAddress = await this._addressService.find(address);
+    this.selectedAddress = await this._addressService.find('address', address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
@@ -445,7 +445,7 @@ export class TripFormComponent implements OnInit {
 
     if (!name) { this.selectedNameDeliveries = []; return; }
 
-    this.selectedName = await this._nameService.find(name);
+    this.selectedName = await this._nameService.find('name', name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
   }
@@ -458,7 +458,7 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    this.selectedPlace = await this._placeService.find(place);
+    this.selectedPlace = await this._placeService.find('place', place);
     if (!this.selectedPlace) {
       return;
     }

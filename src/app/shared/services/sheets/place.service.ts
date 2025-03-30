@@ -1,52 +1,15 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IPlace } from '@interfaces/place.interface';
-import { ICrudService } from '@interfaces/crud-service.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
-export class PlaceService implements ICrudService<IPlace> {
+export class PlaceService extends GenericCrudService<IPlace> {
+    constructor() {
+      super(spreadsheetDB.places); // Pass the table reference
+    }
+    
     places$ = liveQuery(() => spreadsheetDB.places.toArray());
-    
-    // Basic CRUD operations
-    public async add(place: IPlace) {
-        await spreadsheetDB.places.add(place);
-    }
 
-    public async delete(id: number) {
-        await spreadsheetDB.places.delete(id);
-    }
-
-    public async filter(place: string): Promise<IPlace[]> {
-        return await spreadsheetDB.places.where("place").startsWithAnyOfIgnoreCase(place).toArray();
-    }
-
-    public async find(place: string): Promise<IPlace | undefined> {
-        return await spreadsheetDB.places.where("place").anyOfIgnoreCase(place).first();
-    }
-
-    public async get(id: number): Promise<IPlace | undefined> {
-        return await spreadsheetDB.places.where("id").equals(id).first();
-    }
-
-    public async list(): Promise<IPlace[]> {
-        return await spreadsheetDB.places.toArray();
-    }
-    
-    public async load(places: IPlace[]) {
-        await spreadsheetDB.places.clear();
-        await spreadsheetDB.places.bulkAdd(places);
-    }
-
-    public async query(field: string, value: string | number): Promise<IPlace[]> {
-        return await spreadsheetDB.places.where(field).equals(value).toArray();
-    }
-
-    public async update(places: IPlace[]) {
-        for (const place of places) {
-            await spreadsheetDB.places.put(place);
-        }
-    }
-
-    // Other operations
     public async deleteUnsaved() {
         let places = await this.getUnsaved();
         places.forEach(async place => {

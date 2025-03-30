@@ -1,52 +1,15 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IType } from '@interfaces/type.interface';
-import { ICrudService } from '@interfaces/crud-service.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
-export class TypeService implements ICrudService<IType> {
+export class TypeService extends GenericCrudService<IType> {
+    constructor() {
+      super(spreadsheetDB.types); // Pass the table reference
+    }
+    
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
-    
-    // Basic CRUD operations
-    public async add(type: IType) {
-        await spreadsheetDB.types.add(type);
-    }
-
-    public async delete(id: number) {
-        await spreadsheetDB.types.delete(id);
-    }
-
-    public async filter(type: string): Promise<IType[]> {
-        return await spreadsheetDB.types.where("type").startsWithAnyOfIgnoreCase(type).toArray();
-    }
-
-    public async find(type: string): Promise<IType | undefined> {
-        return await spreadsheetDB.types.where("type").anyOfIgnoreCase(type).first();
-    }
-
-    public async get(id: number): Promise<IType | undefined> {
-        return await spreadsheetDB.types.where("id").equals(id).first();
-    }
-
-    public async list(): Promise<IType[]> {
-        return await spreadsheetDB.types.toArray();
-    }
-    
-    public async load(types: IType[]) {
-        await spreadsheetDB.types.clear();
-        await spreadsheetDB.types.bulkAdd(types);
-    }
-
-    public async query(field: string, value: string | number): Promise<IType[]> {
-        return await spreadsheetDB.types.where(field).equals(value).toArray();
-    }
-
-    public async update(types: IType[]) {
-        for (const type of types) {
-            await spreadsheetDB.types.put(type);
-        }
-    }
-    
-    // Other operations
+   
     public async deleteUnsaved() {
         let types = await this.getUnsaved();
         types.forEach(async type => {

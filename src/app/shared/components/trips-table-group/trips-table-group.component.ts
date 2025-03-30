@@ -52,7 +52,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       }
 
       let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
-      let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+      let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
 
       tripGroup.date = date;
       tripGroup.trips = trips;

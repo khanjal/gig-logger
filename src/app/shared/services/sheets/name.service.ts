@@ -1,53 +1,15 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IName } from '@interfaces/name.interface';
-import { ICrudService } from '@interfaces/crud-service.interface';
-import { ICrudAdvanced } from '@interfaces/crud-advanced.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
-export class NameService implements ICrudAdvanced<IName> {
+export class NameService extends GenericCrudService<IName> {
+    constructor() {
+      super(spreadsheetDB.names); // Pass the table reference
+    }
+      
     names$ = liveQuery(() => spreadsheetDB.names.toArray());
     
-    // Basic CRUD operations
-    public async add(name: IName) {
-        await spreadsheetDB.names.add(name);
-    }
-
-    public async delete(id: number) {
-        await spreadsheetDB.names.delete(id);
-    }
-
-    public async filter(name: string): Promise<IName[]> {
-        return await spreadsheetDB.names.where("name").startsWithAnyOfIgnoreCase(name).toArray();
-    }
-
-    public async find(name: string): Promise<IName | undefined> {
-        return await spreadsheetDB.names.where("name").anyOfIgnoreCase(name).first();
-    }
-
-    public async get(id: number): Promise<IName | undefined> {
-        return await spreadsheetDB.names.where("id").equals(id).first();
-    }
-
-    public async list(): Promise<IName[]> {
-        return await spreadsheetDB.names.toArray();
-    }
-    
-    public async load(names: IName[]) {
-        await spreadsheetDB.names.clear();
-        await spreadsheetDB.names.bulkAdd(names);
-    }
-
-    public async query(field: string, value: string | number): Promise<IName[]> {
-        return await spreadsheetDB.names.where(field).equals(value).toArray();
-    }
-
-    public async update(names: IName[]) {
-        for (const name of names) {
-            await spreadsheetDB.names.put(name);
-        }
-    }
-
-    // Other operations
     public async deleteUnsaved() {
         let names = await this.getUnsaved();
         names.forEach(async name => {

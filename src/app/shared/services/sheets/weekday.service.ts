@@ -1,8 +1,13 @@
 import { spreadsheetDB } from "@data/spreadsheet.db";
 import { IWeekday } from "@interfaces/weekday.interface";
+import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 
-export class WeekdayService {
+export class WeekdayService  extends GenericCrudService<IWeekday> {
+    constructor() {
+      super(spreadsheetDB.weekdays); // Pass the table reference
+    }
+    
     weekdays$ = liveQuery(() => spreadsheetDB.weekdays.toArray());
 
     public async getCurrentTotal() {
@@ -30,18 +35,5 @@ export class WeekdayService {
             .each (x => total += x.dailyPrevAverage);
 
         return total;
-    }
-    
-    public async loadWeekdays(weekdays: IWeekday[]) {
-        await spreadsheetDB.weekdays.clear();
-        await spreadsheetDB.weekdays.bulkAdd(weekdays);
-    }
-
-    public async queryWeekdays(field: string, value: string | number): Promise<IWeekday[]> {
-        return await spreadsheetDB.weekdays.where(field).equals(value).toArray();
-    }
-
-    public async updateWeekday(weekday: IWeekday) {
-        await spreadsheetDB.weekdays.put(weekday);
     }
 }

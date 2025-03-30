@@ -1,20 +1,13 @@
 import { spreadsheetDB } from "@data/spreadsheet.db";
 import { IDaily } from "@interfaces/daily.interface";
+import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 
-export class DailyService {
+export class DailyService extends GenericCrudService<IDaily> {
+    constructor() {
+      super(spreadsheetDB.daily); // Pass the table reference
+    }
+
     daily$ = liveQuery(() => spreadsheetDB.daily.toArray());
 
-    public async loadDaily(daily: IDaily[]) {
-        await spreadsheetDB.daily.clear();
-        await spreadsheetDB.daily.bulkAdd(daily);
-    }
-
-    public async queryDaily(field: string, value: string | number): Promise<IDaily[]> {
-        return await spreadsheetDB.daily.where(field).equals(value).toArray();
-    }
-
-    public async updateDaily(daily: IDaily) {
-        await spreadsheetDB.daily.put(daily);
-    }
 }

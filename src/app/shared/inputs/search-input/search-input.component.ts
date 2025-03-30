@@ -294,41 +294,32 @@ export class SearchInputComponent {
 
   // Filter items based on the search type
   private async _filterAddress(value: string): Promise<IAddress[]> {
-    let addresses = await this._addressService.list();
-    addresses = addresses.filter(x => x.address.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-
-    return addresses;
+    return await this._addressService.includes('address', value);
   }
 
   private async _filterName(value: string): Promise<IName[]> {
-    let names = await this._nameService.list();
-    names = names.filter(x => x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-
-    return names;
+    return await this._nameService.includes('name', value);
   }
 
   private async _filterPlace(value: string): Promise<IPlace[]> {
-    let places = await this._placeService.list();
-    places = places.filter(x => x.place.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
-
-    return places;
+    return await this._placeService.includes('place', value);
   }
 
   private async _filterRegion(value: string): Promise<IRegion[]> {
     const filterValue = value;
 
-    return await this._regionService.filter(filterValue);
+    return await this._regionService.filter('region', filterValue);
   }
 
   private async _filterService(value: string): Promise<IService[]> {
     const filterValue = value;
 
-    return await this._serviceService.filter(filterValue);
+    return await this._serviceService.filter('service', filterValue);
   }
 
   private async _filterType(value: string): Promise<IType[]> {
     const filterValue = value;
 
-    return await this._typeService.filter(filterValue);
+    return await this._typeService.filter('type', filterValue);
   }
 }

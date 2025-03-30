@@ -1,52 +1,15 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IService } from '@interfaces/service.interface';
-import { ICrudService } from '@interfaces/crud-service.interface';
+import { GenericCrudService } from '@services/generic-crud.service';
 
-export class ServiceService implements ICrudService<IService> {
+export class ServiceService extends GenericCrudService<IService> {
+    constructor() {
+      super(spreadsheetDB.services); // Pass the table reference
+    }
+    
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
 
-    // Basic CRUD operations
-    public async add(service: IService) {
-        await spreadsheetDB.services.add(service);
-    }
-
-    public async delete(id: number) {
-        await spreadsheetDB.services.delete(id);
-    }
-
-    public async filter(service: string): Promise<IService[]> {
-        return await spreadsheetDB.services.where("service").startsWithAnyOfIgnoreCase(service).toArray();
-    }
-
-    public async find(service: string): Promise<IService | undefined> {
-        return await spreadsheetDB.services.where("service").anyOfIgnoreCase(service).first();
-    }
-
-    public async get(id: number): Promise<IService | undefined> {
-        return await spreadsheetDB.services.where("id").equals(id).first();
-    }
-
-    public async list(): Promise<IService[]> {
-        return await spreadsheetDB.services.toArray();
-    }
-    
-    public async load(services: IService[]) {
-        await spreadsheetDB.services.clear();
-        await spreadsheetDB.services.bulkAdd(services);
-    }
-
-    public async query(field: string, value: string | number): Promise<IService[]> {
-        return await spreadsheetDB.services.where(field).equals(value).toArray();
-    }
-
-    public async update(services: IService[]) {
-        for (const service of services) {
-            await spreadsheetDB.services.put(service);
-        }
-    }
-    
-    // Other operations
     public async deleteUnsaved() {
         let services = await this.getUnsaved();
         services.forEach(async service => {
