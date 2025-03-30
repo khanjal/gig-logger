@@ -5,7 +5,7 @@ import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, Ma
 import { NgClass, CurrencyPipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
-import { TripService } from '@services/trip.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
   selector: 'app-shift-trips-table',

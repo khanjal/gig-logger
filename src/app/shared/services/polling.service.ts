@@ -2,8 +2,8 @@ import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, interval } from 'rxjs';
 import { GigLoggerService } from './gig-logger.service';
-import { ShiftService } from './shift.service';
-import { TripService } from './trip.service';
+import { ShiftService } from './sheets/shift.service';
+import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 

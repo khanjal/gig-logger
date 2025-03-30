@@ -6,8 +6,8 @@ import { DateHelper } from '@helpers/date.helper';
 import { IShift } from '@interfaces/shift.interface';
 import { IStatItem } from '@interfaces/stat-item.interface';
 import { ITrip } from '@interfaces/trip.interface';
-import { ShiftService } from '@services/shift.service';
-import { TripService } from '@services/trip.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
   selector: 'app-stats',

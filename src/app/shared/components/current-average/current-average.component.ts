@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DateHelper } from '@helpers/date.helper';
-import { ShiftService } from '@services/shift.service';
-import { WeekdayService } from '@services/weekday.service';
-import { WeeklyService } from '@services/weekly.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
+import { WeeklyService } from '@services/sheets/weekly.service';
 
 @Component({
   selector: 'app-current-average',

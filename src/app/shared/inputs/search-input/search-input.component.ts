@@ -36,12 +36,12 @@ import { IType } from '@interfaces/type.interface';
 import { PipesModule } from '@pipes/pipes.module';
 
 // Application-specific imports - Services
-import { AddressService } from '@services/address.service';
-import { NameService } from '@services/name.service';
-import { PlaceService } from '@services/place.service';
-import { RegionService } from '@services/region.service';
-import { ServiceService } from '@services/service.service';
-import { TypeService } from '@services/type.service';
+import { AddressService } from '@services/sheets/address.service';
+import { NameService } from '@services/sheets/name.service';
+import { PlaceService } from '@services/sheets/place.service';
+import { RegionService } from '@services/sheets/region.service';
+import { ServiceService } from '@services/sheets/service.service';
+import { TypeService } from '@services/sheets/type.service';
 
 // RxJS imports
 import { Observable, startWith, switchMap } from 'rxjs';

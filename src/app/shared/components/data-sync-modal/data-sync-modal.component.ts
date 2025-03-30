@@ -14,10 +14,10 @@ import { ISheet } from '@interfaces/sheet.interface';
 
 // Application-specific imports - Services
 import { GigLoggerService } from '@services/gig-logger.service';
-import { ShiftService } from '@services/shift.service';
+import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
-import { TripService } from '@services/trip.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
   selector: 'app-data-sync-modal',

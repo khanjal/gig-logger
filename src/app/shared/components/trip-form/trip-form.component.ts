@@ -21,14 +21,14 @@ import { IShift, updateShiftAction } from '@interfaces/shift.interface';
 import { ITrip, updateTripAction } from '@interfaces/trip.interface';
 
 // Application-specific imports - Services
-import { AddressService } from '@services/address.service';
+import { AddressService } from '@services/sheets/address.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
-import { NameService } from '@services/name.service';
-import { PlaceService } from '@services/place.service';
-import { ShiftService } from '@services/shift.service';
+import { NameService } from '@services/sheets/name.service';
+import { PlaceService } from '@services/sheets/place.service';
+import { ShiftService } from '@services/sheets/shift.service';
 import { TimerService } from '@services/timer.service';
-import { TripService } from '@services/trip.service';
+import { TripService } from '@services/sheets/trip.service';
 
 // Application-specific imports - Helpers
 import { sort } from '@helpers/sort.helper';

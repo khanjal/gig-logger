@@ -13,8 +13,8 @@ import { ITrip } from '@interfaces/trip.interface';
 
 import { GigLoggerService } from '@services/gig-logger.service';
 import { PollingService } from '@services/polling.service';
-import { TripService } from '@services/trip.service';
-import { ShiftService } from '@services/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 
 import { CurrentAverageComponent } from '@components/current-average/current-average.component';

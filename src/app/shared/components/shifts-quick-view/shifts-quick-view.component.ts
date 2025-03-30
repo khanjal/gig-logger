@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { IShift, updateShiftAction } from '@interfaces/shift.interface';
 import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
 import { ShiftTripsTableComponent } from "@components/shift-trips-table/shift-trips-table.component";
-import { ShiftService } from '@services/shift.service';
+import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';

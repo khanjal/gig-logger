@@ -5,7 +5,7 @@ import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-mo
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
-import { ShiftService } from '@services/shift.service';
+import { ShiftService } from '@services/sheets/shift.service';
 
 @Component({
   selector: 'app-shifts',

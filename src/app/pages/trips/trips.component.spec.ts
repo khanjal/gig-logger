@@ -5,8 +5,8 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { GigLoggerService } from '@services/gig-logger.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ShiftService } from '@services/shift.service';
-import { TripService } from '@services/trip.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
 
 describe('TripComponent', () => {
   let component: TripComponent;

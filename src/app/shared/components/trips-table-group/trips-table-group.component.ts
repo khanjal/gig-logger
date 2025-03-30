@@ -2,8 +2,8 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
-import { TripService } from '@services/trip.service';
-import { WeekdayService } from '@services/weekday.service';
+import { TripService } from '@services/sheets/trip.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
 
 @Component({
   selector: 'app-trips-table-group',
