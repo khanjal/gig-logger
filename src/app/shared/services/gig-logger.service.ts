@@ -472,7 +472,7 @@ export class GigLoggerService {
                 await this._placeService.add({ place: trip.place! } as IPlace);
             }
 
-            let region = await this._regionService.find('trip', trip.region);
+            let region = await this._regionService.find('region', trip.region);
             if (!region && trip.region) {
                 await this._regionService.add({ region: trip.region! } as IRegion);
             }
