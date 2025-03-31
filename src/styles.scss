@@ -116,13 +116,13 @@ div.mat-expansion-panel-body {
 .pac-container {
   position: fixed !important;
   left: 50px !important;
-  width: 300px !important;
+  width: 275px !important;
   z-index: 99999999 !important;
 
   // https://developers.google.com/maps/documentation/javascript/place-autocomplete#style_autocomplete
   .pac-item {
     font-size: smaller;
-    line-height: 2.5rem;
+    line-height: 2rem;
     vertical-align: middle;
   
     .pac-icon {
