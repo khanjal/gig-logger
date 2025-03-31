@@ -1,5 +1,5 @@
 // Define the version
-const CACHE_VERSION = 'v1.0.3';
+const CACHE_VERSION = 'v1.0.4';
 const CACHE_NAME = `gig-logger-cache-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-cache-${CACHE_VERSION}`;
 
@@ -62,7 +62,7 @@ self.addEventListener('fetch', (event) => {
     console.log(`[Service Worker] Fetching: ${request.url}`);
   
     // Cache Google Material Icons stylesheet
-    if (https(request.url.includes('://fonts.googleapis.com/icon?family=Material+Icons'))) {
+    if (request.url.includes('https://fonts.googleapis.com/icon?family=Material+Icons')) {
       event.respondWith(
         caches.open(RUNTIME_CACHE).then((cache) => {
           return cache.match(request).then((cachedResponse) => {
