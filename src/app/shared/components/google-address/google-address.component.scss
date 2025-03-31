@@ -1,3 +1,8 @@
+/* Ensure the parent container is positioned relative */
+mat-form-field {
+    position: relative;
+}
+
 .field-full-width {
     width: 100%;
 }
