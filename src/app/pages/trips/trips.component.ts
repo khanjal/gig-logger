@@ -32,7 +32,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./trips.component.scss']
 })
 export class TripComponent implements OnInit, OnDestroy {
-  @ViewChild(TripFormComponent) form:TripFormComponent | undefined;
+  @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
@@ -84,6 +84,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
     await this.average?.load();
     await this.tripsTable?.load();
+    this.tripForm?.load();
   }
 
   // Listen for scroll events
