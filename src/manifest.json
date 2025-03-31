@@ -10,42 +10,42 @@
   "start_url": "/",
   "icons": [
     {
-      "src": "icons/icon-72x72.png",
+      "src": "assets/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-96x96.png",
+      "src": "assets/icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-128x128.png",
+      "src": "assets/icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-144x144.png",
+      "src": "assets/icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-152x152.png",
+      "src": "assets/icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-192x192.png",
+      "src": "assets/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-384x384.png",
+      "src": "assets/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "assets/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -58,7 +58,7 @@
       "url": "/trips",
       "icons": [
         {
-          "src": "icons/trip-96x96.png",
+          "src": "assets/icons/trip-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -71,7 +71,7 @@
       "url": "/shifts",
       "icons": [
         {
-          "src": "icons/shift-96x96.png",
+          "src": "assets/icons/shift-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -84,7 +84,7 @@
       "url": "/stats",
       "icons": [
         {
-          "src": "icons/stats-96x96.png",
+          "src": "assets/icons/stats-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -97,7 +97,7 @@
       "url": "/setup",
       "icons": [
         {
-          "src": "icons/icon-96x96.png",
+          "src": "assets/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -106,70 +106,70 @@
   ],
   "screenshots": [
     {
-      "src": "screenshots/narrow/add-trip.png",
+      "src": "assets/screenshots/narrow/add-trip.png",
       "sizes": "484x950",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Add Trip"
     },
     {
-      "src": "screenshots/narrow/todays-trips.png",
+      "src": "assets/screenshots/narrow/todays-trips.png",
       "sizes": "484x950",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Today's Trips"
     },
     {
-      "src": "screenshots/narrow/edit-trip.png",
+      "src": "assets/screenshots/narrow/edit-trip.png",
       "sizes": "484x950",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Edit Trip"
     },
     {
-      "src": "screenshots/narrow/shifts.png",
+      "src": "assets/screenshots/narrow/shifts.png",
       "sizes": "484x950",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Shifts"
     },
     {
-      "src": "screenshots/narrow/stats.png",
+      "src": "assets/screenshots/narrow/stats.png",
       "sizes": "484x950",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Stats"
     },
     {
-      "src": "screenshots/wide/add-trip.png",
+      "src": "assets/screenshots/wide/add-trip.png",
       "sizes": "1024x890",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Add Trip"
     },
     {
-      "src": "screenshots/wide/todays-trips.png",
+      "src": "assets/screenshots/wide/todays-trips.png",
       "sizes": "1024x890",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Today's Trips"
     },
     {
-      "src": "screenshots/wide/edit-trip.png",
+      "src": "assets/screenshots/wide/edit-trip.png",
       "sizes": "1024x890",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Edit Trip"
     },
     {
-      "src": "screenshots/wide/shifts.png",
+      "src": "assets/screenshots/wide/shifts.png",
       "sizes": "1024x890",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Shifts"
     },
     {
-      "src": "screenshots/wide/stats.png",
+      "src": "assets/screenshots/wide/stats.png",
       "sizes": "1024x890",
       "type": "image/png",
       "form_factor": "wide",
