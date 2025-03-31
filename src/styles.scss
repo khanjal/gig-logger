@@ -114,13 +114,14 @@ div.mat-expansion-panel-body {
 
 /* Style the google place/address autocomplete dropdown container */
 .pac-container {
-  position: absolute !important;
-  top: 100% !important;
-  width: 100% !important;
+  position: fixed !important;
+  left: 50px !important;
+  width: 300px !important;
   z-index: 99999999 !important;
 
   // https://developers.google.com/maps/documentation/javascript/place-autocomplete#style_autocomplete
   .pac-item {
+    font-size: smaller;
     line-height: 2.5rem;
     vertical-align: middle;
   
@@ -133,6 +134,7 @@ div.mat-expansion-panel-body {
     }
 
     .pac-item-query {
+      font-size: medium;
       vertical-align: middle;
     }
   }
