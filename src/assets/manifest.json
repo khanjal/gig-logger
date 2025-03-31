@@ -58,7 +58,7 @@
       "url": "/trips",
       "icons": [
         {
-          "src": "icons/icon-96x96.png",
+          "src": "icons/trip-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -71,7 +71,7 @@
       "url": "/shifts",
       "icons": [
         {
-          "src": "icons/icon-96x96.png",
+          "src": "icons/shift-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -84,7 +84,7 @@
       "url": "/stats",
       "icons": [
         {
-          "src": "icons/icon-96x96.png",
+          "src": "icons/stats-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
