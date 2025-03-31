@@ -27,7 +27,7 @@ export class GoogleAddressComponent implements OnInit {
     address: new FormControl('')
   });
 
-    googleAddress!: GoogleAddress;
+  googleAddress!: GoogleAddress;
 
   constructor(private googleAddressService: GoogleAddressService) { }
 
