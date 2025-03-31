@@ -37,6 +37,7 @@ export class GoogleAddressComponent implements OnInit {
 
   ngAfterViewInit() {
     this.getPlaceAutocomplete();
+    this.attachPacContainer();
     
     setTimeout(() => this.addressInput?.nativeElement?.focus(), 500);
   }
@@ -45,8 +46,8 @@ export class GoogleAddressComponent implements OnInit {
     this.addressChange.emit(this.addressForm.value.address || "");
   }
 
-    private getPlaceAutocomplete() {
-        //@ts-ignore
+  private getPlaceAutocomplete() {
+    //@ts-ignore
     const autocomplete = new google.maps.places.Autocomplete(
       this.addressInput.nativeElement,
       {
@@ -55,7 +56,7 @@ export class GoogleAddressComponent implements OnInit {
       }
     );
 
-        //@ts-ignore
+    //@ts-ignore
     google.maps.event.addListener(autocomplete, 'place_changed', () => {
       // $('.pac-container').remove(); // TODO remove existing pac-containers
       this.place = autocomplete.getPlace();
@@ -71,6 +72,16 @@ export class GoogleAddressComponent implements OnInit {
 
     if (!this.formattedAddress.startsWith(name)) {
       this.formattedAddress = `${name}, ${this.formattedAddress}`;
+    }
+  }
+
+  private attachPacContainer() {
+    const pacContainer = document.querySelector('.pac-container');
+    if (pacContainer && this.addressInput) {
+      const parent = this.addressInput.nativeElement.closest('mat-form-field');
+      if (parent) {
+        parent.appendChild(pacContainer);
+      }
     }
   }
 }
