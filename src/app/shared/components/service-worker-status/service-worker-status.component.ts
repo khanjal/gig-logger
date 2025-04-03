@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { SwPush, SwUpdate } from '@angular/service-worker';
+import { SwPush, SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
 
 @Component({
   selector: 'app-service-worker-status',
@@ -23,18 +23,18 @@ export class ServiceWorkerStatusComponent {
     if (this.swUpdate.isEnabled) {
       this.serviceWorkerStatus = 'Active';
 
-      // Listen for updates
-      // this.swUpdate.available.subscribe(() => {
-      //   this.serviceWorkerStatus = 'Update Available';
-      //   this.isUpdateAvailable = true;
-      // });
-
-      // this.swUpdate.activated.subscribe(() => {
-      //   this.serviceWorkerStatus = 'Updated';
-      // });
-    } else {
-      this.serviceWorkerStatus = 'Not Enabled';
-    }
+    // Listen for version updates
+    this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
+      if (event.type === 'VERSION_READY') {
+        const versionReadyEvent = event as VersionReadyEvent;
+        console.log(`New version available: ${versionReadyEvent.latestVersion.hash}`);
+        this.serviceWorkerStatus = 'Update Available';
+        this.isUpdateAvailable = true;
+      }
+    });
+  } else {
+    this.serviceWorkerStatus = 'Not Enabled';
+  }
 
     // Check if the app is offline
     window.addEventListener('offline', () => {
