@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
+import { SwUpdate, SwPush } from '@angular/service-worker';
 
 @Component({
   selector: 'app-setup',

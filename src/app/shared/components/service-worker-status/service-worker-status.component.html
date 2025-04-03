@@ -1,0 +1,6 @@
+<p>Service Worker Status: <strong>{{ serviceWorkerStatus }}</strong></p>
+@if (isUpdateAvailable) {
+    <button mat-fab extended color="primary" (click)="updateApp()">
+        <mat-icon>update</mat-icon> Update App
+    </button>
+}

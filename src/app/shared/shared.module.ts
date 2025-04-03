@@ -37,6 +37,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ServiceWorkerStatusComponent } from '@components/service-worker-status/service-worker-status.component';
 
 @NgModule({
     declarations: [
@@ -61,6 +62,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         CurrentAverageComponent,
         HeaderComponent,
         SearchInputComponent,
+        ServiceWorkerStatusComponent,
         ShiftsQuickViewComponent,
         ShiftTripsTableComponent,
         TripFormComponent,
@@ -88,6 +90,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         ReactiveFormsModule,
         RouterModule,
         SearchInputComponent,
+        ServiceWorkerStatusComponent,
         PipesModule
 ],
     providers: [

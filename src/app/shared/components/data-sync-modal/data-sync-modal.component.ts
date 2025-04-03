@@ -32,6 +32,7 @@ export class DataSyncModalComponent {
     currentTime = 0;
     time = 0;
     enableAutoClose = true;
+    nonInfoMessage = false;
     currentTimeString = "";
     divMessages: { time: string, text: string; type: string }[] = [];
     timerDelay = 5000;
@@ -83,7 +84,6 @@ export class DataSyncModalComponent {
             this.dialogRef.close(true);
         }
         else {
-            this.appendToTerminal('Modal autoclose disabled');
             this.stopTimer();
         }
     }
@@ -119,7 +119,7 @@ export class DataSyncModalComponent {
         data.messages.forEach(message => {
             let messageLevel = message.level.toLowerCase();
             if (messageLevel != 'info') {
-                this.enableAutoClose = false;
+                this.nonInfoMessage = true;
             }
 
             this.appendToTerminal(message.message, messageLevel);
@@ -145,6 +145,11 @@ export class DataSyncModalComponent {
             
             await this._sheetService.appendSpreadsheetData(data);
             this.appendToLastMessage(`APPENDED (${this.currentTime - this.time}s)`);
+        }
+
+        if (this.nonInfoMessage) {
+            this.enableAutoClose = false;
+            this.appendToTerminal("Auto-close disabled");
         }
     }
 
@@ -174,7 +179,7 @@ export class DataSyncModalComponent {
         this.enableAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
         this.updateLastMessageType('error');
-        this.appendToTerminal('Modal autoclose disabled');
+        this.appendToTerminal('Auto-close disabled');
         this.stopTimer();
     }
 
