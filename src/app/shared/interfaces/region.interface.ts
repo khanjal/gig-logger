@@ -5,5 +5,5 @@ export interface IRegion extends IAmount {
     rowId: number;
     saved: boolean;
     region: string;
-    visits: number;
+    trips: number;
 }

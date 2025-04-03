@@ -129,7 +129,7 @@
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <div *ngFor="let address of selectedPlace.addresses">
-                        <a mat-button color="primary" class="address-link"  [ngClass]="address.address === tripForm.value.startAddress? 'highlight' : ''" (click)="setPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.visits }})
+                        <a mat-button color="primary" class="address-link"  [ngClass]="address.address === tripForm.value.startAddress? 'highlight' : ''" (click)="setPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.trips }})
                     </div>
                 </mat-expansion-panel>
             </mat-accordion>

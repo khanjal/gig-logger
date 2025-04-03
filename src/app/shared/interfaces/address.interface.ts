@@ -8,7 +8,7 @@ export interface IAddress extends IAmount {
     saved: boolean;
     names: string[];
     notes: INote[];
-    visits: number;
+    trips: number;
     firstTrip: string;
     lastTrip: string;
 }

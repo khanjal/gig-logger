@@ -8,5 +8,5 @@ export interface IName extends IAmount {
     saved: boolean;
     addresses: string[];
     notes: INote[];
-    visits: number;
+    trips: number;
 }

@@ -35,7 +35,7 @@ export class PlaceService extends GenericCrudService<IPlace> {
                 place.pay += remotePlace.pay;
                 place.tip += remotePlace.tip;
                 place.total += remotePlace.total;
-                place.visits += remotePlace.visits;
+                place.trips += remotePlace.trips;
             }
             else {
                 place.id = undefined;

@@ -3,5 +3,5 @@ export interface ISearchItem {
   name: string;
   saved: boolean;
   value: string;
-  visits?: number;
+  trips?: number;
 }

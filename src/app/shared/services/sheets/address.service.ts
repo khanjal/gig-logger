@@ -32,7 +32,7 @@ export class AddressService extends GenericCrudService<IAddress> {
                 address.pay += existingAddress.pay;
                 address.tip += existingAddress.tip;
                 address.total += existingAddress.total;
-                address.visits += existingAddress.visits;
+                address.trips += existingAddress.trips;
 
                 if (!address.names) {
                     address.names = [];

@@ -5,5 +5,5 @@ export interface IService extends IAmount {
     rowId: number;
     saved: boolean;
     service: string;
-    visits: number;
+    trips: number;
 }

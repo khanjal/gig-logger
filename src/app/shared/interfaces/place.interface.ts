@@ -9,5 +9,5 @@ export interface IPlace extends IAmount {
     saved: boolean;
     addresses: IAddress[];
     types: IType[];
-    visits: number;
+    trips: number;
 }

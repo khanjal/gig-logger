@@ -35,7 +35,7 @@ export class RegionService extends GenericCrudService<IRegion> {
                 item.pay += foundItem.pay;
                 item.tip += foundItem.tip;
                 item.total += foundItem.total;
-                item.visits += foundItem.visits;
+                item.trips += foundItem.trips;
             }
             else {
                 item.id = undefined;

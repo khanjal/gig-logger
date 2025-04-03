@@ -406,12 +406,12 @@ export class GigLoggerService {
                 let placeAddress = place.addresses.find(x => x.address === tripPlaceAddress.startAddress);
 
                 if (placeAddress) {
-                    placeAddress.visits++;
+                    placeAddress.trips++;
                 }
                 else {
                     let address: IAddress = {} as IAddress;
                     address.address = tripPlaceAddress.startAddress;
-                    address.visits = 1;
+                    address.trips = 1;
                     place.addresses.push(address);    
                 }
             };
@@ -431,12 +431,12 @@ export class GigLoggerService {
                 let placeType = place.types.find(x => x.type === tripPlaceType.type);
 
                 if (placeType) {
-                    placeType.visits++;
+                    placeType.trips++;
                 }
                 else {
                     let type: IType = {} as IType;
                     type.type = tripPlaceType.type;
-                    type.visits = 1;
+                    type.trips = 1;
                     place.types.push(type);    
                 }
             };

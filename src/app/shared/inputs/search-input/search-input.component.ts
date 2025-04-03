@@ -189,7 +189,7 @@ export class SearchInputComponent {
           name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
           saved: item.saved,
           value: item.address,
-          visits: item.visits
+          trips: item.trips
         }));
       case 'Name':
         return (await this._filterName(value)).map(item => ({
@@ -197,7 +197,7 @@ export class SearchInputComponent {
           name: item.name,
           saved: item.saved,
           value: item.name,
-          visits: item.visits
+          trips: item.trips
         }));
       case 'Place':
         return (await this._filterPlace(value)).map(item => ({
@@ -205,7 +205,7 @@ export class SearchInputComponent {
           name: item.place,
           saved: item.saved,
           value: item.place,
-          visits: item.visits
+          trips: item.trips
         }));
       case 'Region':
         return (await this._filterRegion(value)).map(item => ({
@@ -213,7 +213,7 @@ export class SearchInputComponent {
           name: item.region,
           saved: item.saved,
           value: item.region,
-          visits: item.visits
+          trips: item.trips
         }));
       case 'Service':
         return (await this._filterService(value)).map(item => ({
@@ -221,7 +221,7 @@ export class SearchInputComponent {
           name: item.service,
           saved: item.saved,
           value: item.service,
-          visits: item.visits
+          trips: item.trips
         }));
       case 'Type':
         return (await this._filterType(value)).map(item => ({
@@ -229,7 +229,7 @@ export class SearchInputComponent {
           name: item.type,
           saved: item.saved,
           value: item.type,
-          visits: item.visits
+          trips: item.trips
         }));
       default:
         return [];

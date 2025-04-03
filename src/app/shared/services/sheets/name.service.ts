@@ -34,7 +34,7 @@ export class NameService extends GenericCrudService<IName> {
                 name.pay += remoteName.pay;
                 name.tip += remoteName.tip;
                 name.total += remoteName.total;
-                name.visits += remoteName.visits;
+                name.trips += remoteName.trips;
 
                 if (!name.addresses) {
                     name.addresses = [];

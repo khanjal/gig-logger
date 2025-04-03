@@ -35,7 +35,7 @@ export class ServiceService extends GenericCrudService<IService> {
                 service.pay += existingService.pay;
                 service.tip += existingService.tip;
                 service.total += existingService.total;
-                service.visits += existingService.visits;
+                service.trips += existingService.trips;
             }
             else {
                 service.id = undefined;

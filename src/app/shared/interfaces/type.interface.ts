@@ -5,5 +5,5 @@ export interface IType extends IAmount {
     rowId: number;
     saved: boolean;
     type: string;
-    visits: number;
+    trips: number;
 }
