@@ -19,14 +19,14 @@
         </div>
     </div>
 
-    <div class="section">
-        <app-sheet-quota></app-sheet-quota>
-    </div>
-
-    <div class="section">
-        <app-service-worker-status></app-service-worker-status>
-    </div>
-
+    <mat-card class="section">
+        <mat-card-header><h2>Application Insights</h2></mat-card-header>
+        <mat-card-content>
+            <app-sheet-quota></app-sheet-quota>
+            <app-service-worker-status></app-service-worker-status>
+        </mat-card-content>
+    </mat-card>
+    
     <div class="section">
         <div>
             <!-- <button mat-stroked-button color="warn" type="button" [class.spinner]="deleting" [disabled]="deleting" (click)="deleteLocalData()"><mat-icon>delete</mat-icon> Delete Local Data</button> -->

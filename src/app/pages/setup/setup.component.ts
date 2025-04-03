@@ -164,7 +164,7 @@ export class SetupComponent {
     }
 
   async confirmDeleteAndReloadDialog() {
-    const message = `This will reload your data from the spreadsheet preserving your local unsaved data.`;
+    const message = `Reloading will fetch data from the spreadsheet and <strong>WILL NOT</strong> preserve any unsaved local changes. Please ensure all your data is saved before proceeding.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete & Reload";

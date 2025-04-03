@@ -1,4 +1,4 @@
-<p>Service Worker Status: <strong>{{ serviceWorkerStatus }}</strong></p>
+<p>Service Worker Status: <strong [ngClass]="{'primary': serviceWorkerStatus === 'Available', 'warn': serviceWorkerStatus === 'Not Enabled'}">{{ serviceWorkerStatus }}</strong></p>
 @if (isUpdateAvailable) {
     <button mat-fab extended color="primary" (click)="updateApp()">
         <mat-icon>update</mat-icon> Update App

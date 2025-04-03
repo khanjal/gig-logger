@@ -101,20 +101,6 @@ export class SpreadsheetService {
         this._snackBar.open("Loaded Secondary Spreadsheet Data");
     }
 
-    public async showEstimatedQuota(): Promise<StorageEstimate | undefined> {
-        if (navigator.storage && navigator.storage.estimate) {
-            const estimation = await navigator.storage.estimate();
-            // console.log(`Quota: ${NumberHelper.getDataSize(estimation.quota)}`);
-            // console.log(`Usage: ${NumberHelper.getDataSize(estimation.usage)}`);
-
-            return estimation;
-        } else {
-            console.error("StorageManager not found");
-        }
-
-        return;
-    }
-
     private async updateSheetSize(sheetId: string, data: any){
         let sheet = await this.findSheet(sheetId);
         if (!sheet) return;

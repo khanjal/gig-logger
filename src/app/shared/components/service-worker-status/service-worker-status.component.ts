@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { SwPush, SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
@@ -5,7 +6,7 @@ import { SwPush, SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/serv
 @Component({
   selector: 'app-service-worker-status',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './service-worker-status.component.html',
   styleUrl: './service-worker-status.component.scss'
 })

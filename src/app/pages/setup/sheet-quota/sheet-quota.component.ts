@@ -12,13 +12,24 @@ export class SheetQuotaComponent {
   quota: string | undefined;
   usage: string | undefined;
 
-  constructor(
-    private _spreadsheetService: SpreadsheetService,
-  ) { }
-
   async ngOnInit(): Promise<void> {
-    let estimation = await this._spreadsheetService.showEstimatedQuota();
-    this.quota = NumberHelper.getDataSize(estimation?.quota);
-    this.usage = NumberHelper.getDataSize(estimation?.usage);
+    await this.showEstimatedQuota();
   }
+  
+  private async showEstimatedQuota() {
+    if (navigator.storage && navigator.storage.estimate) {
+        const estimation = await navigator.storage.estimate();
+        this.quota = NumberHelper.getDataSize(estimation?.quota);
+        this.usage = NumberHelper.getDataSize(estimation?.usage);
+        
+        console.log("Quota", this.quota);
+        console.log("Usage", this.usage);
+
+        return estimation;
+    } else {
+        console.error("StorageManager not found");
+    }
+
+    return;
+}
 }
