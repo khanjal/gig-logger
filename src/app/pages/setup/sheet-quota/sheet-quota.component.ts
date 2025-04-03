@@ -22,8 +22,8 @@ export class SheetQuotaComponent {
         this.quota = NumberHelper.getDataSize(estimation?.quota);
         this.usage = NumberHelper.getDataSize(estimation?.usage);
         
-        console.log("Quota", this.quota);
-        console.log("Usage", this.usage);
+        // console.log("Quota", this.quota);
+        // console.log("Usage", this.usage);
 
         return estimation;
     } else {
