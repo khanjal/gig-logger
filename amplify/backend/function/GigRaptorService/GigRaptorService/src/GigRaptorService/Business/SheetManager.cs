@@ -17,34 +17,34 @@ public interface ISheetManager
 }
 public class SheetManager : ISheetManager
 {
-    private IGoogleSheetManager _googleSheetManger;
+    private IGoogleSheetManager _googleSheetManager;
     public SheetManager(string token, string sheetId) {
-        _googleSheetManger = new GoogleSheetManager(token, sheetId);
+        _googleSheetManager = new GoogleSheetManager(token, sheetId);
     }
 
     public SheetManager(Dictionary<string,string> credentials, string sheetId)
     {
-        _googleSheetManger = new GoogleSheetManager(credentials, sheetId);
+        _googleSheetManager = new GoogleSheetManager(credentials, sheetId);
     }
 
     public async Task<List<MessageEntity>> CheckSheets()
     {
-        return await _googleSheetManger.CheckSheets(true);
+        return await _googleSheetManager.CheckSheets(true);
     }
 
     public async Task<SheetEntity> CreateSheet()
     {
-        return await _googleSheetManger.CreateSheets();
+        return await _googleSheetManager.CreateSheets();
     }
 
     public async Task<string?> GetName()
     {
-        return await _googleSheetManger.GetSpreadsheetName();
+        return await _googleSheetManager.GetSpreadsheetName();
     }
 
     public async Task<SheetEntity> GetSheet(string sheet)
     {
-        return await _googleSheetManger.GetSheet(sheet);
+        return await _googleSheetManager.GetSheet(sheet);
     }
 
     public async Task<SheetEntity> GetSheets(string[] sheets)
@@ -59,12 +59,12 @@ public class SheetManager : ISheetManager
                 sheetEnums.Add(sheetName);
             }
         }
-        return await _googleSheetManger.GetSheets(sheetEnums);
+        return await _googleSheetManager.GetSheets(sheetEnums);
     }
 
     public async Task<SheetEntity> GetSheets()
     {
-        var sheetData = await _googleSheetManger.GetSheets();
+        var sheetData = await _googleSheetManager.GetSheets();
 
         return sheetData ?? new SheetEntity();
     }
@@ -72,7 +72,7 @@ public class SheetManager : ISheetManager
     public async Task<SheetEntity> SaveData(SheetEntity sheetEntity)
     {
         var returnEntity = new SheetEntity { Messages = [] };
-        returnEntity.Messages.AddRange((await _googleSheetManger.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity)).Messages);
+        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity)).Messages);
         return returnEntity;
     }
 }

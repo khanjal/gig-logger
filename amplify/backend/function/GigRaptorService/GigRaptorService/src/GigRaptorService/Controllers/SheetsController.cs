@@ -67,7 +67,7 @@ public class SheetsController : ControllerBase
     // GET api/sheets/health
     [HttpGet("health")]
     [RequireSheetId]
-    public async Task<bool> health()
+    public async Task<bool> Health()
     {
         InitializeSheetmanger();
         return !string.IsNullOrEmpty(await _sheetmanager!.GetName());
