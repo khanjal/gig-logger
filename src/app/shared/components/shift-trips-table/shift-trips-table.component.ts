@@ -29,7 +29,14 @@ export class ShiftTripsTableComponent {
 
   async getTripsByShiftKey(shiftKey: string) {
     try {
-      this.trips = await this.tripService.query('key', shiftKey);
+      // Split the key on dashes
+      const keyParts = shiftKey.split('-');
+      let excludedKey = `${keyParts[0]}-X-${keyParts[2]}`;
+
+      let trips = await this.tripService.query('key', this.tripKey);
+      let excludedTrips = (await this.tripService.query('key', excludedKey)).filter(trip => trip.number.toString() === keyParts[1]); 
+      
+      this.trips = [...trips, ...excludedTrips];
     } catch (error) {
       console.error('Error fetching trips:', error);
     }

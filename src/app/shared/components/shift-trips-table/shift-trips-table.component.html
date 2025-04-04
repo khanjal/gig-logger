@@ -1,4 +1,4 @@
-<mat-card class="trips-container">
+<mat-card class="trips-container" *ngIf="trips && trips.length > 0">
     <h3>Trips ({{ trips.length }})</h3>
     <div class='table-responsive'>
         <mat-table [dataSource]="trips">

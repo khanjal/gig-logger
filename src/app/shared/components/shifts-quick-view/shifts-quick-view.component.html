@@ -73,9 +73,7 @@
                 </div>
             }
 
-            @if (shift.totalTrips) {
-                <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
-            }
+            <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
         </mat-card-content>
         <div mat-card class="row-flex button-bar">
             <button mat-fab extended color="primary" class="button-left" disabled="true"><mat-icon>edit</mat-icon> Edit</button>
