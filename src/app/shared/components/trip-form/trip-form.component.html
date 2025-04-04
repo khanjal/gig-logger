@@ -120,15 +120,15 @@
         </div>
 
         <!-- Pickup Address List -->
-        <div *ngIf="showPickupAddress && selectedPlace && selectedPlace.addresses && selectedPlace.addresses.length > 0" class="selected-name-address field-full-width">
+        <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="selected-name-address field-full-width">
             <mat-accordion>
-                <mat-expansion-panel [expanded]="!(selectedPlace.addresses.length > 5 && data.id)">
+                <mat-expansion-panel [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
                     <mat-expansion-panel-header [expandedHeight]="'auto'">
                         <mat-panel-title>
-                            Found {{ selectedPlace.addresses.length }} Previous Pickup Addresses
+                            Found {{ selectedPlaceAddresses.length }} Previous Pickup Addresses
                         </mat-panel-title>
                     </mat-expansion-panel-header>
-                    <div *ngFor="let address of selectedPlace.addresses">
+                    <div *ngFor="let address of selectedPlaceAddresses">
                         <a mat-button color="primary" class="address-link"  [ngClass]="address.address === tripForm.value.startAddress? 'highlight' : ''" (click)="setPickupAddress(address.address)">{{ address.address | shortaddress:selectedPlace.place | truncate:40 }}</a> ({{ address.trips }})
                     </div>
                 </mat-expansion-panel>

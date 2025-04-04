@@ -463,11 +463,14 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    // TODO Filter addresses with visits > 0 and last visited within a year
-    // this.selectedPlaceAddresses = this.selectedPlace.addresses.filter(address => {
-    //     const lastVisitedDate = new Date(address.lastVisited); // Assuming `lastVisited` is a date string
-    //     return address.visits > 0 && lastVisitedDate >= oneYearAgo;
-    // });
+
+    // Filter addresses to show only those with trips in the last year.
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    this.selectedPlaceAddresses = this.selectedPlace.addresses.filter(address => 
+      new Date(address.lastTrip) >= oneYearAgo
+    );
 
     place = this.selectedPlace.place;
 

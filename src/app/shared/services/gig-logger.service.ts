@@ -406,13 +406,15 @@ export class GigLoggerService {
                 let placeAddress = place.addresses.find(x => x.address === tripPlaceAddress.startAddress);
 
                 if (placeAddress) {
+                    placeAddress.lastTrip = tripPlaceAddress.date;
                     placeAddress.trips++;
                 }
                 else {
                     let address: IAddress = {} as IAddress;
                     address.address = tripPlaceAddress.startAddress;
                     address.trips = 1;
-                    place.addresses.push(address);    
+                    address.lastTrip = tripPlaceAddress.date;
+                    place.addresses.push(address);
                 }
             };
 
