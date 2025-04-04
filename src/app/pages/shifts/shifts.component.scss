@@ -47,3 +47,9 @@
 .row-grid {
     margin-bottom: 2rem;
 }
+
+.shifts-scrollable {
+    height: 80vh; /* Adjust height as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    box-sizing: border-box;
+}

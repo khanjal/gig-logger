@@ -46,6 +46,11 @@ export class GenericCrudService<T> implements ICrudService<T> {
         await this.table.bulkAdd(items);
     }
 
+    public async paginate(page: number, amount: number): Promise<T[]> {
+        const offset = page * amount; // Calculate the starting index
+        return await this.table.reverse().offset(offset).limit(amount).toArray();
+    }
+
     // Query items by a specific field and value
     public async query(field: string, value: string | number): Promise<T[]> {
         return await this.table.where(field).equals(value).toArray();

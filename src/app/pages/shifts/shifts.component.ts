@@ -17,21 +17,39 @@ export class ShiftsComponent implements OnInit {
   actionEnum = ActionEnum;
   saving: boolean = false;
   unsavedShifts: IShift[] = [];
+  pageSize: number = 20; // Number of shifts to load per request
+  currentPage: number = 0; // Current page index
+  isLoading: boolean = false; // Prevent multiple simultaneous requests
 
   constructor(public dialog: MatDialog, private _shiftService: ShiftService) { }
 
   async ngOnInit(): Promise<void> {
-    await this.reload();
+    await this.loadShifts();
   }
 
-  async reload() {
-    this.shifts = (await this._shiftService.getPreviousWeekShifts()).reverse();
-    this.unsavedShifts = (await this._shiftService.getUnsavedShifts());
+  async loadShifts(): Promise<void> {
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+    const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize);
+    this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
+    this.currentPage++;
+    this.isLoading = false;
+  }
+
+  onScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+
+    // Check if the user has scrolled to the bottom
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight) {
+      this.loadShifts();
+    }
   }
 
   handleParentReload() {
-    this.shifts = []; // Clear the shifts array so that it'll refresh everything
-    this.reload();
+    this.shifts = []; // Clear the shifts array
+    this.currentPage = 0; // Reset pagination
+    this.loadShifts();
   }
 
   async confirmSaveDialog() {
