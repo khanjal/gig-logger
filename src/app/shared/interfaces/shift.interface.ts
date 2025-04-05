@@ -23,6 +23,7 @@ export interface IShift extends IAmountPer {
     totalBonus: number;
     grandTotal: number;
     totalCash: number;
+    note: string;
     action: string;
     actionTime: number;
 }

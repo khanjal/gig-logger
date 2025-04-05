@@ -16,7 +16,7 @@
             @else {
                 <mat-icon [ngClass]="{'warn': !shift.saved}">save</mat-icon> 
             }
-            <h3 [ngClass]="duplicateShift ? 'warn' : ''"><strong>#{{shift.rowId}} {{shift.date | date:'E, MMM d'}} ({{shift.service}} {{ shift.number == 0 ? "" : '#' + shift.number }})</strong></h3>
+            <h3 [ngClass]="duplicateShift ? 'warn' : ''"><strong>#{{shift.rowId}} {{shift.date | date:"E, MMM d ''yy"}} ({{shift.service}} {{ shift.number == 0 ? "" : '#' + shift.number }})</strong></h3>
         </mat-card-header>
         <mat-card-content [ngClass]="shift.action === 'DELETE' ? 'strike' : ''">
             <div class="row-flex section-container">
@@ -57,22 +57,19 @@
                     </div>
                 </div>
             }
-            @if (shift.pay || shift.total) {
+
+            @if (shift.note) {
                 <div class="row-flex section-container">
                     <div>
-                        <mat-icon class="icon-display">payments</mat-icon>
-                    </div>
+                        <mat-icon class="icon-display">description</mat-icon>
+                    </div>  
                     <div class="padding-left">
-                        <span class="padding-right" *ngIf="shift.pay"><strong>Pay</strong> {{shift.pay | currency}}</span> 
-                        <span class="padding-right" *ngIf="shift.tip"><strong>Tip</strong> {{shift.tip | currency}}</span> 
-                        <span class="padding-right" *ngIf="shift.bonus"><strong>Bonus</strong> {{shift.bonus | currency}}</span> 
-                        <br/>
-                        <span class="padding-right" *ngIf="shift.total > shift.pay"><strong>Total</strong> {{shift.total | currency}}</span>
-                        <span class="padding-right" *ngIf="shift.cash"><strong>Cash</strong> {{shift.cash | currency}}</span>
+                        <div>"{{shift.note}}"</div>
                     </div>
                 </div>
             }
 
+            <br/>
             <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
         </mat-card-content>
         <div mat-card class="row-flex button-bar">

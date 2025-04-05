@@ -50,7 +50,7 @@ export class ShiftTripsTableComponent {
   async viewTrips(trips: ITrip[]) {
     let dialogRef = this.dialog.open(ShiftTripsQuickViewComponent, {
       data: trips,
-      height: '450px',
+      height: '500px',
       width: '500px',
       panelClass: 'custom-modalbox'
     });
