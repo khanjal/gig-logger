@@ -1,0 +1,11 @@
+<h2>Trips</h2>
+
+<button mat-icon-button class="close-button" (click)="closeModal()">
+<mat-icon>close</mat-icon>
+</button>
+
+@for (trip of trips; track $index) {
+    <div [id]="trip.rowId" [ngClass]="{'mat-card': trips.length % 2 != 0, 'mat-card-reverse': trips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+        <trips-quick-view [trip]="trip" [showActions]="false"></trips-quick-view>
+    </div>
+}

@@ -4,6 +4,17 @@ h3 {
     font-weight: bold;
 }
 
+.header-container {
+    display: flex;
+    justify-content: space-between; /* Space between the header and button */
+    align-items: center; /* Vertically align items */
+}
+
+.mini-button {
+    transform: scale(0.8);
+    margin-top: -15px;
+}
+
 .trips-container {
     display: block;
     margin: 0 auto;

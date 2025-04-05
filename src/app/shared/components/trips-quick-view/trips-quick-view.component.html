@@ -99,7 +99,7 @@
             
         </mat-card-content>
     </div>
-    <div mat-card class="row-flex button-bar">
+    <div mat-card class="row-flex button-bar" *ngIf="showActions">
         <button mat-fab extended color="primary" class="button-left" (click)="editTrip()"><mat-icon>edit</mat-icon> Edit</button>
         <button mat-fab extended color="accent" (click)="setPickupTime()" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
         <button mat-fab extended color="accent" (click)="setDropoffTime()" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>

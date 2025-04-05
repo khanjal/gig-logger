@@ -1,5 +1,12 @@
 <mat-card class="trips-container" *ngIf="trips && trips.length > 0">
-    <h3>Trips ({{ trips.length }})</h3>
+    <div class="header-container">
+        <h2>
+            Trips ({{ trips.length }})
+        </h2>
+        <button mat-mini-fab color="primary" class="button-right mini-button" (click)="viewTrips(trips)">
+            <mat-icon>view_agenda</mat-icon>
+        </button>
+    </div>
     <div class='table-responsive'>
         <mat-table [dataSource]="trips">
             <ng-container matColumnDef="place">

@@ -20,6 +20,7 @@ import { GigLoggerService } from '@services/gig-logger.service';
 
 export class TripsQuickViewComponent {
   @Input() trip: ITrip = {} as ITrip;
+  @Input() showActions: boolean = true;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
 

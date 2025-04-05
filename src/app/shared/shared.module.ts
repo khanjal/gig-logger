@@ -38,6 +38,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ServiceWorkerStatusComponent } from '@components/service-worker-status/service-worker-status.component';
+import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
 
 @NgModule({
     declarations: [
@@ -49,6 +50,7 @@ import { ServiceWorkerStatusComponent } from '@components/service-worker-status/
         AddressDialogComponent,
         GoogleAddressComponent,
         ShiftsQuickViewComponent,
+        ShiftTripsQuickViewComponent,
         ShiftTripsTableComponent,
         TripFormComponent,
         TripsTableBasicComponent,
@@ -64,6 +66,7 @@ import { ServiceWorkerStatusComponent } from '@components/service-worker-status/
         SearchInputComponent,
         ServiceWorkerStatusComponent,
         ShiftsQuickViewComponent,
+        ShiftTripsQuickViewComponent,
         ShiftTripsTableComponent,
         TripFormComponent,
         TripsTableBasicComponent,

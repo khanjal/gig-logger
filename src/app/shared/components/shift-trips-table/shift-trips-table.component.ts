@@ -6,6 +6,8 @@ import { NgClass, CurrencyPipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
 import { TripService } from '@services/sheets/trip.service';
+import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-shift-trips-table',
@@ -20,7 +22,10 @@ export class ShiftTripsTableComponent {
   displayedColumns: string[] = [];
   trips: ITrip[] = [];
 
-  constructor(private tripService: TripService) {}
+  constructor(
+    private tripService: TripService,
+    private dialog: MatDialog,
+  ) {}
 
   async ngOnInit() { 
     this.displayedColumns = ['place', 'total', 'name', 'pickup', 'dropoff', 'address'];
@@ -40,5 +45,14 @@ export class ShiftTripsTableComponent {
     } catch (error) {
       console.error('Error fetching trips:', error);
     }
+  }
+
+  async viewTrips(trips: ITrip[]) {
+    let dialogRef = this.dialog.open(ShiftTripsQuickViewComponent, {
+      data: trips,
+      height: '400px',
+      width: '500px',
+      panelClass: 'custom-modalbox'
+    });
   }
 }
