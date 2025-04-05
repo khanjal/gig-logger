@@ -72,6 +72,10 @@ export class ShiftsComponent implements OnInit {
       }
     });
   }
+  
+  addShift() {
+    throw new Error('Method not implemented.');
+  }
 
   async saveSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
