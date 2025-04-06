@@ -7,9 +7,7 @@ namespace  GigRaptorService.Business;
 
 public interface ISheetManager
 {
-    public Task<List<MessageEntity>> CheckSheets();
     public Task<SheetEntity> CreateSheet();
-    public Task<string?> GetName();
     public Task<SheetEntity> GetSheet(string sheet);
     public Task<SheetEntity> GetSheets(string[] sheets);
     public Task<SheetEntity> GetSheets();
@@ -27,19 +25,9 @@ public class SheetManager : ISheetManager
         _googleSheetManager = new GoogleSheetManager(credentials, sheetId);
     }
 
-    public async Task<List<MessageEntity>> CheckSheets()
-    {
-        return await _googleSheetManager.CheckSheets(true);
-    }
-
     public async Task<SheetEntity> CreateSheet()
     {
         return await _googleSheetManager.CreateSheets();
-    }
-
-    public async Task<string?> GetName()
-    {
-        return await _googleSheetManager.GetSpreadsheetName();
     }
 
     public async Task<SheetEntity> GetSheet(string sheet)

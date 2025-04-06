@@ -55,22 +55,14 @@ public class SheetsController : ControllerBase
         return await _sheetmanager!.GetSheets(sheetName);
     }
 
-    // GET api/sheets/check
-    [HttpGet("check")]
-    [RequireSheetId]
-    public async Task<List<MessageEntity>> Check()
-    {
-        InitializeSheetmanger();
-        return await _sheetmanager!.CheckSheets();
-    }
-
     // GET api/sheets/health
     [HttpGet("health")]
     [RequireSheetId]
     public async Task<bool> Health()
     {
         InitializeSheetmanger();
-        return !string.IsNullOrEmpty(await _sheetmanager!.GetName());
+        await Task.CompletedTask;
+        return true;
     }
 
     // POST api/sheets/create
