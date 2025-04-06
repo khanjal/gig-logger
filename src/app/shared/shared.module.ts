@@ -39,6 +39,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ServiceWorkerStatusComponent } from '@components/service-worker-status/service-worker-status.component';
 import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
+import { DiagnosticsComponent } from '@components/diagnostics/diagnostics.component';
 
 @NgModule({
     declarations: [
@@ -62,6 +63,7 @@ import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view
     ],
     exports: [
         CurrentAverageComponent,
+        DiagnosticsComponent,
         HeaderComponent,
         SearchInputComponent,
         ServiceWorkerStatusComponent,
@@ -77,6 +79,7 @@ import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view
     ],
     imports: [
         CommonModule,
+        DiagnosticsComponent,
         MatButtonModule,
         MatCardModule,
         MatExpansionModule,
