@@ -41,7 +41,7 @@ export class ShiftsComponent implements OnInit {
     const target = event.target as HTMLElement;
 
     // Check if the user has scrolled to the bottom
-    if (target.scrollTop + target.clientHeight >= target.scrollHeight-100) {
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight-200) {
       this.loadShifts();
     }
   }
