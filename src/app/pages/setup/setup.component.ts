@@ -9,7 +9,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
-import { SwUpdate, SwPush } from '@angular/service-worker';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
   selector: 'app-setup',
@@ -24,12 +25,15 @@ export class SetupComponent {
   setting: boolean = false;
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
+  unsavedData: boolean = false;
 
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
+    private _shiftService: ShiftService,
+    private _tripService: TripService,
     private _timerService: TimerService
   ) { }
 
@@ -38,6 +42,7 @@ export class SetupComponent {
   }
 
   public async load() {
+    this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
     this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
     this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
     this.updateHeader();

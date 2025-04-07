@@ -12,8 +12,8 @@
             <div class="row row-block">
                 <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
                 <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
-                <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
-                <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
+                <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
+                <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading || unsavedData" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
                 <button mat-fab extended color="primary" class="button-right" color="warn" *ngIf="spreadsheet.default === 'false'"  [class.spinner]="deleting" [disabled]="deleting || reloading" (click)="deleteSpreadsheet(spreadsheet)"><mat-icon>delete</mat-icon> Delete</button>
             </div>
         </div>

@@ -47,7 +47,7 @@ export class TripComponent implements OnInit, OnDestroy {
   savedTrips: ITrip[] = [];
   todaysTrips: ITrip[] = [];
   yesrterdaysTrips: ITrip[] = [];
-  unsavedTrips: ITrip[] = [];
+  unsavedData: boolean = false;
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
@@ -78,7 +78,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   public async load() {
-    this.unsavedTrips = (await this._tripService.getUnsaved()).reverse();
+    this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
     this.todaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
     this.yesrterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)))).reverse();
 

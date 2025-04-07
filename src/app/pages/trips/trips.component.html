@@ -3,15 +3,15 @@
     
     <trip-form (parentReload)="load()" id="tripForm"></trip-form>
 
-    @if (unsavedTrips.length > 0 && !pollingEnabled) {
+    @if (unsavedData && !pollingEnabled) {
         <div class="row-grid">
             <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
         </div>
     }
     
-    @if (!unsavedTrips.length || pollingEnabled) {
+    @if (!unsavedData || pollingEnabled) {
         <div class="row-grid">
-            <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedTrips.length > 0"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
+            <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
     
