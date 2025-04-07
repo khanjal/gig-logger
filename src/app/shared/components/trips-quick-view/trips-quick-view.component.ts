@@ -145,6 +145,7 @@ export class TripsQuickViewComponent {
 
     dialogRef.afterClosed().subscribe(async result => {
       this.pollingToggle.emit(true);
+      this.parentReload.emit();
     });
   }
 }
