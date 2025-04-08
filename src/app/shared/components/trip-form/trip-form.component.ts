@@ -115,6 +115,8 @@ export class TripFormComponent implements OnInit {
     ) {}
 
   async ngOnInit(): Promise<void> {
+    this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
+    this.tripForm.controls.service.updateValueAndValidity();
     this.load();
   }
 
@@ -410,7 +412,7 @@ export class TripFormComponent implements OnInit {
     }
     else {
       let recentRegion = shifts.filter(x => x.region)[0];
-      this.tripForm.controls.region.setValue(recentRegion.region);
+      this.tripForm.controls.region.setValue(recentRegion?.region);
     }
 
     this.tripForm.controls.service.updateValueAndValidity();
