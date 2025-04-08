@@ -1,3 +1,5 @@
+@import "color-vars";
+
 .filler {
     flex: 1 1 auto;
 }
@@ -12,7 +14,7 @@
 }
 
 a {
-    color: white;
+    color: $background-color;
     text-decoration: none;
     vertical-align: bottom;
 
@@ -22,7 +24,7 @@ a {
 }
 
 mat-icon {
-    color: white;
+    color: $background-color;
     margin-right: .5rem;
 }
 

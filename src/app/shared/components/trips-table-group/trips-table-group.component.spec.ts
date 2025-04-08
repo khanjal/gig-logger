@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TripsTableGroupComponent } from './trips-table-group.component';
-import { DailyService } from '@services/daily.service';
-import { TripService } from '@services/trip.service';
-import { WeekdayService } from '@services/weekday.service';
+import { DailyService } from '@services/sheets/daily.service';
+import { TripService } from '@services/sheets/trip.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
 
 describe('TripsTableGroupComponent', () => {
   let component: TripsTableGroupComponent;

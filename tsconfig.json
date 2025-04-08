@@ -41,6 +41,7 @@
       "@components/*": ["./src/app/shared/components/*"],
       "@data/*": ["./src/app/shared/data/*"],
       "@directives/*": ["./src/app/shared/directives/*"],
+      "@enums/*": ["./src/app/shared/enums/*"],
       "@guards/*": ["./src/app/shared/guards/*"],
       "@helpers/*": ["./src/app/shared/helpers/*"],
       "@interfaces/*": ["./src/app/shared/interfaces/*"],

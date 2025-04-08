@@ -1,0 +1,10 @@
+{
+  "resource": "/auth",
+  "path": "/auth",
+  "httpMethod": "POST",
+  "headers": {
+   "Content-Type": "application/json",
+    "Sheet-Id": "1E7cpE6DdOglWCSnuXKYt4_0jbH7b6moWpcGe-M-5sZk"
+  },
+  "body": "{\"id\": \"token\", \"name\": \"test\"}"
+}

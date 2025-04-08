@@ -1,5 +1,7 @@
+@import "color-vars";
+
 .uber-form {
-    background-color: white;
+    background-color: $background-color;
     min-width: 100px;
     max-width: 750px;
     margin: 0 auto;

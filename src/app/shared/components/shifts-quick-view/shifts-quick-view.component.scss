@@ -1,0 +1,44 @@
+@import "color-vars";
+
+.button-bar {
+    padding: 1rem;
+}
+
+.padding-left {
+    padding-left: .5rem;
+}
+
+.padding-right {
+    padding-right: .5rem;
+}
+
+mat-card {
+    background-color: transparent;
+}
+
+mat-card-header {
+    padding: .5em;
+}
+
+h3 {
+    padding-left: .5em;
+    margin: 0;
+}
+
+.primary {
+    color: $primary-color;
+}
+
+.warn {
+    color: $warn-color;
+}
+
+.icon-display {
+    transform: scale(2);
+    padding: .5rem;
+ }
+
+ .section-container {
+    justify-content: flex-start;
+    margin-top: .5rem;
+ }

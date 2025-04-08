@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DateHelper } from '@helpers/date.helper';
-import { WeekdayService } from '@services/weekday.service';
-import { WeeklyService } from '@services/weekly.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
+import { WeeklyService } from '@services/sheets/weekly.service';
 
 @Component({
   selector: 'app-current-average',
@@ -25,6 +26,7 @@ export class CurrentAverageComponent implements OnInit {
 
   constructor(
     private _snackBar: MatSnackBar,
+    private _shiftService: ShiftService,
     private _weekdayService: WeekdayService,
     private _weeklyService: WeeklyService
     ) {}
@@ -36,16 +38,22 @@ export class CurrentAverageComponent implements OnInit {
   async load() {
     // Load daily average
     this.currentDayAmount = 0;
-    // let dayOfWeek = new Date(this.date).toLocaleDateString('en-us', {weekday: 'short'});
+
+    // Current amount
+    let dayShifts = await this._shiftService.queryShifts("date", this.date);
+    this.currentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+
     let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));
-    let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
-    this.currentDayAmount = !weekday || isNaN(weekday.currentAmount) ? 0 : weekday.currentAmount;
+    let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
+    let mondayISO = DateHelper.getISOFormat(DateHelper.getMonday(new Date()));
+    let currentWeekShifts = await this._shiftService.getShiftsByStartDate(mondayISO);
+    this.currentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+
     let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(7));
     let weekly = await this._weeklyService.getLastWeekFromDay(date);
-    this.currentWeekAmount = await this._weekdayService.getCurrentTotal() ?? 0;
     let prevTotal = weekly?.average ?? 0;
     this.weeklyAverage = prevTotal;
   }

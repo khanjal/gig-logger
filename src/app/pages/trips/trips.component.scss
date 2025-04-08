@@ -1,0 +1,76 @@
+@import "color-vars";
+
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.address-link {
+    overflow: visible;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: 1rem;
+}
+
+.table {
+    overflow-x: auto;
+}
+
+.button-bar {
+    margin: 0;
+    padding: 1rem .5rem;
+}
+
+.mat-card {
+    margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: $primary-light-color;
+    }
+
+    &:nth-child(odd){
+        background-color: $tertiary-light-color;
+    }
+}
+
+.mat-card-reverse {
+    margin-bottom: 1rem;
+
+    &:nth-child(even){
+        background-color: $tertiary-light-color;
+    }
+
+    &:nth-child(odd){
+        background-color: $primary-light-color;
+    }
+}
+
+.mat-card-disabled {
+    background-color: $disabled-color !important;
+}
+
+.mat-panel-header {
+    padding-left: .5rem;
+}
+
+.mat-panel-title {
+    margin-top: 1rem;
+}
+
+.row-grid {
+    margin-bottom: 2rem;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+  
