@@ -33,10 +33,12 @@ export class HeaderComponent implements OnInit {
   public getToolbarColor(): string {
     const subdomain = window.location.hostname.split('.')[0];
     switch (subdomain) {
+      case 'gig':
+        return 'primary';
       case 'gig-test':
         return 'accent';
       default:
-        return 'primary';
+        return 'warn';
     }
   }
 
