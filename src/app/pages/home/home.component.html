@@ -1,21 +1,30 @@
 <div class="container">
-    <h1>Description</h1>
-        <p>Raptor Gig is a tool to input gig work into your own google spreadsheet to track information.</p>
+    <p class="drop-cap"><span class="first-letter">R</span>aptor Gig is a powerful tool that enables you to seamlessly log and manage your gig work data by integrating it directly into your personal Google Spreadsheet. Effortlessly track your progress, organize your shifts, and gain valuable insights with ease.</p>
+    <br/>
     <h1>Features</h1>
-        <ul>
-            <li>Quickly store trips in groups</li>
-            <li>Data stored is easily accessible</li>
-            <li>View useful statistics</li>
-            <li>See notes about previous work</li>
-        </ul>
+    <ul>
+        <li>Organize your trips into structured groups for better tracking and management</li>
+        <li>Seamlessly access and update your data directly from your Google Spreadsheet</li>
+        <li>Gain valuable insights with detailed statistics and performance metrics</li>
+        <li>Keep track of important notes and details from previous work</li>
+        <li>Enable auto-save to ensure your progress is always up-to-date</li>
+        <li>Sync your data across multiple devices using Google Sheets</li>
+        <li>Enjoy a user-friendly interface designed for gig workers</li>
+    </ul>
     <h1>Pages</h1>
-        <p>
+        <p class="page">
             <mat-icon>home</mat-icon> - This page
         </p>
-        <p>
-            <mat-icon>add</mat-icon> - Add trip
+        <p class="page">
+            <mat-icon>navigation</mat-icon> - Trips
         </p>
-        <p>
+        <p class="page">
+            <mat-icon>today</mat-icon> - Shifts
+        </p>
+        <p class="page">
+            <mat-icon>poll</mat-icon> - Stats
+        </p>
+        <p class="page">
             <mat-icon>settings</mat-icon> - Settings
         </p>
     <h1>Instructions</h1>
@@ -63,32 +72,20 @@
     <h1>FAQ</h1>
     <ul>
         <li>
-            <h2>Do I need to create an account?</h2>
-            <p>You only need an account for Google sheets. No account is needed for this website.</p>
-        </li>
-        <li>
-            <h2>Is it free?</h2>
-            <p>Yes. There is no reason to monetize this very useful site.</p>
-        </li>
-        <li>
             <h2>How often should I save?</h2>
-            <p>Save as often as you want! You can save after each trip, shift, or just once at the end of the day.</p>
+            <p>Feel free to save whenever you'd like. You can save after each trip, shift, or simply at the end of the day. Alternatively, you can enable auto-save, which will automatically save your progress every minute.</p>
         </li>
         <li>
-            <h2>How do I edit saved data?</h2>
-            <p>Once data is saved to the spreadsheet you'll need to go to Google sheets on your phone or computer to change data.</p>
-        </li>
-        <li>
-            <h2>Why does it take a while to save?</h2>
-            <p>A lot of calculations running will slow down the saving as it waits for the calculations to run.</p>
+            <h2>Why does it take a while to manually save?</h2>
+            <p>The save also runs multiple calculations and may slow down the saving process, as it waits for the calculations to complete.</p>
         </li>
         <li>
             <h2>Is my data safe?</h2>
-            <p>Your data is stored in your browser and Google sheets. Gig logger doesn't store any of your data.</p>
+            <p>Your data is stored in your browser and Google Sheets. Gig Logger does not store any of your data.</p>
         </li>
         <li>
             <h2>Can I sync accross multiple computers?</h2>
-            <p>You can view your sheet data on multiple browsers but your local data is only available in that browser.</p>
+            <p>You can access your sheet data across multiple browsers, but local data is only available in the browser where it was saved. It's strongly recommended not to save to the same spreadsheet from multiple browsers simultaneously, as this may result in data being overwritten.</p>
         </li>
         <li>
             <h2>How do I delete my data?</h2>
@@ -96,20 +93,24 @@
         </li>
         <li>
             <h2>#REF - Array result was not expanded because it would overwrite data...</h2>
-            <p>This error will occur in the header if you have manually entered data into the column below Row 1. The easiest way to fix this is to delete everything in the column except the header.</p>
+            <p>This error occurs in the header if data has been manually entered in the column below Row 1. The simplest way to resolve this is to delete all content in the column, leaving only the header.</p>
         </li>
         <li>
             <h2>#REF - Unresolved sheet name...</h2>
-            <p>This error will occur in the header if you deleted a sheet that it was referencing. Even if the sheet it references is recreated, it will still be broken. To fix this you can refresh the header by clicking in it and hitting enter to make it update. You can also delete the sheet if it's a proteced with the lock symbol and have it regenerate, but this could break other sheets if it's being referenced.</p>
+            <p>This error occurs in the header if a sheet it references has been deleted. Even if the referenced sheet is recreated, the link will remain broken. To fix this, you can refresh the header by clicking on it and pressing Enter to update it. Alternatively, if the sheet is protected with a lock symbol, you can delete it to regenerate the reference. However, be cautious, as this may break other sheets that depend on it.</p>
         </li>
         <li>
+            <h2>My data in the spreadsheet is either missing or has been overwritten. What should I do?</h2>
+            <p>If you notice that data has been removed or overwritten, you can review the version history in Google Sheets by going to File > Version history. This will allow you to restore previous versions of the sheet. You may need to manually re-enter any changes. Once you've restored the missing data, don't forget to click Update from Spreadsheet on the website to sync the changes.</p>
+        </li>
+        <!-- <li>
             <h2>I have an idea for a feature</h2>
             <p>Use the contact link below to send me a message on what your idea is.</p>
         </li>
         <li>
             <h2>I have an issue or bug</h2>
             <p>Contact me below to send me the issue you are having.</p>
-        </li>
+        </li> -->
     </ul>
-    <h1>Contact</h1>
+    <!-- <h1>Contact</h1> -->
 </div>

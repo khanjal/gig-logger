@@ -16,29 +16,29 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
-import { QuickComponent } from './quick/quick.component';
-import { QuickFormComponent } from './quick/quick-form/quick-form.component';
+import { TripComponent } from './trips/trips.component';
 import { LoginComponent } from './login/login.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatCardModule } from '@angular/material/card';
-import { SetupComponent } from './sheet-setup/setup.component';
-import { SheetAddFormComponent } from './sheet-setup/sheet-add-form/sheet-add-form.component';
-import { SheetQuickViewComponent } from './sheet-setup/sheet-quick-view/sheet-quick-view.component';
+import { SetupComponent } from './setup/setup.component';
+import { SheetAddFormComponent } from './setup/sheet-add-form/sheet-add-form.component';
+import { SheetQuickViewComponent } from './setup/sheet-quick-view/sheet-quick-view.component';
 import { MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CalculatorComponent } from './calculator/calculator.component';
 import { UberCalculatorComponent } from './calculator/uber-calculator/uber-calculator.component';
-import { SheetQuotaComponent } from './sheet-setup/sheet-quota/sheet-quota.component';
+import { SheetQuotaComponent } from './setup/sheet-quota/sheet-quota.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { StatsComponent } from './stats/stats.component';
 import { StatsTableComponent } from './stats/stats-table/stats-table.component';
 import { SharedModule } from '../shared/shared.module';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 @NgModule({
   declarations: [
     HomeComponent,
-    QuickComponent,
-    QuickFormComponent,
+    TripComponent,
     ShiftsComponent,
     LoginComponent,
     SetupComponent,
@@ -67,13 +67,16 @@ import { SharedModule } from '../shared/shared.module';
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     MatTableModule,
+    NgxMatTimepickerModule,
     ReactiveFormsModule,
     ScrollingModule,
     SharedModule
   ],
   exports: [
+    NgxMatTimepickerModule
   ],
   providers: [
       {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}},

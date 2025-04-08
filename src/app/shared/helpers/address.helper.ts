@@ -17,10 +17,15 @@ export class AddressHelper {
             return address;
         }
 
-        // Check if first element starts with place name.
-        if (place && 
-            (addressArray[0].toLocaleLowerCase().startsWith(place.toLocaleLowerCase()) || 
-            (place.toLocaleLowerCase().startsWith(addressArray[0].toLocaleLowerCase())))) 
+        // Check if first element starts with place name. Also check abbreviated place name
+        let lowerPlace = place.toLocaleLowerCase();
+        let lowerAddress = addressArray[0].toLocaleLowerCase();
+        let abbrvPlace = this.abbrvAddress(place).toLocaleLowerCase();
+        if (lowerPlace && 
+            (lowerAddress.startsWith(lowerPlace) || 
+            lowerPlace.startsWith(lowerAddress) ||
+            lowerAddress.startsWith(abbrvPlace) || 
+            abbrvPlace.startsWith(lowerAddress))) 
         {
             return addressArray.slice(1, length+1).join(", ");
         }

@@ -79,57 +79,26 @@ export class SpreadsheetService {
         // Wake up lambda
         //console.log("Warming up lambda");
         let defaultSheet = await this.getDefaultSheet();
-        await firstValueFrom(await this._gigLoggerService.warmupLambda(defaultSheet.id));
+        return await this._gigLoggerService.healthCheck(defaultSheet.id);
     }
 
-    public async loadSpreadsheetData() {
-        // Load primary spreadsheet data.
-        let primarySpreadsheet = await this.getDefaultSheet();
-        //await firstValueFrom(await this._gigLoggerService.healthCheck(primarySpreadsheet.id));
-        //await firstValueFrom(await this._gigLoggerService.getSheetSingle(primarySpreadsheet.id, "trips"));
+    public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet>{
+        let data = await this._gigLoggerService.getSheetData(spreadsheet.id);
+        this.updateSheetSize(spreadsheet.id, data);
 
-        //console.log("Loading default data");
-        this._snackBar.open(`Connecting to ${primarySpreadsheet.name} Spreadsheet`);
+        return <ISheet>data;
+    }
 
-        let data = await firstValueFrom(await this._gigLoggerService.getSheetData(primarySpreadsheet.id));
-        this.updateSheetSize(primarySpreadsheet.id, data);
-        
+    public async loadSpreadsheetData(data: ISheet) {
         this._snackBar.open("Loading Primary Spreadsheet Data");
         await this._gigLoggerService.loadData(<ISheet>data);
         this._snackBar.open("Loaded Primary Spreadsheet Data");
-
-        await this.appendSpreadsheetData();
-
-        //console.log("Done")
     }
 
-    public async appendSpreadsheetData() {
-        // Append secondary spreadsheets.
-        let secondarySpreadsheets = (await this.getSpreadsheets()).filter(x => x.default !== "true");
-        // console.log(secondarySpreadsheets.length);
-        for (const secondarySpreadsheet of secondarySpreadsheets) {
-            // console.log(secondarySpreadsheet.name);
-            this._snackBar.open(`Connecting to ${secondarySpreadsheet.name} Spreadsheet`);
-            let data = await firstValueFrom(await this._gigLoggerService.getSecondarySheetData(secondarySpreadsheet.id));
-            this.updateSheetSize(secondarySpreadsheet.id, data);
-            this._snackBar.open("Loading Secondary Spreadsheet Data");
-            await this._gigLoggerService.appendData(<ISheet>data);
-            this._snackBar.open("Loaded Secondary Spreadsheet Data");
-        };
-    }
-
-    public async showEstimatedQuota(): Promise<StorageEstimate | undefined> {
-        if (navigator.storage && navigator.storage.estimate) {
-            const estimation = await navigator.storage.estimate();
-            // console.log(`Quota: ${NumberHelper.getDataSize(estimation.quota)}`);
-            // console.log(`Usage: ${NumberHelper.getDataSize(estimation.usage)}`);
-
-            return estimation;
-        } else {
-            console.error("StorageManager not found");
-        }
-
-        return;
+    public async appendSpreadsheetData(data: ISheet) {
+        this._snackBar.open("Loading Secondary Spreadsheet Data");
+        await this._gigLoggerService.appendData(<ISheet>data);
+        this._snackBar.open("Loaded Secondary Spreadsheet Data");
     }
 
     private async updateSheetSize(sheetId: string, data: any){
