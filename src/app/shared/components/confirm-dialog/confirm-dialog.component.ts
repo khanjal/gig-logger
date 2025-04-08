@@ -12,8 +12,10 @@ export class ConfirmDialogComponent {
   message!: string;
   trueIcon: string | undefined;
   trueText! :string;
+  trueColor: string = "primary";
   falseIcon: string | undefined;
   falseText! :string;
+  falseColor: string = "";
 
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IConfirmDialog) {
@@ -21,7 +23,9 @@ export class ConfirmDialogComponent {
     this.title = data.title;
     this.message = data.message;
     this.trueText = data.trueText;
+    this.trueColor = data.trueColor ?? "primary";
     this.falseText = data.falseText;
+    this.falseColor = data.falseColor;
   }
 
   onConfirm(): void {

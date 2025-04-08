@@ -1,2 +1,2 @@
-<h2 *ngIf="showDailyAverage" (click)="toggle()">{{ currentDayAmount | currency }} / {{ dailyAverage | currency }}</h2>
-<h2 *ngIf="showWeeklyAverage" (click)="toggle()">{{ currentWeekAmount | currency }} / {{ weeklyAverage | currency }}</h2>
+<h2 *ngIf="showDailyAverage" (click)="toggle()">{{ currentDayAmount | currency }} / {{ dailyAverage ?? 0 | currency }}</h2>
+<h2 *ngIf="showWeeklyAverage" (click)="toggle()">{{ currentWeekAmount | currency }} / {{ weeklyAverage ?? 0 | currency }}</h2>

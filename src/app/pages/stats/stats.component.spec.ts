@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StatsComponent } from './stats.component';
-import { ShiftService } from '@services/shift.service';
-import { TripService } from '@services/trip.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
 
 describe('StatsComponent', () => {
   let component: StatsComponent;

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,35 +10,45 @@ import { SharedModule } from './shared/shared.module';
 
 import { AppComponent } from './app.component';
 
-import { AddressService } from '@services/address.service';
+import { AddressService } from '@services/sheets/address.service';
 import { CommonService } from '@services/common.service';
-import { DailyService } from '@services/daily.service';
+import { DailyService } from '@services/sheets/daily.service';
 import { DeliveryService } from '@services/delivery.service';
 import { GigLoggerService } from '@services/gig-logger.service';
-import { MonthlyService } from '@services/monthly.service';
-import { NameService } from '@services/name.service';
-import { PlaceService } from '@services/place.service';
-import { RegionService } from '@services/region.service';
-import { ServiceService } from '@services/service.service';
-import { ShiftService } from '@services/shift.service';
+import { MonthlyService } from '@services/sheets/monthly.service';
+import { NameService } from '@services/sheets/name.service';
+import { PlaceService } from '@services/sheets/place.service';
+import { PollingService } from '@services/polling.service';
+import { RegionService } from '@services/sheets/region.service';
+import { ServiceService } from '@services/sheets/service.service';
+import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
-import { TripService } from '@services/trip.service';
-import { TypeService } from '@services/type.service';
-import { WeekdayService } from '@services/weekday.service';
-import { WeeklyService } from '@services/weekly.service';
-import { YearlyService } from '@services/yearly.service';
+import { TripService } from '@services/sheets/trip.service';
+import { TypeService } from '@services/sheets/type.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
+import { WeeklyService } from '@services/sheets/weekly.service';
+import { YearlyService } from '@services/sheets/yearly.service';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({ declarations: [
         AppComponent
     ],
-    bootstrap: [AppComponent], imports: [AppRoutingModule,
+    bootstrap: [AppComponent], 
+    imports: [AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
         FormsModule,
         MatIconModule,
         PagesModule,
-        SharedModule], providers: [
+        SharedModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+          enabled: !isDevMode(),
+          // Register the ServiceWorker as soon as the application is stable
+          // or after 30 seconds (whichever comes first).
+          registrationStrategy: 'registerWhenStable:30000'
+        })], 
+    providers: [
         AddressService,
         CommonService,
         DailyService,
@@ -47,6 +57,7 @@ import { YearlyService } from '@services/yearly.service';
         NameService,
         GigLoggerService,
         PlaceService,
+        PollingService,
         RegionService,
         ServiceService,
         ShiftService,

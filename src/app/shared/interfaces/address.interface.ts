@@ -3,8 +3,12 @@ import { INote } from "./note.interface";
 
 export interface IAddress extends IAmount {
     id?: number;
+    rowId: number;
     address: string;
+    saved: boolean;
     names: string[];
     notes: INote[];
-    visits: number;
+    trips: number;
+    firstTrip: string;
+    lastTrip: string;
 }

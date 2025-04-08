@@ -26,7 +26,7 @@ export class LoginComponent {
       //   this.isLoggedin = user != null;
       //   sessionStorage.setItem('token', this.socialUser?.idToken);
       //   // console.log(this.socialUser);
-      //   this._router.navigate(['/quick']);
+      //   this._router.navigate(['/trips']);
       // });
   }
 }

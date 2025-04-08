@@ -1,6 +1,7 @@
 import { DateHelper } from "@helpers/date.helper";
-import { IShift } from "@interfaces/shift.interface";
+import { IShift, updateShiftAction } from "@interfaces/shift.interface";
 import { sort } from "./sort.helper";
+import { ActionEnum } from "@enums/action.enum";
 
 export class ShiftHelper {
     static compareShifts(o1: IShift, o2: IShift): boolean {
@@ -59,10 +60,10 @@ export class ShiftHelper {
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
         shift.date = DateHelper.getISOFormat(DateHelper.getDateFromDays());
         shift.number = shiftNumber ?? 0;
-        shift.saved = false;
         shift.start = new Date().toLocaleTimeString();
         shift.total = 0;
         shift.trips = 0;
+        updateShiftAction(shift, ActionEnum.Add);
         
         return shift;
     }

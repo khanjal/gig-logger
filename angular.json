@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "gig-worker": {
+    "raptor-gig": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/gig-worker",
+            "outputPath": "dist/raptor-gig",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -25,11 +25,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/manifest.json",
+              "src/offline.html"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "./node_modules/material-design-icons/iconfont/material-icons.css",
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
@@ -37,7 +38,9 @@
                 "src/app/shared/styles"
               ]
             },
-            "scripts": []
+            "scripts": [],
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -98,11 +101,11 @@
           "configurations": {
             "production": {
               "proxyConfig": "src/proxy.conf.json",
-              "buildTarget": "gig-worker:build:production"
+              "buildTarget": "raptor-gig:build:production"
             },
             "development": {
               "proxyConfig": "src/proxy.conf.json",
-              "buildTarget": "gig-worker:build:development"
+              "buildTarget": "raptor-gig:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -110,7 +113,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "gig-worker:build"
+            "buildTarget": "raptor-gig:build"
           }
         },
         "test": {
@@ -132,7 +135,6 @@
             },
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "./node_modules/material-design-icons/iconfont/material-icons.css",
               "src/styles.scss"
             ],
             "scripts": []

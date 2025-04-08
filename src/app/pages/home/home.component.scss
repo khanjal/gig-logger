@@ -1,0 +1,13 @@
+.drop-cap .first-letter {
+  font-size: 3rem; /* Make the first letter larger */
+  font-weight: bold; /* Make it bold */
+  float: left; /* Float it to the left */
+  margin-right: 8px; /* Add some spacing to the right */
+  line-height: 1; /* Adjust line height */
+}
+
+.page {
+  display: flex;
+  align-items: center; /* Vertically centers the content */
+  gap: 8px; /* Adds spacing between the icon and the text */
+}

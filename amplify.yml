@@ -1,0 +1,24 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 22.12.0
+        - nvm use 22.12.0
+        - node -v
+        - npm install -g @angular/cli@18
+        - npm i @rollup/rollup-linux-x64-gnu
+        - npm ci
+    build:
+      commands:
+        - echo "${AWS_BRANCH}"
+        - if [ "${AWS_BRANCH}" = "test" ]; then npm run build:stage; fi
+        - if [ "${AWS_BRANCH}" = "main" ]; then npm run build:prod; fi
+  artifacts:
+    baseDirectory: dist/raptor-gig
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      

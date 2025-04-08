@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="header-container">
+        <h1>Shifts</h1>
+        <button mat-mini-fab color="primary" class="add-button" (click)="addShift()" disabled>
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+    <!-- @if (unsavedShifts.length > 0) {
+        <div class="row-grid">
+            <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
+        </div>
+    } -->
+
+    <div class="shifts-scrollable" (scroll)="onScroll($event)">
+        @for (shift of shifts; track $index) {
+          <div
+            [id]="shift.rowId"
+            [ngClass]="{
+              'mat-card': shifts.length % 2 != 0,
+              'mat-card-reverse': shifts.length % 2 == 0,
+              'mat-card-disabled': shift.action == actionEnum.Delete
+            }"
+          >
+            <app-shifts-quick-view
+              [shift]="shift"
+              (parentReload)="handleParentReload()"
+            ></app-shifts-quick-view>
+          </div>
+        }
+    </div>
+</div>

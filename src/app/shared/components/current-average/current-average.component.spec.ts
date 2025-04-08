@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CurrentAverageComponent } from './current-average.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { WeekdayService } from '@services/weekday.service';
-import { WeeklyService } from '@services/weekly.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
+import { WeeklyService } from '@services/sheets/weekly.service';
 
 describe('CurrentAverageComponent', () => {
   let component: CurrentAverageComponent;

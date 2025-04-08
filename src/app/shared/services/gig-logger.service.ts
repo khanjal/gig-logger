@@ -2,6 +2,13 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 
+// Enums
+import { ActionEnum } from "@enums/action.enum";
+
+// Helpers
+import { DateHelper } from "@helpers/date.helper";
+import { sort } from "@helpers/sort.helper";
+
 // Interfaces
 import { ISheet } from "@interfaces/sheet.interface";
 import { IDelivery } from "@interfaces/delivery.interface";
@@ -9,30 +16,30 @@ import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { IType } from "@interfaces/type.interface";
 import { IAddress } from "@interfaces/address.interface";
-
-// Helpers
-import { AddressHelper } from "@helpers/address.helper";
-import { DateHelper } from "@helpers/date.helper";
-
-// Services
-import { AddressService } from "./address.service";
-import { DeliveryService } from "./delivery.service";
-import { NameService } from "./name.service";
-import { PlaceService } from "./place.service";
-import { ServiceService } from "./service.service";
-import { ShiftService } from "./shift.service";
-import { TripService } from "./trip.service";
-import { WeekdayService } from "./weekday.service";
-import { RegionService } from "./region.service";
-import { TypeService } from "./type.service";
-import { DailyService } from "./daily.service";
-import { MonthlyService } from "./monthly.service";
-import { WeeklyService } from "./weekly.service";
-import { YearlyService } from "./yearly.service";
-import { sort } from "@helpers/sort.helper";
-import { IShift } from "@interfaces/shift.interface";
+import { IShift, updateShiftAction } from "@interfaces/shift.interface";
 import { IWeekday } from "@interfaces/weekday.interface";
 import { ISheetProperties } from "@interfaces/sheet-properties.interface";
+
+// Services
+import { AddressService } from "./sheets/address.service";
+import { DeliveryService } from "./delivery.service";
+import { NameService } from "./sheets/name.service";
+import { PlaceService } from "./sheets/place.service";
+import { ServiceService } from "./sheets/service.service";
+import { ShiftService } from "./sheets/shift.service";
+import { TripService } from "./sheets/trip.service";
+import { WeekdayService } from "./sheets/weekday.service";
+import { RegionService } from "./sheets/region.service";
+import { TypeService } from "./sheets/type.service";
+import { DailyService } from "./sheets/daily.service";
+import { MonthlyService } from "./sheets/monthly.service";
+import { WeeklyService } from "./sheets/weekly.service";
+import { YearlyService } from "./sheets/yearly.service";
+import { firstValueFrom, lastValueFrom } from "rxjs";
+import { IService } from "@interfaces/service.interface";
+import { IRegion } from "@interfaces/region.interface";
+import { IName } from "@interfaces/name.interface";
+import { IPlace } from "@interfaces/place.interface";
 
 @Injectable()
 export class GigLoggerService {
@@ -64,7 +71,12 @@ export class GigLoggerService {
     }
 
     public async getSheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/all`, { headers: this.setHeader(sheetId) });
+        try {
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, { headers: this.setHeader(sheetId) }));
+        } catch (error) {
+            console.error('Error getting sheet data:', error);
+            return null;
+        }
     }
 
     public async getSheetSingle(sheetId: string, sheetName: string) {
@@ -75,16 +87,31 @@ export class GigLoggerService {
         return this._http.get(`${this.apiUrl}/sheets/multiple?sheetName=names&sheetName=places&sheetName=trips`, { headers: this.setHeader(sheetId) });
     }
 
-    public async warmupLambda(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) });
+    public async warmupLambda(sheetId: string): Promise<any> {
+        try {
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }));
+        } catch (error) {
+            console.error('Error warming up Lambda:', error);
+            return null;
+        }
     }
 
     public async healthCheck(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) });
+        try {
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) }));
+        } catch (error) {
+            console.error('Error getting health check:', error);
+            return null;
+        }
     }
 
-    public async postSheetData(sheetData: ISheet) {
-        return this._http.post<any>(`${this.apiUrl}/sheets/add`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) });
+    public async postSheetData(sheetData: ISheet): Promise<any> {
+        try {
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) }));
+        } catch (error) {
+            console.error('Error posting sheet data:', error);
+            return null;
+        }
     }
 
     public async createSheet(properties: ISheetProperties){
@@ -92,19 +119,19 @@ export class GigLoggerService {
     }
 
     public async loadData(sheetData: ISheet) {
-        await this._addressService.loadAddresses(sheetData.addresses);
-        await this._dailyService.loadDaily(sheetData.daily);
-        await this._monthlyService.loadMonthly(sheetData.monthly);
-        await this._nameService.loadNames(sheetData.names);
-        await this._placeService.loadPlaces(sheetData.places);
-        await this._regionService.loadRegions(sheetData.regions);
-        await this._serviceService.loadServices(sheetData.services);
-        await this._shiftService.loadShifts(sheetData.shifts);
-        await this._tripService.loadTrips(sheetData.trips);
-        await this._typeService.loadTypes(sheetData.types);
-        await this._weekdayService.loadWeekdays(sheetData.weekdays);
-        await this._weeklyService.loadweekly(sheetData.weekly);
-        await this._yearlyService.loadYearly(sheetData.yearly);
+        await this._addressService.load(sheetData.addresses);
+        await this._dailyService.load(sheetData.daily);
+        await this._monthlyService.load(sheetData.monthly);
+        await this._nameService.load(sheetData.names);
+        await this._placeService.load(sheetData.places);
+        await this._regionService.load(sheetData.regions);
+        await this._serviceService.load(sheetData.services);
+        await this._shiftService.load(sheetData.shifts);
+        await this._tripService.load(sheetData.trips);
+        await this._typeService.load(sheetData.types);
+        await this._weekdayService.load(sheetData.weekdays);
+        await this._weeklyService.load(sheetData.weekly);
+        await this._yearlyService.load(sheetData.yearly);
 
         await this.linkNameData();
         await this.linkAddressData();
@@ -115,28 +142,30 @@ export class GigLoggerService {
     }
 
     public async appendData(sheetData: ISheet) {
-        await this._addressService.updateAddresses(sheetData.addresses);
-        await this._nameService.updateNames(sheetData.names);
+        await this._addressService.append(sheetData.addresses);
+        await this._nameService.append(sheetData.names);
 
         await this.linkDeliveries(sheetData.trips);
     }
 
     public async calculateShiftTotals(shifts: IShift[] = []) {
+        // Filter out undefined shifts
+        shifts = shifts.filter(shift => shift !== undefined);
+    
         if (!shifts.length) {
             shifts = await this._shiftService.getPreviousWeekShifts();
         }
 
         for (let shift of shifts) {
-            let trips = await this._tripService.queryTrips("key", shift.key);
-            let filteredTrips: ITrip[] = trips.filter(x => !x.exclude);
+            let trips = (await this._tripService.query("key", shift.key)).filter(x => x.action !== ActionEnum.Delete && !x.exclude);
 
-            shift.totalTrips = +(shift.trips ?? 0) + filteredTrips.length;
-            shift.totalDistance = +(shift.distance ?? 0) + +filteredTrips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
-            shift.totalPay = +(shift.pay ?? 0) + +filteredTrips.filter(x => x.pay != undefined).map((x) => x.pay).reduce((acc, value) => acc + value, 0);
-            shift.totalTips = +(shift.tip ?? 0) + +filteredTrips.filter(x => x.tip != undefined).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
-            shift.totalBonus = +(shift.bonus ?? 0) + +filteredTrips.filter(x => x.bonus != undefined).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
-            shift.totalCash = +(shift.cash ?? 0) + +filteredTrips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
-            shift.grandTotal = +(shift.total ?? 0) + +filteredTrips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
+            shift.totalTrips = +(shift.trips ?? 0) + trips.length;
+            shift.totalDistance = +(shift.distance ?? 0) + +trips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
+            shift.totalPay = +(shift.pay ?? 0) + +trips.filter(x => x.pay != undefined).map((x) => x.pay).reduce((acc, value) => acc + value, 0);
+            shift.totalTips = +(shift.tip ?? 0) + +trips.filter(x => x.tip != undefined).map((x) => x.tip).reduce((acc, value) => acc + value, 0);
+            shift.totalBonus = +(shift.bonus ?? 0) + +trips.filter(x => x.bonus != undefined).map((x) => x.bonus).reduce((acc, value) => acc + value, 0);
+            shift.totalCash = +(shift.cash ?? 0) + +trips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
+            shift.grandTotal = +(shift.total ?? 0) + +trips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
             let duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
             if (duration) {
@@ -144,15 +173,21 @@ export class GigLoggerService {
                 shift.time = DateHelper.getDurationString(duration);
             }
 
-            if (trips?.length === 0 && !shift.saved) {
-                this._shiftService.deleteLocal(shift.id!);
+            if (trips?.length === 0) {
+                if (shift.saved) {
+                    updateShiftAction(shift, ActionEnum.Delete);
+                    await this._shiftService.update([shift]);
+                }
+                else {
+                    this._shiftService.delete(shift.id!);
+                }
             }
             else {
-                await this._shiftService.updateShift(shift);
+                await this._shiftService.update([shift]);
             }
         };
 
-        let dates = [... new Set(shifts.map(x => x.date))];
+        let dates = [... new Set(shifts.map(x => x?.date))];
 
         await this.calculateDailyTotal(dates);
     }
@@ -179,7 +214,7 @@ export class GigLoggerService {
 
             let shiftTotal = shifts.filter(x => x.date === date).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
             let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
-            let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+            let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
 
             if (!weekday) {
                 weekday = {} as IWeekday;
@@ -188,7 +223,7 @@ export class GigLoggerService {
 
             if (!weekday.currentAmount || weekday.currentAmount != shiftTotal) {
                 weekday.currentAmount = shiftTotal;
-                await this._weekdayService.updateWeekday(weekday);
+                await this._weekdayService.update([weekday]);
             }
         };
     }
@@ -276,8 +311,8 @@ export class GigLoggerService {
     }
 
     private async linkNameData () {
-        let names = await this._nameService.getRemoteNames();
-        let trips = await this._tripService.getRemoteTrips();
+        let names = await this._nameService.list();
+        let trips = await this._tripService.getAll();
 
         for (let name of names) {
             let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
@@ -309,15 +344,15 @@ export class GigLoggerService {
                 }                
                 
                 // console.table(name);
-                await this._nameService.update(name);
+                await this._nameService.update([name]);
             };
             // console.log(`Name: ${name.name}`);
         };
     }
 
     private async linkAddressData () {
-        let addresses = await this._addressService.getRemoteAddresses();
-        let trips = await this._tripService.getRemoteTrips();
+        let addresses = await this._addressService.list();
+        let trips = await this._tripService.getAll();
 
         for (let address of addresses) {
             let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
@@ -349,15 +384,15 @@ export class GigLoggerService {
                 }                
                 
                 // console.table(name);
-                await this._addressService.update(address)
+                await this._addressService.append([address])
             };
             // console.log(`Address: ${address.address}`);
         };
     }
 
     private async linkPlaceData() {
-        let trips = await this._tripService.getRemoteTrips();
-        let places = await this._placeService.getRemotePlaces();
+        let trips = await this._tripService.getAll();
+        let places = await this._placeService.list();
 
         for (let place of places) {
             // Addresses
@@ -371,13 +406,15 @@ export class GigLoggerService {
                 let placeAddress = place.addresses.find(x => x.address === tripPlaceAddress.startAddress);
 
                 if (placeAddress) {
-                    placeAddress.visits++;
+                    placeAddress.lastTrip = tripPlaceAddress.date;
+                    placeAddress.trips++;
                 }
                 else {
                     let address: IAddress = {} as IAddress;
                     address.address = tripPlaceAddress.startAddress;
-                    address.visits = 1;
-                    place.addresses.push(address);    
+                    address.trips = 1;
+                    address.lastTrip = tripPlaceAddress.date;
+                    place.addresses.push(address);
                 }
             };
 
@@ -396,17 +433,66 @@ export class GigLoggerService {
                 let placeType = place.types.find(x => x.type === tripPlaceType.type);
 
                 if (placeType) {
-                    placeType.visits++;
+                    placeType.trips++;
                 }
                 else {
                     let type: IType = {} as IType;
                     type.type = tripPlaceType.type;
-                    type.visits = 1;
+                    type.trips = 1;
                     place.types.push(type);    
                 }
             };
 
-            await this._placeService.update(place);
+            await this._placeService.update([place]);
         };
     }
+
+    async updateAncillaryInfo() {
+        // Delete all unsaved services, regions, places, types, names, and addresses
+        await this._addressService.deleteUnsaved();
+        await this._nameService.deleteUnsaved();
+        await this._placeService.deleteUnsaved();
+        await this._regionService.deleteUnsaved();
+        await this._serviceService.deleteUnsaved();
+        await this._typeService.deleteUnsaved();
+
+        let trips = await this._tripService.getPreviousDays(2);
+
+        for (let trip of trips) {
+            let endAddress = await this._addressService.find('address', trip.endAddress);
+            if (!endAddress && trip.endAddress) {
+                await this._addressService.add({ address: trip.endAddress! } as IAddress);
+            }
+
+            let name = await this._nameService.find('name', trip.name);
+            if (!name && trip.name) {
+                await this._nameService.add({ name: trip.name! } as IName);
+            }
+
+            let place = await this._placeService.find('place', trip.place);
+            if (!place && trip.place) {
+                await this._placeService.add({ place: trip.place! } as IPlace);
+            }
+
+            let region = await this._regionService.find('region', trip.region);
+            if (!region && trip.region) {
+                await this._regionService.add({ region: trip.region! } as IRegion);
+            }
+
+            let service = await this._serviceService.find('service', trip.service);
+            if (!service && trip.service) {
+                await this._serviceService.add({ service: trip.service! } as IService);
+            }
+
+            let startAddress = await this._addressService.find('address', trip.startAddress);
+            if (!startAddress && trip.startAddress) {
+                await this._addressService.add({ address: trip.startAddress! } as IAddress);
+            }
+
+            let type = await this._typeService.find('type', trip.type);
+            if (!type && trip.type) {
+                await this._typeService.add({ type: trip.type! } as IType);
+            }
+        }
+      }
 }

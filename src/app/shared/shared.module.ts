@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { PipesModule } from '@pipes/pipes.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -25,11 +24,22 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
 
 // Misc
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
-import { TripsTableBasicComponent } from './components/trips-table-basic/trips-table-basic.component';
-import { CustomRangePanelComponent } from './components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
-import { CustomCalendarHeaderComponent } from './components/custom-calendar-header/custom-calendar-header.component';
-import { LoadModalComponent } from './components/load-modal/load-modal.component';
-import { SaveModalComponent } from './components/save-modal/save-modal.component';
+import { TripsTableBasicComponent } from '@components/trips-table-basic/trips-table-basic.component';
+import { CustomRangePanelComponent } from '@components/custom-calendar-header/custom-range-panel/custom-range-panel.component';
+import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
+import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
+import { PipesModule } from '@pipes/pipes.module';
+import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
+import { ShiftTripsTableComponent } from '@components/shift-trips-table/shift-trips-table.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { TripFormComponent } from '@components/trip-form/trip-form.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ServiceWorkerStatusComponent } from '@components/service-worker-status/service-worker-status.component';
+import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
+import { DiagnosticsComponent } from '@components/diagnostics/diagnostics.component';
 
 @NgModule({
     declarations: [
@@ -40,38 +50,55 @@ import { SaveModalComponent } from './components/save-modal/save-modal.component
         ConfirmDialogComponent,
         AddressDialogComponent,
         GoogleAddressComponent,
+        ShiftsQuickViewComponent,
+        ShiftTripsQuickViewComponent,
+        ShiftTripsTableComponent,
+        TripFormComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
         CustomRangePanelComponent,
         CustomCalendarHeaderComponent,
-        LoadModalComponent,
-        SaveModalComponent
+        DataSyncModalComponent
     ],
     exports: [
         CurrentAverageComponent,
+        DiagnosticsComponent,
         HeaderComponent,
-        PipesModule,
         SearchInputComponent,
+        ServiceWorkerStatusComponent,
+        ShiftsQuickViewComponent,
+        ShiftTripsQuickViewComponent,
+        ShiftTripsTableComponent,
+        TripFormComponent,
         TripsTableBasicComponent,
         TripsTableGroupComponent,
         TripsTableSimpleComponent,
-        TripsQuickViewComponent
+        TripsQuickViewComponent,
+        PipesModule
     ],
     imports: [
         CommonModule,
+        DiagnosticsComponent,
         MatButtonModule,
         MatCardModule,
+        MatExpansionModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatSlideToggleModule,
         MatTableModule,
         MatToolbarModule,
+        NgxMatTimepickerModule,
         PipesModule,
         ReactiveFormsModule,
         RouterModule,
-        SearchInputComponent
-    ],
+        SearchInputComponent,
+        ServiceWorkerStatusComponent,
+        PipesModule
+],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
         JwtHelperService

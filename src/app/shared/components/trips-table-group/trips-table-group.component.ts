@@ -1,10 +1,9 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
-import { DailyService } from '@services/daily.service';
-import { TripService } from '@services/trip.service';
-import { WeekdayService } from '@services/weekday.service';
+import { TripService } from '@services/sheets/trip.service';
+import { WeekdayService } from '@services/sheets/weekday.service';
 
 @Component({
   selector: 'app-trips-table-group',
@@ -20,7 +19,6 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
   tripGroups: ITripGroup[] = [];
   
   constructor(
-    private _dailyService: DailyService,
     private _tripService: TripService,
     private _weekdayService: WeekdayService
   ) {}
@@ -38,7 +36,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
 
   async load() {
     // console.log("TripsTableGroup: Loading");
-    let sheetTrips = await this._tripService.getRemoteTripsPreviousDays(this.days);
+    let sheetTrips = await this._tripService.getPreviousDays(this.days);
     sort(sheetTrips, '-id');
     // Get unique dates in trips.
     let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
@@ -48,13 +46,17 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     for (const date of dates) {
       let tripGroup = {} as ITripGroup;
       let trips = sheetTrips.filter(x => x.date === date);
+
+      if (trips.length === 0) {
+        continue;
+      }
+
       let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
-      let day = (await this._dailyService.queryDaily("date", date))[0];
-      let weekday = (await this._weekdayService.queryWeekdays("day", dayOfWeek))[0];
+      let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
 
       tripGroup.date = date;
       tripGroup.trips = trips;
-      tripGroup.amount = day?.total ?? 0;
+      tripGroup.amount = trips.filter(x => !x.exclude).reduce((acc, trip) => acc + trip.total, 0);
       tripGroup.average = weekday?.dailyPrevAverage ?? 0;
 
       this.tripGroups.push(tripGroup);

@@ -1,9 +1,13 @@
 <mat-toolbar color="primary">
     <span class="gap"><a routerLink="/"><mat-icon>home</mat-icon> </a></span>
-    <span class="gap" *ngIf="defaultSheet"><a routerLink="/quick"><mat-icon>add</mat-icon></a></span>
-    <span class="gap" *ngIf="defaultSheet"><a routerLink="/stats"><mat-icon>poll</mat-icon></a></span>
-    <!--<span class="gap"><a routerLink="/lookup"><mat-icon>search</mat-icon></a></span>
-    <span class="gap"><a routerLink="/ratings"><mat-icon>star-half</mat-icon></a></span>
+    @if (defaultSheet) {
+        <span class="gap"><a routerLink="/trips"><mat-icon>navigation</mat-icon></a></span>
+        <span class="gap"><a routerLink="/shifts"><mat-icon>today</mat-icon></a></span>
+        <span class="gap"><a routerLink="/stats"><mat-icon>poll</mat-icon></a></span>
+    }
+    
+    <!-- <span class="gap"><a routerLink="/lookup"><mat-icon>search</mat-icon></a></span> -->
+    <!--<span class="gap"><a routerLink="/ratings"><mat-icon>star-half</mat-icon></a></span>
     <span class="gap"><a routerLink="/quick-replies"><mat-icon>chat</mat-icon></a></span> -->
     <span class="filler"></span>
     <span class="end"><a routerLink="/setup"><mat-icon>settings</mat-icon></a></span>
