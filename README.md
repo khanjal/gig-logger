@@ -1,7 +1,7 @@
-# Gig-Logger
+# Raptor Gig
 For logging gig work
 
-![Architectual Diagram of Gig Logger](GigLogger.drawio.png?raw=true "Gig Logger Diagram")
+![Architectual Diagram of Raptor Gig](RaptorGig.drawio.png?raw=true "Raptor Gig Diagram")
 
 ## UI
 
@@ -14,15 +14,4 @@ For logging gig work
 
 ### Setup
 
-```bash
-aws lambda add-permission 
---function-name "arn:aws:lambda:us-east-1:316675302119:function:GigLoggerService-staging:${stageVariables.lambdaAlias}" 
---source-arn "arn:aws:execute-api:us-east-1:316675302119:atftzfc4p0/*/*/sheet/*/*"  --principal apigateway.amazonaws.com  
---statement-id 83d9a165-c46a-406f-abe9-a4ed18c4ec18 
---action lambda:InvokeFunction 
-```
-
 ### Update Lambda:
-
-```amplify push```
-
