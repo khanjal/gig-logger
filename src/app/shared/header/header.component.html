@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar [color]="getToolbarColor()">
     <span class="gap"><a routerLink="/"><mat-icon>home</mat-icon> </a></span>
     @if (defaultSheet) {
         <span class="gap"><a routerLink="/trips"><mat-icon>navigation</mat-icon></a></span>
