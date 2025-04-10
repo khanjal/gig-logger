@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root'
 })
 export class GoogleAddressService {
-
+    place!: any;
+    formattedAddress!: string;
     constructor() { }
 
     getPlaceId(place: any){
@@ -81,5 +82,44 @@ export class GoogleAddressService {
         const COMPONENT_TEMPLATE = { formatted_phone_number: 'formatted_phone_number' },
             phone = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return phone;
+    }
+
+    public getPlaceAutocomplete(inputElement: ElementRef<any>) {
+        //@ts-ignore
+        const autocomplete = new google.maps.places.Autocomplete(
+            inputElement.nativeElement,
+            {
+            componentRestrictions: { country: 'US' },
+            types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
+            }
+        );
+
+        //@ts-ignore
+        google.maps.event.addListener(autocomplete, 'place_changed', () => {
+            this.place = autocomplete.getPlace();
+            this.formatAddress();
+            // this.searchForm.controls.searchInput.setValue(this.formattedAddress);
+            ///this.addressChange.emit(this.formattedAddress);
+        });
+    }
+    
+    private formatAddress() {
+    this.formattedAddress = this.getFormattedAddress(this.place);
+    let name = this.place['name'];
+
+    if (!this.formattedAddress.startsWith(name)) {
+        this.formattedAddress = `${name}, ${this.formattedAddress}`;
+    }
+    }
+
+    public clearAddressListeners(inputElement: ElementRef<any>) {
+    //@ts-ignore
+        google.maps.event.clearInstanceListeners(inputElement.nativeElement);
+        this.removePacContainers();
+    }
+    
+    private removePacContainers() {
+        const pacContainers = document.querySelectorAll('.pac-container');
+        pacContainers.forEach(container => container.remove());
     }
 }

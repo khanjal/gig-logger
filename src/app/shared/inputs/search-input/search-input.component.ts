@@ -81,8 +81,6 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
-  place!: any;
-  formattedAddress!: string;
 
   constructor(
     public dialog: MatDialog,
@@ -198,10 +196,10 @@ export class SearchInputComponent {
 
         // Trigger Google Places Autocomplete if addresses are empty
         if (addresses.length === 0 && this.useGoogle) {
-          this.getPlaceAutocomplete();
+          this._googleAddressService.getPlaceAutocomplete(this.inputElement);
         }
         else {
-          this.clearAddressListeners();
+          this._googleAddressService.clearAddressListeners(this.inputElement);
         }
 
         return addresses;
@@ -352,42 +350,4 @@ export class SearchInputComponent {
     return await this._typeService.filter('type', filterValue);
   }
 
-  private getPlaceAutocomplete() {
-    //@ts-ignore
-    const autocomplete = new google.maps.places.Autocomplete(
-      this.inputElement.nativeElement,
-      {
-        componentRestrictions: { country: 'US' },
-        types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
-      }
-    );
-
-    //@ts-ignore
-    google.maps.event.addListener(autocomplete, 'place_changed', () => {
-      this.place = autocomplete.getPlace();
-      this.formatAddress();
-      this.searchForm.controls.searchInput.setValue(this.formattedAddress);
-      ///this.addressChange.emit(this.formattedAddress);
-    });
-  }
-
-  private formatAddress() {
-    this.formattedAddress = this._googleAddressService.getFormattedAddress(this.place);
-    let name = this.place['name'];
-
-    if (!this.formattedAddress.startsWith(name)) {
-      this.formattedAddress = `${name}, ${this.formattedAddress}`;
-    }
-  }
-
-  private clearAddressListeners() {
-    //@ts-ignore
-    google.maps.event.clearInstanceListeners(this.inputElement.nativeElement);
-    this.removePacContainers();
-  }
-
-  private removePacContainers() {
-    const pacContainers = document.querySelectorAll('.pac-container');
-    pacContainers.forEach(container => container.remove());
-  }
 }
