@@ -42,6 +42,7 @@ import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
+import { GoogleAddressService } from '@services/google-address.service';
 
 // RxJS imports
 import { Observable, startWith, switchMap } from 'rxjs';
@@ -66,7 +67,7 @@ export class SearchInputComponent {
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
   @Input() searchType: string = '';
-  @Input() showGoogle: boolean = false;
+  @Input() useGoogle: boolean = false;
   @Input() isRequired: boolean = false; // Default is not required
 
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>(); // Emit changes to parent
@@ -80,6 +81,8 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
+  place!: any;
+  formattedAddress!: string;
 
   constructor(
     public dialog: MatDialog,
@@ -88,8 +91,9 @@ export class SearchInputComponent {
     private _placeService: PlaceService,
     private _regionService: RegionService,
     private _serviceService: ServiceService,
-    private _typeService: TypeService
-  ) {}
+    private _typeService: TypeService,
+    private _googleAddressService: GoogleAddressService
+  ) { }
 
   async ngOnInit(): Promise<void> {
     if (this.isRequired) {
@@ -184,13 +188,23 @@ export class SearchInputComponent {
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
-        return (await this._filterAddress(value)).map(item => ({
+        let addresses = (await this._filterAddress(value)).map(item => ({
           id: item.id,
           name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
           saved: item.saved,
           value: item.address,
           trips: item.trips
         }));
+
+        // Trigger Google Places Autocomplete if addresses are empty
+        if (addresses.length === 0 && this.useGoogle) {
+          this.getPlaceAutocomplete();
+        }
+        else {
+          this.clearAddressListeners();
+        }
+
+        return addresses;
       case 'Name':
         return (await this._filterName(value)).map(item => ({
           id: item.id,
@@ -321,5 +335,44 @@ export class SearchInputComponent {
     const filterValue = value;
 
     return await this._typeService.filter('type', filterValue);
+  }
+
+  private getPlaceAutocomplete() {
+    //@ts-ignore
+    const autocomplete = new google.maps.places.Autocomplete(
+      this.inputElement.nativeElement,
+      {
+        componentRestrictions: { country: 'US' },
+        types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
+      }
+    );
+
+    //@ts-ignore
+    google.maps.event.addListener(autocomplete, 'place_changed', () => {
+      this.place = autocomplete.getPlace();
+      this.formatAddress();
+      this.searchForm.controls.searchInput.setValue(this.formattedAddress);
+      ///this.addressChange.emit(this.formattedAddress);
+    });
+  }
+
+  private formatAddress() {
+    this.formattedAddress = this._googleAddressService.getFormattedAddress(this.place);
+    let name = this.place['name'];
+
+    if (!this.formattedAddress.startsWith(name)) {
+      this.formattedAddress = `${name}, ${this.formattedAddress}`;
+    }
+  }
+
+  private clearAddressListeners() {
+    //@ts-ignore
+    google.maps.event.clearInstanceListeners(this.inputElement.nativeElement);
+    this.removePacContainers();
+  }
+
+  private removePacContainers() {
+    const pacContainers = document.querySelectorAll('.pac-container');
+    pacContainers.forEach(container => container.remove());
   }
 }

@@ -141,7 +141,7 @@
             fieldName="Pickup Address" 
             searchType="Address" 
             formControlName="startAddress"
-            [showGoogle]="true">
+            [useGoogle]="true">
         </app-search-input>
         
         <!-- Address List/Notes -->
@@ -172,7 +172,7 @@
             fieldName="Destination Address" 
             searchType="Address" 
             formControlName="endAddress"
-            [showGoogle]="true"
+            [useGoogle]="true"
             (valueChanged)="showAddressNames()">
         </app-search-input>
         

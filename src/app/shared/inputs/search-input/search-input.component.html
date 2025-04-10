@@ -1,5 +1,5 @@
 <form [formGroup]="searchForm">
-    <mat-form-field [ngClass]="showGoogle ? 'field-button-width' : 'field-full-width'" appearance="outline">
+    <mat-form-field [ngClass]="false ? 'field-button-width' : 'field-full-width'" appearance="outline">
         <mat-label>{{fieldName}}</mat-label>
         <input 
             matInput
@@ -35,7 +35,7 @@
         </button>
     </mat-form-field>
 
-    <button *ngIf="showGoogle" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Address" (click)="searchAddress()">
+    <button *ngIf="false" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Address" (click)="searchAddress()">
         <mat-icon>search</mat-icon>
     </button>
 </form>
