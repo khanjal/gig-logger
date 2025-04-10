@@ -21,8 +21,6 @@ export class GoogleAddressService {
         google.maps.event.addListener(autocomplete, 'place_changed', () => {
             this.place = autocomplete.getPlace();
             this.formatAddress();
-            // this.searchForm.controls.searchInput.setValue(this.formattedAddress);
-            ///this.addressChange.emit(this.formattedAddress);
         });
     }
 

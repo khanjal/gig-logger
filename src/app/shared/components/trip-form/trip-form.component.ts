@@ -462,6 +462,19 @@ export class TripFormComponent implements OnInit {
 
     this.selectedPlace = await this._placeService.find('place', place);
     if (!this.selectedPlace) {
+      if (this.tripForm.controls.type.value) {
+        return;
+      }
+
+      // Assign most recent trip type if no place is found.
+      let recentTrips = (await this._tripService.getAll()).reverse();
+      let recentTrip = recentTrips[0];
+      if (recentTrip) {
+        this.tripForm.controls.type.setValue(recentTrip.type);
+      }
+      else {
+        this.tripForm.controls.type.setValue("Pickup");
+      }
       return;
     }
 
