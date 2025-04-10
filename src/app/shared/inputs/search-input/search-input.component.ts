@@ -214,13 +214,28 @@ export class SearchInputComponent {
           trips: item.trips
         }));
       case 'Place':
-        return (await this._filterPlace(value)).map(item => ({
+        let places = (await this._filterPlace(value)).map(item => ({
           id: item.id,
           name: item.place,
           saved: item.saved,
           value: item.place,
           trips: item.trips
         }));
+
+        if (places.length === 0) {
+          const placesJson = await fetch('/assets/json/places.json').then(res => res.json());
+          places = placesJson
+            .filter((place: string) => place.toLowerCase().includes(value.toLowerCase()))
+            .map((place: string) => ({
+              id: place,
+              name: place,
+              saved: false,
+              value: place,
+              trips: 0
+            }));
+        }
+
+        return places;
       case 'Region':
         return (await this._filterRegion(value)).map(item => ({
           id: item.id,
