@@ -12,11 +12,12 @@ export class FocusScrollDirective {
   @HostBinding('class')
   elementClass = 'focus-scroll';
 
-  @HostListener('focus', ['$event.target']) onFocus() {
+  @HostListener('focus', ['$event.target']) async onFocus() {
     if (this.el.nativeElement) {
       try {
-        // Use scrollIntoView with explicit options
-        this.el.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        // Delay to allow keyboard to open
+        await this.delay(300); // Adjust delay as needed
+        this.el.nativeElement.scrollIntoView(this.scrollOptions);
       } catch (error) {
         // Fallback: manually scroll to the element's position
         const rect = this.el.nativeElement.getBoundingClientRect();
@@ -26,5 +27,9 @@ export class FocusScrollDirective {
         });
       }
     }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
