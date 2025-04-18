@@ -14,7 +14,17 @@ export class FocusScrollDirective {
 
   @HostListener('focus', ['$event.target']) onFocus() {
     if (this.el.nativeElement) {
-      this.el.nativeElement.scrollIntoView(this.scrollOptions);
+      try {
+        // Use scrollIntoView with explicit options
+        this.el.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      } catch (error) {
+        // Fallback: manually scroll to the element's position
+        const rect = this.el.nativeElement.getBoundingClientRect();
+        window.scrollTo({
+          top: rect.top + window.scrollY,
+          behavior: 'smooth'
+        });
+      }
     }
   }
 }
