@@ -1,10 +1,11 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { clearTripAction, ITrip, updateTripAction } from '@interfaces/trip.interface';
+import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { ActionEnum } from '@enums/action.enum'; // Adjust the import path as necessary
 import { Injectable } from '@angular/core';
 import { GenericCrudService } from '@services/generic-crud.service';
+import { clearAction, updateAction } from '@utils/action.utils';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,7 @@ export class TripService  extends GenericCrudService<ITrip> {
     
     public async addNext(trip: ITrip) {
         let nextTrip = {} as ITrip;
-        updateTripAction(nextTrip, ActionEnum.Add);
+        updateAction(nextTrip, ActionEnum.Add);
         nextTrip.rowId = await this.getMaxId() + 1;
         nextTrip.key = trip.key;
         nextTrip.date = trip.date;
@@ -36,7 +37,7 @@ export class TripService  extends GenericCrudService<ITrip> {
         let cloneTrip = trip;
         delete cloneTrip.id;
         cloneTrip.rowId = await this.getMaxId() + 1;
-        updateTripAction(cloneTrip, ActionEnum.Add);
+        updateAction(cloneTrip, ActionEnum.Add);
         await this.add(cloneTrip);
     }
 
@@ -96,7 +97,7 @@ export class TripService  extends GenericCrudService<ITrip> {
 
             let originalTrip = await this.queryById(trip.id!);
             if (originalTrip.actionTime === trip.actionTime) {
-                clearTripAction(trip);
+                clearAction(trip);
                 await this.update([trip]);
             }
         };

@@ -1,7 +1,8 @@
 import { DateHelper } from "@helpers/date.helper";
-import { IShift, updateShiftAction } from "@interfaces/shift.interface";
+import { IShift } from "@interfaces/shift.interface";
 import { sort } from "./sort.helper";
 import { ActionEnum } from "@enums/action.enum";
+import { updateAction } from "@utils/action.utils";
 
 export class ShiftHelper {
     static compareShifts(o1: IShift, o2: IShift): boolean {
@@ -63,7 +64,7 @@ export class ShiftHelper {
         shift.start = new Date().toLocaleTimeString();
         shift.total = 0;
         shift.trips = 0;
-        updateShiftAction(shift, ActionEnum.Add);
+        updateAction(shift, ActionEnum.Add);
         
         return shift;
     }
