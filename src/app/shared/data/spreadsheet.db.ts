@@ -7,6 +7,7 @@ import { IPlace } from '@interfaces/place.interface';
 import { IRating } from '@interfaces/rating.interface';
 import { IRegion } from '@interfaces/region.interface';
 import { IService } from '@interfaces/service.interface';
+import { ISetup } from '@interfaces/setup.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IType } from '@interfaces/type.interface';
@@ -27,6 +28,7 @@ export class AppDB extends Dexie {
     ratings!: Table<IRating, number>;
     regions!: Table<IRegion, number>;
     services!: Table<IService, number>;
+    setup!: Table<ISetup, number>;
     shifts!: Table<IShift, number>;
     trips!: Table<ITrip, number>;
     types!: Table<IType, number>;
@@ -46,6 +48,7 @@ export class AppDB extends Dexie {
             ratings: '++id, date, time',
             regions: '++id, region, saved',
             services: '++id, service, saved',
+            setup: '++id, name, saved',
             shifts: '++id, rowId, date, service, number, key, [date+service+number], saved',
             trips: '++id, rowId, date, service, number, key, [date+service+number], saved',
             types: '++id, type, saved',

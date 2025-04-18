@@ -221,16 +221,7 @@ export class SearchInputComponent {
         }));
 
         if (places.length === 0) {
-          const placesJson = await fetch('/assets/json/places.json').then(res => res.json());
-          places = placesJson
-            .filter((place: string) => place.toLowerCase().includes(value.toLowerCase()))
-            .map((place: string) => ({
-              id: place,
-              name: place,
-              saved: false,
-              value: place,
-              trips: 0
-            }));
+          places = await this.searchJson('places', value);
         }
 
         return places;
@@ -243,24 +234,52 @@ export class SearchInputComponent {
           trips: item.trips
         }));
       case 'Service':
-        return (await this._filterService(value)).map(item => ({
+        let services = (await this._filterService(value)).map(item => ({
           id: item.id,
           name: item.service,
           saved: item.saved,
           value: item.service,
           trips: item.trips
         }));
+
+        if (services.length === 0) {
+          services = await this.searchJson('services', value);
+        }
+
+        return services;
       case 'Type':
-        return (await this._filterType(value)).map(item => ({
+        let types = (await this._filterType(value)).map(item => ({
           id: item.id,
           name: item.type,
           saved: item.saved,
           value: item.type,
           trips: item.trips
         }));
+
+        if (types.length === 0) {
+          types = await this.searchJson('types', value);
+        }
+
+        return types;
       default:
         return [];
     }
+  }
+
+  private async searchJson(searchType: string, value: string ) {
+    let items = [];
+    const itemsJson = await fetch('/assets/json/'+searchType+'.json').then(res => res.json());
+    items = itemsJson
+      .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
+      .map((item: string) => ({
+        id: item,
+        name: item,
+        saved: false,
+        value: item,
+        trips: 0
+      }));
+
+      return items;
   }
 
   // Open the address dialog
