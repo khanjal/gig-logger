@@ -5,7 +5,7 @@ import { Directive, ElementRef, HostBinding, HostListener, Input } from '@angula
   standalone: true
 })
 export class FocusScrollDirective {
-  @Input('focus-scroll-options') scrollOptions: ScrollIntoViewOptions = { behavior: 'auto', block: 'start', inline: 'nearest' };
+  @Input('focus-scroll-options') scrollOptions: ScrollIntoViewOptions = { behavior: 'smooth', block: 'start', inline: 'nearest' };
 
   constructor(private el: ElementRef) {}
 
@@ -14,7 +14,7 @@ export class FocusScrollDirective {
 
   @HostListener('focus', ['$event.target']) async onFocus() {
     // Delay to allow the keyboard to fully open
-    await this.delay(100); // Adjust the delay as needed
+    await this.delay(250); // Adjust the delay as needed
     this.scrollIntoView();
   }
 
@@ -27,7 +27,7 @@ export class FocusScrollDirective {
         const rect = this.el.nativeElement.getBoundingClientRect();
         window.scrollTo({
           top: rect.top + window.scrollY,
-          behavior: 'auto'
+          behavior: 'smooth'
         });
       }
     }
