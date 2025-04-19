@@ -5,35 +5,27 @@ import { Directive, ElementRef, HostBinding, HostListener, Input } from '@angula
   standalone: true
 })
 export class FocusScrollDirective {
-  @Input('focus-scroll-options') scrollOptions: ScrollIntoViewOptions = { behavior: 'auto', block: 'start', inline: 'nearest' };
+  @Input('focus-scroll-options') scrollOptions: ScrollIntoViewOptions = { behavior: 'smooth', block: 'start', inline: 'nearest' };
 
   constructor(private el: ElementRef) {}
 
   @HostBinding('class')
   elementClass = 'focus-scroll';
 
-  @HostListener('focus', ['$event.target']) async onFocus() {
-    // Delay to allow the keyboard to fully open
-    await this.delay(400); // Adjust the delay as needed
-    this.scrollIntoView();
-  }
-
-  private scrollIntoView() {
+  @HostListener('focus', ['$event.target']) onFocus() {
     if (this.el.nativeElement) {
-      try {
+      const adjustScroll = () => {
         this.el.nativeElement.scrollIntoView(this.scrollOptions);
-      } catch (error) {
-        // Fallback: manually scroll to the element's position
-        const rect = this.el.nativeElement.getBoundingClientRect();
-        window.scrollTo({
-          top: rect.top + window.scrollY,
-          behavior: 'auto'
-        });
-      }
-    }
-  }
+        window.removeEventListener('resize', adjustScroll); // Remove listener after adjustment
+      };
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+      // Add a resize listener to handle viewport changes caused by the keyboard
+      window.addEventListener('resize', adjustScroll);
+
+      // Fallback: Scroll immediately in case resize doesn't trigger
+      setTimeout(() => {
+        this.el.nativeElement.scrollIntoView(this.scrollOptions);
+      }, 300); // Adjust delay as needed
+    }
   }
 }
