@@ -173,16 +173,6 @@ export class SearchInputComponent {
     }
   }
 
-  onFocusScrollComplete(): void {
-    if (this.autocompleteTrigger) {
-      // Reopen the dropdown panel
-      // this.autocompleteTrigger.openPanel();
-  
-      // Recalculate and update the dropdown's position
-      this.autocompleteTrigger.updatePosition();
-    }
-  }
-
   onSearch() {
     if (!this.googleSearch) {
       return;

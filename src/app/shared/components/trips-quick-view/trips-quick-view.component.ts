@@ -134,13 +134,16 @@ export class TripsQuickViewComponent {
     this.parentReload.emit();
   }
 
-  async editTrip() {
+  async openTripDialog() {
     this.pollingToggle.emit(false);
     let dialogRef = this.dialog.open(TripFormComponent, {
       data: this.trip,
-      height: '650px',
+      height: '500px',
       width: '500px',
-      panelClass: 'custom-modalbox'
+      panelClass: 'custom-modalbox',
+      position: {
+        top: '50px' // Adjust this value to position the dialog higher
+      }
     });
 
     dialogRef.afterClosed().subscribe(async result => {
