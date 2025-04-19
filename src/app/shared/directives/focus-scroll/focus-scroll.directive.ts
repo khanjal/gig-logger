@@ -14,8 +14,6 @@ export class FocusScrollDirective {
 
   @HostListener('focus', ['$event.target']) async onFocus() {
     this.scrollIntoView();
-    await this.delay(300); // Adjust delay as needed
-    this.scrollIntoView();
   }
 
   private scrollIntoView() {
@@ -32,9 +30,5 @@ export class FocusScrollDirective {
         });
       }
     }
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
