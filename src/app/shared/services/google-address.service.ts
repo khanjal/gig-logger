@@ -4,24 +4,30 @@ import { ElementRef, Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class GoogleAddressService {
-    place!: any;
-    formattedAddress!: string;
 
-    public getPlaceAutocomplete(inputElement: ElementRef<any>, callback: (address: string) => void) {
+    public getPlaceAutocomplete(inputElement: ElementRef<any>, searchType: string, callback: (address: string) => void) {
+        const searchTypeMapping: { [key: string]: string[] } = {
+            address: ['establishment', 'geocode'],
+            place: ['establishment'],
+            default: ['address', 'place', 'establishment', 'geocode']
+        };
+    
+        const searchTypes = searchTypeMapping[searchType] || searchTypeMapping['default'];
+
         //@ts-ignore
         const autocomplete = new google.maps.places.Autocomplete(
             inputElement.nativeElement,
             {
                 componentRestrictions: { country: 'US' },
-                types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
+                types: searchTypes  // 'establishment' / 'address' / 'geocode' // we are checking all types
             }
         );
 
         //@ts-ignore
         google.maps.event.addListener(autocomplete, 'place_changed', () => {
-            this.place = autocomplete.getPlace();
-            this.formatAddress();
-            callback(this.formattedAddress); // Call the provided callback with the selected address
+            let place = autocomplete.getPlace();
+            let search = searchType === 'place' ? place.name : this.formatAddress(place);
+            callback(search ?? ""); // Call the provided callback with the selected address
         });
     }
 
@@ -114,13 +120,15 @@ export class GoogleAddressService {
         return phone;
     }
     
-    private formatAddress() {
-        this.formattedAddress = this.getFormattedAddress(this.place);
-        let name = this.place['name'];
+    private formatAddress(place: any): string {
+        let formattedAddress = this.getFormattedAddress(place);
+        let name = place['name'];
 
-        if (!this.formattedAddress.startsWith(name)) {
-            this.formattedAddress = `${name}, ${this.formattedAddress}`;
+        if (!formattedAddress.startsWith(name)) {
+            formattedAddress = `${name}, ${formattedAddress}`;
         }
+
+        return formattedAddress ?? "";
     }
 
     private removePacContainers() {
