@@ -14,7 +14,7 @@ export class FocusScrollDirective {
 
   @HostListener('focus', ['$event.target']) async onFocus() {
     // Delay to allow the keyboard to fully open
-    await this.delay(350); // Adjust the delay as needed
+    await this.delay(400); // Adjust the delay as needed
     this.scrollIntoView();
   }
 
