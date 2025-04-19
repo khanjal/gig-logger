@@ -13,13 +13,14 @@ export class FocusScrollDirective {
   elementClass = 'focus-scroll';
 
   @HostListener('focus', ['$event.target']) async onFocus() {
+    // Delay to allow the keyboard to fully open
+    await this.delay(50); // Adjust the delay as needed
     this.scrollIntoView();
   }
 
   private scrollIntoView() {
     if (this.el.nativeElement) {
       try {
-        // Delay to allow keyboard to open
         this.el.nativeElement.scrollIntoView(this.scrollOptions);
       } catch (error) {
         // Fallback: manually scroll to the element's position
@@ -30,5 +31,9 @@ export class FocusScrollDirective {
         });
       }
     }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
