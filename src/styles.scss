@@ -115,6 +115,8 @@ div.mat-expansion-panel-body {
 /* Style the google place/address autocomplete dropdown container */
 .pac-container {
   margin-top: 1rem !important;
+  max-width: 768px;
+  width: 85% !important;
   z-index: 99999999 !important;
 
   // https://developers.google.com/maps/documentation/javascript/place-autocomplete#style_autocomplete

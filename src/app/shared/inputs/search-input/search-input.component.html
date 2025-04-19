@@ -29,7 +29,10 @@
             </mat-option>
             </cdk-virtual-scroll-viewport>
         </mat-autocomplete>
-        <button class="mat-icon-button" *ngIf="value" color="primary" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
+        <button class="mat-icon-button" *ngIf="value && useGoogle && (filteredItems | async)?.length === 0" color="primary" matSuffix mat-icon-button aria-label="Search Google" (click)="onSearch()">
+            <mat-icon>search</mat-icon>
+        </button>
+        <button class="mat-icon-button" *ngIf="value" color="accent" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
             <mat-icon>clear</mat-icon>
         </button>
     </mat-form-field>

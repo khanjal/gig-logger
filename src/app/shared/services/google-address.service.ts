@@ -7,13 +7,13 @@ export class GoogleAddressService {
     place!: any;
     formattedAddress!: string;
 
-    public getPlaceAutocomplete(inputElement: ElementRef<any>) {
+    public getPlaceAutocomplete(inputElement: ElementRef<any>, callback: (address: string) => void) {
         //@ts-ignore
         const autocomplete = new google.maps.places.Autocomplete(
             inputElement.nativeElement,
             {
-            componentRestrictions: { country: 'US' },
-            types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
+                componentRestrictions: { country: 'US' },
+                types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
             }
         );
 
@@ -21,7 +21,16 @@ export class GoogleAddressService {
         google.maps.event.addListener(autocomplete, 'place_changed', () => {
             this.place = autocomplete.getPlace();
             this.formatAddress();
+            callback(this.formattedAddress); // Call the provided callback with the selected address
         });
+    }
+
+    public attachToModal() {
+        const modalContainer = document.querySelector('.mat-mdc-dialog-container'); // Adjust selector if needed
+        const pacContainer = document.querySelector('.pac-container');
+        if (modalContainer && pacContainer) {
+            modalContainer.appendChild(pacContainer); // Move the dropdown into the modal
+        }
     }
 
     public getAddrComponent(place: any, componentTemplate: any) {

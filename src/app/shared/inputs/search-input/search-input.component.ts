@@ -159,6 +159,7 @@ export class SearchInputComponent {
   async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
+    this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
@@ -173,8 +174,6 @@ export class SearchInputComponent {
   }
 
   onFocusScrollComplete(): void {
-    console.log('Focus scroll completed!');
-  
     if (this.autocompleteTrigger) {
       // Reopen the dropdown panel
       // this.autocompleteTrigger.openPanel();
@@ -182,6 +181,18 @@ export class SearchInputComponent {
       // Recalculate and update the dropdown's position
       this.autocompleteTrigger.updatePosition();
     }
+  }
+
+  onSearch() {
+    this._googleAddressService.getPlaceAutocomplete(this.inputElement, (address: string) => {
+      this.value = address; // Update the FormControl value for this specific component
+    });
+
+    setTimeout(() => {
+        this._googleAddressService.attachToModal();
+        this.inputElement.nativeElement.blur();
+        this.inputElement.nativeElement.focus();
+    }, 100);
   }
 
   getViewportHeight(items: ISearchItem[] | null): number {
@@ -199,23 +210,13 @@ export class SearchInputComponent {
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
-        let addresses = (await this._filterAddress(value)).map(item => ({
+        return (await this._filterAddress(value)).map(item => ({
           id: item.id,
           name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
           saved: item.saved,
           value: item.address,
           trips: item.trips
         }));
-
-        // Trigger Google Places Autocomplete if addresses are empty
-        if (addresses.length === 0 && this.useGoogle) {
-          this._googleAddressService.getPlaceAutocomplete(this.inputElement);
-        }
-        else {
-          this._googleAddressService.clearAddressListeners(this.inputElement);
-        }
-
-        return addresses;
       case 'Name':
         return (await this._filterName(value)).map(item => ({
           id: item.id,
