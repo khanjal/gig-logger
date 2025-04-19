@@ -5,7 +5,7 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 import { BrowserModule } from '@angular/platform-browser';
 
 // Angular Material imports
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -64,6 +64,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 })
 
 export class SearchInputComponent {
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
   @Input() searchType: string = '';
@@ -157,7 +158,7 @@ export class SearchInputComponent {
 
   async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
-    this.value = inputValue; // Update the value and trigger onChange
+    this.value = inputValue; // Update the value
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
@@ -168,6 +169,18 @@ export class SearchInputComponent {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
       }, 100); // Delay by 100ms
+    }
+  }
+
+  onFocusScrollComplete(): void {
+    console.log('Focus scroll completed!');
+  
+    if (this.autocompleteTrigger) {
+      // Reopen the dropdown panel
+      // this.autocompleteTrigger.openPanel();
+  
+      // Recalculate and update the dropdown's position
+      this.autocompleteTrigger.updatePosition();
     }
   }
 
