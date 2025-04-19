@@ -15,14 +15,16 @@
         />
         <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
             <cdk-virtual-scroll-viewport 
-            [itemSize]="48" 
-            [style.height.px]="getViewportHeight(filteredItems | async)" 
-            class="virtual-scroll-viewport"
+                [itemSize]="48" 
+                [style.height.px]="getViewportHeight(filteredItems | async)" 
+                class="virtual-scroll-viewport"
             >
             <mat-option 
                 *cdkVirtualFor="let item of filteredItems | async" 
+                class="mat-option"
                 [value]="item.name" 
-                (click)="onInputSelect(item.value)">
+                (click)="onInputSelect(item.value)"
+                #matOption>
                 {{ item.name }} {{ item.saved ? '(' + (item.trips ?? 0) + ')' : '' }}
             </mat-option>
             </cdk-virtual-scroll-viewport>
