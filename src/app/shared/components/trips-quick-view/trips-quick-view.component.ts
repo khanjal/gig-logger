@@ -138,7 +138,7 @@ export class TripsQuickViewComponent {
     this.pollingToggle.emit(false);
     let dialogRef = this.dialog.open(TripFormComponent, {
       data: this.trip,
-      height: '600px',
+      height: '650px',
       width: '500px',
       panelClass: 'custom-modalbox'
     });

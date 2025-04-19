@@ -11,7 +11,13 @@ export class FocusScrollDirective {
 
   @HostListener('focus', ['$event.target']) onFocus() {
     this.renderer.addClass(this.el.nativeElement, 'focus-scroll');
-    this.el.nativeElement.scrollIntoView(true);
+    
+    this.el.nativeElement.scrollIntoView({
+      behavior: 'auto',
+      block: 'start',
+      inline: 'nearest'
+    });
+
     this.scrollComplete.emit(); // Emit event after scroll completes
   }
 }
