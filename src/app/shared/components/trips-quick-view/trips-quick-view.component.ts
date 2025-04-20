@@ -138,11 +138,11 @@ export class TripsQuickViewComponent {
     this.pollingToggle.emit(false);
     let dialogRef = this.dialog.open(TripFormComponent, {
       data: this.trip,
-      height: '500px',
+      height: '600px',
       width: '500px',
       panelClass: 'custom-modalbox',
       position: {
-        top: '50px' // Adjust this value to position the dialog higher
+        top: '25px' // Adjust this value to position the dialog higher
       }
     });
 

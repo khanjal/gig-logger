@@ -20,7 +20,6 @@
             >
             <mat-option 
                 *cdkVirtualFor="let item of filteredItems | async" 
-                class="mat-option"
                 [value]="item.name" 
                 (click)="onInputSelect(item.value)"
                 #matOption>
