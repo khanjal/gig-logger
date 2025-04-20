@@ -489,7 +489,7 @@ export class TripFormComponent implements OnInit {
 
     place = this.selectedPlace.place;
 
-    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place);
+    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place && !x.exclude);
     let recentTrip = recentTrips[0];
 
     if (!recentTrip) {
