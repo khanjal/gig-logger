@@ -1,4 +1,5 @@
 export class DateHelper {
+
     static getDateFromDays(days: number = 0): Date {
         let currentDate = new Date();
         let date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-days);
@@ -35,6 +36,16 @@ export class DateHelper {
         let days = time / (1000 * 3600 * 24);
 
         return Math.trunc(days) + 2;
+    }
+
+    static getMonthYearString(date: Date) {
+        let monthString = `${date.getMonth()+1}-${date.getFullYear()}`;
+        return monthString;
+    }
+
+    static getFirstDayOfMonth(date: Date) {
+        let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        return this.getISOFormat(firstDay);
     }
 
     static getFirstDayOfWeek(): number {
@@ -105,8 +116,6 @@ export class DateHelper {
         const hours = Math.floor((diff / (60* 60)) % 60);
 
         const duration = `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}.000`;
-        // console.log(duration);
-
         return duration;
     }
 

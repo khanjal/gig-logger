@@ -5,7 +5,7 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 import { BrowserModule } from '@angular/platform-browser';
 
 // Angular Material imports
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -42,6 +42,7 @@ import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
+import { GoogleAddressService } from '@services/google-address.service';
 
 // RxJS imports
 import { Observable, startWith, switchMap } from 'rxjs';
@@ -63,10 +64,11 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 })
 
 export class SearchInputComponent {
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
   @Input() searchType: string = '';
-  @Input() showGoogle: boolean = false;
+  @Input() googleSearch: string | undefined; // Google search type (e.g., 'address', 'place', etc.)
   @Input() isRequired: boolean = false; // Default is not required
 
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>(); // Emit changes to parent
@@ -88,8 +90,9 @@ export class SearchInputComponent {
     private _placeService: PlaceService,
     private _regionService: RegionService,
     private _serviceService: ServiceService,
-    private _typeService: TypeService
-  ) {}
+    private _typeService: TypeService,
+    private _googleAddressService: GoogleAddressService
+  ) { }
 
   async ngOnInit(): Promise<void> {
     if (this.isRequired) {
@@ -155,7 +158,8 @@ export class SearchInputComponent {
 
   async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
-    this.value = inputValue; // Update the value and trigger onChange
+    this.value = inputValue; // Update the value
+    this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
@@ -167,6 +171,22 @@ export class SearchInputComponent {
         this.inputElement.nativeElement.blur();
       }, 100); // Delay by 100ms
     }
+  }
+
+  onSearch() {
+    if (!this.googleSearch) {
+      return;
+    }
+
+    this._googleAddressService.getPlaceAutocomplete(this.inputElement, this.googleSearch, (address: string) => {
+      this.value = address; // Update the FormControl value for this specific component
+    });
+
+    setTimeout(() => {
+        this._googleAddressService.attachToModal();
+        this.inputElement.nativeElement.blur();
+        this.inputElement.nativeElement.focus();
+    }, 100);
   }
 
   getViewportHeight(items: ISearchItem[] | null): number {
@@ -200,13 +220,19 @@ export class SearchInputComponent {
           trips: item.trips
         }));
       case 'Place':
-        return (await this._filterPlace(value)).map(item => ({
+        let places = (await this._filterPlace(value)).map(item => ({
           id: item.id,
           name: item.place,
           saved: item.saved,
           value: item.place,
           trips: item.trips
         }));
+
+        if (places.length === 0) {
+          places = await this.searchJson('places', value);
+        }
+
+        return places;
       case 'Region':
         return (await this._filterRegion(value)).map(item => ({
           id: item.id,
@@ -216,24 +242,52 @@ export class SearchInputComponent {
           trips: item.trips
         }));
       case 'Service':
-        return (await this._filterService(value)).map(item => ({
+        let services = (await this._filterService(value)).map(item => ({
           id: item.id,
           name: item.service,
           saved: item.saved,
           value: item.service,
           trips: item.trips
         }));
+
+        if (services.length === 0) {
+          services = await this.searchJson('services', value);
+        }
+
+        return services;
       case 'Type':
-        return (await this._filterType(value)).map(item => ({
+        let types = (await this._filterType(value)).map(item => ({
           id: item.id,
           name: item.type,
           saved: item.saved,
           value: item.type,
           trips: item.trips
         }));
+
+        if (types.length === 0) {
+          types = await this.searchJson('types', value);
+        }
+
+        return types;
       default:
         return [];
     }
+  }
+
+  private async searchJson(searchType: string, value: string ) {
+    let items = [];
+    const itemsJson = await fetch('/assets/json/'+searchType+'.json').then(res => res.json());
+    items = itemsJson
+      .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
+      .map((item: string) => ({
+        id: item,
+        name: item,
+        saved: false,
+        value: item,
+        trips: 0
+      }));
+
+      return items;
   }
 
   // Open the address dialog
@@ -322,4 +376,5 @@ export class SearchInputComponent {
 
     return await this._typeService.filter('type', filterValue);
   }
+
 }

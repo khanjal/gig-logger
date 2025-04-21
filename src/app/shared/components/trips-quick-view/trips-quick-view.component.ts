@@ -1,16 +1,16 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ITrip, updateTripAction } from '@interfaces/trip.interface';
+import { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum'; 
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TripFormComponent } from '@components/trip-form/trip-form.component';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
-import { updateShiftAction } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { GigLoggerService } from '@services/gig-logger.service';
+import { updateAction } from '@utils/action.utils';
 
 @Component({
   selector: 'trips-quick-view',
@@ -35,12 +35,12 @@ export class TripsQuickViewComponent {
       ) { }
 
   async restoreTrip() {
-    updateTripAction(this.trip, ActionEnum.Update);
+    updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
 
     const shift = await this._shiftService.queryShiftByKey(this.trip.key);
     if (shift) {
-      updateShiftAction(shift, ActionEnum.Update);
+      updateAction(shift, ActionEnum.Update);
       await this._shiftService.update([shift]);
     }
   }
@@ -84,7 +84,7 @@ export class TripsQuickViewComponent {
     let shift = (await this._shiftService.queryShifts("key", this.trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
-      updateShiftAction(shift, ActionEnum.Update);
+      updateAction(shift, ActionEnum.Update);
       await this._shiftService.update([shift]);
     }
 
@@ -95,7 +95,7 @@ export class TripsQuickViewComponent {
     if (this.trip.total && duration) {
       this.trip.amountPerTime = this.trip.total / DateHelper.getHoursFromSeconds(duration);
     }
-    updateTripAction(this.trip, ActionEnum.Update);
+    updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
   }
 
@@ -105,12 +105,12 @@ export class TripsQuickViewComponent {
     let shift = (await this._shiftService.queryShifts("key", this.trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
-      updateShiftAction(shift, ActionEnum.Update);
+      updateAction(shift, ActionEnum.Update);
       await this._shiftService.update([shift]);
     }
 
     this.trip.pickupTime = pickupTime;
-    updateTripAction(this.trip, ActionEnum.Update);
+    updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
   }
 
@@ -121,7 +121,7 @@ export class TripsQuickViewComponent {
       await this._tripService.updateRowIds(this.trip.rowId);
     }
     else {
-      updateTripAction(this.trip, ActionEnum.Delete);
+      updateAction(this.trip, ActionEnum.Delete);
       this.trip.saved = false;
       await this._tripService.update([this.trip]);
     }
@@ -134,13 +134,16 @@ export class TripsQuickViewComponent {
     this.parentReload.emit();
   }
 
-  async editTrip() {
+  async openTripDialog() {
     this.pollingToggle.emit(false);
     let dialogRef = this.dialog.open(TripFormComponent, {
       data: this.trip,
       height: '600px',
       width: '500px',
-      panelClass: 'custom-modalbox'
+      panelClass: 'custom-modalbox',
+      position: {
+        top: '25px' // Adjust this value to position the dialog higher
+      }
     });
 
     dialogRef.afterClosed().subscribe(async result => {

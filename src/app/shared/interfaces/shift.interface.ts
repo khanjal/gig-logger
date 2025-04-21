@@ -1,4 +1,3 @@
-import { ActionEnum } from "@enums/action.enum";
 import { IAmountPer } from "./amount-per.interface";
 
 export interface IShift extends IAmountPer {
@@ -26,18 +25,4 @@ export interface IShift extends IAmountPer {
     note: string;
     action: string;
     actionTime: number;
-}
-
-export function clearShiftAction(shift: IShift) {
-    shift.action = '';
-    shift.actionTime = 0;
-    shift.saved = true;
-}
-
-export function updateShiftAction(shift: IShift, action: string) {
-    if (shift.action != ActionEnum.Add) {
-        shift.action = action;
-    }
-    shift.actionTime = Date.now();
-    shift.saved = false;
 }

@@ -45,12 +45,40 @@ export class ServiceWorkerStatusComponent {
     });
   }
 
-  // Trigger an update if available
   updateApp(): void {
-    if (this.isUpdateAvailable) {
-      this.swUpdate.activateUpdate().then(() => {
-        document.location.reload();
+    if ('caches' in window) {
+      // Clear all caches
+      caches.keys().then(cacheNames => {
+        cacheNames.forEach(cacheName => {
+          caches.delete(cacheName).then(deleted => {
+            if (deleted) {
+              console.log(`Cache ${cacheName} deleted successfully.`);
+            }
+          });
+        });
+      }).finally(() => {
+        // Unregister the service worker
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            registrations.forEach(registration => {
+              registration.unregister().then(unregistered => {
+                if (unregistered) {
+                  console.log('Service worker unregistered successfully.');
+                }
+              });
+            });
+          }).finally(() => {
+            console.log('All caches cleared and service worker unregistered. Reloading the page...');
+            document.location.reload();
+          });
+        } else {
+          console.warn('Service Worker API not supported in this browser.');
+          document.location.reload();
+        }
       });
+    } else {
+      console.warn('Caches API not supported in this browser.');
+      document.location.reload();
     }
   }
 }

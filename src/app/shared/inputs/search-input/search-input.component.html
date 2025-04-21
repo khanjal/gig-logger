@@ -1,5 +1,5 @@
 <form [formGroup]="searchForm">
-    <mat-form-field [ngClass]="showGoogle ? 'field-button-width' : 'field-full-width'" appearance="outline">
+    <mat-form-field appearance="outline">
         <mat-label>{{fieldName}}</mat-label>
         <input 
             matInput
@@ -11,31 +11,27 @@
             [required]="isRequired"
             focus-scroll
             #searchInput
-         />
+        />
         <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
-            <!-- Dynamically adjust the height of the viewport -->
             <cdk-virtual-scroll-viewport 
                 [itemSize]="48" 
                 [style.height.px]="getViewportHeight(filteredItems | async)" 
                 class="virtual-scroll-viewport"
             >
-                <mat-option 
-                    *cdkVirtualFor="let item of filteredItems | async" 
-                    [value]="item.name" 
-                    (click)="onInputSelect(item.value)" 
-                    class="mat-option" 
-                    disableRipple
-                    #matOption>
-                    {{ item.name }} {{ item.saved ? '(' + (item.trips ?? 0) + ')' : '' }}
-                </mat-option>
+            <mat-option 
+                *cdkVirtualFor="let item of filteredItems | async" 
+                [value]="item.name" 
+                (click)="onInputSelect(item.value)"
+                #matOption>
+                {{ item.name }} {{ item.saved ? '(' + (item.trips ?? 0) + ')' : '' }}
+            </mat-option>
             </cdk-virtual-scroll-viewport>
         </mat-autocomplete>
-        <button class="mat-icon-button" *ngIf="value" color="primary" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
+        <button class="mat-icon-button" *ngIf="value && googleSearch && (filteredItems | async)?.length === 0" color="primary" matSuffix mat-icon-button aria-label="Search Google" (click)="onSearch()">
+            <mat-icon>search</mat-icon>
+        </button>
+        <button class="mat-icon-button" *ngIf="value" color="accent" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
             <mat-icon>clear</mat-icon>
         </button>
     </mat-form-field>
-
-    <button *ngIf="showGoogle" class="button-right" color="primary" matSuffix mat-fab aria-label="Search Address" (click)="searchAddress()">
-        <mat-icon>search</mat-icon>
-    </button>
 </form>
