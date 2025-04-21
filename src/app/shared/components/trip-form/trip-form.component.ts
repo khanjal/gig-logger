@@ -17,8 +17,8 @@ import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IService } from '@interfaces/service.interface';
-import { IShift, updateShiftAction } from '@interfaces/shift.interface';
-import { ITrip, updateTripAction } from '@interfaces/trip.interface';
+import { IShift } from '@interfaces/shift.interface';
+import { ITrip } from '@interfaces/trip.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
@@ -37,6 +37,7 @@ import { ShiftHelper } from '@helpers/shift.helper';
 
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
+import { updateAction } from '@utils/action.utils';
 
 @Component({
   selector: 'trip-form',
@@ -190,13 +191,13 @@ export class TripFormComponent implements OnInit {
     
     // Set form properties depending on edit/add
     if (this.data?.id) {
-      updateTripAction(trip, ActionEnum.Update);
+      updateAction(trip, ActionEnum.Update);
       trip.pickupTime = this.tripForm.value.pickupTime ?? "";
       trip.dropoffTime = this.tripForm.value.dropoffTime ?? "";
     }
     else {
       trip.rowId = await this._tripService.getMaxId() + 1;
-      updateTripAction(trip, ActionEnum.Add);
+      updateAction(trip, ActionEnum.Add);
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
 
@@ -334,7 +335,7 @@ export class TripFormComponent implements OnInit {
     let shift = await this.createShift();
     let trip = await this.createTrip(shift);
 
-    updateShiftAction(shift, ActionEnum.Update);
+    updateAction(shift, ActionEnum.Update);
     this._shiftService.update([shift]);
     
     shifts.push(shift);
@@ -462,6 +463,19 @@ export class TripFormComponent implements OnInit {
 
     this.selectedPlace = await this._placeService.find('place', place);
     if (!this.selectedPlace) {
+      if (this.tripForm.controls.type.value) {
+        return;
+      }
+
+      // Assign most recent trip type if no place is found.
+      let recentTrips = (await this._tripService.getAll()).reverse();
+      let recentTrip = recentTrips[0];
+      if (recentTrip) {
+        this.tripForm.controls.type.setValue(recentTrip.type);
+      }
+      else {
+        this.tripForm.controls.type.setValue("Pickup");
+      }
       return;
     }
 
@@ -475,7 +489,7 @@ export class TripFormComponent implements OnInit {
 
     place = this.selectedPlace.place;
 
-    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place);
+    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place && !x.exclude);
     let recentTrip = recentTrips[0];
 
     if (!recentTrip) {

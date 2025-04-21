@@ -1,10 +1,11 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { clearShiftAction, IShift } from '@interfaces/shift.interface';
+import { IShift } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
 import { GenericCrudService } from '@services/generic-crud.service';
+import { clearAction } from '@utils/action.utils';
 
 @Injectable({
     providedIn: 'root'
@@ -94,7 +95,7 @@ export class ShiftService extends GenericCrudService<IShift> {
 
             let originalShift = await this.queryShiftById(shift.id!);
             if (originalShift.actionTime === shift.actionTime) {
-                clearShiftAction(shift);
+                clearAction(shift);
                 await this.update([shift]);
             }
         };

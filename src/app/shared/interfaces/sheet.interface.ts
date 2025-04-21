@@ -6,6 +6,7 @@ import { IName } from "./name.interface";
 import { IPlace } from "./place.interface";
 import { IRegion } from "./region.interface";
 import { IService } from "./service.interface";
+import { ISetup } from "./setup.interface";
 import { ISheetProperties } from "./sheet-properties.interface";
 import { IShift } from "./shift.interface";
 import { ITrip } from "./trip.interface";
@@ -23,6 +24,7 @@ export interface ISheet {
     places: IPlace[];
     regions: IRegion[];
     services: IService[];
+    setup: ISetup[];
     shifts: IShift[];
     trips: ITrip[];
     types: IType[];

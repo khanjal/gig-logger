@@ -48,7 +48,8 @@
       "@inputs/*": ["./src/app/shared/inputs/*"],
       "@models/*": ["./src/app/shared/models/*"],
       "@pipes/*": ["./src/app/shared/pipes/*"],
-      "@services/*": ["./src/app/shared/services/*"]
+      "@services/*": ["./src/app/shared/services/*"],
+      "@utils/*": ["./src/app/shared/utils/*"],
     },
     //"types": [
     //  "google.maps",

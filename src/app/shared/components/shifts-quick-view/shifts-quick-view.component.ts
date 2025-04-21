@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { IShift, updateShiftAction } from '@interfaces/shift.interface';
+import { IShift } from '@interfaces/shift.interface';
 import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
 import { ShiftTripsTableComponent } from "@components/shift-trips-table/shift-trips-table.component";
 import { ShiftService } from '@services/sheets/shift.service';
@@ -11,6 +11,7 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { MatDialog } from '@angular/material/dialog';
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
+import { updateAction } from '@utils/action.utils';
 
 @Component({
   selector: 'app-shifts-quick-view',
@@ -52,7 +53,7 @@ export class ShiftsQuickViewComponent {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        updateShiftAction(shift, ActionEnum.Delete);
+        updateAction(shift, ActionEnum.Delete);
         await this.shiftService.update([shift]);
         await this.saveSheetDialog('save');
       }

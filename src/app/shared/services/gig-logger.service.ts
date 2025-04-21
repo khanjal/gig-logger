@@ -16,7 +16,7 @@ import { INote } from "@interfaces/note.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { IType } from "@interfaces/type.interface";
 import { IAddress } from "@interfaces/address.interface";
-import { IShift, updateShiftAction } from "@interfaces/shift.interface";
+import { IShift } from "@interfaces/shift.interface";
 import { IWeekday } from "@interfaces/weekday.interface";
 import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 
@@ -40,6 +40,7 @@ import { IService } from "@interfaces/service.interface";
 import { IRegion } from "@interfaces/region.interface";
 import { IName } from "@interfaces/name.interface";
 import { IPlace } from "@interfaces/place.interface";
+import { updateAction } from "@utils/action.utils";
 
 @Injectable()
 export class GigLoggerService {
@@ -175,7 +176,7 @@ export class GigLoggerService {
 
             if (trips?.length === 0) {
                 if (shift.saved) {
-                    updateShiftAction(shift, ActionEnum.Delete);
+                    updateAction(shift, ActionEnum.Delete);
                     await this._shiftService.update([shift]);
                 }
                 else {
