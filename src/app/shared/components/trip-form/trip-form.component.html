@@ -42,6 +42,7 @@
             fieldName="Place" 
             searchType="Place" 
             formControlName="place"
+            googleSearch="place"
             (valueChanged)="selectPlace()">
         </app-search-input>
         
@@ -59,13 +60,13 @@
             </button>
             <mat-form-field class="field-quarter-width" appearance="outline">
                 <mat-label>Pay</mat-label>
-                <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="" #pay focus-scroll>
+                <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" value="">
             </mat-form-field>
 
             <!-- Distance -->
             <mat-form-field class="field-quarter-width" appearance="outline">
                 <mat-label>Distance</mat-label>
-                <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="" focus-scroll>
+                <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" value="">
             </mat-form-field>
             <button class="button-right" [color]="showOdometer ? 'accent' : 'primary'" matSuffix mat-fab aria-label="Toggle Odometer" (click)="toggleOdometer()">
                 <mat-icon>drive_eta</mat-icon>
@@ -141,7 +142,7 @@
             fieldName="Pickup Address" 
             searchType="Address" 
             formControlName="startAddress"
-            [showGoogle]="true">
+            googleSearch="address">
         </app-search-input>
         
         <!-- Address List/Notes -->
@@ -172,7 +173,7 @@
             fieldName="Destination Address" 
             searchType="Address" 
             formControlName="endAddress"
-            [showGoogle]="true"
+            googleSearch="address"
             (valueChanged)="showAddressNames()">
         </app-search-input>
         

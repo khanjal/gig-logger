@@ -1,21 +1,45 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root'
 })
 export class GoogleAddressService {
 
-    constructor() { }
+    public getPlaceAutocomplete(inputElement: ElementRef<any>, searchType: string, callback: (address: string) => void) {
+        const searchTypeMapping: { [key: string]: string[] } = {
+            address: ['establishment', 'geocode'],
+            place: ['establishment'],
+            default: ['address', 'place', 'establishment', 'geocode']
+        };
+    
+        const searchTypes = searchTypeMapping[searchType] || searchTypeMapping['default'];
 
-    getPlaceId(place: any){
-        return place['place_id'];
+        //@ts-ignore
+        const autocomplete = new google.maps.places.Autocomplete(
+            inputElement.nativeElement,
+            {
+                componentRestrictions: { country: 'US' },
+                types: searchTypes  // 'establishment' / 'address' / 'geocode' // we are checking all types
+            }
+        );
+
+        //@ts-ignore
+        google.maps.event.addListener(autocomplete, 'place_changed', () => {
+            let place = autocomplete.getPlace();
+            let search = searchType === 'place' ? place.name : this.formatAddress(place);
+            callback(search ?? ""); // Call the provided callback with the selected address
+        });
     }
 
-    getFormattedAddress(place: any){
-        return place['formatted_address'];
+    public attachToModal() {
+        const modalContainer = document.querySelector('.mat-mdc-dialog-container'); // Adjust selector if needed
+        const pacContainer = document.querySelector('.pac-container');
+        if (modalContainer && pacContainer) {
+            modalContainer.appendChild(pacContainer); // Move the dropdown into the modal
+        }
     }
 
-    getAddrComponent(place: any, componentTemplate: any) {
+    public getAddrComponent(place: any, componentTemplate: any) {
         let result;
 
         for (let i = 0; i < place.address_components.length; i++) {
@@ -28,58 +52,87 @@ export class GoogleAddressService {
         return;
     }
 
-    getStreetNumber(place: any) {
+    public clearAddressListeners(inputElement: ElementRef<any>) {
+    //@ts-ignore
+        google.maps.event.clearInstanceListeners(inputElement.nativeElement);
+        this.removePacContainers();
+    }
+    
+    public getFormattedAddress(place: any){
+        return place['formatted_address'];
+    }
+
+    private getPlaceId(place: any){
+        return place['place_id'];
+    }
+    private getStreetNumber(place: any) {
         const COMPONENT_TEMPLATE = { street_number: 'short_name' },
             streetNumber = this.getAddrComponent(place, COMPONENT_TEMPLATE);
 
         return streetNumber===undefined?'':streetNumber;
     }
 
-    getStreet(place: any) {
+    private getStreet(place: any) {
         const COMPONENT_TEMPLATE = { route: 'long_name' },
             street = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return street;
     }
 
-    getLocality(place: any) {
+    private getLocality(place: any) {
         const COMPONENT_TEMPLATE = { locality: 'long_name' },
             city = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return city;
     }
 
-    getState(place: any) {
+    private getState(place: any) {
         const COMPONENT_TEMPLATE = { administrative_area_level_1: 'short_name' },
             state = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return state;
     }
 
-    getDistrict(place: any) {
+    private getDistrict(place: any) {
         const COMPONENT_TEMPLATE = { administrative_area_level_2: 'short_name' },
             state = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return state;
     }
 
-    getCountryShort(place: any) {
+    private getCountryShort(place: any) {
         const COMPONENT_TEMPLATE = { country: 'short_name' },
             countryShort = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return countryShort;
     }
 
-    getCountry(place:any) {
+    private getCountry(place:any) {
         const COMPONENT_TEMPLATE = { country: 'long_name' },
             country = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return country;
     }
 
-    getPostCode(place: any) {
+    private getPostCode(place: any) {
         const COMPONENT_TEMPLATE = { postal_code: 'long_name' },
             postCode = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return postCode;
     }
 
-    getPhone(place: any) {
+    private getPhone(place: any) {
         const COMPONENT_TEMPLATE = { formatted_phone_number: 'formatted_phone_number' },
             phone = this.getAddrComponent(place, COMPONENT_TEMPLATE);
         return phone;
+    }
+    
+    private formatAddress(place: any): string {
+        let formattedAddress = this.getFormattedAddress(place);
+        let name = place['name'];
+
+        if (!formattedAddress.startsWith(name)) {
+            formattedAddress = `${name}, ${formattedAddress}`;
+        }
+
+        return formattedAddress ?? "";
+    }
+
+    private removePacContainers() {
+        const pacContainers = document.querySelectorAll('.pac-container');
+        pacContainers.forEach(container => container.remove());
     }
 }

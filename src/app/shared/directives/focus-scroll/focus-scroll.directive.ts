@@ -1,20 +1,23 @@
-import { Directive, ElementRef, HostBinding, HostListener } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Output, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[focus-scroll]',
   standalone: true
 })
 export class FocusScrollDirective {
+  @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private el: ElementRef) { }
-
-  ngOnInit() { }
-
-  @HostBinding('class') 
-  elementClass = 'focus-scroll';
+  constructor(private el: ElementRef, private renderer: Renderer2) { }
 
   @HostListener('focus', ['$event.target']) onFocus() {
-    this.el.nativeElement.scrollIntoView(true);
-  }
+    this.renderer.addClass(this.el.nativeElement, 'focus-scroll');
+    
+    this.el.nativeElement.scrollIntoView({
+      behavior: 'auto',
+      block: 'start',
+      inline: 'nearest'
+    });
 
+    this.scrollComplete.emit(); // Emit event after scroll completes
+  }
 }
