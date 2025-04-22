@@ -35,12 +35,11 @@ import { DailyService } from "./sheets/daily.service";
 import { MonthlyService } from "./sheets/monthly.service";
 import { WeeklyService } from "./sheets/weekly.service";
 import { YearlyService } from "./sheets/yearly.service";
-import { firstValueFrom, lastValueFrom } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { IService } from "@interfaces/service.interface";
 import { IRegion } from "@interfaces/region.interface";
 import { IName } from "@interfaces/name.interface";
 import { IPlace } from "@interfaces/place.interface";
-import { updateAction } from "@utils/action.utils";
 
 @Injectable()
 export class GigLoggerService {
@@ -159,6 +158,10 @@ export class GigLoggerService {
 
         for (let shift of shifts) {
             let trips = (await this._tripService.query("key", shift.key)).filter(x => x.action !== ActionEnum.Delete && !x.exclude);
+            if (trips?.length === 0 && !shift.saved) {
+                this._shiftService.delete(shift.id!);
+                return;
+            }
 
             shift.totalTrips = +(shift.trips ?? 0) + trips.length;
             shift.totalDistance = +(shift.distance ?? 0) + +trips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
@@ -168,29 +171,74 @@ export class GigLoggerService {
             shift.totalCash = +(shift.cash ?? 0) + +trips.filter(x => x.cash != undefined).map((x) => x.cash).reduce((acc, value) => acc + value, 0);
             shift.grandTotal = +(shift.total ?? 0) + +trips.filter(x => x.total != undefined).map((x) => x.total).reduce((acc, value) => acc + value, 0);
 
-            let duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
-            if (duration) {
-                shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
-                shift.time = DateHelper.getDurationString(duration);
+            if (trips.length > 0) {
+                shift = this.calculateDurations(shift, trips);
             }
-
-            if (trips?.length === 0) {
-                if (shift.saved) {
-                    updateAction(shift, ActionEnum.Delete);
-                    await this._shiftService.update([shift]);
-                }
-                else {
-                    this._shiftService.delete(shift.id!);
-                }
-            }
-            else {
-                await this._shiftService.update([shift]);
-            }
+            
+            await this._shiftService.update([shift]);
         };
 
         let dates = [... new Set(shifts.map(x => x?.date))];
 
         await this.calculateDailyTotal(dates);
+    }
+
+    private calculateDurations(shift: IShift, trips: ITrip[]) {
+        const uniqueTimeRanges = trips
+            .map(trip => ({ pickupTime: trip.pickupTime, dropoffTime: trip.dropoffTime }))
+            .filter((timeSet, index, self) =>
+                self.findIndex(t => 
+                    t.pickupTime === timeSet.pickupTime && t.dropoffTime === timeSet.dropoffTime
+                ) === index
+            );
+
+        let mergedTotalTime = 0;
+        const mergedTimeSets = uniqueTimeRanges.reduce((acc: { pickupTime: string; dropoffTime: string }[], currentSet: { pickupTime: string; dropoffTime: string }) => {
+            const lastSet = acc[acc.length - 1];
+
+            const pickupTimestamp = DateHelper.convertToTimestamp(currentSet.pickupTime);
+            const dropoffTimestamp = DateHelper.convertToTimestamp(lastSet?.dropoffTime);
+
+            if (lastSet && pickupTimestamp < dropoffTimestamp) {
+                const currentSetDropoff = DateHelper.convertToTimestamp(currentSet.dropoffTime);
+
+                if (currentSetDropoff > dropoffTimestamp) {
+                    currentSet.pickupTime = lastSet.dropoffTime;
+                    mergedTotalTime += DateHelper.getDurationSeconds(currentSet.pickupTime, currentSet.dropoffTime);
+                    acc.push({ ...currentSet });
+                }
+            }
+            else {
+                mergedTotalTime += DateHelper.getDurationSeconds(currentSet.pickupTime, currentSet.dropoffTime);
+                acc.push({ ...currentSet });
+            }
+
+            return acc;
+        }, [] as { pickupTime: string; dropoffTime: string }[]);
+
+        const tripsActiveTime = trips
+            .map(trip => DateHelper.getTimeNumber(trip.duration)) // Convert duration to a number
+            .filter(duration => duration > 0) // Filter out invalid or non-positive durations
+            .reduce((acc, value) => acc + value, 0); // Sum up the durations
+
+        if (tripsActiveTime > 0) {
+            shift.totalActive = DateHelper.getDurationString(tripsActiveTime);
+        }
+        
+        if (mergedTotalTime < tripsActiveTime) {
+            shift.active = DateHelper.getDurationString(mergedTotalTime);
+        }
+        else {
+            shift.active = "";
+        }
+
+        let duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+        if (duration) {
+            shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
+            shift.time = DateHelper.getDurationString(duration);
+        }
+
+        return shift;
     }
 
     public async calculateDailyTotal(dates: string[] = []) {
