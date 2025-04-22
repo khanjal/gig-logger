@@ -10,6 +10,12 @@
     </strong>
   </p>
   
-    <button mat-fab extended color="accent" (click)="updateApp()">
-      <mat-icon>update</mat-icon> Update Cache
+  @if(isUpdateAvailable) {
+    <button mat-fab extended color="primary" (click)="updateApp()">
+      <mat-icon>update</mat-icon> Update App
     </button>
+  }
+
+  <button mat-fab extended color="accent" class="button-right" (click)="forceCacheUpdate()">
+    <mat-icon>refresh</mat-icon> Reset Cache
+  </button>
