@@ -158,10 +158,6 @@ export class GigLoggerService {
 
         for (let shift of shifts) {
             let trips = (await this._tripService.query("key", shift.key)).filter(x => x.action !== ActionEnum.Delete && !x.exclude);
-            if (trips?.length === 0 && !shift.saved) {
-                this._shiftService.delete(shift.id!);
-                return;
-            }
 
             shift.totalTrips = +(shift.trips ?? 0) + trips.length;
             shift.totalDistance = +(shift.distance ?? 0) + +trips.filter(x => x.distance != undefined).map((x) => x.distance).reduce((acc, value) => acc + value, 0);
