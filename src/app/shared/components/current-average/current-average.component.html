@@ -1,6 +1,6 @@
 <h2 *ngIf="showDailyAverage" (click)="toggle()" class="average">
     {{ currentDayAmount | currency }} / {{ dailyAverage | currency }}
-    <mat-icon>today</mat-icon>
+    <mat-icon>event</mat-icon>
   </h2>
   <h2 *ngIf="showWeeklyAverage" (click)="toggle()" class="average">
     {{ currentWeekAmount | currency }} / {{ weeklyAverage | currency }}

@@ -110,6 +110,30 @@ export class DateHelper {
         return diff;
     }
 
+    static getTimeNumber(time: string): number {
+        if (!time) {
+            return 0;
+        }
+
+        let timeParts = time.split(":");
+        let hours = parseInt(timeParts[0]);
+        let minutes = parseInt(timeParts[1]);
+        let seconds = parseInt(timeParts[2]);
+
+        return (hours * 3600) + (minutes * 60) + seconds;
+    }
+
+    static convertToTimestamp(time: string): number {
+        if (!time) {
+            return 0;
+        }
+        
+        const [hoursMinutes, period] = time.split(' ');
+        const [hours, minutes] = hoursMinutes.split(':').map(Number);
+        let totalHours = hours % 12 + (period.toLowerCase() === 'pm' ? 12 : 0);
+        return totalHours * 60 + minutes;
+    };
+
     static getDurationString(diff: number): string {
         const seconds = Math.floor(diff % 60);
         const minutes = Math.floor(diff / 60 ) % 60;

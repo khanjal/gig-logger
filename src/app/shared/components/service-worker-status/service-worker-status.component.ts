@@ -44,8 +44,17 @@ export class ServiceWorkerStatusComponent {
       this.serviceWorkerStatus = 'Online';
     });
   }
-
+  
+  // Trigger an update if available
   updateApp(): void {
+    if (this.isUpdateAvailable) {
+      this.swUpdate.activateUpdate().then(() => {
+        document.location.reload();
+      });
+    }
+  }
+
+  forceCacheUpdate(): void {
     if ('caches' in window) {
       // Clear all caches
       caches.keys().then(cacheNames => {
