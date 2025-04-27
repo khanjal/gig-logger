@@ -107,6 +107,10 @@ div.mat-expansion-panel-body {
   padding: 0;
 }
 
+.mat-expansion-indicator, .mat-expansion-indicator:after { 
+  color: $accent-color !important;
+}
+
 .strike {
   background-color: $disabled-color; // Set in ngStyle in HTML in some files
   text-decoration: line-through;

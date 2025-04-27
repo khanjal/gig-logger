@@ -25,7 +25,7 @@
                 </div>  
                 <div class="padding-left">
                     <div><strong>Time:</strong>&nbsp;<span [ngClass]="{'primary': shift.amountPerTime > 25, 'warn': shift.amountPerTime < 20, 'rainbow-text-animated': shift.amountPerTime > 30}">{{shift.start | noseconds}} {{!shift.time ? '' : '- ' + (shift.finish | noseconds)}}</span></div>
-                    <div *ngIf="shift.time"><strong>Duration:</strong> {{shift.time | noseconds}}</div>
+                    <div *ngIf="shift.time || shift.totalActive"><strong>Duration:</strong> {{shift.time | noseconds}} <strong>Active:</strong> {{ (shift.active === "" ? shift.totalActive : shift.active) | noseconds}}</div>
                 </div>
             </div>
             @if (shift.region || shift.totalDistance) {
@@ -74,7 +74,7 @@
         </mat-card-content>
         <div mat-card class="row-flex button-bar">
             <button mat-fab extended color="primary" class="button-left" disabled="true"><mat-icon>edit</mat-icon> Edit</button>
-            <button mat-fab extended color="warn" [disabled]="!duplicateShift || !shift.saved" (click)="confirmDeleteShiftDialog(shift)"><mat-icon>delete</mat-icon> Delete</button>
+            <button mat-fab extended color="warn" [disabled]="!duplicateShift && !(shift.grandTotal === 0 && shift.totalTrips === 0)" (click)="confirmDeleteShiftDialog(shift)"><mat-icon>delete</mat-icon> Delete</button>
         </div>
     </div>
     
