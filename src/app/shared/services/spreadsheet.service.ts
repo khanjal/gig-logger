@@ -90,14 +90,27 @@ export class SpreadsheetService {
 
     public async loadSpreadsheetData(data: ISheet) {
         this._snackBar.open("Loading Primary Spreadsheet Data");
+        this.updateSheetName(data.properties.id, data.properties.name);
         await this._gigLoggerService.loadData(<ISheet>data);
         this._snackBar.open("Loaded Primary Spreadsheet Data");
     }
 
     public async appendSpreadsheetData(data: ISheet) {
         this._snackBar.open("Loading Secondary Spreadsheet Data");
+        this.updateSheetName(data.properties.id, data.properties.name);
         await this._gigLoggerService.appendData(<ISheet>data);
         this._snackBar.open("Loaded Secondary Spreadsheet Data");
+    }
+
+    private async updateSheetName(sheetId: string, name: string) {
+        if (sheetId){
+            let sheet = await this.findSheet(sheetId);
+            if (sheet)
+            {
+                sheet.name = name;
+                this.update(sheet);
+            }
+        }
     }
 
     private async updateSheetSize(sheetId: string, data: any){

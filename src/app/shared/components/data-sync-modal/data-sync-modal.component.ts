@@ -126,6 +126,7 @@ export class DataSyncModalComponent {
         });
 
         // Load data
+        data.properties.id = this.defaultSheet.id;
         this.time = this.currentTime;
         this.appendToTerminal("Loading sheet data...");
 
