@@ -71,7 +71,7 @@ export class SearchInputComponent {
   @Input() googleSearch: string | undefined; // Google search type (e.g., 'address', 'place', etc.)
   @Input() isRequired: boolean = false; // Default is not required
 
-  @Output() placeAddress: EventEmitter<string> = new EventEmitter<string>();
+  @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
  
   // Callbacks for ControlValueAccessor
@@ -186,7 +186,7 @@ export class SearchInputComponent {
         }
         else {
           this.value = result.place;
-          this.placeAddress.emit(result.address);
+          this.auxiliaryData.emit(result.address);
         }
     });
 
