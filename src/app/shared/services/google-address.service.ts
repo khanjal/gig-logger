@@ -1,11 +1,17 @@
 import { ElementRef, Injectable } from '@angular/core';
+//@ts-ignore
+type PlaceResult = google.maps.places.PlaceResult;
 
 @Injectable({
     providedIn: 'root'
 })
 export class GoogleAddressService {
 
-    public getPlaceAutocomplete(inputElement: ElementRef<any>, searchType: string, callback: (address: string) => void) {
+    public getPlaceAutocomplete(
+        inputElement: ElementRef<any>, 
+        searchType: string, 
+        callback: (result: { place: string, address: string }) => void
+    ) {
         const searchTypeMapping: { [key: string]: string[] } = {
             address: ['establishment', 'geocode'],
             place: ['establishment'],
@@ -25,9 +31,10 @@ export class GoogleAddressService {
 
         //@ts-ignore
         google.maps.event.addListener(autocomplete, 'place_changed', () => {
-            let place = autocomplete.getPlace();
-            let search = searchType === 'place' ? place.name : this.formatAddress(place);
-            callback(search ?? ""); // Call the provided callback with the selected address
+            const placeObject = autocomplete.getPlace();
+            const place = placeObject.name ?? "";
+            const address = this.formatAddress(placeObject);
+            callback({ place, address }); // Call the provided callback with the selected address
         });
     }
 
@@ -120,11 +127,11 @@ export class GoogleAddressService {
         return phone;
     }
     
-    private formatAddress(place: any): string {
-        let formattedAddress = this.getFormattedAddress(place);
-        let name = place['name'];
+    private formatAddress(place: PlaceResult): string {
+        let formattedAddress = place.formatted_address;
+        let name = place.name ?? "";
 
-        if (!formattedAddress.startsWith(name)) {
+        if (!formattedAddress?.startsWith(name)) {
             formattedAddress = `${name}, ${formattedAddress}`;
         }
 

@@ -1,4 +1,4 @@
-﻿using RaptorSheets.Core.Entities;
+﻿using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
 using RaptorSheets.Gig.Managers;
@@ -37,17 +37,18 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetEntity> GetSheets(string[] sheets)
     {
-        var sheetEnums = new List<SheetEnum>();
+        var sheetList = new List<string>();
+        var gigSheets = RaptorSheets.Gig.Helpers.GigSheetHelpers.GetSheetNames();
         foreach (var sheet in sheets)
         {
-            var foundEnum = Enum.TryParse(sheet, true, out SheetEnum sheetName);
+            var foundSheet = gigSheets.Any(gigSheet => string.Equals(gigSheet, sheet, StringComparison.OrdinalIgnoreCase));
 
-            if (foundEnum)
+            if (foundSheet)
             {
-                sheetEnums.Add(sheetName);
+                sheetList.Add(sheet);
             }
         }
-        return await _googleSheetManager.GetSheets(sheetEnums);
+        return await _googleSheetManager.GetSheets(sheetList);
     }
 
     public async Task<SheetEntity> GetSheets()
@@ -60,7 +61,7 @@ public class SheetManager : ISheetManager
     public async Task<SheetEntity> SaveData(SheetEntity sheetEntity)
     {
         var returnEntity = new SheetEntity { Messages = [] };
-        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS, SheetEnum.SHIFTS], sheetEntity)).Messages);
+        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), RaptorSheets.Common.Enums.SheetEnum.SETUP.GetDescription()], sheetEntity)).Messages);
         return returnEntity;
     }
 }
