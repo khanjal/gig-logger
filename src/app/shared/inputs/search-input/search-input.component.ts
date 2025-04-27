@@ -71,7 +71,8 @@ export class SearchInputComponent {
   @Input() googleSearch: string | undefined; // Google search type (e.g., 'address', 'place', etc.)
   @Input() isRequired: boolean = false; // Default is not required
 
-  @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>(); // Emit changes to parent
+  @Output() placeAddress: EventEmitter<string> = new EventEmitter<string>();
+  @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
  
   // Callbacks for ControlValueAccessor
   private onChange: (value: string) => void = () => {};
@@ -178,8 +179,15 @@ export class SearchInputComponent {
       return;
     }
 
-    this._googleAddressService.getPlaceAutocomplete(this.inputElement, this.googleSearch, (address: string) => {
-      this.value = address; // Update the FormControl value for this specific component
+    this._googleAddressService.getPlaceAutocomplete(
+      this.inputElement, this.googleSearch, (result: { place: string, address: string }) => {
+        if (this.googleSearch === 'address') {
+          this.value = result.address;
+        }
+        else {
+          this.value = result.place;
+          this.placeAddress.emit(result.address);
+        }
     });
 
     setTimeout(() => {

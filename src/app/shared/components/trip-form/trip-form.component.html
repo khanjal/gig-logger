@@ -43,7 +43,8 @@
             searchType="Place" 
             formControlName="place"
             googleSearch="place"
-            (valueChanged)="selectPlace()">
+            (valueChanged)="selectPlace()"
+            (placeAddress)="setPickupAddress($event)">
         </app-search-input>
         
         <!-- Type -->
