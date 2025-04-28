@@ -83,8 +83,7 @@ export class SpreadsheetService {
 
     public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet>{
         let data = await this._gigLoggerService.getSheetData(spreadsheet.id);
-        await this.updateSheetName(spreadsheet.id, data);
-        await this.updateSheetSize(spreadsheet.id, data);
+        await this.updateSheetInfo(spreadsheet.id, data);
         return <ISheet>data;
     }
 
@@ -101,20 +100,16 @@ export class SpreadsheetService {
         this._snackBar.open("Loaded Secondary Spreadsheet Data");
     }
 
-    private async updateSheetName(sheetId: string, data: any) {
-        let sheet = await this.findSheet(sheetId);
-        if (!sheet) return;
-
-        if (sheet && data.properties.name) {
-            sheet.name = data.properties.name;
-            this.update(sheet);
-        }
-    }
-
-    private async updateSheetSize(sheetId: string, data: any){
+    private async updateSheetInfo(sheetId: string, data: any){
         let sheet = await this.findSheet(sheetId);
         if (!sheet) return;
         sheet.size = new TextEncoder().encode(JSON.stringify(data)).length;
+        sheet.name = `${sheetId.substring(0, 10)}...`;
+
+        if (data.properties.name) {
+            sheet.name = data.properties.name;
+        }
+
         this.update(sheet);
     }
 }
