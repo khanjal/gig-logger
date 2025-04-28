@@ -83,8 +83,8 @@ export class SpreadsheetService {
 
     public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet>{
         let data = await this._gigLoggerService.getSheetData(spreadsheet.id);
-        this.updateSheetName(spreadsheet.id, data);
-        this.updateSheetSize(spreadsheet.id, data);
+        await this.updateSheetName(spreadsheet.id, data);
+        await this.updateSheetSize(spreadsheet.id, data);
         return <ISheet>data;
     }
 
