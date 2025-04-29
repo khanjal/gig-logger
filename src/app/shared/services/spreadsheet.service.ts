@@ -81,8 +81,12 @@ export class SpreadsheetService {
         return await this._gigLoggerService.healthCheck(defaultSheet.id);
     }
 
-    public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet>{
+    public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet | null>{
         let data = await this._gigLoggerService.getSheetData(spreadsheet.id);
+        if (!data) {
+            return null;
+        }
+
         await this.updateSheetInfo(spreadsheet.id, data);
         return <ISheet>data;
     }
