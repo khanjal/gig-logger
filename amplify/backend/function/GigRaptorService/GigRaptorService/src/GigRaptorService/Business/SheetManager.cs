@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2;
+using GigRaptorService.Helpers;
 using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
@@ -50,19 +51,16 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetEntity> CreateSheet()
     {
-        await EnforceRateLimitAsync(_spreadsheetId);
         return await _googleSheetManager.CreateSheets();
     }
 
     public async Task<SheetEntity> GetSheet(string sheet)
     {
-        await EnforceRateLimitAsync(_spreadsheetId);
         return await _googleSheetManager.GetSheet(sheet);
     }
 
     public async Task<SheetEntity> GetSheets(string[] sheets)
     {
-        await EnforceRateLimitAsync(_spreadsheetId);
         var sheetList = new List<string>();
         var gigSheets = RaptorSheets.Gig.Helpers.GigSheetHelpers.GetSheetNames();
         foreach (var sheet in sheets)
@@ -79,7 +77,6 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetEntity> GetSheets()
     {
-        await EnforceRateLimitAsync(_spreadsheetId);
         var sheetData = await _googleSheetManager.GetSheets();
 
         return sheetData ?? new SheetEntity();
@@ -87,7 +84,6 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetEntity> SaveData(SheetEntity sheetEntity)
     {
-        await EnforceRateLimitAsync(_spreadsheetId);
         var returnEntity = new SheetEntity { Messages = [] };
         returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), RaptorSheets.Common.Enums.SheetEnum.SETUP.GetDescription()], sheetEntity)).Messages);
         return returnEntity;

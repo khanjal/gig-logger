@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 
+namespace GigRaptorService.Helpers;
+
 public static class HashHelper
 {
     public static string HashSpreadsheetId(string spreadsheetId)
