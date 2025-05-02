@@ -114,6 +114,6 @@ export class SpreadsheetService {
             sheet.name = data.properties.name;
         }
 
-        this.update(sheet);
+        await this.update(sheet);
     }
 }
