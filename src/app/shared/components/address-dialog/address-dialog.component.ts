@@ -1,11 +1,17 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
+import { GoogleAddressComponent } from '../google-address/google-address.component';
+import { MatButton } from '@angular/material/button';
+import { NgIf } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-address-dialog',
-  templateUrl: './address-dialog.component.html',
-  styleUrls: ['./address-dialog.component.scss']
+    selector: 'app-address-dialog',
+    templateUrl: './address-dialog.component.html',
+    styleUrls: ['./address-dialog.component.scss'],
+    standalone: true,
+    imports: [GoogleAddressComponent, MatButton, NgIf, MatIcon]
 })
 export class AddressDialogComponent {
   title!: string;

@@ -32,58 +32,54 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { StatsComponent } from './stats/stats.component';
 import { StatsTableComponent } from './stats/stats-table/stats-table.component';
-import { SharedModule } from '../shared/shared.module';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    TripComponent,
-    ShiftsComponent,
-    LoginComponent,
-    SetupComponent,
-    SheetAddFormComponent,
-    SheetQuickViewComponent,
-    CalculatorComponent,
-    UberCalculatorComponent,
-    SheetQuotaComponent,
-    StatsComponent,
-    StatsTableComponent
-  ],
-  imports: [
-    CommonModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatMenuModule,
-    MatNativeDateModule,
-    MatSelectModule,
-    MatListModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBarModule,
-    MatSlideToggleModule,
-    MatSnackBarModule,
-    MatTableModule,
-    NgxMatTimepickerModule,
-    ReactiveFormsModule,
-    ScrollingModule,
-    SharedModule
-  ],
-  exports: [
-    NgxMatTimepickerModule
-  ],
-  providers: [
-      {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}},
-      {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},
-      {provide: MAT_DIALOG_DATA, useValue: {}},
-      {provide: MatDialogRef, useValue: {}}
-  ],
-  bootstrap: []
+    imports: [
+        CommonModule,
+        MatAutocompleteModule,
+        MatButtonModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDatepickerModule,
+        MatDialogModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatMenuModule,
+        MatNativeDateModule,
+        MatSelectModule,
+        MatListModule,
+        MatIconModule,
+        MatInputModule,
+        MatProgressBarModule,
+        MatSlideToggleModule,
+        MatSnackBarModule,
+        MatTableModule,
+        NgxMatTimepickerModule,
+        ReactiveFormsModule,
+        ScrollingModule,
+        HomeComponent,
+        TripComponent,
+        ShiftsComponent,
+        LoginComponent,
+        SetupComponent,
+        SheetAddFormComponent,
+        SheetQuickViewComponent,
+        CalculatorComponent,
+        UberCalculatorComponent,
+        SheetQuotaComponent,
+        StatsComponent,
+        StatsTableComponent
+    ],
+    exports: [
+        NgxMatTimepickerModule
+    ],
+    providers: [
+        { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
+        { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useValue: {} }
+    ],
+    bootstrap: []
 })
 export class PagesModule { }

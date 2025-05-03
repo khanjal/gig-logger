@@ -41,7 +41,9 @@ import { IRegion } from "@interfaces/region.interface";
 import { IName } from "@interfaces/name.interface";
 import { IPlace } from "@interfaces/place.interface";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+  })
 export class GigLoggerService {
     private apiUrl= environment.gigLoggerApi;
 

@@ -8,8 +8,8 @@ describe('UberCalculatorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UberCalculatorComponent ]
-    })
+    imports: [UberCalculatorComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(UberCalculatorComponent);

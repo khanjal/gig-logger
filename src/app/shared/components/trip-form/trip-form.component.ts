@@ -1,7 +1,7 @@
 // Angular core imports
-import { ViewportScroller } from '@angular/common';
+import { ViewportScroller, NgFor, NgIf, NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Angular material imports
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
@@ -38,11 +38,26 @@ import { ShiftHelper } from '@helpers/shift.helper';
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+import { SearchInputComponent } from '@inputs/search-input/search-input.component';
+import { MatFabButton, MatAnchor, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import { TripsTableBasicComponent } from '../trips-table-basic/trips-table-basic.component';
+import { NgxMatTimepickerDirective, NgxMatTimepickerComponent } from 'ngx-mat-timepicker';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
-  selector: 'trip-form',
-  templateUrl: './trip-form.component.html',
-  styleUrls: ['./trip-form.component.scss']
+    selector: 'trip-form',
+    templateUrl: './trip-form.component.html',
+    styleUrls: ['./trip-form.component.scss'],
+    standalone: true,
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatSuffix, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatAnchor, NgClass, TripsTableBasicComponent, NgxMatTimepickerDirective, NgxMatTimepickerComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe]
 })
 export class TripFormComponent implements OnInit {
   // @Input() data!: ITrip;
