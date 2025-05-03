@@ -44,25 +44,5 @@ import { HeaderComponent } from "./shared/header/header.component";
         registrationStrategy: 'registerWhenStable:30000'
     }), HeaderComponent], 
     providers: [
-        AddressService,
-        CommonService,
-        DailyService,
-        DeliveryService,
-        MonthlyService,
-        NameService,
-        GigLoggerService,
-        PlaceService,
-        PollingService,
-        RegionService,
-        ServiceService,
-        ShiftService,
-        SpreadsheetService,
-        TimerService,
-        TripService,
-        TypeService,
-        WeekdayService,
-        WeeklyService,
-        YearlyService,
-        provideHttpClient(withInterceptorsFromDi())
     ] })
 export class AppModule { }

@@ -1,11 +1,11 @@
 // Angular core imports
 import { ViewportScroller, NgFor, NgIf, NgClass, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Angular material imports
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // RxJS imports
@@ -60,7 +60,6 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatSuffix, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatAnchor, NgClass, TripsTableBasicComponent, NgxMatTimepickerDirective, NgxMatTimepickerComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe]
 })
 export class TripFormComponent implements OnInit {
-  // @Input() data!: ITrip;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
@@ -115,9 +114,8 @@ export class TripFormComponent implements OnInit {
   title: string = "Add Trip";
 
   constructor(
-      public dialogRef: MatDialogRef<TripFormComponent>,
-      public dialog: MatDialog,
-      @Inject(MAT_DIALOG_DATA) public data: ITrip,
+      @Optional() public dialogRef: MatDialogRef<TripFormComponent>,
+      @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
       private _deliveryService: DeliveryService,
