@@ -1,15 +1,17 @@
 import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-
-import { AppComponent } from './app/app.component';
-import { environment } from './environments/environment';
-import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
-import { AppRoutingModule } from './app/app-routing.module';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+
+import { AppComponent } from './app/app.component';
+import { AppRoutingModule } from './app/app-routing.module';
+import { environment } from './environments/environment';
 
 if (environment.production) {
   enableProdMode();
@@ -25,7 +27,19 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(CommonModule, HttpClientModule, RouterModule, AppRoutingModule, MatDialogModule, BrowserAnimationsModule),
-    provideNativeDateAdapter()
+    importProvidersFrom(
+      CommonModule,
+      RouterModule,
+      AppRoutingModule,
+      MatDialogModule,
+      BrowserAnimationsModule,
+      ServiceWorkerModule.register('ngsw-worker.js', {
+        enabled: environment.production,
+        registrationStrategy: 'registerWhenStable:30000'
+      })
+    ),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideNativeDateAdapter(),
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } }
   ]
 }).catch(err => console.error(err));
