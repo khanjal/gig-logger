@@ -14,14 +14,17 @@ public class SheetsController : ControllerBase
 
     private void InitializeSheetmanger()
     {
-        if (HttpContext.Items.TryGetValue("Sheet-Id", out var sheetId))
+        // Perform cleanup
+        RateLimiter.MaybeCleanupExpiredEntries();
+
+        var sheetId = HttpContext.Request.Headers["Sheet-Id"].ToString() ?? throw new Exception("SheetId must be provided.");
+
+        if (!RateLimiter.IsRequestAllowed(sheetId))
         {
-            _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), sheetId?.ToString()!);
+            throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
         }
-        else
-        {
-            throw new Exception("SheetId must be provided.");
-        }
+
+        _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), sheetId?.ToString()!);
     }
 
     private void InitializeSheetmanger(string sheetId)

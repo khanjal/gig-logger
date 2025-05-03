@@ -143,6 +143,11 @@ export class DataSyncModalComponent {
             this.appendToTerminal("Appending sheet data...");
             let data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
             
+            if (!data) {
+                this.processFailure("ERROR");
+                return;
+            }
+            
             await this._sheetService.appendSpreadsheetData(data);
             this.appendToLastMessage(`APPENDED (${this.currentTime - this.time}s)`);
         }
