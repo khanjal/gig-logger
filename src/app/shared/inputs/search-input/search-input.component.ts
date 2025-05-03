@@ -83,6 +83,7 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
+  showSearch: boolean = true;
 
   constructor(
     public dialog: MatDialog,
@@ -161,6 +162,7 @@ export class SearchInputComponent {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
     this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
+    this.showSearch = true;
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
@@ -179,6 +181,7 @@ export class SearchInputComponent {
       return;
     }
 
+    this.showSearch = false;
     this._googleAddressService.getPlaceAutocomplete(
       this.inputElement, this.googleSearch, (result: { place: string, address: string }) => {
         if (this.googleSearch === 'address') {

@@ -71,20 +71,10 @@ export class SheetAddFormComponent {
 
   public async setupSheet(id: string) {
     await this.load();
-    let sheetName = this.sheetForm.value.sheetName;
-
-    if (!sheetName) {
-      sheetName = `${id.substring(0, 10)}...`;
-    }
-
-    if (sheetName == "") {
-      return;
-    }
   
     // console.log(sheetName);
     let spreadsheet = {} as ISpreadsheet;
     spreadsheet.id = id;
-    spreadsheet.name = sheetName;
     spreadsheet.default = "false";
 
     // Check for default spreadsheet
