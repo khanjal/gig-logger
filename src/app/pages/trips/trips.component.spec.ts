@@ -18,17 +18,16 @@ describe('TripComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TripComponent ],
-      imports: [ MatDialogModule, MatSnackBarModule ],
-      providers: [
+    imports: [MatDialogModule, MatSnackBarModule, TripComponent],
+    providers: [
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: GigLoggerService, useValue: mockGigLoggerService },
         { provide: SpreadsheetService, useValue: mockSpreadsheetService },
         { provide: ShiftService, useValue: mockShiftService },
         { provide: TripService, useValue: mockTripService }
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TripComponent);

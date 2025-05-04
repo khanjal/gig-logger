@@ -6,11 +6,17 @@ import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
+import { MatMiniFabButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { NgClass } from '@angular/common';
+import { ShiftsQuickViewComponent } from '../../shared/components/shifts-quick-view/shifts-quick-view.component';
 
 @Component({
-  selector: 'app-shifts',
-  templateUrl: './shifts.component.html',
-  styleUrls: ['./shifts.component.scss']
+    selector: 'app-shifts',
+    templateUrl: './shifts.component.html',
+    styleUrls: ['./shifts.component.scss'],
+    standalone: true,
+    imports: [MatMiniFabButton, MatIcon, NgClass, ShiftsQuickViewComponent]
 })
 export class ShiftsComponent implements OnInit {
   shifts: IShift[] = [];

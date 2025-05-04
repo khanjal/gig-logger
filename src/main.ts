@@ -1,7 +1,16 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatDialogModule } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
-import { AppModule } from './app/app.module';
+import { AppComponent } from './app/app.component';
+import { AppRoutingModule } from './app/app-routing.module';
 import { environment } from './environments/environment';
 
 if (environment.production) {
@@ -16,5 +25,21 @@ if (environment.production) {
 //   });
 // }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    importProvidersFrom(
+      CommonModule,
+      RouterModule,
+      AppRoutingModule,
+      MatDialogModule,
+      BrowserAnimationsModule,
+      ServiceWorkerModule.register('ngsw-worker.js', {
+        enabled: environment.production,
+        registrationStrategy: 'registerWhenStable:30000'
+      })
+    ),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideNativeDateAdapter(),
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } }
+  ]
+}).catch(err => console.error(err));

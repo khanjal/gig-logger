@@ -2,7 +2,11 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IPlace } from '@interfaces/place.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+  providedIn: 'root'
+})
 export class PlaceService extends GenericCrudService<IPlace> {
     constructor() {
       super(spreadsheetDB.places); // Pass the table reference

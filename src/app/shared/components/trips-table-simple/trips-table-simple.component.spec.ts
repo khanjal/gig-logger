@@ -8,8 +8,8 @@ describe('TripsTableSimpleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TripsTableSimpleComponent ]
-    })
+    imports: [TripsTableSimpleComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TripsTableSimpleComponent);

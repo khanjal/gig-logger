@@ -10,10 +10,9 @@ describe('CustomRangePanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CustomRangePanelComponent ],
-      imports: [  ],
-      providers: [ DateAdapter, MatDateRangePicker ]
-    })
+    imports: [CustomRangePanelComponent],
+    providers: [DateAdapter, MatDateRangePicker]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(CustomRangePanelComponent);

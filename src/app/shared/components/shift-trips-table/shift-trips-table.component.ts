@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgStyle } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { NgClass, CurrencyPipe } from '@angular/common';
@@ -8,12 +8,38 @@ import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCard } from '@angular/material/card';
+import { MatMiniFabButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { NoSecondsPipe as NoSecondsPipe_1 } from '../../pipes/no-seconds.pipe';
+import { TruncatePipe as TruncatePipe_1 } from '../../pipes/truncate.pipe';
 
 @Component({
-  selector: 'app-shift-trips-table',
-  templateUrl: './shift-trips-table.component.html',
-  styleUrl: './shift-trips-table.component.scss',
-  // imports: [CommonModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, TruncatePipe, NoSecondsPipe]
+    selector: 'app-shift-trips-table',
+    templateUrl: './shift-trips-table.component.html',
+    styleUrl: './shift-trips-table.component.scss',
+    standalone: true,
+    imports: [
+        NgIf,
+        MatCard,
+        MatMiniFabButton,
+        MatIcon,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        NgClass,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        NgStyle,
+        CurrencyPipe,
+        NoSecondsPipe_1,
+        TruncatePipe_1,
+    ],
 })
 
 export class ShiftTripsTableComponent {
