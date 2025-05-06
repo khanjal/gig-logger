@@ -8,6 +8,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { OAuthService, UrlHelperService, OAuthLogger, OAuthStorage } from 'angular-oauth2-oidc';
+import { DateTimeProvider } from 'angular-oauth2-oidc';
 
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
@@ -40,6 +42,11 @@ bootstrapApplication(AppComponent, {
     ),
     provideHttpClient(withInterceptorsFromDi()),
     provideNativeDateAdapter(),
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } }
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
+    OAuthService,
+    UrlHelperService,
+    { provide: OAuthLogger, useValue: console },
+    { provide: DateTimeProvider, useValue: { new: () => new Date(), now: () => new Date() } },
+    { provide: OAuthStorage, useValue: localStorage }
   ]
 }).catch(err => console.error(err));

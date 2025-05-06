@@ -19,13 +19,14 @@ import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
 import { DiagnosticsComponent } from '../../shared/components/diagnostics/diagnostics.component';
+import { LoginComponent } from "@components/login/login.component";
 
 @Component({
     selector: 'app-setup',
     templateUrl: './setup.component.html',
     styleUrls: ['./setup.component.scss'],
     standalone: true,
-    imports: [MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, MatCard, MatCardHeader, MatCardContent, SheetQuotaComponent, ServiceWorkerStatusComponent, DiagnosticsComponent]
+    imports: [MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, MatCard, MatCardHeader, MatCardContent, SheetQuotaComponent, ServiceWorkerStatusComponent, DiagnosticsComponent, LoginComponent]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;

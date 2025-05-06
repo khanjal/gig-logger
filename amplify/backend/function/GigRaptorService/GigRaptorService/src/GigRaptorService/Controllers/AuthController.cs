@@ -11,16 +11,21 @@ public class AuthController : ControllerBase
     [HttpPost]
     public IActionResult Authenticate([FromBody] PropertyEntity token)
     {
+        // Example: Encrypt or sign the refresh token before storing it
+        // var encryptedToken = EncryptToken(token.Name); // Replace with your encryption logic
+
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true,
-            SameSite = SameSiteMode.None,
-            Secure = true
+            HttpOnly = true, // Prevent access via JavaScript
+            SameSite = SameSiteMode.None, // Use None if cross-origin requests are required
+            Secure = true, // Ensure the cookie is sent over HTTPS
+            // Expires = DateTime.UtcNow.AddDays(7) // Set an expiration time (e.g., 7 days)
         };
 
-        Response.Cookies.Append("auth", token.Name, cookieOptions);
+        // Set the refresh token cookie
+        Response.Cookies.Append("refresh_token", token.Name, cookieOptions);
 
-        return Ok(token.Name);
+        return Ok();
     }
 
     // POST api/auth
