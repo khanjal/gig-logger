@@ -27,7 +27,9 @@ export class AuthGoogleService {
       this.oAuthService.setupAutomaticSilentRefresh();
 
       const loggedIn = await this.oAuthService.loadDiscoveryDocumentAndTryLogin();
+      console.log('Logged in status:', loggedIn);
       if (loggedIn && this.oAuthService.hasValidIdToken()) {
+        this.logger.info('User is logged in and has a valid ID token');
         this.handleSuccessfulLogin();
       }
     } catch (error) {
@@ -44,6 +46,7 @@ export class AuthGoogleService {
       this.profile = claims;
 
       await this.gigLoggerService.setRefreshToken(token);
+      this.logger.info('Refresh token set successfully', token);
     } catch (error) {
       this.logger.error('Error handling successful login', error);
     }
