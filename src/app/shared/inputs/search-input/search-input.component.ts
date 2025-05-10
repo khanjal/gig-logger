@@ -199,6 +199,15 @@ export class SearchInputComponent {
     }, 100);
   }
 
+  openMap() {
+    if (this.value) {
+      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.value)}`;
+      window.open(googleMapsUrl, '_blank');
+    } else {
+      console.error('No value provided for Google Maps navigation.');
+    }
+  }
+
   getViewportHeight(items: ISearchItem[] | null): number {
     if (!items || items.length === 0) {
       return 0; // No items, collapse the viewport
