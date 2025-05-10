@@ -18,11 +18,15 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
+import { NgFor, NgClass } from '@angular/common';
+import { MatFabButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-data-sync-modal',
-  templateUrl: './data-sync-modal.component.html',
-  styleUrls: ['./data-sync-modal.component.scss']
+    selector: 'app-data-sync-modal',
+    templateUrl: './data-sync-modal.component.html',
+    styleUrls: ['./data-sync-modal.component.scss'],
+    standalone: true,
+    imports: [NgFor, NgClass, MatFabButton]
 })
 export class DataSyncModalComponent {
     @ViewChild('terminal') terminalElement!: ElementRef;

@@ -7,7 +7,9 @@ import { GigLoggerService } from './gig-logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class SpreadsheetService {
     spreadsheets$ = liveQuery(() => localDB.spreadsheets.toArray());
 
