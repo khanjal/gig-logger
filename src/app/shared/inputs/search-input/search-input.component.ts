@@ -82,7 +82,8 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
-  showSearch: boolean = true;
+  showSearch: boolean = false;
+  placeSearch: boolean = false;
 
   constructor(
     public dialog: MatDialog,
@@ -107,6 +108,10 @@ export class SearchInputComponent {
         return await this._filterItems(trimmedValue);
       })
     );
+
+    if (this.placeSearch) {
+      this.showSearch = true;
+    }
   }
   
   async ngOnChanges(): Promise<void> {
@@ -161,7 +166,10 @@ export class SearchInputComponent {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
     this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
-    this.showSearch = true;
+    
+    if (this.placeSearch) {
+      this.showSearch = true;
+    }
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
