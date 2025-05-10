@@ -1,8 +1,12 @@
+import { Injectable } from "@angular/core";
 import { spreadsheetDB } from "@data/spreadsheet.db";
 import { IWeekday } from "@interfaces/weekday.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 
+@Injectable({
+  providedIn: 'root'
+})
 export class WeekdayService  extends GenericCrudService<IWeekday> {
     constructor() {
       super(spreadsheetDB.weekdays); // Pass the table reference

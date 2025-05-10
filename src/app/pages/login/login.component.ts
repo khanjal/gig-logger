@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 // https://github.com/abacritt/angularx-social-login
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: true
 })
 
 export class LoginComponent {

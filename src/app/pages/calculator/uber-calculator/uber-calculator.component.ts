@@ -1,10 +1,17 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgIf, PercentPipe, CurrencyPipe } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-uber-calculator',
-  templateUrl: './uber-calculator.component.html',
-  styleUrls: ['./uber-calculator.component.scss']
+    selector: 'app-uber-calculator',
+    templateUrl: './uber-calculator.component.html',
+    styleUrls: ['./uber-calculator.component.scss'],
+    standalone: true,
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatButton, MatIcon, PercentPipe, CurrencyPipe]
 })
 export class UberCalculatorComponent {
   uberForm = new FormGroup({

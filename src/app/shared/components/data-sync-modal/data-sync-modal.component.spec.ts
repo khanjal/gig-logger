@@ -8,8 +8,8 @@ describe('DataSyncModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DataSyncModalComponent ]
-    })
+    imports: [DataSyncModalComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(DataSyncModalComponent);

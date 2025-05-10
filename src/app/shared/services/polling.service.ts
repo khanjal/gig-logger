@@ -9,7 +9,9 @@ import { ISheet } from '@interfaces/sheet.interface';
 
 const INTERVAL = 60000;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PollingService implements OnDestroy {
 @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
