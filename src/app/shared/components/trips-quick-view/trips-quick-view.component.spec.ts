@@ -11,9 +11,9 @@ describe('TripsQuickViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TripsQuickViewComponent, NoSecondsPipe, ShortAddressPipe, TruncatePipe ],
-      providers: []
-    })
+    imports: [TripsQuickViewComponent, NoSecondsPipe, ShortAddressPipe, TruncatePipe],
+    providers: []
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TripsQuickViewComponent);

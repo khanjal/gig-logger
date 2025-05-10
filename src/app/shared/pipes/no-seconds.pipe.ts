@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 
 @Pipe({
-    name: 'noseconds'
+    name: 'noseconds',
+    standalone: true
 })
 export class NoSecondsPipe implements PipeTransform {
 

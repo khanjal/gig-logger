@@ -29,9 +29,8 @@ describe('SheetSetupFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SheetAddFormComponent ],
-      imports: [ MatSnackBarModule ],
-      providers: [ 
+    imports: [MatSnackBarModule, SheetAddFormComponent],
+    providers: [
         HttpClient,
         HttpHandler,
         AddressService,
@@ -50,8 +49,8 @@ describe('SheetSetupFormComponent', () => {
         WeekdayService,
         WeeklyService,
         YearlyService
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(SheetAddFormComponent);

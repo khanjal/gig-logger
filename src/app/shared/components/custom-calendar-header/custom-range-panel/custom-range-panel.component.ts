@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 import { DateHelper } from '@helpers/date.helper';
+import { NgFor } from '@angular/common';
+import { MatButton } from '@angular/material/button';
 
 const customPresets = [
     'Today',
@@ -20,10 +22,12 @@ const customPresets = [
 type CustomPreset = typeof customPresets[number];
 
 @Component({
-  selector: 'app-custom-range-panel',
-  templateUrl: './custom-range-panel.component.html',
-  styleUrls: ['./custom-range-panel.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-custom-range-panel',
+    templateUrl: './custom-range-panel.component.html',
+    styleUrls: ['./custom-range-panel.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgFor, MatButton],
 })
 export class CustomRangePanelComponent<D> {
   // list of range presets we want to provide:

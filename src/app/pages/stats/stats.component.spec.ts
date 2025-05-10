@@ -12,12 +12,12 @@ describe('StatsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StatsComponent ],
-      providers: [
+    imports: [StatsComponent],
+    providers: [
         { provide: ShiftService, useValue: mockShiftService },
         { provide: TripService, useValue: mockTripService },
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(StatsComponent);

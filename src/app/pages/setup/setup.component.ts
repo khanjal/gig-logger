@@ -11,11 +11,21 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
+import { MatIcon } from '@angular/material/icon';
+import { NgIf, NgFor } from '@angular/common';
+import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
+import { MatFabButton } from '@angular/material/button';
+import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
+import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
+import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
+import { DiagnosticsComponent } from '../../shared/components/diagnostics/diagnostics.component';
 
 @Component({
-  selector: 'app-setup',
-  templateUrl: './setup.component.html',
-  styleUrls: ['./setup.component.scss']
+    selector: 'app-setup',
+    templateUrl: './setup.component.html',
+    styleUrls: ['./setup.component.scss'],
+    standalone: true,
+    imports: [MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, MatCard, MatCardHeader, MatCardContent, SheetQuotaComponent, ServiceWorkerStatusComponent, DiagnosticsComponent]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;

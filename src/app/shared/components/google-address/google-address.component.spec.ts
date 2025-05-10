@@ -8,8 +8,8 @@ describe('GoogleAddressComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GoogleAddressComponent ]
-    })
+    imports: [GoogleAddressComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(GoogleAddressComponent);

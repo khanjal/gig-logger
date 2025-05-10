@@ -48,7 +48,9 @@
                     <div class="padding-left">
                         <strong>{{trip.place}}</strong> 
                         <br/>
-                        {{ trip.startAddress | shortaddress:trip.place | truncate:35}}
+                        @if (trip.startAddress) {
+                            <a href="https://maps.google.com/?q={{trip.startAddress}}">{{ trip.startAddress | shortaddress:trip.place | truncate:35}}</a>
+                        }
                     </div>
                 </div>
             }
@@ -61,7 +63,9 @@
                     <div class="padding-left">
                         <strong>{{trip.name | truncate:25}}</strong> 
                         <br/>
-                        {{ trip.endAddress | shortaddress | truncate:40}}
+                        @if (trip.endAddress) {
+                            <a href="https://maps.google.com/?q={{trip.endAddress}}">{{ trip.endAddress | shortaddress | truncate:35}}</a>
+                        }
                     </div>
                 </div>
             }

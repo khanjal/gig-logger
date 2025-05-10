@@ -14,13 +14,13 @@ describe('TripsTableGroupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TripsTableGroupComponent ],
-      providers: [
+    imports: [TripsTableGroupComponent],
+    providers: [
         { provide: DailyService, useValue: mockDailyService },
         { provide: TripService, useValue: mockTripService },
         { provide: WeekdayService, useValue: mockWeekdayService }
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TripsTableGroupComponent);

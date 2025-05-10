@@ -1,7 +1,11 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IDelivery } from '@interfaces/delivery.interface';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+  providedIn: 'root'
+})
 export class DeliveryService {
     names$ = liveQuery(() => spreadsheetDB.deliveries.toArray());
 

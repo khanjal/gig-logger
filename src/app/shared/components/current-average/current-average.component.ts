@@ -5,11 +5,15 @@ import { MonthlyService } from '@services/sheets/monthly.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { WeekdayService } from '@services/sheets/weekday.service';
 import { WeeklyService } from '@services/sheets/weekly.service';
+import { NgIf, CurrencyPipe } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-current-average',
-  templateUrl: './current-average.component.html',
-  styleUrls: ['./current-average.component.scss']
+    selector: 'app-current-average',
+    templateUrl: './current-average.component.html',
+    styleUrls: ['./current-average.component.scss'],
+    standalone: true,
+    imports: [NgIf, MatIcon, CurrencyPipe]
 })
 
 export class CurrentAverageComponent implements OnInit {

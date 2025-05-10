@@ -170,3 +170,13 @@ div.mat-expansion-panel-body {
       background-position: 100% 0;
   }
 }
+
+a {
+  text-decoration: none;
+  color: $primary-color;
+}
+
+a:visited {
+  text-decoration: none;
+  color: $primary-color;
+}
