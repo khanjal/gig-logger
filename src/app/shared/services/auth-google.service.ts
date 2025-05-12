@@ -92,14 +92,18 @@ export class AuthGoogleService {
   }
 
   isAuthenticated(): boolean {
-    return this.oAuthService.hasValidAccessToken() && this.oAuthService.hasValidIdToken();
+    return this.oAuthService.hasValidAccessToken();
   }
 
-  getProfile(): UserProfile | null {
-    return this.profile$.value;
+  async getProfile(): Promise<UserProfile | null> {
+    return await this.oAuthService.loadUserProfile().then(profile => profile as UserProfile);
   }
 
   getAccessToken(): string | null {
     return this.oAuthService.hasValidAccessToken() ? this.oAuthService.getAccessToken() : null;
+  }
+
+  getIdToken(): string | null {
+    return this.oAuthService.hasValidIdToken() ? this.oAuthService.getIdToken() : null;
   }
 }

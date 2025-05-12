@@ -5,9 +5,6 @@
         <mat-icon>logout</mat-icon>
         Sign Out
       </button>
-      <div class="user-info" *ngIf="authService.getProfile() as user">
-        Signed in as: {{ user['email'] }}
-      </div>
     </div>
   }
   @else {
