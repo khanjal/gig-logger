@@ -1,57 +1,48 @@
 {
-  "openapi" : "3.0.1",
-  "info" : {
-    "title" : "RaptorGIgAPI",
-    "version" : "2024-09-03T01:05:21Z"
+  "openapi": "3.0.1",
+  "info": {
+    "title": "RaptorGIgAPI",
+    "version": "2024-09-03T01:05:21Z"
   },
-  "servers" : [ {
-    "url" : "https://1al1hr5ub4.execute-api.us-east-1.amazonaws.com/{basePath}",
-    "variables" : {
-      "basePath" : {
-        "default" : "dev"
+  "servers": [{
+    "url": "https://1al1hr5ub4.execute-api.us-east-1.amazonaws.com/{basePath}",
+    "variables": {
+      "basePath": {
+        "default": "dev"
       }
     }
-  } ],
-  "paths" : {
-    "/{proxy+}" : {
-      "x-amazon-apigateway-any-method" : {
-        "parameters" : [ {
-          "name" : "proxy",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        },
-        {
+  }],
+  "paths": {
+    "/{proxy+}": {
+      "options": {
+        "parameters": [{
           "name": "Origin",
           "in": "header",
           "required": false,
           "schema": {
             "type": "string"
           }
-        } ],
-        "x-amazon-apigateway-integration" : {
-          "httpMethod" : "POST",
-          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:316675302119:function:raptor-gig-service/invocations",
-          "responses" : {
-            "default" : {
-              "statusCode" : "200",
+        }],        "x-amazon-apigateway-integration": {
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:316675302119:function:raptor-gig-service/invocations",
+          "httpMethod": "POST",
+          "type": "aws_proxy",
+          "passthroughBehavior": "when_no_match",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "timeoutInMillis": 29000,
+          "responses": {
+            "default": {
+              "statusCode": "200",              
               "responseParameters": {
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,sheet-id'"
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,sheet-id,Origin'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:4200'",
+                "method.response.header.Access-Control-Allow-Credentials": "'true'"
+              },
+              "responseTemplates": {
+                "application/json": "{\"statusCode\": 200}"
               }
             }
-          },
-          "requestParameters" : {
-            "integration.request.path.proxy" : "method.request.path.proxy",
-            "integration.request.header.Origin": "method.request.header.Origin"
-          },
-          "passthroughBehavior" : "when_no_match",
-          "timeoutInMillis" : 29000,
-          "contentHandling" : "CONVERT_TO_TEXT",
-          "type" : "aws"
+          }
         },
         "responses": {
           "200": {
@@ -62,12 +53,17 @@
                   "type": "string"
                 }
               },
-              "Access-Control-Allow-Credentials": {
+              "Access-Control-Allow-Methods": {
                 "schema": {
                   "type": "string"
                 }
               },
               "Access-Control-Allow-Headers": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Credentials": {
                 "schema": {
                   "type": "string"
                 }
@@ -76,38 +72,43 @@
           }
         }
       },
-      "get": {
-        "parameters": [
-          {
-            "name": "Origin",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
+      "x-amazon-apigateway-any-method": {
+        "parameters": [{
+          "name": "proxy",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
           }
-        ],
-        "x-amazon-apigateway-integration": {
-          "httpMethod": "GET",
+        }, {
+          "name": "Origin",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }],        "x-amazon-apigateway-integration": {
           "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:316675302119:function:raptor-gig-service/invocations",
-          "responses": {
-            "default": {
-              "statusCode": "200",
-              "responseParameters": {
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,sheet-id'"
-              }
-            }
-          },
+          "httpMethod": "POST",
+          "type": "aws_proxy",
+          "timeoutInMillis": 29000,
+          "passthroughBehavior": "when_no_match",
+          "contentHandling": "CONVERT_TO_TEXT",
           "requestParameters": {
             "integration.request.path.proxy": "method.request.path.proxy",
             "integration.request.header.Origin": "method.request.header.Origin"
           },
-          "passthroughBehavior": "when_no_match",
-          "timeoutInMillis": 29000,
-          "contentHandling": "CONVERT_TO_TEXT",
-          "type": "aws"
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:4200'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,sheet-id,Origin'",
+                "method.response.header.Access-Control-Allow-Credentials": "'true'"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -118,12 +119,17 @@
                   "type": "string"
                 }
               },
-              "Access-Control-Allow-Credentials": {
+              "Access-Control-Allow-Methods": {
                 "schema": {
                   "type": "string"
                 }
               },
               "Access-Control-Allow-Headers": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Credentials": {
                 "schema": {
                   "type": "string"
                 }
@@ -133,6 +139,5 @@
         }
       }
     }
-  },
-  "components" : { }
+  }
 }
