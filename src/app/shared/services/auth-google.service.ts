@@ -31,6 +31,10 @@ export class AuthGoogleService {
 
       const loggedIn = await this.oAuthService.loadDiscoveryDocumentAndTryLogin();
       console.log('Logged in status:', loggedIn);
+
+      console.log('Valid access token:', this.oAuthService.hasValidAccessToken());
+      console.log('Valid id token:', this.oAuthService.hasValidIdToken());
+
       if (loggedIn && this.oAuthService.hasValidIdToken()) {
         this.logger.info('User is logged in and has a valid ID token');
         this.handleSuccessfulLogin();
