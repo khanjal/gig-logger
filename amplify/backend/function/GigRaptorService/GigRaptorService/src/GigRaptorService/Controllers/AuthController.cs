@@ -57,17 +57,17 @@ public class AuthController : ControllerBase
         var newAccessToken = GenerateAccessToken(refreshToken);
 
         // Optionally, rotate the refresh token
-        var newRefreshToken = RotateRefreshToken(refreshToken);
+        // var newRefreshToken = RotateRefreshToken(refreshToken);
 
         // Update the refresh token cookie
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            SameSite = SameSiteMode.None,
-            Secure = true,
-            //Expires = DateTime.UtcNow.AddDays(7) // Set expiration for the new refresh token
-        };
-        Response.Cookies.Append("refresh_token", newRefreshToken, cookieOptions);
+        //var cookieOptions = new CookieOptions
+        //{
+        //    HttpOnly = true,
+        //    SameSite = SameSiteMode.None,
+        //    Secure = true,
+        //    //Expires = DateTime.UtcNow.AddDays(7) // Set expiration for the new refresh token
+        //};
+        // Response.Cookies.Append("refresh_token", newRefreshToken, cookieOptions);
 
         // Return the new access token
         return Ok(new { accessToken = newAccessToken });
