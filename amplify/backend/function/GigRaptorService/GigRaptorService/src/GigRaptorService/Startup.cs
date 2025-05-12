@@ -12,19 +12,30 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
-
-        services.AddCors(option =>
+        //services.AddCors(option =>
+        //{
+        //    option.AddDefaultPolicy(builder =>
+        //    {
+        //        builder.WithOrigins("http://www.localhost:4200");
+        //        builder.AllowAnyOrigin();
+        //        builder.AllowAnyHeader();
+        //        builder.AllowAnyMethod();
+        //    });
+        //});
+        var allowedOrigins = new[] { "https://localhost:4200", "https://gig-test.raptorsheets.com" };        
+        services.AddCors(options =>
         {
-            option.AddDefaultPolicy(builder =>
+            options.AddPolicy("AllowSpecificOrigins", policy =>
             {
-                builder.WithOrigins("*");
-                builder.AllowAnyOrigin();
-                builder.AllowAnyHeader();
-                builder.AllowAnyMethod();
+                policy.WithOrigins(allowedOrigins)
+                     .AllowCredentials()
+                     .AllowAnyHeader()
+                     .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                     .WithExposedHeaders("Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "sheet-id");
             });
         });
 
+        services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
     }
 
@@ -34,13 +45,9 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-        }
-
-        app.UseHttpsRedirection();
-
+        }        app.UseHttpsRedirection();        
         app.UseRouting();
-
-        app.UseCors();
+        app.UseCors("AllowSpecificOrigins");
 
         app.UseAuthorization();
 
