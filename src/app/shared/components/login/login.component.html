@@ -1,10 +1,25 @@
-<div class="login-button">
-  <button mat-raised-button (click)="signInWithGoogle()">
-    <img
-      src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-      alt="Google"
-      class="google-icon"
-    />
-    Sign in with Google
-  </button>
+<div class="auth-buttons">
+  @if (isAuthenticated) {
+    <div>
+      <button mat-raised-button (click)="signOut()" color="warn" class="logout-button">
+        <mat-icon>logout</mat-icon>
+        Sign Out
+      </button>
+      <div class="user-info" *ngIf="authService.getProfile() as user">
+        Signed in as: {{ user['email'] }}
+      </div>
+    </div>
+  }
+  @else {
+    <div>
+      <button mat-raised-button (click)="signInWithGoogle()" class="login-button">
+        <img
+          src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+          alt="Google"
+          class="google-icon"
+        />
+        Sign in with Google
+      </button>
+    </div>    
+  }
 </div>

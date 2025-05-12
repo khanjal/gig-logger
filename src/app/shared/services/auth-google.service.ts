@@ -79,6 +79,10 @@ export class AuthGoogleService {
     }
   }
 
+  isAuthenticated(): boolean {
+    return this.oAuthService.hasValidAccessToken()
+  }
+
   getProfile() {
     return this.profile;
   }
