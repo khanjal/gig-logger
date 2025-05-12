@@ -3,20 +3,23 @@ import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from './auth.config';
 import { GigLoggerService } from './gig-logger.service';
-import { LoggerService } from './logger.service'; // Adjusted path to match the correct location
+import { LoggerService } from './logger.service';
+import { SecureCookieStorageService } from './secure-cookie-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGoogleService {
   profile: any = null; // Replace 'any' with a proper type if available
-
   constructor(
     private oAuthService: OAuthService,
     private router: Router,
     private gigLoggerService: GigLoggerService,
-    private logger: LoggerService // Injecting a logger service
+    private logger: LoggerService, // Injecting a logger service
+    private secureCookieStorage: SecureCookieStorageService
   ) {
+    // Set custom storage before initializing
+    this.oAuthService.setStorage(this.secureCookieStorage);
     this.initConfiguration();
   }
 
@@ -45,8 +48,12 @@ export class AuthGoogleService {
       this.logger.info('User claims retrieved', claims);
       this.profile = claims;
 
-      await this.gigLoggerService.setRefreshToken(token);
-      this.logger.info('Refresh token set successfully', token);
+      //await this.gigLoggerService.setRefreshToken(token);
+      //this.logger.info('Refresh token set successfully', token);
+
+      this.logger.info('Getting auth token');
+      //let authToken = await this.gigLoggerService.refreshAuthToken();
+      //console.log('Auth token:', authToken);
     } catch (error) {
       this.logger.error('Error handling successful login', error);
     }

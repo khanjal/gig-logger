@@ -6,4 +6,10 @@ export const authConfig: AuthConfig = {
   clientId: '1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com',
   redirectUri: window.location.origin + '/setup',
   scope: 'openid profile email https://www.googleapis.com/auth/spreadsheets',
+  clearHashAfterLogin: true,
+  showDebugInformation: false,
+  sessionChecksEnabled: true,
+  timeoutFactor: 0.75,
+  disableAtHashCheck: false,
+  requireHttps: true
 };

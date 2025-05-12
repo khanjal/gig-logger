@@ -117,6 +117,15 @@ export class GigLoggerService {
         return this._http.post<any>(`${this.apiUrl}/auth/clear`, null);
     }
 
+    public async refreshAuthToken() { 
+        try {
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/auth/refresh`, this.setOptions()));
+        } catch (error) {
+            console.error('Error getting access token:', error);
+            return null;
+        }
+    }
+
     public async getSheetData(sheetId: string) {
         try {
             return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, this.setOptions(sheetId)));
