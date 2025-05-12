@@ -17,8 +17,6 @@ export class AuthGoogleService {
 
   constructor(
     private oAuthService: OAuthService,
-    private router: Router,
-    private gigLoggerService: GigLoggerService,
     private logger: LoggerService,
     private secureCookieStorage: SecureCookieStorageService
   ) {
