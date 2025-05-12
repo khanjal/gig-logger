@@ -24,6 +24,19 @@ export class AuthGoogleService {
     this.initConfiguration().catch(error => {
       this.logger.error('Failed to initialize auth configuration', error);
     });
+
+    // Setup automatic token refresh event handlers
+    this.oAuthService.events.subscribe(event => {
+      this.logger.debug('Auth event:', event);
+      if (event.type === 'token_received') {
+        this.logger.info('New token received');
+      }
+      if (event.type === 'token_expires') {
+        this.logger.info('Token is about to expire, refreshing...');
+      }
+    });
+
+    this.oAuthService.setupAutomaticSilentRefresh();
   }
 
   private async initConfiguration(): Promise<void> {
@@ -34,7 +47,6 @@ export class AuthGoogleService {
     try {
       this.logger.info('Initializing OAuth configuration');
       this.oAuthService.configure(authConfig);
-      this.oAuthService.setupAutomaticSilentRefresh();
 
       const loggedIn = await this.oAuthService.loadDiscoveryDocumentAndTryLogin();
       this.logger.debug('Auth state', {
