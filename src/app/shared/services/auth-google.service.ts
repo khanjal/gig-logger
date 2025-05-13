@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
 import { authConfig } from './auth.config';
-import { GigLoggerService } from './gig-logger.service';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { UserProfile } from '../interfaces/user-profile.interface';

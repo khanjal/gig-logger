@@ -11,6 +11,7 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { MatIcon } from '@angular/material/icon';
 import { NgIf, NgFor } from '@angular/common';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
@@ -37,7 +38,6 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
-
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -45,7 +45,8 @@ export class SetupComponent {
     private _spreadsheetService: SpreadsheetService,
     private _shiftService: ShiftService,
     private _tripService: TripService,
-    private _timerService: TimerService
+    private _timerService: TimerService,
+    protected authService: AuthGoogleService
   ) { }
 
   async ngOnInit(): Promise<void> {
