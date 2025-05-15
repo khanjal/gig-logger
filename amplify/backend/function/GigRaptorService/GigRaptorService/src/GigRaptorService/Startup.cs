@@ -22,7 +22,7 @@ public class Startup
         //        builder.AllowAnyMethod();
         //    });
         //});
-        var allowedOrigins = new[] { "https://localhost:4200", "https://gig-test.raptorsheets.com" };        
+        var allowedOrigins = new[] { "https://localhost:4200", "https://gig-test.raptorsheets.com", "https://gig.raptorsheets.com" };        
         services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigins", policy =>
