@@ -32,8 +32,9 @@ bootstrapApplication(AppComponent, {
       RouterModule,
       AppRoutingModule,
       MatDialogModule,
-      BrowserAnimationsModule,      ServiceWorkerModule.register('ngsw-worker.js', {
-        enabled: environment.production || environment.enableServiceWorker,
+      BrowserAnimationsModule,      
+      ServiceWorkerModule.register('ngsw-worker.js', {
+        enabled: environment.production,
         registrationStrategy: 'registerWhenStable:30000'
       })
     ),
