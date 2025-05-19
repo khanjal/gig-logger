@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
+  production: true, // Enable production mode for service worker
   gigLoggerApi: "https://1al1hr5ub4.execute-api.us-east-1.amazonaws.com/dev",
   demoSheet: "1JwzjAqs_fZhnR1XbARY__2OnWdrqUoxIBa1mtVQwHMU",
   enableServiceWorker: true
