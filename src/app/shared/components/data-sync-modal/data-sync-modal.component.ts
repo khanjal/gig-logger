@@ -132,6 +132,7 @@ export class DataSyncModalComponent {
         // Load data
         await this.loadData(data);
 
+        // TODO make this it's own function but needs to be able to continue loading
         let secondarySpreadsheets = (await this._sheetService.getSpreadsheets()).filter(x => x.default !== "true");
         for (const secondarySpreadsheet of secondarySpreadsheets) {
             this.time = this.currentTime;
@@ -220,7 +221,7 @@ export class DataSyncModalComponent {
         this.stopTimer();
     }
 
-    cancelLoad() {
+    cancelSync() {
         this.dialogRef.close(false);
     }
 

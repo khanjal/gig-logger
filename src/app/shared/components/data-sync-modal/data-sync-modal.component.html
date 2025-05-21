@@ -19,6 +19,6 @@
             <button mat-fab extended color="warn" class="button-left" (click)="continueLoad()">Continue</button>
             <button mat-fab extended color="primary" class="button-middle" (click)="retryLoad()">Retry</button>
         }
-        <button mat-fab extended color="accent" class="button-right" [disabled]="currentTime < 60 && enableAutoClose" (click)="cancelLoad()">{{ enableAutoClose ? "Cancel" : "Close" }}</button>
+        <button mat-fab extended color="accent" class="button-right" [disabled]="currentTime < 60 && enableAutoClose" (click)="cancelSync()">{{ enableAutoClose ? "Cancel" : "Close" }}</button>
     </div>
 </div>
