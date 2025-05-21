@@ -37,9 +37,12 @@ export class DataSyncModalComponent {
     time = 0;
     enableAutoClose = true;
     nonInfoMessage = false;
+    continue = false;
+    force = false;
     currentTimeString = "";
     divMessages: { time: string, text: string; type: string }[] = [];
     timerDelay = 5000;
+    data: ISheet | null = null;
 
     defaultSheet!: ISpreadsheet;
 
@@ -55,8 +58,26 @@ export class DataSyncModalComponent {
     async ngOnInit(): Promise<void> {
         this.defaultSheet = await this._sheetService.getDefaultSheet();
 
+        await this.warmup();
+
+        // Split between save and load
+        switch (this.type) {
+            case 'save':
+                await this.saveData();
+                break;
+            case 'load':
+                await this.getData();
+                break;
+            default:
+                this.appendToTerminal(`Invalid type: ${this.type}`, "error");
+                break;
+        }
+        
+        await this.completeSync();
+    }
+
+    async warmup () {
         this.startTimer();
-        this.time = this.currentTime;
 
         this.appendToTerminal("Checking service status...");
         let response = await this._sheetService.warmUpLambda();
@@ -68,29 +89,8 @@ export class DataSyncModalComponent {
 
         this.appendToLastMessage(`ONLINE (${this.currentTime - this.time}s)`);
         this.time = this.currentTime;
-
-        // Split between save and load
-        switch (this.type) {
-            case 'save':
-                await this.saveData();
-                break;
-            case 'load':
-                await this.loadData();
-                break;
-            default:
-                this.appendToTerminal(`Invalid type: ${this.type}`, "error");
-                break;
-        }
-
-        if (this.enableAutoClose) {
-            this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
-            await this._timerService.delay(this.timerDelay);
-            this.dialogRef.close(true);
-        }
-        else {
-            this.stopTimer();
-        }
     }
+
     async saveData() {
         let sheetData = {} as ISheet;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
@@ -109,7 +109,7 @@ export class DataSyncModalComponent {
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
     }
 
-    private async loadData() {
+    private async getData() {
         // Get data
         this.appendToTerminal("Getting sheet data...");
         let data = await this._sheetService.getSpreadsheetData(this.defaultSheet);
@@ -130,16 +130,7 @@ export class DataSyncModalComponent {
         });
 
         // Load data
-        this.time = this.currentTime;
-        this.appendToTerminal("Loading sheet data...");
-
-        if (data.messages.filter(x => x.level.toLowerCase() == 'error').length > 0) {
-            this.processFailure("ERROR");
-            return;
-        }
-
-        await this._sheetService.loadSpreadsheetData(<ISheet>data);
-        this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
+        await this.loadData(data);
 
         let secondarySpreadsheets = (await this._sheetService.getSpreadsheets()).filter(x => x.default !== "true");
         for (const secondarySpreadsheet of secondarySpreadsheets) {
@@ -159,6 +150,32 @@ export class DataSyncModalComponent {
         if (this.nonInfoMessage) {
             this.enableAutoClose = false;
             this.appendToTerminal("Auto-close disabled");
+        }
+    }
+
+    private async loadData(data: ISheet) {
+        this.time = this.currentTime;
+        this.appendToTerminal("Loading sheet data...");
+
+        if (!this.force && data.messages.filter(x => x.level.toLowerCase() == 'error').length > 0) {
+            this.continue = true;
+            this.data = data;
+            this.processFailure("ERROR");
+            return;
+        }
+
+        await this._sheetService.loadSpreadsheetData(<ISheet>data);
+        this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
+    }
+
+    private async completeSync() {
+        if (this.enableAutoClose) {
+            this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
+            await this._timerService.delay(this.timerDelay);
+            this.dialogRef.close(true);
+        }
+        else {
+            this.stopTimer();
         }
     }
 
@@ -188,12 +205,43 @@ export class DataSyncModalComponent {
         this.enableAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
         this.updateLastMessageType('error');
-        this.appendToTerminal('Auto-close disabled');
+
+        console.log(this.continue);
+        
+        if (this.continue) {              
+            this.appendToTerminal("Partial data retrieved - Choose an option:", "warning");
+            this.appendToTerminal("• Continue with partial data", "info");
+            this.appendToTerminal("• Retry download", "info");
+            this.appendToTerminal("• Close", "info");
+        }
+        else {
+            this.appendToTerminal('Auto-close disabled test');
+        }
         this.stopTimer();
     }
 
     cancelLoad() {
         this.dialogRef.close(false);
+    }
+
+    async continueLoad() {
+        if (!this.data) {
+            this.appendToTerminal("No data to continue with", "error");
+            return;
+        }
+
+        this.force = true;
+        this.enableAutoClose = true;
+        this.continue = false;
+
+        this.startTimer();
+        await this.loadData(this.data);
+        await this.completeSync();
+    }
+
+    async retryLoad() {
+        await this.warmup();
+        await this.getData();
     }
 
     private startTimer() {
@@ -206,6 +254,8 @@ export class DataSyncModalComponent {
                 this.currentTimeString = DateHelper.getMinutesAndSeconds(t);
                 this.updateLastMessageTime();
             });
+
+        this.time = this.currentTime;
     }
 
     private stopTimer() {
