@@ -32,6 +32,8 @@ export class DataSyncModalComponent {
     @ViewChild('terminal') terminalElement!: ElementRef;
     
     private timerSubscription: Subscription | null = null; // Add a subscription for the timer
+    private isPaused: boolean = false;
+    private pausedTime: number = 0;
     
     currentTime = 0;
     time = 0;
@@ -74,10 +76,10 @@ export class DataSyncModalComponent {
         }
         
         await this.completeSync();
-    }
-
+    }    
+    
     async warmup () {
-        this.startTimer();
+        this.startTimer(0);
 
         this.appendToTerminal("Checking service status...");
         let response = await this._sheetService.warmUpLambda();
@@ -214,11 +216,13 @@ export class DataSyncModalComponent {
             this.appendToTerminal("• Continue with partial data", "info");
             this.appendToTerminal("• Retry download", "info");
             this.appendToTerminal("• Close", "info");
+            this.pauseTimer();
         }
         else {
             this.appendToTerminal('Auto-close disabled test');
+            this.stopTimer();
         }
-        this.stopTimer();
+        
     }
 
     cancelSync() {
@@ -235,7 +239,7 @@ export class DataSyncModalComponent {
         this.enableAutoClose = true;
         this.continue = false;
 
-        this.startTimer();
+        this.resumeTimer();
         await this.loadData(this.data);
         await this.completeSync();
     }
@@ -245,10 +249,26 @@ export class DataSyncModalComponent {
         await this.getData();
     }
 
-    private startTimer() {
+    pauseTimer() {
+        if (this.timerSubscription && !this.isPaused) {
+            this.timerSubscription.unsubscribe();
+            this.timerSubscription = null;
+            this.isPaused = true;
+            this.pausedTime = this.currentTime;
+        }
+    }
+
+    resumeTimer() {
+        if (this.isPaused) {
+            this.isPaused = false;
+            this.startTimer(this.pausedTime);
+        }
+    }
+
+    private startTimer(startFrom: number = 0) {
         this.timerSubscription = timer(0, 1000) // Emit values every second
             .pipe(
-                map((x: number) => x)
+                map((x: number) => x + startFrom)
             )
             .subscribe(t => {
                 this.currentTime = t;
@@ -264,6 +284,8 @@ export class DataSyncModalComponent {
             this.timerSubscription.unsubscribe(); // Unsubscribe from the timer
             this.timerSubscription = null; // Reset the subscription
         }
+        this.isPaused = false;
+        this.pausedTime = 0;
     }
 
     private scrollToBottom() {
