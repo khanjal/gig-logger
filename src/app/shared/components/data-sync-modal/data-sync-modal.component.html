@@ -5,7 +5,7 @@
             <p class="info">00:00&nbsp;&nbsp;&nbsp;Modal will close when complete.</p>
         </div>
         <div>
-            <p *ngFor="let message of divMessages">
+            <p *ngFor="let message of terminalMessages">
                 <span class="info">{{ message.time }}</span>
                 &nbsp;
                 <span [ngClass]="message.type">{{ message.text }}</span>
@@ -15,10 +15,10 @@
 
     <!-- Button pinned at the bottom -->
     <div class="button-container button-bar">
-        @if (continue) {
+        @if (syncState.canContinue) {
             <button mat-fab extended color="warn" class="button-left" (click)="continueLoad()">Continue</button>
             <button mat-fab extended color="primary" class="button-middle" (click)="retryLoad()">Retry</button>
         }
-        <button mat-fab extended color="accent" class="button-right" [disabled]="currentTime < 60 && enableAutoClose" (click)="cancelSync()">{{ enableAutoClose ? "Cancel" : "Close" }}</button>
+        <button mat-fab extended color="accent" class="button-right" [disabled]="currentTime < 60 && syncState.isAutoClose" (click)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</button>
     </div>
 </div>

@@ -21,6 +21,32 @@ import { TripService } from '@services/sheets/trip.service';
 import { NgFor, NgClass } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 
+// Define types for better type safety
+enum SyncType {
+  SAVE = 'save',
+  LOAD = 'load'
+}
+
+enum MessageType {
+  INFO = 'info',
+  WARNING = 'warning',
+  ERROR = 'error'
+}
+
+interface TerminalMessage {
+  time: string;
+  text: string;
+  type: MessageType | string;  // Allow string for backward compatibility
+}
+
+interface SyncState {
+  isPaused: boolean;
+  isAutoClose: boolean;
+  canContinue: boolean;
+  forceLoad: boolean;
+  hasNonInfoMessage: boolean;
+}
+
 @Component({
     selector: 'app-data-sync-modal',
     templateUrl: './data-sync-modal.component.html',
@@ -31,24 +57,33 @@ import { MatFabButton } from '@angular/material/button';
 export class DataSyncModalComponent {
     @ViewChild('terminal') terminalElement!: ElementRef;
     
-    private timerSubscription: Subscription | null = null; // Add a subscription for the timer
-    private isPaused: boolean = false;
+    // Timer related properties
+    private timerSubscription: Subscription | null = null;
+    private readonly timerDelay = 5000;
     private pausedTime: number = 0;
-    
     currentTime = 0;
     time = 0;
-    enableAutoClose = true;
-    nonInfoMessage = false;
-    continue = false;
-    force = false;
     currentTimeString = "";
-    divMessages: { time: string, text: string; type: string }[] = [];
-    timerDelay = 5000;
-    data: ISheet | null = null;
 
-    defaultSheet!: ISpreadsheet;
+    // Sync state management
+    protected syncState: SyncState = {
+        isPaused: false,
+        isAutoClose: true,
+        canContinue: false,
+        forceLoad: false,
+        hasNonInfoMessage: false
+    };
 
-    constructor(
+    // Terminal messages
+    private messages: TerminalMessage[] = [];
+    
+    // Data management
+    protected data: ISheet | null = null;
+    protected defaultSheet!: ISpreadsheet;
+    
+    get terminalMessages(): TerminalMessage[] {
+        return this.messages;
+    }    constructor(
         @Inject(MAT_DIALOG_DATA) public type: string,
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
         private _gigLoggerService: GigLoggerService,
@@ -109,7 +144,7 @@ export class DataSyncModalComponent {
         }
 
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
-    }
+    }    
 
     private async getData() {
         // Get data
@@ -124,8 +159,8 @@ export class DataSyncModalComponent {
 
         data.messages.forEach(message => {
             let messageLevel = message.level.toLowerCase();
-            if (messageLevel != 'info') {
-                this.nonInfoMessage = true;
+            if (messageLevel !== MessageType.INFO) {
+                this.syncState.hasNonInfoMessage = true;
             }
 
             this.appendToTerminal(message.message, messageLevel);
@@ -134,7 +169,6 @@ export class DataSyncModalComponent {
         // Load data
         await this.loadData(data);
 
-        // TODO make this it's own function but needs to be able to continue loading
         let secondarySpreadsheets = (await this._sheetService.getSpreadsheets()).filter(x => x.default !== "true");
         for (const secondarySpreadsheet of secondarySpreadsheets) {
             this.time = this.currentTime;
@@ -150,8 +184,8 @@ export class DataSyncModalComponent {
             this.appendToLastMessage(`APPENDED (${this.currentTime - this.time}s)`);
         }
 
-        if (this.nonInfoMessage) {
-            this.enableAutoClose = false;
+        if (this.syncState.hasNonInfoMessage) {
+            this.syncState.isAutoClose = false;
             this.appendToTerminal("Auto-close disabled");
         }
     }
@@ -160,69 +194,70 @@ export class DataSyncModalComponent {
         this.time = this.currentTime;
         this.appendToTerminal("Loading sheet data...");
 
-        if (!this.force && data.messages.filter(x => x.level.toLowerCase() == 'error').length > 0) {
-            this.continue = true;
+        if (!this.syncState.forceLoad && data.messages.filter(x => x.level.toLowerCase() === MessageType.ERROR).length > 0) {
+            this.syncState.canContinue = true;
             this.data = data;
             this.processFailure("ERROR");
             return;
         }
 
-        await this._sheetService.loadSpreadsheetData(<ISheet>data);
+        await this._sheetService.loadSpreadsheetData(data);
         this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
     }
 
     private async completeSync() {
-        if (this.enableAutoClose) {
+        if (this.syncState.isAutoClose) {
             this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
             await this._timerService.delay(this.timerDelay);
             this.dialogRef.close(true);
-        }
-        else {
+        } else {
             this.stopTimer();
         }
     }
 
-    private appendToTerminal(text: string, type: string = 'info') {
-        this.divMessages.push({
+    private appendToTerminal(text: string, type: MessageType | string = MessageType.INFO) {
+        this.messages.push({
             time: DateHelper.getMinutesAndSeconds(this.currentTime),
             text: text,
             type: type
         });
 
-        this.scrollToBottom(); // Scroll to the bottom after adding a message
+        this.scrollToBottom();
     }
 
     private appendToLastMessage(text: string) {
-        this.divMessages[this.divMessages.length - 1].text += ` ${text}`;
+        if (this.messages.length > 0) {
+            this.messages[this.messages.length - 1].text += ` ${text}`;
+        }
     }
 
-    private updateLastMessageType(type: string) {
-        this.divMessages[this.divMessages.length - 1].type = type;
+    private updateLastMessageType(type: MessageType | string) {
+        if (this.messages.length > 0) {
+            this.messages[this.messages.length - 1].type = type;
+        }
     }
 
     private updateLastMessageTime() {
-        this.divMessages[this.divMessages.length - 1].time = DateHelper.getMinutesAndSeconds(this.currentTime);
+        if (this.messages.length > 0) {
+            this.messages[this.messages.length - 1].time = DateHelper.getMinutesAndSeconds(this.currentTime);
+        }
     }
 
     private async processFailure(message: string) {
-        this.enableAutoClose = false;
+        this.syncState.isAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
-        this.updateLastMessageType('error');
-
-        console.log(this.continue);
+        this.updateLastMessageType(MessageType.ERROR);
         
-        if (this.continue) {              
-            this.appendToTerminal("Partial data retrieved - Choose an option:", "warning");
-            this.appendToTerminal("• Continue with partial data", "info");
-            this.appendToTerminal("• Retry download", "info");
-            this.appendToTerminal("• Close", "info");
+        if (this.syncState.canContinue) {              
+            this.appendToTerminal("Partial data retrieved - Choose an option:", MessageType.WARNING);
+            this.appendToTerminal("• Continue with partial data", MessageType.INFO);
+            this.appendToTerminal("• Retry download", MessageType.INFO);
+            this.appendToTerminal("• Close", MessageType.INFO);
             this.pauseTimer();
-        }
-        else {
-            this.appendToTerminal('Auto-close disabled test');
+        } else {
+            this.appendToTerminal('Auto-close disabled');
             this.stopTimer();
         }
-        
     }
 
     cancelSync() {
@@ -231,13 +266,13 @@ export class DataSyncModalComponent {
 
     async continueLoad() {
         if (!this.data) {
-            this.appendToTerminal("No data to continue with", "error");
+            this.appendToTerminal("No data to continue with", MessageType.ERROR);
             return;
         }
 
-        this.force = true;
-        this.enableAutoClose = true;
-        this.continue = false;
+        this.syncState.forceLoad = true;
+        this.syncState.isAutoClose = true;
+        this.syncState.canContinue = false;
 
         this.resumeTimer();
         await this.loadData(this.data);
@@ -250,17 +285,17 @@ export class DataSyncModalComponent {
     }
 
     pauseTimer() {
-        if (this.timerSubscription && !this.isPaused) {
+        if (this.timerSubscription && !this.syncState.isPaused) {
             this.timerSubscription.unsubscribe();
             this.timerSubscription = null;
-            this.isPaused = true;
+            this.syncState.isPaused = true;
             this.pausedTime = this.currentTime;
         }
     }
 
     resumeTimer() {
-        if (this.isPaused) {
-            this.isPaused = false;
+        if (this.syncState.isPaused) {
+            this.syncState.isPaused = false;
             this.startTimer(this.pausedTime);
         }
     }
@@ -284,7 +319,7 @@ export class DataSyncModalComponent {
             this.timerSubscription.unsubscribe(); // Unsubscribe from the timer
             this.timerSubscription = null; // Reset the subscription
         }
-        this.isPaused = false;
+        this.syncState.isPaused = false;
         this.pausedTime = 0;
     }
 
