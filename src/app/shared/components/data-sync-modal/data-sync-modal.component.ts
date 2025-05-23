@@ -22,21 +22,13 @@ import { NgFor, NgClass } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 
 // Define types for better type safety
-enum SyncType {
-  SAVE = 'save',
-  LOAD = 'load'
-}
-
-enum MessageType {
-  INFO = 'info',
-  WARNING = 'warning',
-  ERROR = 'error'
-}
+type SyncType = 'save' | 'load';
+type MessageType = 'info' | 'warning' | 'error';
 
 interface TerminalMessage {
   time: string;
   text: string;
-  type: MessageType | string;  // Allow string for backward compatibility
+  type: MessageType;
 }
 
 interface SyncState {
@@ -60,7 +52,6 @@ export class DataSyncModalComponent {
     // Timer related properties
     private timerSubscription: Subscription | null = null;
     private readonly timerDelay = 5000;
-    private pausedTime: number = 0;
     currentTime = 0;
     time = 0;
     currentTimeString = "";
@@ -83,21 +74,22 @@ export class DataSyncModalComponent {
     
     get terminalMessages(): TerminalMessage[] {
         return this.messages;
-    }    constructor(
-        @Inject(MAT_DIALOG_DATA) public type: string,
+    }
+    
+    constructor(
+        @Inject(MAT_DIALOG_DATA) public type: SyncType,
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
         private _gigLoggerService: GigLoggerService,
         private _sheetService: SpreadsheetService,
         private _shiftService: ShiftService,
         private _tripService: TripService,
-        private _timerService: TimerService) { }
+        private _timerService: TimerService
+    ) { }
 
     async ngOnInit(): Promise<void> {
         this.defaultSheet = await this._sheetService.getDefaultSheet();
+        await this.warmup(0);
 
-        await this.warmup();
-
-        // Split between save and load
         switch (this.type) {
             case 'save':
                 await this.saveData();
@@ -106,19 +98,18 @@ export class DataSyncModalComponent {
                 await this.getData();
                 break;
             default:
-                this.appendToTerminal(`Invalid type: ${this.type}`, "error");
+                this.appendToTerminal(`Invalid type: ${this.type}`, 'error');
                 break;
         }
         
         await this.completeSync();
-    }    
-    
-    async warmup () {
-        this.startTimer(0);
+    }
 
+    async warmup(startFrom: number = 0) {
+        this.startTimer(startFrom);
         this.appendToTerminal("Checking service status...");
+        
         let response = await this._sheetService.warmUpLambda();
-
         if (!response) {
             this.processFailure("OFFLINE");
             return;
@@ -135,19 +126,17 @@ export class DataSyncModalComponent {
         sheetData.trips = await this._tripService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");
-        
         let postResponse = await this._gigLoggerService.postSheetData(sheetData);
-
+        
         if (!postResponse) {
             this.processFailure("ERROR");
             return;
         }
 
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
-    }    
+    }
 
     private async getData() {
-        // Get data
         this.appendToTerminal("Getting sheet data...");
         let data = await this._sheetService.getSpreadsheetData(this.defaultSheet);
 
@@ -158,18 +147,18 @@ export class DataSyncModalComponent {
         this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
 
         data.messages.forEach(message => {
-            let messageLevel = message.level.toLowerCase();
-            if (messageLevel !== MessageType.INFO) {
+            let messageLevel = message.level.toLowerCase() as MessageType;
+            if (messageLevel !== 'info') {
                 this.syncState.hasNonInfoMessage = true;
             }
-
             this.appendToTerminal(message.message, messageLevel);
         });
 
-        // Load data
         await this.loadData(data);
 
-        let secondarySpreadsheets = (await this._sheetService.getSpreadsheets()).filter(x => x.default !== "true");
+        let secondarySpreadsheets = (await this._sheetService.getSpreadsheets())
+            .filter(x => x.default !== "true");
+        
         for (const secondarySpreadsheet of secondarySpreadsheets) {
             this.time = this.currentTime;
             this.appendToTerminal("Appending sheet data...");
@@ -194,7 +183,8 @@ export class DataSyncModalComponent {
         this.time = this.currentTime;
         this.appendToTerminal("Loading sheet data...");
 
-        if (!this.syncState.forceLoad && data.messages.filter(x => x.level.toLowerCase() === MessageType.ERROR).length > 0) {
+        if (!this.syncState.forceLoad && 
+            data.messages.filter(x => x.level.toLowerCase() === 'error').length > 0) {
             this.syncState.canContinue = true;
             this.data = data;
             this.processFailure("ERROR");
@@ -205,23 +195,12 @@ export class DataSyncModalComponent {
         this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
     }
 
-    private async completeSync() {
-        if (this.syncState.isAutoClose) {
-            this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
-            await this._timerService.delay(this.timerDelay);
-            this.dialogRef.close(true);
-        } else {
-            this.stopTimer();
-        }
-    }
-
-    private appendToTerminal(text: string, type: MessageType | string = MessageType.INFO) {
+    private appendToTerminal(text: string, type: MessageType = 'info') {
         this.messages.push({
             time: DateHelper.getMinutesAndSeconds(this.currentTime),
             text: text,
             type: type
         });
-
         this.scrollToBottom();
     }
 
@@ -231,7 +210,7 @@ export class DataSyncModalComponent {
         }
     }
 
-    private updateLastMessageType(type: MessageType | string) {
+    private updateLastMessageType(type: MessageType) {
         if (this.messages.length > 0) {
             this.messages[this.messages.length - 1].type = type;
         }
@@ -239,19 +218,21 @@ export class DataSyncModalComponent {
 
     private updateLastMessageTime() {
         if (this.messages.length > 0) {
-            this.messages[this.messages.length - 1].time = DateHelper.getMinutesAndSeconds(this.currentTime);
+            this.messages[this.messages.length - 1].time = 
+                DateHelper.getMinutesAndSeconds(this.currentTime);
         }
     }
 
     private async processFailure(message: string) {
         this.syncState.isAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
-        this.updateLastMessageType(MessageType.ERROR);
-          if (this.syncState.canContinue) {              
-            this.appendToTerminal("Partial data retrieved - Choose an option:", MessageType.WARNING);
-            this.appendToTerminal("• Continue with partial data", MessageType.INFO);
-            this.appendToTerminal("• Retry download", MessageType.INFO);
-            this.appendToTerminal("• Close", MessageType.INFO);
+        this.updateLastMessageType('error');
+        
+        if (this.syncState.canContinue) {              
+            this.appendToTerminal("Partial data retrieved - Choose an option:", 'warning');
+            this.appendToTerminal("• Continue with partial data", 'info');
+            this.appendToTerminal("• Retry download", 'info');
+            this.appendToTerminal("• Close", 'info');
             this.stopTimer();
         } else {
             this.appendToTerminal('Auto-close disabled');
@@ -265,7 +246,7 @@ export class DataSyncModalComponent {
 
     async continueLoad() {
         if (!this.data) {
-            this.appendToTerminal("No data to continue with", MessageType.ERROR);
+            this.appendToTerminal("No data to continue with", 'error');
             return;
         }
 
@@ -278,15 +259,27 @@ export class DataSyncModalComponent {
     }
 
     async retryLoad() {
-        await this.warmup();
+        await this.warmup(this.currentTime);
         await this.getData();
-    }    private startTimer(startFrom: number = 0) {
+    }
+
+    private async completeSync() {
+        if (this.syncState.isAutoClose) {
+            this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
+            await this._timerService.delay(this.timerDelay);
+            this.dialogRef.close(true);
+        } else {
+            this.stopTimer();
+        }
+    }
+
+    private startTimer(startFrom: number = 0) {
         if (this.timerSubscription) {
             this.timerSubscription.unsubscribe();
             this.timerSubscription = null;
         }
 
-        this.timerSubscription = timer(0, 1000) // Emit values every second
+        this.timerSubscription = timer(0, 1000)
             .pipe(
                 map((x: number) => x + startFrom)
             )
@@ -308,9 +301,10 @@ export class DataSyncModalComponent {
 
     private scrollToBottom() {
         setTimeout(() => {
-          if (this.terminalElement) {
-            this.terminalElement.nativeElement.scrollTop = this.terminalElement.nativeElement.scrollHeight;
-          }
+            if (this.terminalElement) {
+                this.terminalElement.nativeElement.scrollTop = 
+                    this.terminalElement.nativeElement.scrollHeight;
+            }
         }, 0);
-      }
+    }
 }
