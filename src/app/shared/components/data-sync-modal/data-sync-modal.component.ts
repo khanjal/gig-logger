@@ -137,7 +137,7 @@ export class DataSyncModalComponent {
         this.appendToTerminal("Saving changes...");
         
         let postResponse = await this._gigLoggerService.postSheetData(sheetData);
-        // console.log(postResponse);
+
         if (!postResponse) {
             this.processFailure("ERROR");
             return;
@@ -247,13 +247,12 @@ export class DataSyncModalComponent {
         this.syncState.isAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
         this.updateLastMessageType(MessageType.ERROR);
-        
-        if (this.syncState.canContinue) {              
+          if (this.syncState.canContinue) {              
             this.appendToTerminal("Partial data retrieved - Choose an option:", MessageType.WARNING);
             this.appendToTerminal("• Continue with partial data", MessageType.INFO);
             this.appendToTerminal("• Retry download", MessageType.INFO);
             this.appendToTerminal("• Close", MessageType.INFO);
-            this.pauseTimer();
+            this.stopTimer();
         } else {
             this.appendToTerminal('Auto-close disabled');
             this.stopTimer();
@@ -273,8 +272,7 @@ export class DataSyncModalComponent {
         this.syncState.forceLoad = true;
         this.syncState.isAutoClose = true;
         this.syncState.canContinue = false;
-
-        this.resumeTimer();
+        this.startTimer(this.currentTime);
         await this.loadData(this.data);
         await this.completeSync();
     }
@@ -282,25 +280,12 @@ export class DataSyncModalComponent {
     async retryLoad() {
         await this.warmup();
         await this.getData();
-    }
-
-    pauseTimer() {
-        if (this.timerSubscription && !this.syncState.isPaused) {
+    }    private startTimer(startFrom: number = 0) {
+        if (this.timerSubscription) {
             this.timerSubscription.unsubscribe();
             this.timerSubscription = null;
-            this.syncState.isPaused = true;
-            this.pausedTime = this.currentTime;
         }
-    }
 
-    resumeTimer() {
-        if (this.syncState.isPaused) {
-            this.syncState.isPaused = false;
-            this.startTimer(this.pausedTime);
-        }
-    }
-
-    private startTimer(startFrom: number = 0) {
         this.timerSubscription = timer(0, 1000) // Emit values every second
             .pipe(
                 map((x: number) => x + startFrom)
@@ -316,11 +301,9 @@ export class DataSyncModalComponent {
 
     private stopTimer() {
         if (this.timerSubscription) {
-            this.timerSubscription.unsubscribe(); // Unsubscribe from the timer
-            this.timerSubscription = null; // Reset the subscription
+            this.timerSubscription.unsubscribe();
+            this.timerSubscription = null;
         }
-        this.syncState.isPaused = false;
-        this.pausedTime = 0;
     }
 
     private scrollToBottom() {
