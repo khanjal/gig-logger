@@ -7,7 +7,6 @@ import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { UserProfile } from '../interfaces/user-profile.interface';
 import { GigLoggerService } from './gig-logger.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -23,23 +22,15 @@ export class AuthGoogleService {
     private secureCookieStorage: SecureCookieStorageService,
     private gigLoggerService: GigLoggerService,
     private http: HttpClient
-  ) {
+  ) {    
     this.oAuthService.setStorage(this.secureCookieStorage);
     this.initConfiguration().catch(error => {
       this.logger.error('Failed to initialize auth configuration', error);
     });
 
-    // Only handle URL params since we're not using the library's token management
+    // Subscribe to auth events for debugging
     this.oAuthService.events.subscribe(event => {
       this.logger.debug('Auth event:', event);
-      if (event.type === 'discovery_document_loaded') {
-        // Check URL for auth code
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('code');
-        if (code) {
-          this.handleAuthorizationCode(code);
-        }
-      }
     });
   }
 
@@ -68,32 +59,25 @@ export class AuthGoogleService {
 
   private async handleAuthorizationCode(code: string): Promise<void> {
     try {
-      // Send the authorization code to our backend to exchange for tokens
+      // Send the authorization code to our backend
       const response = await this.gigLoggerService.setRefreshToken(code);
-      if (!response?.accessToken) {
-        throw new Error('Failed to exchange code for tokens');
-      }
 
       this.logger.info('Successfully exchanged code for tokens');
       
       // Store the access token
       this.secureCookieStorage.setItem('access_token', response.accessToken);
 
-      // Try to load profile to validate token
-      const profile = await this.getProfile();
-      if (!profile) {
-        throw new Error('Failed to get user profile');
-      }
-      
-      this.profile$.next(profile);
-
       // Clean up the URL
       window.history.replaceState(null, '', window.location.pathname);
     } catch (error) {
       this.logger.error('Error exchanging code for tokens', error);
-      this.logout();
       throw error;
     }
+  }
+
+  login(): void {
+    this.logger.info('Initiating login flow');
+    this.oAuthService.initCodeFlow();
   }
 
   async refreshToken(): Promise<void> {
@@ -107,46 +91,47 @@ export class AuthGoogleService {
       this.logger.info('Access token refreshed through backend successfully');
       
       // Validate token
-      const profile = await this.getProfile();
-      if (!profile) {
-        throw new Error('Invalid token received from refresh');
-      }
+      // const profile = await this.getProfile();
+      // if (!profile) {
+      //   throw new Error('Invalid token received from refresh');
+      // }
     } catch (error) {
       this.logger.error('Error refreshing token', error);
-      this.logout();
+      // this.logout();
       throw error;
     }
   }
 
-  login(): void {
-    this.logger.info('Initiating login flow');
-    this.oAuthService.initCodeFlow();
-  }
-
   logout(): void {
-    try {
-      // Clear backend tokens first
-      this.gigLoggerService.clearRefreshToken()
-        .then(observable => {
-          observable.subscribe(() => {
+    this.logger.info('Starting logout process');
+    
+    // Clear backend tokens first
+    this.gigLoggerService.clearRefreshToken()
+      .then(observable => {
+        observable.subscribe({
+          next: () => {
             // Then clear local state
             this.secureCookieStorage.removeItem('access_token');
             this.oAuthService.logOut();
             this.profile$.next(null);
             this.logger.info('User logged out successfully');
-          });
-        })
-        .catch(error => {
-          this.logger.error('Error clearing refresh token', error);
-          // Still clear local state
-          this.secureCookieStorage.removeItem('access_token');
-          this.oAuthService.logOut();
-          this.profile$.next(null);
+          },
+          error: (error) => {
+            this.logger.error('Error in refresh token clear subscription', error);
+            // Still clear local state on error
+            this.secureCookieStorage.removeItem('access_token');
+            this.oAuthService.logOut();
+            this.profile$.next(null);
+          }
         });
-    } catch (error) {
-      this.logger.error('Error during logout', error);
-      this.profile$.next(null);
-    }
+      })
+      .catch(error => {
+        this.logger.error('Error initiating refresh token clear', error);
+        // Still clear local state
+        this.secureCookieStorage.removeItem('access_token');
+        this.oAuthService.logOut();
+        this.profile$.next(null);
+      });
   }
 
   isAuthenticated(): boolean {

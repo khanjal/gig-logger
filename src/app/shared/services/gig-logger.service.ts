@@ -40,6 +40,8 @@ import { IService } from "@interfaces/service.interface";
 import { IRegion } from "@interfaces/region.interface";
 import { IName } from "@interfaces/name.interface";
 import { IPlace } from "@interfaces/place.interface";
+import { SecureCookieStorageService } from './secure-cookie-storage.service';
+import { authConfig } from './auth.config';
 
 @Injectable({
     providedIn: 'root'
@@ -49,6 +51,7 @@ export class GigLoggerService {
 
     constructor(
         private _http: HttpClient,
+        private _secureCookieStorage: SecureCookieStorageService,
         private _addressService: AddressService,
         private _dailyService: DailyService,
         private _deliveryService: DeliveryService,
@@ -85,23 +88,29 @@ export class GigLoggerService {
         return options;
     }
 
-    // Auth
-    public async setRefreshToken(refreshToken: string) { 
-        console.log("Setting Refresh Token:", refreshToken);
+    // Auth    
+    public async setRefreshToken(authToken: string) { 
+        console.log("Setting Auth Token:", authToken);
         try {
-            if (typeof refreshToken !== 'string') {
-                throw new Error('Invalid refresh token format. Expected a string.');
+            if (typeof authToken !== 'string') {
+                throw new Error('Invalid auth token format. Expected a string.');
             }
 
-            let body = {} as ISheetProperties;
-            body.id = "refreshToken";
-            body.name = refreshToken;
+            const tokenData = {
+                code: authToken,
+                codeVerifier: this._secureCookieStorage.getItem('PKCE_verifier'),
+                redirectUri: authConfig.redirectUri
+            };
 
-            console.log("Sending request to set refresh token with body:", body);
+            if (!tokenData.codeVerifier) {
+                throw new Error('No PKCE verifier found in storage');
+            }
+
+            console.log("Sending request with token data:", tokenData);
 
             const response = await firstValueFrom(this._http.post<any>(
                 `${this.apiUrl}/auth`, 
-                JSON.stringify(body), 
+                JSON.stringify(tokenData), 
                 { headers: this.setHeader() }
             ));
 
