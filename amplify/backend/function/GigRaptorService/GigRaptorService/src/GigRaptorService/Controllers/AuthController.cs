@@ -1,6 +1,4 @@
-﻿using GigRaptorService.Models;
-using Microsoft.AspNetCore.Mvc;
-using RaptorSheets.Core.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace GigRaptorService.Controllers;
 
@@ -29,8 +27,6 @@ public class AuthController : ControllerBase
 
         var tokenResponse = await ExchangeAuthCodeForTokens(code, codeVerifier, redirectUri);
 
-        _logger.LogInformation("Token response: {TokenResponse}", System.Text.Json.JsonSerializer.Serialize(tokenResponse));
-
         if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
         {
             _logger.LogWarning("Failed to obtain refresh token from Google for code: {Code}", code);
@@ -41,17 +37,16 @@ public class AuthController : ControllerBase
 
         var cookieOptions = new CookieOptions
         {
+            Expires = DateTimeOffset.UtcNow.AddSeconds(tokenResponse.RefreshTokenExpiresIn),
             HttpOnly = true,
             SameSite = SameSiteMode.None,
             Secure = true,
-            Expires = DateTime.UtcNow.AddDays(7)
         };
 
         Response.Cookies.Append("refresh_token", encryptedToken, cookieOptions);
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
     }
-
 
 
     // POST api/auth/clear
@@ -82,18 +77,6 @@ public class AuthController : ControllerBase
         // Generate a new access token
         var newAccessToken = GenerateAccessToken(refreshToken);
 
-        // Optionally, rotate the refresh token
-        // var newRefreshToken = RotateRefreshToken(refreshToken);
-
-        // Update the refresh token cookie
-        //var cookieOptions = new CookieOptions
-        //{
-        //    HttpOnly = true,
-        //    SameSite = SameSiteMode.None,
-        //    Secure = true,
-        //    //Expires = DateTime.UtcNow.AddDays(7) // Set expiration for the new refresh token
-        //};
-        // Response.Cookies.Append("refresh_token", newRefreshToken, cookieOptions);
 
         // Return the new access token
         return Ok(new { accessToken = newAccessToken });
@@ -189,14 +172,5 @@ public class AuthController : ControllerBase
         }
 
         return tokenResponse.AccessToken;
-    }
-
-
-    // Helper method to rotate the refresh token
-    private string RotateRefreshToken(string oldRefreshToken)
-    {
-        // Example: Generate a new refresh token
-        // Replace this with your actual token rotation logic
-        return Guid.NewGuid().ToString(); // Replace with secure token generation logic
     }
 }

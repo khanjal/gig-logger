@@ -111,7 +111,7 @@ export class GigLoggerService {
             const response = await firstValueFrom(this._http.post<any>(
                 `${this.apiUrl}/auth`, 
                 JSON.stringify(tokenData), 
-                { headers: this.setHeader() }
+                this.setOptions()
             ));
 
             console.log("Refresh token set successfully:", response);
