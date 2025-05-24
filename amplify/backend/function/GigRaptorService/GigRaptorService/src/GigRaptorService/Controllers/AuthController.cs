@@ -38,6 +38,7 @@ public class AuthController : ControllerBase
         {
             Expires = DateTimeOffset.UtcNow.AddSeconds(tokenResponse.RefreshTokenExpiresIn),
             HttpOnly = true,
+            Path = "/",
             SameSite = SameSiteMode.None,
             Secure = true,
         };

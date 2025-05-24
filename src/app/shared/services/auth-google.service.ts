@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { authConfig } from './auth.config';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { UserProfile } from '../interfaces/user-profile.interface';
 import { GigLoggerService } from './gig-logger.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,24 +26,16 @@ export class AuthGoogleService {
     this.initConfiguration().catch(error => {
       this.logger.error('Failed to initialize auth configuration', error);
     });
-
-    // Subscribe to auth events for debugging
-    this.oAuthService.events.subscribe(event => {
-      this.logger.debug('Auth event:', event);
-    });
   }
 
   private async initConfiguration(): Promise<void> {
-    if (this.isInitialized) {
-      return;
-    }
+    if (this.isInitialized) return;
 
     try {
       this.logger.info('Initializing OAuth configuration');
       this.oAuthService.configure(authConfig);
       await this.oAuthService.loadDiscoveryDocument();
       
-      // Check for authorization code in URL
       const params = new URLSearchParams(window.location.search);
       if (params.has('code')) {
         await this.handleAuthorizationCode(params.get('code')!);
@@ -59,18 +50,25 @@ export class AuthGoogleService {
 
   private async handleAuthorizationCode(code: string): Promise<void> {
     try {
-      // Send the authorization code to our backend
       const response = await this.gigLoggerService.setRefreshToken(code);
+      if (!response?.accessToken) {
+        throw new Error('No access token received from authorization');
+      }
 
       this.logger.info('Successfully exchanged code for tokens');
-      
-      // Store the access token
       this.secureCookieStorage.setItem('access_token', response.accessToken);
 
-      // Clean up the URL
+      // Validate token by loading profile
+      const profile = await this.getProfile();
+      if (!profile) {
+        throw new Error('Failed to validate access token');
+      }
+      this.profile$.next(profile);
+
       window.history.replaceState(null, '', window.location.pathname);
     } catch (error) {
       this.logger.error('Error exchanging code for tokens', error);
+      await this.logout();
       throw error;
     }
   }
@@ -88,50 +86,37 @@ export class AuthGoogleService {
       }
       
       this.secureCookieStorage.setItem('access_token', result.accessToken);
-      this.logger.info('Access token refreshed through backend successfully');
       
-      // Validate token
-      // const profile = await this.getProfile();
-      // if (!profile) {
-      //   throw new Error('Invalid token received from refresh');
-      // }
+      // Validate refreshed token
+      const profile = await this.getProfile();
+      if (!profile) {
+        throw new Error('Invalid token received from refresh');
+      }
+      this.profile$.next(profile);
+      
+      this.logger.info('Access token refreshed and validated successfully');
     } catch (error) {
       this.logger.error('Error refreshing token', error);
-      // this.logout();
+      await this.logout();
       throw error;
     }
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
     this.logger.info('Starting logout process');
     
-    // Clear backend tokens first
-    this.gigLoggerService.clearRefreshToken()
-      .then(observable => {
-        observable.subscribe({
-          next: () => {
-            // Then clear local state
-            this.secureCookieStorage.removeItem('access_token');
-            this.oAuthService.logOut();
-            this.profile$.next(null);
-            this.logger.info('User logged out successfully');
-          },
-          error: (error) => {
-            this.logger.error('Error in refresh token clear subscription', error);
-            // Still clear local state on error
-            this.secureCookieStorage.removeItem('access_token');
-            this.oAuthService.logOut();
-            this.profile$.next(null);
-          }
-        });
-      })
-      .catch(error => {
-        this.logger.error('Error initiating refresh token clear', error);
-        // Still clear local state
-        this.secureCookieStorage.removeItem('access_token');
-        this.oAuthService.logOut();
-        this.profile$.next(null);
-      });
+    try {
+      // Clear backend tokens first
+      await this.gigLoggerService.clearRefreshToken();
+    } catch (error) {
+      this.logger.error('Error clearing refresh token', error);
+    } finally {
+      // Always clear local state
+      this.secureCookieStorage.removeItem('access_token');
+      this.oAuthService.logOut();
+      this.profile$.next(null);
+      this.logger.info('Local state cleared');
+    }
   }
 
   isAuthenticated(): boolean {
@@ -144,8 +129,9 @@ export class AuthGoogleService {
       if (!token) return null;
       
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      const response = await firstValueFrom(this.http.get<UserProfile>('https://www.googleapis.com/oauth2/v3/userinfo', { headers }));
-      return response;
+      return await firstValueFrom(
+        this.http.get<UserProfile>('https://www.googleapis.com/oauth2/v3/userinfo', { headers })
+      );
     } catch (error) {
       this.logger.error('Error loading user profile', error);
       return null;
