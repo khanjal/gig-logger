@@ -1,19 +1,17 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
 
 export const authConfig: AuthConfig = {
+  // We use the authorization code flow where our backend server handles all token
+  // exchange and refresh operations for security. This keeps tokens server-side
+  // and avoids exposing sensitive credentials (like client_secret) to the client.
   issuer: 'https://accounts.google.com',
   strictDiscoveryDocumentValidation: false,
   clientId: '1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com',
   redirectUri: window.location.origin + '/setup',
   scope: 'openid profile email https://www.googleapis.com/auth/spreadsheets',
-  responseType: 'token id_token',
-  clearHashAfterLogin: true,
-  showDebugInformation: false,
-  sessionChecksEnabled: false, // Disable session checks since Google doesn't support it
-  timeoutFactor: 0.9, // Refresh token when 90% of lifetime has passed
-  silentRefreshTimeout: 30000, // 30 seconds timeout for silent refresh
-  disableAtHashCheck: false,
-  requireHttps: true,
-  useSilentRefresh: true, // Enable silent refresh
-  silentRefreshShowIFrame: false // Don't show the iframe for silent refresh
+  responseType: 'code',
+  showDebugInformation: true,
+  oidc: true,
+  requestAccessToken: false, // Library only handles the initial auth code flow
+  disableAtHashCheck: true
 };
