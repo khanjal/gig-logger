@@ -3,30 +3,51 @@
   "index": "/index.html",
   "assetGroups": [
     {
-      "name": "app",
+      "name": "app-shell",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
         "files": [
           "/favicon.ico",
           "/index.html",
           "/manifest.json",
+          "/offline.html",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "/*-es2015.*.js",
+          "/*-es5.*.js",
+          "/assets/icons/*.png"
+        ],
+        "urls": [
+          "https://fonts.googleapis.com/icon?family=Material+Icons"
         ]
       }
     },
     {
-      "name": "assets",
+      "name": "assets-eager",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/json/*.json",
+          "/assets/icons/*-96x96.png",
+          "/assets/icons/*-144x144.png"
+        ]
+      }
+    },
+    {
+      "name": "assets-lazy",
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/**/*"
+          "/assets/images/**/*",
+          "/assets/icons/*-!(96x96|144x144).png",
+          "/assets/screenshots/**/*"
         ]
       }
     }
-  ],
-  "dataGroups": [
+  ],  "dataGroups": [
     {
       "name": "google-fonts-stylesheets",
       "urls": [
@@ -34,8 +55,9 @@
       ],
       "cacheConfig": {
         "maxSize": 5,
-        "maxAge": "1d",
-        "strategy": "freshness"
+        "maxAge": "7d",
+        "strategy": "freshness",
+        "timeout": "3s"
       }
     },
     {
@@ -44,10 +66,17 @@
         "https://fonts.gstatic.com/s/materialicons/*"
       ],
       "cacheConfig": {
-        "maxSize": 10,
+        "maxSize": 20,
         "maxAge": "30d",
-        "strategy": "performance"
+        "strategy": "performance",
+        "timeout": "5s"
       }
     }
+  ],  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**",
+    "!/**/?(*.)(css|js|json|jpg|jpeg|gif|png|svg|ico)"
   ]
 }
