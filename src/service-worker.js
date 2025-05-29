@@ -1,7 +1,25 @@
-// Define the version
-const CACHE_VERSION = 'v1.0.8';
-const CACHE_NAME = `gig-logger-cache-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `runtime-cache-${CACHE_VERSION}`;
+// Define the version and cache names
+const CACHE_VERSION = 'v1.0.9';
+const STATIC_CACHE = `static-cache-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `dynamic-cache-${CACHE_VERSION}`;
+const API_CACHE = `api-cache-${CACHE_VERSION}`;
+const SYNC_QUEUE = 'sync-queue';
+
+// Configure cache strategies
+const CACHE_STRATEGIES = {
+  STATIC: {
+    name: STATIC_CACHE,
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  },
+  DYNAMIC: {
+    name: DYNAMIC_CACHE,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  },
+  API: {
+    name: API_CACHE,
+    maxAge: 60 * 60 * 1000, // 1 hour
+  }
+};
 
 // Files to cache during installation
 const FILES_TO_CACHE = [
@@ -9,15 +27,34 @@ const FILES_TO_CACHE = [
   '/index.html',
   '/favicon.ico',
   '/manifest.json',
-  '/offline.html', // Offline fallback page
+  '/offline.html',
+  '/assets/icons/**/*',
+  '/assets/images/**/*',
+  '/assets/json/**/*',
+  '/*.css',
+  '/*.js'
 ];
+
+// Helper function to check if a response is valid
+function isValidResponse(response) {
+  return response && response.status === 200 && response.type === 'basic';
+}
+
+// Helper function to determine if a request should be cached
+function shouldCache(request) {
+  return (request.method === 'GET' && !request.url.includes('/api/'));
+}
 
 // Install event
 self.addEventListener('install', (event) => {
   console.log(`[Service Worker] Installing version: ${CACHE_VERSION}`);
+  
+  // Skip waiting to activate the new service worker immediately
+  self.skipWaiting();
+  
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching app shell');
+    caches.open(CACHE_STRATEGIES.STATIC.name).then((cache) => {
+      console.log('[Service Worker] Caching app shell and static assets');
       return cache.addAll(FILES_TO_CACHE).catch((error) => {
         console.error('[Service Worker] Failed to cache files during install:', error);
       });
@@ -28,56 +65,162 @@ self.addEventListener('install', (event) => {
 // Activate event with cache cleanup
 self.addEventListener('activate', (event) => {
   console.log(`[Service Worker] Activating version: ${CACHE_VERSION}`);
-  const CACHE_WHITELIST = [CACHE_NAME, RUNTIME_CACHE];
+  const CACHE_WHITELIST = [
+    CACHE_STRATEGIES.STATIC.name,
+    CACHE_STRATEGIES.DYNAMIC.name,
+    CACHE_STRATEGIES.API.name
+  ];
 
-  event.waitUntil(
+  // Take control of all clients immediately
+  event.waitUntil(Promise.all([
+    // Clean up old caches
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (!CACHE_WHITELIST.includes(cache)) {
-            console.log(`[Service Worker] Deleting old cache: ${cache}`);
-            return caches.delete(cache);
+        cacheNames.map((cacheName) => {
+          if (!CACHE_WHITELIST.includes(cacheName)) {
+            console.log(`[Service Worker] Deleting old cache: ${cacheName}`);
+            return caches.delete(cacheName);
           }
         })
       );
-    })
-  );
+    }),
+    // Take control of all clients
+    self.clients.claim()
+  ]));
 });
 
-// Fetch event
+// Fetch event with improved caching strategy
 self.addEventListener('fetch', (event) => {
   const request = event.request;
+  const url = new URL(request.url);
 
-  // Log the request URL
-  console.log(`[Service Worker] Fetching: ${request.url}`);
+  // Skip non-GET requests or browser-sync requests
+  if (request.method !== 'GET' || request.url.includes('browser-sync')) {
+    return;
+  }
 
-  event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      // Serve cached response if available
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+  // Different strategies for different types of requests
+  if (request.url.includes('/api/')) {
+    // API requests: Network first, then cache
+    event.respondWith(handleApiRequest(request));
+  } else if (request.headers.get('accept').includes('text/html')) {
+    // HTML requests: Cache first for faster loading, then network update
+    event.respondWith(handleHtmlRequest(request));
+  } else {
+    // Static assets: Cache first with network fallback
+    event.respondWith(handleStaticRequest(request));
+  }
+});
 
-      // Fetch from network and cache dynamically
-      return fetch(request)
-        .then((networkResponse) => {
-          if (request.url.startsWith(self.location.origin)) {
-            return caches.open(RUNTIME_CACHE).then((cache) => {
-              cache.put(request, networkResponse.clone());
-              return networkResponse;
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // Handle navigation requests when offline
-          if (request.mode === 'navigate') {
-            return caches.match('/index.html'); // Serve index.html for SPA navigation
-          }
+// Handle API requests
+async function handleApiRequest(request) {
+  try {
+    // Try network first
+    const response = await fetch(request);
+    if (isValidResponse(response)) {
+      const cache = await caches.open(CACHE_STRATEGIES.API.name);
+      cache.put(request, response.clone());
+      return response;
+    }
+  } catch (error) {
+    // If offline, try cache
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    // If the request fails and it's a mutation (POST/PUT/DELETE),
+    // add it to the background sync queue
+    if (request.method !== 'GET') {
+      await addToSyncQueue(request);
+    }
+  }
+  return new Response('{"error": "Unable to fetch data"}', {
+    status: 503,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
 
-          // Fallback to offline.html for other requests
-          return caches.match('/offline.html');
-        });
-    })
-  );
+// Handle HTML requests
+async function handleHtmlRequest(request) {
+  try {
+    // Try cache first
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      // Fetch from network in the background to update cache
+      updateCache(request);
+      return cachedResponse;
+    }
+    // If not in cache, get from network
+    const response = await fetch(request);
+    if (isValidResponse(response)) {
+      const cache = await caches.open(CACHE_STRATEGIES.DYNAMIC.name);
+      cache.put(request, response.clone());
+      return response;
+    }
+  } catch (error) {
+    // Return offline page if available
+    return caches.match('/offline.html');
+  }
+}
+
+// Handle static asset requests
+async function handleStaticRequest(request) {
+  // Try cache first
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+  
+  // Fall back to network
+  try {
+    const response = await fetch(request);
+    if (isValidResponse(response)) {
+      const cache = await caches.open(CACHE_STRATEGIES.STATIC.name);
+      cache.put(request, response.clone());
+      return response;
+    }
+  } catch (error) {
+    console.error('[Service Worker] Failed to fetch static asset:', error);
+  }
+  
+  return new Response('Not Found', { status: 404 });
+}
+
+// Background sync for offline mutations
+async function addToSyncQueue(request) {
+  try {
+    const db = await openDB();
+    await db.add(SYNC_QUEUE, {
+      url: request.url,
+      method: request.method,
+      body: await request.clone().text(),
+      timestamp: Date.now()
+    });
+    // Register for sync if supported
+    if ('sync' in self.registration) {
+      await self.registration.sync.register('sync-gig-data');
+    }
+  } catch (error) {
+    console.error('[Service Worker] Failed to add to sync queue:', error);
+  }
+}
+
+// Update cache in the background
+async function updateCache(request) {
+  try {
+    const response = await fetch(request);
+    if (isValidResponse(response)) {
+      const cache = await caches.open(CACHE_STRATEGIES.DYNAMIC.name);
+      await cache.put(request, response);
+    }
+  } catch (error) {
+    console.error('[Service Worker] Background cache update failed:', error);
+  }
+}
+
+// Background sync event handler
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-gig-data') {
+    event.waitUntil(syncData());
+  }
 });

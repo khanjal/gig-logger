@@ -30,6 +30,9 @@
         <button class="mat-icon-button" *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" color="primary" matSuffix mat-icon-button aria-label="Search Google" (click)="onSearch()">
             <mat-icon>search</mat-icon>
         </button>
+        <button class="mat-icon-button" *ngIf="!showSearch && value && googleSearch" color="primary" matSuffix mat-icon-button aria-label="Google Maps" (click)="openMap()">
+            <mat-icon>map</mat-icon>
+        </button>
         <button class="mat-icon-button" *ngIf="value" color="accent" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
             <mat-icon>clear</mat-icon>
         </button>
