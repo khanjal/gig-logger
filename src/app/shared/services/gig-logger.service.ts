@@ -42,6 +42,7 @@ import { IName } from "@interfaces/name.interface";
 import { IPlace } from "@interfaces/place.interface";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
+import { AUTH_CONSTANTS } from "@constants/auth.constants";
 
 @Injectable({
     providedIn: 'root'
@@ -80,7 +81,7 @@ export class GigLoggerService {
         headers = headers.set('Content-Type', "application/json");
         
         // Add Authorization header from access_token cookie
-        const accessToken = this._secureCookieStorage.getItem('access_token');
+        const accessToken = this._secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
         if (accessToken) {
             headers = headers.set('Authorization', `Bearer ${accessToken}`);
         }
@@ -106,7 +107,7 @@ export class GigLoggerService {
 
             const tokenData = {
                 code: authToken,
-                codeVerifier: this._secureCookieStorage.getItem('PKCE_verifier'),
+                codeVerifier: this._secureCookieStorage.getItem(AUTH_CONSTANTS.PKCE_VERIFIER),
                 redirectUri: authConfig.redirectUri
             };
 

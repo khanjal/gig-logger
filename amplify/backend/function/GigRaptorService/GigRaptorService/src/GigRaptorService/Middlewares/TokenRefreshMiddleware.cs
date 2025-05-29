@@ -28,7 +28,7 @@ public class TokenRefreshMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var accessToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
-        var encryptedRefreshToken = context.Request.Cookies["rg_refresh"];
+        var encryptedRefreshToken = context.Request.Cookies["RG_REFRESH"];
         string? refreshToken = null;
 
         if (!string.IsNullOrEmpty(encryptedRefreshToken))

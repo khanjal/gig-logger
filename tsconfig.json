@@ -39,6 +39,7 @@
       "url": ["./node_modules/url"],
       "util": ["./node_modules/util"],
       "@components/*": ["./src/app/shared/components/*"],
+      "@constants/*": ["./src/app/shared/constants/*"],
       "@data/*": ["./src/app/shared/data/*"],
       "@directives/*": ["./src/app/shared/directives/*"],
       "@enums/*": ["./src/app/shared/enums/*"],

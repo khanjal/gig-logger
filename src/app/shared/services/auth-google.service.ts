@@ -7,6 +7,7 @@ import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { UserProfile } from '../interfaces/user-profile.interface';
 import { GigLoggerService } from './gig-logger.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AUTH_CONSTANTS } from '@constants/auth.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -55,7 +56,7 @@ export class AuthGoogleService {
       }
 
       this.logger.info('Successfully exchanged code for tokens');
-      this.secureCookieStorage.setItem('access_token', response.accessToken);
+      this.secureCookieStorage.setItem(AUTH_CONSTANTS.ACCESS_TOKEN, response.accessToken);
 
       // Validate token by loading profile
       const profile = await this.getProfile();
@@ -84,7 +85,7 @@ export class AuthGoogleService {
         throw new Error('No access token received from refresh');
       }
       
-      this.secureCookieStorage.setItem('access_token', result.accessToken);
+      this.secureCookieStorage.setItem(AUTH_CONSTANTS.ACCESS_TOKEN, result.accessToken);
       
       // Validate refreshed token
       const profile = await this.getProfile();
@@ -111,7 +112,7 @@ export class AuthGoogleService {
       this.logger.error('Error clearing refresh token', error);
     } finally {
       // Always clear local state
-      this.secureCookieStorage.removeItem('access_token');
+      this.secureCookieStorage.removeItem(AUTH_CONSTANTS.ACCESS_TOKEN);
       this.oAuthService.logOut();
       this.profile$.next(null);
       this.logger.info('Local state cleared');
@@ -119,12 +120,12 @@ export class AuthGoogleService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.secureCookieStorage.getItem('access_token');
+    return !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }
 
   async getProfile(): Promise<UserProfile | null> {
     try {
-      const token = this.secureCookieStorage.getItem('access_token');
+      const token = this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
       if (!token) return null;
       
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -138,6 +139,6 @@ export class AuthGoogleService {
   }
 
   getAccessToken(): string | null {
-    return this.secureCookieStorage.getItem('access_token');
+    return this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }
 }

@@ -1,12 +1,12 @@
 ﻿using GigRaptorService.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace GigRaptorService.Controllers;
 
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
+    private const string RefreshTokenCookieName = "RG_REFRESH";
     private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -61,7 +61,7 @@ public class AuthController : ControllerBase
             Secure = true,
         };
 
-        Response.Cookies.Append("rg_refresh", encryptedToken, cookieOptions);
+        Response.Cookies.Append(RefreshTokenCookieName, encryptedToken, cookieOptions);
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
     }
@@ -69,14 +69,14 @@ public class AuthController : ControllerBase
     [HttpPost("clear")]
     public IActionResult Clear()
     {
-        Response.Cookies.Delete("rg_refresh");
+        Response.Cookies.Delete(RefreshTokenCookieName);
         return Ok();
     }
 
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh()
     {
-        var refreshToken = Request.Cookies["rg_refresh"];
+        var refreshToken = Request.Cookies[RefreshTokenCookieName];
         if (string.IsNullOrEmpty(refreshToken))
             return Unauthorized(new { message = "Refresh token is missing or invalid." });
 
