@@ -64,7 +64,7 @@ public class TokenRefreshMiddleware
             }
 
             // Set the new access token in a response header for the client
-            context.Response.Headers["X-New-Access-Token"] = newAccessToken;
+            context.Response.Headers["ACCESS_TOKEN"] = newAccessToken;
 
             // Update the Authorization header for downstream
             context.Request.Headers["Authorization"] = $"Bearer {newAccessToken}";
