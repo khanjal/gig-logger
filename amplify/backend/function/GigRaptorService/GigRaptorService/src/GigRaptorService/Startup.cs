@@ -41,6 +41,8 @@ public class Startup
 
         services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
+
+        services.AddHttpClient();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

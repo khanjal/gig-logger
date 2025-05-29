@@ -10,13 +10,20 @@ public class TokenRefreshMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<TokenRefreshMiddleware> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public TokenRefreshMiddleware(RequestDelegate next, ILogger<TokenRefreshMiddleware> logger, IConfiguration configuration)
+    public TokenRefreshMiddleware(
+        RequestDelegate next,
+        ILogger<TokenRefreshMiddleware> logger,
+        IConfiguration configuration,
+        IHttpClientFactory httpClientFactory)
     {
         _next = next;
         _logger = logger;
         _configuration = configuration;
+        _httpClientFactory = httpClientFactory;
     }
+
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -96,13 +103,13 @@ public class TokenRefreshMiddleware
 
         var requestBody = new Dictionary<string, string>
         {
-            { "client_id", clientId },
-            { "client_secret", clientSecret },
+            { "client_id", clientId! },
+            { "client_secret", clientSecret! },
             { "refresh_token", refreshToken },
             { "grant_type", "refresh_token" }
         };
 
-        using var httpClient = new HttpClient();
+        var httpClient = _httpClientFactory.CreateClient();
         var requestContent = new FormUrlEncodedContent(requestBody);
         var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
 

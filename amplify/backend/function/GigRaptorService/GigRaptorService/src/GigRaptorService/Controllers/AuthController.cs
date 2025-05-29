@@ -9,11 +9,16 @@ public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public AuthController(ILogger<AuthController> logger, IConfiguration configuration)
+    public AuthController(
+        ILogger<AuthController> logger,
+        IConfiguration configuration,
+        IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _configuration = configuration;
+        _httpClientFactory = httpClientFactory;
     }
 
     [HttpPost]
@@ -69,7 +74,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public IActionResult Refresh()
+    public async Task<IActionResult> Refresh()
     {
         var refreshToken = Request.Cookies["rg_refresh"];
         if (string.IsNullOrEmpty(refreshToken))
@@ -78,7 +83,7 @@ public class AuthController : ControllerBase
         if (!ValidateRefreshToken(refreshToken))
             return Unauthorized(new { message = "Invalid refresh token." });
 
-        var newAccessToken = GenerateAccessToken(refreshToken);
+        var newAccessToken = await GenerateAccessToken(refreshToken);
         return Ok(new { accessToken = newAccessToken });
     }
 
@@ -109,7 +114,7 @@ public class AuthController : ControllerBase
             { "code_verifier", codeVerifier }
         };
 
-        using var httpClient = new HttpClient();
+        var httpClient = _httpClientFactory.CreateClient();
         var requestContent = new FormUrlEncodedContent(requestBody);
 
         var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
@@ -144,7 +149,7 @@ public class AuthController : ControllerBase
             { "grant_type", "refresh_token" }
         };
 
-        using var httpClient = new HttpClient();
+        var httpClient = _httpClientFactory.CreateClient();
         var requestContent = new FormUrlEncodedContent(requestBody);
 
         var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
