@@ -1,4 +1,5 @@
 ﻿using GigRaptorService.Middlewares;
+using GigRaptorService.Services;
 
 namespace GigRaptorService;
 
@@ -41,6 +42,7 @@ public class Startup
 
         services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
+        services.AddScoped<GoogleOAuthService>();
 
         services.AddHttpClient();
     }

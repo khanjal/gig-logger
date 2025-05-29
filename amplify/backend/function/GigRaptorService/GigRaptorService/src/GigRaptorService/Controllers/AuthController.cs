@@ -1,5 +1,6 @@
 ﻿using GigRaptorService.Helpers;
 using GigRaptorService.Models;
+using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GigRaptorService.Controllers;
@@ -11,15 +12,18 @@ public class AuthController : ControllerBase
     private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly GoogleOAuthService _googleOAuthService;
 
     public AuthController(
         ILogger<AuthController> logger,
         IConfiguration configuration,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        GoogleOAuthService googleOAuthService)
     {
         _logger = logger;
         _configuration = configuration;
         _httpClientFactory = httpClientFactory;
+        _googleOAuthService = googleOAuthService;
     }
 
     [HttpPost]
@@ -43,7 +47,17 @@ public class AuthController : ControllerBase
             return StatusCode(500, new { message = "Server configuration error." });
         }
 
-        var tokenResponse = await ExchangeAuthCodeForTokens(code, codeVerifier, redirectUri);
+        var requestBody = new Dictionary<string, string>
+        {
+            { "client_id", clientId! },
+            { "client_secret", clientSecret! },
+            { "code", code },
+            { "grant_type", "authorization_code" },
+            { "redirect_uri", redirectUri },
+            { "code_verifier", codeVerifier }
+        };
+
+        var tokenResponse = await RequestGoogleTokenAsync(requestBody);
 
         if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
         {
@@ -84,8 +98,11 @@ public class AuthController : ControllerBase
         if (!ValidateRefreshToken(refreshToken))
             return Unauthorized(new { message = "Invalid refresh token." });
 
-        var newAccessToken = await GenerateAccessToken(refreshToken);
-        return Ok(new { accessToken = newAccessToken });
+        var tokenResponse = await _googleOAuthService.RefreshAccessTokenAsync(refreshToken);
+        if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+            return Unauthorized(new { message = "Failed to retrieve access token from Google." });
+
+        return Ok(new { accessToken = tokenResponse.AccessToken });
     }
 
     private string EncryptToken(string token)
@@ -99,23 +116,9 @@ public class AuthController : ControllerBase
         return !string.IsNullOrEmpty(refreshToken);
     }
 
-    private async Task<GoogleTokenResponse> ExchangeAuthCodeForTokens(string authorizationCode, string codeVerifier, string redirectUri)
+    private async Task<GoogleTokenResponse> RequestGoogleTokenAsync(Dictionary<string, string> requestBody)
     {
         const string tokenEndpoint = "https://oauth2.googleapis.com/token";
-
-        var clientId = _configuration["Google_OAuth:Client_Id"];
-        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
-
-        var requestBody = new Dictionary<string, string>
-        {
-            { "client_id", clientId! },
-            { "client_secret", clientSecret! },
-            { "code", authorizationCode },
-            { "grant_type", "authorization_code" },
-            { "redirect_uri", redirectUri },
-            { "code_verifier", codeVerifier }
-        };
-
         var httpClient = _httpClientFactory.CreateClient();
         var requestContent = new FormUrlEncodedContent(requestBody);
 
@@ -124,7 +127,7 @@ public class AuthController : ControllerBase
         if (!response.IsSuccessStatusCode)
         {
             var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to exchange auth code: {errorContent}");
+            throw new Exception($"Failed to retrieve token from Google: {errorContent}");
         }
 
         var responseContent = await response.Content.ReadAsStringAsync();
@@ -134,40 +137,5 @@ public class AuthController : ControllerBase
             throw new Exception("Failed to parse token response from Google.");
 
         return tokenResponse;
-    }
-
-    private async Task<string> GenerateAccessToken(string refreshToken)
-    {
-        const string tokenEndpoint = "https://oauth2.googleapis.com/token";
-
-        var clientId = _configuration["Google_OAuth:Client_Id"];
-        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
-
-        var requestBody = new Dictionary<string, string>
-        {
-            { "client_id", clientId! },
-            { "client_secret", clientSecret! },
-            { "refresh_token", refreshToken },
-            { "grant_type", "refresh_token" }
-        };
-
-        var httpClient = _httpClientFactory.CreateClient();
-        var requestContent = new FormUrlEncodedContent(requestBody);
-
-        var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to refresh access token: {errorContent}");
-        }
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var tokenResponse = System.Text.Json.JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent);
-
-        if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
-            throw new Exception("Failed to retrieve access token from Google.");
-
-        return tokenResponse.AccessToken;
     }
 }

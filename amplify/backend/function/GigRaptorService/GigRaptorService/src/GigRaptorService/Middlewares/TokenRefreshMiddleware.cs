@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using GigRaptorService.Helpers;
 using GigRaptorService.Models;
-using Microsoft.Extensions.Configuration;
+using GigRaptorService.Services;
 
 namespace GigRaptorService.Middlewares;
 
@@ -12,17 +12,20 @@ public class TokenRefreshMiddleware
     private readonly ILogger<TokenRefreshMiddleware> _logger;
     private readonly IConfiguration _configuration;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly GoogleOAuthService _googleOAuthService;
 
     public TokenRefreshMiddleware(
         RequestDelegate next,
         ILogger<TokenRefreshMiddleware> logger,
         IConfiguration configuration,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        GoogleOAuthService googleOAuthService)
     {
         _next = next;
         _logger = logger;
         _configuration = configuration;
         _httpClientFactory = httpClientFactory;
+        _googleOAuthService = googleOAuthService;
     }
 
 
@@ -55,7 +58,8 @@ public class TokenRefreshMiddleware
         try
         {
             // Try to get a new access token using the refresh token
-            var newAccessToken = await RefreshAccessTokenAsync(refreshToken, context);
+            var tokenResponse = await _googleOAuthService.RefreshAccessTokenAsync(refreshToken);
+            var newAccessToken = tokenResponse?.AccessToken;
             if (string.IsNullOrEmpty(newAccessToken))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -94,32 +98,5 @@ public class TokenRefreshMiddleware
         if (exp == null) return true;
         var expDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(exp));
         return expDate < DateTimeOffset.UtcNow;
-    }
-
-    private async Task<string?> RefreshAccessTokenAsync(string refreshToken, HttpContext context)
-    {
-        var clientId = _configuration["Google_OAuth:Client_Id"];
-        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
-        var tokenEndpoint = "https://oauth2.googleapis.com/token";
-
-        var requestBody = new Dictionary<string, string>
-        {
-            { "client_id", clientId! },
-            { "client_secret", clientSecret! },
-            { "refresh_token", refreshToken },
-            { "grant_type", "refresh_token" }
-        };
-
-        var httpClient = _httpClientFactory.CreateClient();
-        var requestContent = new FormUrlEncodedContent(requestBody);
-        var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
-
-        if (!response.IsSuccessStatusCode)
-            return null;
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var tokenResponse = JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent);
-
-        return tokenResponse?.AccessToken;
     }
 }
