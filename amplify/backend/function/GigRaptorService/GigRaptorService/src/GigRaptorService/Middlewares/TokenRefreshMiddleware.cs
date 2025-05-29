@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
+using GigRaptorService.Helpers;
 using GigRaptorService.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -80,8 +81,8 @@ public class TokenRefreshMiddleware
 
     private string DecryptToken(string encryptedToken)
     {
-        var bytes = Convert.FromBase64String(encryptedToken);
-        return System.Text.Encoding.UTF8.GetString(bytes);
+        var key = _configuration["Encryption:Key"]!;
+        return TokenEncryptionHelper.Decrypt(encryptedToken, key);
     }
 
     private bool IsJwtExpired(string jwt)

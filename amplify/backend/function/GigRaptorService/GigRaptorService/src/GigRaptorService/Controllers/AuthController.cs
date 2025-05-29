@@ -1,4 +1,5 @@
-﻿using GigRaptorService.Models;
+﻿using GigRaptorService.Helpers;
+using GigRaptorService.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GigRaptorService.Controllers;
@@ -89,7 +90,8 @@ public class AuthController : ControllerBase
 
     private string EncryptToken(string token)
     {
-        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(token));
+        var key = _configuration["Encryption:Key"]!;
+        return TokenEncryptionHelper.Encrypt(token, key);
     }
 
     private bool ValidateRefreshToken(string refreshToken)
