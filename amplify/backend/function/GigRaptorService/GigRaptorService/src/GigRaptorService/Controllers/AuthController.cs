@@ -1,5 +1,6 @@
 ﻿using GigRaptorService.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace GigRaptorService.Controllers;
 
@@ -7,10 +8,12 @@ namespace GigRaptorService.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(ILogger<AuthController> logger)
+    public AuthController(ILogger<AuthController> logger, IConfiguration configuration)
     {
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -24,6 +27,15 @@ public class AuthController : ControllerBase
 
         if (!data.TryGetValue("redirectUri", out var redirectUri) || string.IsNullOrEmpty(redirectUri))
             return BadRequest(new { message = "Missing redirectUri." });
+
+        var clientId = _configuration["GoogleOAuth:ClientId"];
+        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+
+        if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+        {
+            _logger.LogError("Google OAuth configuration is missing.");
+            return StatusCode(500, new { message = "Server configuration error." });
+        }
 
         var tokenResponse = await ExchangeAuthCodeForTokens(code, codeVerifier, redirectUri);
 
@@ -84,10 +96,13 @@ public class AuthController : ControllerBase
     {
         const string tokenEndpoint = "https://oauth2.googleapis.com/token";
 
+        var clientId = _configuration["GoogleOAuth:ClientId"];
+        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+
         var requestBody = new Dictionary<string, string>
         {
-            { "client_id", "1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com" },
-            { "client_secret", "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" },
+            { "client_id", clientId! },
+            { "client_secret", clientSecret! },
             { "code", authorizationCode },
             { "grant_type", "authorization_code" },
             { "redirect_uri", redirectUri },
@@ -118,10 +133,13 @@ public class AuthController : ControllerBase
     {
         const string tokenEndpoint = "https://oauth2.googleapis.com/token";
 
+        var clientId = _configuration["GoogleOAuth:ClientId"];
+        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+
         var requestBody = new Dictionary<string, string>
         {
-            { "client_id", "1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com" },
-            { "client_secret", "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" },
+            { "client_id", clientId! },
+            { "client_secret", clientSecret! },
             { "refresh_token", refreshToken },
             { "grant_type", "refresh_token" }
         };

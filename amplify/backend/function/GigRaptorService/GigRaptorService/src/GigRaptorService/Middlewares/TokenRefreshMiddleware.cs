@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using GigRaptorService.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace GigRaptorService.Middlewares;
 
@@ -8,11 +9,13 @@ public class TokenRefreshMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<TokenRefreshMiddleware> _logger;
+    private readonly IConfiguration _configuration;
 
-    public TokenRefreshMiddleware(RequestDelegate next, ILogger<TokenRefreshMiddleware> logger)
+    public TokenRefreshMiddleware(RequestDelegate next, ILogger<TokenRefreshMiddleware> logger, IConfiguration configuration)
     {
         _next = next;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -47,7 +50,6 @@ public class TokenRefreshMiddleware
             var newAccessToken = await RefreshAccessTokenAsync(refreshToken, context);
             if (string.IsNullOrEmpty(newAccessToken))
             {
-                // If we can't get a new access token, do NOT attempt to refresh the refresh token
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsync("Failed to refresh access token.");
                 return;
@@ -88,8 +90,8 @@ public class TokenRefreshMiddleware
 
     private async Task<string?> RefreshAccessTokenAsync(string refreshToken, HttpContext context)
     {
-        var clientId = "1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com";
-        var clientSecret = "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";
+        var clientId = _configuration["GoogleOAuth:ClientId"];
+        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
         var tokenEndpoint = "https://oauth2.googleapis.com/token";
 
         var requestBody = new Dictionary<string, string>
