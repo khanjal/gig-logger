@@ -98,8 +98,8 @@ public class TokenRefreshMiddleware
 
     private async Task<string?> RefreshAccessTokenAsync(string refreshToken, HttpContext context)
     {
-        var clientId = _configuration["GoogleOAuth:ClientId"];
-        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+        var clientId = _configuration["Google_OAuth:Client_Id"];
+        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
         var tokenEndpoint = "https://oauth2.googleapis.com/token";
 
         var requestBody = new Dictionary<string, string>

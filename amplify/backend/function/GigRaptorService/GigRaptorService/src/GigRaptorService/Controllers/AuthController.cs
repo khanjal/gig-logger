@@ -34,8 +34,8 @@ public class AuthController : ControllerBase
         if (!data.TryGetValue("redirectUri", out var redirectUri) || string.IsNullOrEmpty(redirectUri))
             return BadRequest(new { message = "Missing redirectUri." });
 
-        var clientId = _configuration["GoogleOAuth:ClientId"];
-        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+        var clientId = _configuration["Google_OAuth:Client_Id"];
+        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
 
         if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
         {
@@ -103,8 +103,8 @@ public class AuthController : ControllerBase
     {
         const string tokenEndpoint = "https://oauth2.googleapis.com/token";
 
-        var clientId = _configuration["GoogleOAuth:ClientId"];
-        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+        var clientId = _configuration["Google_OAuth:Client_Id"];
+        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
 
         var requestBody = new Dictionary<string, string>
         {
@@ -140,8 +140,8 @@ public class AuthController : ControllerBase
     {
         const string tokenEndpoint = "https://oauth2.googleapis.com/token";
 
-        var clientId = _configuration["GoogleOAuth:ClientId"];
-        var clientSecret = _configuration["GoogleOAuth:ClientSecret"];
+        var clientId = _configuration["Google_OAuth:Client_Id"];
+        var clientSecret = _configuration["Google_OAuth:Client_Secret"];
 
         var requestBody = new Dictionary<string, string>
         {
