@@ -1,4 +1,6 @@
-﻿namespace GigRaptorService;
+﻿using GigRaptorService.Middlewares;
+
+namespace GigRaptorService;
 
 public class Startup
 {
@@ -9,29 +11,31 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
-        //services.AddCors(option =>
-        //{
-        //    option.AddDefaultPolicy(builder =>
-        //    {
-        //        builder.WithOrigins("http://www.localhost:4200");
-        //        builder.AllowAnyOrigin();
-        //        builder.AllowAnyHeader();
-        //        builder.AllowAnyMethod();
-        //    });
-        //});
-        var allowedOrigins = new[] { "https://localhost:4200", "https://gig-test.raptorsheets.com", "https://gig.raptorsheets.com" };        
+        var allowedOrigins = new[]
+        {
+            "https://localhost:4200",
+            "https://gig-test.raptorsheets.com",
+            "https://gig.raptorsheets.com"
+        };
+
         services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigins", policy =>
             {
                 policy.WithOrigins(allowedOrigins)
-                     .AllowCredentials()
-                     .AllowAnyHeader()
-                     .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                     .WithExposedHeaders("Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "sheet-id");
+                      .AllowCredentials()
+                      .AllowAnyHeader()
+                      .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                      .WithExposedHeaders(
+                          "Content-Type",
+                          "X-Amz-Date",
+                          "Authorization",
+                          "X-Api-Key",
+                          "X-Amz-Security-Token",
+                          "sheet-id"
+                      );
             });
         });
 
@@ -39,17 +43,23 @@ public class Startup
         services.AddScoped<Filters.RequireSheetIdFilter>();
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-        }        app.UseHttpsRedirection();        
+        }
+
+        app.UseHttpsRedirection();
         app.UseRouting();
         app.UseCors("AllowSpecificOrigins");
-
         app.UseAuthorization();
+
+        app.UseWhen(
+            context => context.Request.Path.StartsWithSegments("/sheets", StringComparison.OrdinalIgnoreCase),
+            appBuilder => appBuilder.UseMiddleware<TokenRefreshMiddleware>()
+        );
+
 
         app.UseEndpoints(endpoints =>
         {

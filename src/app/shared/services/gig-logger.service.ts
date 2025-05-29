@@ -70,10 +70,21 @@ export class GigLoggerService {
 
     private setHeader(sheetId?: string) {
         let headers = new HttpHeaders();
+        
+        // Add Sheet-Id header if provided
         if (sheetId) {
             headers = headers.set('Sheet-Id', sheetId);
         }
+        
+        // Always set Content-Type
         headers = headers.set('Content-Type', "application/json");
+        
+        // Add Authorization header from access_token cookie
+        const accessToken = this._secureCookieStorage.getItem('access_token');
+        if (accessToken) {
+            headers = headers.set('Authorization', `Bearer ${accessToken}`);
+        }
+        
         console.log("Headers set:", headers);
         return headers;
     }
@@ -164,7 +175,7 @@ export class GigLoggerService {
     public async healthCheck(sheetId: string) {
         console.log("Performing health check for sheet ID:", sheetId);
         try {
-            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) }));
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/health`, this.setOptions(sheetId) ));
         } catch (error) {
             console.error('Error getting health check:', error);
             return null;

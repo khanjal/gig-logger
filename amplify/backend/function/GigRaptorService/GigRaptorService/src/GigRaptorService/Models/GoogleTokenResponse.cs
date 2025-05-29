@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 
+namespace GigRaptorService.Models;
+
 public class GoogleTokenResponse
 {
     [JsonPropertyName("access_token")]
