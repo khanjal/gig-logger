@@ -60,14 +60,9 @@ public class Startup
             appBuilder => appBuilder.UseMiddleware<TokenRefreshMiddleware>()
         );
 
-
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapGet("/", async context =>
-            {
-                await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
-            });
         });
     }
 }

@@ -12,28 +12,21 @@ public class SheetsController : ControllerBase
 {
     private SheetManager? _sheetmanager;
 
-    private void InitializeSheetmanager()
+    private void InitializeSheetmanager(string? sheetId = null)
     {
         RateLimiter.MaybeCleanupExpiredEntries();
 
-        var sheetId = HttpContext.Request.Headers["Sheet-Id"].ToString() ?? throw new Exception("SheetId must be provided.");
+        // If sheetId is not provided, get it from the header
+        sheetId ??= HttpContext.Request.Headers["Sheet-Id"].ToString();
+        if (string.IsNullOrEmpty(sheetId))
+            throw new Exception("SheetId must be provided.");
 
         if (!RateLimiter.IsRequestAllowed(sheetId))
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
 
         var accessToken = GetAccessTokenFromHeader();
-        // No need to check for null/empty; middleware guarantees it's valid
+        // Middleware guarantees accessToken is valid
         _sheetmanager = new SheetManager(accessToken!, sheetId);
-    }
-
-
-    private void InitializeSheetmanager(string sheetId)
-    {
-        var accessToken = GetAccessTokenFromHeader();
-        if (string.IsNullOrEmpty(accessToken))
-            throw new UnauthorizedAccessException("Missing or invalid Authorization header.");
-
-        _sheetmanager = new SheetManager(accessToken, sheetId);
     }
 
     private string? GetAccessTokenFromHeader()
