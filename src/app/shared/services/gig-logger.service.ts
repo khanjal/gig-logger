@@ -85,7 +85,6 @@ export class GigLoggerService {
             headers = headers.set('Authorization', `Bearer ${accessToken}`);
         }
         
-        console.log("Headers set:", headers);
         return headers;
     }
 
@@ -95,13 +94,11 @@ export class GigLoggerService {
             headers: this.setHeader(sheetId),
         };
 
-        console.log("Request options:", options);
         return options;
     }
 
     // Auth    
     public async setRefreshToken(authToken: string) { 
-        console.log("Setting Auth Token:", authToken);
         try {
             if (typeof authToken !== 'string') {
                 throw new Error('Invalid auth token format. Expected a string.');
@@ -117,15 +114,12 @@ export class GigLoggerService {
                 throw new Error('No PKCE verifier found in storage');
             }
 
-            console.log("Sending request with token data:", tokenData);
-
             const response = await firstValueFrom(this._http.post<any>(
                 `${this.apiUrl}/auth`, 
                 JSON.stringify(tokenData), 
                 this.setOptions()
             ));
 
-            console.log("Refresh token set successfully:", response);
             return response;
         } catch (error) {
             console.error('Error setting refresh token:', error);

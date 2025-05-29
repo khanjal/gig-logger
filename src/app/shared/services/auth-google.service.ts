@@ -32,7 +32,6 @@ export class AuthGoogleService {
     if (this.isInitialized) return;
 
     try {
-      this.logger.info('Initializing OAuth configuration');
       this.oAuthService.configure(authConfig);
       await this.oAuthService.loadDiscoveryDocument();
       
