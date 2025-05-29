@@ -25,18 +25,9 @@ public class SheetManager : ISheetManager
         TimeSpan.FromMinutes(1)     // Time window
     );
 
-    private readonly string _spreadsheetId;
-
     public SheetManager(string token, string sheetId)
     {
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
-        _spreadsheetId = sheetId;
-    }
-
-    public SheetManager(Dictionary<string, string> credentials, string sheetId)
-    {
-        _googleSheetManager = new GoogleSheetManager(credentials, sheetId);
-        _spreadsheetId = sheetId;
     }
 
     private static async Task EnforceRateLimitAsync(string spreadsheetId)

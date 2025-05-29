@@ -26,12 +26,14 @@ public class TokenRefreshMiddleware
             refreshToken = DecryptToken(encryptedRefreshToken);
         }
 
+        // If access token is present and valid, proceed without using the refresh token
         if (!string.IsNullOrEmpty(accessToken) && !IsJwtExpired(accessToken))
         {
             await _next(context);
             return;
         }
 
+        // Only attempt to use the refresh token if we need a new access token
         if (string.IsNullOrEmpty(refreshToken))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -39,21 +41,22 @@ public class TokenRefreshMiddleware
             return;
         }
 
-        // Refresh the access token using the refresh token
         try
         {
+            // Try to get a new access token using the refresh token
             var newAccessToken = await RefreshAccessTokenAsync(refreshToken, context);
             if (string.IsNullOrEmpty(newAccessToken))
             {
+                // If we can't get a new access token, do NOT attempt to refresh the refresh token
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsync("Failed to refresh access token.");
                 return;
             }
 
-            // Optionally set the new access token in a response header for the client
+            // Set the new access token in a response header for the client
             context.Response.Headers["X-New-Access-Token"] = newAccessToken;
 
-            // Optionally, you can also update the Authorization header for downstream
+            // Update the Authorization header for downstream
             context.Request.Headers["Authorization"] = $"Bearer {newAccessToken}";
 
             await _next(context);
@@ -85,7 +88,6 @@ public class TokenRefreshMiddleware
 
     private async Task<string?> RefreshAccessTokenAsync(string refreshToken, HttpContext context)
     {
-        // You may want to inject a service for this in production
         var clientId = "1037406003641-06neo4a41bh84equ3tafo5dgl2ftvopm.apps.googleusercontent.com";
         var clientSecret = "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";
         var tokenEndpoint = "https://oauth2.googleapis.com/token";
