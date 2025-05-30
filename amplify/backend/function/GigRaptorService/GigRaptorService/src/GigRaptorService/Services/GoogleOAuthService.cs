@@ -65,4 +65,27 @@ public class GoogleOAuthService
         var responseContent = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent);
     }
+
+    public async Task<GoogleTokenResponse> RequestGoogleTokenAsync(Dictionary<string, string> requestBody)
+    {
+        const string tokenEndpoint = "https://oauth2.googleapis.com/token";
+        var httpClient = _httpClientFactory.CreateClient();
+        var requestContent = new FormUrlEncodedContent(requestBody);
+
+        var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to retrieve token from Google: {errorContent}");
+        }
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var tokenResponse = System.Text.Json.JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent);
+
+        if (tokenResponse == null)
+            throw new Exception("Failed to parse token response from Google.");
+
+        return tokenResponse;
+    }
 }

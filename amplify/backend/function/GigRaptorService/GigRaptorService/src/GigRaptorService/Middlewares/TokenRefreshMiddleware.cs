@@ -37,7 +37,17 @@ public class TokenRefreshMiddleware
 
         if (!string.IsNullOrEmpty(encryptedRefreshToken))
         {
-            refreshToken = DecryptToken(encryptedRefreshToken);
+            try
+            {
+                refreshToken = DecryptToken(encryptedRefreshToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to decrypt refresh token cookie. Possible tampering or corruption.");
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Refresh token is invalid or corrupted.");
+                return;
+            }
         }
 
         // If access token is present and valid, proceed without using the refresh token

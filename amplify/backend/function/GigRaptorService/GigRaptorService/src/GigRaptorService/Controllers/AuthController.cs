@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
             { "code_verifier", codeVerifier }
         };
 
-        var tokenResponse = await RequestGoogleTokenAsync(requestBody);
+        var tokenResponse = await _googleOAuthService.RequestGoogleTokenAsync(requestBody);
 
         if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
         {
@@ -67,16 +67,11 @@ public class AuthController : ControllerBase
 
         var encryptedToken = EncryptToken(tokenResponse.RefreshToken);
 
-        var cookieOptions = new CookieOptions
-        {
-            Expires = DateTimeOffset.UtcNow.AddSeconds(tokenResponse.RefreshTokenExpiresIn),
-            HttpOnly = true,
-            Path = "/",
-            SameSite = SameSiteMode.None,
-            Secure = true,
-        };
-
-        Response.Cookies.Append(RefreshTokenCookieName, encryptedToken, cookieOptions);
+        Response.Cookies.Append(
+            RefreshTokenCookieName,
+            encryptedToken,
+            GetRefreshTokenCookieOptions(DateTimeOffset.UtcNow.AddSeconds(tokenResponse.RefreshTokenExpiresIn))
+        );
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
     }
@@ -84,7 +79,10 @@ public class AuthController : ControllerBase
     [HttpPost("clear")]
     public IActionResult Clear()
     {
-        Response.Cookies.Delete(RefreshTokenCookieName);
+        Response.Cookies.Delete(
+            RefreshTokenCookieName,
+            GetRefreshTokenCookieOptions()
+        );
         return Ok();
     }
 
@@ -115,27 +113,15 @@ public class AuthController : ControllerBase
     {
         return !string.IsNullOrEmpty(refreshToken);
     }
-
-    private async Task<GoogleTokenResponse> RequestGoogleTokenAsync(Dictionary<string, string> requestBody)
+    private CookieOptions GetRefreshTokenCookieOptions(DateTimeOffset? expires = null)
     {
-        const string tokenEndpoint = "https://oauth2.googleapis.com/token";
-        var httpClient = _httpClientFactory.CreateClient();
-        var requestContent = new FormUrlEncodedContent(requestBody);
-
-        var response = await httpClient.PostAsync(tokenEndpoint, requestContent);
-
-        if (!response.IsSuccessStatusCode)
+        return new CookieOptions
         {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to retrieve token from Google: {errorContent}");
-        }
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var tokenResponse = System.Text.Json.JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent);
-
-        if (tokenResponse == null)
-            throw new Exception("Failed to parse token response from Google.");
-
-        return tokenResponse;
+            Path = "/",
+            HttpOnly = true,
+            SameSite = SameSiteMode.None,
+            Secure = true,
+            Expires = expires
+        };
     }
 }
