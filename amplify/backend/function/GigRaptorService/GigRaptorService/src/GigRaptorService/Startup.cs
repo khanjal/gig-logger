@@ -1,4 +1,7 @@
-﻿namespace GigRaptorService;
+﻿using GigRaptorService.Middlewares;
+using GigRaptorService.Services;
+
+namespace GigRaptorService;
 
 public class Startup
 {
@@ -9,26 +12,41 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
-
-        services.AddCors(option =>
+        var allowedOrigins = new[]
         {
-            option.AddDefaultPolicy(builder =>
+            "https://localhost:4200",
+            "https://gig-test.raptorsheets.com",
+            "https://gig.raptorsheets.com"
+        };
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigins", policy =>
             {
-                builder.WithOrigins("*");
-                builder.AllowAnyOrigin();
-                builder.AllowAnyHeader();
-                builder.AllowAnyMethod();
+                policy.WithOrigins(allowedOrigins)
+                      .AllowCredentials()
+                      .AllowAnyHeader()
+                      .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                      .WithExposedHeaders(
+                          "Content-Type",
+                          "X-Amz-Date",
+                          "Authorization",
+                          "X-Api-Key",
+                          "X-Amz-Security-Token",
+                          "sheet-id"
+                      );
             });
         });
 
+        services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
+        services.AddScoped<GoogleOAuthService>();
+
+        services.AddHttpClient();
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
@@ -37,20 +55,18 @@ public class Startup
         }
 
         app.UseHttpsRedirection();
-
         app.UseRouting();
-
-        app.UseCors();
-
+        app.UseCors("AllowSpecificOrigins");
         app.UseAuthorization();
+
+        app.UseWhen(
+            context => context.Request.Path.StartsWithSegments("/sheets", StringComparison.OrdinalIgnoreCase),
+            appBuilder => appBuilder.UseMiddleware<TokenRefreshMiddleware>()
+        );
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapGet("/", async context =>
-            {
-                await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
-            });
         });
     }
 }

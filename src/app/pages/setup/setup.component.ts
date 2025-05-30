@@ -11,6 +11,7 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { MatIcon } from '@angular/material/icon';
 import { NgIf, NgFor } from '@angular/common';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
@@ -19,13 +20,14 @@ import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
 import { DiagnosticsComponent } from '../../shared/components/diagnostics/diagnostics.component';
+import { LoginComponent } from "@components/login/login.component";
 
 @Component({
     selector: 'app-setup',
     templateUrl: './setup.component.html',
     styleUrls: ['./setup.component.scss'],
     standalone: true,
-    imports: [MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, MatCard, MatCardHeader, MatCardContent, SheetQuotaComponent, ServiceWorkerStatusComponent, DiagnosticsComponent]
+    imports: [MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, MatCard, MatCardHeader, MatCardContent, SheetQuotaComponent, ServiceWorkerStatusComponent, DiagnosticsComponent, LoginComponent]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
@@ -36,7 +38,6 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
-
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -44,7 +45,8 @@ export class SetupComponent {
     private _spreadsheetService: SpreadsheetService,
     private _shiftService: ShiftService,
     private _tripService: TripService,
-    private _timerService: TimerService
+    private _timerService: TimerService,
+    protected authService: AuthGoogleService
   ) { }
 
   async ngOnInit(): Promise<void> {

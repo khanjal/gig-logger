@@ -40,6 +40,9 @@ import { IService } from "@interfaces/service.interface";
 import { IRegion } from "@interfaces/region.interface";
 import { IName } from "@interfaces/name.interface";
 import { IPlace } from "@interfaces/place.interface";
+import { SecureCookieStorageService } from './secure-cookie-storage.service';
+import { authConfig } from './auth.config';
+import { AUTH_CONSTANTS } from "@constants/auth.constants";
 
 @Injectable({
     providedIn: 'root'
@@ -49,6 +52,7 @@ export class GigLoggerService {
 
     constructor(
         private _http: HttpClient,
+        private _secureCookieStorage: SecureCookieStorageService,
         private _addressService: AddressService,
         private _dailyService: DailyService,
         private _deliveryService: DeliveryService,
@@ -65,16 +69,81 @@ export class GigLoggerService {
         private _yearlyService: YearlyService
     ) {}
 
-    private setHeader(sheetId: string) {
+    private setHeader(sheetId?: string) {
         let headers = new HttpHeaders();
-        headers = headers.set('Sheet-Id', sheetId);
+        
+        // Add Sheet-Id header if provided
+        if (sheetId) {
+            headers = headers.set('Sheet-Id', sheetId);
+        }
+        
+        // Always set Content-Type
         headers = headers.set('Content-Type', "application/json");
+        
+        // Add Authorization header from access_token cookie
+        const accessToken = this._secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+        if (accessToken) {
+            headers = headers.set('Authorization', `Bearer ${accessToken}`);
+        }
+        
         return headers;
+    }
+
+    private setOptions(sheetId?: string) {
+        const options = {
+            withCredentials: true, // Ensures cookies are sent with requests
+            headers: this.setHeader(sheetId),
+        };
+
+        return options;
+    }
+
+    // Auth    
+    public async setRefreshToken(authToken: string) { 
+        try {
+            if (typeof authToken !== 'string') {
+                throw new Error('Invalid auth token format. Expected a string.');
+            }
+
+            const tokenData = {
+                code: authToken,
+                codeVerifier: this._secureCookieStorage.getItem(AUTH_CONSTANTS.PKCE_VERIFIER),
+                redirectUri: authConfig.redirectUri
+            };
+
+            if (!tokenData.codeVerifier) {
+                throw new Error('No PKCE verifier found in storage');
+            }
+
+            const response = await firstValueFrom(this._http.post<any>(
+                `${this.apiUrl}/auth`, 
+                JSON.stringify(tokenData), 
+                this.setOptions()
+            ));
+
+            return response;
+        } catch (error) {
+            console.error('Error setting refresh token:', error);
+            return null;
+        }
+    }
+
+    public async clearRefreshToken() { 
+        return this._http.post<any>(`${this.apiUrl}/auth/clear`, null);
+    }
+
+    public async refreshAuthToken() { 
+        try {
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/auth/refresh`, this.setOptions()));
+        } catch (error) {
+            console.error('Error getting access token:', error);
+            return null;
+        }
     }
 
     public async getSheetData(sheetId: string) {
         try {
-            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, { headers: this.setHeader(sheetId) }));
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, this.setOptions(sheetId)));
         } catch (error) {
             console.error('Error getting sheet data:', error);
             return null;
@@ -82,16 +151,16 @@ export class GigLoggerService {
     }
 
     public async getSheetSingle(sheetId: string, sheetName: string) {
-        return this._http.get(`${this.apiUrl}/sheets/single/${sheetName}`, { headers: this.setHeader(sheetId) });
+        return this._http.get(`${this.apiUrl}/sheets/single/${sheetName}`, this.setOptions(sheetId));
     }
 
     public async getSecondarySheetData(sheetId: string) {
-        return this._http.get(`${this.apiUrl}/sheets/multiple?sheetName=names&sheetName=places&sheetName=trips`, { headers: this.setHeader(sheetId) });
+        return this._http.get(`${this.apiUrl}/sheets/multiple?sheetName=names&sheetName=places&sheetName=trips`, this.setOptions(sheetId));
     }
 
     public async warmupLambda(sheetId: string): Promise<any> {
         try {
-            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/check`, { headers: this.setHeader(sheetId) }));
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/check`, this.setOptions(sheetId)));
         } catch (error) {
             console.error('Error warming up Lambda:', error);
             return null;
@@ -99,8 +168,9 @@ export class GigLoggerService {
     }
 
     public async healthCheck(sheetId: string) {
+        console.log("Performing health check for sheet ID:", sheetId);
         try {
-            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/health`, { headers: this.setHeader(sheetId) }));
+            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/health`, this.setOptions(sheetId) ));
         } catch (error) {
             console.error('Error getting health check:', error);
             return null;
@@ -109,7 +179,7 @@ export class GigLoggerService {
 
     public async postSheetData(sheetData: ISheet): Promise<any> {
         try {
-            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), { headers: this.setHeader(sheetData.properties.id) }));
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/sheets/save`, JSON.stringify(sheetData), this.setOptions(sheetData.properties.id)));
         } catch (error) {
             console.error('Error posting sheet data:', error);
             return null;
@@ -117,7 +187,7 @@ export class GigLoggerService {
     }
 
     public async createSheet(properties: ISheetProperties){
-        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties), { headers: this.setHeader(properties.id) });
+        return this._http.post<any>(`${this.apiUrl}/sheets/create`, JSON.stringify(properties), this.setOptions(properties.id));
     }
 
     public async loadData(sheetData: ISheet) {

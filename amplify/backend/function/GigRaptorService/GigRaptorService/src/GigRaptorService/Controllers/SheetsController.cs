@@ -12,24 +12,29 @@ public class SheetsController : ControllerBase
 {
     private SheetManager? _sheetmanager;
 
-    private void InitializeSheetmanger()
+    private void InitializeSheetmanager(string? sheetId = null)
     {
-        // Perform cleanup
         RateLimiter.MaybeCleanupExpiredEntries();
 
-        var sheetId = HttpContext.Request.Headers["Sheet-Id"].ToString() ?? throw new Exception("SheetId must be provided.");
+        // If sheetId is not provided, get it from the header
+        sheetId ??= HttpContext.Request.Headers["Sheet-Id"].ToString();
+        if (string.IsNullOrEmpty(sheetId))
+            throw new Exception("SheetId must be provided.");
 
         if (!RateLimiter.IsRequestAllowed(sheetId))
-        {
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
-        }
 
-        _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), sheetId?.ToString()!);
+        var accessToken = GetAccessTokenFromHeader();
+        // Middleware guarantees accessToken is valid
+        _sheetmanager = new SheetManager(accessToken!, sheetId);
     }
 
-    private void InitializeSheetmanger(string sheetId)
+    private string? GetAccessTokenFromHeader()
     {
-        _sheetmanager = new SheetManager(ConfigurationHelper.GetJsonCredential(), sheetId);
+        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            return null;
+        return authHeader.Substring("Bearer ".Length).Trim();
     }
 
     // GET api/sheets/all
@@ -37,7 +42,7 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetEntity?> GetAll()
     {
-        InitializeSheetmanger();
+        InitializeSheetmanager();
         return await _sheetmanager!.GetSheets();
     }
 
@@ -46,7 +51,7 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetEntity?> GetSingle(string sheetName)
     {
-        InitializeSheetmanger();
+        InitializeSheetmanager();
         return await _sheetmanager!.GetSheet(sheetName);
     }
 
@@ -54,7 +59,7 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetEntity?> GetMultiple([FromQuery] string[] sheetName)
     {
-        InitializeSheetmanger();
+        InitializeSheetmanager();
         return await _sheetmanager!.GetSheets(sheetName);
     }
 
@@ -63,7 +68,7 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<bool> Health()
     {
-        InitializeSheetmanger();
+        InitializeSheetmanager();
         await Task.CompletedTask;
         return true;
     }
@@ -73,7 +78,7 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetEntity> Create([FromBody] PropertyEntity properties)
     {
-        InitializeSheetmanger();
+        InitializeSheetmanager();
         return await _sheetmanager!.CreateSheet();
     }
 
@@ -82,7 +87,7 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
     {
-        InitializeSheetmanger(sheetEntity.Properties.Id);
+        InitializeSheetmanager(sheetEntity.Properties.Id);
         return await _sheetmanager!.SaveData(sheetEntity);
     }
 }
