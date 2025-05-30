@@ -30,23 +30,34 @@
     <h1>Instructions</h1>
     <ol>
         <li>Create a new Google spreadsheet</li>
-        <li>Open <strong>File > Share > Share with others</strong></li>
-        <li>Add <strong>srvsheets&#64;gig-sheets.iam.gserviceaccount.com</strong> as an <strong>editor</strong></li>
-        <li>Go to setup page and add your spreadsheet id/link to the site</li>
+        <li>Go to setup page and login</li>
+        <li>Click "Add Spreadsheet" and enter your Google sheet ID/Link</li>
         <li>Do not share your Google sheet ID with anyone!</li>
     </ol>
 
     <h1>Normal Use</h1>
-    <p>After setting up your Google Sheet and linking it to the app, you are ready to start logging your trips. Navigate to the Trips page to begin. If you haven't logged any trips today, the Shift/Group dropdown will display "New." Select or enter a service in the Service field, and optionally set a region to track trips in a specific area. This region will be reused for all trips in the same shift.</p>
-    <p>When you accept an offer from your delivery app, start by filling out the Service and Region fields (if not already selected). Enter the pay and distance, then click "Store." For subsequent trips in the same shift, you can quickly add the pay and distance first. Complete the remaining details, such as Place, Type, Name, and pickup/destination addresses, when you arrive at the pickup or destination.</p>
-    <p>After completing the delivery, click the "Dropoff" button to record the dropoff time. At this stage, ensure that most of the trip details are filled out. You can update the pay amount later to separate the base pay from the tip if needed.</p>
+    <ol>
+        <li><strong>Goto Trips:</strong> Navigate to the Trips page after linking your Google Sheet</li>
+        <li><strong>Start Shift:</strong> Select or enter a service and optionally set a region for tracking</li>
+        <li><strong>Accept Offer:</strong> Enter pay and distance, then click "Store"</li>
+        <li><strong>At Pickup:</strong> Fill in Place, Type, Name, and pickup/destination address details</li>
+        <li><strong>Complete Delivery:</strong> Click "Dropoff" button to record completion time</li>
+        <li><strong>Finalize:</strong> Update pay amount if needed to separate base pay from tips</li>
+    </ol>
 
     <h1>Advanced Use</h1>
-    <p>Each trip has a menu (represented by three dots) at the bottom, offering options to add a Next trip, Clone/Copy the trip, or Delete it. Adding a Next trip creates a new trip with the same pickup location and name. Cloning creates an exact copy of the trip, while deleting removes the trip if it hasn't been saved or flags it for deletion on the next save.</p>
-    <p>The Place and Address fields allow you to search for input using Google Maps. This feature enables you to enter partial names or addresses and look them up later. For convenience, you can copy these fields directly from the Google Maps app or website.</p>
+    <ul>
+        <li><strong>Trip Menu:</strong> Use the three dots at the bottom of each trip for additional options</li>
+        <ul>
+            <li><strong>Next Trip:</strong> Creates a new trip with the same pickup location and name</li>
+            <li><strong>Clone/Copy:</strong> Creates an exact duplicate of the current trip</li>
+            <li><strong>Delete:</strong> Removes unsaved trips or flags saved trips for deletion</li>
+        </ul>
+        <li><strong>Google Maps Search:</strong> Click the map on Place and Address fields to search and lookup locations</li>
+        <li><strong>Copy from Maps:</strong> Paste addresses directly from Google Maps app or website</li>
+    </ul>
 
-    <h1>Sheets</h1>
-    <p>Structure</p>
+    <h1>Sheets & Heirarchy</h1>
     <ul>
         <li>Trips</li>
         <ul>
@@ -72,13 +83,15 @@
             <li>Types</li>
         </ul>
     </ul>
-    <h1>Demo</h1>
+    
+    <!-- <h1>Demo</h1>
     <p>
         Head to <a href="/setup">setup</a> page to try out the demo spreadsheet.
     </p>
     <p>
         View demo spreadsheet <a href="https://docs.google.com/spreadsheets/d/{{ demoSheetId }}/" target="_blank">here</a>.
-    </p>
+    </p> -->
+
     <h1>FAQ</h1>
     <ul>
         <li>
@@ -114,11 +127,16 @@
             <p>If you notice that data has been removed or overwritten, you can review the version history in Google Sheets by going to File > Version history. This will allow you to restore previous versions of the sheet. You may need to manually re-enter any changes. Once you've restored the missing data, don't forget to click Update from Spreadsheet on the website to sync the changes.</p>
         </li>
     </ul>
-    <h1 id="contact">Contact</h1>
-    <h2>Have a feature, idea, issue, bug, or any other question? Let me know using the contact link below.</h2>
+
+    <h1 id="contact">Questions, feedback, or found a bug?</h1>
     <p>
         Send me a message on Discord: 
         <a href="https://discord.com/users/235747179459772416" target="_blank">Khan Jal</a>
+    </p>
+
+    <h1>Support</h1>
+    <p>
+        If you like this app, consider supporting it by donating. Your support helps keep the app running and allows me to continue improving it.
     </p>
 
     <footer class="legal-links">
