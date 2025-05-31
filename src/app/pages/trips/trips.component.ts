@@ -111,40 +111,40 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async loadSheetDialog(inputValue: string) {
-      let dialogRef = this.dialog.open(DataSyncModalComponent, {
-          height: '400px',
-          width: '500px',
-          panelClass: 'custom-modalbox',
-          data: inputValue
-      });
+    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+        height: '400px',
+        width: '500px',
+        panelClass: 'custom-modalbox',
+        data: inputValue
+    });
 
-      dialogRef.afterClosed().subscribe(async result => {
+    dialogRef.afterClosed().subscribe(async result => {
 
-          if (result) {
-              await this.reload("todaysTrips");
-          }
-      });
+        if (result) {
+            await this.reload("todaysTrips");
+        }
+    });
   }
 
   async saveSheetDialog(inputValue: string) {
-      let dialogRef = this.dialog.open(DataSyncModalComponent, {
-          height: '400px',
-          width: '500px',
-          panelClass: 'custom-modalbox',
-          data: inputValue
-      });
+    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+        height: '400px',
+        width: '500px',
+        panelClass: 'custom-modalbox',
+        data: inputValue
+    });
 
-      dialogRef.afterClosed().subscribe(async result => {
+    dialogRef.afterClosed().subscribe(async result => {
 
-          if (result) {
-              await this._tripService.saveUnsaved();
-              await this._shiftService.saveUnsavedShifts();
-              this._snackBar.open("Trip(s) Saved to Spreadsheet");
+      if (result) {
+          await this._tripService.saveUnsaved();
+          await this._shiftService.saveUnsavedShifts();
+          this._snackBar.open("Trip(s) Saved to Spreadsheet");
 
-              await this.reload("todaysTrips");
-              this._viewportScroller.scrollToAnchor("todaysTrips");
-          }
-      });
+          await this.reload("todaysTrips");
+          this._viewportScroller.scrollToAnchor("todaysTrips");
+      }
+    });
   }
     
   async confirmSaveTripsDialog() {

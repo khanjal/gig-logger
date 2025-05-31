@@ -20,12 +20,12 @@ export class PollingService implements OnDestroy {
   private processing = false;
 
   constructor(
-        private _snackBar: MatSnackBar,
-        private _sheetService: SpreadsheetService,
-        private _gigLoggerService: GigLoggerService,
-        private _shiftService: ShiftService,
-        private _tripService: TripService,
-      ) { }
+      private _snackBar: MatSnackBar,
+      private _sheetService: SpreadsheetService,
+      private _gigLoggerService: GigLoggerService,
+      private _shiftService: ShiftService,
+      private _tripService: TripService,
+    ) { }
 
   async startPolling() {
     // Do intial check to see if there are any unsaved trips or shifts
@@ -87,6 +87,8 @@ export class PollingService implements OnDestroy {
     // Post data to Google Sheets
     let postResult = await this._gigLoggerService.postSheetData(sheetData);
     if (!postResult) {
+      this._snackBar.open("Error saving data to spreadsheet");
+      console.error('Error saving data to spreadsheet');
       return
     }
 
