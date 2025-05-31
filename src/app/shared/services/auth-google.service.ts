@@ -74,6 +74,7 @@ export class AuthGoogleService {
       this.setAuthenticationState(true);
 
       window.history.replaceState(null, '', window.location.pathname);
+      window.location.reload();
     } catch (error) {
       this.logger.error('Error exchanging code for tokens', error);
       await this.logout();

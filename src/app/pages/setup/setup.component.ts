@@ -21,7 +21,6 @@ import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
 import { DiagnosticsComponent } from '../../shared/components/diagnostics/diagnostics.component';
 import { LoginComponent } from "@components/login/login.component";
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-setup',
@@ -41,8 +40,6 @@ export class SetupComponent {
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -56,13 +53,6 @@ export class SetupComponent {
 
   async ngOnInit(): Promise<void> {
     this.isAuthenticated = await this.authService.isAuthenticated();
-
-    // Subscribe to authentication changes
-    this.authService.profile$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(profile => {
-        this.isAuthenticated = !!profile;
-      });
 
     this.load();
   }

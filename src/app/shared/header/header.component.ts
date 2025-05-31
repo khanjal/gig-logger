@@ -3,10 +3,9 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-header',
@@ -15,16 +14,14 @@ import { Subject, takeUntil } from 'rxjs';
     standalone: true,
     imports: [MatToolbar, RouterLink, MatIcon, RouterOutlet]
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit {
   defaultSheet: ISpreadsheet | undefined;
   isAuthenticated = false;
-  private destroy$ = new Subject<void>();
   
   constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
     private authService: AuthGoogleService,
-    private router: Router
   ) { 
     this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
         this.load();
@@ -34,29 +31,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     // Check authentication state
     this.isAuthenticated = await this.authService.isAuthenticated();
-    
-    // Subscribe to authentication changes
-    this.authService.profile$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(profile => {
-        this.isAuthenticated = !!profile;
-        // Reload data when authentication changes
-        if (this.isAuthenticated) {
-          this.load();
-        } else {
-          this.defaultSheet = undefined;
-        }
-      });
 
     // Load initial data if authenticated
     if (this.isAuthenticated) {
       this.load();
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   public async load() {
