@@ -113,9 +113,10 @@ public class AuthController : ControllerBase
     {
         return !string.IsNullOrEmpty(refreshToken);
     }
+
     private CookieOptions GetRefreshTokenCookieOptions(DateTimeOffset? expires = null)
     {
-        return new CookieOptions
+        var options = new CookieOptions
         {
             Path = "/",
             HttpOnly = true,
@@ -123,5 +124,7 @@ public class AuthController : ControllerBase
             Secure = true,
             Expires = expires
         };
+
+        return options;
     }
 }
