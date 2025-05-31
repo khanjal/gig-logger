@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { Subject, takeUntil } from 'rxjs';
 
 const MODULES: any[] = [
   CommonModule,
@@ -24,17 +25,28 @@ const MODULES: any[] = [
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
+  isAuthenticated = false;
+  private destroy$ = new Subject<void>();
+
   constructor(protected authService: AuthGoogleService) {}
 
-  get isAuthenticated(): boolean {
-    return this.authService.isAuthenticated();
+  async ngOnInit() {
+    // Check authentication state (this may trigger a refresh)
+    this.isAuthenticated = await this.authService.isAuthenticated();
+
+    // Subscribe to authentication changes
+    this.authService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(profile => {
+        this.isAuthenticated = !!profile;
+      });
   }
 
   signInWithGoogle() {
     this.authService.login();
   }
 
-  signOut() {
-    this.authService.logout();
+  async signOut() {
+    await this.authService.logout();
   }
 }

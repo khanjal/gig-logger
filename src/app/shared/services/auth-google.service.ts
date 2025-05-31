@@ -13,8 +13,9 @@ import { AUTH_CONSTANTS } from '@constants/auth.constants';
   providedIn: 'root',
 })
 export class AuthGoogleService {
-  private profile$ = new BehaviorSubject<UserProfile | null>(null);
+  public profile$ = new BehaviorSubject<UserProfile | null>(null);
   private isInitialized = false;
+  private readonly IS_AUTHENTICATED_KEY = 'is_authenticated';
 
   constructor(
     private oAuthService: OAuthService,
@@ -48,6 +49,10 @@ export class AuthGoogleService {
     }
   }
 
+   private setAuthenticationState(isAuthenticated: boolean): void {
+    localStorage.setItem(this.IS_AUTHENTICATED_KEY, isAuthenticated.toString());
+  }
+
   private async handleAuthorizationCode(code: string): Promise<void> {
     try {
       const response = await this.gigLoggerService.setRefreshToken(code);
@@ -64,6 +69,9 @@ export class AuthGoogleService {
         throw new Error('Failed to validate access token');
       }
       this.profile$.next(profile);
+      
+      // Set authentication state in localStorage
+      this.setAuthenticationState(true);
 
       window.history.replaceState(null, '', window.location.pathname);
     } catch (error) {
@@ -94,6 +102,9 @@ export class AuthGoogleService {
       }
       this.profile$.next(profile);
       
+      // Update authentication state
+      this.setAuthenticationState(true);
+      
       this.logger.info('Access token refreshed and validated successfully');
     } catch (error) {
       this.logger.error('Error refreshing token', error);
@@ -107,7 +118,7 @@ export class AuthGoogleService {
     
     try {
       // Clear backend tokens first
-      await this.gigLoggerService.clearRefreshToken();
+      await this.gigLoggerService.clearRefreshToken(); 
     } catch (error) {
       this.logger.error('Error clearing refresh token', error);
     } finally {
@@ -115,12 +126,59 @@ export class AuthGoogleService {
       this.secureCookieStorage.removeItem(AUTH_CONSTANTS.ACCESS_TOKEN);
       this.oAuthService.logOut();
       this.profile$.next(null);
+      
+      // Set authentication state to false
+      this.setAuthenticationState(false);
+      
       this.logger.info('Local state cleared');
     }
   }
 
-  isAuthenticated(): boolean {
-    return !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+  async isAuthenticated(): Promise<boolean> {
+      const hasToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+      
+      // If we have an access token, we're authenticated
+      if (hasToken) {
+          this.setAuthenticationState(true);
+          return true;
+      }
+
+      // No access token - check localStorage
+      const localStorageAuth = localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
+      
+      if (localStorageAuth) {
+          // localStorage says we should be authenticated, try to refresh
+          try {
+              await this.refreshToken();
+              // Check if refresh was successful
+              const refreshedToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+              if (refreshedToken) {
+                  return true;
+              } else {
+                  // Refresh failed, clear localStorage
+                  this.setAuthenticationState(false);
+                  return false;
+              }
+          } catch (error) {
+              this.logger.info('Token refresh failed, clearing authentication state');
+              this.setAuthenticationState(false);
+              return false;
+          }
+      }
+      
+      // No token and localStorage is false/not set
+      this.setAuthenticationState(false);
+      return false;
+  }
+
+  // Keep the synchronous version for cases where you can't use async
+  isAuthenticatedSync(): boolean {
+      return !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+  }
+
+  // Method to get authentication state from localStorage only
+  getAuthenticationFromStorage(): boolean {
+    return localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
   }
 
   async getProfile(): Promise<UserProfile | null> {

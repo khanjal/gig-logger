@@ -129,7 +129,12 @@ export class GigLoggerService {
     }
 
     public async clearRefreshToken() { 
-        return this._http.post<any>(`${this.apiUrl}/auth/clear`, null);
+        try {
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/auth/clear`, null));
+        } catch (error) {
+            console.error('Error clearing access tokens:', error);
+            return null;
+        }
     }
 
     public async refreshAuthToken() { 

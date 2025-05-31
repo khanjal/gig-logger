@@ -7,7 +7,7 @@
         <app-login></app-login>
     </div>    
     
-    <div class="section" *ngIf="authService.isAuthenticated()">
+    <div class="section" *ngIf="isAuthenticated">
         <h2>Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
         <sheet-add-form (parentReload)="reload()"></sheet-add-form>
     </div>
