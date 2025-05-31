@@ -93,6 +93,8 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(refreshToken))
             return Unauthorized(new { message = "Refresh token is missing or invalid." });
 
+        refreshToken = DecryptToken(refreshToken);
+
         if (!ValidateRefreshToken(refreshToken))
             return Unauthorized(new { message = "Invalid refresh token." });
 
@@ -101,6 +103,12 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Failed to retrieve access token from Google." });
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
+    }
+
+    private string DecryptToken(string encryptedToken)
+    {
+        var key = _configuration["Encryption:Key"]!;
+        return TokenEncryptionHelper.Decrypt(encryptedToken, key);
     }
 
     private string EncryptToken(string token)

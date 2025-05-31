@@ -139,7 +139,12 @@ export class GigLoggerService {
 
     public async refreshAuthToken() { 
         try {
-            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/auth/refresh`, this.setOptions()));
+            const response = await firstValueFrom(this._http.post<any>(
+                `${this.apiUrl}/auth/refresh`, 
+                null, // No body needed for refresh
+                this.setOptions()
+            ));
+            return response;
         } catch (error) {
             console.error('Error getting access token:', error);
             return null;
