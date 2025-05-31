@@ -135,45 +135,45 @@ export class AuthGoogleService {
   }
 
   async isAuthenticated(): Promise<boolean> {
-      const hasToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
-      
-      // If we have an access token, we're authenticated
-      if (hasToken) {
-          this.setAuthenticationState(true);
-          return true;
-      }
+    const hasToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+    
+    // If we have an access token, we're authenticated
+    if (hasToken) {
+        this.setAuthenticationState(true);
+        return true;
+    }
 
-      // No access token - check localStorage
-      const localStorageAuth = localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
-      
-      if (localStorageAuth) {
-          // localStorage says we should be authenticated, try to refresh
-          try {
-              await this.refreshToken();
-              // Check if refresh was successful
-              const refreshedToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
-              if (refreshedToken) {
-                  return true;
-              } else {
-                  // Refresh failed, clear localStorage
-                  this.setAuthenticationState(false);
-                  return false;
-              }
-          } catch (error) {
-              this.logger.info('Token refresh failed, clearing authentication state');
-              this.setAuthenticationState(false);
-              return false;
-          }
-      }
-      
-      // No token and localStorage is false/not set
-      this.setAuthenticationState(false);
-      return false;
+    // No access token - check localStorage
+    const localStorageAuth = localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
+    
+    if (localStorageAuth) {
+        // localStorage says we should be authenticated, try to refresh
+        try {
+            await this.refreshToken();
+            // Check if refresh was successful
+            const refreshedToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+            if (refreshedToken) {
+                return true;
+            } else {
+                // Refresh failed, clear localStorage
+                this.setAuthenticationState(false);
+                return false;
+            }
+        } catch (error) {
+            this.logger.info('Token refresh failed, clearing authentication state');
+            this.setAuthenticationState(false);
+            return false;
+        }
+    }
+    
+    // No token and localStorage is false/not set
+    this.setAuthenticationState(false);
+    return false;
   }
 
   // Keep the synchronous version for cases where you can't use async
   isAuthenticatedSync(): boolean {
-      return !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+    return !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }
 
   // Method to get authentication state from localStorage only
