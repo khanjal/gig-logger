@@ -43,6 +43,7 @@ import { IPlace } from "@interfaces/place.interface";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
+import { ISpreadsheet } from "@interfaces/spreadsheet.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -151,6 +152,28 @@ export class GigLoggerService {
         }
     }
 
+    // Files
+    // Create File
+    public async createFile(properties: ISheetProperties): Promise<ISheet | null> {
+        try {
+            return await firstValueFrom(this._http.post<any>(`${this.apiUrl}/files/create`, JSON.stringify(properties), this.setOptions()));
+        } catch (error) {
+            console.error('Error creating file:', error);
+            return null;
+        }
+    }
+
+    // List files
+    public async listFiles() {
+        try {
+            return await firstValueFrom(this._http.get<any[]>(`${this.apiUrl}/files/list`, this.setOptions()));
+        } catch (error) {
+            console.error('Error listing files:', error);
+            return [];
+        }
+    }
+
+    // Sheets
     public async getSheetData(sheetId: string) {
         try {
             return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, this.setOptions(sheetId)));

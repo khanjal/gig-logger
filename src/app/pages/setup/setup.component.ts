@@ -1,33 +1,59 @@
+// Angular Core
 import { Component, ViewChild } from '@angular/core';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { SpreadsheetService } from '@services/spreadsheet.service';
-import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
-import { TimerService } from '@services/timer.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonService } from '@services/common.service';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+
+// Angular Material
+import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { MatFabButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+// App Components
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
-import { ShiftService } from '@services/sheets/shift.service';
-import { TripService } from '@services/sheets/trip.service';
-import { AuthGoogleService } from '@services/auth-google.service';
-import { MatIcon } from '@angular/material/icon';
-import { NgIf, NgFor, CommonModule } from '@angular/common';
-import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
-import { MatFabButton } from '@angular/material/button';
-import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
-import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
-import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
 import { DiagnosticsComponent } from '../../shared/components/diagnostics/diagnostics.component';
 import { LoginComponent } from "@components/login/login.component";
+import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
+import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
+import { SheetLinkComponent } from './sheet-link/sheet-link.component';
+import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
+import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
+
+// App Interfaces
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+
+// App Services
+import { AuthGoogleService } from '@services/auth-google.service';
+import { CommonService } from '@services/common.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
+import { TimerService } from '@services/timer.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
     selector: 'app-setup',
     templateUrl: './setup.component.html',
     styleUrls: ['./setup.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon, SheetAddFormComponent, NgIf, NgFor, SheetQuickViewComponent, MatFabButton, MatCard, MatCardHeader, MatCardContent, SheetQuotaComponent, ServiceWorkerStatusComponent, DiagnosticsComponent, LoginComponent]
+    imports: [
+        CommonModule,
+        NgIf,
+        NgFor,
+        MatCard,
+        MatCardContent,
+        MatCardHeader,
+        MatFabButton,
+        MatIcon,
+        DiagnosticsComponent,
+        LoginComponent,
+        ServiceWorkerStatusComponent,
+        SheetAddFormComponent,
+        SheetLinkComponent,
+        SheetQuickViewComponent,
+        SheetQuotaComponent
+    ]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
