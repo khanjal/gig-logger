@@ -68,14 +68,13 @@ export class SheetLinkComponent {
         // User selected a sheet
         console.log('Selected sheet:', result);
         
-        this._gigLoggerService.getSheetData(result.id).then((sheetData) => {
-          if (sheetData) {
-            sheetData.properties.id = result.id; // Ensure the ID is set correctly
-            this.linkSheet(sheetData);
-          } else {
-            this._snackBar.open('Error retrieving sheet data', 'Close');
-          }
-        });
+        let sheetData = {} as ISheet;
+        sheetData.properties = {
+          id: result.id,
+          name: result.name
+        };
+
+        this.linkSheet(sheetData);
       }
     });
   }
