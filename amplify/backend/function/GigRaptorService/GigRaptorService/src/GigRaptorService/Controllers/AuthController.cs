@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
         Response.Cookies.Append(
             RefreshTokenCookieName,
             encryptedToken,
-            GetRefreshTokenCookieOptions(DateTimeOffset.UtcNow.AddSeconds(tokenResponse.RefreshTokenExpiresIn))
+            GetRefreshTokenCookieOptions(DateTimeOffset.UtcNow.AddYears(1))
         );
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
