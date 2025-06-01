@@ -70,9 +70,8 @@ export class SheetLinkComponent {
         
         this._gigLoggerService.getSheetData(result.id).then((sheetData) => {
           if (sheetData) {
+            sheetData.properties.id = result.id; // Ensure the ID is set correctly
             this.linkSheet(sheetData);
-            this._snackBar.open('Sheet linked successfully', 'Close');
-            this.parentReload.emit(); // Emit event to reload parent component
           } else {
             this._snackBar.open('Error retrieving sheet data', 'Close');
           }
