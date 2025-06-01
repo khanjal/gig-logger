@@ -1,1 +1,73 @@
-<p>sheet-list works!</p>
+<div class="sheet-list-container">
+  <!-- Search/Filter -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search sheets</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (input)="filterSheets()" placeholder="Type to filter sheets...">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading sheets...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredSheets.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">description</mat-icon>
+    <h3>No sheets found</h3>
+    <p>{{ searchTerm ? 'No sheets match your search.' : 'No sheets available to select.' }}</p>
+  </div>
+
+  <!-- Sheet List -->
+  <div *ngIf="!loading && filteredSheets.length > 0" class="sheets-grid">
+    <mat-card 
+      *ngFor="let sheet of filteredSheets; trackBy: trackBySheetId" 
+      class="sheet-card"
+      [class.selected]="selectedSheet?.id === sheet.id"
+      (click)="selectSheet(sheet)">
+      
+      <mat-card-content>
+        <div class="sheet-header">
+          <mat-icon class="sheet-icon">description</mat-icon>
+          <div class="sheet-info">
+            <h3 class="sheet-name">{{ sheet.name }}</h3>
+            <!-- <p class="sheet-meta">
+              <span class="created-date">
+                <mat-icon class="meta-icon">schedule</mat-icon>
+                {{ sheet.createdTime | date:'short' }}
+              </span>
+              <span class="file-size" *ngIf="sheet.size">
+                <mat-icon class="meta-icon">storage</mat-icon>
+                {{ formatFileSize(sheet.size) }}
+              </span>
+            </p> -->
+          </div>
+        </div>
+        
+        <!-- Selection indicator -->
+        <div class="selection-indicator" *ngIf="selectedSheet?.id === sheet.id">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Actions -->
+  <!-- <div class="actions" *ngIf="!loading">
+    <button mat-button (click)="cancel()">Cancel</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      [disabled]="!selectedSheet"
+      (click)="confirmSelection()">
+      Select Sheet
+    </button>
+  </div> -->
+</div>
+
+
+<div class="row-flex" *ngIf="!loading">
+    <button mat-fab extended color="primary" (click)="confirmSelection()" [disabled]="!selectedSheet"><mat-icon>add</mat-icon> Select</button>
+    <button mat-fab extended color="warn" (click)="cancel()"><mat-icon>refresh</mat-icon> Cancel</button>
+</div>

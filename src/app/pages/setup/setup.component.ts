@@ -49,7 +49,6 @@ import { TripService } from '@services/sheets/trip.service';
         DiagnosticsComponent,
         LoginComponent,
         ServiceWorkerStatusComponent,
-        SheetAddFormComponent,
         SheetLinkComponent,
         SheetQuickViewComponent,
         SheetQuotaComponent

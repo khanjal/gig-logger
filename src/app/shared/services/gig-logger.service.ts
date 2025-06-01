@@ -164,9 +164,9 @@ export class GigLoggerService {
     }
 
     // List files
-    public async listFiles() {
+    public async listFiles(): Promise<ISheetProperties[]> {
         try {
-            return await firstValueFrom(this._http.get<any[]>(`${this.apiUrl}/files/list`, this.setOptions()));
+            return await firstValueFrom(this._http.get<ISheetProperties[]>(`${this.apiUrl}/files/list`, this.setOptions()));
         } catch (error) {
             console.error('Error listing files:', error);
             return [];
@@ -174,9 +174,9 @@ export class GigLoggerService {
     }
 
     // Sheets
-    public async getSheetData(sheetId: string) {
+    public async getSheetData(sheetId: string): Promise<ISheet | null> {
         try {
-            return await firstValueFrom(this._http.get(`${this.apiUrl}/sheets/all`, this.setOptions(sheetId)));
+            return await firstValueFrom(this._http.get<ISheet>(`${this.apiUrl}/sheets/all`, this.setOptions(sheetId)));
         } catch (error) {
             console.error('Error getting sheet data:', error);
             return null;

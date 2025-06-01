@@ -62,8 +62,24 @@ export class SheetLinkComponent {
       height: '400px',
       panelClass: 'custom-modalbox'
     });
-  }
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // User selected a sheet
+        console.log('Selected sheet:', result);
+        
+        this._gigLoggerService.getSheetData(result.id).then((sheetData) => {
+          if (sheetData) {
+            this.linkSheet(sheetData);
+            this._snackBar.open('Sheet linked successfully', 'Close');
+            this.parentReload.emit(); // Emit event to reload parent component
+          } else {
+            this._snackBar.open('Error retrieving sheet data', 'Close');
+          }
+        });
+      }
+    });
+  }
 
   linkSheet(sheet: ISheet) {
     this._spreadsheetService.findSheet(sheet.properties.id).then((existingSheet) => {
