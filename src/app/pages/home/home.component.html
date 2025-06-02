@@ -1,149 +1,221 @@
 <div class="container">
-    <p class="drop-cap"><span class="first-letter">R</span>aptor Gig is a powerful tool that enables you to seamlessly log and manage your gig work data by integrating it directly into your personal Google Spreadsheet. Effortlessly track your progress, organize your shifts, and gain valuable insights with ease.</p>
-    <br/>
-    <h1>Features</h1>
-    <ul>
-        <li>Organize your trips into structured groups for better tracking and management</li>
-        <li>Seamlessly access and update your data directly from your Google Spreadsheet</li>
-        <li>Gain valuable insights with detailed statistics and performance metrics</li>
-        <li>Keep track of important notes and details from previous work</li>
-        <li>Enable auto-save to ensure your progress is always up-to-date</li>
-        <li>Sync your data across multiple devices using Google Sheets</li>
-        <li>Enjoy a user-friendly interface designed for gig workers</li>
-    </ul>
-    <h1>Pages</h1>
-        <p class="page">
-            <mat-icon>home</mat-icon> - This page
-        </p>
-        <p class="page">
-            <mat-icon>navigation</mat-icon> - Trips
-        </p>
-        <p class="page">
-            <mat-icon>today</mat-icon> - Shifts
-        </p>
-        <p class="page">
-            <mat-icon>poll</mat-icon> - Stats
-        </p>
-        <p class="page">
-            <mat-icon>settings</mat-icon> - Settings
-        </p>
-    <h1>Instructions</h1>
-    <ol>
-        <li>Go to <a href="/setup">Setup Page</a> and Login</li>
-        <li>Make sure to check the see, edit, create Google Drive permission</li>
-        <li>Click "Create New" or "Link Existing" under spreadsheet section</li>
-        <li>A spreadsheet is now linked and you can begin using the app! (see below)</li>
-    </ol>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Track Your Gig Work</h1>
+            <p class="hero-subtitle">Seamlessly log deliveries, rides, and earnings directly to your Google Spreadsheet</p>
+        </div>
+        <div class="hero-cta">
+            <a href="/setup" class="cta-button">
+                <mat-icon>play_arrow</mat-icon>
+                Get Started
+            </a>
+        </div>
+    </div>
 
-    <h1>Normal Use</h1>
-    <ol>
-        <li><strong>Goto Trips:</strong> Navigate to the <a href="/trips">Trips page</a> after linking your Google Sheet</li>
-        <li><strong>Start Shift:</strong> Select or enter a service and optionally set a region for tracking</li>
-        <li><strong>Accept Offer:</strong> Enter pay and distance, then click "Store"</li>
-        <li><strong>At Pickup:</strong> Fill in Place, Type, Name, and pickup/destination address details</li>
-        <li><strong>Complete Delivery:</strong> Click "Dropoff" button to record completion time</li>
-        <li><strong>Finalize:</strong> Update pay amount if needed to separate base pay from tips</li>
-    </ol>
+    <!-- Key Benefits -->
+    <div class="benefits-section">
+        <h2>Why Gig Workers Choose Us</h2>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <mat-icon>smartphone</mat-icon>
+                <h3>Mobile First</h3>
+                <p>Designed for quick entry between trips - large buttons, simple interface</p>
+            </div>
+            <div class="benefit-card">
+                <mat-icon>cloud_sync</mat-icon>
+                <h3>Your Data</h3>
+                <p>Everything syncs to your Google Sheets - you own it</p>
+            </div>
+            <div class="benefit-card">
+                <mat-icon>calculate</mat-icon>
+                <h3>Tax Ready</h3>
+                <p>Track miles and earnings for tax time</p>
+            </div>
+            <div class="benefit-card">
+                <mat-icon>timeline</mat-icon>
+                <h3>Real Insights</h3>
+                <p>See which zones and times make you the most money</p>
+            </div>
+        </div>
+    </div>
 
-    <h1>Advanced Use</h1>
-    <ul>
-        <li><strong>Trip Menu:</strong> Use the three dots at the bottom of each trip for additional options</li>
-        <ul>
-            <li><strong>Next Trip:</strong> Creates a new trip with the same pickup location and name</li>
-            <li><strong>Clone/Copy:</strong> Creates an exact duplicate of the current trip</li>
-            <li><strong>Delete:</strong> Removes unsaved trips or flags saved trips for deletion</li>
-        </ul>
-        <li><strong>Google Maps Search:</strong> Click the map on Place and Address fields to search and lookup locations</li>
-        <li><strong>Copy from Maps:</strong> Paste addresses directly from Google Maps app or website</li>
-    </ul>
+    <!-- Quick Start Guide -->
+    <div class="quick-start-section">
+        <h2>Quick Start (2 minutes)</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Connect Google</h3>
+                    <p>Sign in and allow access to Google Drive</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Create or Link Sheet</h3>
+                    <p>Start fresh or connect an existing spreadsheet</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Start Logging</h3>
+                    <p>Track your first delivery or ride</p>
+                </div>
+            </div>
+        </div>
+        <a href="/setup" class="setup-link">
+            <mat-icon>settings</mat-icon>
+            Go to Setup
+        </a>
+    </div>
 
-    <h1>Sheets & Heirarchy</h1>
-    <ul>
-        <li>Trips</li>
-        <ul>
-            <li>Shifts</li>
-            <ul>
-                <li>Daily</li>
-                <ul>
-                    <li>Weekdays</li>
-                    <li>Weekly</li>
-                    <li>Monthly</li>
+    <!-- App Navigation -->
+    <div class="navigation-section">
+        <h2>App Features</h2>
+        <div class="nav-cards">
+            <a href="/trips" class="nav-card">
+                <mat-icon>navigation</mat-icon>
+                <h3>Trips</h3>
+                <p>Log deliveries and rides in real-time</p>
+            </a>
+            <a href="/stats" class="nav-card">
+                <mat-icon>poll</mat-icon>
+                <h3>Analytics</h3>
+                <p>Earnings, miles, and performance insights</p>
+            </a>
+            <a href="/setup" class="nav-card">
+                <mat-icon>settings</mat-icon>
+                <h3>Setup</h3>
+                <p>Manage your spreadsheet and preferences</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="workflow-section">
+        <h2>Your Workflow</h2>
+        <div class="workflow-steps">
+            <div class="workflow-step">
+                <mat-icon>work</mat-icon>
+                <h3>Start Your Shift</h3>
+                <p>Select your service and region</p>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step">
+                <mat-icon>add_circle</mat-icon>
+                <h3>Accept Orders</h3>
+                <p>Quick entry: pay, distance, pickup info</p>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step">
+                <mat-icon>done</mat-icon>
+                <h3>Complete & Save</h3>
+                <p>Mark delivered, auto-save to spreadsheet</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features (Collapsed by default on mobile) -->
+    <div class="features-section">
+        <details>
+            <summary>
+                <h2>All Features</h2>
+                <mat-icon>expand_more</mat-icon>
+            </summary>
+            <div class="features-content">
+                <div class="feature-group">
+                    <h3>Tracking</h3>
                     <ul>
-                        <li>Yearly</li>
+                        <li>Earnings and tips per trip</li>
+                        <li>Mileage and driving time</li>
+                        <li>Customer names and addresses</li>
+                        <li>Restaurant/pickup locations</li>
+                        <li>Service type and region</li>
                     </ul>
-                </ul>
-                <li>Regions</li>
-                <li>Services</li>
-            </ul>
-            <li>Addresses</li>
-            <li>Names</li>
-            <li>Places</li>
-            <li>Regions</li>
-            <li>Services</li>
-            <li>Types</li>
-        </ul>
-    </ul>
-    
-    <!-- <h1>Demo</h1>
-    <p>
-        Head to <a href="/setup">setup</a> page to try out the demo spreadsheet.
-    </p>
-    <p>
-        View demo spreadsheet <a href="https://docs.google.com/spreadsheets/d/{{ demoSheetId }}/" target="_blank">here</a>.
-    </p> -->
+                </div>
+                <div class="feature-group">
+                    <h3>Smart Features</h3>
+                    <ul>
+                        <li>Auto-save every minute</li>
+                        <li>Address and place lookup with Google Maps</li>
+                        <li>Clone trips for multiple pickups to same customer</li>
+                        <li>Offline capability</li>
+                    </ul>
+                </div>
+                <div class="feature-group">
+                    <h3>Analytics</h3>
+                    <ul>
+                        <li>Daily, weekly, monthly reports</li>
+                        <li>Best performing zones</li>
+                        <li>Peak earning hours</li>
+                        <li>Tax-ready summaries</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+    </div>
 
-    <h1>FAQ</h1>
-    <ul>
-        <li>
-            <h2>How often should I save?</h2>
-            <p>Feel free to save whenever you'd like. You can save after each trip, shift, or simply at the end of the day. Alternatively, you can enable auto-save, which will automatically save your progress every minute.</p>
-        </li>
-        <li>
-            <h2>Why does it take a while to manually save?</h2>
-            <p>The save also runs multiple calculations and may slow down the saving process, as it waits for the calculations to complete.</p>
-        </li>
-        <li>
-            <h2>Is my data safe?</h2>
-            <p>Your data is stored in your browser and Google Sheets. Raptor Gig does not store any of your data.</p>
-        </li>
-        <li>
-            <h2>Can I sync accross multiple computers?</h2>
-            <p>You can access your sheet data across multiple browsers, but local data is only available in the browser where it was saved. It's strongly recommended not to save to the same spreadsheet from multiple browsers simultaneously, as this may result in data being overwritten.</p>
-        </li>
-        <li>
-            <h2>How do I delete my data?</h2>
-            <p>On the setup page you can click delete all data to remove your local and remote data. Your spreadsheet data will remain untouched.</p>
-        </li>
-        <li>
-            <h2>#REF - Array result was not expanded because it would overwrite data...</h2>
-            <p>This error occurs in the header if data has been manually entered in the column below Row 1. The simplest way to resolve this is to delete all content in the column, leaving only the header.</p>
-        </li>
-        <li>
-            <h2>#REF - Unresolved sheet name...</h2>
-            <p>This error occurs in the header if a sheet it references has been deleted. Even if the referenced sheet is recreated, the link will remain broken. To fix this, you can refresh the header by clicking on it and pressing Enter to update it. Alternatively, if the sheet is protected with a lock symbol, you can delete it to regenerate the reference. However, be cautious, as this may break other sheets that depend on it.</p>
-        </li>
-        <li>
-            <h2>My data in the spreadsheet is either missing or has been overwritten. What should I do?</h2>
-            <p>If you notice that data has been removed or overwritten, you can review the version history in Google Sheets by going to File > Version history. This will allow you to restore previous versions of the sheet. You may need to manually re-enter any changes. Once you've restored the missing data, don't forget to click Update from Spreadsheet on the website to sync the changes.</p>
-        </li>
-    </ul>
+    <!-- FAQ Section -->
+    <div class="faq-section" id="faq">
+        <details>
+            <summary>
+                <h2>Common Questions</h2>
+                <mat-icon>expand_more</mat-icon>
+            </summary>
+            <div class="faq-content">
+                <div class="faq-item">
+                    <h3>Is my data safe?</h3>
+                    <p>Your data stays in your Google Sheets. We don't store anything on our servers.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Does it work offline?</h3>
+                    <p>Yes! Log trips offline and they'll sync when you're back online.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I use multiple devices?</h3>
+                    <p>Yes, your Google Sheet syncs across devices. However, avoid using the app simultaneously on multiple devices with the same sheet to prevent data conflicts. Use one device at a time during your shift.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How often should I save?</h3>
+                    <p>Enable auto-save and forget about it. Manual saves work after each trip or shift too.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What about taxes?</h3>
+                    <p>Track all your miles and earnings. Perfect for Schedule C or giving to your accountant.</p>
+                </div>
+            </div>
+        </details>
+    </div>
 
-    <h1 id="contact">Questions, feedback, or found a bug?</h1>
-    <p>
-        Send me a message on Discord: 
-        <a href="https://discord.com/users/235747179459772416" target="_blank">Khan Jal</a>
-    </p>
+    <!-- Support Section -->
+    <div class="support-section">
+        <h2>Need Help?</h2>
+        <div class="support-options">
+            <a href="https://discord.com/users/235747179459772416" target="_blank" class="support-link">
+                <mat-icon>chat</mat-icon>
+                Discord Support
+            </a>
+            <a href="#faq" class="support-link">
+                <mat-icon>help</mat-icon>
+                FAQ
+            </a>
+        </div>
+        
+        <div class="support-text">
+            <p>Like the app? Consider supporting development to keep it free and ad-free.</p>
+        </div>
+    </div>
 
-    <h1>Support</h1>
-    <p>
-        If you like this app, consider supporting it by donating. Your support helps keep the app running and allows me to continue improving it.
-    </p>
-
-    <footer class="legal-links">
-        <p>
-            By using this application, you agree to our 
-            <a href="/terms">Terms of Service</a> and 
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="legal-links">
+            <a href="/terms">Terms of Service</a>
+            <span>•</span>
             <a href="/policy">Privacy Policy</a>
-        </p>
+        </div>
+        <p class="footer-text">Built for gig workers, by gig workers</p>
     </footer>
 </div>
