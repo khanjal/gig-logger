@@ -31,6 +31,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
+import { AuthStatusComponent } from "../../shared/components/auth-status/auth-status.component";
 
 @Component({
     selector: 'app-setup',
@@ -38,21 +39,22 @@ import { TripService } from '@services/sheets/trip.service';
     styleUrls: ['./setup.component.scss'],
     standalone: true,
     imports: [
-        CommonModule,
-        NgIf,
-        NgFor,
-        MatCard,
-        MatCardContent,
-        MatCardHeader,
-        MatFabButton,
-        MatIcon,
-        DiagnosticsComponent,
-        LoginComponent,
-        ServiceWorkerStatusComponent,
-        SheetLinkComponent,
-        SheetQuickViewComponent,
-        SheetQuotaComponent
-    ]
+    CommonModule,
+    NgIf,
+    NgFor,
+    MatCard,
+    MatCardContent,
+    MatCardHeader,
+    MatFabButton,
+    MatIcon,
+    DiagnosticsComponent,
+    LoginComponent,
+    ServiceWorkerStatusComponent,
+    SheetLinkComponent,
+    SheetQuickViewComponent,
+    SheetQuotaComponent,
+    AuthStatusComponent
+]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
