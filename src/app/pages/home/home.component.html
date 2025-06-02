@@ -15,7 +15,7 @@
 
     <!-- Key Benefits -->
     <div class="benefits-section">
-        <h2>Why Gig Workers Choose Us</h2>
+        <h2>Built for Your Success</h2>
         <div class="benefits-grid">
             <div class="benefit-card">
                 <mat-icon>smartphone</mat-icon>
@@ -70,6 +70,63 @@
             <mat-icon>settings</mat-icon>
             Go to Setup
         </a>
+    </div>
+
+    <!-- Install App Section -->
+    <div class="install-section">
+        <h2>Install the App</h2>
+        <div class="install-content">
+            <div class="install-info">
+                <h3>📱 Add to Home Screen</h3>
+                <p>Install Raptor Gig on your phone for quick access - no app store needed!</p>
+                
+                <div class="install-benefits">
+                    <div class="install-benefit">
+                        <mat-icon>offline_bolt</mat-icon>
+                        <span>Works offline</span>
+                    </div>
+                    <div class="install-benefit">
+                        <mat-icon>speed</mat-icon>
+                        <span>Faster loading</span>
+                    </div>
+                    <div class="install-benefit">
+                        <mat-icon>home</mat-icon>
+                        <span>Home screen icon</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="install-steps">
+                <div class="platform-instructions">
+                    <h4>📱 On iPhone/iPad:</h4>
+                    <ol>
+                        <li>Open this site in Safari</li>
+                        <li>Tap the <mat-icon class="inline-icon">ios_share</mat-icon> Share button</li>
+                        <li>Scroll down and tap "Add to Home Screen"</li>
+                        <li>Tap "Add" to confirm</li>
+                    </ol>
+                </div>
+
+                <div class="platform-instructions">
+                    <h4>🤖 On Android:</h4>
+                    <ol>
+                        <li>Open this site in Chrome</li>
+                        <li>Tap the menu <mat-icon class="inline-icon">more_vert</mat-icon> (three dots)</li>
+                        <li>Tap "Add to Home screen"</li>
+                        <li>Tap "Add" to confirm</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Install Button (for supported browsers) -->
+            <div class="install-button-container" *ngIf="showInstallButton">
+                <button mat-raised-button color="primary" class="install-button" (click)="installApp()">
+                    <mat-icon>download</mat-icon>
+                    Install App
+                </button>
+                <p class="install-note">Click to install directly to your device</p>
+            </div>
+        </div>
     </div>
 
     <!-- App Navigation -->
@@ -139,7 +196,7 @@
                 <div class="feature-group">
                     <h3>Smart Features</h3>
                     <ul>
-                        <li>Auto-save every minute</li>
+                        <li>Auto-save changes</li>
                         <li>Address and place lookup with Google Maps</li>
                         <li>Clone trips for multiple pickups to same customer</li>
                         <li>Offline capability</li>
@@ -198,15 +255,8 @@
                 <mat-icon>chat</mat-icon>
                 Discord Support
             </a>
-            <a href="#faq" class="support-link">
-                <mat-icon>help</mat-icon>
-                FAQ
-            </a>
         </div>
-        
-        <div class="support-text">
-            <p>Like the app? Consider supporting development to keep it free and ad-free.</p>
-        </div>
+      
     </div>
 
     <!-- Footer -->
