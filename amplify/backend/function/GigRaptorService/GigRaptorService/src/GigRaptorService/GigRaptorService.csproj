@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.1.1" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.69.0.3783" />
-    <PackageReference Include="RaptorSheets.Gig" Version="1.0.29" />
+    <PackageReference Include="RaptorSheets.Gig" Version="1.1.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />
   </ItemGroup>
   <ItemGroup>
