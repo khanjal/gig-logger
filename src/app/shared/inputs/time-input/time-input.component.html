@@ -4,11 +4,11 @@
         matInput 
         [ngxMatTimepicker]="timePicker" 
         [value]="value"
-        (dateChange)="onTimeChange($event)"
+        (ngModelChange)="onTimeChange($event)"
         [placeholder]="placeholder"
         [disabled]="disabled"
         readonly>
-    <ngx-mat-timepicker #timePicker></ngx-mat-timepicker>
+    <ngx-mat-timepicker #timePicker (timeSet)="onTimeChange($event)"></ngx-mat-timepicker>
     
     <div matSuffix class="time-actions">
         <button 
