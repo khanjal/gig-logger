@@ -1,5 +1,7 @@
 ﻿using GigRaptorService.Middlewares;
 using GigRaptorService.Services;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 namespace GigRaptorService;
 
@@ -40,6 +42,25 @@ public class Startup
             });
         });
 
+        // Add response compression services
+        services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+            // Optionally, restrict to certain MIME types
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
+        });
+
+        services.Configure<BrotliCompressionProviderOptions>(opts =>
+        {
+            opts.Level = CompressionLevel.Fastest;
+        });
+        services.Configure<GzipCompressionProviderOptions>(opts =>
+        {
+            opts.Level = CompressionLevel.Fastest;
+        });
+
         services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
         services.AddScoped<GoogleOAuthService>();
@@ -58,6 +79,9 @@ public class Startup
         app.UseRouting();
         app.UseCors("AllowSpecificOrigins");
         app.UseAuthorization();
+
+        // Use response compression middleware
+        app.UseResponseCompression();
 
         app.UseWhen(
             context => context.Request.Path.StartsWithSegments("/sheets", StringComparison.OrdinalIgnoreCase),
