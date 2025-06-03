@@ -1,0 +1,35 @@
+<mat-form-field [class]="fieldClass" appearance="outline">
+    <mat-label>{{ label }}</mat-label>
+    <input 
+        matInput 
+        [ngxMatTimepicker]="timePicker" 
+        [value]="value"
+        (dateChange)="onTimeChange($event)"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        readonly>
+    <ngx-mat-timepicker #timePicker></ngx-mat-timepicker>
+    
+    <div matSuffix class="time-actions">
+        <button 
+            *ngIf="!value"
+            mat-icon-button 
+            type="button"
+            (click)="setCurrentTime()"
+            [disabled]="disabled"
+            matTooltip="Set current time"
+            class="current-time-btn">
+            <mat-icon>access_time</mat-icon>
+        </button>
+        <button 
+            *ngIf="value"
+            mat-icon-button 
+            type="button"
+            (click)="clearTime()"
+            [disabled]="disabled"
+            matTooltip="Clear time"
+            class="clear-time-btn">
+            <mat-icon>clear</mat-icon>
+        </button>
+    </div>
+</mat-form-field>
