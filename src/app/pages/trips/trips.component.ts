@@ -87,7 +87,7 @@ export class TripComponent implements OnInit, OnDestroy {
   public async load() {
     this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
     this.todaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
-    this.yesrterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1)))).reverse();
+    this.yesrterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1))));
 
     await this.average?.load();
     await this.tripsTable?.load();

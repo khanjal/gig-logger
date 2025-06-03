@@ -62,7 +62,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
       let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
 
       tripGroup.date = date;
-      tripGroup.trips = trips;
+      tripGroup.trips = trips.reverse();
       tripGroup.amount = trips.filter(x => !x.exclude).reduce((acc, trip) => acc + trip.total, 0);
       tripGroup.average = weekday?.dailyPrevAverage ?? 0;
 
