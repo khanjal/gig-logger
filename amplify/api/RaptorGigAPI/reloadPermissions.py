@@ -34,9 +34,12 @@ def get_lambda_policy(function_name):
 
         # Add all the lambda permissions back in
         add_lambda_permissions(function_name)
-    
     except subprocess.CalledProcessError as e:
         print(f"Error executing command: {e}")
+        # Status code 254 typically means no policy exists yet
+        if e.returncode == 254:
+            print("No existing policy found. Adding new permissions...")
+            add_lambda_permissions(function_name)
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")
 
@@ -73,19 +76,7 @@ def remove_lambda_permission(statement, function_name):
 def add_lambda_permissions(function_name):
     try:
         lambda_commands = [
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/POST/sheets/add --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/POST/sheets/create --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/POST/sheets/save --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/GET/sheets/all --principal apigateway.amazonaws.com --statement-id {statement-id}5 --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/*/sheets/all/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/GET/sheets/single/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/*/sheets/single/*/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/GET/sheets/multiple --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/*/sheets/multiple/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/GET/sheets/check --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/*/sheets/check/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/GET/sheets/health --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
-            # "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/*/sheets/health/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction"
+            "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:316675302119:1al1hr5ub4/*/*/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
         ]
         
         for command in lambda_commands:

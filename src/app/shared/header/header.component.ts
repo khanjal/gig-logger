@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AuthGoogleService } from '@services/auth-google.service';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 
@@ -15,23 +16,33 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class HeaderComponent implements OnInit {
   defaultSheet: ISpreadsheet | undefined;
+  isAuthenticated = false;
   
   constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
-    private router: Router
+    private authService: AuthGoogleService,
   ) { 
     this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
         this.load();
-      })
+    });
   }
 
   async ngOnInit(): Promise<void> {
-    this.load();
+    // Check authentication state
+    this.isAuthenticated = await this.authService.isAuthenticated();
+
+    // Load initial data if authenticated
+    if (this.isAuthenticated) {
+      this.load();
+    }
   }
 
   public async load() {
-    this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    // Only load data if authenticated
+    if (this.isAuthenticated) {
+      this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    }
   }
 
   public getToolbarColor(): string {
@@ -45,5 +56,4 @@ export class HeaderComponent implements OnInit {
         return 'warn';
     }
   }
-
 }

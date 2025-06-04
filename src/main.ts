@@ -8,6 +8,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
+import { SecureCookieStorageService } from './app/shared/services/secure-cookie-storage.service';
 
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
@@ -16,14 +18,6 @@ import { environment } from './environments/environment';
 if (environment.production) {
   enableProdMode();
 }
-
-// if ('serviceWorker' in navigator) {
-//   navigator.serviceWorker.register('/service-worker.js').then((registration) => {
-//     console.log('Service Worker registered with scope:', registration.scope);
-//   }).catch((error) => {
-//     console.error('Service Worker registration failed:', error);
-//   });
-// }
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -36,10 +30,12 @@ bootstrapApplication(AppComponent, {
       ServiceWorkerModule.register('ngsw-worker.js', {
         enabled: environment.production,
         registrationStrategy: 'registerWhenStable:30000'
-      })
+      }),
+      OAuthModule.forRoot()
     ),
     provideHttpClient(withInterceptorsFromDi()),
     provideNativeDateAdapter(),
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } }
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
+    { provide: OAuthStorage, useClass: SecureCookieStorageService }
   ]
 }).catch(err => console.error(err));

@@ -1,0 +1,11 @@
+<form class="sheet-form" [formGroup]="sheetCreate">
+    <mat-form-field class="field-full-width" appearance="outline">
+        <mat-label>Sheet Name</mat-label>
+        <input matInput type="text" name="sheetName" placeholder="Enter Name" formControlName="sheetName" value="" required>
+    </mat-form-field>
+</form>
+
+<div class="row-flex">
+    <button mat-fab extended color="primary" (click)="createSheet()" [class.spinner]="saving" [disabled]="!sheetCreate.valid || saving"><mat-icon>add</mat-icon> Create</button>
+    <button mat-fab extended color="warn" (click)="closeModal()"><mat-icon>refresh</mat-icon> Cancel</button>
+</div>

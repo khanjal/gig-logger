@@ -1,23 +1,38 @@
 <div class="container">
     <div class="section">
         <h1>Setup</h1>
-        <h2>Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
-        <sheet-add-form (parentReload)="reload()"></sheet-add-form>
     </div>
 
-    <div class="section" *ngIf="spreadsheets?.length">
-        <h2>Current Spreadsheets</h2>
-        <div *ngFor="let spreadsheet of spreadsheets" class="section">
-            <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
-            <div class="row row-block">
-                <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
-                <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
-                <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
-                <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading || unsavedData" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
-                <button mat-fab extended color="primary" class="button-right" color="warn" *ngIf="spreadsheet.default === 'false'"  [class.spinner]="deleting" [disabled]="deleting || reloading" (click)="deleteSpreadsheet(spreadsheet)"><mat-icon>delete</mat-icon> Delete</button>
+    <div class="section">
+        <app-login></app-login>
+    </div>    
+    
+    @if (isAuthenticated) 
+    {
+        <!-- <div class="section">
+            <h2>Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
+            <sheet-add-form (parentReload)="reload()"></sheet-add-form>
+        </div> -->
+
+        <div class="section" *ngIf="!spreadsheets?.length">
+            <h2>Link Spreadsheet</h2>
+            <app-sheet-link (parentReload)="reload()"></app-sheet-link>
+        </div>
+
+        <div class="section" *ngIf="spreadsheets?.length">
+            <h2>Current Spreadsheets</h2>
+            <div *ngFor="let spreadsheet of spreadsheets" class="section">
+                <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
+                <div class="row row-block">
+                    <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
+                    <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
+                    <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
+                    <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading || unsavedData" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
+                    <button mat-fab extended color="primary" class="button-right" color="warn" *ngIf="spreadsheet.default === 'false'"  [class.spinner]="deleting" [disabled]="deleting || reloading" (click)="deleteSpreadsheet(spreadsheet)"><mat-icon>delete</mat-icon> Delete</button>
+                </div>
             </div>
         </div>
-    </div>
+    }
 
     <mat-card class="section">
         <mat-card-header><h2>Application Insights</h2></mat-card-header>
@@ -26,6 +41,8 @@
             <app-service-worker-status></app-service-worker-status>
         </mat-card-content>
     </mat-card>
+    
+    <app-auth-status></app-auth-status>
 
     <mat-card class="section" *ngIf="false">
         <mat-card-header><h2>Diagnostics</h2></mat-card-header>

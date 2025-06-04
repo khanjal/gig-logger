@@ -13,17 +13,13 @@ public static class ConfigurationHelper
                             .Build();
     }
 
-    public static Dictionary<string, string> GetJsonCredential()
+    public static Dictionary<string, string> GetGoogleOAuth()
     {
         GetConfiguration();
-
         var parameters = new Dictionary<string, string>
         {
-            { "type", _configuration["google_credentials:type"] ?? "" },
-            { "privateKeyId", _configuration["google_credentials:private_key_id"] ?? "" },
-            { "privateKey", _configuration["google_credentials:private_key"] ?? "" },
-            { "clientEmail", _configuration["google_credentials:client_email"] ?? "" },
-            { "clientId", _configuration["google_credentials:client_id"] ?? "" }
+            { "clientId", _configuration["google_oauth:client_id"] ?? "" },
+            { "clientSecret", _configuration["google_oauth:client_secret"] ?? "" }
         };
 
         return parameters;
