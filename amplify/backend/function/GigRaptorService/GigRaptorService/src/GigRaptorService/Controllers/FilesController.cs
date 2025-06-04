@@ -8,7 +8,13 @@ namespace GigRaptorService.Controllers;
 [Route("[controller]")]
 public class FilesController : ControllerBase
 {
+    private readonly IConfiguration _configuration;
     private FileManager? _fileManager;
+
+    public FilesController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     private void InitializeSheetmanager()
     {
@@ -42,7 +48,7 @@ public class FilesController : ControllerBase
 
         if(sheet != null)
         {
-            var sheetManager = new SheetManager(GetAccessTokenFromHeader()!, sheet.Id);
+            var sheetManager = new SheetManager(GetAccessTokenFromHeader()!, sheet.Id, _configuration);
             var sheetData = await sheetManager.CreateSheet();
 
             if (sheetData != null)

@@ -1,4 +1,5 @@
-﻿using RaptorSheets.Core.Extensions;
+﻿using GigRaptorService.Helpers;
+using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
 using RaptorSheets.Gig.Managers;
@@ -16,27 +17,32 @@ public interface ISheetManager
 public class SheetManager : ISheetManager
 {
     private readonly IGoogleSheetManager _googleSheetManager;
-    //private static readonly DynamoDbRateLimiter _rateLimiter = new DynamoDbRateLimiter(
-    //    new AmazonDynamoDBClient(), // AWS DynamoDB client
-    //    "RaptorSheetsRateLimit",    // DynamoDB table name
-    //    5,                         // Max requests
-    //    TimeSpan.FromMinutes(1)     // Time window
-    //);
+    private readonly IConfiguration _configuration;
+    private static readonly DynamoDbRateLimiter _rateLimiter = new DynamoDbRateLimiter(
+        new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
+        "RaptorSheetsRateLimit",
+        5,
+        TimeSpan.FromMinutes(1)
+    );
 
-    public SheetManager(string token, string sheetId)
+    public SheetManager(string token, string sheetId, IConfiguration configuration)
     {
+        _configuration = configuration;
+        if (FeatureFlags.IsRateLimitingEnabled(_configuration))
+        {
+            EnforceRateLimitAsync(sheetId).GetAwaiter().GetResult();
+        }
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
     }
 
-    //private static async Task EnforceRateLimitAsync(string spreadsheetId)
-    //{
-    //    // Hash the spreadsheet ID to use as a unique key for rate limiting
-    //    var hashedSpreadsheetId = HashHelper.HashSpreadsheetId(spreadsheetId);
-    //    if (!await _rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
-    //    {
-    //        throw new InvalidOperationException($"Rate limit exceeded for spreadsheet ID: {hashedSpreadsheetId}. Please try again later.");
-    //    }
-    //}
+    private static async Task EnforceRateLimitAsync(string spreadsheetId)
+    {
+        var hashedSpreadsheetId = HashHelper.HashSpreadsheetId(spreadsheetId);
+        if (!await _rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
+        {
+            throw new InvalidOperationException($"Rate limit exceeded for spreadsheet ID: {hashedSpreadsheetId}. Please try again later.");
+        }
+    }
 
     public async Task<SheetEntity> CreateSheet()
     {
