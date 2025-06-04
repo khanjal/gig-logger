@@ -1,0 +1,35 @@
+@import "color-vars";
+
+.time-actions {
+  display: flex;
+  align-items: center;
+  
+  .mat-icon-button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    
+    .mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+  
+  .current-time-btn {
+    color: $primary-color;
+    
+    &:hover:not(:disabled) {
+      background-color: rgba(76, 175, 80, 0.1);
+    }
+  }
+  
+  .clear-time-btn {
+    color: $warn-color;
+    
+    &:hover:not(:disabled) {
+      background-color: rgba(244, 67, 54, 0.1);
+    }
+  }
+
+}

@@ -74,7 +74,7 @@ export class ShiftTripsTableComponent {
   }
 
   async viewTrips(trips: ITrip[]) {
-    let dialogRef = this.dialog.open(ShiftTripsQuickViewComponent, {
+    this.dialog.open(ShiftTripsQuickViewComponent, {
       data: trips,
       height: '500px',
       width: '500px',
