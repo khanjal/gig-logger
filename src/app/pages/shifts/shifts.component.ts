@@ -9,7 +9,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
-import { ShiftsQuickViewComponent } from '../../shared/components/shifts-quick-view/shifts-quick-view.component';
+import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
 
 @Component({
     selector: 'app-shifts',

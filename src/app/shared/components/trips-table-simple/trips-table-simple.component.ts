@@ -3,9 +3,9 @@ import { ITrip } from '@interfaces/trip.interface';
 import { NgIf, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
-import { NoSecondsPipe } from '../../pipes/no-seconds.pipe';
-import { ShortAddressPipe } from '../../pipes/short-address.pipe';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
     selector: 'trips-table-simple',

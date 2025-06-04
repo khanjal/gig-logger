@@ -16,9 +16,9 @@ import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { NoSecondsPipe } from '../../pipes/no-seconds.pipe';
-import { ShortAddressPipe } from '../../pipes/short-address.pipe';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
     selector: 'trips-quick-view',
