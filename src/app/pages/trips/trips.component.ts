@@ -28,15 +28,16 @@ import { Subscription } from 'rxjs';
 import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { TripsQuickViewComponent } from '../../shared/components/trips-quick-view/trips-quick-view.component';
+import { TripsQuickViewComponent } from '@components/trips-quick-view/trips-quick-view.component';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import { TruncatePipe } from "@pipes/truncate.pipe";
 
 @Component({
     selector: 'app-trip',
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, NgClass, TripsQuickViewComponent, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableGroupComponent]
+    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, NgClass, TripsQuickViewComponent, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableGroupComponent, TruncatePipe]
 })
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;

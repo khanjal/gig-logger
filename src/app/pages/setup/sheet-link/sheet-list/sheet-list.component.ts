@@ -16,6 +16,7 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // App Services
 import { GigLoggerService } from '@services/gig-logger.service';
+import { TruncatePipe } from "@pipes/truncate.pipe";
 
 @Component({
   selector: 'app-sheet-list',
@@ -28,8 +29,9 @@ import { GigLoggerService } from '@services/gig-logger.service';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule
-  ],
+    MatProgressSpinnerModule,
+    TruncatePipe
+],
   templateUrl: './sheet-list.component.html',
   styleUrl: './sheet-list.component.scss'
 })
@@ -51,7 +53,15 @@ export class SheetListComponent implements OnInit {
     this.loading = true;
     try {
       // Load sheets from your service
-      this.sheets = await this._gigLoggerService.listFiles();
+      const sheetsData = await this._gigLoggerService.listFiles();
+      
+      // Sort alphabetically by name
+      this.sheets = sheetsData.sort((a, b) => 
+        a.name.localeCompare(b.name, undefined, { 
+          numeric: true, 
+          sensitivity: 'base' 
+        })
+      );
     } catch (error) {
       console.error('Error loading sheets:', error);
       // Optionally show error message to user
