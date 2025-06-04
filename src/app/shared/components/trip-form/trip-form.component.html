@@ -1,7 +1,7 @@
 <div class="section">
     <h1>{{title}}</h1>
 
-    <!-- <div class="row field-halfish-width">
+    <!-- <div class="row field-fullish-width">
         <h1>{{ title }}</h1>
     </div>
     <div class="row field-quarter-width">
@@ -104,7 +104,7 @@
 
         <!-- Name -->
         <div class="row-flex">
-            <div class="field-halfish-width">
+            <div class="field-fullish-width">
                 <app-search-input 
                     fieldName="Name" 
                     searchType="Name" 
@@ -204,26 +204,22 @@
         </div>
 
         <!-- Pickup Time -->
-        <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
-            <mat-label>Pickup Time</mat-label>
-            <input matInput [ngxMatTimepicker]="pickupTimePicker" formControlName="pickupTime" readonly>
-            <ngx-mat-timepicker #pickupTimePicker></ngx-mat-timepicker>
-        </mat-form-field>
-
-        <button mat-stroked-button (click)="setPickupTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Pickup</button>
+        <app-time-input 
+            *ngIf="data?.id"
+            label="Pickup Time"
+            formControlName="pickupTime">
+        </app-time-input>
 
         <!-- Dropoff Time -->
-        <mat-form-field class="field-third-width" appearance="outline" *ngIf="data?.id">
-            <mat-label>Dropoff Time</mat-label>
-            <input matInput [ngxMatTimepicker]="dropoffTimePicker" formControlName="dropoffTime" readonly>
-            <ngx-mat-timepicker #dropoffTimePicker></ngx-mat-timepicker>
-        </mat-form-field>
-
-        <button mat-stroked-button (click)="setDropoffTime()" *ngIf="data?.id"><mat-icon>schedule</mat-icon> Set Dropoff</button>
+        <app-time-input 
+            *ngIf="data?.id"
+            label="Dropoff Time"
+            formControlName="dropoffTime">
+        </app-time-input>
         
         <!-- Note -->
         <div class="row-block">
-            <mat-form-field class="field-halfish-width" appearance="outline">
+            <mat-form-field class="field-fullish-width" appearance="outline">
                 <mat-label>Note</mat-label>
                 <input matInput type="text" name="note" placeholder="" formControlName="note" value="">
             </mat-form-field>
