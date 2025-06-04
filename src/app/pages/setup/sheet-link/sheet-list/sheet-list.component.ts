@@ -35,9 +35,7 @@ import { GigLoggerService } from '@services/gig-logger.service';
 })
 export class SheetListComponent implements OnInit {
   sheets: ISheetProperties[] = [];
-  filteredSheets: ISheetProperties[] = [];
   selectedSheet: ISheetProperties | null = null;
-  searchTerm: string = '';
   loading: boolean = true;
 
   constructor(
@@ -54,25 +52,12 @@ export class SheetListComponent implements OnInit {
     try {
       // Load sheets from your service
       this.sheets = await this._gigLoggerService.listFiles();
-      this.filteredSheets = [...this.sheets];
     } catch (error) {
       console.error('Error loading sheets:', error);
       // Optionally show error message to user
     } finally {
       this.loading = false;
     }
-  }
-
-  filterSheets() {
-    if (!this.searchTerm.trim()) {
-      this.filteredSheets = [...this.sheets];
-      return;
-    }
-
-    const term = this.searchTerm.toLowerCase();
-    this.filteredSheets = this.sheets.filter(sheet =>
-      sheet.name.toLowerCase().includes(term)
-    );
   }
 
   selectSheet(sheet: ISheetProperties) {
