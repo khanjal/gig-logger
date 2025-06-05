@@ -13,7 +13,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ISheet } from '@interfaces/sheet.interface';
 
 // Application-specific imports - Services
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
@@ -79,7 +79,7 @@ export class DataSyncModalComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public type: SyncType,
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
-        private _gigLoggerService: GigLoggerService,
+        private _gigLoggerService: GigWorkflowService,
         private _sheetService: SpreadsheetService,
         private _shiftService: ShiftService,
         private _tripService: TripService,

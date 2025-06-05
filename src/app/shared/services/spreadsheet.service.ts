@@ -3,7 +3,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { GigLoggerService } from './gig-logger.service';
+import { GigWorkflowService } from './gig-workflow.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 
@@ -15,7 +15,7 @@ export class SpreadsheetService {
 
     constructor(
         private _snackBar: MatSnackBar,
-        private _gigLoggerService: GigLoggerService,
+        private _gigLoggerService: GigWorkflowService,
     ) { }
     
     public async add(spreadsheet: ISpreadsheet) {

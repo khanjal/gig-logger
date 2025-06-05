@@ -15,7 +15,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // App Services
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { TruncatePipe } from "@pipes/truncate.pipe";
 
 @Component({
@@ -41,7 +41,7 @@ export class SheetListComponent implements OnInit {
   loading: boolean = true;
 
   constructor(
-    private _gigLoggerService: GigLoggerService,
+    private _gigLoggerService: GigWorkflowService,
     private dialogRef: MatDialogRef<SheetListComponent>
   ) { }
   

@@ -23,7 +23,7 @@ import { ITrip } from '@interfaces/trip.interface';
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
 import { DeliveryService } from '@services/delivery.service';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -120,7 +120,7 @@ export class TripFormComponent implements OnInit {
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
       private _deliveryService: DeliveryService,
-      private _gigLoggerService: GigLoggerService,
+      private _gigLoggerService: GigWorkflowService,
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _shiftService: ShiftService,

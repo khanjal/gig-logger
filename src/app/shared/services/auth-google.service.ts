@@ -5,7 +5,7 @@ import { authConfig } from './auth.config';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { UserProfile } from '../interfaces/user-profile.interface';
-import { GigLoggerService } from './gig-logger.service';
+import { GigWorkflowService } from './gig-workflow.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
 
@@ -21,7 +21,7 @@ export class AuthGoogleService {
     private oAuthService: OAuthService,
     private logger: LoggerService,
     private secureCookieStorage: SecureCookieStorageService,
-    private gigLoggerService: GigLoggerService,
+    private gigWorkflowService: GigWorkflowService,
     private http: HttpClient
   ) {    
     this.oAuthService.setStorage(this.secureCookieStorage);
@@ -55,7 +55,7 @@ export class AuthGoogleService {
 
   private async handleAuthorizationCode(code: string): Promise<void> {
     try {
-      const response = await this.gigLoggerService.setRefreshToken(code);
+      const response = await this.gigWorkflowService.setRefreshToken(code);
       if (!response?.accessToken) {
         throw new Error('No access token received from authorization');
       }
@@ -89,7 +89,7 @@ export class AuthGoogleService {
 
   async refreshToken(): Promise<void> {
     try {
-      const result = await this.gigLoggerService.refreshAuthToken();
+      const result = await this.gigWorkflowService.refreshAuthToken();
       if (!result?.accessToken) {
         throw new Error('No access token received from refresh');
       }
@@ -119,7 +119,7 @@ export class AuthGoogleService {
     
     try {
       // Clear backend tokens first
-      await this.gigLoggerService.clearRefreshToken(); 
+      await this.gigWorkflowService.clearRefreshToken(); 
     } catch (error) {
       this.logger.error('Error clearing refresh token', error);
     } finally {

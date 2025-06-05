@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { MatFabButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,7 +25,7 @@ export class SheetLinkComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   constructor(
-    private _gigLoggerService: GigLoggerService,
+    private _gigLoggerService: GigWorkflowService,
     private _spreadsheetService: SpreadsheetService,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog

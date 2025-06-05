@@ -11,7 +11,7 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -64,7 +64,7 @@ export class TripComponent implements OnInit, OnDestroy {
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
-      private _gigLoggerService: GigLoggerService,
+      private _gigLoggerService: GigWorkflowService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService,

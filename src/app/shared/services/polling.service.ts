@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, interval } from 'rxjs';
-import { GigLoggerService } from './gig-logger.service';
+import { GigWorkflowService } from './gig-workflow.service';
 import { ShiftService } from './sheets/shift.service';
 import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
@@ -22,7 +22,7 @@ export class PollingService implements OnDestroy {
   constructor(
       private _snackBar: MatSnackBar,
       private _sheetService: SpreadsheetService,
-      private _gigLoggerService: GigLoggerService,
+      private _gigLoggerService: GigWorkflowService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
     ) { }

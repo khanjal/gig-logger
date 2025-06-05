@@ -6,7 +6,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 
 @Component({
   selector: 'app-sheet-create',
@@ -23,7 +23,7 @@ export class SheetCreateComponent {
   });
 
   constructor(
-    private _gigLoggerService: GigLoggerService,
+    private _gigLoggerService: GigWorkflowService,
     private dialogRef: MatDialogRef<SheetCreateComponent>
   ) { }
 

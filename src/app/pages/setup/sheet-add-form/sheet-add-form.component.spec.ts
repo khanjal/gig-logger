@@ -8,7 +8,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { CommonService } from '@services/common.service';
 import { DailyService } from '@services/sheets/daily.service';
 import { DeliveryService } from '@services/delivery.service';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { MonthlyService } from '@services/sheets/monthly.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
@@ -36,7 +36,7 @@ describe('SheetSetupFormComponent', () => {
         AddressService,
         DailyService,
         DeliveryService,
-        GigLoggerService,
+        GigWorkflowService,
         MonthlyService,
         NameService,
         PlaceService,
