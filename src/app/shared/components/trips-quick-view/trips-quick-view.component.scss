@@ -823,9 +823,9 @@
   @extend .btn;
   
   &--primary { @extend .btn--primary; }
-  &--accent { @extend .btn--accent; }  &--menu { 
+  &--accent { @extend .btn--accent; }  
+  &--menu { 
     @extend .btn--icon;
-    background: white;
     border: 2px solid $border-color;
     color: $text-secondary;
     
