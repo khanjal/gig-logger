@@ -698,6 +698,107 @@
   }
 }
 
+// Workflow Section - Mobile First
+.workflow-section {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: $surface-color;
+  
+  h2 {
+    margin-bottom: 2rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 3rem;
+    }
+  }
+}
+
+.workflow-steps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 2rem;
+  }
+}
+
+.workflow-step {
+  background: $background-color;
+  padding: 2rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px $shadow-light, 0 2px 8px $shadow-medium;
+  border: 1px solid $border-light;
+  text-align: center;
+  flex: 1;
+  max-width: 20rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px $shadow-medium, 0 4px 12px $shadow-heavy;
+  }
+  
+  @media (min-width: 768px) {
+    max-width: 18rem;
+  }
+  
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: $primary-color;
+    margin-bottom: 1rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  h3 {
+    margin: 0 0 0.75rem 0;
+    color: $text-primary;
+    font-size: 1.25rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 1.375rem;
+    }
+  }
+  
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+}
+
+.workflow-arrow {
+  font-size: 2rem;
+  color: $accent-color;
+  font-weight: bold;
+  user-select: none;
+  transform: rotate(90deg);
+  
+  @media (min-width: 768px) {
+    transform: rotate(0deg);
+    font-size: 2.5rem;
+  }
+}
+
 // Small mobile adjustments
 @media (max-width: 480px) {
   .hero-section {
