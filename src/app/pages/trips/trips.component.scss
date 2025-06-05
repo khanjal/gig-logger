@@ -181,28 +181,6 @@
   }
 }
 
-// Reverse card styling for variety
-.mat-card-reverse {
-  margin-bottom: 1rem;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium !important;
-  border: 1px solid $border-light;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    box-shadow: 0 4px 12px $shadow-medium, 0 2px 8px $shadow-heavy !important;
-    transform: translateY(-2px);
-  }
-  
-  &:nth-child(even) {
-    background-color: $accent-50 !important;
-  }
-  
-  &:nth-child(odd) {
-    background-color: $primary-50 !important;
-  }
-}
-
 // Disabled card styling
 .mat-card-disabled {
   background-color: $background-secondary !important;
