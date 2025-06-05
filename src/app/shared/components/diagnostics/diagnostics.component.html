@@ -5,52 +5,59 @@
       {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
     </button>
   </div>
+  <div class="diagnostics-list">
+    <div *ngFor="let item of dataDiagnostics" class="diagnostic-item-container">
+      <div class="diagnostic-header">
+        <mat-icon [color]="getSeverityColor(item.severity)" class="severity-icon">
+          {{ getSeverityIcon(item.severity) }}
+        </mat-icon>
+        <div class="diagnostic-info">
+          <div class="diagnostic-title">{{ item.name }}</div>
+          <div class="diagnostic-description">{{ item.description }}</div>
+        </div>
+        <div class="diagnostic-count">{{ item.count }}</div>
+      </div>
 
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>data_usage</mat-icon>
-        Data
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>      <mat-list>
-        <mat-list-item *ngFor="let item of dataDiagnostics">
-          <mat-icon [color]="getSeverityColor(item.severity)" matListItemIcon>
-            {{ getSeverityIcon(item.severity) }}
-          </mat-icon>
-          <div matListItemTitle>{{ item.name }}</div>
-          <div matListItemLine>{{ item.description }}</div>
-          <div matListItemMeta>{{ item.count }}</div>
-          
-          <!-- Detailed items list -->
-          <div *ngIf="item.items && item.items.length > 0" class="diagnostic-details">
-            <div class="details-header">
-              <strong>Details:</strong>
+      <!-- Detailed items list -->
+      <div *ngIf="item.items && item.items.length > 0" class="diagnostic-details">
+        <div class="details-header">
+          <strong>Details ({{ item.items.length }} items):</strong>
+        </div>
+        
+        <div class="items-list">
+          <div *ngFor="let problemItem of item.items" class="diagnostic-item">
+            <!-- For shifts -->
+            <div *ngIf="item.itemType === 'shift'" class="shift-item">
+              <strong>Shift:</strong>&nbsp;
+              <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+              <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
+              <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
+              <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
+              <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
+              <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
             </div>
-            <div class="items-list">
-              <div *ngFor="let problemItem of item.items" class="diagnostic-item">
-                <!-- For shifts -->
-                <div *ngIf="problemItem.date && problemItem.key" class="shift-item">
-                  <strong>Shift:</strong> {{ problemItem.date }} ({{ problemItem.key }})
-                  <span *ngIf="problemItem.trips !== undefined"> - {{ problemItem.trips }} trips</span>
-                  <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
-                  <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-                </div>
-                
-                <!-- For trips -->
-                <div *ngIf="problemItem.startLocation || problemItem.endLocation" class="trip-item">
-                  <strong>Trip:</strong> 
-                  <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
-                  <span *ngIf="problemItem.startLocation && problemItem.endLocation"> → </span>
-                  <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
-                  <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
-                  <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
-                </div>
-              </div>
+            
+            <!-- For trips -->
+            <div *ngIf="item.itemType === 'trip'" class="trip-item">
+              <strong>Trip:</strong>&nbsp;
+              <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+              <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
+              <span *ngIf="problemItem.pickup">{{ problemItem.pickup }}</span>
+              <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
+              <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
+              <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
+              <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
+              <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
+              <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
+            </div>
+            
+            <!-- Fallback for any other items -->
+            <div *ngIf="!problemItem.date && !problemItem.key && !problemItem.startLocation && !problemItem.endLocation && !problemItem.pickup && !problemItem.dropoff" class="unknown-item">
+              <strong>Unknown Item Type:</strong> Check console for details
             </div>
           </div>
-        </mat-list-item>
-      </mat-list>
-    </mat-card-content>
-  </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
