@@ -185,8 +185,13 @@ export class DiagnosticsComponent implements OnInit {
         const place2 = places[j];
         if (!place2.place || place2.place.trim().length < 2) continue;
         
-        // Case-insensitive exact match
-        if (place1.place.toLowerCase().trim() === place2.place.toLowerCase().trim()) {
+        const place1Lower = place1.place.toLowerCase().trim();
+        const place2Lower = place2.place.toLowerCase().trim();
+        
+        // Check for exact match or partial match (one contains the other)
+        if (place1Lower === place2Lower || 
+            place1Lower.includes(place2Lower) || 
+            place2Lower.includes(place1Lower)) {
           matchingPlaces.push(place2);
           processedPlaces.add(j);
         }
@@ -292,6 +297,7 @@ export class DiagnosticsComponent implements OnInit {
 
     return { items: duplicates, groups: duplicateGroups };
   }
+
   getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
