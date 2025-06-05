@@ -4,9 +4,14 @@
         <div class="hero-content">
             <h1 class="hero-title">Track Your Gig Work</h1>
             <p class="hero-subtitle">Seamlessly log deliveries, rides, and earnings directly to your Google Spreadsheet</p>
-        </div>
-        <div class="hero-cta">
-            <a href="/setup" class="cta-button">
+        </div>        <div class="hero-cta">
+            <!-- Show "Start Logging" button when user is authenticated and has default sheet -->
+            <a *ngIf="showStartLoggingButton" href="/trips" class="cta-button">
+                <mat-icon>add_circle</mat-icon>
+                Start Logging
+            </a>
+            <!-- Show "Get Started" button when user is not ready to log -->
+            <a *ngIf="!showStartLoggingButton" href="/setup" class="cta-button">
                 <mat-icon>play_arrow</mat-icon>
                 Get Started
             </a>
@@ -65,8 +70,11 @@
                     <p>Track your first delivery or ride</p>
                 </div>
             </div>
-        </div>
-        <a href="/setup" class="setup-link">
+        </div>        <a *ngIf="showStartLoggingButton" href="/trips" class="setup-link">
+            <mat-icon>add_circle</mat-icon>
+            Start Logging Trips
+        </a>
+        <a *ngIf="!showStartLoggingButton" href="/setup" class="setup-link">
             <mat-icon>settings</mat-icon>
             Go to Setup
         </a>
