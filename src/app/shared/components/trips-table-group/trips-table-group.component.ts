@@ -7,8 +7,8 @@ import { WeekdayService } from '@services/sheets/weekday.service';
 import { MatIcon } from '@angular/material/icon';
 import { NgFor, NgClass, NgStyle, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
-import { NoSecondsPipe } from '../../pipes/no-seconds.pipe';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
     selector: 'app-trips-table-group',
