@@ -16,7 +16,9 @@
           <div class="diagnostic-description">{{ item.description }}</div>
         </div>
         <div class="diagnostic-count">{{ item.count }}</div>
-      </div>      <!-- Detailed items list -->
+      </div>
+      
+      <!-- Detailed items list -->
       <div *ngIf="item.items && item.items.length > 0" class="diagnostic-details">
         <div class="details-header">
           <strong>Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):</strong>
@@ -32,11 +34,11 @@
               <div *ngFor="let problemItem of group" class="diagnostic-item grouped-item">
                 <!-- For shifts -->
                 <div *ngIf="item.itemType === 'shift'" class="shift-item">
-                  <strong>Shift:</strong>&nbsp;
+                  <strong>Shift:</strong>
                   <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
                   <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
                   <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                  <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
+                  <span *ngIf="problemItem.totalTrips !== undefined"> Trips: {{ problemItem.totalTrips }}</span>
                   <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
                   <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
                 </div>
@@ -74,38 +76,36 @@
           <!-- Fallback to individual items display -->
         <ng-template #showIndividualItems>
           <div class="items-list">
-            <div *ngFor="let problemItem of item.items" class="diagnostic-item">
-              <!-- For shifts -->
+            <div *ngFor="let problemItem of item.items" class="diagnostic-item">              <!-- For shifts -->
               <div *ngIf="item.itemType === 'shift'" class="shift-item">
-                <strong>Shift:</strong>&nbsp;
+                <strong>Shift:</strong>
                 <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
                 <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
                 <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
+                <span *ngIf="problemItem.totalTrips !== undefined"> Trips: {{ problemItem.totalTrips }}</span>
                 <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
                 <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-              </div>            
-              
-              <!-- For trips -->
+              </div>
+                <!-- For trips -->
               <div *ngIf="item.itemType === 'trip'" class="trip-item">
-                <strong>Trip:</strong>&nbsp;
+                <strong>Trip:</strong>
                 <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+                <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
+                <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
                 
                 <!-- Place information -->
-                <span *ngIf="problemItem.place" class="place-info">{{ problemItem.place }}</span>
+                <span *ngIf="problemItem.place" class="place-info"> {{ problemItem.place }}</span>
                 
                 <!-- Name information -->
-                <span *ngIf="problemItem.name" class="name-info">{{ problemItem.name }}</span>
+                <span *ngIf="problemItem.name" class="name-info"> {{ problemItem.name }}</span>
                 
                 <!-- Legacy location fields -->
-                <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
-                <span *ngIf="problemItem.pickup">{{ problemItem.pickup }}</span>
+                <span *ngIf="problemItem.startLocation"> {{ problemItem.startLocation }}</span>
+                <span *ngIf="problemItem.pickup"> {{ problemItem.pickup }}</span>
                 <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
                 <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
                 <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
                 
-                <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
-                <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
                 <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
               </div>
 
