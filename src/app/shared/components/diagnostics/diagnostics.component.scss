@@ -1,0 +1,67 @@
+.diagnostics-container {
+  padding: 16px;
+
+  .diagnostics-actions {
+    margin-bottom: 16px;
+  }
+
+  .diagnostic-details {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+    border-left: 3px solid #ccc;
+    
+    .details-header {
+      margin-bottom: 8px;
+      font-size: 0.9em;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .items-list {
+      .diagnostic-item {
+        margin-bottom: 6px;
+        font-size: 0.85em;
+        line-height: 1.4;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .shift-item, .trip-item {
+          padding: 4px 8px;
+          background-color: rgba(255, 255, 255, 0.7);
+          border-radius: 3px;
+          border-left: 2px solid;
+        }
+
+        .shift-item {
+          border-left-color: #ff9800; // Orange for shifts
+        }
+
+        .trip-item {
+          border-left-color: #2196f3; // Blue for trips
+        }
+
+        strong {
+          color: rgba(0, 0, 0, 0.8);
+        }
+      }
+    }
+  }
+
+  // Adjust mat-list-item to accommodate details
+  ::ng-deep mat-list-item {
+    min-height: auto !important;
+    padding: 12px 16px !important;
+    
+    .mat-mdc-list-item-content {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .mdc-list-item__primary-text {
+        width: 100%;
+      }
+    }
+  }
+}

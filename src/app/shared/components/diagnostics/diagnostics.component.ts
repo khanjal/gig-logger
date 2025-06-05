@@ -14,6 +14,7 @@ interface DiagnosticItem {
   count: number;
   severity: 'info' | 'warning' | 'error';
   description: string;
+  items?: any[]; // Array of problematic shifts/trips
 }
 
 @Component({
@@ -24,7 +25,6 @@ interface DiagnosticItem {
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
-  sheetDiagnostics: DiagnosticItem[] = [];
   dataDiagnostics: DiagnosticItem[] = [];
   isLoading = false;
 
@@ -41,29 +41,31 @@ export class DiagnosticsComponent implements OnInit {
     this.isLoading = true;
     try {
       await this.checkDataIntegrity();
-      await this.checkSheetStructure();
     } finally {
       this.isLoading = false;
     }
   }
   private async checkDataIntegrity() {
     const shifts = await this._shiftService.list();
-    const trips = await this._tripService.list();
-
-    // Check for duplicate shifts
+    const trips = await this._tripService.list();    // Check for duplicate shifts
     const duplicateShifts = this.findDuplicateShifts(shifts);
     this.dataDiagnostics.push({
       name: 'Duplicate Shifts',
       count: duplicateShifts.length,
       severity: duplicateShifts.length > 0 ? 'warning' : 'info',
-      description: 'Shifts with identical dates and keys'
-    });    // Check for empty shifts
-    const emptyShifts = shifts.filter((s: any) => !s.start || !s.finish);
+      description: 'Shifts with identical dates and keys',
+      items: duplicateShifts
+    });    
+    
+    // Check for empty shifts
+    const emptyShifts = shifts.filter((s: any) => !s.start && !s.finish && s.trips === 0);
+
     this.dataDiagnostics.push({
       name: 'Empty Shifts',
       count: emptyShifts.length,
       severity: emptyShifts.length > 0 ? 'warning' : 'info',
-      description: 'Shifts missing start or end times'
+      description: 'Shifts with zero trips',
+      items: emptyShifts
     });
 
     // Check for orphaned trips
@@ -72,24 +74,8 @@ export class DiagnosticsComponent implements OnInit {
       name: 'Orphaned Trips',
       count: orphanedTrips.length,
       severity: orphanedTrips.length > 0 ? 'error' : 'info',
-      description: 'Trips not associated with any shift'
-    });
-  }
-
-  private async checkSheetStructure() {
-    // Placeholder for sheet structure checks
-    this.sheetDiagnostics.push({
-      name: 'Missing Sheets',
-      count: 0,
-      severity: 'info',
-      description: 'Required sheets not found in spreadsheet'
-    });
-
-    this.sheetDiagnostics.push({
-      name: 'Missing Columns',
-      count: 0,
-      severity: 'info',
-      description: 'Required columns not found in sheets'
+      description: 'Trips not associated with any shift',
+      items: orphanedTrips
     });
   }
 

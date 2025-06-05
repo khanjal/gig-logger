@@ -9,33 +9,11 @@
   <mat-card>
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>table_chart</mat-icon>
-        Spreadsheet
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-list>
-        <mat-list-item *ngFor="let item of sheetDiagnostics">
-          <mat-icon [color]="getSeverityColor(item.severity)" matListItemIcon>
-            {{ getSeverityIcon(item.severity) }}
-          </mat-icon>
-          <div matListItemTitle>{{ item.name }}</div>
-          <div matListItemLine>{{ item.description }}</div>
-          <div matListItemMeta>{{ item.count }}</div>
-        </mat-list-item>
-      </mat-list>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
         <mat-icon>data_usage</mat-icon>
         Data
       </mat-card-title>
     </mat-card-header>
-    <mat-card-content>
-      <mat-list>
+    <mat-card-content>      <mat-list>
         <mat-list-item *ngFor="let item of dataDiagnostics">
           <mat-icon [color]="getSeverityColor(item.severity)" matListItemIcon>
             {{ getSeverityIcon(item.severity) }}
@@ -43,6 +21,34 @@
           <div matListItemTitle>{{ item.name }}</div>
           <div matListItemLine>{{ item.description }}</div>
           <div matListItemMeta>{{ item.count }}</div>
+          
+          <!-- Detailed items list -->
+          <div *ngIf="item.items && item.items.length > 0" class="diagnostic-details">
+            <div class="details-header">
+              <strong>Details:</strong>
+            </div>
+            <div class="items-list">
+              <div *ngFor="let problemItem of item.items" class="diagnostic-item">
+                <!-- For shifts -->
+                <div *ngIf="problemItem.date && problemItem.key" class="shift-item">
+                  <strong>Shift:</strong> {{ problemItem.date }} ({{ problemItem.key }})
+                  <span *ngIf="problemItem.trips !== undefined"> - {{ problemItem.trips }} trips</span>
+                  <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
+                  <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
+                </div>
+                
+                <!-- For trips -->
+                <div *ngIf="problemItem.startLocation || problemItem.endLocation" class="trip-item">
+                  <strong>Trip:</strong> 
+                  <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
+                  <span *ngIf="problemItem.startLocation && problemItem.endLocation"> → </span>
+                  <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
+                  <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
+                  <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </mat-list-item>
       </mat-list>
     </mat-card-content>
