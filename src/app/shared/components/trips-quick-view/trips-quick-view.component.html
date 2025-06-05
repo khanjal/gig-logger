@@ -87,14 +87,8 @@
         <mat-icon class="info-icon">schedule</mat-icon>
         <h4>{{ trip.type === "" ? "Time" : trip.type }}</h4>
       </div>
-      <div class="info-card__content">
-        <div class="time-display">
-          <span class="pickup-time" [ngClass]="{
-            'time--excellent': trip.amountPerTime > 30,
-            'time--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-            'time--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-            'time--poor': trip.amountPerTime < 20
-          }">
+      <div class="info-card__content">        <div class="time-display">
+          <span class="pickup-time">
             {{trip.pickupTime | noseconds}}
           </span>
           <span class="time-separator" *ngIf="trip.duration && trip.dropoffTime">-</span>
