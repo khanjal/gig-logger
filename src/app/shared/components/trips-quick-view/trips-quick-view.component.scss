@@ -1,18 +1,222 @@
 // Mobile-First Trip Quick View Component Styles
 @import "color-vars";
 
+/* ========================================
+   UTILITY CLASSES - Reusable Components
+   ======================================== */
+
+/* Icon Utilities */
+.icon {
+  &--sm { font-size: 0.875rem !important; width: 0.875rem !important; height: 0.875rem !important; }
+  &--md { font-size: 1rem !important; width: 1rem !important; height: 1rem !important; }
+  &--lg { font-size: 1.125rem !important; width: 1.125rem !important; height: 1.125rem !important; }
+  &--xl { font-size: 1.25rem !important; width: 1.25rem !important; height: 1.25rem !important; }
+  &--xxl { font-size: 1.5rem !important; width: 1.5rem !important; height: 1.5rem !important; }
+}
+
+/* Glow Effect Utility */
+.with-glow {
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+/* Efficiency Color Utilities */
+.efficiency--excellent {
+  color: $efficiency-excellent !important;
+}
+.efficiency--excellent-with-glow {
+  color: $efficiency-excellent !important;
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+.efficiency--excellent-bg { 
+  background: $efficiency-excellent !important; 
+  color: white !important; 
+}
+.efficiency--excellent-bg-light { 
+  background: rgba(34, 197, 94, 0.1); 
+  border-color: rgba(34, 197, 94, 0.3); 
+}
+
+.efficiency--good {
+  color: $efficiency-good !important;
+}
+.efficiency--good-bg { 
+  background: $efficiency-good !important; 
+  color: white !important; 
+}
+.efficiency--good-bg-light { 
+  background: rgba(59, 130, 246, 0.1); 
+  border-color: rgba(59, 130, 246, 0.3); 
+}
+
+.efficiency--average {
+  color: $efficiency-average !important;
+}
+.efficiency--average-bg { 
+  background: $efficiency-average !important; 
+  color: white !important; 
+}
+.efficiency--average-bg-light { 
+  background: rgba(245, 158, 11, 0.1); 
+  border-color: rgba(245, 158, 11, 0.3); 
+}
+
+.efficiency--poor {
+  color: $efficiency-poor !important;
+}
+.efficiency--poor-bg { 
+  background: $efficiency-poor !important; 
+  color: white !important; 
+}
+.efficiency--poor-bg-light { 
+  background: rgba(239, 68, 68, 0.1); 
+  border-color: rgba(239, 68, 68, 0.3); 
+}
+
+/* Payment Color Utilities */
+.payment-color {
+  &--pay { color: $payment-card; }
+  &--tip { color: $payment-tip; }
+  &--bonus { color: $payment-bonus; }
+  &--cash { color: $payment-cash; }
+  &--total { color: $primary-color; }
+}
+
+/* Badge Base */
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  
+  &--success { background: $success-100; color: $success-color; border: 1px solid $success-200; }
+  &--info { background: $info-100; color: $info-color; border: 1px solid $info-color; }
+  &--warning { background: $warn-100; color: $warn-color; border: 1px solid $warn-200; }
+  &--primary { background: $primary-100; color: $primary-color; border: 1px solid $primary-200; }
+  
+  &--pill {
+    padding: 0.375rem 0.875rem;
+    border-radius: 1.25rem;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.025em;
+  }
+}
+
+/* Button Base */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+  
+  &--primary {
+    background: $primary-color;
+    color: white;
+    &:hover { background: $primary-dark; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+  }
+  
+  &--accent {
+    background: $accent-color;
+    color: white;
+    &:hover { background: $accent-dark; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+  }
+  
+  &--outline {
+    background: $surface-color;
+    border: 2px solid $border-color;
+    color: $text-primary;
+    &:hover { background: $primary-50; border-color: $primary-color; color: $primary-color; }
+  }
+  
+  &--icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0;
+    .icon { margin: 0; }
+  }
+  
+  &:focus { outline: 2px solid $border-focus; outline-offset: 2px; }
+}
+
+/* Card Base */
+.card {
+  background: $surface-color;
+  border-radius: 0.75rem;
+  border: 1px solid $border-light;
+  transition: all 0.2s ease-in-out;
+  
+  &--surface { background: $surface-secondary; }
+  &--hover:hover { background: $surface-color; box-shadow: 0 2px 8px $shadow-light; }
+  &--shadow { box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium; }
+}
+
+/* Grid Item Base */
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  
+  &__label {
+    font-size: 0.75rem;
+    color: $text-secondary;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+  
+  &__value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: $text-primary;
+    
+    &--lg { font-size: 1.125rem; }
+    &--xl { font-size: 1.25rem; }
+  }
+}
+
+/* Animation Utilities */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(34, 197, 94, 0.6); }
+  50% { box-shadow: 0 0 16px rgba(34, 197, 94, 0.8); }
+}
+
+@keyframes expandIn {
+  from { opacity: 0; max-height: 0; transform: translateY(-10px); }
+  to { opacity: 1; max-height: 1000px; transform: translateY(0); }
+}
+
+@keyframes loading-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ========================================
+   COMPONENT STYLES
+   ======================================== */
+
 /* Trip Card Container */
 .trip-card {
-  background: $surface-color;
+  @extend .card;
+  @extend .card--shadow;
   border-radius: 1rem;
-  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
   margin-bottom: 1rem;
   overflow: hidden;
   transition: all 0.3s ease-in-out;
-  border: 1px solid $border-light;
   
   /* Card States */
-  &.trip-card--excluded {
+  &--excluded {
     opacity: 0.6;
     background: $background-secondary;
     position: relative;
@@ -20,47 +224,24 @@
     &::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 10px,
-        $warn-color 10px,
-        $warn-color 12px
-      );
+      inset: 0;
+      background: repeating-linear-gradient(45deg, transparent, transparent 10px, $warn-color 10px, $warn-color 12px);
       opacity: 0.1;
       pointer-events: none;
     }
   }
   
-  &.trip-card--unsaved {
-    border-left: 4px solid $warn-color;
-    box-shadow: 0 2px 12px $shadow-medium, 0 1px 6px $shadow-heavy;
-  }
-  
-  &.trip-card--add {
-    border-left-color: $success-color;
-  }
-  
-  &.trip-card--edit {
-    border-left-color: $info-color;
-  }
-  
-  &.trip-card--delete {
-    border-left-color: $warn-color;
-  }
+  &--unsaved { border-left: 4px solid $warn-color; box-shadow: 0 2px 12px $shadow-medium, 0 1px 6px $shadow-heavy; }
+  &--add { border-left-color: $success-color; }
+  &--edit { border-left-color: $info-color; }
+  &--delete { border-left-color: $warn-color; }
   
   &:hover:not(.trip-card--excluded) {
     box-shadow: 0 4px 16px $shadow-light, 0 2px 8px $shadow-medium;
     transform: translateY(-1px);
   }
   
-  &:focus-within {
-    box-shadow: 0 0 0 2px $border-focus;
-  }
+  &:focus-within { box-shadow: 0 0 0 2px $border-focus; }
 }
 
 /* Trip Header */
@@ -76,11 +257,9 @@
     margin-bottom: 0.5rem;
   }
   
-  &__right {
-    display: flex;
-    align-items: center;
-  }
-    &__secondary {
+  &__right { display: flex; align-items: center; }
+  
+  &__secondary {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -88,18 +267,20 @@
     margin-bottom: 0.75rem;
   }
     &__toggle-bar {
+    @extend .badge;
+    @extend .badge--pill;
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 1.25rem;
-    padding: 0.5rem 1rem;
+    color: $primary-color;
     margin: 0.75rem auto 0.5rem auto;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
     border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    width: 85%;
+    max-width: 200px;
+    min-width: 120px;
+    padding: 0.25rem 1rem;
+    height: 2rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: fit-content;
     
     &:hover {
       background: white;
@@ -107,31 +288,17 @@
       transform: translateY(-1px);
     }
     
-    &:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
-    
-    &:focus {
-      outline: 2px solid $border-focus;
-      outline-offset: 2px;
-    }
-    
-    .toggle-bar__content {
+    &:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); }
+    &:focus { outline: 2px solid $border-focus; outline-offset: 2px; }
+      .toggle-bar__content {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      width: 100%;
       
-      .toggle-bar__text {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: $primary-color;
-      }
-      
+      .toggle-bar__text { font-size: 0.875rem; font-weight: 500; color: $primary-color; }
       .toggle-bar__icon {
-        font-size: 1.25rem !important;
-        width: 1.25rem !important;
-        height: 1.25rem !important;
+        @extend .icon--xl;
         color: $primary-color;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -147,7 +314,8 @@
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-        .minimized-top-row {
+      
+      .minimized-top-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -161,49 +329,33 @@
       }
       
       .minimized-time {
+        @extend .badge;
+        @extend .badge--pill;
         background: rgba(255, 255, 255, 0.95);
         color: $primary-color;
-        padding: 0.375rem 0.875rem;
-        border-radius: 1.25rem;
-        font-size: 0.875rem;
         font-weight: 600;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         flex-shrink: 0;
       }
         .minimized-total {
+        @extend .badge;
+        @extend .badge--pill;
         background: linear-gradient(135deg, $success-color 0%, $accent-color 100%);
         color: white;
-        padding: 0.375rem 0.875rem;
-        border-radius: 1.25rem;
-        font-size: 0.875rem;
         font-weight: 700;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-        letter-spacing: 0.025em;
         flex-shrink: 0;
         
-        // Efficiency-based colors override the default gradient
-        &.efficiency--excellent {
-          background: $efficiency-excellent;
-          color: white;
-          text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+        // Use utility classes for efficiency colors
+        &.efficiency--excellent { 
+          @extend .efficiency--excellent; 
+          @extend .efficiency--excellent-bg; 
+          text-shadow: 0 0 8px rgba(34, 197, 94, 0.3); 
         }
-        
-        &.efficiency--good {
-          background: $efficiency-good;
-          color: white;
-        }
-        
-        &.efficiency--average {
-          background: $efficiency-average;
-          color: white;
-        }
-        
-        &.efficiency--poor {
-          background: $efficiency-poor;
-          color: white;
-        }
+        &.efficiency--good { @extend .efficiency--good; @extend .efficiency--good-bg; }
+        &.efficiency--average { @extend .efficiency--average; @extend .efficiency--average-bg; }
+        &.efficiency--poor { @extend .efficiency--poor; @extend .efficiency--poor-bg; }
       }
-        .minimized-place {
+      
+      .minimized-place {
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -221,20 +373,17 @@
         max-width: 100%;
         
         .place-icon {
-          font-size: 1rem !important;
-          width: 1rem !important;
-          height: 1rem !important;
+          @extend .icon--md;
           color: $primary-color;
           flex-shrink: 0;
         }
-      }    }
+      }
+    }
   }
 }
 
 .trip-id {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @extend .grid-item;
   
   .trip-number {
     font-size: 1.125rem;
@@ -265,11 +414,10 @@
   }
   
   .service-number {
+    @extend .badge;
+    @extend .badge--primary;
     font-size: 0.75rem;
-    color: $text-secondary;
-    background: $primary-100;
     padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
     white-space: nowrap;
   }
 }
@@ -281,13 +429,12 @@
   justify-content: center;
   
   .pickup-time {
+    @extend .badge;
+    @extend .badge--pill;
+    background: rgba(255, 255, 255, 0.9);
+    color: $primary-color;
     font-size: 1rem;
     font-weight: 600;
-    color: $primary-color;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -295,134 +442,56 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  
-  .total-amount {
+    .total-amount {
+    @extend .badge;
+    @extend .badge--pill;
+    background: linear-gradient(135deg, $success-color 0%, $accent-color 100%);
+    color: white;
     font-size: 0.875rem;
     font-weight: 700;
-    color: white;
-    background: linear-gradient(135deg, $success-color 0%, $accent-color 100%);
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    letter-spacing: 0.025em;
     
-    // Efficiency-based colors override the default gradient
-    &.efficiency--excellent {
-      background: $efficiency-excellent;
-      color: white;
-      text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+    // Use utility classes for efficiency colors
+    &.efficiency--excellent { 
+      @extend .efficiency--excellent; 
+      @extend .efficiency--excellent-bg; 
+      text-shadow: 0 0 8px rgba(34, 197, 94, 0.3); 
     }
-    
-    &.efficiency--good {
-      background: $efficiency-good;
-      color: white;
-    }
-    
-    &.efficiency--average {
-      background: $efficiency-average;
-      color: white;
-    }
-    
-    &.efficiency--poor {
-      background: $efficiency-poor;
-      color: white;
-    }
+    &.efficiency--good { @extend .efficiency--good; @extend .efficiency--good-bg; }
+    &.efficiency--average { @extend .efficiency--average; @extend .efficiency--average-bg; }
+    &.efficiency--poor { @extend .efficiency--poor; @extend .efficiency--poor-bg; }
   }
 }
 
 /* Status Badge */
 .status-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  @extend .badge;
   
-  &--add {
-    background: $success-100;
-    color: $success-color;
-    border: 1px solid $success-200;
-  }
+  &--add { @extend .badge--success; }
+  &--edit { @extend .badge--info; }
+  &--delete { @extend .badge--warning; }
+  &--saved { @extend .badge--primary; }
   
-  &--edit {
-    background: $info-100;
-    color: $info-color;
-    border: 1px solid $info-color;
-  }
-  
-  &--delete {
-    background: $warn-100;
-    color: $warn-color;
-    border: 1px solid $warn-200;
-  }
-  
-  &--saved {
-    background: $primary-100;
-    color: $primary-color;
-    border: 1px solid $primary-200;
-  }
-    .status-icon {
-    font-size: 1rem !important;
-    width: 1rem !important;
-    height: 1rem !important;
+  .status-icon {
+    @extend .icon--md;
     flex-shrink: 0;
   }
   
-  .status-text {
-    white-space: nowrap;
-  }
+  .status-text { white-space: nowrap; }
 }
 
 /* Efficiency Badge */
 .efficiency-badge {
-  display: flex;
-  align-items: center;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
+  @extend .badge;
   font-weight: 700;
-  
-  .efficiency-value {
+    .efficiency-value {
     &.efficiency--excellent {
-      background: $efficiency-excellent;
-      color: white;
+      @extend .efficiency--excellent;
+      @extend .efficiency--excellent-bg;
       animation: pulse-glow 2s infinite;
     }
-    
-    &.efficiency--good {
-      background: $efficiency-good;
-      color: white;
-    }
-    
-    &.efficiency--average {
-      background: $efficiency-average;
-      color: white;
-    }
-    
-    &.efficiency--poor {
-      background: $efficiency-poor;
-      color: white;
-    }
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(34, 197, 94, 0.6); }
-  50% { box-shadow: 0 0 16px rgba(34, 197, 94, 0.8); }
-}
-
-@keyframes expandIn {
-  from {
-    opacity: 0;
-    max-height: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    max-height: 1000px;
-    transform: translateY(0);
+    &.efficiency--good { @extend .efficiency--good; @extend .efficiency--good-bg; }
+    &.efficiency--average { @extend .efficiency--average; @extend .efficiency--average-bg; }
+    &.efficiency--poor { @extend .efficiency--poor; @extend .efficiency--poor-bg; }
   }
 }
 
@@ -438,16 +507,10 @@
 
 /* Info Cards */
 .info-card {
-  background: $surface-secondary;
-  border-radius: 0.75rem;
+  @extend .card;
+  @extend .card--surface;
+  @extend .card--hover;
   padding: 0.75rem;
-  border: 1px solid $border-light;
-  transition: all 0.2s ease-in-out;
-  
-  &:hover {
-    background: $surface-color;
-    box-shadow: 0 2px 8px $shadow-light;
-  }
   
   &__header {
     display: flex;
@@ -467,12 +530,23 @@
     font-size: 0.875rem;
     line-height: 1.5;
   }
+  
+  &.loading {
+    opacity: 0.6;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, $border-light, transparent);
+      animation: loading-shimmer 1.5s infinite;
+    }
+  }
 }
 
 .info-icon {
-  font-size: 1.125rem !important;
-  width: 1.125rem !important;
-  height: 1.125rem !important;
+  @extend .icon--lg;
   color: $primary-color;
   background: $primary-100;
   border-radius: 0.375rem;
@@ -480,6 +554,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Business Icon Styling */
+.business-pickup-icon,
+.business-minimized-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  // Override the default icon styling for business icons
+  &.business-icon-container {
+    background: transparent;
+    border-radius: 4px;
+    
+    .business-logo {
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.business-pickup-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+}
+
+.business-minimized-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.375rem;
   flex-shrink: 0;
 }
 
@@ -496,22 +602,10 @@
     font-size: 1rem;
   }
   
-  .time--excellent {
-    color: $efficiency-excellent;
-    text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
-  }
-  
-  .time--good {
-    color: $efficiency-good;
-  }
-  
-  .time--average {
-    color: $efficiency-average;
-  }
-  
-  .time--poor {
-    color: $efficiency-poor;
-  }
+  .time--excellent { @extend .efficiency--excellent-with-glow; }
+  .time--good { @extend .efficiency--good; }
+  .time--average { @extend .efficiency--average; }
+  .time--poor { @extend .efficiency--poor; }
   
   .time-separator {
     color: $text-secondary;
@@ -546,21 +640,10 @@
   .distance-value {
     font-weight: 600;
     
-    &.distance--excellent {
-      color: $efficiency-excellent;
-    }
-    
-    &.distance--good {
-      color: $efficiency-good;
-    }
-    
-    &.distance--average {
-      color: $efficiency-average;
-    }
-    
-    &.distance--poor {
-      color: $efficiency-poor;
-    }
+    &.distance--excellent { @extend .efficiency--excellent; }
+    &.distance--good { @extend .efficiency--good; }
+    &.distance--average { @extend .efficiency--average; }
+    &.distance--poor { @extend .efficiency--poor; }
   }
 }
 
@@ -579,10 +662,9 @@
       color: $primary-dark;
       text-decoration: underline;
     }
-      .external-link-icon {
-      font-size: 0.875rem !important;
-      width: 0.875rem !important;
-      height: 0.875rem !important;
+    
+    .external-link-icon {
+      @extend .icon--sm;
       opacity: 0.7;
       margin-left: 0.25rem;
       flex-shrink: 0;
@@ -610,10 +692,12 @@
 .payment-row {
   display: flex;
   gap: 0.75rem;
-    &--primary {
+  
+  &--primary {
     flex-wrap: wrap;
     
     .payment-item {
+      @extend .grid-item;
       flex: 1;
       min-width: 0;
       background: $surface-color;
@@ -622,8 +706,10 @@
       padding: 0.75rem;
     }
   }
-    &--secondary {
+  
+  &--secondary {
     .payment-item {
+      @extend .grid-item;
       flex: 1;
       background: $surface-secondary;
       border: 1px solid $border-light;
@@ -643,132 +729,37 @@
       &--efficiency {
         background: $info-50;
         border: 1px solid $info-200;
-        
-        // Override border color based on efficiency rating
-        &:has(.efficiency--excellent) {
-          background: rgba(34, 197, 94, 0.1);
-          border-color: rgba(34, 197, 94, 0.3);
-        }
-        
-        &:has(.efficiency--good) {
-          background: rgba(59, 130, 246, 0.1);
-          border-color: rgba(59, 130, 246, 0.3);
-        }
-        
-        &:has(.efficiency--average) {
-          background: rgba(245, 158, 11, 0.1);
-          border-color: rgba(245, 158, 11, 0.3);
-        }
-        
-        &:has(.efficiency--poor) {
-          background: rgba(239, 68, 68, 0.1);
-          border-color: rgba(239, 68, 68, 0.3);
-        }
+          // Use utility classes for efficiency backgrounds
+        &:has(.efficiency--excellent) { @extend .efficiency--excellent-bg-light; }
+        &:has(.efficiency--good) { @extend .efficiency--good-bg-light; }
+        &:has(.efficiency--average) { @extend .efficiency--average-bg-light; }
+        &:has(.efficiency--poor) { @extend .efficiency--poor-bg-light; }
       }
-    }  }
+    }
+  }
 }
 
 .payment-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  
   .payment-label {
-    font-size: 0.75rem;
-    color: $text-secondary;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
+    @extend .grid-item__label;
   }
   
   .payment-value {
-    font-weight: 700;
-    font-size: 1rem;
+    @extend .grid-item__value;
     
-    &--pay {
-      color: $payment-card;
-    }
-    
-    &--tip {
-      color: $payment-tip;
-    }
-    
-    &--bonus {
-      color: $payment-bonus;
-    }
-    
-    &--cash {
-      color: $payment-cash;
-    }
-    
-    &--total {
-      color: $primary-color;
-      font-size: 1.125rem;
-    }
+    &--pay { @extend .payment-color--pay; }
+    &--tip { @extend .payment-color--tip; }
+    &--bonus { @extend .payment-color--bonus; }
+    &--cash { @extend .payment-color--cash; }
+    &--total { @extend .payment-color--total; @extend .grid-item__value--lg; }
     
     &--efficiency {
-      font-size: 1.125rem;
-      font-weight: 700;
+      @extend .grid-item__value--lg;
       
-      &.efficiency--excellent {
-        color: $efficiency-excellent;
-        text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
-      }
-      
-      &.efficiency--good {
-        color: $efficiency-good;
-      }
-      
-      &.efficiency--average {
-        color: $efficiency-average;
-      }
-      
-      &.efficiency--poor {
-        color: $efficiency-poor;
-      }
-    }
-  }
-}
-
-@media (min-width: 480px) {
-  .payment-grid {
-    grid-template-columns: repeat(3, 1fr);
-    
-    .payment-item--total {
-      grid-column: 1 / -1;
-    }
-  }
-  
-  .trip-header {
-    &__minimized {
-      .minimized-info {
-        .minimized-details {
-          flex-direction: row;
-          align-items: center;
-          gap: 0.75rem;
-        }
-        
-        .minimized-place {
-          max-width: none;
-        }
-      }
-    }
-  }
-}
-
-/* Mobile-specific adjustments */
-@media (max-width: 479px) {
-  .trip-header {
-    &__minimized {
-      .minimized-info {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.75rem;
-        
-        .minimized-total {
-          align-self: flex-end;
-        }
-      }
+      &.efficiency--excellent { @extend .efficiency--excellent-with-glow; }
+      &.efficiency--good { @extend .efficiency--good; }
+      &.efficiency--average { @extend .efficiency--average; }
+      &.efficiency--poor { @extend .efficiency--poor; }
     }
   }
 }
@@ -781,23 +772,8 @@
   margin-bottom: 0.75rem;
   
   .detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    @extend .grid-item;
     flex: 1;
-    
-    .detail-label {
-      font-size: 0.75rem;
-      color: $text-secondary;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
-    }
-    
-    .detail-value {
-      font-weight: 600;
-      color: $text-primary;
-    }
   }
 }
 
@@ -809,10 +785,9 @@
   border: 1px solid $info-100;
   border-radius: 0.5rem;
   padding: 0.75rem;
-    .note-icon {
-    font-size: 1rem !important;
-    width: 1rem !important;
-    height: 1rem !important;
+  
+  .note-icon {
+    @extend .icon--md;
     color: $info-color;
     margin-top: 0.125rem;
     flex-shrink: 0;
@@ -845,92 +820,82 @@
 }
 
 .action-button {
-  min-height: 2.5rem;
-  border-radius: 0.75rem !important;
-  font-weight: 600;
-  transition: all 0.2s ease-in-out;
-    &--primary {
-    background: $primary-color !important;
-    color: $text-inverse !important;
-    flex-shrink: 0;
+  @extend .btn;
+  
+  &--primary { @extend .btn--primary; }
+  &--accent { @extend .btn--accent; }  &--menu { 
+    @extend .btn--icon;
+    background: white;
+    border: 2px solid $border-color;
+    color: $text-secondary;
     
-    &:hover {
-      background: $primary-dark !important;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
-    }
-  }
-    &--accent {
-    background: $accent-color !important;
-    color: $text-inverse !important;
-    
-    &:hover {
-      background: $accent-dark !important;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
-    }
-  }
-    &--menu {
-    background: $surface-color !important;
-    border: 2px solid $border-color !important;
-    color: $text-primary !important;
-    width: 2.5rem;
-    height: 2.5rem;
-    min-height: 2.5rem;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    &:hover {
-      background: $primary-50 !important;
-      border-color: $primary-color !important;
-      color: $primary-color !important;
-    }
-    
-    mat-icon {
-      margin-right: 0 !important;
+    &:hover { 
+      background: $surface-secondary; 
+      border-color: $border-color; 
+      color: $text-primary; 
     }
   }
   
   mat-icon {
-    margin-right: 0.375rem;
-    font-size: 1.125rem !important;
-    width: 1.125rem !important;
-    height: 1.125rem !important;
+    @extend .icon--lg;
+    
+    // For regular buttons with text
+    &:not(.btn--icon *) {
+      margin-right: 0.375rem;
+    }
+    
+    // For icon-only buttons - center the icon
+    .btn--icon & { 
+      margin: 0; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Small Devices - Payment Grid */
+@media (min-width: 480px) {
+  .payment-grid {
+    grid-template-columns: repeat(3, 1fr);
+    
+    .payment-item--total { grid-column: 1 / -1; }
   }
   
-  &:focus {
-    outline: 2px solid $border-focus;
-    outline-offset: 2px;
+  .trip-header__minimized .minimized-info {
+    .minimized-details {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .minimized-place { max-width: none; }
+  }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 479px) {
+  .trip-header__minimized .minimized-info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    
+    .minimized-total { align-self: flex-end; }
   }
 }
 
 /* Tablet and Desktop Responsive Design */
 @media (min-width: 768px) {
-  .trip-card {
-    border-radius: 1.25rem;
-  }
+  .trip-card { border-radius: 1.25rem; }
   
   .trip-header {
     padding: 1.5rem;
     
-    &__main {
-      margin-bottom: 1rem;
-      
-      .toggle-button {
-        top: -0.5rem;
-        right: -0.25rem;
-        width: 3rem;
-        height: 3rem;
-        
-        mat-icon {
-          font-size: 1.5rem !important;
-          width: 1.5rem !important;
-          height: 1.5rem !important;
-        }
-      }
-    }
+    &__main { margin-bottom: 1rem; }
     
     &__minimized {
       margin-top: 1rem;
@@ -939,38 +904,11 @@
       .minimized-info {
         gap: 1.5rem;
         
-        .minimized-details {
-          gap: 0.75rem;
-        }
-        
-        .minimized-time {
-          padding: 0.5rem 1.25rem;
-          font-size: 1rem;
-        }
-        
-        .minimized-place {
-          font-size: 1rem;
-          padding: 0.375rem 1rem;
-          
-          .place-icon {
-            font-size: 1.125rem !important;
-            width: 1.125rem !important;
-            height: 1.125rem !important;
-          }
-        }
-        
-        .minimized-total {
-          .total-amount {
-            padding: 0.625rem 1.25rem;
-            font-size: 1.125rem;
-          }
-        }
+        .minimized-details { gap: 0.75rem; }
+        .minimized-time { padding: 0.5rem 1.25rem; font-size: 1rem; }
+        .minimized-place { font-size: 1rem; padding: 0.375rem 1rem; }
+        .minimized-total .total-amount { padding: 0.625rem 1.25rem; font-size: 1.125rem; }
       }
-    }
-    
-    &__actions {
-      gap: 1rem;
-      margin-top: 0.75rem;
     }
   }
   
@@ -980,105 +918,52 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     
-    .info-card:first-child {
-      grid-column: 1 / -1;
-    }
+    .info-card:first-child { grid-column: 1 / -1; }
   }
   
-  .info-card {
-    padding: 1.25rem;
-  }    .action-bar {
-    padding: 1.5rem;
-    
-    &__center {
-      gap: 1rem;
-    }
-  }
+  .info-card { padding: 1.25rem; }
+  .action-bar { padding: 1.5rem; &__center { gap: 1rem; } }
 }
 
 /* Large Screen Layout */
 @media (min-width: 1024px) {
-  .trip-content {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .trip-content { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Menu Styles */
-.trip-menu {
-  .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    
-    &--danger mat-icon {
-      color: $warn-color;
-    }
-    
-    &--restore mat-icon {
-      color: $success-color;
-    }
-      mat-icon {
-      font-size: 1.125rem !important;
-      width: 1.125rem !important;
-      height: 1.125rem !important;
-    }
-  }
+.trip-menu .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  
+  &--danger mat-icon { color: $warn-color; }
+  &--restore mat-icon { color: $success-color; }
+  
+  mat-icon { @extend .icon--lg; }
 }
 
-/* Loading States */
-.info-card {
-  &.loading {
-    opacity: 0.6;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent, $border-light, transparent);
-      animation: loading-shimmer 1.5s infinite;
-    }
-  }
-}
-
-@keyframes loading-shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
+/* ========================================
+   ACCESSIBILITY & SPECIAL STATES
+   ======================================== */
 
 /* Accessibility Enhancements */
 @media (prefers-reduced-motion: reduce) {
   .trip-card,
-  .action-button,
+  .btn,
   .info-card,
   .trip-content,
-  .toggle-button,
-  .toggle-button mat-icon {
-    transition: none;
-    animation: none;
-  }
-  
+  .trip-header__toggle-bar,
   .efficiency-badge .efficiency-value.efficiency--excellent {
+    transition: none;
     animation: none;
   }
 }
 
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
-  .trip-card {
-    border: 2px solid $text-primary;
-  }
-  
-  .status-badge,
-  .efficiency-badge {
-    border: 2px solid currentColor;
-  }
-  
-  .info-card {
-    border: 1px solid $text-primary;
-  }
+  .trip-card { border: 2px solid $text-primary; }
+  .badge { border: 2px solid currentColor; }
+  .info-card { border: 1px solid $text-primary; }
 }
