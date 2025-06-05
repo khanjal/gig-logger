@@ -76,10 +76,133 @@
     margin-bottom: 0.5rem;
   }
   
-  &__badges {
+  &__right {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  &__secondary {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+  }
+  
+  &__toggle-bar {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1.25rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    
+    &:hover {
+      background: white;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    
+    &:focus {
+      outline: 2px solid $border-focus;
+      outline-offset: 2px;
+    }
+    
+    .toggle-bar__content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .toggle-bar__text {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $primary-color;
+      }
+      
+      .toggle-bar__icon {
+        font-size: 1.25rem !important;
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+        color: $primary-color;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    }
+  }
+  
+  &__minimized {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    
+    .minimized-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+        .minimized-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .minimized-bottom-row {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      
+      .minimized-time {
+        background: rgba(255, 255, 255, 0.95);
+        color: $primary-color;
+        padding: 0.375rem 0.875rem;
+        border-radius: 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+      }
+      
+      .minimized-total {
+        background: linear-gradient(135deg, $success-color 0%, $accent-color 100%);
+        color: white;
+        padding: 0.375rem 0.875rem;
+        border-radius: 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        letter-spacing: 0.025em;
+        flex-shrink: 0;
+      }
+        .minimized-place {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $text-primary;
+        font-size: 0.875rem;
+        font-weight: 500;
+        opacity: 0.9;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        max-width: 100%;
+        
+        .place-icon {
+          font-size: 1rem !important;
+          width: 1rem !important;
+          height: 1rem !important;
+          color: $primary-color;
+          flex-shrink: 0;
+        }
+      }    }
   }
 }
 
@@ -103,9 +226,9 @@
 
 .trip-service {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
   
   .service-name {
     font-size: 1rem;
@@ -205,12 +328,27 @@
   50% { box-shadow: 0 0 16px rgba(34, 197, 94, 0.8); }
 }
 
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
+}
+
 /* Trip Content */
 .trip-content {
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  animation: expandIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  overflow: hidden;
 }
 
 /* Info Cards */
@@ -396,19 +534,50 @@
       min-width: 0;
     }
   }
-  
-  &--secondary {
+    &--secondary {
     .payment-item {
       flex: 1;
+      background: $surface-secondary;
+      border: 1px solid $border-light;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
       
       &--total {
         background: $primary-50;
         border: 1px solid $primary-200;
-        border-radius: 0.5rem;
-        padding: 0.75rem;
       }
-    }
-  }
+      
+      &--cash {
+        background: $success-50;
+        border: 1px solid $success-200;
+      }
+      
+      &--efficiency {
+        background: $info-50;
+        border: 1px solid $info-200;
+        
+        // Override border color based on efficiency rating
+        &:has(.efficiency--excellent) {
+          background: rgba(34, 197, 94, 0.1);
+          border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        &:has(.efficiency--good) {
+          background: rgba(59, 130, 246, 0.1);
+          border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        &:has(.efficiency--average) {
+          background: rgba(245, 158, 11, 0.1);
+          border-color: rgba(245, 158, 11, 0.3);
+        }
+        
+        &:has(.efficiency--poor) {
+          background: rgba(239, 68, 68, 0.1);
+          border-color: rgba(239, 68, 68, 0.3);
+        }
+      }
+    }  }
 }
 
 .payment-item {
@@ -448,6 +617,28 @@
       color: $primary-color;
       font-size: 1.125rem;
     }
+    
+    &--efficiency {
+      font-size: 1.125rem;
+      font-weight: 700;
+      
+      &.efficiency--excellent {
+        color: $efficiency-excellent;
+        text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+      }
+      
+      &.efficiency--good {
+        color: $efficiency-good;
+      }
+      
+      &.efficiency--average {
+        color: $efficiency-average;
+      }
+      
+      &.efficiency--poor {
+        color: $efficiency-poor;
+      }
+    }
   }
 }
 
@@ -457,6 +648,45 @@
     
     .payment-item--total {
       grid-column: 1 / -1;
+    }
+  }
+  
+  .trip-header {
+    &__minimized {
+      .minimized-info {
+        .minimized-details {
+          flex-direction: row;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        
+        .minimized-place {
+          max-width: none;
+        }
+      }
+    }
+  }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 479px) {
+  .trip-header {
+    &__main {
+      .trip-service {
+        margin-right: 3rem; // Make room for toggle button
+      }
+    }
+    
+    &__minimized {
+      .minimized-info {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        
+        .minimized-total {
+          align-self: flex-end;
+        }
+      }
     }
   }
 }
@@ -599,6 +829,60 @@
     
     &__main {
       margin-bottom: 1rem;
+      
+      .toggle-button {
+        top: -0.5rem;
+        right: -0.25rem;
+        width: 3rem;
+        height: 3rem;
+        
+        mat-icon {
+          font-size: 1.5rem !important;
+          width: 1.5rem !important;
+          height: 1.5rem !important;
+        }
+      }
+    }
+    
+    &__minimized {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      
+      .minimized-info {
+        gap: 1.5rem;
+        
+        .minimized-details {
+          gap: 0.75rem;
+        }
+        
+        .minimized-time {
+          padding: 0.5rem 1.25rem;
+          font-size: 1rem;
+        }
+        
+        .minimized-place {
+          font-size: 1rem;
+          padding: 0.375rem 1rem;
+          
+          .place-icon {
+            font-size: 1.125rem !important;
+            width: 1.125rem !important;
+            height: 1.125rem !important;
+          }
+        }
+        
+        .minimized-total {
+          .total-amount {
+            padding: 0.625rem 1.25rem;
+            font-size: 1.125rem;
+          }
+        }
+      }
+    }
+    
+    &__actions {
+      gap: 1rem;
+      margin-top: 0.75rem;
     }
   }
   
@@ -682,8 +966,12 @@
 @media (prefers-reduced-motion: reduce) {
   .trip-card,
   .action-button,
-  .info-card {
+  .info-card,
+  .trip-content,
+  .toggle-button,
+  .toggle-button mat-icon {
     transition: none;
+    animation: none;
   }
   
   .efficiency-badge .efficiency-value.efficiency--excellent {

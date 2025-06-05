@@ -5,30 +5,14 @@
   'trip-card--add': !trip.saved && trip.action === 'ADD',
   'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
   'trip-card--delete': !trip.saved && trip.action === 'DELETE'
-}">
-    <!-- Trip Header -->
-  <div class="trip-header">
+}">    <!-- Trip Header -->  <div class="trip-header">
     <div class="trip-header__main">
       <div class="trip-id">
         <span class="trip-number">#{{trip.rowId}}</span>
         <span class="trip-date">{{trip.date | date:'MMM d'}}</span>
       </div>
-      <div class="trip-service">
-        <span class="service-name">{{trip.service}}</span>
-        <span class="service-number" *ngIf="trip.number > 0">#{{trip.number}}</span>
-      </div>
-    </div>
-    
-    <!-- Minimized View: Show pickup time and place when collapsed -->
-    <div class="trip-header__minimized" *ngIf="!isExpanded">
-      <div class="minimized-info">
-        <span class="minimized-time">{{trip.pickupTime | noseconds}}</span>
-        <span class="minimized-place" *ngIf="trip.place">{{trip.place | truncate:20}}</span>
-      </div>
-    </div>
-    
-    <div class="trip-header__actions">
-      <div class="trip-header__badges">
+      
+      <div class="trip-header__right">
         <div class="status-badge" [ngClass]="{
           'status-badge--add': !trip.saved && trip.action === 'ADD',
           'status-badge--edit': !trip.saved && trip.action === 'UPDATE',
@@ -48,27 +32,49 @@
             @else { Saved }
           </span>
         </div>
-        
-        <div class="efficiency-badge" *ngIf="trip.amountPerTime">
-          <span class="efficiency-value" [ngClass]="{
-            'efficiency--excellent': trip.amountPerTime > 30,
-            'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-            'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-            'efficiency--poor': trip.amountPerTime < 20
-          }">
-            ${{trip.amountPerTime | number:'1.0'}}/hr
+      </div>
+    </div>
+    
+    <div class="trip-header__secondary">
+      <div class="trip-service">
+        <span class="service-name">{{trip.service}}</span>
+        <span class="service-number" *ngIf="trip.number > 0">#{{trip.number}}</span>
+      </div>
+    </div>
+    
+    <!-- Minimized View: Reorganized for better hierarchy -->
+    <div class="trip-header__minimized" *ngIf="!isExpanded">
+      <div class="minimized-info">
+        <div class="minimized-top-row">
+          <span class="minimized-time">{{trip.pickupTime | noseconds}}</span>
+          <span class="minimized-total" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
+            {{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}
           </span>
         </div>
+        <div class="minimized-bottom-row" *ngIf="trip.place">
+          <div class="minimized-place">
+            <mat-icon class="place-icon">place</mat-icon>
+            {{trip.place | truncate:35}}
+          </div>
+        </div>
       </div>
-      
-      <button mat-icon-button 
-              class="toggle-button" 
-              (click)="toggleExpansion()" 
-              [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'">
-        <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-      </button>
+    </div>
+    
+    <!-- Slim toggle bar -->
+    <div class="trip-header__toggle-bar" 
+         (click)="toggleExpansion()" 
+         [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
+         role="button"
+         tabindex="0"
+         (keydown.enter)="toggleExpansion()"
+         (keydown.space)="toggleExpansion()">
+      <div class="toggle-bar__content">
+        <span class="toggle-bar__text">{{isExpanded ? 'Less Details' : 'More Details'}}</span>
+        <mat-icon class="toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </div>
     </div>
   </div>
+  
   <!-- Trip Content - Only show when expanded -->
   <div class="trip-content" *ngIf="isExpanded">
     
@@ -191,17 +197,26 @@
               <span class="payment-label">Bonus</span>
               <span class="payment-value payment-value--bonus">{{trip.bonus | currency}}</span>
             </div>
-          </div>
-          
-          <!-- Second row: Total and Cash -->
-          <div class="payment-row payment-row--secondary" *ngIf="trip.total > trip.pay || trip.cash">
+          </div>            <!-- Second row: Total, Cash, and Efficiency -->
+          <div class="payment-row payment-row--secondary" *ngIf="trip.total > trip.pay || trip.cash || trip.amountPerTime">
             <div class="payment-item payment-item--total" *ngIf="trip.total > trip.pay">
               <span class="payment-label">Total</span>
               <span class="payment-value payment-value--total">{{trip.total | currency}}</span>
             </div>
-            <div class="payment-item" *ngIf="trip.cash">
+            <div class="payment-item payment-item--cash" *ngIf="trip.cash">
               <span class="payment-label">Cash</span>
               <span class="payment-value payment-value--cash">{{trip.cash | currency}}</span>
+            </div>
+            <div class="payment-item payment-item--efficiency" *ngIf="trip.amountPerTime">
+              <span class="payment-label">Efficiency</span>
+              <span class="payment-value payment-value--efficiency" [ngClass]="{
+                'efficiency--excellent': trip.amountPerTime > 30,
+                'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+                'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+                'efficiency--poor': trip.amountPerTime < 20
+              }">
+                ${{trip.amountPerTime | number:'1.0'}}/hr
+              </span>
             </div>
           </div>
         </div>
@@ -231,9 +246,10 @@
         </div>
       </div>
     </div>
-    
-  </div>  <!-- Action Bar - Only show when expanded -->
-  <div class="action-bar" *ngIf="showActions && isExpanded">
+      </div>
+  
+  <!-- Action Bar - Always visible, outside collapse -->
+  <div class="action-bar" *ngIf="showActions">
     <!-- Edit button on the left -->
     <button mat-fab extended color="primary" class="action-button action-button--primary" (click)="openTripDialog()">
       <mat-icon>edit</mat-icon>
