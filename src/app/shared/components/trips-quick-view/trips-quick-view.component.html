@@ -42,9 +42,13 @@
       <div class="trip-time">
         <span class="pickup-time">{{trip.pickupTime | noseconds}}</span>
       </div>
-      
-      <div class="trip-total" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
-        <span class="total-amount">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
+        <div class="trip-total" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
+        <span class="total-amount" [ngClass]="{
+          'efficiency--excellent': trip.amountPerTime > 30,
+          'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+          'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+          'efficiency--poor': trip.amountPerTime < 20
+        }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
       </div>
     </div>
       <!-- Minimized View: Show only place information since time/total are now in secondary row -->
