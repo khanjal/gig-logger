@@ -35,25 +35,59 @@
               <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
               <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
               <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-            </div>
+            </div>            
             
             <!-- For trips -->
             <div *ngIf="item.itemType === 'trip'" class="trip-item">
               <strong>Trip:</strong>&nbsp;
               <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+              
+              <!-- Place information -->
+              <span *ngIf="problemItem.place" class="place-info">{{ problemItem.place }}</span>
+              
+              <!-- Name information -->
+              <span *ngIf="problemItem.name" class="name-info">{{ problemItem.name }}</span>
+              
+              <!-- Legacy location fields -->
               <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
               <span *ngIf="problemItem.pickup">{{ problemItem.pickup }}</span>
               <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
               <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
               <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
+              
               <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
               <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
               <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
             </div>
-            
-            <!-- Fallback for any other items -->
-            <div *ngIf="!problemItem.date && !problemItem.key && !problemItem.startLocation && !problemItem.endLocation && !problemItem.pickup && !problemItem.dropoff" class="unknown-item">
-              <strong>Unknown Item Type:</strong> Check console for details
+
+            <!-- For addresses -->
+            <div *ngIf="item.itemType === 'address'" class="address-item">
+              <strong>Address:</strong>&nbsp;
+              <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+              <span class="address-info">{{ problemItem.address }}</span>
+              <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
+              <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
+            </div>
+
+            <!-- For places -->
+            <div *ngIf="item.itemType === 'place'" class="place-item">
+              <strong>Place:</strong>&nbsp;
+              <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+              <span class="place-info">{{ problemItem.place }}</span>
+              <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
+              <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>            </div>
+
+            <!-- For names -->
+            <div *ngIf="item.itemType === 'name'" class="name-item">
+              <strong>Name:</strong>&nbsp;
+              <span *ngIf="problemItem.rowId" class="row-id">[{{ problemItem.rowId }}]</span>
+              <span class="name-info">{{ problemItem.name }}</span>
+              <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
+              <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
+            </div>
+              <!-- Fallback for any other items -->
+            <div *ngIf="item.itemType !== 'shift' && item.itemType !== 'trip' && item.itemType !== 'address' && item.itemType !== 'place' && item.itemType !== 'name'" class="unknown-item">
+              <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
             </div>
           </div>
         </div>

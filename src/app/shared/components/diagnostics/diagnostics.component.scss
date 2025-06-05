@@ -126,8 +126,7 @@
       border-radius: 4px;      border: 1px solid #e0e0e0;
       font-size: 0.875rem;
       overflow-wrap: break-word;
-      word-break: break-word;
-        .shift-item, .trip-item, .unknown-item {
+      word-break: break-word;        .shift-item, .trip-item, .address-item, .place-item, .name-item, .unknown-item {
         line-height: 1.4;
         
         strong {
@@ -151,12 +150,59 @@
         }
       }
       
+      .address-item {
+        strong {
+          color: #f57c00;
+        }
+      }
+      
+      .place-item {
+        strong {
+          color: #1976d2;
+        }
+      }
+      
+      .name-item {
+        strong {
+          color: #7b1fa2;
+        }
+      }
+      
       .unknown-item {
         strong {
           color: #f57c00;
         }
       }
     }
+  }
+
+  .place-info {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-right: 8px;
+  }
+
+  .name-info {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-right: 8px;
+  }
+
+  .address-info {
+    background-color: #fff3e0;
+    color: #f57c00;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-right: 8px;
+    display: inline-block;
+    margin-bottom: 4px;
   }
 
   // Mobile responsive styles

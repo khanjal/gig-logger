@@ -6,16 +6,22 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
+import { AddressService } from '@services/sheets/address.service';
+import { PlaceService } from '@services/sheets/place.service';
+import { NameService } from '@services/sheets/name.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { IAddress } from '@interfaces/address.interface';
+import { IPlace } from '@interfaces/place.interface';
+import { IName } from '@interfaces/name.interface';
 
 interface DiagnosticItem {
   name: string;
   count: number;
   severity: 'info' | 'warning' | 'error';
   description: string;
-  itemType?: 'shift' | 'trip'; // Type of items in the array
-  items?: any[]; // Array of problematic shifts/trips
+  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name'; // Type of items in the array
+  items?: any[]; // Array of problematic shifts/trips/addresses/places/names
 }
 
 @Component({
@@ -28,10 +34,12 @@ interface DiagnosticItem {
 export class DiagnosticsComponent implements OnInit {
   dataDiagnostics: DiagnosticItem[] = [];
   isLoading = false;
-
   constructor(
     private _shiftService: ShiftService,
-    private _tripService: TripService
+    private _tripService: TripService,
+    private _addressService: AddressService,
+    private _placeService: PlaceService,
+    private _nameService: NameService
   ) {}
 
   async ngOnInit() {
@@ -46,13 +54,18 @@ export class DiagnosticsComponent implements OnInit {
       this.isLoading = false;
     }
   }
-  
-  private async checkDataIntegrity() {
+    private async checkDataIntegrity() {
     const shifts = await this._shiftService.list();
     const trips = await this._tripService.list();
+    const addresses = await this._addressService.list();
+    const places = await this._placeService.list();
+    const names = await this._nameService.list();
     
     console.log('Diagnostics - Shifts:', shifts);
     console.log('Diagnostics - Trips:', trips);
+    console.log('Diagnostics - Addresses:', addresses);
+    console.log('Diagnostics - Places:', places);
+    console.log('Diagnostics - Names:', names);
 
     // Check for duplicate shifts
     const duplicateShifts = this.findDuplicateShifts(shifts);
@@ -86,9 +99,47 @@ export class DiagnosticsComponent implements OnInit {
       itemType: 'trip',
       items: orphanedTrips
     });
+
+    // Check for duplicate places with different casing
+    const duplicatePlaces = this.findDuplicatePlaces(places);
+    console.log('Duplicate places found:', duplicatePlaces);
+    this.dataDiagnostics.push({
+      name: 'Duplicate Places',
+      count: duplicatePlaces.length,
+      severity: duplicatePlaces.length > 0 ? 'warning' : 'info',
+      description: 'Places with different casing or variations',
+      itemType: 'place',
+      items: duplicatePlaces
+    });
+
+    // Check for duplicate addresses with different casing/variations
+    const duplicateAddresses = this.findDuplicateAddresses(addresses);
+    console.log('Duplicate addresses found:', duplicateAddresses);
+    this.dataDiagnostics.push({
+      name: 'Duplicate Addresses',
+      count: duplicateAddresses.length,
+      severity: duplicateAddresses.length > 0 ? 'warning' : 'info',
+      description: 'Addresses with different casing or partial matches',
+      itemType: 'address',
+      items: duplicateAddresses
+    });
+
+    // Check for duplicate names with different casing
+    const duplicateNames = this.findDuplicateNames(names);
+    console.log('Duplicate names found:', duplicateNames);
+    this.dataDiagnostics.push({
+      name: 'Duplicate Names',
+      count: duplicateNames.length,
+      severity: duplicateNames.length > 0 ? 'warning' : 'info',
+      description: 'Names with different casing or variations',
+      itemType: 'name',
+      items: duplicateNames
+    });
     
     console.log('Final dataDiagnostics:', this.dataDiagnostics);
-  }  private findDuplicateShifts(shifts: IShift[]): IShift[] {
+  }
+
+  private findDuplicateShifts(shifts: IShift[]): IShift[] {
     const keyMap = new Map<string, IShift[]>();
     const duplicates: IShift[] = [];
 
@@ -110,11 +161,126 @@ export class DiagnosticsComponent implements OnInit {
 
     return duplicates;
   }
+
   private findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
     const shiftKeys = new Set(shifts.map(s => s.key));
     return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
   }
+  private findDuplicatePlaces(places: IPlace[]): IPlace[] {
+    const duplicates: IPlace[] = [];
+    const processedPlaces = new Set<number>();
 
+    for (let i = 0; i < places.length; i++) {
+      if (processedPlaces.has(i)) continue;
+      
+      const place1 = places[i];
+      if (!place1.place || place1.place.trim().length < 2) continue;
+      
+      const matchingPlaces: IPlace[] = [place1];
+      
+      for (let j = i + 1; j < places.length; j++) {
+        if (processedPlaces.has(j)) continue;
+        
+        const place2 = places[j];
+        if (!place2.place || place2.place.trim().length < 2) continue;
+        
+        // Case-insensitive exact match
+        if (place1.place.toLowerCase().trim() === place2.place.toLowerCase().trim()) {
+          matchingPlaces.push(place2);
+          processedPlaces.add(j);
+        }
+      }
+      
+      // If we found duplicates, add them all
+      if (matchingPlaces.length > 1) {
+        duplicates.push(...matchingPlaces);
+        processedPlaces.add(i);
+      }
+    }    return duplicates;
+  }
+  private findDuplicateAddresses(addresses: IAddress[]): IAddress[] {
+    const duplicates: IAddress[] = [];
+    const processedAddresses = new Set<number>();
+
+    for (let i = 0; i < addresses.length; i++) {
+      if (processedAddresses.has(i)) continue;
+      
+      const address1 = addresses[i];
+      if (!address1.address || address1.address.trim().length < 5) continue;
+      
+      const matchingAddresses: IAddress[] = [address1];
+      
+      for (let j = i + 1; j < addresses.length; j++) {
+        if (processedAddresses.has(j)) continue;
+        
+        const address2 = addresses[j];        if (!address2.address || address2.address.trim().length < 5) continue;
+        
+        const addr1Lower = address1.address.toLowerCase().trim();
+        const addr2Lower = address2.address.toLowerCase().trim();
+        
+        // Split addresses on comma and get first elements
+        const addr1Parts = addr1Lower.split(',').map(part => part.trim());
+        const addr2Parts = addr2Lower.split(',').map(part => part.trim());
+        
+        // Skip comparison if first elements are different AND second elements are the same
+        if (addr1Parts[0] !== addr2Parts[0] && 
+            addr1Parts.length > 1 && addr2Parts.length > 1 && 
+            addr1Parts[1] === addr2Parts[1]) {
+          continue;
+        }
+        
+        // Check for exact match or partial match (one contains the other)
+        if (addr1Lower === addr2Lower || 
+            addr1Lower.includes(addr2Lower) || 
+            addr2Lower.includes(addr1Lower)) {
+          matchingAddresses.push(address2);
+          processedAddresses.add(j);
+        }
+      }
+      
+      // If we found duplicates, add them all
+      if (matchingAddresses.length > 1) {
+        duplicates.push(...matchingAddresses);
+        processedAddresses.add(i);
+      }
+    }
+
+    return duplicates;
+  }
+  private findDuplicateNames(names: IName[]): IName[] {
+    const duplicates: IName[] = [];
+    const processedNames = new Set<number>();
+
+    for (let i = 0; i < names.length; i++) {
+      if (processedNames.has(i)) continue;
+      
+      const name1 = names[i];
+      if (!name1.name || name1.name.trim().length < 2) continue;
+      
+      const matchingNames: IName[] = [name1];
+      
+      for (let j = i + 1; j < names.length; j++) {
+        if (processedNames.has(j)) continue;
+        
+        const name2 = names[j];
+        if (!name2.name || name2.name.trim().length < 2) continue;
+        
+        // Case-insensitive exact match
+        if (name1.name.toLowerCase().trim() === name2.name.toLowerCase().trim()) {
+          matchingNames.push(name2);
+          processedNames.add(j);
+        }
+      }
+      
+      // If we found duplicates, add them all
+      if (matchingNames.length > 1) {
+        duplicates.push(...matchingNames);
+        processedNames.add(i);
+      }
+    }
+
+    return duplicates;
+  }
   getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
