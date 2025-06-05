@@ -207,11 +207,20 @@
 .mat-card-disabled {
   background-color: $background-secondary !important;
   opacity: 0.6;
-  pointer-events: none;
   
   &:hover {
     transform: none;
     box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium !important;
+  }
+  
+  // Keep buttons interactive while making card content appear disabled
+  .mat-card-content,
+  .mat-card-header {
+    pointer-events: none;
+  }
+  
+  .mat-card-actions {
+    pointer-events: auto;
   }
 }
 

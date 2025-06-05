@@ -87,16 +87,19 @@
     gap: 12px;
     margin-bottom: 0.75rem;
   }
-  
-  &__toggle-bar {
+    &__toggle-bar {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 1.25rem;
     padding: 0.5rem 1rem;
-    margin: 0.5rem 0;
+    margin: 0.75rem auto 0.5rem auto;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
     
     &:hover {
       background: white;
