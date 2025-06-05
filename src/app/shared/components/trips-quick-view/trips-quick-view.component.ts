@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum'; 
 import { MatDialog } from '@angular/material/dialog';
@@ -11,10 +11,9 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { updateAction } from '@utils/action.utils';
-import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import { MatFabButton, MatIconButton } from '@angular/material/button';
+import { MatFabButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -24,17 +23,17 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
-    imports: [MatCard, MatCardHeader, MatIcon, NgClass, MatCardContent, NgIf, MatFabButton, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
+    imports: [MatIcon, NgClass, NgIf, MatFabButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
 })
 
-export class TripsQuickViewComponent {
+export class TripsQuickViewComponent implements OnInit {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
-
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
+  
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
@@ -42,6 +41,11 @@ export class TripsQuickViewComponent {
         private _tripService: TripService,
         private _shiftService: ShiftService,
       ) { }
+
+  ngOnInit() {
+    // Show details by default if there is no dropoff time
+    this.isExpanded = !this.trip.dropoffTime && !this.trip.exclude;
+  }
 
   toggleExpansion() {
     this.isExpanded = !this.isExpanded;
