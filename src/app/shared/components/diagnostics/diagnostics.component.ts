@@ -42,9 +42,8 @@ export class DiagnosticsComponent implements OnInit {
     private _placeService: PlaceService,
     private _nameService: NameService
   ) {}
-
-  async ngOnInit() {
-    await this.runDiagnostics();
+  ngOnInit() {
+    // Diagnostics will only run when the user clicks the "Run Diagnostics" button
   }
   async runDiagnostics() {
     this.isLoading = true;
@@ -62,11 +61,7 @@ export class DiagnosticsComponent implements OnInit {
     const places = await this._placeService.list();
     const names = await this._nameService.list();
     
-    console.log('Diagnostics - Shifts:', shifts);
-    console.log('Diagnostics - Trips:', trips);
-    console.log('Diagnostics - Addresses:', addresses);
-    console.log('Diagnostics - Places:', places);
-    console.log('Diagnostics - Names:', names);    // Check for duplicate shifts
+    // Check for duplicate shifts
     const duplicateShiftsResult = this.findDuplicateShifts(shifts);
     console.log('Duplicate shifts found:', duplicateShiftsResult);
     this.dataDiagnostics.push({
@@ -99,7 +94,9 @@ export class DiagnosticsComponent implements OnInit {
       description: 'Trips not associated with any shift',
       itemType: 'trip',
       items: orphanedTrips
-    });    // Check for duplicate places with different casing
+    });
+
+    // Check for duplicate places with different casing
     const duplicatePlacesResult = this.findDuplicatePlaces(places);
     console.log('Duplicate places found:', duplicatePlacesResult);
     this.dataDiagnostics.push({
@@ -110,7 +107,9 @@ export class DiagnosticsComponent implements OnInit {
       itemType: 'place',
       items: duplicatePlacesResult.items,
       groups: duplicatePlacesResult.groups
-    });    // Check for duplicate addresses with different casing/variations
+    });
+
+    // Check for duplicate addresses with different casing/variations
     const duplicateAddressesResult = this.findDuplicateAddresses(addresses);
     console.log('Duplicate addresses found:', duplicateAddressesResult);
     this.dataDiagnostics.push({
@@ -121,7 +120,9 @@ export class DiagnosticsComponent implements OnInit {
       itemType: 'address',
       items: duplicateAddressesResult.items,
       groups: duplicateAddressesResult.groups
-    });    // Check for duplicate names with different casing
+    });
+
+    // Check for duplicate names with different casing
     const duplicateNamesResult = this.findDuplicateNames(names);
     console.log('Duplicate names found:', duplicateNamesResult);
     this.dataDiagnostics.push({
@@ -136,6 +137,7 @@ export class DiagnosticsComponent implements OnInit {
     
     console.log('Final dataDiagnostics:', this.dataDiagnostics);
   }
+
   private findDuplicateShifts(shifts: IShift[]): { items: IShift[], groups: IShift[][] } {
     const keyMap = new Map<string, IShift[]>();
     const duplicates: IShift[] = [];
@@ -199,7 +201,9 @@ export class DiagnosticsComponent implements OnInit {
     }
 
     return { items: duplicates, groups: duplicateGroups };
-  }  private findDuplicateAddresses(addresses: IAddress[]): { items: IAddress[], groups: IAddress[][] } {
+  }
+
+  private findDuplicateAddresses(addresses: IAddress[]): { items: IAddress[], groups: IAddress[][] } {
     const duplicates: IAddress[] = [];
     const duplicateGroups: IAddress[][] = [];
     const processedAddresses = new Set<number>();
@@ -250,7 +254,9 @@ export class DiagnosticsComponent implements OnInit {
     }
 
     return { items: duplicates, groups: duplicateGroups };
-  }  private findDuplicateNames(names: IName[]): { items: IName[], groups: IName[][] } {
+  }
+
+  private findDuplicateNames(names: IName[]): { items: IName[], groups: IName[][] } {
     const duplicates: IName[] = [];
     const duplicateGroups: IName[][] = [];
     const processedNames = new Set<number>();
