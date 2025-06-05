@@ -799,6 +799,225 @@
   }
 }
 
+// Features Section - Mobile First (Collapsible)
+.features-section {
+  padding: 2.5rem 1rem;
+  background: $background-secondary;
+  
+  details {
+    max-width: 64rem;
+    margin: 0 auto;
+    
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      list-style: none;
+      padding: 1rem;
+      background: $surface-color;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+      border: 1px solid $border-light;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 12px $shadow-medium;
+        transform: translateY(-1px);
+      }
+      
+      &::-webkit-details-marker {
+        display: none;
+      }
+      
+      h2 {
+        margin: 0;
+        color: $text-primary;
+        font-size: 1.75rem;
+        font-weight: 600;
+        
+        @media (min-width: 768px) {
+          font-size: 2rem;
+        }
+      }
+      
+      mat-icon {
+        color: $primary-color;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: transform 0.3s ease;
+      }
+    }
+    
+    &[open] summary mat-icon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.features-content {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-group {
+  background: $surface-color;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  
+  h3 {
+    margin: 0 0 1rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 1.25rem;
+    }
+  }
+  
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    
+    li {
+      margin-bottom: 0.5rem;
+      color: $text-secondary;
+      line-height: 1.5;
+      font-size: 0.875rem;
+      
+      @media (min-width: 768px) {
+        font-size: 1rem;
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// FAQ Section - Mobile First (Collapsible)
+.faq-section {
+  padding: 2.5rem 1rem;
+  background: $surface-color;
+  
+  details {
+    max-width: 64rem;
+    margin: 0 auto;
+    
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      list-style: none;
+      padding: 1rem;
+      background: $background-color;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+      border: 1px solid $border-light;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 12px $shadow-medium;
+        transform: translateY(-1px);
+      }
+      
+      &::-webkit-details-marker {
+        display: none;
+      }
+      
+      h2 {
+        margin: 0;
+        color: $text-primary;
+        font-size: 1.75rem;
+        font-weight: 600;
+        
+        @media (min-width: 768px) {
+          font-size: 2rem;
+        }
+      }
+      
+      mat-icon {
+        color: $primary-color;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: transform 0.3s ease;
+      }
+    }
+    
+    &[open] summary mat-icon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.faq-content {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.faq-item {
+  background: $background-color;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px $shadow-medium;
+    transform: translateY(-1px);
+  }
+  
+  h3 {
+    margin: 0 0 0.75rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 1.25rem;
+    }
+  }
+  
+  p {
+    margin: 0;
+    color: $text-secondary;
+    line-height: 1.6;
+    font-size: 0.875rem;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+}
+
 // Small mobile adjustments
 @media (max-width: 480px) {
   .hero-section {
