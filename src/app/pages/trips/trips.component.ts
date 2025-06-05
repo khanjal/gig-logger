@@ -116,6 +116,11 @@ export class TripComponent implements OnInit, OnDestroy {
     this.viewportScroller.scrollToPosition([0, 0]);
   }
 
+  // Scroll to today's trips section
+  scrollToTodaysTrips(): void {
+    this._viewportScroller.scrollToAnchor("todaysTrips");
+  }
+
   async loadSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',

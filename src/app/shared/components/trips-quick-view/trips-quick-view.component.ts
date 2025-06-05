@@ -31,6 +31,7 @@ export class TripsQuickViewComponent implements OnInit {
   @Input() showActions: boolean = true;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
+  @Output("scrollToTodaysTrips") scrollToTodaysTrips: EventEmitter<void> = new EventEmitter();
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   
@@ -81,21 +82,20 @@ export class TripsQuickViewComponent implements OnInit {
         await this.deleteTrip();
       }
     });
-  }
-  async cloneUnsavedTrip() {
+  }  async cloneUnsavedTrip() {
    await this._tripService.clone(this.trip);
    this.parentReload.emit();
    this._snackBar.open("Cloned Trip");
-   // Scroll to top where the first trip for today is
-   window.scrollTo({ top: 0, behavior: 'smooth' });
+   // Scroll to today's trips section
+   this.scrollToTodaysTrips.emit();
   }
 
   async nextUnsavedTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
     this._snackBar.open("Added Next Trip");
-    // Scroll to top where the first trip for today is
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll to today's trips section
+    this.scrollToTodaysTrips.emit();
   }
 
   async setDropoffTime() {

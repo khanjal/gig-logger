@@ -25,11 +25,9 @@
         <mat-slide-toggle class="field-right" (change)="changePolling()">
             Auto Save
         </mat-slide-toggle>
-    </h2>
-
-    @for (trip of todaysTrips; track $index) {
+    </h2>    @for (trip of todaysTrips; track $index) {
         <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()"></trips-quick-view>
+            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTodaysTrips)="scrollToTodaysTrips()"></trips-quick-view>
         </div>
     }
 
@@ -43,7 +41,7 @@
             </mat-expansion-panel-header>
             @for (trip of yesrterdaysTrips; track $index) {
                 <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                    <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()"></trips-quick-view>
+                    <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTodaysTrips)="scrollToTodaysTrips()"></trips-quick-view>
                 </div>
             }
         </mat-expansion-panel>
