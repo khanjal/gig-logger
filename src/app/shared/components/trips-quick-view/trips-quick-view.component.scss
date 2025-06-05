@@ -557,38 +557,6 @@
   flex-shrink: 0;
 }
 
-/* Business Icon Styling */
-.business-pickup-icon,
-.business-minimized-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  // Override the default icon styling for business icons
-  &.business-icon-container {
-    background: transparent;
-    border-radius: 4px;
-    
-    .business-logo {
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-  }
-}
-
-.business-pickup-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 0.5rem;
-}
-
-.business-minimized-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 0.375rem;
-  flex-shrink: 0;
-}
-
 /* Time Display */
 .time-display {
   display: flex;

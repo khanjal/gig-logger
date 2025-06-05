@@ -82,17 +82,20 @@ export class TripsQuickViewComponent implements OnInit {
       }
     });
   }
-
   async cloneUnsavedTrip() {
    await this._tripService.clone(this.trip);
    this.parentReload.emit();
    this._snackBar.open("Cloned Trip");
+   // Scroll to top where the first trip for today is
+   window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async nextUnsavedTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
     this._snackBar.open("Added Next Trip");
+    // Scroll to top where the first trip for today is
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async setDropoffTime() {
