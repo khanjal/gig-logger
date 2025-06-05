@@ -352,3 +352,84 @@
     }
   }
 }
+
+// Grouped duplicates styling
+.groups-list {
+  .duplicate-group {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    
+    .group-header {
+      background-color: #f5f5f5;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #666;
+      
+      strong {
+        color: #333;
+      }
+    }
+    
+    .group-items {
+      padding: 8px;
+      
+      .grouped-item {
+        background-color: #fafafa;
+        border: 1px solid #eeeeee;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsive for groups
+@media (max-width: 768px) {
+  .groups-list {
+    .duplicate-group {
+      margin-bottom: 16px;
+      
+      .group-header {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+      
+      .group-items {
+        padding: 6px;
+        
+        .grouped-item {
+          padding: 6px 10px;
+          margin-bottom: 6px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .groups-list {
+    .duplicate-group {
+      .group-header {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+      
+      .group-items {
+        padding: 4px;
+        
+        .grouped-item {
+          padding: 4px 8px;
+          margin-bottom: 4px;
+        }
+      }
+    }
+  }
+}
