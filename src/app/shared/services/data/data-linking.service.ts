@@ -4,10 +4,6 @@ import { IDelivery } from "@interfaces/delivery.interface";
 import { INote } from "@interfaces/note.interface";
 import { IAddress } from "@interfaces/address.interface";
 import { IType } from "@interfaces/type.interface";
-import { IName } from "@interfaces/name.interface";
-import { IPlace } from "@interfaces/place.interface";
-import { IRegion } from "@interfaces/region.interface";
-import { IService } from "@interfaces/service.interface";
 import { AddressService } from "../sheets/address.service";
 import { NameService } from "../sheets/name.service";
 import { PlaceService } from "../sheets/place.service";
@@ -16,14 +12,13 @@ import { ServiceService } from "../sheets/service.service";
 import { TripService } from "../sheets/trip.service";
 import { TypeService } from "../sheets/type.service";
 import { DeliveryService } from "../delivery.service";
+import { LoggerService } from "../logger.service";
 import { sort } from "@helpers/sort.helper";
 
 @Injectable({
     providedIn: 'root'
 })
-export class DataLinkingService {
-
-    constructor(
+export class DataLinkingService {    constructor(
         private _addressService: AddressService,
         private _deliveryService: DeliveryService,
         private _nameService: NameService,
@@ -31,11 +26,12 @@ export class DataLinkingService {
         private _regionService: RegionService,
         private _serviceService: ServiceService,
         private _tripService: TripService,
-        private _typeService: TypeService
+        private _typeService: TypeService,
+        private _logger: LoggerService
     ) {}
 
     private handleError(operation: string, error: any): void {
-        console.error(`❌ ${operation} failed:`, {
+        this._logger.error(`${operation} failed`, {
             message: error.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
@@ -131,9 +127,8 @@ export class DataLinkingService {
                     deliveries.push(delivery);
                 }
             });
-
             await this._deliveryService.loadDeliveries(deliveries);
-            console.log('✅ Deliveries linked successfully');
+            this._logger.info('Deliveries linked successfully');
         } catch (error) {
             this.handleError('linkDeliveries', error);
             throw error;
@@ -142,7 +137,7 @@ export class DataLinkingService {
 
     private async linkNameData() {
         try {
-            console.log('🔗 Linking name data...');
+            this._logger.info('Linking name data');
             
             let names = await this._nameService.list();
             let trips = await this._tripService.getAll();
@@ -173,12 +168,11 @@ export class DataLinkingService {
 
                         name.notes.push(note);
                     }                
-                    
-                    await this._nameService.update([name]);
+                      await this._nameService.update([name]);
                 };
             };
             
-            console.log('✅ Name data linked successfully');
+            this._logger.info('Name data linked successfully');
         } catch (error) {
             this.handleError('linkNameData', error);
             throw error;
@@ -187,7 +181,7 @@ export class DataLinkingService {
 
     private async linkAddressData() {
         try {
-            console.log('🔗 Linking address data...');
+            this._logger.info('Linking address data');
             
             let addresses = await this._addressService.list();
             let trips = await this._tripService.getAll();
@@ -220,10 +214,9 @@ export class DataLinkingService {
                     }                
                     
                     await this._addressService.append([address])
-                };
-            };
+                };            };
             
-            console.log('✅ Address data linked successfully');
+            this._logger.info('Address data linked successfully');
         } catch (error) {
             this.handleError('linkAddressData', error);
             throw error;
@@ -232,7 +225,7 @@ export class DataLinkingService {
 
     private async linkPlaceData() {
         try {
-            console.log('🔗 Linking place data...');
+            this._logger.info('Linking place data');
             
             let trips = await this._tripService.getAll();
             let places = await this._placeService.list();
@@ -286,10 +279,9 @@ export class DataLinkingService {
                     }
                 };
 
-                await this._placeService.update([place]);
-            };
+                await this._placeService.update([place]);            };
             
-            console.log('✅ Place data linked successfully');
+            this._logger.info('Place data linked successfully');
         } catch (error) {
             this.handleError('linkPlaceData', error);
             throw error;
@@ -298,7 +290,7 @@ export class DataLinkingService {
 
     async updateAncillaryInfo() {
         try {
-            console.log('🔄 Updating ancillary info...');
+            this._logger.info('Updating ancillary info');
             
             // Delete all unsaved services, regions, places, types, names, and addresses
             await Promise.all([
@@ -323,8 +315,7 @@ export class DataLinkingService {
                     this.addIfNotExists('type', trip.type, this._typeService)
                 ]);
             }
-            
-            console.log('✅ Ancillary info updated successfully');
+              this._logger.info('Ancillary info updated successfully');
         } catch (error) {
             this.handleError('updateAncillaryInfo', error);
             throw error;

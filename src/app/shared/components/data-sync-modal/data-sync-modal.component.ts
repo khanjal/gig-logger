@@ -1,5 +1,5 @@
 // Angular imports
-import { Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
@@ -46,7 +46,7 @@ interface SyncState {
     standalone: true,
     imports: [NgFor, NgClass, MatFabButton]
 })
-export class DataSyncModalComponent {
+export class DataSyncModalComponent implements OnInit, OnDestroy {
     @ViewChild('terminal') terminalElement!: ElementRef;
     
     // Timer related properties
@@ -306,5 +306,10 @@ export class DataSyncModalComponent {
                     this.terminalElement.nativeElement.scrollHeight;
             }
         }, 0);
+    }
+
+    ngOnDestroy(): void {
+        // Clean up timer subscription to prevent memory leaks
+        this.stopTimer();
     }
 }

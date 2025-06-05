@@ -15,6 +15,7 @@ import { WeeklyService } from "../sheets/weekly.service";
 import { YearlyService } from "../sheets/yearly.service";
 import { DeliveryService } from "../delivery.service";
 import { DataLinkingService } from "./data-linking.service";
+import { LoggerService } from "../logger.service";
 
 @Injectable({
     providedIn: 'root'
@@ -36,11 +37,12 @@ export class DataLoaderService {
         private _weekdayService: WeekdayService,
         private _weeklyService: WeeklyService,
         private _yearlyService: YearlyService,
-        private _dataLinking: DataLinkingService
+        private _dataLinking: DataLinkingService,
+        private _logger: LoggerService
     ) {}
 
     private handleError(operation: string, error: any): void {
-        console.error(`❌ ${operation} failed:`, {
+        this._logger.error(`${operation} failed`, {
             message: error.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
@@ -49,7 +51,7 @@ export class DataLoaderService {
 
     public async loadData(sheetData: ISheet) {
         try {
-            console.log('📊 Starting data load process...');
+            this._logger.info('Starting data load process');
             
             // Load all sheet data in parallel for better performance
             await Promise.all([
@@ -70,13 +72,13 @@ export class DataLoaderService {
             await this._shiftService.load(sheetData.shifts);
             await this._tripService.load(sheetData.trips);
 
-            console.log('🔗 Linking data...');
+            this._logger.info('Linking data');
             await this._dataLinking.linkAllData();
 
             await this._deliveryService.clear();
             await this._dataLinking.linkDeliveries(sheetData.trips);
             
-            console.log('✅ Data loading completed successfully');
+            this._logger.info('Data loading completed successfully');
         } catch (error) {
             this.handleError('loadData', error);
             throw error;
@@ -85,13 +87,13 @@ export class DataLoaderService {
 
     public async appendData(sheetData: ISheet) {
         try {
-            console.log('📊 Appending data...');
+            this._logger.info('Appending data');
             
             await this._addressService.append(sheetData.addresses);
             await this._nameService.append(sheetData.names);
             await this._dataLinking.linkDeliveries(sheetData.trips);
             
-            console.log('✅ Data appending completed');
+            this._logger.info('Data appending completed');
         } catch (error) {
             this.handleError('appendData', error);
             throw error;

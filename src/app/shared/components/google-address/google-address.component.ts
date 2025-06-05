@@ -23,12 +23,9 @@ export class GoogleAddressComponent implements OnInit {
   @Output() addressChange = new EventEmitter<string>();
   
   @ViewChild('address') addressInput!: ElementRef;
-  
-  // establishmentAddress!: Object;
 
   place!: any;
   formattedAddress!: string;
-  // formattedEstablishmentAddress!: string;
 
   addressForm = new FormGroup({
     address: new FormControl('')
@@ -59,12 +56,9 @@ export class GoogleAddressComponent implements OnInit {
       {
         componentRestrictions: { country: 'US' },
         types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
-      }
-    );
+      }    );
 
-    //@ts-ignore
-    google.maps.event.addListener(autocomplete, 'place_changed', () => {
-      // $('.pac-container').remove(); // TODO remove existing pac-containers
+    (window as any).google.maps.event.addListener(autocomplete, 'place_changed', () => {
       this.place = autocomplete.getPlace();
       this.formatAddress();
       this.addressForm.controls.address.setValue(this.formattedAddress);

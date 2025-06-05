@@ -82,7 +82,6 @@ export class ShiftsComponent implements OnInit {
   addShift() {
     throw new Error('Method not implemented.');
   }
-
   async saveSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',
@@ -92,14 +91,8 @@ export class ShiftsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result: any) => {
-
         if (result) {
-            // await this._tripService.saveUnsavedTrips();
-            // await this._shiftService.saveUnsavedShifts();
-            // this._snackBar.open("Trip(s) Saved to Spreadsheet");
-
-            // await this.reload("todaysTrips");
-            // this._viewportScroller.scrollToAnchor("todaysTrips");
+            // Future: Implement save to spreadsheet functionality
         }
     });
   }

@@ -7,6 +7,7 @@ import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
+import { LoggerService } from './logger.service';
 
 @Injectable({
     providedIn: 'root'
@@ -37,12 +38,11 @@ export class ApiService {
 
     constructor(
         private _http: HttpClient,
-        private _secureCookieStorage: SecureCookieStorageService
-    ) {}
-
-    // Centralized error handler
+        private _secureCookieStorage: SecureCookieStorageService,
+        private logger: LoggerService
+    ) {}    // Centralized error handler
     private handleError(operation: string, error: any): void {
-        console.error(`❌ ${operation} failed:`, {
+        this.logger.error(`${operation} failed`, {
             message: error.message || 'Unknown error',
             status: error.status || 'No status',
             statusText: error.statusText || 'No status text',
@@ -104,7 +104,7 @@ export class ApiService {
                 this.setOptions()
             ));
 
-            console.log('✅ Refresh token set successfully');
+            this.logger.debug('Refresh token set successfully');
             return response;
         } catch (error) {
             this.handleError('setRefreshToken', error);
@@ -117,7 +117,7 @@ export class ApiService {
             const response = await firstValueFrom(
                 this._http.post<any>(`${this.apiUrl}${this.API_ENDPOINTS.AUTH_CLEAR}`, null)
             );
-            console.log('✅ Refresh token cleared successfully');
+            this.logger.debug('Refresh token cleared successfully');
             return response;
         } catch (error) {
             this.handleError('clearRefreshToken', error);
@@ -132,7 +132,7 @@ export class ApiService {
                 null,
                 this.setOptions()
             ));
-            console.log('✅ Auth token refreshed successfully');
+            this.logger.debug('Auth token refreshed successfully');
             return response;
         } catch (error) {
             this.handleError('refreshAuthToken', error);
@@ -153,7 +153,7 @@ export class ApiService {
                     this.setOptions()
                 )
             );
-            console.log(`✅ File created: ${properties.name}`);
+            this.logger.info(`File created: ${properties.name}`);
             return response;
         } catch (error) {
             this.handleError('createFile', error);
@@ -169,7 +169,7 @@ export class ApiService {
                     this.setOptions()
                 )
             );
-            console.log(`✅ Files listed: ${response.length} files found`);
+            this.logger.debug(`Files listed: ${response.length} files found`);
             return response;
         } catch (error) {
             this.handleError('listFiles', error);
@@ -189,7 +189,7 @@ export class ApiService {
                     this.setOptions(sheetId)
                 )
             );
-            console.log(`✅ Sheet data loaded: ${sheetId}`);
+            this.logger.debug(`Sheet data loaded: ${sheetId}`);
             return response;
         } catch (error) {
             this.handleError('getSheetData', error);
@@ -203,7 +203,7 @@ export class ApiService {
                 `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_SINGLE}/${sheetName}`, 
                 this.setOptions(sheetId)
             );
-            console.log(`✅ Single sheet data requested: ${sheetName}`);
+            this.logger.debug(`Single sheet data requested: ${sheetName}`);
             return response;
         } catch (error) {
             this.handleError('getSheetSingle', error);
@@ -217,7 +217,7 @@ export class ApiService {
                 `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_MULTIPLE}?sheetName=names&sheetName=places&sheetName=trips`, 
                 this.setOptions(sheetId)
             );
-            console.log('✅ Secondary sheet data requested');
+            this.logger.debug('Secondary sheet data requested');
             return response;
         } catch (error) {
             this.handleError('getSecondarySheetData', error);
@@ -234,7 +234,7 @@ export class ApiService {
                     this.setOptions(sheetData.properties.id)
                 )
             );
-            console.log(`✅ Sheet data saved: ${sheetData.properties.name}`);
+            this.logger.info(`Sheet data saved: ${sheetData.properties.name}`);
             return response;
         } catch (error) {
             this.handleError('postSheetData', error);
@@ -249,7 +249,7 @@ export class ApiService {
                 JSON.stringify(properties), 
                 this.setOptions(properties.id)
             );
-            console.log(`✅ Sheet creation requested: ${properties.name}`);
+            this.logger.info(`Sheet creation requested: ${properties.name}`);
             return response;
         } catch (error) {
             this.handleError('createSheet', error);
@@ -265,7 +265,7 @@ export class ApiService {
                     this.setOptions(sheetId)
                 )
             );
-            console.log('✅ Lambda warmed up successfully');
+            this.logger.debug('Lambda warmed up successfully');
             return response;
         } catch (error) {
             this.handleError('warmupLambda', error);
@@ -281,7 +281,7 @@ export class ApiService {
                     this.setOptions(sheetId)
                 )
             );
-            console.log('✅ Health check completed');
+            this.logger.debug('Health check completed');
             return response;
         } catch (error) {
             this.handleError('healthCheck', error);

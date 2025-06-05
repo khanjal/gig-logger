@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { MatIcon } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-home',
@@ -11,6 +12,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule, MatIcon]
 })
 export class HomeComponent implements OnInit {
+  private logger = inject(LoggerService);
   showInstallButton = false;
   private deferredPrompt: any;
 
@@ -32,10 +34,9 @@ export class HomeComponent implements OnInit {
     if (this.deferredPrompt) {
       this.deferredPrompt.prompt();
       const { outcome } = await this.deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        console.log('App installed');
-      }
+        if (outcome === 'accepted') {
+          this.logger.info('App installed successfully');
+        }
       
       this.deferredPrompt = null;
       this.showInstallButton = false;

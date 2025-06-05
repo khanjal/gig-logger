@@ -7,6 +7,7 @@ import { DateHelper } from "@helpers/date.helper";
 import { ShiftService } from "../sheets/shift.service";
 import { TripService } from "../sheets/trip.service";
 import { WeekdayService } from "../sheets/weekday.service";
+import { LoggerService } from "../logger.service";
 
 @Injectable({
     providedIn: 'root'
@@ -16,11 +17,12 @@ export class ShiftCalculatorService {
     constructor(
         private _shiftService: ShiftService,
         private _tripService: TripService,
-        private _weekdayService: WeekdayService
+        private _weekdayService: WeekdayService,
+        private _logger: LoggerService
     ) {}
 
     private handleError(operation: string, error: any): void {
-        console.error(`❌ ${operation} failed:`, {
+        this._logger.error(`${operation} failed`, {
             message: error.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
@@ -29,7 +31,7 @@ export class ShiftCalculatorService {
 
     public async calculateShiftTotals(shifts: IShift[] = []) {
         try {
-            console.log('🧮 Calculating shift totals...');
+            this._logger.info('Calculating shift totals');
             
             // Filter out undefined shifts
             shifts = shifts.filter(shift => shift !== undefined);
@@ -60,7 +62,7 @@ export class ShiftCalculatorService {
             let dates = [... new Set(shifts.map(x => x?.date))];
             await this.calculateDailyTotal(dates);
             
-            console.log('✅ Shift totals calculated successfully');
+            this._logger.info('Shift totals calculated successfully');
         } catch (error) {
             this.handleError('calculateShiftTotals', error);
             throw error;
@@ -134,7 +136,7 @@ export class ShiftCalculatorService {
 
     public async calculateDailyTotal(dates: string[] = []) {
         try {
-            console.log('📅 Calculating daily totals...');
+            this._logger.info('Calculating daily totals');
             
             let currentDate = DateHelper.getStartOfWeekDate(new Date);
             let individualDates = true;
@@ -174,7 +176,7 @@ export class ShiftCalculatorService {
                 }
             };
             
-            console.log('✅ Daily totals calculated successfully');
+            this._logger.debug('Daily totals calculated successfully');
         } catch (error) {
             this.handleError('calculateDailyTotal', error);
             throw error;

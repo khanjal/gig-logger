@@ -16,6 +16,7 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // App Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
+import { LoggerService } from '@services/logger.service';
 import { TruncatePipe } from "@pipes/truncate.pipe";
 
 @Component({
@@ -42,6 +43,7 @@ export class SheetListComponent implements OnInit {
 
   constructor(
     private _gigLoggerService: GigWorkflowService,
+    private _logger: LoggerService,
     private dialogRef: MatDialogRef<SheetListComponent>
   ) { }
   
@@ -63,7 +65,7 @@ export class SheetListComponent implements OnInit {
         })
       );
     } catch (error) {
-      console.error('Error loading sheets:', error);
+      this._logger.error('Error loading sheets', { error });
       // Optionally show error message to user
     } finally {
       this.loading = false;

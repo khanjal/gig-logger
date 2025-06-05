@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-sheet-quota',
@@ -12,6 +13,8 @@ export class SheetQuotaComponent {
   quota: string | undefined;
   usage: string | undefined;
 
+  constructor(private _logger: LoggerService) {}
+
   async ngOnInit(): Promise<void> {
     await this.showEstimatedQuota();
   }
@@ -22,14 +25,11 @@ export class SheetQuotaComponent {
         this.quota = NumberHelper.getDataSize(estimation?.quota);
         this.usage = NumberHelper.getDataSize(estimation?.usage);
         
-        // console.log("Quota", this.quota);
-        // console.log("Usage", this.usage);
-
         return estimation;
     } else {
-        console.error("StorageManager not found");
+        this._logger.error("StorageManager not found");
     }
 
     return;
-}
+  }
 }

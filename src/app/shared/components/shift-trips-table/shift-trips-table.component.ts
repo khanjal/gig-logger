@@ -11,6 +11,7 @@ import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
 import { TruncatePipe as TruncatePipe_1 } from '@pipes/truncate.pipe';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-shift-trips-table',
@@ -49,6 +50,7 @@ export class ShiftTripsTableComponent {
   constructor(
     private tripService: TripService,
     private dialog: MatDialog,
+    private _logger: LoggerService
   ) {}
 
   async ngOnInit() { 
@@ -67,7 +69,7 @@ export class ShiftTripsTableComponent {
       
       this.trips = [...trips, ...excludedTrips];
     } catch (error) {
-      console.error('Error fetching trips:', error);
+      this._logger.error('Error fetching trips', { error, shiftKey });
     }
   }
 

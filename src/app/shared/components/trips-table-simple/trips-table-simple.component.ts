@@ -19,7 +19,11 @@ export class TripsTableSimpleComponent implements OnInit {
   @Input() link: string = "";
   @Input() trips: ITrip[] = [];
   
-  // TODO: Add grouping: https://stackblitz.com/edit/angular-material-table-row-grouping?file=src%2Fapp%2Fapp.module.ts
+  /**
+   * Future enhancement: Add row grouping functionality
+   * Reference implementation: https://stackblitz.com/edit/angular-material-table-row-grouping
+   * This would allow grouping trips by date, service, or other criteria
+   */
   displayedColumns: string[] = [];
 
   ngOnInit() { 

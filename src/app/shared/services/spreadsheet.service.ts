@@ -4,6 +4,7 @@ import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from './gig-workflow.service';
+import { LoggerService } from './logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 
@@ -16,6 +17,7 @@ export class SpreadsheetService {
     constructor(
         private _snackBar: MatSnackBar,
         private _gigLoggerService: GigWorkflowService,
+        private _logger: LoggerService
     ) { }
     
     public async add(spreadsheet: ISpreadsheet) {
@@ -44,13 +46,11 @@ export class SpreadsheetService {
 
     public async deleteSpreadsheet(spreadsheet: ISpreadsheet) {
         await localDB.spreadsheets.delete(spreadsheet.id);
-    }
-
-    public deleteLocalData(): boolean {
+    }    public deleteLocalData(): boolean {
         localDB.delete().then(() => {
-            console.log("Local Database successfully deleted");
+            this._logger.info("Local Database successfully deleted");
         }).catch((err) => {
-            console.error("Could not delete local database");
+            this._logger.error("Could not delete local database", err);
         }).finally(async () => {
             localDB.open();
         });
@@ -60,10 +60,9 @@ export class SpreadsheetService {
 
     public deleteRemoteData() {
         spreadsheetDB.delete().then(() => {
-            console.log("Spreadsheet Database successfully deleted");
-            // spreadsheetDB.open();
+            this._logger.info("Spreadsheet Database successfully deleted");
         }).catch((err) => {
-            console.error("Could not delete spreadsheet database");
+            this._logger.error("Could not delete spreadsheet database", err);
         }).finally(async () => {
             spreadsheetDB.open();
         });
@@ -74,11 +73,9 @@ export class SpreadsheetService {
     public deleteData() {
         this.deleteLocalData();
         this.deleteRemoteData();
-    }
-
-    public async warmUpLambda() {
+    }    public async warmUpLambda() {
         // Wake up lambda
-        //console.log("Warming up lambda");
+        this._logger.debug("Warming up lambda");
         let defaultSheet = await this.getDefaultSheet();
         return await this._gigLoggerService.healthCheck(defaultSheet.id);
     }

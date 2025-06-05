@@ -1,16 +1,50 @@
-<h3>Spreadsheet</h3>
-<ul>
-    <li>Missing Sheets</li>
-    <li>Missing Columns</li>
-    <li>Column in wrong position</li>
-</ul>
+<div class="diagnostics-container">
+  <div class="diagnostics-actions">
+    <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading">
+      <mat-icon>refresh</mat-icon>
+      {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
+    </button>
+  </div>
 
-<h3>Data</h3>
-<ul>
-    <li>Duplicate shifts</li>
-    <li>Empty shifts</li>
-    <li>Orphaned trips</li>
-    <li>Duplicate names/addresses/places w/ different casing</li>
-    <li>Check for no time if there are start/end times on shifts</li>
-    <li>Check for no duration if there are pickup/dropoff times on trips</li>
-</ul>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>table_chart</mat-icon>
+        Spreadsheet
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let item of sheetDiagnostics">
+          <mat-icon [color]="getSeverityColor(item.severity)" matListItemIcon>
+            {{ getSeverityIcon(item.severity) }}
+          </mat-icon>
+          <div matListItemTitle>{{ item.name }}</div>
+          <div matListItemLine>{{ item.description }}</div>
+          <div matListItemMeta>{{ item.count }}</div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>data_usage</mat-icon>
+        Data
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let item of dataDiagnostics">
+          <mat-icon [color]="getSeverityColor(item.severity)" matListItemIcon>
+            {{ getSeverityIcon(item.severity) }}
+          </mat-icon>
+          <div matListItemTitle>{{ item.name }}</div>
+          <div matListItemLine>{{ item.description }}</div>
+          <div matListItemMeta>{{ item.count }}</div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>

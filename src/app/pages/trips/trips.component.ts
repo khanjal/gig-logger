@@ -16,6 +16,7 @@ import { PollingService } from '@services/polling.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { LoggerService } from '@services/logger.service';
 
 import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
@@ -60,7 +61,6 @@ export class TripComponent implements OnInit, OnDestroy {
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
   parentReloadSubscription!: Subscription;
-
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
@@ -70,11 +70,16 @@ export class TripComponent implements OnInit, OnDestroy {
       private _tripService: TripService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
-      private viewportScroller: ViewportScroller
+      private viewportScroller: ViewportScroller,
+      private logger: LoggerService
     ) { }
-
   ngOnDestroy(): void {
     this._pollingService.stopPolling();
+    
+    // Unsubscribe from parent reload subscription to prevent memory leaks
+    if (this.parentReloadSubscription) {
+      this.parentReloadSubscription.unsubscribe();
+    }
   }
 
   async ngOnInit(): Promise<void> {
@@ -228,13 +233,12 @@ export class TripComponent implements OnInit, OnDestroy {
       return;
     }
     
-    console.log('Starting polling');
+    this.logger.debug('Starting polling');
     this._pollingService.stopPolling();
     await this._pollingService.startPolling();
   }
-
   stopPolling() {
-    console.log('Stopping polling');
+    this.logger.debug('Stopping polling');
     this._pollingService.stopPolling();
   }
 }

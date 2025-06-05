@@ -29,26 +29,22 @@ export class TripsTableGroupComponent implements OnInit, OnChanges {
     private _tripService: TripService,
     private _weekdayService: WeekdayService
   ) {}
-  
-  async ngOnChanges() {
-    // console.log("TripsTableGroup: OnChanges");
+    async ngOnChanges() {
     await this.load();
   }
 
   async ngOnInit() {
-    // console.log("TripsTableGroup: OnInit");
     this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     await this.load();
   }
 
   async load() {
-    // console.log("TripsTableGroup: Loading");
     let sheetTrips = await this._tripService.getPreviousDays(this.days);
     sort(sheetTrips, '-id');
-    // Get unique dates in trips.
+    
+    // Get unique dates in trips and create groups
     let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
     this.tripGroups = [];
-    // console.log(this.trips);
     
     for (const date of dates) {
       let tripGroup = {} as ITripGroup;
