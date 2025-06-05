@@ -567,13 +567,16 @@
 .payment-row {
   display: flex;
   gap: 0.75rem;
-  
-  &--primary {
+    &--primary {
     flex-wrap: wrap;
     
     .payment-item {
       flex: 1;
       min-width: 0;
+      background: $surface-color;
+      border: 1px solid $border-light;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
     }
   }
     &--secondary {
