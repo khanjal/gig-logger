@@ -14,7 +14,7 @@ import { updateAction } from '@utils/action.utils';
 import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import { MatFabButton } from '@angular/material/button';
+import { MatFabButton, MatIconButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -23,9 +23,8 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 @Component({
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
-    styleUrls: ['./trips-quick-view.component.scss'],
-    standalone: true,
-    imports: [MatCard, MatCardHeader, MatIcon, NgClass, MatCardContent, NgIf, MatFabButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
+    styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
+    imports: [MatCard, MatCardHeader, MatIcon, NgClass, MatCardContent, NgIf, MatFabButton, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
 })
 
 export class TripsQuickViewComponent {
@@ -35,7 +34,7 @@ export class TripsQuickViewComponent {
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
 
   actionEnum = ActionEnum;
-
+  isExpanded: boolean = false;
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
@@ -43,6 +42,10 @@ export class TripsQuickViewComponent {
         private _tripService: TripService,
         private _shiftService: ShiftService,
       ) { }
+
+  toggleExpansion() {
+    this.isExpanded = !this.isExpanded;
+  }
 
   async restoreTrip() {
     updateAction(this.trip, ActionEnum.Update);
