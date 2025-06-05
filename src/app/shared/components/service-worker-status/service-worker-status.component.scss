@@ -1,13 +1,181 @@
+// Mobile-First Service Worker Status Component Styles
 @import "color-vars";
 
+// Service Worker Status Container - Mobile First
+.service-worker-status {
+  background: $surface-color;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px $shadow-light;
+  border: 1px solid $border-light;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+// Status Indicator Colors
 .accent {
-    color: $accent-color;
+  color: $accent-color;
+  font-weight: 600;
+  
+  &.status-badge {
+    background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
+    color: $accent-700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    @media (min-width: 768px) {
+      padding: 0.375rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .primary {
-    color: $primary-color;
+  color: $primary-color;
+  font-weight: 600;
+  
+  &.status-badge {
+    background: linear-gradient(135deg, $primary-50 0%, $primary-100 100%);
+    color: $primary-700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    @media (min-width: 768px) {
+      padding: 0.375rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .warn {
-    color: $warn-color;
+  color: $warn-color;
+  font-weight: 600;
+  
+  &.status-badge {
+    background: linear-gradient(135deg, $warn-50 0%, $warn-100 100%);
+    color: $warn-700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    @media (min-width: 768px) {
+      padding: 0.375rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Status Icon Styling
+.status-icon {
+  font-size: 1.125rem;
+  vertical-align: middle;
+  
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+}
+
+// Status Text
+.status-text {
+  font-size: 0.875rem;
+  color: $text-primary;
+  line-height: 1.4;
+  
+  @media (min-width: 768px) {
+    font-size: 0.9rem;
+  }
+}
+
+// Status Header
+.status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  
+  .status-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    @media (min-width: 768px) {
+      font-size: 1.125rem;
+    }
+  }
+}
+
+// Status Details
+.status-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $border-light;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .status-label {
+      font-weight: 500;
+      color: $text-secondary;
+      font-size: 0.875rem;
+    }
+    
+    .status-value {
+      font-weight: 500;
+      color: $text-primary;
+      font-size: 0.875rem;
+      text-align: right;
+    }
+  }
+}
+
+// PWA Installation Status
+.pwa-status {
+  background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
+  border: 1px solid $info-200;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  
+  .pwa-text {
+    color: $info-700;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    @media (min-width: 768px) {
+      font-size: 0.9rem;
+    }
+  }
 }

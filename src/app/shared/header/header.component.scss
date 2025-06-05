@@ -1,33 +1,392 @@
+// Mobile-First Header Component Styles
 @import "color-vars";
 
-.filler {
-    flex: 1 1 auto;
+/* App Header Container */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: $surface-color;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
 }
 
-.gap {
-    margin-right: 1rem;
-    margin-top: .5rem;
+/* Main Toolbar */
+.main-toolbar {
+  padding: 0 1rem;
+  height: 3.5rem; /* 56px */
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%) !important;
+  color: $text-inverse !important;
+  
+  /* Remove default Material toolbar styling */
+  .mat-toolbar-row,
+  .mat-toolbar-single-row {
+    padding: 0;
+    height: auto;
+  }
 }
 
-.end {
-    margin-top: .5rem;
+.toolbar-section {
+  display: flex;
+  align-items: center;
+  
+  &--brand {
+    flex: 0 0 auto;
+  }
+  
+  &--actions {
+    flex: 0 0 auto;
+  }
 }
 
-a {
-    color: $background-color;
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+/* Brand Section */
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $text-inverse !important;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: opacity 0.2s ease-in-out;
+  
+  &:hover {
+    opacity: 0.9;
     text-decoration: none;
-    vertical-align: bottom;
+  }
+  
+  &:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+}
 
-    &:hover {
-        text-decoration: underline;
+.brand-icon {
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: $text-inverse !important;
+}
+
+.brand-text {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Action Button */
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  color: $text-inverse !important;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+  }
+  
+  &:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+  }
+  
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $text-inverse !important;
+  }
+}
+
+/* Bottom Navigation - Mobile First */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: $surface-color;
+  border-top: 1px solid $border-light;
+  box-shadow: 0 -2px 8px $shadow-light, 0 -1px 4px $shadow-medium;
+  padding-bottom: env(safe-area-inset-bottom, 0); /* PWA safe area support */
+}
+
+.nav-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-width: 100%;
+  height: 4rem; /* 64px - optimal touch target */
+  align-items: center;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.25rem;
+  color: $text-secondary;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.75rem;
+  margin: 0.25rem;
+  min-height: 3rem; /* 48px touch target */
+  position: relative;
+  
+  &:hover {
+    color: $primary-color;
+    background: $primary-50;
+    text-decoration: none;
+  }
+  
+  &:focus {
+    outline: 2px solid $border-focus;
+    outline-offset: 2px;
+  }
+  
+  &--active {
+    color: $primary-color;
+    background: $primary-100;
+    transform: translateY(-1px);
+    
+    .nav-icon {
+      color: $primary-color;
+      transform: scale(1.1);
     }
+    
+    .nav-label {
+      font-weight: 600;
+    }
+  }
+  
+  &--home {
+    .home-button {
+      background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+      transition: all 0.2s ease-in-out;
+      
+      .nav-icon {
+        color: $text-inverse !important;
+        font-size: 1.25rem;
+      }
+    }
+    
+    &:hover .home-button {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+    
+    &.nav-item--active .home-button {
+      background: linear-gradient(135deg, $accent-color 0%, $primary-color 100%);
+      transform: translateY(-2px) scale(1.1);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.5);
+    }
+  }
 }
 
-mat-icon {
-    color: $background-color;
-    margin-right: .5rem;
+.nav-icon {
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  transition: all 0.2s ease-in-out;
 }
 
-mat-toolbar {
-    margin-bottom: 1rem;
+.nav-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.025em;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: $primary-100;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  
+  &--visible {
+    opacity: 1;
+  }
+}
+
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(90deg, $primary-color, $accent-color);
+  transform: translateX(-100%);
+  animation: loading-progress 2s infinite;
+}
+
+@keyframes loading-progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Main Content Area */
+.main-content {
+  padding-top: 3.5rem; /* Account for fixed header */
+  padding-bottom: 4.5rem; /* Account for bottom nav + safe area */
+  min-height: calc(100vh - 8rem);
+  background: $background-color;
+}
+
+/* Tablet Layout */
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none; /* Hide bottom nav on tablets */
+  }
+  
+  .main-toolbar {
+    height: 4rem; /* Larger toolbar for tablets */
+    padding: 0 2rem;
+  }
+  
+  .toolbar-section--brand {
+    .brand-text {
+      font-size: 1.25rem;
+    }
+  }
+  
+  /* Show horizontal navigation in toolbar */
+  .toolbar-section--nav {
+    display: flex;
+    gap: 1rem;
+    flex: 1 1 auto;
+    justify-content: center;
+    
+    .nav-item {
+      flex-direction: row;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      min-height: auto;
+      color: rgba(255, 255, 255, 0.9);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: $text-inverse;
+      }
+      
+      &--active {
+        background: rgba(255, 255, 255, 0.15);
+        color: $text-inverse;
+      }
+      
+      .nav-icon {
+        font-size: 1rem;
+      }
+      
+      .nav-label {
+        font-size: 0.875rem;
+      }
+    }
+  }
+  
+  .main-content {
+    padding-top: 4rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Desktop Layout */
+@media (min-width: 1024px) {
+  .main-toolbar {
+    padding: 0 3rem;
+  }
+  
+  .toolbar-section--nav {
+    gap: 1.5rem;
+    
+    .nav-item {
+      padding: 0.75rem 1.5rem;
+    }
+  }
+}
+
+/* PWA Specific Styles */
+@media (display-mode: standalone) {
+  .app-header {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  
+  .main-content {
+    padding-top: calc(3.5rem + env(safe-area-inset-top, 0));
+  }
+}
+
+/* Dark Theme Support (Future) */
+@media (prefers-color-scheme: dark) {
+  .bottom-nav {
+    background: var(--surface-dark, #{$surface-color});
+    border-top-color: var(--border-dark, #{$border-color});
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .nav-item {
+    border: 1px solid transparent;
+    
+    &--active {
+      border-color: $primary-color;
+    }
+  }
+  
+  .bottom-nav {
+    border-top: 2px solid $text-primary;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .nav-item,
+  .action-button,
+  .loading-bar {
+    transition: none;
+    animation: none;
+  }
+  
+  .nav-item--home .home-button {
+    transition: none;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (pointer: coarse) {
+  .nav-item {
+    min-height: 3rem; /* Ensure minimum touch target */
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .action-button {
+    width: 3rem;
+    height: 3rem;
+  }
 }

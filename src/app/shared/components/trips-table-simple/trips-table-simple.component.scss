@@ -1,53 +1,197 @@
 @import "color-vars";
 
 .span-icon {
-    vertical-align: sub;
+    vertical-align: middle;
+    margin-right: 0.25rem;
 }
 
+// Mobile-first trips container
 .trips-container {
     display: block;
     margin: 0 auto;
     overflow: hidden;
-    padding-bottom: .5rem;
+    padding-bottom: 0.5rem;
+    
+    @media (max-width: 768px) {
+        padding-bottom: 0.25rem;
+    }
 }
 
+// Enhanced responsive table wrapper
 .table-responsive {
     display: block;
     width: 100%;
     overflow-x: auto;
-    padding-bottom: .5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    @media (max-width: 768px) {
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        
+        // Hide table on small screens, show card layout instead
+        mat-table {
+            display: none;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        border-radius: 6px;
+        padding-bottom: 0.25rem;
+    }
 }
 
+// Enhanced table styling
 mat-table {
     width: 100%;
     max-width: 100%;
     margin-bottom: 1rem;
     display: table;
-    border-collapse: collapse;
-    margin: 0px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    @media (min-width: 769px) {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
 }
 
 mat-row,
 mat-header-row {
     display: table-row;
+    transition: background-color 0.2s ease;
 }
 
+// Enhanced row styling with hover effects
 mat-row:nth-child(even){
-    background-color: $primary-light-color;
+    background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+    
+    &:hover {
+        background: linear-gradient(135deg, $primary-100 0%, rgba(255, 255, 255, 0.9) 100%);
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 }
 
 mat-row:nth-child(odd){
-    background-color: $tertiary-light-color;
+    background: linear-gradient(135deg, $secondary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+    
+    &:hover {
+        background: linear-gradient(135deg, $secondary-100 0%, rgba(255, 255, 255, 0.9) 100%);
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+
+// Enhanced header styling
+mat-header-row {
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    color: white;
+    font-weight: 600;
+    
+    mat-header-cell {
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
 }
 
 mat-cell,
 mat-header-cell {
-    word-wrap: initial;
+    word-wrap: break-word;
     display: table-cell;
-    padding: 0px 5px;
-    line-break: unset;
+    padding: 12px 8px;
+    line-break: auto;
     width: auto;
     white-space: nowrap;
     overflow: hidden;
     vertical-align: middle;
-}   
+    border-bottom: 1px solid $border-light;
+    
+    @media (max-width: 1024px) {
+        padding: 10px 6px;
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+        padding: 8px 4px;
+        font-size: 0.85rem;
+    }
+}
+
+// Mobile card layout (shown when table is hidden)
+@media (max-width: 768px) {
+    .mobile-card-layout {
+        display: block;
+        
+        .trip-card {
+            background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
+            border: 1px solid $border-light;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            }
+            
+            &:nth-child(even) {
+                background: linear-gradient(135deg, $secondary-50 0%, $primary-50 100%);
+            }
+            
+            .card-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+                
+                &:last-child {
+                    margin-bottom: 0;
+                }
+                
+                .label {
+                    font-weight: 600;
+                    color: $text-primary;
+                    font-size: 0.9rem;
+                }
+                
+                .value {
+                    color: $text-secondary;
+                    font-size: 0.9rem;
+                    text-align: right;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-card-layout .trip-card {
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        
+        .card-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+            
+            .value {
+                text-align: left;
+                font-size: 0.85rem;
+            }
+            
+            .label {
+                font-size: 0.85rem;
+            }
+        }
+    }
+}

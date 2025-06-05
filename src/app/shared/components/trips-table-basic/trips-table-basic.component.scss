@@ -1,51 +1,167 @@
+// Mobile-First Trips Table Basic Component Styles
 @import "color-vars";
 
+// Table Container - Mobile First
 .trips-container {
-    display: block;
-    margin: 0 auto;
-    overflow: hidden;
-    padding-bottom: .5rem;
+  display: block;
+  margin: 0 auto;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background: $surface-color;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
 }
 
 .table-responsive {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: .5rem;
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $background-secondary;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, $primary-color, $accent-color);
+    border-radius: 3px;
+    
+    &:hover {
+      background: linear-gradient(45deg, $primary-600, $accent-600);
+    }
+  }
 }
 
+// Table Styles - Mobile First
 mat-table {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 1rem;
-    display: table;
-    border-collapse: collapse;
-    margin: 0px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  display: table;
+  border-collapse: collapse;
+  background: $surface-color;
 }
 
 mat-row,
 mat-header-row {
-    display: table-row;
+  display: table-row;
+  transition: all 0.2s ease;
 }
 
+// Enhanced Row Styling
+mat-header-row {
+  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+  color: $primary-700;
+  font-weight: 600;
+}
+
+// Alternating Row Colors with Gradients
 .alt-row {
-    &.odd {
-        background-color: $tertiary-light-color;
-    }
+  &.odd {
+    background: linear-gradient(135deg, $surface-color 0%, rgba($accent-50, 0.2) 100%);
+  }
 
-    &.even {
-        background-color: $primary-light-color;
-    }
+  &.even {
+    background: linear-gradient(135deg, $primary-50 0%, rgba($primary-100, 0.3) 100%);
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, $primary-100 0%, $accent-100 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px $shadow-light;
+  }
 }
 
+// Cell Styling - Mobile First
 mat-cell,
 mat-header-cell {
-    word-wrap: initial;
-    display: table-cell;
-    padding: 0px 5px;
-    line-break: unset;
-    width: auto;
-    white-space: nowrap;
-    overflow: hidden;
-    vertical-align: middle;
+  word-wrap: initial;
+  display: table-cell;
+  padding: 0.75rem 0.5rem;
+  line-break: unset;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  
+  @media (min-width: 768px) {
+    padding: 1rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+mat-header-cell {
+  font-weight: 600;
+  color: $primary-700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  
+  @media (min-width: 768px) {
+    font-size: 0.8rem;
+  }
+}
+
+// Mobile Card Layout for very small screens
+@media (max-width: 480px) {
+  .table-responsive {
+    display: none;
+  }
+  
+  .mobile-card-layout {
+    display: block !important;
+    
+    .trip-card {
+      background: $surface-color;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px $shadow-light;
+      border: 1px solid $border-light;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px $shadow-medium;
+      }
+      
+      .trip-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        
+        .trip-field {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid $border-light;
+          
+          &:last-child {
+            border-bottom: none;
+          }
+          
+          .field-label {
+            font-weight: 600;
+            color: $text-secondary;
+            font-size: 0.875rem;
+          }
+          
+          .field-value {
+            font-weight: 500;
+            color: $text-primary;
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
 }

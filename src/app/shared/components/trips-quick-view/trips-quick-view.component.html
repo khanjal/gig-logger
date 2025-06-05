@@ -1,140 +1,277 @@
-<mat-card>
-    <div>
-        <mat-card-header>
-            @if (!trip.saved && trip.action === 'ADD') {
-                <mat-icon class="warn">add</mat-icon> 
-            }
-            @else if (!trip.saved && trip.action === 'UPDATE') {
-                <mat-icon class="warn">edit</mat-icon>
-            }
-            @else if (!trip.saved && trip.action === 'DELETE') {
-                <mat-icon class="warn">delete</mat-icon> 
-            }
-            @else {
-                <mat-icon [ngClass]="{'warn': !trip.saved}">save</mat-icon> 
-            }
-            <h3><strong>#{{trip.rowId}} {{trip.date | date:'MMM d'}}, {{trip.pickupTime | noseconds}} ({{trip.service}} {{ trip.number == 0 ? "" : '#' + trip.number }})</strong></h3>
-        </mat-card-header>
-        <mat-card-content [ngClass]="trip.exclude || trip.action === 'DELETE' ? 'strike' : ''">
-            <div class="row-flex section-container">
-                <div>
-                    <mat-icon class="icon-display">schedule</mat-icon>
-                </div>  
-                <div class="padding-left">
-                    <div><strong>{{ trip.type === "" ? "Time" : trip.type }}:</strong>&nbsp;<span [ngClass]="{'primary': trip.amountPerTime > 25, 'warn': trip.amountPerTime < 20, 'rainbow-text-animated': trip.amountPerTime > 30}">{{trip.pickupTime | noseconds}} {{!trip.duration ? '' : '- ' + (trip.dropoffTime | noseconds)}}</span></div>
-                    <div *ngIf="trip.duration"><strong>Duration:</strong> {{trip.duration | noseconds}}</div>
-                </div>
-            </div>
-            @if (trip.region || trip.distance) {
-                <div class="row-flex section-container">
-                    <div>
-                        <mat-icon class="icon-display">map</mat-icon>
-                    </div>  
-                    <div class="padding-left">
-                        <div *ngIf="trip.region">{{trip.region}}</div>
-                        <div *ngIf="trip.startOdometer || trip.distance">
-                            <strong>Distance:</strong> {{trip.startOdometer | number}}<span *ngIf="trip.endOdometer"> - {{trip.endOdometer | number}}</span>
-                            <span *ngIf="trip.distance"> (<span [ngClass]="{'primary': trip.amountPerDistance > 2, 'warn': trip.amountPerDistance < 1, 'rainbow-text-animated': trip.amountPerDistance > 5}">{{trip.distance | number:'1.1'}}</span>)</span>
-                        </div>
-                    </div>
-                </div>
-            }
+<!-- Mobile-First Trip Quick View Component -->
+<div class="trip-card" [ngClass]="{
+  'trip-card--excluded': trip.exclude || trip.action === 'DELETE',
+  'trip-card--unsaved': !trip.saved,
+  'trip-card--add': !trip.saved && trip.action === 'ADD',
+  'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
+  'trip-card--delete': !trip.saved && trip.action === 'DELETE'
+}">
+  
+  <!-- Trip Header -->
+  <div class="trip-header">
+    <div class="trip-header__main">
+      <div class="trip-id">
+        <span class="trip-number">#{{trip.rowId}}</span>
+        <span class="trip-date">{{trip.date | date:'MMM d'}}</span>
+      </div>
+      <div class="trip-service">
+        <span class="service-name">{{trip.service}}</span>
+        <span class="service-number" *ngIf="trip.number > 0">#{{trip.number}}</span>
+      </div>
+    </div>
+    
+    <div class="trip-header__badges">
+      <div class="status-badge" [ngClass]="{
+        'status-badge--add': !trip.saved && trip.action === 'ADD',
+        'status-badge--edit': !trip.saved && trip.action === 'UPDATE',
+        'status-badge--delete': !trip.saved && trip.action === 'DELETE',
+        'status-badge--saved': trip.saved
+      }">
+        <mat-icon class="status-icon">
+          @if (!trip.saved && trip.action === 'ADD') { add }
+          @else if (!trip.saved && trip.action === 'UPDATE') { edit }
+          @else if (!trip.saved && trip.action === 'DELETE') { delete }
+          @else { check_circle }
+        </mat-icon>
+        <span class="status-text">
+          @if (!trip.saved && trip.action === 'ADD') { New }
+          @else if (!trip.saved && trip.action === 'UPDATE') { Modified }
+          @else if (!trip.saved && trip.action === 'DELETE') { Deleted }
+          @else { Saved }
+        </span>
+      </div>
+      
+      <div class="efficiency-badge" *ngIf="trip.amountPerTime">
+        <span class="efficiency-value" [ngClass]="{
+          'efficiency--excellent': trip.amountPerTime > 30,
+          'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+          'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+          'efficiency--poor': trip.amountPerTime < 20
+        }">
+          ${{trip.amountPerTime | number:'1.0'}}/hr
+        </span>
+      </div>
+    </div>
+  </div>
 
-            @if (trip.place || trip.startAddress) {
-                <div class="row-flex section-container">
-                    <div>
-                        <mat-icon class="icon-display">storefront</mat-icon>
-                    </div>
-                    <div class="padding-left">
-                        <strong>{{trip.place}}</strong> 
-                        <br/>
-                        @if (trip.startAddress) {
-                            <a href="https://www.google.com/maps/search/?api=1&query={{trip.startAddress}}" target="_blank">{{ trip.startAddress | shortaddress:trip.place | truncate:35}}</a>
-                        }
-                    </div>
-                </div>
-            }
-            
-            @if (trip.name || trip.endAddress) {
-                <div class="row-flex section-container">
-                    <div>
-                        <mat-icon class="icon-display">home</mat-icon>
-                    </div>
-                    <div class="padding-left">
-                        <strong>{{trip.name | truncate:25}}</strong> 
-                        <br/>
-                        @if (trip.endAddress) {
-                            <a href="https://www.google.com/maps/search/?api=1&query={{trip.endAddress}}" target="_blank">{{ trip.endAddress | shortaddress | truncate:35}}</a>
-                        }
-                    </div>
-                </div>
-            }
-            
-            @if (trip.pay || trip.total) {
-                <div class="row-flex section-container">
-                    <div>
-                        <mat-icon class="icon-display">payments</mat-icon>
-                    </div>
-                    <div class="padding-left">
-                        <span class="padding-right" *ngIf="trip.pay"><strong>Pay</strong> {{trip.pay | currency}}</span> 
-                        <span class="padding-right" *ngIf="trip.tip"><strong>Tip</strong> {{trip.tip | currency}}</span> 
-                        <span class="padding-right" *ngIf="trip.bonus"><strong>Bonus</strong> {{trip.bonus | currency}}</span> 
-                        <br/>
-                        <span class="padding-right" *ngIf="trip.total > trip.pay"><strong>Total</strong> {{trip.total | currency}}</span>
-                        <span class="padding-right" *ngIf="trip.cash"><strong>Cash</strong> {{trip.cash | currency}}</span>
-                    </div>
-                </div>
-            }
-            
-            @if (trip.endUnit || trip.orderNumber || trip.note) {
-                <div class="row-flex section-container">
-                    <div>
-                        <mat-icon class="icon-display">description</mat-icon>
-                    </div>
-                    <div class="padding-left">
-                        <div>
-                            <span class="padding-right" *ngIf="trip.endUnit"><strong>Unit #</strong> {{trip.endUnit}}</span> 
-                            <span *ngIf="trip.orderNumber"><strong>Order #</strong> {{trip.orderNumber}}</span>
-                        </div>
-                        <div *ngIf="trip.note">"{{trip.note}}"</div>
-                    </div>
-                </div>
-            }
-            
-        </mat-card-content>
+  <!-- Trip Content -->
+  <div class="trip-content">
+    
+    <!-- Time Card -->
+    <div class="info-card">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">schedule</mat-icon>
+        <h4>{{ trip.type === "" ? "Time" : trip.type }}</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="time-display">
+          <span class="pickup-time" [ngClass]="{
+            'time--excellent': trip.amountPerTime > 30,
+            'time--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+            'time--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+            'time--poor': trip.amountPerTime < 20
+          }">
+            {{trip.pickupTime | noseconds}}
+          </span>
+          <span class="time-separator" *ngIf="trip.duration && trip.dropoffTime">-</span>
+          <span class="dropoff-time" *ngIf="trip.dropoffTime">
+            {{trip.dropoffTime | noseconds}}
+          </span>
+        </div>
+        <div class="duration" *ngIf="trip.duration">
+          <strong>Duration:</strong> {{trip.duration | noseconds}}
+        </div>
+      </div>
     </div>
-    <div mat-card class="row-flex button-bar" *ngIf="showActions">
-        <button mat-fab extended color="primary" class="button-left" (click)="openTripDialog()"><mat-icon>edit</mat-icon> Edit</button>
-        <button mat-fab extended color="accent" (click)="setPickupTime()" *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>update</mat-icon> Pickup</button>
-        <button mat-fab extended color="accent" (click)="setDropoffTime()" *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"><mat-icon>schedule</mat-icon> Dropoff</button>
-        <button mat-fab color="primary" [matMenuTriggerFor]="menu" aria-label="Trip menu">
-            <mat-icon>more_vert</mat-icon>
+
+    <!-- Location Card -->
+    <div class="info-card" *ngIf="trip.region || trip.distance">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">map</mat-icon>
+        <h4>Location</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="region" *ngIf="trip.region">{{trip.region}}</div>
+        <div class="distance-info" *ngIf="trip.startOdometer || trip.distance">
+          <div class="odometer-range" *ngIf="trip.startOdometer">
+            <strong>Odometer:</strong> 
+            {{trip.startOdometer | number}}
+            <span *ngIf="trip.endOdometer"> - {{trip.endOdometer | number}}</span>
+          </div>
+          <div class="distance-display" *ngIf="trip.distance">
+            <strong>Distance:</strong> 
+            <span class="distance-value" [ngClass]="{
+              'distance--excellent': trip.amountPerDistance > 5,
+              'distance--good': trip.amountPerDistance >= 2 && trip.amountPerDistance <= 5,
+              'distance--average': trip.amountPerDistance >= 1 && trip.amountPerDistance < 2,
+              'distance--poor': trip.amountPerDistance < 1
+            }">
+              {{trip.distance | number:'1.1'}} mi
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pickup Card -->
+    <div class="info-card" *ngIf="trip.place || trip.startAddress">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">storefront</mat-icon>
+        <h4>Pickup</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="place-name" *ngIf="trip.place">
+          <strong>{{trip.place}}</strong>
+        </div>
+        <div class="address-link" *ngIf="trip.startAddress">
+          <a href="https://www.google.com/maps/search/?api=1&query={{trip.startAddress}}" 
+             target="_blank" 
+             class="address-link__text">
+            {{ trip.startAddress | shortaddress:trip.place | truncate:45}}
+            <mat-icon class="external-link-icon">open_in_new</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Dropoff Card -->
+    <div class="info-card" *ngIf="trip.name || trip.endAddress">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">home</mat-icon>
+        <h4>Dropoff</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="customer-name" *ngIf="trip.name">
+          <strong>{{trip.name | truncate:30}}</strong>
+        </div>
+        <div class="address-link" *ngIf="trip.endAddress">
+          <a href="https://www.google.com/maps/search/?api=1&query={{trip.endAddress}}" 
+             target="_blank" 
+             class="address-link__text">
+            {{ trip.endAddress | shortaddress | truncate:45}}
+            <mat-icon class="external-link-icon">open_in_new</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Payment Card -->
+    <div class="info-card" *ngIf="trip.pay || trip.total">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">payments</mat-icon>
+        <h4>Payment</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="payment-grid">
+          <div class="payment-item" *ngIf="trip.pay">
+            <span class="payment-label">Pay</span>
+            <span class="payment-value payment-value--pay">{{trip.pay | currency}}</span>
+          </div>
+          <div class="payment-item" *ngIf="trip.tip">
+            <span class="payment-label">Tip</span>
+            <span class="payment-value payment-value--tip">{{trip.tip | currency}}</span>
+          </div>
+          <div class="payment-item" *ngIf="trip.bonus">
+            <span class="payment-label">Bonus</span>
+            <span class="payment-value payment-value--bonus">{{trip.bonus | currency}}</span>
+          </div>
+          <div class="payment-item" *ngIf="trip.cash">
+            <span class="payment-label">Cash</span>
+            <span class="payment-value payment-value--cash">{{trip.cash | currency}}</span>
+          </div>
+          <div class="payment-item payment-item--total" *ngIf="trip.total > trip.pay">
+            <span class="payment-label">Total</span>
+            <span class="payment-value payment-value--total">{{trip.total | currency}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Details Card -->
+    <div class="info-card" *ngIf="trip.endUnit || trip.orderNumber || trip.note">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">description</mat-icon>
+        <h4>Details</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="details-grid">
+          <div class="detail-item" *ngIf="trip.endUnit">
+            <span class="detail-label">Unit #</span>
+            <span class="detail-value">{{trip.endUnit}}</span>
+          </div>
+          <div class="detail-item" *ngIf="trip.orderNumber">
+            <span class="detail-label">Order #</span>
+            <span class="detail-value">{{trip.orderNumber}}</span>
+          </div>
+        </div>
+        <div class="trip-note" *ngIf="trip.note">
+          <mat-icon class="note-icon">format_quote</mat-icon>
+          <span class="note-text">{{trip.note}}</span>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar" *ngIf="showActions">
+    <div class="action-bar__primary">
+      <button mat-fab extended color="primary" class="action-button action-button--primary" (click)="openTripDialog()">
+        <mat-icon>edit</mat-icon>
+        <span>Edit Trip</span>
+      </button>
+    </div>
+    
+    <div class="action-bar__secondary">
+      <button mat-fab extended 
+              color="accent" 
+              class="action-button action-button--accent" 
+              (click)="setPickupTime()" 
+              *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude">
+        <mat-icon>update</mat-icon>
+        <span>Pickup</span>
+      </button>
+      
+      <button mat-fab extended 
+              color="accent" 
+              class="action-button action-button--accent" 
+              (click)="setDropoffTime()" 
+              *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude">
+        <mat-icon>schedule</mat-icon>
+        <span>Dropoff</span>
+      </button>
+      
+      <button mat-fab 
+              color="primary" 
+              class="action-button action-button--menu" 
+              [matMenuTriggerFor]="menu" 
+              aria-label="Trip options menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+    
+    <mat-menu #menu="matMenu" class="trip-menu">
+      <button mat-menu-item (click)="nextUnsavedTrip()" class="menu-item">
+        <mat-icon>pin_drop</mat-icon>
+        <span>Next Unsaved</span>
+      </button>
+      <button mat-menu-item (click)="cloneUnsavedTrip()" class="menu-item">
+        <mat-icon>content_copy</mat-icon>
+        <span>Clone Trip</span>
+      </button>
+      @if (trip.action != actionEnum.Delete) {
+        <button mat-menu-item (click)="confirmDeleteTripDialog()" class="menu-item menu-item--danger">
+          <mat-icon>delete</mat-icon>
+          <span>Delete Trip</span>
         </button>
-        <mat-menu color="primary" #menu="matMenu">
-            <!-- <button mat-menu-item>
-                <mat-icon>block</mat-icon>
-                <span>Exclude</span>
-            </button> -->
-            <button mat-menu-item (click)="nextUnsavedTrip()">
-                <mat-icon>pin_drop</mat-icon>
-                <span>Next</span>
-            </button>
-            <button mat-menu-item (click)="cloneUnsavedTrip()">
-                <mat-icon>content_copy</mat-icon>
-                <span>Clone</span>
-            </button>
-            @if (trip.action != actionEnum.Delete) {
-                <button mat-menu-item [attr.color]="'warn'" (click)="confirmDeleteTripDialog()">
-                    <mat-icon color="warn">delete</mat-icon>
-                    <span>Delete</span>
-                </button>
-            }
-            @else {
-                <button mat-menu-item [attr.color]="'primary'" (click)="restoreTrip()">
-                    <mat-icon color="primary">restore</mat-icon>
-                    <span>Restore</span>
-                </button>
-            }
-        </mat-menu>
-    </div>
-</mat-card>
+      }
+      @else {
+        <button mat-menu-item (click)="restoreTrip()" class="menu-item menu-item--restore">
+          <mat-icon>restore</mat-icon>
+          <span>Restore Trip</span>
+        </button>
+      }
+    </mat-menu>
+  </div>
+  
+</div>

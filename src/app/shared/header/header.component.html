@@ -1,17 +1,90 @@
-<mat-toolbar [color]="getToolbarColor()">
-    <span class="gap"><a routerLink="/"><mat-icon>home</mat-icon> </a></span>
-    @if (defaultSheet) {
-        <span class="gap"><a routerLink="/trips"><mat-icon>navigation</mat-icon></a></span>
-        <span class="gap"><a routerLink="/shifts"><mat-icon>today</mat-icon></a></span>
-        <span class="gap"><a routerLink="/stats"><mat-icon>poll</mat-icon></a></span>
-    }
+<!-- Mobile-First PWA Header Component -->
+<header class="app-header">
+  <!-- Main Toolbar -->
+  <mat-toolbar class="main-toolbar" [color]="getToolbarColor()">
     
-    <!-- <span class="gap"><a routerLink="/lookup"><mat-icon>search</mat-icon></a></span> -->
-    <!--<span class="gap"><a routerLink="/ratings"><mat-icon>star-half</mat-icon></a></span>
-    <span class="gap"><a routerLink="/quick-replies"><mat-icon>chat</mat-icon></a></span> -->
-    <span class="filler"></span>
-    <span class="end"><a routerLink="/setup"><mat-icon>settings</mat-icon></a></span>
-    <!-- <span><a routerLink="/about">About</a></span> -->
-    <!-- <profile></profile> -->
-</mat-toolbar>
-<router-outlet></router-outlet>
+    <!-- Logo/Home Section -->
+    <div class="toolbar-section toolbar-section--brand">
+      <a routerLink="/" class="brand-link" aria-label="Go to home page">
+        <mat-icon class="brand-icon">home</mat-icon>
+        <span class="brand-text">Gig Logger</span>
+      </a>
+    </div>
+    
+    <!-- Spacer -->
+    <div class="toolbar-spacer"></div>
+    
+    <!-- Settings Button -->
+    <div class="toolbar-section toolbar-section--actions">
+      <a routerLink="/setup" 
+         class="action-button" 
+         aria-label="Open settings"
+         matTooltip="Settings"
+         matTooltipPosition="below">
+        <mat-icon>settings</mat-icon>
+      </a>
+    </div>
+    
+  </mat-toolbar>
+  
+  <!-- Bottom Navigation Bar (Mobile) -->
+  <nav class="bottom-nav" *ngIf="defaultSheet" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      
+      <a routerLink="/trips" 
+         routerLinkActive="nav-item--active"
+         class="nav-item"
+         aria-label="View trips">
+        <mat-icon class="nav-icon">navigation</mat-icon>
+        <span class="nav-label">Trips</span>
+      </a>
+      
+      <a routerLink="/shifts" 
+         routerLinkActive="nav-item--active"
+         class="nav-item"
+         aria-label="View shifts">
+        <mat-icon class="nav-icon">today</mat-icon>
+        <span class="nav-label">Shifts</span>
+      </a>
+      
+      <a routerLink="/" 
+         routerLinkActive="nav-item--active" 
+         [routerLinkActiveOptions]="{exact: true}"
+         class="nav-item nav-item--home"
+         aria-label="Go to home">
+        <div class="home-button">
+          <mat-icon class="nav-icon">home</mat-icon>
+        </div>
+        <span class="nav-label">Home</span>
+      </a>
+      
+      <a routerLink="/stats" 
+         routerLinkActive="nav-item--active"
+         class="nav-item"
+         aria-label="View statistics">
+        <mat-icon class="nav-icon">poll</mat-icon>
+        <span class="nav-label">Stats</span>
+      </a>
+      
+      <a routerLink="/calculator" 
+         routerLinkActive="nav-item--active"
+         class="nav-item"
+         aria-label="Open calculator">
+        <mat-icon class="nav-icon">calculate</mat-icon>
+        <span class="nav-label">Calc</span>
+      </a>
+      
+    </div>
+  </nav>
+  
+  <!-- Progress Indicator for PWA Loading -->
+  <div class="loading-indicator" [class.loading-indicator--visible]="isLoading">
+    <div class="loading-bar"></div>
+  </div>
+  
+</header>
+
+<!-- Main Content Area -->
+<main class="main-content" role="main">
+  <router-outlet></router-outlet>
+</main>

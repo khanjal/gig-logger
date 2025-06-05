@@ -1,57 +1,162 @@
 @import "color-vars";
 
+// Mobile-first trip form with PWA-optimized touch targets
 .trip-form {
     margin-bottom: 1rem;
     min-width: 100px;
     width: 100%;
+    padding: 0.5rem;
+    
+    // Mobile-first form styling
+    @media (max-width: 480px) {
+        padding: 0.25rem;
+    }
 }
 
+// Touch-friendly field buttons
 .field-button {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 44px; // Touch target minimum
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (max-width: 768px) {
+        margin-right: 0.25rem;
+        margin-bottom: 0.75rem;
+        flex: 1;
+        max-width: calc(50% - 0.125rem);
+    }
+    
+    @media (max-width: 480px) {
+        max-width: 100%;
+        margin-right: 0;
+    }
 }
 
 .bold {
-    font-weight: bold;
+    font-weight: 600; // Slightly bolder for mobile readability
 }
 
 .button-icon {
-    margin-top: .5rem;
+    margin-top: 0.5rem;
+    
+    @media (max-width: 768px) {
+        margin-top: 0.25rem;
+    }
 }
 
+// Enhanced tabbed content for mobile
 .tab {
     margin-left: 1rem;
-
+    padding: 0.5rem 0;
+    
     .title {
-        font-weight: bold;
-        padding-bottom: .5rem;
+        font-weight: 600;
+        padding-bottom: 0.75rem;
+        font-size: 1.1rem;
+        color: $primary-color;
+        
+        @media (max-width: 768px) {
+            font-size: 1rem;
+            padding-bottom: 0.5rem;
+        }
     }
 
-    .sub-tab { margin-left: .5rem;}
+    .sub-tab { 
+        margin-left: 0.5rem;
+        padding: 0.25rem 0;
+    }
+    
+    @media (max-width: 768px) {
+        margin-left: 0.5rem;
+        padding: 0.25rem 0;
+    }
+    
+    @media (max-width: 480px) {
+        margin-left: 0.25rem;
+    }
 }
 
 .tab-itallic {
     font-style: italic;
-    margin-left: .5rem;
+    margin-left: 0.5rem;
+    color: $text-secondary;
+    
+    @media (max-width: 768px) {
+        margin-left: 0.25rem;
+        font-size: 0.9rem;
+    }
 }
 
 .highlight {
     color: $accent-color !important;
+    font-weight: 500;
 }
 
+// Enhanced icon buttons for mobile
 .mat-icon-button {
     margin: 0;
+    min-height: 44px;
+    min-width: 44px;
+    
+    @media (max-width: 768px) {
+        &:not(:last-child) {
+            margin-right: 0.5rem;
+        }
+    }
 }
 
 .margin-right {
     margin-right: 1rem;
+    
+    @media (max-width: 768px) {
+        margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 480px) {
+        margin-right: 0.25rem;
+    }
 }
 
+// Mobile-optimized virtual scroll
 cdk-virtual-scroll-viewport {
     height: 200px;
+    border-radius: 8px;
+    border: 1px solid $border-color;
+    
+    @media (max-width: 768px) {
+        height: 150px;
+        border-radius: 6px;
+    }
+    
+    @media (max-width: 480px) {
+        height: 120px;
+        border-radius: 4px;
+    }
 }
 
+// Enhanced address selection for mobile
 .selected-name-address {
     margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
+    border-radius: 12px;
+    border: 1px solid $border-light;
+    
+    @media (max-width: 768px) {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+    }
 }
 
 // ::-webkit-scrollbar {

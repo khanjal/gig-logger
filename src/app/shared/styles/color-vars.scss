@@ -1,10 +1,140 @@
-$primary-color: #3f51b5;
-$accent-color: #ff4081;
-$warn-color: #f44336;
+// Mobile-First Color Palette
+// Primary Colors
+$primary-color: #2563eb;           // Modern blue
+$primary-light: #3b82f6;           // Lighter blue
+$primary-dark: #1d4ed8;            // Darker blue
+$primary-50: #eff6ff;              // Ultra light blue
+$primary-100: #dbeafe;             // Very light blue
+$primary-200: #bfdbfe;             // Light blue
+$primary-300: #93c5fd;             // Medium light blue
+$primary-600: #2563eb;             // Medium primary
+$primary-700: #1d4ed8;             // Darker primary
+$primary-800: #1e40af;             // Dark blue
+$primary-900: #1e3a8a;             // Very dark blue
 
-$primary-light-color: lightblue;
-$accent-light-color: #FFEAE9;
-$tertiary-light-color: moccasin;
+// Secondary Colors
+$secondary-color: #8b5cf6;         // Modern purple
+$secondary-light: #a78bfa;         // Light purple
+$secondary-dark: #7c3aed;          // Dark purple
+$secondary-50: #faf5ff;            // Ultra light purple
+$secondary-100: #f3e8ff;           // Very light purple
+$secondary-200: #e9d5ff;           // Light purple
+$secondary-600: #7c3aed;           // Medium secondary
+$secondary-700: #6d28d9;           // Darker secondary
+$secondary-800: #5b21b6;           // Dark purple
+$secondary-900: #4c1d95;           // Very dark purple
 
-$background-color: #f5f5f5;
-$disabled-color: lightgray;
+// Accent Colors
+$accent-color: #10b981;            // Modern green
+$accent-light: #34d399;            // Light green
+$accent-dark: #059669;             // Dark green
+$accent-50: #ecfdf5;               // Ultra light green
+$accent-100: #d1fae5;              // Very light green
+$accent-200: #a7f3d0;              // Light green
+$accent-600: #059669;              // Medium accent
+$accent-700: #047857;              // Darker accent
+$accent-800: #065f46;              // Dark green
+$accent-900: #064e3b;              // Very dark green
+
+// Warning Colors
+$warn-color: #ef4444;              // Modern red
+$warn-light: #f87171;              // Light red
+$warn-dark: #dc2626;               // Dark red
+$warn-50: #fef2f2;                 // Ultra light red
+$warn-100: #fee2e2;                // Very light red
+$warn-200: #fecaca;                // Light red
+$warn-600: #dc2626;                // Medium warning
+$warn-700: #b91c1c;                // Darker warning
+$warn-800: #991b1b;                // Dark red
+$warn-900: #7f1d1d;                // Very dark red
+
+// Success Colors
+$success-color: #22c55e;           // Success green
+$success-light: #4ade80;           // Light success
+$success-dark: #16a34a;            // Dark success
+$success-50: #f0fdf4;              // Ultra light success
+$success-100: #dcfce7;             // Very light success
+$success-200: #bbf7d0;             // Light success
+$success-600: #16a34a;             // Medium success
+$success-700: #15803d;             // Darker success
+$success-800: #166534;             // Dark success
+$success-900: #14532d;             // Very dark success
+
+// Danger Colors
+$danger-color: #ef4444;            // Danger red
+$danger-light: #f87171;            // Light danger
+$danger-dark: #dc2626;             // Dark danger
+$danger-50: #fef2f2;               // Ultra light danger
+$danger-100: #fee2e2;              // Very light danger
+$danger-200: #fecaca;              // Light danger
+$danger-600: #dc2626;              // Medium danger
+$danger-700: #b91c1c;              // Darker danger
+$danger-800: #991b1b;              // Dark danger
+$danger-900: #7f1d1d;              // Very dark danger
+
+// Info Colors
+$info-color: #06b6d4;              // Info cyan
+$info-light: #22d3ee;              // Light info
+$info-dark: #0891b2;               // Dark info
+$info-50: #ecfeff;                 // Ultra light info
+$info-100: #cffafe;                // Very light info
+$info-200: #a5f3fc;                // Light info
+$info-600: #0891b2;                // Medium info
+$info-700: #0e7490;                // Darker info
+$info-800: #155e75;                // Dark info
+$info-900: #164e63;                // Very dark info
+
+// Background Colors
+$background-color: #f8fafc;        // Light gray background
+$background-secondary: #f1f5f9;    // Secondary background
+$background-card: #ffffff;         // Card background
+$background-overlay: rgba(0, 0, 0, 0.5); // Overlay background
+$background-light: #f8fafc;        // Light background
+$background-dark: #1f2937;         // Dark background
+
+// Surface Colors
+$surface-color: #ffffff;           // Main surface
+$surface-secondary: #f8fafc;       // Secondary surface
+$surface-tertiary: #f1f5f9;        // Tertiary surface
+
+// Text Colors
+$text-primary: #1e293b;            // Primary text
+$text-secondary: #64748b;          // Secondary text
+$text-tertiary: #94a3b8;           // Tertiary text
+$text-inverse: #ffffff;            // Inverse text
+$text-disabled: #cbd5e1;           // Disabled text
+
+// Border Colors
+$border-color: #e2e8f0;            // Default border
+$border-light: #f1f5f9;            // Light border
+$border-dark: #cbd5e1;             // Dark border
+$border-focus: $primary-color;     // Focus border
+
+// Shadow Colors
+$shadow-light: rgba(0, 0, 0, 0.05);
+$shadow-medium: rgba(0, 0, 0, 0.1);
+$shadow-heavy: rgba(0, 0, 0, 0.25);
+
+// Status Colors
+$status-online: #22c55e;           // Online status
+$status-offline: #6b7280;          // Offline status
+$status-busy: #f59e0b;             // Busy status
+$status-away: #ef4444;             // Away status
+
+// Efficiency Colors
+$efficiency-excellent: #22c55e;    // >90% efficiency
+$efficiency-good: #10b981;         // 80-90% efficiency
+$efficiency-average: #f59e0b;      // 70-80% efficiency
+$efficiency-poor: #ef4444;         // <70% efficiency
+
+// Payment Colors
+$payment-cash: #22c55e;            // Cash payment
+$payment-card: #3b82f6;            // Card payment
+$payment-bonus: #8b5cf6;           // Bonus payment
+$payment-tip: #f59e0b;             // Tip payment
+
+// Legacy Color Mappings (for backward compatibility)
+$primary-light-color: $primary-light;
+$accent-light-color: $accent-light;
+$tertiary-light-color: $info-100;
+$disabled-color: $text-disabled;
