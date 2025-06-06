@@ -585,14 +585,44 @@ cdk-virtual-scroll-viewport {
     }
 }
 
-// ::-webkit-scrollbar {
-//     width: 10px;
-// }
-
-// ::-webkit-scrollbar-track {
-//     background: transparent;
-// }
-
-// ::-webkit-scrollbar-thumb {
-//     background: transparent;
-// }
+// Form actions - override global styles to keep buttons side by side with 25% width
+.form-actions {
+    .form-actions__row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        
+        button {
+            flex: 0 0 25% !important;
+            width: 25% !important;
+            min-width: 120px !important;
+            max-width: 200px !important;
+            margin-bottom: 0 !important;
+            
+            @media (max-width: 768px) {
+                flex: 0 0 25% !important;
+                width: 25% !important;
+                min-width: 100px !important;
+                max-width: 150px !important;
+            }
+            
+            @media (max-width: 480px) {
+                flex: 0 0 25% !important;
+                width: 25% !important;
+                min-width: 80px !important;
+                max-width: 120px !important;
+                gap: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            gap: 0.75rem;
+        }
+        
+        @media (max-width: 480px) {
+            gap: 0.5rem;
+        }
+    }
+}
