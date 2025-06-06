@@ -3,7 +3,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';
-import { RouterLink, RouterOutlet, RouterLinkActive, NavigationEnd, Router } from '@angular/router';
+import { RouterLink, RouterOutlet, NavigationEnd, Router } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -15,22 +15,20 @@ import { filter } from 'rxjs/operators';
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    standalone: true,
-    imports: [
+    standalone: true,    imports: [
       MatToolbar, 
       RouterLink, 
-      RouterLinkActive,
       MatIcon, 
       MatTooltip,
-      RouterOutlet, 
-      NgIf
+      RouterOutlet
     ]
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  defaultSheet: ISpreadsheet | undefined;
+export class HeaderComponent implements OnInit, OnDestroy {  defaultSheet: ISpreadsheet | undefined;
   isAuthenticated = false;
   isLoading = false;
   currentRoute = '/';
+  isMenuOpen = false;
+  pageTitle = 'Home';
   
   private headerSubscription: Subscription;
   private routerSubscription: Subscription;
@@ -45,16 +43,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
         this.load();
     });
-    
-    // Subscribe to route changes for loading indicator
+      // Subscribe to route changes for loading indicator
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.url;
+        this.updatePageTitle(event.url);
         this.setLoadingState(false); // Hide loading when navigation completes
       });
   }
-
   async ngOnInit(): Promise<void> {
     // Show loading indicator
     this.setLoadingState(true);
@@ -67,6 +64,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       if (this.isAuthenticated) {
         await this.load();
       }
+      
+      // Set initial page title
+      this.updatePageTitle(this.router.url);
     } catch (error) {
       console.error('Error during header initialization:', error);
     } finally {
@@ -110,8 +110,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.isLoading = loading;
     }, loading ? 0 : 300); // Delay hiding to show completion
   }
-  
-  /**
+    /**
    * Determines if the current route matches the given route
    * @param route - Route to check against
    * @returns True if the current route matches
@@ -119,6 +118,39 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public isActiveRoute(route: string): boolean {
     return this.currentRoute === route || 
            (route === '/' && this.currentRoute === '/');
+  }
+
+  /**
+   * Toggles the mobile menu open/closed state
+   */
+  public toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+  /**
+   * Closes the mobile menu
+   */
+  public closeMenu(): void {
+    this.isMenuOpen = false;
+  }
+
+  /**
+   * Updates the page title based on the current route
+   * @param route - The current route URL
+   */
+  private updatePageTitle(route: string): void {
+    const routeMap: { [key: string]: string } = {
+      '/': 'Home',
+      '/trips': 'Trips',
+      '/shifts': 'Shifts',
+      '/stats': 'Statistics',
+      '/calculator': 'Calculator',
+      '/setup': 'Settings'
+    };
+
+    // Handle route parameters and query strings
+    const cleanRoute = route.split('?')[0].split(';')[0];
+    
+    this.pageTitle = routeMap[cleanRoute] || 'Gig Logger';
   }
 
   ngOnDestroy(): void {

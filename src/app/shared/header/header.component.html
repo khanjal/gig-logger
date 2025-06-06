@@ -2,20 +2,33 @@
 <header class="app-header">
   <!-- Main Toolbar -->
   <mat-toolbar class="main-toolbar" [color]="getToolbarColor()">
+      <!-- Menu Button -->
+    <div class="toolbar-section toolbar-section--menu">
+      <button (click)="toggleMenu()" 
+              class="menu-button" 
+              aria-label="Toggle menu"
+              matTooltip="Menu"
+              matTooltipPosition="below">
+        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      </button>    </div>
     
-    <!-- Logo/Home Section -->
-    <div class="toolbar-section toolbar-section--brand">
-      <a routerLink="/" class="brand-link" aria-label="Go to home page">
-        <mat-icon class="brand-icon">home</mat-icon>
-        <span class="brand-text">Raptor Gig</span>
-      </a>
+    <!-- Page Title -->
+    <div class="toolbar-section toolbar-section--title">
+      <h1 class="page-title">{{ pageTitle }}</h1>
     </div>
     
     <!-- Spacer -->
     <div class="toolbar-spacer"></div>
     
-    <!-- Settings Button -->
+    <!-- Action Buttons -->
     <div class="toolbar-section toolbar-section--actions">
+      <a routerLink="/" 
+         class="action-button" 
+         aria-label="Go to home page"
+         matTooltip="Home"
+         matTooltipPosition="below">
+        <mat-icon>home</mat-icon>
+      </a>
       <a routerLink="/setup" 
          class="action-button" 
          aria-label="Open settings"
@@ -24,58 +37,92 @@
         <mat-icon>settings</mat-icon>
       </a>
     </div>
-    
-  </mat-toolbar>
+      </mat-toolbar>
   
-  <!-- Bottom Navigation Bar (Mobile) -->
-  <nav class="bottom-nav" *ngIf="defaultSheet" role="navigation" aria-label="Main navigation">
-    <div class="nav-container">
+  <!-- Slide-out Menu Overlay -->
+  <div class="menu-overlay" 
+       [class.menu-overlay--open]="isMenuOpen" 
+       (click)="closeMenu()"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="menu-title">
+    
+    <nav class="slide-menu" 
+         (click)="$event.stopPropagation()"
+         role="navigation"
+         aria-label="Main menu">
       
-      <a routerLink="/trips" 
-         routerLinkActive="nav-item--active"
-         class="nav-item"
-         aria-label="View trips">
-        <mat-icon class="nav-icon">navigation</mat-icon>
-        <span class="nav-label">Trips</span>
-      </a>
+      <div class="menu-header">
+        <h2 id="menu-title" class="menu-title">Menu</h2>
+        <button (click)="closeMenu()" 
+                class="menu-close" 
+                aria-label="Close menu">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
       
-      <a routerLink="/shifts" 
-         routerLinkActive="nav-item--active"
-         class="nav-item"
-         aria-label="View shifts">
-        <mat-icon class="nav-icon">today</mat-icon>
-        <span class="nav-label">Shifts</span>
-      </a>
-      
-      <a routerLink="/" 
-         routerLinkActive="nav-item--active" 
-         [routerLinkActiveOptions]="{exact: true}"
-         class="nav-item nav-item--home"
-         aria-label="Go to home">
-        <div class="home-button">
-          <mat-icon class="nav-icon">home</mat-icon>
+      <div class="menu-content">
+        <div class="menu-section">
+          <h3 class="menu-section-title">Navigation</h3>
+          <a routerLink="/" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="Go to home">
+            <mat-icon class="menu-icon">home</mat-icon>
+            <span class="menu-text">Home</span>
+          </a>
+          <a routerLink="/trips" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="View trips">
+            <mat-icon class="menu-icon">navigation</mat-icon>
+            <span class="menu-text">Trips</span>
+          </a>
+          <a routerLink="/shifts" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="View shifts">
+            <mat-icon class="menu-icon">today</mat-icon>
+            <span class="menu-text">Shifts</span>
+          </a>
         </div>
-        <span class="nav-label">Home</span>
-      </a>
+        
+        <div class="menu-section">
+          <h3 class="menu-section-title">Tools</h3>
+          <a routerLink="/stats" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="View statistics">
+            <mat-icon class="menu-icon">poll</mat-icon>
+            <span class="menu-text">Statistics</span>
+          </a>
+          <!-- Future menu items will go here -->
+          <div class="menu-item menu-item--disabled">
+            <mat-icon class="menu-icon">search</mat-icon>
+            <span class="menu-text">Search</span>
+            <span class="menu-badge">Coming Soon</span>
+          </div>
+          <div class="menu-item menu-item--disabled">
+            <mat-icon class="menu-icon">receipt</mat-icon>
+            <span class="menu-text">Expenses</span>
+            <span class="menu-badge">Coming Soon</span>
+          </div>
+        </div>
+        
+        <div class="menu-section">
+          <h3 class="menu-section-title">Settings</h3>
+          <a routerLink="/setup" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="Open settings">
+            <mat-icon class="menu-icon">settings</mat-icon>
+            <span class="menu-text">Settings</span>
+          </a>
+        </div>
+      </div>
       
-      <a routerLink="/stats" 
-         routerLinkActive="nav-item--active"
-         class="nav-item"
-         aria-label="View statistics">
-        <mat-icon class="nav-icon">poll</mat-icon>
-        <span class="nav-label">Stats</span>
-      </a>
-      
-      <a routerLink="/calculator" 
-         routerLinkActive="nav-item--active"
-         class="nav-item"
-         aria-label="Open calculator">
-        <mat-icon class="nav-icon">calculate</mat-icon>
-        <span class="nav-label">Calc</span>
-      </a>
-      
-    </div>
-  </nav>
+    </nav>
+  </div>
   
   <!-- Progress Indicator for PWA Loading -->
   <div class="loading-indicator" [class.loading-indicator--visible]="isLoading">
