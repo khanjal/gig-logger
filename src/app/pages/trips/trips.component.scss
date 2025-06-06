@@ -303,8 +303,12 @@
     top: 1.25rem;
     right: 0.5rem;
   }
-    @media (max-width: 480px) {
-    display: none; // Hide on very small screens to save space
+  
+  @media (max-width: 480px) {
+    position: absolute;
+    top: 0.5rem; // Adjust to align better with mobile form header
+    right: 0.5rem;
+    z-index: 10;
   }
 }
 
@@ -317,7 +321,7 @@
   }
   
   @media (max-width: 480px) {
-    padding-right: 0; // No padding when hidden
+    padding-right: 120px; // Reduced padding for smaller current average on mobile
   }
 }
 
