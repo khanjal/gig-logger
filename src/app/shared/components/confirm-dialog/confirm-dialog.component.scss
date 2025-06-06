@@ -91,12 +91,13 @@
 
 // Confirm button styling
 .confirm-button {
-  background: linear-gradient(135deg, $success-color 0%, $success-600 100%);
-  color: white;
-  border: none;
+  background: linear-gradient(135deg, $success-color 0%, $success-600 100%) !important;
+  color: white !important;
+  border: none !important;
   
   &:hover {
-    background: linear-gradient(135deg, $success-600 0%, $success-700 100%);
+    background: linear-gradient(135deg, $success-600 0%, $success-700 100%) !important;
+    color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
   }
