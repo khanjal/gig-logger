@@ -258,26 +258,25 @@
                     formControlName="dropoffTime">
                 </app-time-input>
             </div>
-        </div>
-
-        <!-- Note and Order -->
-        <div class="form-section">            <div class="form-row">
-                <mat-form-field class="form-field" appearance="outline">
+        </div>        <!-- Note and Order -->
+        <div class="form-section">
+            <div class="form-row">
+                <mat-form-field class="field-full-width" appearance="outline">
                     <mat-label>Note</mat-label>
                     <input matInput type="text" name="note" placeholder="" formControlName="note">
                 </mat-form-field>
 
                 <button 
                     mat-mini-fab
+                    type="button"
+                    class="toggle-button"
                     [color]="showOrder ? 'accent' : 'primary'" 
                     aria-label="Toggle Address/Order" 
                     (click)="toggleOrder()">
                     <mat-icon>business</mat-icon>
                 </button>
-            </div>
-
-            <!-- Address 2/Order/Exclude -->
-            <div class="form-row form-row--with-toggle" *ngIf="showOrder">
+            </div><!-- Address 2/Order/Exclude -->
+            <div class="form-row form-row--halves" *ngIf="showOrder">
                 <mat-form-field class="form-field" appearance="outline">
                     <mat-label>Apt/Unit/Room</mat-label>
                     <input matInput type="text" name="endUnit" placeholder="104" formControlName="endUnit">
@@ -287,7 +286,9 @@
                     <mat-label>Order Number</mat-label>
                     <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber">
                 </mat-form-field>
-                
+            </div>
+            
+            <div class="form-row" *ngIf="showOrder">
                 <mat-slide-toggle name="exclude" formControlName="exclude">
                     Exclude from calculations
                 </mat-slide-toggle>
