@@ -1,12 +1,23 @@
-<h2 *ngIf="showDailyAverage" (click)="toggle()" class="average">
-    {{ currentDayAmount | currency }} / {{ dailyAverage | currency }}
-    <mat-icon>event</mat-icon>
-  </h2>
-  <h2 *ngIf="showWeeklyAverage" (click)="toggle()" class="average">
-    {{ currentWeekAmount | currency }} / {{ weeklyAverage | currency }}
-    <mat-icon>date_range</mat-icon>
-  </h2>
-  <h2 *ngIf="showMonthlyAverage" (click)="toggle()" class="average">
-    {{ currentMonthAmount | currency }} / {{ monthlyAverage | currency }}
-    <mat-icon>calendar_month</mat-icon>
-  </h2>
+<div *ngIf="showDailyAverage" (click)="toggle()" class="stats-display stats-display--success interactive">
+  <mat-icon class="stats-display__icon">event</mat-icon>
+  <div class="stats-display__content">
+    <div class="stats-display__label">Daily</div>
+    <div class="stats-display__value">{{ currentDayAmount | currency }} / {{ dailyAverage | currency }}</div>
+  </div>
+</div>
+
+<div *ngIf="showWeeklyAverage" (click)="toggle()" class="stats-display stats-display--primary interactive">
+  <mat-icon class="stats-display__icon">date_range</mat-icon>
+  <div class="stats-display__content">
+    <div class="stats-display__label">Weekly</div>
+    <div class="stats-display__value">{{ currentWeekAmount | currency }} / {{ weeklyAverage | currency }}</div>
+  </div>
+</div>
+
+<div *ngIf="showMonthlyAverage" (click)="toggle()" class="stats-display stats-display--accent interactive">
+  <mat-icon class="stats-display__icon">calendar_month</mat-icon>
+  <div class="stats-display__content">
+    <div class="stats-display__label">Monthly</div>
+    <div class="stats-display__value">{{ currentMonthAmount | currency }} / {{ monthlyAverage | currency }}</div>
+  </div>
+</div>
