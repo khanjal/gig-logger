@@ -483,14 +483,37 @@ cdk-virtual-scroll-viewport {
                 min-height: 44px;
             }
         }
-        
-        // Remove subscript wrapper spacing globally
+          // Remove subscript wrapper spacing globally with higher specificity
         .mat-mdc-form-field-subscript-wrapper {
-            margin-top: 0;
-            min-height: 0;
-            height: 0;
-            overflow: hidden;
-            display: none;
+            margin-top: 0 !important;
+            min-height: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            display: none !important;
+            line-height: 0 !important;
+            padding: 0 !important;
+        }
+        
+        // Additional fixes for hint and error text containers
+        .mat-mdc-form-field-bottom-align {
+            margin-top: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            display: none !important;
+        }
+        
+        // Ensure form fields are compact
+        .mat-mdc-form-field {
+            margin-bottom: 0.5rem !important;
+            
+            // Remove any hint or error text spacing
+            .mat-mdc-form-field-hint-wrapper,
+            .mat-mdc-form-field-error-wrapper {
+                display: none !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
         }
     }
 }

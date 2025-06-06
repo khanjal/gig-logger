@@ -691,3 +691,58 @@ a {
 @media (prefers-color-scheme: dark) {
   /* Dark mode styles can be added here in the future */
 }
+
+/* Global Material Form Field Subscript Wrapper Removal */
+/* This removes the large gaps between form fields caused by reserved space for hint/error text */
+.mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  display: none !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+  position: absolute !important;
+  visibility: hidden !important;
+}
+
+/* Additional Material form field bottom alignment fixes */
+.mat-mdc-form-field-bottom-align {
+  margin-top: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  display: none !important;
+}
+
+/* Remove hint and error wrapper spacing */
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Ensure form fields have consistent compact spacing */
+.mat-mdc-form-field {
+  margin-bottom: 0.75rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 0.375rem;
+  }
+}
+
+/* Override any remaining Material Design subscript spacing */
+.mat-form-field-subscript-wrapper,
+.mat-form-field-underline,
+.mat-form-field-ripple {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
