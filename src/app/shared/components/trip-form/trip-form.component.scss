@@ -300,15 +300,43 @@ cdk-virtual-scroll-viewport {
                 margin: 0;
             }
         }
-    }    &--with-buttons {
+    }
+    
+    &--with-buttons {
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: nowrap;
-        
-        .form-field {
+          .form-field {
             flex: 0 0 auto;
             margin: 0;
+            align-self: center;
+            
+            ::ng-deep {
+                .mat-mdc-form-field {
+                    align-items: center;
+                    display: flex;
+                    height: auto;
+                    min-height: 44px;
+                }
+                
+                .mat-mdc-text-field-wrapper {
+                    align-self: center;
+                    height: 44px;
+                }
+                
+                .mat-mdc-form-field-infix {
+                    min-height: 44px;
+                    padding: 8px 0;
+                }
+                
+                .mat-mdc-form-field-subscript-wrapper {
+                    margin-top: 0;
+                    min-height: 0;
+                    height: 0;
+                    overflow: hidden;
+                }
+            }
         }
         
         .toggle-button {
@@ -438,8 +466,7 @@ cdk-virtual-scroll-viewport {
             max-width: 25%;
         }
     }
-    
-    // Ensure proper spacing and alignment
+      // Ensure proper spacing and alignment
     ::ng-deep {
         .mat-mdc-form-field {
             width: 100%;
@@ -455,6 +482,15 @@ cdk-virtual-scroll-viewport {
             @media (max-width: 768px) {
                 min-height: 44px;
             }
+        }
+        
+        // Remove subscript wrapper spacing globally
+        .mat-mdc-form-field-subscript-wrapper {
+            margin-top: 0;
+            min-height: 0;
+            height: 0;
+            overflow: hidden;
+            display: none;
         }
     }
 }
