@@ -677,82 +677,63 @@ mat-card-actions {
 .form-row--with-buttons {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   flex-wrap: nowrap;
   min-height: 48px; // Consistent height with other form rows
-  
-  .form-field {
-    flex: 0 0 auto;
+    .form-field {
     margin: 0;
     align-self: center;
+    
+    // Override form-field--third responsive behavior for this layout
+    &.form-field--third {
+      flex: 1;
+      max-width: none;
+      
+      @media (max-width: 768px) {
+        flex: 1;
+        max-width: none;
+      }
+      
+      @media (max-width: 480px) {
+        flex: 1;
+        max-width: none;
+      }
+    }
+    
+    // New 30% width variant for better button accommodation
+    &.form-field--thirty {
+      flex: 0 0 30%;
+      max-width: 30%;
+      
+      @media (max-width: 768px) {
+        flex: 0 0 30%;
+        max-width: 30%;
+      }
+      
+      @media (max-width: 480px) {
+        flex: 0 0 28%;
+        max-width: 28%;
+      }
+    }
   }
   
   .toggle-button {
     flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
     
-    &:first-child {
-      order: -1;
-      margin-right: 1rem;
-    }
-    
-    &:last-child {
-      order: 1;
-      margin-left: 1rem;
+    @media (min-width: 769px) {
+      min-width: 48px;
+      min-height: 48px;
     }
   }
   
   @media (max-width: 768px) {
     min-height: 44px;
     gap: 0.5rem;
-    
-    .toggle-button {
-      min-width: 40px;
-      min-height: 40px;
-      
-      &:first-child {
-        margin-right: 0.5rem;
-      }
-      
-      &:last-child {
-        margin-left: 0.5rem;
-      }
-    }
   }
-  
-  @media (max-width: 480px) {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    
-    .form-field {
-      flex: 0 0 auto;
-      margin: 0.25rem;
-    }
-    
-    .button-row {
-      flex-basis: 100%;
-      display: flex;
-      justify-content: space-between;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    
-    .toggle-button {
-      margin: 0;
-      flex: 0 0 auto;
-      
-      &:first-child {
-        margin-right: 0;
-        order: -1;
-      }
-      
-      &:last-child {
-        margin-left: 0;
-        order: 1;
-      }
-    }
+    @media (max-width: 480px) {
+    gap: 0.25rem;
   }
 }
 
@@ -827,8 +808,7 @@ mat-card-actions {
       max-width: 100%;
     }
   }
-  
-  &--quarter {
+    &--quarter {
     flex: 0 0 25%;
     max-width: 25%;
     
@@ -840,6 +820,35 @@ mat-card-actions {
     @media (max-width: 480px) {
       flex: 0 0 25%;
       max-width: 25%;
+    }
+  }
+    &--thirty {
+    flex: 0 0 30%;
+    max-width: 30%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+  }
+  
+  &--three-quarters {
+    flex: 0 0 75%;
+    max-width: 75%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 70%;
+      max-width: 70%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 100%;
+      max-width: 100%;
     }
   }
 }

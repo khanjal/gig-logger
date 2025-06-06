@@ -61,9 +61,7 @@
                     formControlName="type">
                 </app-search-input>
             </div>
-        </div>
-
-        <!-- Payment Information -->
+        </div>        <!-- Payment Information -->
         <div class="form-section">
             <div class="form-row form-row--with-buttons">
                 <button 
@@ -75,14 +73,12 @@
                     aria-label="Toggle Advanced Pay" 
                     (click)="toggleAdvancedPay()">
                     <mat-icon>account_balance</mat-icon>
-                </button>
-
-                <mat-form-field class="form-field form-field--quarter" appearance="outline">
+                </button>                <mat-form-field class="form-field form-field--thirty" appearance="outline">
                     <mat-label>Pay</mat-label>
                     <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay">
                 </mat-form-field>
 
-                <mat-form-field class="form-field form-field--quarter" appearance="outline">
+                <mat-form-field class="form-field form-field--thirty" appearance="outline">
                     <mat-label>Distance</mat-label>
                     <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance">
                 </mat-form-field>
@@ -129,9 +125,9 @@
         </div>
 
         <!-- Customer Information -->
-        <div class="form-section">
-            <div class="form-row form-row--with-button">
+        <div class="form-section">            <div class="form-row form-row--with-button">
                 <app-search-input 
+                    class="form-field form-field--three-quarters"
                     fieldName="Name" 
                     searchType="Name" 
                     formControlName="name"
