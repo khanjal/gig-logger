@@ -119,12 +119,8 @@
   
   .current-time-btn {
     color: $success-color;
-    background: rgba($success-color, 0.1);
-    border: 1px solid rgba($success-color, 0.2);
     
     &:hover:not(:disabled) {
-      background: rgba($success-color, 0.15);
-      border-color: $success-color;
       box-shadow: 0 2px 8px rgba($success-color, 0.2);
       transform: translateY(-1px);
     }
@@ -141,13 +137,8 @@
   
   .clear-time-btn {
     color: $danger-color;
-    background: rgba($danger-color, 0.1);
-    border: 1px solid rgba($danger-color, 0.2);
     
     &:hover:not(:disabled) {
-      background: rgba($danger-color, 0.15);
-      border-color: $danger-color;
-      box-shadow: 0 2px 8px rgba($danger-color, 0.2);
       transform: translateY(-1px);
     }
     
