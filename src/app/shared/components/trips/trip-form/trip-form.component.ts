@@ -34,22 +34,20 @@ import { TripService } from '@services/sheets/trip.service';
 import { sort } from '@helpers/sort.helper';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
-import { ShiftCreationHelper } from '@helpers/shift-creation.helper';
 
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
-import { MatFabButton, MatAnchor, MatButton, MatMiniFabButton } from '@angular/material/button';
+import { MatFabButton, MatButton, MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { TripsTableBasicComponent } from '../trips-table-basic/trips-table-basic.component';
-import { NgxMatTimepickerDirective, NgxMatTimepickerComponent } from 'ngx-mat-timepicker';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
