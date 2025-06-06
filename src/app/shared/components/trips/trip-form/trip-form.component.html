@@ -13,7 +13,9 @@
                     <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.totalTrips }} &#64; {{ shift.grandTotal | currency }})</mat-option>
                 </mat-select>
             </mat-form-field>
-        </div>            <!-- New Shift Fields -->
+        </div>
+
+        <!-- New Shift Fields -->
         @if (isNewShift) {
             <div class="form-section">
                 <div class="form-row">
@@ -35,7 +37,9 @@
                     </app-search-input>
                 </div>
             </div>
-        }        <!-- Location Information -->
+        }
+
+        <!-- Location Information -->
         <div class="form-section">
             <div class="form-row">
                 <app-search-input 
@@ -56,7 +60,10 @@
                     searchType="Type" 
                     formControlName="type">
                 </app-search-input>
-            </div>        </div><!-- Payment Information -->
+            </div>
+        </div>
+
+        <!-- Payment Information -->
         <div class="form-section">
             <div class="form-row form-row--with-buttons">
                 <button 
@@ -119,7 +126,9 @@
                     <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer">
                 </mat-form-field>
             </div>
-        </div>        <!-- Customer Information -->
+        </div>
+
+        <!-- Customer Information -->
         <div class="form-section">
             <div class="form-row form-row--with-button">
                 <app-search-input 
@@ -175,7 +184,8 @@
                 </app-search-input>
             </div>
         </div>
-          <!-- Address List/Notes -->
+
+        <!-- Address List/Notes -->
         <div class="form-section" *ngIf="selectedNameDeliveries?.length">
             <mat-expansion-panel [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
                 <mat-expansion-panel-header [expandedHeight]="'auto'">
@@ -199,7 +209,9 @@
                     <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
                 </div>
             </mat-expansion-panel>
-        </div>        <!-- Destination Address -->
+        </div>
+
+        <!-- Destination Address -->
         <div class="form-section">
             <div class="form-row">
                 <app-search-input 
@@ -211,7 +223,8 @@
                 </app-search-input>
             </div>
         </div>
-          <!-- Name List/Notes -->
+
+        <!-- Name List/Notes -->
         <div class="form-section" *ngIf="selectedAddressDeliveries?.length">
             <mat-expansion-panel [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
                 <mat-expansion-panel-header [expandedHeight]="'auto'">
@@ -235,7 +248,9 @@
                     <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
                 </div>
             </mat-expansion-panel>
-        </div>        <!-- Time Inputs -->
+        </div>
+
+        <!-- Time Inputs -->
         <div class="form-section" *ngIf="data?.id">
             <div class="form-row form-row--halves">
                 <app-time-input 
@@ -249,7 +264,8 @@
                 </app-time-input>
             </div>
         </div>
-          <!-- Note and Order -->
+
+        <!-- Note and Order -->
         <div class="form-section">
             <div class="form-row form-row--with-button">
                 <mat-form-field class="form-field" appearance="outline">
@@ -283,7 +299,9 @@
                 </mat-slide-toggle>
             </div>
         </div>
-    </form>    <!-- Form Actions -->
+    </form>
+
+    <!-- Form Actions -->
     <div class="form-actions">
         <div class="form-actions__row" *ngIf="!data?.id">
             <button mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid">
