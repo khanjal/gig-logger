@@ -39,9 +39,7 @@
                     </app-search-input>
                 </div>
             </div>
-        }
-
-        <!-- Location Information -->
+        }        <!-- Location Information -->
         <div class="form-section">
             <div class="form-row">
                 <app-search-input 
@@ -63,8 +61,11 @@
                     formControlName="type">
                 </app-search-input>
             </div>
-        </div>        <!-- Payment Information -->
-        <div class="form-section">            <div class="form-row">
+        </div>
+
+        <!-- Payment Information -->
+        <div class="form-section">
+            <div class="form-row">
                 <button 
                     mat-mini-fab
                     type="button"
@@ -123,10 +124,10 @@
                     <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer">
                 </mat-form-field>
             </div>
-        </div>
-        
+        </div>        
         <!-- Customer Information -->
-        <div class="form-section">            <div class="form-row">
+        <div class="form-section">
+            <div class="form-row">
                 <app-search-input 
                     class="field-full-width"
                     fieldName="Name" 
@@ -152,7 +153,7 @@
                     <mat-expansion-panel [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Found {{ selectedPlaceAddresses.length }} Previous Pickup Addresses
+                                {{ selectedPlaceAddresses.length }} Previous Pickup Addresses
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <div class="address-options">
@@ -164,12 +165,13 @@
                                 class="address-button"
                                 [class.address-button--selected]="address.address === tripForm.value.startAddress"
                                 (click)="setPickupAddress(address.address)">
-                                {{ address.address | shortaddress:selectedPlace.place | truncate:35 }} ({{ address.trips }})
+                                {{ address.address | shortaddress:selectedPlace.place | truncate:30 }} ({{ address.trips }})
                             </button>
                         </div>
                     </mat-expansion-panel>
-                </mat-accordion>
-            </div>            <!-- Pickup Address Input -->
+                </mat-accordion>            </div>
+
+            <!-- Pickup Address Input -->
             <div class="form-row" *ngIf="showPickupAddress">
                 <app-search-input 
                     class="field-full-width"
@@ -186,7 +188,7 @@
             <mat-expansion-panel [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
                 <mat-expansion-panel-header [expandedHeight]="'auto'">
                     <mat-panel-title>
-                        Found {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
+                        {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div *ngFor="let delivery of selectedNameDeliveries" class="delivery-item">
@@ -203,9 +205,10 @@
                         {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
                     </button>
                     <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
-                </div>
-            </mat-expansion-panel>
-        </div>        <!-- Destination Address -->
+                </div>            </mat-expansion-panel>
+        </div>
+
+        <!-- Destination Address -->
         <div class="form-section">
             <div class="form-row">
                 <app-search-input 
@@ -224,7 +227,7 @@
             <mat-expansion-panel [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
                 <mat-expansion-panel-header [expandedHeight]="'auto'">
                     <mat-panel-title>
-                        Found {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
+                        {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div *ngFor="let delivery of selectedAddressDeliveries" class="delivery-item">
@@ -256,9 +259,10 @@
                 <app-time-input 
                     label="Dropoff Time"
                     formControlName="dropoffTime">
-                </app-time-input>
-            </div>
-        </div>        <!-- Note and Order -->
+                </app-time-input>            </div>
+        </div>
+
+        <!-- Note and Order -->
         <div class="form-section">
             <div class="form-row">
                 <mat-form-field class="field-full-width" appearance="outline">
@@ -272,10 +276,11 @@
                     class="toggle-button"
                     [color]="showOrder ? 'accent' : 'primary'" 
                     aria-label="Toggle Address/Order" 
-                    (click)="toggleOrder()">
-                    <mat-icon>business</mat-icon>
+                    (click)="toggleOrder()">                    <mat-icon>business</mat-icon>
                 </button>
-            </div><!-- Address 2/Order/Exclude -->
+            </div>
+
+            <!-- Address 2/Order/Exclude -->
             <div class="form-row form-row--halves" *ngIf="showOrder">
                 <mat-form-field class="form-field" appearance="outline">
                     <mat-label>Apt/Unit/Room</mat-label>

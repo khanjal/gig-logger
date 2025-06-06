@@ -1,6 +1,20 @@
 // Mobile-First Time Input Component Styles
 @import "color-vars";
 
+// Host element styling to ensure proper width inheritance and layout compatibility
+:host {
+  display: block;
+  width: 100%;
+  
+  // Ensure time input works properly within form-row--halves
+  .form-row--halves & {
+    flex: 1 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+}
+
 // Time Input Container - Mobile First
 .time-input-container {
   display: flex;
