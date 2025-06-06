@@ -194,8 +194,10 @@
               <span class="payment-label">Bonus</span>
               <span class="payment-value payment-value--bonus">{{trip.bonus | currency}}</span>
             </div>
-          </div>            <!-- Second row: Total, Cash, and Efficiency -->
-          <div class="payment-row payment-row--secondary" *ngIf="trip.total > trip.pay || trip.cash || trip.amountPerTime">
+          </div>
+
+          <!-- Second row: Total, Cash, and Efficiency -->
+          <div class="payment-row payment-row--secondary">
             <div class="payment-item payment-item--total" *ngIf="trip.total > trip.pay">
               <span class="payment-label">Total</span>
               <span class="payment-value payment-value--total">{{trip.total | currency}}</span>
@@ -244,7 +246,6 @@
       </div>
     </div>
       </div>
-  
   <!-- Action Bar - Always visible, outside collapse -->
   <div class="action-bar" *ngIf="showActions">
     <!-- Edit button on the left -->

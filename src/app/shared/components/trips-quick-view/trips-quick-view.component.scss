@@ -711,15 +711,30 @@
   .payment-label {
     @extend .grid-item__label;
   }
-  
-  .payment-value {
+    .payment-value {
     @extend .grid-item__value;
     
-    &--pay { @extend .payment-color--pay; }
-    &--tip { @extend .payment-color--tip; }
-    &--bonus { @extend .payment-color--bonus; }
-    &--cash { @extend .payment-color--cash; }
-    &--total { @extend .payment-color--total; @extend .grid-item__value--lg; }
+    &--pay { 
+      @extend .payment-color--pay; 
+      color: $payment-card !important;
+    }
+    &--tip { 
+      @extend .payment-color--tip; 
+      color: $payment-tip !important;
+    }
+    &--bonus { 
+      @extend .payment-color--bonus; 
+      color: $payment-bonus !important;
+    }
+    &--cash { 
+      @extend .payment-color--cash; 
+      color: $payment-cash !important;
+    }
+    &--total { 
+      @extend .payment-color--total; 
+      @extend .grid-item__value--lg; 
+      color: $primary-color !important;
+    }
     
     &--efficiency {
       @extend .grid-item__value--lg;
@@ -785,20 +800,51 @@
     flex: 1;
     justify-content: center;
   }
+  
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    @media (max-width: 479px) {
+      flex-direction: column;
+      gap: 0.375rem;
+      
+      .action-button {
+        width: 100%;
+        min-width: 120px;
+      }
+    }
+    
+    @media (min-width: 480px) {
+      flex-direction: row;
+      gap: 0.75rem;
+    }
+  }
 }
 
 .action-button {
   @extend .btn;
   
   &--primary { @extend .btn--primary; }
-  &--accent { @extend .btn--accent; }  
+  &--accent { @extend .btn--accent; }
+  &--secondary {
+    background: $warn-color;
+    color: white;
+    
+    &:hover { 
+      background: darken($warn-color, 10%); 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); 
+    }
+  }
   &--menu { 
     @extend .btn--icon;
     border: 2px solid $border-color;
     color: $text-secondary;
     
     &:hover { 
-      background: $surface-secondary; 
+      background: $surface-secondary;
       border-color: $border-color; 
       color: $text-primary; 
     }
