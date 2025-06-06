@@ -176,7 +176,15 @@ cdk-virtual-scroll-viewport {
 }
 
 .form-section {
-    margin-bottom: 0rem;
+    margin-bottom: 1.5rem;
+    
+    @media (max-width: 768px) {
+        margin-bottom: 1.25rem;
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 1rem;
+    }
 }
 
 // Component-specific styling that doesn't use global utilities
