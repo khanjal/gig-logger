@@ -1,0 +1,248 @@
+// Simplified trip-form component using responsive utilities
+@import "../../../shared/styles/responsive-utilities";
+@import "color-vars";
+
+// Component-specific styles only - leveraging utilities for common patterns
+.trip-form {
+  @extend .container-responsive;
+  margin-bottom: 1rem;
+  min-width: 100px;
+}
+
+.field-button {
+  @extend .touch-button;
+  @extend .margin-right-small-responsive;
+  @extend .spacing-small;
+  
+  @media (max-width: 768px) {
+    flex: 1;
+    max-width: calc(50% - 0.125rem);
+  }
+  
+  @media (max-width: 480px) {
+    max-width: 100%;
+    margin-right: 0;
+  }
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.button-icon {
+  @extend .spacing-small;
+}
+
+.tab {
+  @extend .margin-right-responsive;
+  @extend .padding-responsive;
+  
+  .title {
+    @extend .font-subtitle-responsive;
+    padding-bottom: 0.75rem;
+    color: $primary-color;
+    
+    @media (max-width: 768px) {
+      padding-bottom: 0.5rem;
+    }
+  }
+
+  .sub-tab { 
+    margin-left: 0.5rem;
+    padding: 0.25rem 0;
+  }
+}
+
+.tab-itallic {
+  font-style: italic;
+  @extend .margin-right-small-responsive;
+  color: $text-secondary;
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+}
+
+.highlight {
+  color: $accent-color !important;
+  font-weight: 500;
+}
+
+.mat-icon-button {
+  @extend .touch-button;
+  margin: 0;
+  
+  @media (max-width: 768px) {
+    &:not(:last-child) {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.margin-right {
+  @extend .margin-right-responsive;
+}
+
+cdk-virtual-scroll-viewport {
+  @extend .scrollable-responsive;
+}
+
+.selected-name-address {
+  @extend .card-responsive;
+  @extend .spacing-section;
+}
+
+.form-header {
+  @extend .spacing-section;
+  
+  h1 {
+    @extend .font-title-responsive;
+    margin: 0;
+    color: var(--primary-color);
+  }
+}
+
+.form-section {
+  @extend .spacing-section;
+}
+
+// Component-specific styles that don't fit utility patterns
+.delivery-item {
+  @extend .spacing-item;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.02);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.delivery-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.address-button,
+.name-button {
+  @extend .form-field-full;
+  margin-bottom: 0.5rem;
+  text-align: left;
+  justify-content: flex-start;
+  
+  &--selected {
+    background-color: var(--accent-color);
+    color: white;
+  }
+}
+
+.trips-table {
+  margin-top: 0.5rem;
+}
+
+// Enhanced Material component overrides using utilities
+@media (max-width: 768px) {
+  ::ng-deep {
+    .mat-expansion-panel-body {
+      padding: 0.75rem 1rem;
+    }
+    
+    .mat-expansion-panel-header {
+      padding: 0 1rem;
+      height: 48px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  ::ng-deep {
+    .mat-expansion-panel-body {
+      padding: 0.5rem 0.75rem;
+    }
+    
+    .mat-expansion-panel-header {
+      padding: 0 0.75rem;
+      height: 44px;
+    }
+    
+    .mat-mdc-fab.mat-mdc-mini-fab {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}
+
+.address-list {
+  @extend .spacing-item;
+  
+  mat-expansion-panel {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.address-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+// Simplified form row patterns using utilities
+.form-row {
+  @extend .form-row;
+  
+  // Use utility classes instead of complex nested selectors
+  &.form-row--halves {
+    @extend .form-row--halves;
+  }
+  
+  &.form-row--thirds {
+    @extend .form-row--thirds;
+  }
+  
+  &.form-row--with-button {
+    @extend .form-row--with-button;
+  }
+}
+
+// Specific overrides for edge cases
+.form-section:nth-child(4) {
+  .form-row {
+    @extend .form-row--with-button;
+  }
+}
+
+// Form actions using button utility
+.form-actions {
+  .form-actions__row {
+    @extend .button-row;
+    
+    button {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+// Mobile-specific search input handling
+@media (max-width: 768px) {
+  app-search-input {
+    @extend .form-field-full;
+    display: block !important;
+    
+    &.field-full-width {
+      flex: 1 !important;
+      max-width: none !important;
+      min-width: 0 !important;
+    }
+  }
+  
+  // Specific field targeting
+  .form-row app-search-input[formControlName="service"],
+  .form-row app-search-input[formControlName="region"], 
+  .form-row app-search-input[formControlName="place"],
+  .form-row app-search-input[formControlName="type"] {
+    @extend .form-field-full;
+    display: block !important;
+  }
+}
