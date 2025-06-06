@@ -585,7 +585,7 @@ cdk-virtual-scroll-viewport {
     }
 }
 
-// Form actions - override global styles to keep buttons side by side with 25% width
+// Form actions - override global styles to keep buttons side by side with larger size
 .form-actions {
     .form-actions__row {
         display: flex !important;
@@ -595,25 +595,55 @@ cdk-virtual-scroll-viewport {
         gap: 1rem;
         
         button {
-            flex: 0 0 25% !important;
-            width: 25% !important;
-            min-width: 120px !important;
-            max-width: 200px !important;
+            flex: 0 0 35% !important;
+            width: 35% !important;
+            min-width: 150px !important;
+            max-width: 250px !important;
+            min-height: 56px !important;
             margin-bottom: 0 !important;
+            padding: 12px 24px !important;
+            font-size: 1.1rem !important;
+            font-weight: 500 !important;
+            
+            mat-icon {
+                font-size: 24px !important;
+                width: 24px !important;
+                height: 24px !important;
+                margin-right: 8px !important;
+            }
             
             @media (max-width: 768px) {
-                flex: 0 0 25% !important;
-                width: 25% !important;
-                min-width: 100px !important;
-                max-width: 150px !important;
+                flex: 0 0 35% !important;
+                width: 35% !important;
+                min-width: 130px !important;
+                max-width: 180px !important;
+                min-height: 52px !important;
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                
+                mat-icon {
+                    font-size: 22px !important;
+                    width: 22px !important;
+                    height: 22px !important;
+                    margin-right: 6px !important;
+                }
             }
             
             @media (max-width: 480px) {
-                flex: 0 0 25% !important;
-                width: 25% !important;
-                min-width: 80px !important;
-                max-width: 120px !important;
-                gap: 0.5rem;
+                flex: 0 0 40% !important;
+                width: 40% !important;
+                min-width: 110px !important;
+                max-width: 140px !important;
+                min-height: 48px !important;
+                padding: 8px 16px !important;
+                font-size: 0.95rem !important;
+                
+                mat-icon {
+                    font-size: 20px !important;
+                    width: 20px !important;
+                    height: 20px !important;
+                    margin-right: 4px !important;
+                }
             }
         }
         
