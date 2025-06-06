@@ -122,18 +122,16 @@
                     <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer">
                 </mat-form-field>
             </div>
-        </div>
-
-        <!-- Customer Information -->
+        </div>        <!-- Customer Information -->
         <div class="form-section">            <div class="form-row form-row--with-button">
                 <app-search-input 
-                    class="form-field form-field--three-quarters"
+                    class="form-field"
                     fieldName="Name" 
                     searchType="Name" 
                     formControlName="name"
                     (valueChanged)="showNameAddresses()">
                 </app-search-input>
-                  <button 
+                  <button
                     mat-mini-fab
                     type="button"
                     class="toggle-button"
@@ -168,11 +166,10 @@
                         </div>
                     </mat-expansion-panel>
                 </mat-accordion>
-            </div>
-
-            <!-- Pickup Address Input -->
+            </div>            <!-- Pickup Address Input -->
             <div class="form-row" *ngIf="showPickupAddress">
                 <app-search-input 
+                    class="field-full-width"
                     fieldName="Pickup Address" 
                     searchType="Address" 
                     formControlName="startAddress"
@@ -205,12 +202,11 @@
                     <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
                 </div>
             </mat-expansion-panel>
-        </div>
-
-        <!-- Destination Address -->
+        </div>        <!-- Destination Address -->
         <div class="form-section">
             <div class="form-row">
                 <app-search-input 
+                    class="field-full-width"
                     fieldName="Destination Address" 
                     searchType="Address" 
                     formControlName="endAddress"

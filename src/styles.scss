@@ -547,11 +547,28 @@ mat-card-actions {
   padding: 1rem;
   
   @media (max-width: 768px) {
-    padding: 0.5rem;
+    padding: 0.75rem;
   }
   
   @media (max-width: 480px) {
-    padding: 0.25rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Form Section Utilities */
+.form-section {
+  margin-bottom: 1.5rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1.25rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
   }
 }
 
@@ -559,8 +576,9 @@ mat-card-actions {
 .form-row {
   display: flex;
   gap: 1rem;
-  align-items: flex-start;
-  margin-bottom: 0.5rem;
+  align-items: center; // Changed from flex-start to center for better alignment
+  margin-bottom: 0.75rem;
+  min-height: 48px; // Consistent row height
   
   &:last-child {
     margin-bottom: 0;
@@ -569,13 +587,17 @@ mat-card-actions {
   @media (max-width: 768px) {
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 0.375rem;
+    margin-bottom: 0.5rem;
+    min-height: 44px; // Consistent mobile row height
+    align-items: center; // Maintain center alignment on tablet
   }
   
   @media (max-width: 480px) {
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem; // Slightly more space on mobile
+    min-height: 44px; // Maintain minimum height for touch targets
+    align-items: stretch; // Full width on mobile
   }
 }
 
@@ -635,41 +657,54 @@ mat-card-actions {
 }
 
 .form-row--with-button {
-  align-items: flex-end;
+  align-items: center; // Centered alignment for better visual balance
   
   .form-field {
     flex: 1;
     min-width: 0;
+    margin: 0; // Remove any default margins for cleaner layout
   }
   
   .toggle-button {
     margin-left: 0.5rem;
     flex-shrink: 0;
+    align-self: center; // Ensure button is centered
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (min-width: 769px) {
+      min-width: 48px;
+      min-height: 48px;
+    }
   }
   
   @media (max-width: 768px) {
     gap: 0.5rem;
+    min-height: 44px; // Consistent mobile height
     
     .toggle-button {
       margin-left: 0;
-      min-width: 40px;
-      min-height: 40px;
     }
   }
   
   @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row; // Keep horizontal layout on mobile
+    align-items: center;
     gap: 0.75rem;
+    min-height: 44px;
     
     .form-field {
-      width: 100%;
+      flex: 1;
+      width: auto;
       margin-bottom: 0;
     }
     
     .toggle-button {
-      align-self: center;
       margin: 0;
+      flex-shrink: 0;
     }
   }
 }
@@ -680,7 +715,8 @@ mat-card-actions {
   gap: 1rem;
   flex-wrap: nowrap;
   min-height: 48px; // Consistent height with other form rows
-    .form-field {
+  
+  .form-field {
     margin: 0;
     align-self: center;
     
@@ -711,8 +747,8 @@ mat-card-actions {
       }
       
       @media (max-width: 480px) {
-        flex: 0 0 28%;
-        max-width: 28%;
+        flex: 0 0 32%; // Slightly larger on mobile for better touch targets
+        max-width: 32%;
       }
     }
   }
@@ -721,6 +757,10 @@ mat-card-actions {
     flex-shrink: 0;
     min-width: 44px;
     min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center; // Better centering
     
     @media (min-width: 769px) {
       min-width: 48px;
@@ -732,45 +772,72 @@ mat-card-actions {
     min-height: 44px;
     gap: 0.5rem;
   }
-    @media (max-width: 480px) {
-    gap: 0.25rem;
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem; // Consistent gap on mobile
+    min-height: 44px; // Keep consistent height even on mobile
+    flex-wrap: nowrap; // Prevent wrapping on small screens
+    
+    .form-field {
+      &.form-field--thirty {
+        flex: 0 0 30%; // Maintain 30% width on mobile
+        max-width: 30%;
+      }
+    }
   }
 }
 
 .form-row--with-toggle {
   align-items: center;
   flex-wrap: wrap;
+  min-height: 48px; // Consistent height
   
   .form-field {
     flex: 1;
     margin-right: 0.5rem;
+    margin-bottom: 0; // Remove default margin for cleaner layout
     min-width: 0;
   }
   
   mat-slide-toggle {
     flex-shrink: 0;
-    margin-top: 0.5rem;
+    margin-top: 0;
+    align-self: center; // Better centering
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   
   @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
+    min-height: 44px;
     gap: 0.75rem;
     
     .form-field {
       margin-right: 0;
       margin-bottom: 0;
+      flex: 1;
     }
     
     mat-slide-toggle {
       margin-top: 0;
-      align-self: flex-start;
+      align-self: center;
     }
   }
   
   @media (max-width: 480px) {
+    flex-direction: row; // Keep horizontal layout on mobile
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    
     .form-field {
-      width: 100%;
+      flex: 1;
+      width: auto;
+    }
+    
+    mat-slide-toggle {
+      align-self: center; // Center toggle on mobile
+      flex-shrink: 0;
     }
   }
 }
@@ -858,13 +925,25 @@ mat-card-actions {
   ::ng-deep {
     .mat-mdc-form-field {
       width: 100%;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0;
       
       .mat-mdc-form-field-infix {
         min-height: 48px;
+        display: flex;
+        align-items: center;
         
         @media (max-width: 768px) {
           min-height: 44px;
+        }
+      }
+      
+      .mat-mdc-text-field-wrapper {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        
+        @media (max-width: 768px) {
+          height: 44px;
         }
       }
       
@@ -952,15 +1031,37 @@ mat-card-actions {
 .toggle-button {
   min-width: 44px;
   min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
   
   &--active {
-    transform: scale(1.1);
+    transform: scale(1.05);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   
+  @media (min-width: 769px) {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
   @media (max-width: 768px) {
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  // Ensure proper touch targets on all screen sizes
+  @media (max-width: 480px) {
+    min-width: 44px; // Maintain 44px minimum for accessibility
+    min-height: 44px;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
   }
 }
 
@@ -1337,18 +1438,44 @@ a {
 
 /* Ensure form fields have consistent compact spacing */
 .mat-mdc-form-field {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem; // Reduced default margin
   
   @media (max-width: 768px) {
-    margin-bottom: 0.5rem;
-  }
-  
-  @media (max-width: 480px) {
     margin-bottom: 0.375rem;
   }
   
   @media (max-width: 480px) {
-    margin-bottom: 0.375rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  // Ensure consistent field heights across all screen sizes
+  .mat-mdc-form-field-infix {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      min-height: 44px;
+    }
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      min-height: 44px;
+    }
+  }
+  
+  // Better input styling for mobile
+  input, textarea, mat-select {
+    line-height: normal;
+    
+    @media (max-width: 480px) {
+      font-size: 16px; // Prevent zoom on iOS
+    }
   }
 }
 
@@ -1361,3 +1488,103 @@ a {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+/* ==============================================
+   MOBILE FORM ENHANCEMENTS
+   ============================================== */
+
+/* Mobile Touch Optimization */
+@media (max-width: 480px) {
+  // Prevent accidental zoom on form inputs
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+  
+  // Better spacing for form elements
+  .form-row {
+    min-height: 44px;
+    
+    &:not(.form-row--thirds):not(.form-row--with-buttons) {
+      .form-field {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+  }
+  
+  // Optimize button sizes for touch
+  button[mat-button], 
+  button[mat-raised-button], 
+  button[mat-stroked-button] {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+  
+  // Better Material form field mobile styling
+  .mat-mdc-form-field {
+    .mat-mdc-form-field-infix {
+      padding: 12px 0;
+    }
+    
+    .mat-mdc-floating-label {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+/* Form Field Focus States for Better Mobile UX */
+.mat-mdc-form-field.mat-focused {
+  .mat-mdc-form-field-outline {
+    border-width: 2px;
+  }
+}
+
+/* Improved Form Row Alignment for All Screen Sizes */
+.form-row {
+  // Ensure all child form fields align properly
+  > .form-field,
+  > app-search-input,
+  > mat-form-field {
+    display: flex;
+    align-items: center;
+    min-height: inherit;
+  }
+  
+  // Better alignment for mixed content (fields + buttons)
+  &.form-row--with-button,
+  &.form-row--with-buttons,
+  &.form-row--with-toggle {
+    > * {
+      align-self: center;
+    }
+  }
+}
+
+/* Enhanced Stats Display for Mobile */
+@media (max-width: 480px) {
+  .stats-display {
+    padding: 0.75rem;
+    min-height: 44px;
+    
+    &__icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &__value {
+      font-size: 0.9rem;
+      line-height: 1.2;
+    }
+  }
+}
+
+/* ==============================================
+   END MOBILE FORM ENHANCEMENTS
+   ============================================== */
