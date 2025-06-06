@@ -1,0 +1,1545 @@
+/* ==============================================
+   GIGI LOGGER - MAIN STYLES ENTRY POINT
+   ============================================== */
+
+/* Import the modular SCSS architecture */
+@import "app/shared/styles/index";
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
+}
+
+/* Material Icons */
+.material-icons {
+  font-family: 'Material Icons' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Loading Spinner */
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  position: relative;
+  display: inline-block;
+  
+  &:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: -0.625rem;
+    margin-left: -0.625rem;
+    border-radius: 50%;
+    border: 2px solid $border-color;
+    border-top-color: $primary-color;
+    animation: spinner 0.8s linear infinite;
+  }
+}
+
+/* Container System - Mobile First */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.75rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+    padding: 2rem;
+  }
+}
+
+/* Section Styles */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Utility Classes */
+.focus-scroll {
+  scroll-margin-top: 4rem;
+}
+
+.full-height {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Layout Grid System */
+.row-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .row-grid {
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+}
+
+.row-block {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .row-flex {
+    gap: 1rem;
+  }
+}
+
+/* Button System - Mobile First */
+.button {
+  margin: 0.5rem 0;
+  min-height: 2.75rem; /* 44px - iOS touch target */
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  &:focus {
+    outline: 2px solid $border-focus;
+    outline-offset: 2px;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@media (min-width: 768px) {
+  .button {
+    min-height: 2.5rem;
+    font-size: 1rem;
+  }
+}
+
+.button-left {
+  margin-right: 0.75rem;
+}
+
+.button-middle {
+  margin: 0 0.375rem;
+}
+
+.button-right {
+  margin-left: 0.75rem;
+}
+
+/* Form Field System */
+.field-full-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-fullish-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-halfish-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-half-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-third-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-quarter-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-right {
+  margin-left: auto;
+  margin-bottom: 0.75rem;
+}
+
+/* Tablet and Desktop Field Widths */
+@media (min-width: 768px) {
+  .field-fullish-width {
+    width: 80%;
+  }
+  
+  .field-halfish-width {
+    width: 60%;
+  }
+  
+  .field-half-width {
+    width: 50%;
+  }
+  
+  .field-third-width {
+    width: 40%;
+    margin-right: 1rem;
+  }
+  
+  .field-quarter-width {
+    width: 30%;
+    margin-right: 0.5rem;
+  }
+  
+  .field-right {
+    margin-left: auto;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Card System */
+.card {
+  background: $surface-color;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px $shadow-light, 0 1px 2px $shadow-medium;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid $border-light;
+  
+  &:hover {
+    box-shadow: 0 4px 6px $shadow-light, 0 2px 4px $shadow-medium;
+  }
+  
+  &:focus-within {
+    box-shadow: 0 0 0 2px $border-focus;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+}
+
+/* Status Classes */
+.status-success {
+  color: $success-color;
+}
+
+.status-warning {
+  color: $warn-color;
+}
+
+.status-info {
+  color: $info-color;
+}
+
+.status-primary {
+  color: $primary-color;
+}
+
+/* Badge System */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  line-height: 1;
+  
+  &.badge-primary {
+    background-color: $primary-100;
+    color: $primary-800;
+  }
+  
+  &.badge-success {
+    background-color: $success-100;
+    color: $success-color;
+  }
+  
+  &.badge-warning {
+    background-color: $warn-100;
+    color: $warn-800;
+  }
+  
+  &.badge-info {
+    background-color: $info-100;
+    color: $info-color;
+  }
+}
+
+/* Touch Optimizations */
+@media (pointer: coarse) {
+  .button,
+  button,
+  [role="button"] {
+    min-height: 2.75rem; /* 44px touch target */
+    padding: 0.75rem 1rem;
+  }
+  
+  .mat-mdc-icon-button {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+/* Material Design Component Overrides */
+.custom-modalbox {
+  max-width: calc(100vw - 2rem) !important;
+  width: 100% !important;
+  
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    padding: 1rem;
+    border-radius: 1rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .custom-modalbox {
+    max-width: 600px !important;
+    width: 90% !important;
+    
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+      padding: 1.5rem;
+    }
+  }
+}
+
+/* Material Expansion Panel */
+div.mat-expansion-panel-body {
+  padding: 0;
+}
+
+.mat-expansion-indicator,
+.mat-expansion-indicator:after {
+  color: $accent-color !important;
+}
+
+/* Material Card Overrides */
+mat-card {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 1px 3px $shadow-light, 0 1px 2px $shadow-medium !important;
+  border: 1px solid $border-light;
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: 0 4px 6px $shadow-light, 0 2px 4px $shadow-medium !important;
+  }
+}
+
+mat-card-header {
+  padding: 1rem !important;
+  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+  border-bottom: 1px solid $border-light;
+}
+
+mat-card-content {
+  padding: 1rem !important;
+}
+
+mat-card-actions {
+  padding: 0.75rem 1rem !important;
+  border-top: 1px solid $border-light;
+  background-color: $surface-secondary;
+}
+
+/* Material Button Overrides */
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 2px 4px $shadow-light, 0 1px 2px $shadow-medium !important;
+  
+  &:hover {
+    box-shadow: 0 4px 8px $shadow-light, 0 2px 4px $shadow-medium !important;
+  }
+}
+
+.mat-mdc-fab.mat-primary {
+  background-color: $primary-color !important;
+  color: $text-inverse !important;
+}
+
+.mat-mdc-fab.mat-accent {
+  background-color: $accent-color !important;
+  color: $text-inverse !important;
+}
+
+/* Utility Classes for Text and Colors */
+.primary {
+  color: $primary-color !important;
+}
+
+.accent {
+  color: $accent-color !important;
+}
+
+.warn {
+  color: $warn-color !important;
+}
+
+.success {
+  color: $success-color !important;
+}
+
+.text-primary {
+  color: $text-primary !important;
+}
+
+.text-secondary {
+  color: $text-secondary !important;
+}
+
+.text-inverse {
+  color: $text-inverse !important;
+}
+
+.bg-primary {
+  background-color: $primary-color !important;
+}
+
+.bg-accent {
+  background-color: $accent-color !important;
+}
+
+.bg-surface {
+  background-color: $surface-color !important;
+}
+
+/* Strike Through Effect - Enhanced */
+.strike {
+  position: relative;
+  background-color: $background-secondary;
+  opacity: 0.7;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: $warn-color;
+    transform: translateY(-50%);
+  }
+}
+
+/* ==============================================
+   FORM UTILITY CLASSES
+   ============================================== */
+
+/* Form Container Utilities */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+  }
+}
+
+/* Form Section Utilities */
+.form-section {
+  margin-bottom: 1.5rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1.25rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Form Row Utilities */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center; // Changed from flex-start to center for better alignment
+  margin-bottom: 0.75rem;
+  min-height: 48px; // Consistent row height
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+    min-height: 44px; // Consistent mobile row height
+    align-items: center; // Maintain center alignment on tablet
+  }
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem; // Slightly more space on mobile
+    min-height: 44px; // Maintain minimum height for touch targets
+    align-items: stretch; // Full width on mobile
+  }
+}
+
+/* Form Row Variations */
+.form-row--halves {
+  .form-field {
+    flex: 1;
+  }
+  
+  @media (max-width: 480px) {
+    .form-field {
+      flex: none;
+    }
+  }
+}
+
+.form-row--thirds {
+  // Override base form-row behavior to keep fields in same row
+  flex-wrap: nowrap !important;
+  flex-direction: row !important;
+  
+  .form-field {
+    flex: 1;
+    min-width: 0; // Prevent flex items from overflowing
+    
+    // Ensure Material form fields fit properly in mobile
+    ::ng-deep .mat-mdc-form-field {
+      width: 100%;
+      min-width: 80px; // Minimum touch-friendly width
+    }
+  }
+  
+  // Keep all three fields on same row for mobile - equal width distribution
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+    
+    .form-field {
+      flex: 1;
+      min-width: calc(33.333% - 0.33rem);
+      max-width: calc(33.333% - 0.33rem);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.25rem;
+    
+    .form-field {
+      flex: 1;
+      min-width: calc(33.333% - 0.17rem);
+      max-width: calc(33.333% - 0.17rem);
+      
+      ::ng-deep .mat-mdc-form-field {
+        min-width: 70px; // Slightly smaller for very small screens
+      }
+    }
+  }
+}
+
+.form-row--with-button {
+  align-items: center; // Centered alignment for better visual balance
+  
+  .form-field {
+    flex: 1;
+    min-width: 0;
+    margin: 0; // Remove any default margins for cleaner layout
+  }
+  
+  .toggle-button {
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+    align-self: center; // Ensure button is centered
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (min-width: 769px) {
+      min-width: 48px;
+      min-height: 48px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+    min-height: 44px; // Consistent mobile height
+    
+    .toggle-button {
+      margin-left: 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    flex-direction: row; // Keep horizontal layout on mobile
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    
+    .form-field {
+      flex: 1;
+      width: auto;
+      margin-bottom: 0;
+    }
+    
+    .toggle-button {
+      margin: 0;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.form-row--with-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  min-height: 48px; // Consistent height with other form rows
+  
+  .form-field {
+    margin: 0;
+    align-self: center;
+    
+    // Override form-field--third responsive behavior for this layout
+    &.form-field--third {
+      flex: 1;
+      max-width: none;
+      
+      @media (max-width: 768px) {
+        flex: 1;
+        max-width: none;
+      }
+      
+      @media (max-width: 480px) {
+        flex: 1;
+        max-width: none;
+      }
+    }
+    
+    // New 30% width variant for better button accommodation
+    &.form-field--thirty {
+      flex: 0 0 30%;
+      max-width: 30%;
+      
+      @media (max-width: 768px) {
+        flex: 0 0 30%;
+        max-width: 30%;
+      }
+      
+      @media (max-width: 480px) {
+        flex: 0 0 32%; // Slightly larger on mobile for better touch targets
+        max-width: 32%;
+      }
+    }
+  }
+  
+  .toggle-button {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center; // Better centering
+    
+    @media (min-width: 769px) {
+      min-width: 48px;
+      min-height: 48px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    min-height: 44px;
+    gap: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem; // Consistent gap on mobile
+    min-height: 44px; // Keep consistent height even on mobile
+    flex-wrap: nowrap; // Prevent wrapping on small screens
+    
+    .form-field {
+      &.form-field--thirty {
+        flex: 0 0 30%; // Maintain 30% width on mobile
+        max-width: 30%;
+      }
+    }
+  }
+}
+
+.form-row--with-toggle {
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 48px; // Consistent height
+  
+  .form-field {
+    flex: 1;
+    margin-right: 0.5rem;
+    margin-bottom: 0; // Remove default margin for cleaner layout
+    min-width: 0;
+  }
+  
+  mat-slide-toggle {
+    flex-shrink: 0;
+    margin-top: 0;
+    align-self: center; // Better centering
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  @media (max-width: 768px) {
+    min-height: 44px;
+    gap: 0.75rem;
+    
+    .form-field {
+      margin-right: 0;
+      margin-bottom: 0;
+      flex: 1;
+    }
+    
+    mat-slide-toggle {
+      margin-top: 0;
+      align-self: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    flex-direction: row; // Keep horizontal layout on mobile
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    
+    .form-field {
+      flex: 1;
+      width: auto;
+    }
+    
+    mat-slide-toggle {
+      align-self: center; // Center toggle on mobile
+      flex-shrink: 0;
+    }
+  }
+}
+
+/* Form Field Utilities */
+.form-field {
+  flex: 1;
+  min-width: 0;
+  
+  &--full {
+    flex-basis: 100%;
+  }
+  
+  &--half {
+    flex: 0 0 50%;
+    max-width: 50%;
+    
+    @media (max-width: 480px) {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  
+  &--third {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+    &--quarter {
+    flex: 0 0 25%;
+    max-width: 25%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+  }
+    &--thirty {
+    flex: 0 0 30%;
+    max-width: 30%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+  }
+  
+  &--three-quarters {
+    flex: 0 0 75%;
+    max-width: 75%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 70%;
+      max-width: 70%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+/* Material Form Field Utilities with consistent heights */
+.form-field-compact {
+  ::ng-deep {
+    .mat-mdc-form-field {
+      width: 100%;
+      margin-bottom: 0;
+      
+      .mat-mdc-form-field-infix {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        
+        @media (max-width: 768px) {
+          min-height: 44px;
+        }
+      }
+      
+      .mat-mdc-text-field-wrapper {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        
+        @media (max-width: 768px) {
+          height: 44px;
+        }
+      }
+      
+      // Remove subscript wrapper spacing
+      .mat-mdc-form-field-subscript-wrapper {
+        margin-top: 0 !important;
+        min-height: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        display: none !important;
+      }
+    }
+  }
+}
+
+/* Centered Input Utility (for pay/distance fields) */
+.form-field-centered {
+  ::ng-deep {
+    .mat-mdc-form-field {
+      align-items: center;
+      display: flex;
+      height: auto;
+      min-height: 48px;
+      
+      @media (max-width: 768px) {
+        min-height: 44px;
+      }
+    }
+    
+    .mat-mdc-text-field-wrapper {
+      align-self: center;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      
+      @media (max-width: 768px) {
+        height: 44px;
+      }
+    }
+    
+    .mat-mdc-form-field-infix {
+      min-height: 48px;
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      
+      @media (max-width: 768px) {
+        min-height: 44px;
+      }
+    }
+    
+    input {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      line-height: normal;
+      
+      @media (max-width: 768px) {
+        height: 44px;
+        min-height: 44px;
+      }
+    }
+  }
+}
+
+/* Button Row Utilities */
+.button-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+  }
+  
+  @media (max-width: 480px) {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Toggle Button Utilities */
+.toggle-button {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  
+  &--active {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  @media (min-width: 769px) {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  @media (max-width: 768px) {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  // Ensure proper touch targets on all screen sizes
+  @media (max-width: 480px) {
+    min-width: 44px; // Maintain 44px minimum for accessibility
+    min-height: 44px;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/* Form Actions Utilities */
+.form-actions {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+  }
+  
+  &__row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      
+      button {
+        flex: 1;
+        min-width: 140px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      
+      button {
+        width: 100%;
+        margin-bottom: 0;
+        min-width: 0;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+/* ==============================================
+   COMPONENT DISPLAY UTILITIES
+   ============================================== */
+
+/* Average/Stats Display Component */
+.stats-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid;
+  box-shadow: 0 2px 6px $shadow-light;
+  margin: 0;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  min-height: auto;
+  height: auto;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px $shadow-medium;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.375rem 0.5rem;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    max-height: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  // Color variants
+  &--success {
+    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
+    border-color: $success-200;
+    color: $success-800;
+    
+    .stats-display__icon {
+      color: $success-600;
+    }
+  }
+  
+  &--primary {
+    background: linear-gradient(135deg, $primary-50 0%, $primary-100 100%);
+    border-color: $primary-200;
+    color: $primary-800;
+    
+    .stats-display__icon {
+      color: $primary-600;
+    }
+  }
+  
+  &--accent {
+    background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
+    border-color: $accent-200;
+    color: $accent-800;
+    
+    .stats-display__icon {
+      color: $accent-600;
+    }
+  }
+  
+  &--warning {
+    background: linear-gradient(135deg, $warn-50 0%, $warn-100 100%);
+    border-color: $warn-200;
+    color: $warn-800;
+    
+    .stats-display__icon {
+      color: $warn-600;
+    }
+  }
+  
+  &--info {
+    background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
+    border-color: $info-200;
+    color: $info-800;
+    
+    .stats-display__icon {
+      color: $info-600;
+    }
+  }
+}
+
+.stats-display__icon {
+  font-size: 1rem;
+  
+  @media (max-width: 480px) {
+    font-size: 0.875rem;
+  }
+  
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+}
+
+.stats-display__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+  }
+}
+
+.stats-display__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  opacity: 0.8;
+  
+  @media (min-width: 768px) {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+}
+
+.stats-display__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+/* Touch-Friendly Utilities */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target--large {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Focus/Active States */
+.interactive {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:focus {
+    outline: 2px solid $border-focus;
+    outline-offset: 2px;
+  }
+}
+
+/* Text Alignment Utilities */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Flexbox Utilities */
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+/* Spacing Utilities */
+.gap-xs { gap: 0.25rem; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 0.75rem; }
+.gap-lg { gap: 1rem; }
+.gap-xl { gap: 1.5rem; }
+
+.m-0 { margin: 0; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.ml-0 { margin-left: 0; }
+.mr-0 { margin-right: 0; }
+.mx-0 { margin-left: 0; margin-right: 0; }
+.my-0 { margin-top: 0; margin-bottom: 0; }
+
+.p-0 { padding: 0; }
+.pt-0 { padding-top: 0; }
+.pb-0 { padding-bottom: 0; }
+.pl-0 { padding-left: 0; }
+.pr-0 { padding-right: 0; }
+.px-0 { padding-left: 0; padding-right: 0; }
+.py-0 { padding-top: 0; padding-bottom: 0; }
+
+/* Width Utilities */
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-fit { width: fit-content; }
+
+/* Height Utilities */
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-fit { height: fit-content; }
+
+/* Mobile Visibility Utilities */
+.mobile-only {
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.desktop-only {
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+.tablet-up {
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+/* Link Styles - Enhanced */
+a {
+  color: $primary-color;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+  
+  &:hover {
+    color: $primary-dark;
+    text-decoration: underline;
+  }
+  
+  &:visited {
+    color: $primary-color;
+  }
+  
+  &:focus {
+    outline: 2px solid $border-focus;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid $text-primary;
+  }
+  
+  .badge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Dark Mode Preparation (for future implementation) */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles can be added here in the future */
+}
+
+/* Global Material Form Field Subscript Wrapper Removal */
+/* This removes the large gaps between form fields caused by reserved space for hint/error text */
+.mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  display: none !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+  position: absolute !important;
+  visibility: hidden !important;
+}
+
+/* Additional Material form field bottom alignment fixes */
+.mat-mdc-form-field-bottom-align {
+  margin-top: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  display: none !important;
+}
+
+/* Remove hint and error wrapper spacing */
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Ensure form fields have consistent compact spacing */
+.mat-mdc-form-field {
+  margin-bottom: 0.5rem; // Reduced default margin
+  
+  @media (max-width: 768px) {
+    margin-bottom: 0.375rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 0.25rem;
+  }
+  
+  // Ensure consistent field heights across all screen sizes
+  .mat-mdc-form-field-infix {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      min-height: 44px;
+    }
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      min-height: 44px;
+    }
+  }
+  
+  // Better input styling for mobile
+  input, textarea, mat-select {
+    line-height: normal;
+    
+    @media (max-width: 480px) {
+      font-size: 16px; // Prevent zoom on iOS
+    }
+  }
+}
+
+/* Override any remaining Material Design subscript spacing */
+.mat-form-field-subscript-wrapper,
+.mat-form-field-underline,
+.mat-form-field-ripple {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ==============================================
+   MOBILE FORM ENHANCEMENTS
+   ============================================== */
+
+/* Mobile Touch Optimization */
+@media (max-width: 480px) {
+  // Prevent accidental zoom on form inputs
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+  
+  // Better spacing for form elements
+  .form-row {
+    min-height: 44px;
+    
+    &:not(.form-row--thirds):not(.form-row--with-buttons) {
+      .form-field {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+  }
+  
+  // Optimize button sizes for touch
+  button[mat-button], 
+  button[mat-raised-button], 
+  button[mat-stroked-button] {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+  
+  // Better Material form field mobile styling
+  .mat-mdc-form-field {
+    .mat-mdc-form-field-infix {
+      padding: 12px 0;
+    }
+    
+    .mat-mdc-floating-label {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+/* Form Field Focus States for Better Mobile UX */
+.mat-mdc-form-field.mat-focused {
+  .mat-mdc-form-field-outline {
+    border-width: 2px;
+  }
+}
+
+/* Improved Form Row Alignment for All Screen Sizes */
+.form-row {
+  // Ensure all child form fields align properly
+  > .form-field,
+  > app-search-input,
+  > mat-form-field {
+    display: flex;
+    align-items: center;
+    min-height: inherit;
+  }
+  
+  // Better alignment for mixed content (fields + buttons)
+  &.form-row--with-button,
+  &.form-row--with-buttons,
+  &.form-row--with-toggle {
+    > * {
+      align-self: center;
+    }
+  }
+}
+
+/* Enhanced Stats Display for Mobile */
+@media (max-width: 480px) {
+  .stats-display {
+    padding: 0.75rem;
+    min-height: 44px;
+    
+    &__icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &__value {
+      font-size: 0.9rem;
+      line-height: 1.2;
+    }
+  }
+}
+
+/* ==============================================
+   END MOBILE FORM ENHANCEMENTS
+   ============================================== */

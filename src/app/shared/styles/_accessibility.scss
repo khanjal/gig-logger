@@ -1,0 +1,381 @@
+/* ==============================================
+   ACCESSIBILITY AND RESPONSIVE UTILITIES
+   ============================================== */
+
+/* Screen Reader Only Content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Skip Links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000;
+  font-weight: 600;
+  
+  &:focus {
+    top: 0;
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* Focus Management */
+.focus-trap {
+  outline: none;
+}
+
+.focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Touch Target Size Enhancement */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .card,
+  .form-container,
+  .stats-display {
+    border: 2px solid currentColor;
+  }
+  
+  .badge {
+    border: 1px solid currentColor;
+    background-color: transparent;
+  }
+  
+  button,
+  .btn {
+    border: 2px solid currentColor;
+  }
+  
+  input,
+  textarea,
+  select {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .spinner {
+    animation: none;
+  }
+}
+
+/* Color Scheme Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Font Size Preferences */
+@media (prefers-reduced-data: reduce) {
+  /* Reduce non-essential animations and effects */
+  .card:hover,
+  .stats-display:hover,
+  button:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+}
+
+/* Responsive Typography for Accessibility */
+@media (min-width: 1200px) and (prefers-reduced-motion: no-preference) {
+  html {
+    font-size: 18px; /* Larger base font for desktop users */
+  }
+}
+
+/* Large Text Support */
+@media (min-resolution: 2dppx) {
+  .text-xs { font-size: 0.8125rem; } /* Slightly larger on high-DPI screens */
+  .text-sm { font-size: 0.9375rem; }
+}
+
+/* Orientation-based Responsive Design */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Compact layout for landscape mobile */
+  .container {
+    padding: 0.5rem;
+  }
+  
+  .form-section {
+    margin-bottom: 1rem;
+  }
+  
+  h1, h2, h3 {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Mobile-First Responsive Breakpoints */
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+  
+  .sm\:d-block { display: block !important; }
+  .sm\:d-flex { display: flex !important; }
+  .sm\:d-none { display: none !important; }
+  
+  .sm\:w-25 { width: 25%; }
+  .sm\:w-50 { width: 50%; }
+  .sm\:w-75 { width: 75%; }
+  .sm\:w-100 { width: 100%; }
+  .sm\:w-auto { width: auto; }
+  
+  .sm\:text-left { text-align: left; }
+  .sm\:text-center { text-align: center; }
+  .sm\:text-right { text-align: right; }
+  
+  .sm\:justify-start { justify-content: flex-start; }
+  .sm\:justify-center { justify-content: center; }
+  .sm\:justify-end { justify-content: flex-end; }
+  .sm\:justify-between { justify-content: space-between; }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+  
+  .md\:d-block { display: block !important; }
+  .md\:d-flex { display: flex !important; }
+  .md\:d-none { display: none !important; }
+  
+  .md\:flex-row { flex-direction: row; }
+  .md\:flex-column { flex-direction: column; }
+  
+  .md\:w-25 { width: 25%; }
+  .md\:w-33 { width: 33.333%; }
+  .md\:w-50 { width: 50%; }
+  .md\:w-66 { width: 66.666%; }
+  .md\:w-75 { width: 75%; }
+  .md\:w-100 { width: 100%; }
+  .md\:w-auto { width: auto; }
+  
+  .md\:text-left { text-align: left; }
+  .md\:text-center { text-align: center; }
+  .md\:text-right { text-align: right; }
+  
+  .md\:justify-start { justify-content: flex-start; }
+  .md\:justify-center { justify-content: center; }
+  .md\:justify-end { justify-content: flex-end; }
+  .md\:justify-between { justify-content: space-between; }
+  
+  /* Tablet-specific spacing */
+  .md\:p-lg { padding: 1rem; }
+  .md\:m-lg { margin: 1rem; }
+  .md\:gap-lg { gap: 1rem; }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+  
+  .lg\:d-block { display: block !important; }
+  .lg\:d-flex { display: flex !important; }
+  .lg\:d-none { display: none !important; }
+  
+  .lg\:flex-row { flex-direction: row; }
+  .lg\:flex-column { flex-direction: column; }
+  
+  .lg\:w-16 { width: 16.666%; }
+  .lg\:w-25 { width: 25%; }
+  .lg\:w-33 { width: 33.333%; }
+  .lg\:w-50 { width: 50%; }
+  .lg\:w-66 { width: 66.666%; }
+  .lg\:w-75 { width: 75%; }
+  .lg\:w-83 { width: 83.333%; }
+  .lg\:w-100 { width: 100%; }
+  .lg\:w-auto { width: auto; }
+  
+  .lg\:text-left { text-align: left; }
+  .lg\:text-center { text-align: center; }
+  .lg\:text-right { text-align: right; }
+  
+  .lg\:justify-start { justify-content: flex-start; }
+  .lg\:justify-center { justify-content: center; }
+  .lg\:justify-end { justify-content: flex-end; }
+  .lg\:justify-between { justify-content: space-between; }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+  
+  .xl\:d-block { display: block !important; }
+  .xl\:d-flex { display: flex !important; }
+  .xl\:d-none { display: none !important; }
+  
+  .xl\:w-16 { width: 16.666%; }
+  .xl\:w-25 { width: 25%; }
+  .xl\:w-33 { width: 33.333%; }
+  .xl\:w-50 { width: 50%; }
+  .xl\:w-66 { width: 66.666%; }
+  .xl\:w-75 { width: 75%; }
+  .xl\:w-83 { width: 83.333%; }
+  .xl\:w-100 { width: 100%; }
+  .xl\:w-auto { width: auto; }
+  
+  /* Desktop-specific enhancements */
+  .xl\:p-xl { padding: 1.5rem; }
+  .xl\:m-xl { margin: 1.5rem; }
+  .xl\:gap-xl { gap: 1.5rem; }
+}
+
+/* Extra extra large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+
+/* Mobile Keyboard Support */
+@media (max-width: 767px) and (max-height: 500px) {
+  /* When mobile keyboard is likely open */
+  .keyboard-open {
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .form-container {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* iOS Safari Viewport Fix */
+@supports (-webkit-touch-callout: none) {
+  .ios-viewport-fix {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Android Chrome Address Bar Fix */
+@media screen and (max-width: 767px) {
+  .mobile-viewport-fix {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Print Styles for Accessibility */
+@media print {
+  .no-print,
+  .btn,
+  button,
+  nav,
+  .navigation {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+  
+  .card,
+  .form-container {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  
+  /* Ensure good contrast for printing */
+  * {
+    color: #000 !important;
+    background: transparent !important;
+  }
+}
+
+/* Focus Ring Customization */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Remove focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Improve tap targets on touch devices */
+@media (pointer: coarse) {
+  button,
+  .btn,
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    min-height: 44px;
+  }
+}

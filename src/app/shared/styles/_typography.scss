@@ -1,0 +1,132 @@
+/* ==============================================
+   TYPOGRAPHY SYSTEM
+   ============================================== */
+
+/* Typography Scale - Mobile First */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.75rem 0;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+h1 { font-size: 1.5rem; }   /* 24px */
+h2 { font-size: 1.25rem; }  /* 20px */
+h3 { font-size: 1.125rem; } /* 18px */
+h4 { font-size: 1rem; }     /* 16px */
+h5 { font-size: 0.875rem; } /* 14px */
+h6 { font-size: 0.75rem; }  /* 12px */
+
+/* Responsive Typography Scale */
+@media (min-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
+}
+
+/* Text Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Color Text Utilities */
+.primary {
+  color: var(--primary-color) !important;
+}
+
+.accent {
+  color: var(--accent-color) !important;
+}
+
+.warn {
+  color: var(--warn-color) !important;
+}
+
+.success {
+  color: var(--success-color) !important;
+}
+
+.text-primary {
+  color: var(--text-primary) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.text-inverse {
+  color: var(--text-inverse) !important;
+}
+
+/* Font Weight Utilities */
+.bold {
+  font-weight: 600; // Slightly bolder for mobile readability
+}
+
+/* Strike Through Effect - Enhanced */
+.strike {
+  position: relative;
+  background-color: var(--background-secondary);
+  opacity: 0.7;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--warn-color);
+    transform: translateY(-50%);
+  }
+}
+
+/* Text Highlighting */
+.highlight {
+  color: var(--accent-color) !important;
+  font-weight: 500;
+}
+
+/* Tab and Italic Text Styles */
+.tab {
+  margin-left: 1rem;
+  padding: 0.5rem 0;
+  
+  .title {
+    font-weight: 600;
+    padding-bottom: 0.75rem;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      padding-bottom: 0.5rem;
+    }
+  }
+
+  .sub-tab { 
+    margin-left: 0.5rem;
+    padding: 0.25rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    margin-left: 0.5rem;
+    padding: 0.25rem 0;
+  }
+  
+  @media (max-width: 480px) {
+    margin-left: 0.25rem;
+  }
+}
+
+.tab-itallic {
+  font-style: italic;
+  margin-left: 0.5rem;
+  color: var(--text-secondary);
+  
+  @media (max-width: 768px) {
+    margin-left: 0.25rem;
+    font-size: 0.9rem;
+  }
+}

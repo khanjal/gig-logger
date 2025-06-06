@@ -1,0 +1,425 @@
+/* ==============================================
+   MATERIAL DESIGN OVERRIDES AND CUSTOMIZATIONS
+   ============================================== */
+
+/* Material Form Field Customizations */
+.mat-mdc-form-field {
+  width: 100%;
+  
+  .mdc-text-field {
+    background-color: var(--surface-color);
+  }
+  
+  .mat-mdc-form-field-infix {
+    padding: 12px 0;
+    min-height: 44px; // Touch-friendly
+  }
+  
+  .mat-mdc-floating-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+  
+  &.mat-focused {
+    .mat-mdc-floating-label {
+      color: var(--primary-color);
+    }
+    
+    .mdc-notched-outline {
+      border-color: var(--primary-color);
+      border-width: 2px;
+    }
+  }
+  
+  // Error state
+  &.mat-form-field-invalid {
+    .mat-mdc-floating-label {
+      color: var(--error-color);
+    }
+    
+    .mdc-notched-outline {
+      border-color: var(--error-color);
+    }
+  }
+  
+  // Mobile optimizations
+  @media (max-width: 480px) {
+    .mat-mdc-form-field-infix {
+      padding: 14px 0;
+    }
+    
+    input, textarea {
+      font-size: 16px !important; // Prevent zoom on iOS
+    }
+  }
+}
+
+/* Material Select Customizations */
+.mat-mdc-select {
+  .mat-mdc-select-trigger {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .mat-mdc-select-value {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+  
+  .mat-mdc-select-placeholder {
+    color: var(--text-secondary);
+  }
+  
+  .mat-mdc-select-arrow {
+    color: var(--text-secondary);
+  }
+}
+
+.mat-mdc-select-panel {
+  background: var(--surface-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px var(--shadow-strong);
+  
+  .mat-mdc-option {
+    min-height: 44px;
+    padding: 0 16px;
+    
+    &:hover {
+      background-color: var(--surface-hover);
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: var(--primary-50);
+      color: var(--primary-color);
+    }
+  }
+}
+
+/* Material Slide Toggle Customizations */
+.mat-mdc-slide-toggle {
+  .mdc-switch {
+    --mdc-switch-selected-track-color: var(--primary-color);
+    --mdc-switch-selected-handle-color: var(--primary-color);
+    --mdc-switch-selected-hover-track-color: var(--primary-dark);
+    --mdc-switch-selected-hover-handle-color: var(--primary-dark);
+    --mdc-switch-selected-pressed-track-color: var(--primary-dark);
+    --mdc-switch-selected-pressed-handle-color: var(--primary-dark);
+    --mdc-switch-unselected-track-color: var(--border-color);
+    --mdc-switch-unselected-handle-color: var(--text-secondary);
+  }
+  
+  .mdc-form-field {
+    gap: 12px;
+  }
+  
+  // Touch-friendly sizing
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Material Checkbox Customizations */
+.mat-mdc-checkbox {
+  .mdc-checkbox {
+    --mdc-checkbox-selected-checkmark-color: white;
+    --mdc-checkbox-selected-focus-icon-color: var(--primary-color);
+    --mdc-checkbox-selected-hover-icon-color: var(--primary-dark);
+    --mdc-checkbox-selected-icon-color: var(--primary-color);
+    --mdc-checkbox-selected-pressed-icon-color: var(--primary-dark);
+    --mdc-checkbox-unselected-focus-icon-color: var(--text-secondary);
+    --mdc-checkbox-unselected-hover-icon-color: var(--text-primary);
+    --mdc-checkbox-unselected-icon-color: var(--text-secondary);
+    --mdc-checkbox-unselected-pressed-icon-color: var(--text-primary);
+  }
+  
+  .mdc-form-field {
+    gap: 12px;
+  }
+  
+  // Touch-friendly sizing
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Material Radio Button Customizations */
+.mat-mdc-radio-button {
+  .mdc-radio {
+    --mdc-radio-selected-focus-icon-color: var(--primary-color);
+    --mdc-radio-selected-hover-icon-color: var(--primary-dark);
+    --mdc-radio-selected-icon-color: var(--primary-color);
+    --mdc-radio-selected-pressed-icon-color: var(--primary-dark);
+    --mdc-radio-unselected-focus-icon-color: var(--text-secondary);
+    --mdc-radio-unselected-hover-icon-color: var(--text-primary);
+    --mdc-radio-unselected-icon-color: var(--text-secondary);
+    --mdc-radio-unselected-pressed-icon-color: var(--text-primary);
+  }
+  
+  .mdc-form-field {
+    gap: 12px;
+  }
+  
+  // Touch-friendly sizing
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Material Button Customizations */
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+  .mdc-button__label {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+  }
+  
+  // Ensure proper spacing for icons
+  .mat-icon {
+    margin-right: 8px;
+    margin-left: -4px;
+    
+    &:last-child {
+      margin-right: -4px;
+      margin-left: 8px;
+    }
+    
+    &:only-child {
+      margin: 0;
+    }
+  }
+}
+
+/* Material Chip Customizations */
+.mat-mdc-chip-set {
+  .mat-mdc-chip {
+    .mdc-evolution-chip__action--primary {
+      --mdc-chip-label-text-color: var(--text-primary);
+      --mdc-chip-outline-color: var(--border-color);
+    }
+    
+    &.mat-mdc-chip-selected {
+      .mdc-evolution-chip__action--primary {
+        --mdc-chip-label-text-color: var(--primary-color);
+        --mdc-chip-outline-color: var(--primary-color);
+        background-color: var(--primary-50);
+      }
+    }
+    
+    // Touch-friendly sizing
+    min-height: 36px;
+    
+    @media (max-width: 480px) {
+      min-height: 40px;
+    }
+  }
+}
+
+/* Material Dialog Customizations */
+.mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    background-color: var(--surface-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 32px var(--shadow-strong);
+  }
+  
+  .mat-mdc-dialog-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .mat-mdc-dialog-content {
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  
+  .mat-mdc-dialog-actions {
+    padding: 1rem;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      
+      .mat-mdc-button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* Material Snackbar Customizations */
+.mat-mdc-snack-bar-container {
+  .mdc-snackbar__surface {
+    background-color: var(--surface-dark);
+    color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 24px var(--shadow-strong);
+  }
+  
+  .mat-mdc-snack-bar-action {
+    .mat-mdc-button {
+      .mdc-button__label {
+        color: var(--primary-200);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+/* Material Toolbar Customizations */
+.mat-toolbar {
+  background-color: var(--primary-color);
+  color: white;
+  
+  .mat-toolbar-row {
+    padding: 0 1rem;
+    
+    @media (max-width: 480px) {
+      padding: 0 0.75rem;
+    }
+  }
+  
+  .mat-icon-button {
+    .mat-icon {
+      color: white;
+    }
+  }
+}
+
+/* Material Sidenav Customizations */
+.mat-drawer {
+  background-color: var(--surface-color);
+  border-right: 1px solid var(--border-color);
+  
+  .mat-nav-list {
+    .mat-list-item {
+      .mat-list-item-content {
+        padding: 0 1rem;
+        min-height: 48px;
+      }
+      
+      &:hover {
+        background-color: var(--surface-hover);
+      }
+      
+      &.active {
+        background-color: var(--primary-50);
+        color: var(--primary-color);
+        
+        .mat-icon {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+
+/* Material Card Customizations */
+.mat-mdc-card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px var(--shadow-light);
+  
+  .mat-mdc-card-header {
+    .mat-mdc-card-title {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    
+    .mat-mdc-card-subtitle {
+      color: var(--text-secondary);
+    }
+  }
+  
+  .mat-mdc-card-content {
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  
+  .mat-mdc-card-actions {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+}
+
+/* Material Progress Bar Customizations */
+.mat-mdc-progress-bar {
+  .mdc-linear-progress__bar-inner {
+    border-color: var(--primary-color);
+  }
+  
+  .mdc-linear-progress__buffer-bar {
+    background-color: var(--primary-100);
+  }
+}
+
+/* Material Progress Spinner Customizations */
+.mat-mdc-progress-spinner {
+  .mdc-circular-progress__determinate-circle,
+  .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: var(--primary-color);
+  }
+}
+
+/* Material Tab Customizations */
+.mat-mdc-tab-group {
+  .mat-mdc-tab-header {
+    border-bottom: 1px solid var(--border-color);
+    
+    .mat-mdc-tab {
+      .mdc-tab__text-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+      
+      &.mdc-tab--active {
+        .mdc-tab__text-label {
+          color: var(--primary-color);
+        }
+      }
+    }
+    
+    .mat-mdc-tab-ink-bar {
+      background-color: var(--primary-color);
+    }
+  }
+  
+  .mat-mdc-tab-body-content {
+    padding: 1rem 0;
+  }
+}
+
+/* Material Menu Customizations */
+.mat-mdc-menu-panel {
+  background-color: var(--surface-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px var(--shadow-strong);
+  border: 1px solid var(--border-color);
+  
+  .mat-mdc-menu-item {
+    min-height: 44px;
+    
+    &:hover {
+      background-color: var(--surface-hover);
+    }
+    
+    .mat-icon {
+      color: var(--text-secondary);
+      margin-right: 12px;
+    }
+  }
+}
+
+/* Material Tooltip Customizations */
+.mat-mdc-tooltip {
+  background-color: var(--surface-dark);
+  color: white;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+}

@@ -1,0 +1,164 @@
+/* ==============================================
+   LAYOUT SYSTEM
+   ============================================== */
+
+/* Container System - Mobile First */
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem;
+  
+  @media (min-width: 768px) {
+    padding: 1rem;
+    max-width: 1200px;
+  }
+  
+  @media (min-width: 1024px) {
+    padding: 1.5rem;
+  }
+}
+
+/* Flexbox Layout Utilities */
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+/* Spacing Utilities */
+.gap-xs { gap: 0.25rem; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 0.75rem; }
+.gap-lg { gap: 1rem; }
+.gap-xl { gap: 1.5rem; }
+
+/* Margin Utilities */
+.m-0 { margin: 0; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.ml-0 { margin-left: 0; }
+.mr-0 { margin-right: 0; }
+.mx-0 { margin-left: 0; margin-right: 0; }
+.my-0 { margin-top: 0; margin-bottom: 0; }
+
+.margin-right {
+  margin-right: 1rem;
+  
+  @media (max-width: 768px) {
+    margin-right: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-right: 0.25rem;
+  }
+}
+
+/* Padding Utilities */
+.p-0 { padding: 0; }
+.pt-0 { padding-top: 0; }
+.pb-0 { padding-bottom: 0; }
+.pl-0 { padding-left: 0; }
+.pr-0 { padding-right: 0; }
+.px-0 { padding-left: 0; padding-right: 0; }
+.py-0 { padding-top: 0; padding-bottom: 0; }
+
+/* Width and Height Utilities */
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-fit { width: fit-content; }
+
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-fit { height: fit-content; }
+
+/* Responsive Visibility Utilities */
+.mobile-only {
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.desktop-only {
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+.tablet-up {
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+/* Legacy Field Width System (for backward compatibility) */
+.field-full-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-fullish-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-halfish-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-half-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-third-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-quarter-width {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.field-right {
+  margin-left: auto;
+  margin-bottom: 0.75rem;
+}
+
+/* Tablet and Desktop Field Widths */
+@media (min-width: 768px) {
+  .field-fullish-width {
+    width: 80%;
+  }
+  
+  .field-halfish-width {
+    width: 60%;
+  }
+  
+  .field-half-width {
+    width: 50%;
+  }
+  
+  .field-third-width {
+    width: 40%;
+    margin-right: 1rem;
+  }
+  
+  .field-quarter-width {
+    width: 30%;
+    margin-right: 0.5rem;
+  }
+  
+  .field-right {
+    margin-left: auto;
+    margin-right: 0.5rem;
+  }
+}

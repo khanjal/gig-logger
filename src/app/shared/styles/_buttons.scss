@@ -1,0 +1,321 @@
+/* ==============================================
+   BUTTON STYLES AND UTILITIES
+   ============================================== */
+
+/* Button Base Styles */
+button, .btn {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  min-height: 44px; // Touch-friendly minimum
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  &:focus {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+  
+  @media (max-width: 480px) {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}
+
+/* Material Button Enhancements */
+button[mat-button], 
+button[mat-raised-button], 
+button[mat-stroked-button],
+button[mat-flat-button],
+button[mat-fab],
+button[mat-mini-fab] {
+  min-height: 44px;
+  
+  @media (max-width: 480px) {
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}
+
+/* Button Icon Spacing */
+.mat-button-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+}
+
+/* Custom Button Variants */
+.btn {
+  &--primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px var(--shadow-medium);
+    }
+  }
+  
+  &--secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--primary-color);
+      color: white;
+    }
+  }
+  
+  &--success {
+    background-color: var(--success-color);
+    color: white;
+    border: 1px solid var(--success-color);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--success-dark);
+      border-color: var(--success-dark);
+    }
+  }
+  
+  &--warning {
+    background-color: var(--warn-color);
+    color: white;
+    border: 1px solid var(--warn-color);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--warn-dark);
+      border-color: var(--warn-dark);
+    }
+  }
+  
+  &--danger {
+    background-color: var(--error-color);
+    color: white;
+    border: 1px solid var(--error-color);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--error-dark);
+      border-color: var(--error-dark);
+    }
+  }
+}
+
+/* Button Size Variants */
+.btn {
+  &--small {
+    min-height: 32px;
+    padding: 0 12px;
+    font-size: 0.75rem;
+    
+    .mat-button-wrapper mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  &--large {
+    min-height: 56px;
+    padding: 0 24px;
+    font-size: 1rem;
+    
+    .mat-button-wrapper mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  &--full-width {
+    width: 100%;
+  }
+  
+  &--icon-only {
+    min-width: 44px;
+    width: 44px;
+    padding: 0;
+    
+    .mat-button-wrapper {
+      gap: 0;
+    }
+  }
+}
+
+/* Button Groups */
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+  
+  &--vertical {
+    flex-direction: column;
+  }
+  
+  &--center {
+    justify-content: center;
+  }
+  
+  &--end {
+    justify-content: flex-end;
+  }
+  
+  &--space-between {
+    justify-content: space-between;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    
+    &--mobile-stack {
+      flex-direction: column;
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* Floating Action Button Enhancements */
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  box-shadow: 0 4px 12px var(--shadow-medium);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--shadow-strong);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Button Loading State */
+.btn--loading {
+  position: relative;
+  color: transparent !important;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    color: inherit;
+  }
+}
+
+/* Toggle Button Styles */
+.toggle-button {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  
+  &--active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+  }
+  
+  &:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    
+    &.toggle-button--active {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: white;
+    }
+  }
+}
+
+/* Chip/Tag Button Styles */
+.chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 32px;
+  
+  &:hover {
+    background-color: var(--surface-hover);
+    border-color: var(--primary-color);
+  }
+  
+  &--selected {
+    background-color: var(--primary-100);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+  
+  &--removable {
+    padding-right: 0.5rem;
+    
+    .remove-icon {
+      cursor: pointer;
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* Animation Keyframes */
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Button Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  button, .btn {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (prefers-contrast: high) {
+  button, .btn {
+    border-width: 2px;
+  }
+}
