@@ -44,7 +44,7 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
-import { MatFabButton, MatAnchor, MatButton } from '@angular/material/button';
+import { MatFabButton, MatAnchor, MatButton, MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
@@ -59,7 +59,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatSuffix, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatAnchor, NgClass, TripsTableBasicComponent, NgxMatTimepickerDirective, NgxMatTimepickerComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatMiniFabButton, MatSuffix, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatAnchor, NgClass, TripsTableBasicComponent, NgxMatTimepickerDirective, NgxMatTimepickerComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent]
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
