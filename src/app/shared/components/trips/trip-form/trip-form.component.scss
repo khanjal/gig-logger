@@ -353,6 +353,34 @@ cdk-virtual-scroll-viewport {
     }
 }
 
+// Specific styling for odometer fields - ensure half width on all screen sizes
+.form-row--halves {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem;
+    align-items: center;
+    
+    .form-field,
+    mat-form-field {
+        flex: 1 !important;
+        width: calc(50% - 0.25rem) !important;
+        max-width: calc(50% - 0.25rem) !important;
+        min-width: 0 !important;
+    }
+    
+    @media (max-width: 480px) {
+        gap: 0.375rem;
+        
+        .form-field,
+        mat-form-field {
+            flex: 1 !important;
+            width: calc(50% - 0.1875rem) !important;
+            max-width: calc(50% - 0.1875rem) !important;
+        }
+    }
+}
+
 // Mobile responsive form field behavior
 @media (max-width: 768px) {
     // All form fields should be full width on mobile unless they're in specific multi-field rows
@@ -421,16 +449,24 @@ cdk-virtual-scroll-viewport {
             min-width: 0;
         }
     }
-    
-    // Halves layout - two fields side by side on mobile
+      // Halves layout - two fields side by side on mobile
     .form-row--halves {
         display: flex;
         gap: 0.5rem;
+        flex-wrap: nowrap !important; // Ensure fields stay on same row
         
         .form-field {
-            flex: 1;
-            width: calc(50% - 0.25rem);
-            max-width: calc(50% - 0.25rem);
+            flex: 1 !important;
+            width: calc(50% - 0.25rem) !important;
+            max-width: calc(50% - 0.25rem) !important;
+            min-width: 0; // Prevent overflow
+        }
+        
+        mat-form-field {
+            flex: 1 !important;
+            width: calc(50% - 0.25rem) !important;
+            max-width: calc(50% - 0.25rem) !important;
+            min-width: 0; // Prevent overflow
         }
     }
     
