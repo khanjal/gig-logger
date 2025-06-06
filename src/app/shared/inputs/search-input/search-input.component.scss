@@ -1,6 +1,17 @@
 // Mobile-First Search Input Component Styles
 @import "color-vars";
 
+// Host element styling to ensure proper width inheritance
+:host {
+  display: block;
+  width: 100%;
+  
+  &.field-full-width {
+    width: 100% !important;
+    flex: 1 !important;
+  }
+}
+
 // Search Input Container - Mobile First
 .search-input-container {
   display: flex;
