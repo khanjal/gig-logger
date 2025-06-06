@@ -284,4 +284,40 @@
     }
   }
 }
+
+// Container for positioning current average relative to trip form
+.trip-form-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+// Current average overlay positioned next to form title
+.current-average-overlay {
+  position: absolute;
+  top: 1.5rem; // Align with form header margin
+  right: 0;
+  z-index: 10;
   
+  @media (max-width: 768px) {
+    top: 1.25rem;
+    right: 0.5rem;
+  }
+    @media (max-width: 480px) {
+    display: none; // Hide on very small screens to save space
+  }
+}
+
+// Ensure trip form doesn't overlap with current average
+::ng-deep .trip-form-container trip-form .form-header {
+  padding-right: 200px; // Space for current average component
+  
+  @media (max-width: 768px) {
+    padding-right: 180px;
+  }
+  
+  @media (max-width: 480px) {
+    padding-right: 0; // No padding when hidden
+  }
+}
+

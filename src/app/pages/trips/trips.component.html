@@ -1,7 +1,8 @@
 <div class="container" id="addTrip">
-    <div><app-current-average class="field-right"></app-current-average></div>
-    
-    <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    <div class="trip-form-container">
+        <app-current-average class="current-average-overlay"></app-current-average>
+        <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    </div>
 
     @if (unsavedData && !pollingEnabled) {
         <div class="row-grid">
