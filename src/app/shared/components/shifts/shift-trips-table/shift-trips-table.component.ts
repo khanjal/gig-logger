@@ -4,7 +4,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { NgClass, CurrencyPipe } from '@angular/common';
 import { TripService } from '@services/sheets/trip.service';
-import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
+import { ShiftTripsQuickViewComponent } from '@components/shifts/shift-trips-quick-view/shift-trips-quick-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCard } from '@angular/material/card';
 import { MatMiniFabButton } from '@angular/material/button';

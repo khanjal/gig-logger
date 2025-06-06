@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
-import { TripsQuickViewComponent } from '../trips-quick-view/trips-quick-view.component';
+import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 
 @Component({
     selector: 'app-shift-trips-quick-view',

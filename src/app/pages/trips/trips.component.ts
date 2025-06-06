@@ -18,18 +18,18 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { LoggerService } from '@services/logger.service';
 
-import { CurrentAverageComponent } from '@components/current-average/current-average.component';
-import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { TripFormComponent } from '@components/trip-form/trip-form.component';
-import { TripsTableGroupComponent } from '@components/trips-table-group/trips-table-group.component';
-import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
+import { CurrentAverageComponent } from '@components/analysis/current-average/current-average.component';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
+import { TripFormComponent } from '@components/trips/trip-form/trip-form.component';
+import { TripsTableGroupComponent } from '@components/trips/trips-table-group/trips-table-group.component';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
 import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
 import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { TripsQuickViewComponent } from '@components/trips-quick-view/trips-quick-view.component';
+import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { TruncatePipe } from "@pipes/truncate.pipe";
 
