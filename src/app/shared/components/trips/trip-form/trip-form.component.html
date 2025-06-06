@@ -301,25 +301,23 @@
                 </mat-slide-toggle>
             </div>
         </div>
-    </form>
-
-    <!-- Form Actions -->
+    </form>    <!-- Form Actions -->
     <div class="form-actions">
         <div class="form-actions__row" *ngIf="!data?.id">
-            <button mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid">
-                <mat-icon>add</mat-icon> Store
-            </button>
             <button mat-fab extended color="warn" (click)="formReset()">
                 <mat-icon>refresh</mat-icon> Reset
+            </button>
+            <button mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid">
+                <mat-icon>add</mat-icon> Store
             </button>
         </div>
         
         <div class="form-actions__row" *ngIf="data?.id">
-            <button mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
-                <mat-icon>save</mat-icon> Update
-            </button>
             <button mat-fab extended color="warn" (click)="close()">
                 <mat-icon>cancel</mat-icon> Cancel
+            </button>
+            <button mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
+                <mat-icon>save</mat-icon> Update
             </button>
         </div>
     </div>
