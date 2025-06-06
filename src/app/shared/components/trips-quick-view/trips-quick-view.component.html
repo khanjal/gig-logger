@@ -5,8 +5,7 @@
   'trip-card--add': !trip.saved && trip.action === 'ADD',
   'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
   'trip-card--delete': !trip.saved && trip.action === 'DELETE'
-}">    <!-- Trip Header -->  <div class="trip-header">
-    <div class="trip-header__main">
+}">    <!-- Trip Header -->  <div class="trip-header">    <div class="trip-header__main">
       <div class="trip-id">
         <span class="trip-number">#{{trip.rowId}}</span>
         <span class="trip-date">{{trip.date | date:'MMM d'}}</span>
@@ -49,31 +48,25 @@
           'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
           'efficiency--poor': trip.amountPerTime < 20
         }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
+      </div>    </div>
+      <!-- Combined place and toggle bar -->
+    <div class="trip-header__bottom">
+      <div class="place-info" *ngIf="trip.place">
+        <mat-icon class="place-icon">place</mat-icon>
+        <span class="place-text">{{trip.place | truncate:30}}</span>
       </div>
-    </div>
-      <!-- Minimized View: Show only place information since time/total are now in secondary row -->
-    <div class="trip-header__minimized" *ngIf="!isExpanded">
-      <div class="minimized-info">
-        <div class="minimized-bottom-row" *ngIf="trip.place">
-          <div class="minimized-place">
-            <mat-icon class="place-icon">place</mat-icon>
-            {{trip.place | truncate:35}}
-          </div>
+      
+      <div class="trip-header__toggle-bar" 
+           (click)="toggleExpansion()" 
+           [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
+           role="button"
+           tabindex="0"
+           (keydown.enter)="toggleExpansion()"
+           (keydown.space)="toggleExpansion()">
+        <div class="toggle-bar__content">
+          <span class="toggle-bar__text">{{isExpanded ? 'Less' : 'More'}}</span>
+          <mat-icon class="toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         </div>
-      </div>
-    </div>
-    
-    <!-- Slim toggle bar -->
-    <div class="trip-header__toggle-bar" 
-         (click)="toggleExpansion()" 
-         [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
-         role="button"
-         tabindex="0"
-         (keydown.enter)="toggleExpansion()"
-         (keydown.space)="toggleExpansion()">
-      <div class="toggle-bar__content">
-        <span class="toggle-bar__text">{{isExpanded ? 'Less Details' : 'More Details'}}</span>
-        <mat-icon class="toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
       </div>
     </div>
   </div>
@@ -284,9 +277,9 @@
     </button>
     
     <mat-menu #menu="matMenu" class="trip-menu">
-      <button mat-menu-item (click)="nextUnsavedTrip()" class="menu-item">
+      <button mat-menu-item (click)="nextStopTrip()" class="menu-item">
         <mat-icon>pin_drop</mat-icon>
-        <span>Next Unsaved</span>
+        <span>Next Stop</span>
       </button>
       <button mat-menu-item (click)="cloneUnsavedTrip()" class="menu-item">
         <mat-icon>content_copy</mat-icon>

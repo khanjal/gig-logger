@@ -90,7 +90,7 @@ export class TripsQuickViewComponent implements OnInit {
    this.scrollToTodaysTrips.emit();
   }
 
-  async nextUnsavedTrip() {
+  async nextStopTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
     this._snackBar.open("Added Next Trip");
