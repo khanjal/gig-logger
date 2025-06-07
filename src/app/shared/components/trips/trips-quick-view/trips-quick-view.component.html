@@ -50,12 +50,11 @@
         }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
       </div>
     </div>
-    
-      <!-- Combined place and toggle bar -->
+        <!-- Combined place and toggle bar -->
     <div class="trip-header__bottom">
       <div class="place-info" *ngIf="trip.place">
-        <mat-icon class="place-icon">place</mat-icon>
-        <span class="place-text">{{trip.place | truncate:30}}</span>
+        <mat-icon class="info-badge__icon">place</mat-icon>
+        <span class="info-badge__text">{{trip.place | truncate:30}}</span>
       </div>
       
       <div class="trip-header__toggle-bar" 
