@@ -80,7 +80,8 @@
         <mat-icon class="info-icon">schedule</mat-icon>
         <h4>{{ trip.type === "" ? "Time" : trip.type }}</h4>
       </div>
-      <div class="info-card__content">        <div class="time-display">
+      <div class="info-card__content">
+        <div class="time-display">
           <span class="pickup-time">
             {{trip.pickupTime | noseconds}}
           </span>
