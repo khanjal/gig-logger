@@ -975,6 +975,10 @@ mat-card-actions {
 
 .stats-display__icon {
   font-size: 1rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
   
   @media (max-width: 480px) {
     font-size: 0.875rem;
@@ -983,6 +987,16 @@ mat-card-actions {
   @media (min-width: 768px) {
     font-size: 1.25rem;
   }
+}
+
+/* Material Icon Centering in Stats Display */
+.stats-display mat-icon,
+.stats-display__icon mat-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
 }
 
 .stats-display__content {
