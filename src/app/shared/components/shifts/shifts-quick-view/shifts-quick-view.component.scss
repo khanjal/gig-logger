@@ -1,365 +1,123 @@
-// Mobile-First Shifts Quick View Component Styles
+﻿// Mobile-First Shifts Quick View Component Styles
 @import "color-vars";
+@import "../../../styles/components";
 
-// Shifts Quick View Container - Mobile First
-.shifts-quick-view {
+/* ========================================
+   SECTION CONTAINER STYLES
+   ======================================== */
+
+.section-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 1rem 0;
   padding: 1rem;
-  background: $background-color;
-  
-  @media (min-width: 768px) {
-    padding: 1.5rem;
-  }
-  
-  @media (min-width: 1024px) {
-    padding: 2rem;
-  }
-}
-
-// Shift Card Container - Enhanced styling similar to trip cards
-.shift-card {
-  background: $surface-color;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
+  background: $surface-secondary;
+  border-radius: 0.75rem;
   border: 1px solid $border-light;
+  transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 4px 16px $shadow-medium, 0 2px 8px $shadow-heavy;
-    transform: translateY(-2px);
+    background: $surface-color;
+    box-shadow: 0 2px 8px $shadow-light;
   }
   
-  &.shift-active {
-    border-left: 4px solid $success-color;
-    background: linear-gradient(135deg, $success-50 0%, $surface-color 100%);
+  &:first-child {
+    margin-top: 0;
   }
   
-  &.shift-completed {
-    border-left: 4px solid $primary-color;
-  }
-  
-  &.shift-upcoming {
-    border-left: 4px solid $info-color;
-  }
-  
-  mat-card {
-    background-color: transparent;
-    box-shadow: none;
-    margin: 0;
-    
-    mat-card-header {
-      padding: 1rem;
-      border-bottom: 1px solid $border-light;
-      background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
-      
-      @media (min-width: 768px) {
-        padding: 1.5rem;
-      }
-      
-      mat-card-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: $text-primary;
-        margin: 0;
-        
-        @media (min-width: 768px) {
-          font-size: 1.25rem;
-        }
-      }
-      
-      mat-card-subtitle {
-        font-size: 0.875rem;
-        color: $text-secondary;
-        margin-top: 0.25rem;
-        
-        @media (min-width: 768px) {
-          font-size: 1rem;
-        }
-      }
-    }
-    
-    mat-card-content {
-      padding: 1rem;
-      
-      @media (min-width: 768px) {
-        padding: 1.5rem;
-      }
-    }
-    
-    mat-card-actions {
-      padding: 1rem;
-      margin: 0;
-      border-top: 1px solid $border-light;
-      background: $surface-secondary;
-      
-      @media (min-width: 768px) {
-        padding: 1.5rem;
-      }
-    }
-  }
-}
-
-// Header Section
-.shift-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  
-  h3 {
-    margin: 0;
-    padding: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: $text-primary;
-    
-    @media (min-width: 768px) {
-      font-size: 1.5rem;
-    }
-  }
-}
-
-// Button Bar
-.button-bar {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  
-  @media (min-width: 480px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  &:last-child {
+    margin-bottom: 0;
   }
   
   @media (min-width: 768px) {
-    padding: 1.5rem;
-    gap: 1rem;
-  }
-  
-  .button-group {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    
-    @media (min-width: 768px) {
-      gap: 0.75rem;
-    }
-  }
-  
-  button {
-    min-height: 44px;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease-in-out;
-    
-    &.mat-primary {
-      background: linear-gradient(135deg, $primary-color 0%, $primary-700 100%);
-      color: white;
-      border: none;
-      
-      &:hover {
-        box-shadow: 0 4px 12px rgba($primary-color, 0.3);
-        transform: translateY(-1px);
-      }
-    }
-    
-    &.mat-accent {
-      background: linear-gradient(135deg, $accent-color 0%, $accent-700 100%);
-      color: white;
-      border: none;
-      
-      &:hover {
-        box-shadow: 0 4px 12px rgba($accent-color, 0.3);
-        transform: translateY(-1px);
-      }
-    }
-    
-    &.mat-warn {
-      background: linear-gradient(135deg, $danger-color 0%, $danger-700 100%);
-      color: white;
-      border: none;
-      
-      &:hover {
-        box-shadow: 0 4px 12px rgba($danger-color, 0.3);
-        transform: translateY(-1px);
-      }
-    }
-    
-    @media (min-width: 768px) {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-    }
+    gap: 1.25rem;
+    padding: 1.25rem;
   }
 }
 
-// Status Colors
-.primary {
-  color: $primary-color;
-}
-
-.warn {
-  color: $danger-color;
-}
-
-.success {
-  color: $success-color;
-}
-
-.info {
-  color: $info-color;
-}
-
-// Icon Display
 .icon-display {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0.5rem;
+  background: linear-gradient(135deg, $primary-color, $secondary-color);
   color: white;
-  font-weight: 600;
-  
-  &.primary {
-    background: $primary-color;
-  }
-  
-  &.success {
-    background: $success-color;
-  }
-  
-  &.warn {
-    background: $danger-color;
-  }
-  
-  &.info {
-    background: $info-color;
-  }
-  
-  mat-icon {
-    font-size: 1.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
-  }
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba($primary-color, 0.3);
+  font-size: 1.25rem !important;
+  flex-shrink: 0;
   
   @media (min-width: 768px) {
-    width: 4rem;
-    height: 4rem;
-    
-    mat-icon {
-      font-size: 2rem;
-      width: 2rem;
-      height: 2rem;
-    }
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem !important;
   }
 }
 
-// Section Container
-.section-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+.section-content {
+  flex: 1;
   
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 1.5rem;
+  div {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
   
-  .section-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: $surface-secondary;
-    border-radius: 0.5rem;
-    border: 1px solid $border-light;
-    
-    @media (min-width: 768px) {
-      padding: 1rem;
-    }
-    
-    .section-icon {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: $primary-100;
-      color: $primary-color;
-      
-      mat-icon {
-        font-size: 1rem;
-        width: 1rem;
-        height: 1rem;
-      }
-    }
-    
-    .section-content {
-      flex: 1;
-      
-      .section-label {
-        font-size: 0.75rem;
-        color: $text-tertiary;
-        text-transform: uppercase;
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-      }
-      
-      .section-value {
-        font-size: 0.875rem;
-        color: $text-primary;
-        font-weight: 500;
-        
-        @media (min-width: 768px) {
-          font-size: 1rem;
-        }
-      }
-    }
+  strong {
+    color: $text-primary;
+    font-weight: 600;
+    margin-right: 0.5rem;
   }
 }
 
-// Payment Grid Layout for Shifts
+/* ========================================
+   PAYMENT GRID STYLES
+   ======================================== */
+
 .payment-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  margin-top: 0.75rem;
   
   .payment-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.75rem;
-    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
     
-    .detail-item {
-      flex: 1;
-      min-width: 120px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
     }
   }
 }
 
-// Shift Note Styling
+/* ========================================
+   SHIFT NOTE STYLES
+   ======================================== */
+
 .shift-note {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  background: $info-50;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, $info-50, rgba($info-color, 0.05));
   border: 1px solid $info-100;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
   
   .note-icon {
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
     color: $info-color;
+    font-size: 1.25rem !important;
+    width: 1.25rem;
+    height: 1.25rem;
     margin-top: 0.125rem;
     flex-shrink: 0;
   }
@@ -367,143 +125,46 @@
   .note-text {
     font-style: italic;
     color: $text-primary;
-    line-height: 1.4;
+    line-height: 1.5;
+    flex: 1;
   }
 }
 
-// Spacing Utilities
-.padding-left {
-  padding-left: 0.5rem;
-  
-  @media (min-width: 768px) {
-    padding-left: 1rem;
-  }
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.primary {
+  color: $primary-color !important;
 }
 
-.padding-right {
-  padding-right: 0.5rem;
-  
-  @media (min-width: 768px) {
-    padding-right: 1rem;
-  }
+.warn {
+  color: $danger-color !important;
 }
 
-// Shift Statistics
-.shift-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin: 1rem 0;
-  
-  @media (min-width: 480px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-  }
-  
-  .stat-item {
-    text-align: center;
-    padding: 1rem;
-    background: $surface-color;
-    border-radius: 0.75rem;
-    border: 1px solid $border-light;
-    box-shadow: 0 1px 3px $shadow-light;
-    
-    .stat-value {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: $primary-color;
-      margin-bottom: 0.25rem;
-      
-      @media (min-width: 768px) {
-        font-size: 1.5rem;
-      }
-    }
-    
-    .stat-label {
-      font-size: 0.75rem;
-      color: $text-secondary;
-      text-transform: uppercase;
-      font-weight: 500;
-      
-      @media (min-width: 768px) {
-        font-size: 0.875rem;
-      }
-    }
-  }
+.success {
+  color: $success-color !important;
 }
 
-// Empty State
-.empty-shifts {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: $text-secondary;
-  
-  mat-icon {
-    font-size: 3rem;
-    width: 3rem;
-    height: 3rem;
-    color: $text-tertiary;
-    margin-bottom: 1rem;
-  }
-  
-  h3 {
-    font-size: 1.125rem;
-    color: $text-primary;
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    font-size: 0.875rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  @media (min-width: 768px) {
-    padding: 4rem 2rem;
-    
-    mat-icon {
-      font-size: 4rem;
-      width: 4rem;
-      height: 4rem;
-    }
-    
-    h3 {
-      font-size: 1.25rem;
-    }
-    
-    p {
-      font-size: 1rem;
-    }
-  }
+.info {
+  color: $info-color !important;
 }
 
-// Accessibility Enhancements
-button:focus {
-  outline: 2px solid $primary-color;
-  outline-offset: 2px;
+.strike {
+  text-decoration: line-through;
+  opacity: 0.7;
 }
 
-// Loading State
-.loading-shifts {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  
-  .loading-spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid $border-color;
-    border-top: 3px solid $primary-color;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+.rainbow-text-animated {
+  background: linear-gradient(45deg, $primary-color, $secondary-color, $accent-color, $success-color);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 2s ease-in-out infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
