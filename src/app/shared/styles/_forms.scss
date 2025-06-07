@@ -45,7 +45,7 @@
     margin: 0;
     font-size: 1.5rem;
     font-weight: 500;
-    color: $primary-color;
+    color: var(--primary-color);
     
     @media (max-width: 768px) {
       font-size: 1.25rem;
@@ -74,17 +74,11 @@
   }
   
   @media (max-width: 480px) {
+    flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
     min-height: 44px;
-    align-items: center;
-    
-    // Keep form fields in row layout on mobile for better space usage
-    &:not(.form-row--halves) {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    align-items: stretch;
   }
   
   // Ensure all child form fields align properly
@@ -97,16 +91,11 @@
   }
   
   // Better alignment for mixed content (fields + buttons)
-  > .toggle-button,
-  > button[mat-mini-fab] {
-    align-self: center;
-    flex-shrink: 0;
-    min-width: 44px;
-    min-height: 44px;
-    
-    @media (min-width: 769px) {
-      min-width: 48px;
-      min-height: 48px;
+  &.form-row--with-button,
+  &.form-row--with-buttons,
+  &.form-row--with-toggle {
+    > * {
+      align-self: center;
     }
   }
 }
@@ -119,8 +108,7 @@
   
   @media (max-width: 480px) {
     .form-field {
-      flex: 1;
-      min-width: calc(50% - 0.25rem);
+      flex: none;
     }
   }
 }
@@ -164,6 +152,123 @@
         min-width: 70px;
       }
     }
+  }
+}
+
+.form-row--with-button {
+  align-items: center;
+  
+  .form-field {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+  
+  .toggle-button {
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+    align-self: center;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (min-width: 769px) {
+      min-width: 48px;
+      min-height: 48px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+    min-height: 44px;
+    
+    .toggle-button {
+      margin-left: 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    
+    .form-field {
+      flex: 1;
+      width: auto;
+      margin-bottom: 0;
+    }
+    
+    .toggle-button {
+      margin: 0;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.form-row--with-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  min-height: 48px;
+  
+  .form-field {
+    margin: 0;
+    align-self: center;
+    
+    &.form-field--third {
+      flex: 1;
+      max-width: none;
+      
+      @media (max-width: 768px) {
+        flex: 1;
+        max-width: none;
+      }
+      
+      @media (max-width: 480px) {
+        flex: 1;
+        max-width: none;
+      }
+    }
+    
+    &.form-field--thirty {
+      flex: 0 0 30%;
+      max-width: 30%;
+      
+      @media (max-width: 768px) {
+        flex: 0 0 30%;
+        max-width: 30%;
+      }
+      
+      @media (max-width: 480px) {
+        flex: 0 0 32%;
+        max-width: 32%;
+      }
+    }
+  }
+  
+  .toggle-button {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    
+    @media (min-width: 769px) {
+      min-width: 48px;
+      min-height: 48px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    min-height: 44px;
+    gap: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.375rem;
+    min-height: 44px;
   }
 }
 
@@ -268,6 +373,36 @@
     @media (max-width: 480px) {
       flex: 0 0 25%;
       max-width: 25%;
+    }
+  }
+  
+  &--thirty {
+    flex: 0 0 30%;
+    max-width: 30%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+  }
+  
+  &--three-quarters {
+    flex: 0 0 75%;
+    max-width: 75%;
+    
+    @media (max-width: 768px) {
+      flex: 0 0 70%;
+      max-width: 70%;
+    }
+    
+    @media (max-width: 480px) {
+      flex: 0 0 100%;
+      max-width: 100%;
     }
   }
 }

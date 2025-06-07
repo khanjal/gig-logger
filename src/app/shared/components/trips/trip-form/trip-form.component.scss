@@ -1,6 +1,4 @@
 @import "color-vars";
-@import "forms";
-@import "buttons";
 
 // Mobile-first trip form with PWA-optimized touch targets
 .trip-form {
@@ -162,6 +160,21 @@ cdk-virtual-scroll-viewport {
 }
 
 // Component-specific styling that extends global utilities
+.form-header {
+    margin-bottom: 1.5rem;
+    
+    h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--primary-color);
+        
+        @media (max-width: 768px) {
+            font-size: 1.25rem;
+        }
+    }
+}
+
 .form-section {
     margin-bottom: 1.5rem;
     
@@ -174,233 +187,58 @@ cdk-virtual-scroll-viewport {
     }
 }
 
-// Enhanced payment form row styling
-.form-row {
-    // Improved button integration for payment row
-    .toggle-button {
-        flex-shrink: 0;
-        min-width: 44px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        @media (min-width: 769px) {
-            min-width: 48px;
-            min-height: 48px;
-        }
-        
-        &--active {
-            background-color: var(--accent-color);
-            color: white;
-        }
-    }
-    
-    // Ensure form fields in payment row are properly sized
+// Extend the form-row--with-buttons utility with component-specific styling for pay/distance fields
+.form-row--with-buttons {
     .form-field {
-        flex: 1;
-        min-width: 0;
-        
-        // Center alignment for pay/distance input fields
-        &:has(input[name="pay"]),
-        &:has(input[name="distance"]) {
-            ::ng-deep {
-                .mat-mdc-form-field-infix input {
-                    text-align: center;
+        // Apply centered input styling for pay and distance fields using mixin approach
+        ::ng-deep {
+            .mat-mdc-form-field {
+                align-items: center;
+                display: flex;
+                height: auto;
+                min-height: 48px;
+                
+                @media (max-width: 768px) {
+                    min-height: 44px;
+                }
+            }
+            
+            .mat-mdc-text-field-wrapper {
+                align-self: center;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                
+                @media (max-width: 768px) {
+                    height: 44px;
+                }
+            }
+            
+            .mat-mdc-form-field-infix {
+                min-height: 48px;
+                padding: 8px 0;
+                display: flex;
+                align-items: center;
+                
+                @media (max-width: 768px) {
+                    min-height: 44px;
+                }
+            }
+            
+            input {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                text-align: center;
+                line-height: normal;
+                
+                @media (max-width: 768px) {
+                    height: 44px;
+                    min-height: 44px;
                 }
             }
         }
     }
-    
-    // Better mobile layout for payment row with buttons
-    @media (max-width: 480px) {
-        &:has(.toggle-button) {
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            
-            .toggle-button {
-                order: 1;
-                flex: 0 0 44px;
-            }
-            
-            .form-field {
-                order: 2;
-                flex: 1;
-                min-width: calc(50% - 0.75rem);
-            }
-        }
-    }
-}
-
-// Enhanced toggle button styling with global button system integration
-.toggle-button {
-    // Use global toggle-button styles with responsive enhancements
-    @extend .toggle-button;
-    
-    // Component-specific sizing for mini-fab integration
-    min-width: 44px !important;
-    min-height: 44px !important;
-    width: 44px;
-    height: 44px;
-    border-radius: 50% !important;
-    
-    @media (min-width: 768px) {
-        min-width: 48px !important;
-        min-height: 48px !important;
-        width: 48px;
-        height: 48px;
-    }
-    
-    // Material mini-fab specific styling
-    &.mat-mdc-mini-fab {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        
-        &:hover:not(:disabled) {
-            transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        }
-        
-        &--active {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-    }
-}
-
-// Component-specific enhancements for chip-button selection
-.chip-button {
-    // Override global chip-button for full-width selection buttons
-    &.btn--full-width {
-        width: 100% !important;
-        margin-bottom: 0.5rem;
-        text-align: left;
-        justify-content: flex-start;
-        border-radius: 8px;
-        min-height: 44px;
-        padding: 0.75rem 1rem;
-        
-        &--selected {
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-600) 100%);
-            border-color: var(--accent-color);
-            color: white;
-            box-shadow: 0 2px 8px rgba(var(--accent-color), 0.3);
-            
-            &:hover {
-                background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
-            }
-        }
-    }
-}
-
-// Global button icon enhancement
-button {
-    mat-icon {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        
-        // Ensure icons are properly sized in all button types
-        &:not(.custom-sized) {
-            font-size: inherit;
-            width: 1em;
-            height: 1em;
-        }
-    }
-    
-    // Extended FAB specific icon styling
-    &[mat-fab] mat-icon {
-        margin-right: 8px;
-        flex-shrink: 0;
-    }
-    
-    // Mini FAB specific icon styling (toggle buttons)
-    &[mat-mini-fab] mat-icon {
-        margin: 0;
-        flex-shrink: 0;
-    }
-    
-    // Stroked button icon styling
-    &[mat-stroked-button] mat-icon {
-        margin-right: 4px;
-        flex-shrink: 0;
-    }
-}
-
-// Enhanced form action button styling using global button system
-.form-actions {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    
-    &__row {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        align-items: center;
-        
-        @media (max-width: 768px) {
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-        
-        @media (max-width: 480px) {
-            flex-direction: column;
-            gap: 0.75rem;
-            align-items: stretch;
-        }
-    }
-    
-    // Extended FAB button styling using global system
-    button[mat-fab] {
-        // Apply global button base styles
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        font-weight: 500;
-        border-radius: 28px;
-        min-height: 56px;
-        min-width: 120px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        letter-spacing: 0.025em;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        
-        @media (max-width: 768px) {
-            min-width: 140px;
-            min-height: 48px;
-            font-size: 0.75rem;
-        }
-        
-        @media (max-width: 480px) {
-            width: 100%;
-            min-width: 100%;
-            min-height: 44px;
-            border-radius: 22px;
-        }
-        
-        // Enhanced hover effects
-        &:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        }
-        
-        &:active {
-            transform: translateY(0);
-        }
-        
-        &:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-            transform: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        &:focus {
-            outline: 2px solid var(--border-focus);
-            outline-offset: 2px;
-        }    }
 }
 
 // Component-specific styling that doesn't use global utilities
@@ -419,6 +257,19 @@ button {
     font-weight: 500;
     margin-bottom: 0.5rem;
     color: var(--text-secondary);
+}
+
+.address-button,
+.name-button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    justify-content: flex-start;
+    
+    &--selected {
+        background-color: var(--accent-color);
+        color: white;
+    }
 }
 
 .trips-table {
