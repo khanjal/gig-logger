@@ -97,6 +97,109 @@
   }
 }
 
+// Material Form Field Focus Improvements
+mat-form-field {
+  width: 100%;
+  
+  &.field-full-width {
+    width: 100% !important;
+  }
+  
+  // Ensure proper label positioning on focus
+  .mat-mdc-form-field-label-wrapper {
+    .mat-mdc-form-field-label {
+      transition: all 0.2s ease-in-out;
+      
+      &.mat-mdc-form-field-label-floating {
+        transform: translateY(-50%) scale(0.75);
+        top: 14px;
+      }
+    }
+  }
+  
+  // Fix outline positioning to prevent label cutoff
+  .mat-mdc-text-field-wrapper {
+    .mat-mdc-form-field-flex {
+      .mat-mdc-form-field-outline {
+        .mat-mdc-form-field-outline-start,
+        .mat-mdc-form-field-outline-gap,
+        .mat-mdc-form-field-outline-end {
+          border-width: 1px;
+          border-style: solid;
+          border-color: $border-color;
+        }
+      }
+      
+      &.mdc-text-field--focused {
+        .mat-mdc-form-field-outline {
+          .mat-mdc-form-field-outline-start,
+          .mat-mdc-form-field-outline-gap,
+          .mat-mdc-form-field-outline-end {
+            border-color: $primary-color;
+            border-width: 2px;
+          }
+        }
+      }
+    }
+  }
+  
+  // Ensure proper infix container positioning
+  .mat-mdc-form-field-infix {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: none;
+    
+    input {
+      padding: 0;
+      margin: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+    }
+  }
+  
+  // Mobile-specific adjustments for virtual keyboard and dropdown visibility
+  @media (max-width: 768px) {
+    // Ensure form field has enough top margin when focused to keep label visible
+    &.mat-focused {
+      margin-top: 1rem;
+      transition: margin-top 0.3s ease;
+    }
+    
+    // Better label positioning for mobile
+    .mat-mdc-form-field-label-wrapper {
+      .mat-mdc-form-field-label {
+        &.mat-mdc-form-field-label-floating {
+          transform: translateY(-50%) scale(0.75);
+          top: 8px; // Adjusted for mobile to stay visible
+          z-index: 10; // Ensure label stays above other elements
+        }
+      }
+    }
+    
+    // Enhanced outline visibility on mobile
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-flex {
+        .mat-mdc-form-field-outline {
+          .mat-mdc-form-field-outline-start,
+          .mat-mdc-form-field-outline-gap,
+          .mat-mdc-form-field-outline-end {
+            border-width: 2px; // Thicker border for better visibility on mobile
+          }
+        }
+      }
+    }
+  }
+  
+  // Ensure autocomplete panel has enough space below on mobile
+  @media (max-width: 768px) and (max-height: 800px) {
+    .mat-mdc-autocomplete-panel {
+      max-height: 200px; // Limit height for small mobile screens
+      margin-top: 0.25rem;
+    }
+  }
+}
+
 // Search Icon
 .search-icon {
   position: absolute;
@@ -392,6 +495,24 @@
       background: $primary-50;
       border-color: $primary-color;
       color: $primary-color;
+    }
+  }
+}
+
+// Mobile-specific focus scroll adjustments
+@media (max-width: 768px) {
+  // Add padding to top of viewport when form fields are focused
+  .focus-scroll {
+    scroll-margin-top: 2rem; // Ensures label stays visible after scroll
+  }
+  
+  // Better spacing for search input containers on mobile
+  .search-input-container {
+    padding-top: 0.5rem;
+    
+    &.focused {
+      padding-top: 1rem;
+      transition: padding-top 0.3s ease;
     }
   }
 }
