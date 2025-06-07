@@ -178,66 +178,12 @@ cdk-virtual-scroll-viewport {
 .form-section {
     margin-bottom: 1.5rem;
     
-    &:last-child {
-        margin-bottom: 0;
+    @media (max-width: 768px) {
+        margin-bottom: 1.25rem;
     }
     
-    @media (max-width: 768px) {
+    @media (max-width: 480px) {
         margin-bottom: 1rem;
-    }
-}
-
-// Extend the form-row--with-buttons utility with component-specific styling for pay/distance fields
-.form-row--with-buttons {
-    .form-field {
-        // Apply centered input styling for pay and distance fields using mixin approach
-        ::ng-deep {
-            .mat-mdc-form-field {
-                align-items: center;
-                display: flex;
-                height: auto;
-                min-height: 48px;
-                
-                @media (max-width: 768px) {
-                    min-height: 44px;
-                }
-            }
-            
-            .mat-mdc-text-field-wrapper {
-                align-self: center;
-                height: 48px;
-                display: flex;
-                align-items: center;
-                
-                @media (max-width: 768px) {
-                    height: 44px;
-                }
-            }
-            
-            .mat-mdc-form-field-infix {
-                min-height: 48px;
-                padding: 8px 0;
-                display: flex;
-                align-items: center;
-                
-                @media (max-width: 768px) {
-                    min-height: 44px;
-                }
-            }
-            
-            input {
-                height: 100%;
-                display: flex;
-                align-items: center;
-                text-align: center;
-                line-height: normal;
-                
-                @media (max-width: 768px) {
-                    height: 44px;
-                    min-height: 44px;
-                }
-            }
-        }
     }
 }
 
@@ -324,14 +270,389 @@ cdk-virtual-scroll-viewport {
     padding: 0.5rem 0;
 }
 
-// ::-webkit-scrollbar {
-//     width: 10px;
-// }
+// Custom styling for form rows with buttons - ensures proper field width adjustment
+.form-row {
+    &:has(.toggle-button) {
+        .field-full-width {
+            flex: 1;
+            margin-right: 0.75rem;
+            
+            @media (max-width: 768px) {
+                margin-right: 0.5rem;
+            }
+        }
+        
+        .toggle-button {
+            flex-shrink: 0;
+        }
+    }
+}
 
-// ::-webkit-scrollbar-track {
-//     background: transparent;
-// }
+// Alternative approach using direct styling for better browser support
+.form-row {
+    .field-full-width + .toggle-button {
+        margin-left: 0.75rem;
+        
+        @media (max-width: 768px) {
+            margin-left: 0.5rem;
+        }
+    }
+}
 
-// ::-webkit-scrollbar-thumb {
-//     background: transparent;
-// }
+// Fallback approach for browsers that don't support :has() selector
+.form-row {
+    // Direct child selector approach for better browser support
+    > .field-full-width:not(:only-child) {
+        @media (max-width: 768px) {
+            flex: 1;
+            width: auto;
+            max-width: none;
+        }
+    }
+    
+    > app-search-input.field-full-width:not(:only-child) {
+        @media (max-width: 768px) {
+            flex: 1;
+            width: auto;
+            max-width: none;
+            min-width: 0;
+        }
+    }
+    
+    // Ensure toggle buttons don't grow
+    > .toggle-button {
+        @media (max-width: 768px) {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+        }
+        
+        @media (max-width: 480px) {
+            width: 40px;
+            height: 40px;
+        }
+    }
+}
+
+// Specific styling for the customer information section name field
+.form-section:nth-child(4) { // Customer Information section
+    .form-row {
+        @media (max-width: 768px) {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            
+            app-search-input.field-full-width {
+                flex: 1;
+                width: auto !important;
+                max-width: none !important;
+                min-width: 0;
+            }
+            
+            .toggle-button {
+                flex-shrink: 0;
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            gap: 0.375rem;
+        }
+    }
+}
+
+// Specific styling for odometer fields - ensure half width on all screen sizes
+.form-row--halves {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem;
+    align-items: center;
+    
+    .form-field,
+    mat-form-field {
+        flex: 1 !important;
+        width: calc(50% - 0.25rem) !important;
+        max-width: calc(50% - 0.25rem) !important;
+        min-width: 0 !important;
+    }
+    
+    @media (max-width: 480px) {
+        gap: 0.375rem;
+        
+        .form-field,
+        mat-form-field {
+            flex: 1 !important;
+            width: calc(50% - 0.1875rem) !important;
+            max-width: calc(50% - 0.1875rem) !important;
+        }
+    }
+}
+
+// Mobile responsive form field behavior
+@media (max-width: 768px) {
+    // All form fields should be full width on mobile unless they're in specific multi-field rows
+    .form-row:not(.form-row--halves):not(.form-row--thirds) {
+        .form-field {
+            width: 100%;
+            max-width: 100%;
+            flex: 1 1 100%;
+        }
+        
+        mat-form-field {
+            width: 100%;
+            max-width: 100%;
+            flex: 1 1 100%;
+        }
+        
+        app-search-input {
+            width: 100%;
+            max-width: 100%;
+            flex: 1 1 100%;
+        }
+        
+        .field-full-width {
+            width: 100%;
+            max-width: 100%;
+            flex: 1 1 100%;
+        }
+    }
+    
+    // Form rows with buttons should keep fields and buttons on same row
+    .form-row:has(.toggle-button) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        
+        .field-full-width,
+        app-search-input {
+            flex: 1;
+            width: auto;
+            max-width: none;
+        }
+        
+        .toggle-button {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+        }
+    }
+    
+    // Special handling for Payment section with button-first layout
+    .form-row {
+        &:first-child .toggle-button:first-child {
+            order: -1; // Ensure button appears first
+            margin-right: 0.5rem;
+        }
+        
+        // When button is first, following fields should share remaining space
+        .toggle-button + .form-field {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .form-field + .form-field {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+      // Halves layout - two fields side by side on mobile
+    .form-row--halves {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: nowrap !important; // Ensure fields stay on same row
+        
+        .form-field {
+            flex: 1 !important;
+            width: calc(50% - 0.25rem) !important;
+            max-width: calc(50% - 0.25rem) !important;
+            min-width: 0; // Prevent overflow
+        }
+        
+        mat-form-field {
+            flex: 1 !important;
+            width: calc(50% - 0.25rem) !important;
+            max-width: calc(50% - 0.25rem) !important;
+            min-width: 0; // Prevent overflow
+        }
+    }
+    
+    // Thirds layout - three fields side by side on mobile with adjusted widths
+    .form-row--thirds {
+        display: flex;
+        gap: 0.25rem;
+        
+        .form-field {
+            flex: 1;
+            width: calc(33.333% - 0.17rem);
+            max-width: calc(33.333% - 0.17rem);
+            min-width: 70px;
+        }
+    }
+    
+    // Target search-input components specifically for full width behavior
+    app-search-input {
+        width: 100% !important;
+        display: block !important;
+        
+        &.field-full-width {
+            flex: 1 !important;
+            max-width: none !important;
+            min-width: 0 !important;
+        }
+    }
+    
+    // Ensure form rows with single search-input fields use full width
+    .form-row:not(.form-row--halves):not(.form-row--thirds) {
+        app-search-input {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+        }
+    }
+    
+    // Special handling for Service, Region, Place, Type fields
+    .form-row app-search-input[formControlName="service"],
+    .form-row app-search-input[formControlName="region"], 
+    .form-row app-search-input[formControlName="place"],
+    .form-row app-search-input[formControlName="type"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        display: block !important;
+    }
+}
+
+@media (max-width: 480px) {
+    // Even more compact on small mobile screens
+    .form-row:has(.toggle-button) {
+        gap: 0.375rem;
+        
+        .toggle-button {
+            width: 40px;
+            height: 40px;
+            
+            mat-icon {
+                font-size: 18px;
+            }
+        }
+    }
+    
+    // Adjust thirds layout for very small screens
+    .form-row--thirds {
+        gap: 0.125rem;
+        
+        .form-field {
+            width: calc(33.333% - 0.08rem);
+            max-width: calc(33.333% - 0.08rem);
+            min-width: 60px;
+            
+            ::ng-deep .mat-mdc-form-field {
+                .mat-mdc-form-field-infix {
+                    padding: 8px 0;
+                }
+            }
+        }
+    }
+    
+    // Ensure single fields with buttons are truly full width
+    .form-row {
+        &:not(.form-row--halves):not(.form-row--thirds) {
+            .field-full-width,
+            app-search-input {
+                width: 100% !important;
+                max-width: none !important;
+                flex: 1 !important;
+            }
+        }
+        
+        // Special handling for name field specifically
+        app-search-input.field-full-width {
+            width: 100% !important;
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+    }
+    
+    app-search-input {
+        width: 100% !important;
+        max-width: 100% !important;
+        
+        &.field-full-width {
+            width: 100% !important;
+            flex: 1 !important;
+        }
+    }
+}
+
+// Form actions - override global styles to keep buttons side by side with larger size
+.form-actions {
+    .form-actions__row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        
+        button {
+            flex: 0 0 35% !important;
+            width: 35% !important;
+            min-width: 150px !important;
+            max-width: 250px !important;
+            min-height: 56px !important;
+            margin-bottom: 0 !important;
+            padding: 12px 24px !important;
+            font-size: 1.1rem !important;
+            font-weight: 500 !important;
+            
+            mat-icon {
+                font-size: 24px !important;
+                width: 24px !important;
+                height: 24px !important;
+                margin-right: 8px !important;
+            }
+            
+            @media (max-width: 768px) {
+                flex: 0 0 35% !important;
+                width: 35% !important;
+                min-width: 130px !important;
+                max-width: 180px !important;
+                min-height: 52px !important;
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                
+                mat-icon {
+                    font-size: 22px !important;
+                    width: 22px !important;
+                    height: 22px !important;
+                    margin-right: 6px !important;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                flex: 0 0 40% !important;
+                width: 40% !important;
+                min-width: 110px !important;
+                max-width: 140px !important;
+                min-height: 48px !important;
+                padding: 8px 16px !important;
+                font-size: 0.95rem !important;
+                
+                mat-icon {
+                    font-size: 20px !important;
+                    width: 20px !important;
+                    height: 20px !important;
+                    margin-right: 4px !important;
+                }
+            }
+        }
+        
+        @media (max-width: 768px) {
+            gap: 0.75rem;
+        }
+        
+        @media (max-width: 480px) {
+            gap: 0.5rem;
+        }
+    }
+}

@@ -656,137 +656,6 @@ mat-card-actions {
   }
 }
 
-.form-row--with-button {
-  align-items: center; // Centered alignment for better visual balance
-  
-  .form-field {
-    flex: 1;
-    min-width: 0;
-    margin: 0; // Remove any default margins for cleaner layout
-  }
-  
-  .toggle-button {
-    margin-left: 0.5rem;
-    flex-shrink: 0;
-    align-self: center; // Ensure button is centered
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    @media (min-width: 769px) {
-      min-width: 48px;
-      min-height: 48px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    gap: 0.5rem;
-    min-height: 44px; // Consistent mobile height
-    
-    .toggle-button {
-      margin-left: 0;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    flex-direction: row; // Keep horizontal layout on mobile
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 44px;
-    
-    .form-field {
-      flex: 1;
-      width: auto;
-      margin-bottom: 0;
-    }
-    
-    .toggle-button {
-      margin: 0;
-      flex-shrink: 0;
-    }
-  }
-}
-
-.form-row--with-buttons {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: nowrap;
-  min-height: 48px; // Consistent height with other form rows
-  
-  .form-field {
-    margin: 0;
-    align-self: center;
-    
-    // Override form-field--third responsive behavior for this layout
-    &.form-field--third {
-      flex: 1;
-      max-width: none;
-      
-      @media (max-width: 768px) {
-        flex: 1;
-        max-width: none;
-      }
-      
-      @media (max-width: 480px) {
-        flex: 1;
-        max-width: none;
-      }
-    }
-    
-    // New 30% width variant for better button accommodation
-    &.form-field--thirty {
-      flex: 0 0 30%;
-      max-width: 30%;
-      
-      @media (max-width: 768px) {
-        flex: 0 0 30%;
-        max-width: 30%;
-      }
-      
-      @media (max-width: 480px) {
-        flex: 0 0 32%; // Slightly larger on mobile for better touch targets
-        max-width: 32%;
-      }
-    }
-  }
-  
-  .toggle-button {
-    flex-shrink: 0;
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: center; // Better centering
-    
-    @media (min-width: 769px) {
-      min-width: 48px;
-      min-height: 48px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    min-height: 44px;
-    gap: 0.5rem;
-  }
-  
-  @media (max-width: 480px) {
-    gap: 0.5rem; // Consistent gap on mobile
-    min-height: 44px; // Keep consistent height even on mobile
-    flex-wrap: nowrap; // Prevent wrapping on small screens
-    
-    .form-field {
-      &.form-field--thirty {
-        flex: 0 0 30%; // Maintain 30% width on mobile
-        max-width: 30%;
-      }
-    }
-  }
-}
-
 .form-row--with-toggle {
   align-items: center;
   flex-wrap: wrap;
@@ -1504,12 +1373,11 @@ a {
   select {
     font-size: 16px !important;
   }
-  
-  // Better spacing for form elements
+    // Better spacing for form elements
   .form-row {
     min-height: 44px;
     
-    &:not(.form-row--thirds):not(.form-row--with-buttons) {
+    &:not(.form-row--thirds) {
       .form-field {
         width: 100%;
         max-width: 100%;
@@ -1549,16 +1417,13 @@ a {
 .form-row {
   // Ensure all child form fields align properly
   > .form-field,
-  > app-search-input,
-  > mat-form-field {
+  > app-search-input,  > mat-form-field {
     display: flex;
     align-items: center;
     min-height: inherit;
   }
   
   // Better alignment for mixed content (fields + buttons)
-  &.form-row--with-button,
-  &.form-row--with-buttons,
   &.form-row--with-toggle {
     > * {
       align-self: center;
