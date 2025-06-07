@@ -20,7 +20,8 @@ import { filter } from 'rxjs/operators';
       RouterLink, 
       MatIcon, 
       MatTooltip,
-      RouterOutlet
+      RouterOutlet,
+      NgIf
     ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {  defaultSheet: ISpreadsheet | undefined;

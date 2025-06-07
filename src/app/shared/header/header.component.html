@@ -60,8 +60,8 @@
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      
-      <div class="menu-content">
+        <div class="menu-content">
+        <!-- Always available navigation items -->
         <div class="menu-section">
           <h3 class="menu-section-title">Navigation</h3>
           <a routerLink="/" 
@@ -71,23 +71,28 @@
             <mat-icon class="menu-icon">home</mat-icon>
             <span class="menu-text">Home</span>
           </a>
-          <a routerLink="/trips" 
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="View trips">
-            <mat-icon class="menu-icon">navigation</mat-icon>
-            <span class="menu-text">Trips</span>
-          </a>
-          <a routerLink="/shifts" 
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="View shifts">
-            <mat-icon class="menu-icon">today</mat-icon>
-            <span class="menu-text">Shifts</span>
-          </a>
+          
+          <!-- Authenticated user navigation items -->
+          <ng-container *ngIf="isAuthenticated">
+            <a routerLink="/trips" 
+               (click)="closeMenu()"
+               class="menu-item"
+               aria-label="View trips">
+              <mat-icon class="menu-icon">navigation</mat-icon>
+              <span class="menu-text">Trips</span>
+            </a>
+            <a routerLink="/shifts" 
+               (click)="closeMenu()"
+               class="menu-item"
+               aria-label="View shifts">
+              <mat-icon class="menu-icon">today</mat-icon>
+              <span class="menu-text">Shifts</span>
+            </a>
+          </ng-container>
         </div>
         
-        <div class="menu-section">
+        <!-- Tools section - only for authenticated users -->
+        <div class="menu-section" *ngIf="isAuthenticated">
           <h3 class="menu-section-title">Tools</h3>
           <a routerLink="/stats" 
              (click)="closeMenu()"
@@ -109,6 +114,7 @@
           </div>
         </div>
         
+        <!-- Settings section - always available -->
         <div class="menu-section">
           <h3 class="menu-section-title">Settings</h3>
           <a routerLink="/setup" 
