@@ -11,10 +11,10 @@
   "files": [
     "./src",
     "./dist"
-  ],
-  "scripts": {
+  ],  "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "serve:ssl": "ng serve --host 0.0.0.0 --ssl",
     "build": "ng build",
     "build:dev": "ng build --configuration development",
     "build:stage": "ng build --configuration staging",
