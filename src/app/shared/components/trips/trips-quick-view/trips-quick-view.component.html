@@ -48,7 +48,9 @@
           'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
           'efficiency--poor': trip.amountPerTime < 20
         }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
-      </div>    </div>
+      </div>
+    </div>
+    
       <!-- Combined place and toggle bar -->
     <div class="trip-header__bottom">
       <div class="place-info" *ngIf="trip.place">
