@@ -13,29 +13,6 @@
     }
 }
 
-// Touch-friendly field buttons
-.field-button {
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-    min-height: 44px; // Touch target minimum
-    min-width: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    
-    @media (max-width: 768px) {
-        margin-right: 0.25rem;
-        margin-bottom: 0.75rem;
-        flex: 1;
-        max-width: calc(50% - 0.125rem);
-    }
-    
-    @media (max-width: 480px) {
-        max-width: 100%;
-        margin-right: 0;
-    }
-}
-
 .bold {
     font-weight: 600; // Slightly bolder for mobile readability
 }
@@ -94,19 +71,6 @@
 .highlight {
     color: $accent-color !important;
     font-weight: 500;
-}
-
-// Enhanced icon buttons for mobile
-.mat-icon-button {
-    margin: 0;
-    min-height: 44px;
-    min-width: 44px;
-    
-    @media (max-width: 768px) {
-        &:not(:last-child) {
-            margin-right: 0.5rem;
-        }
-    }
 }
 
 .margin-right {
@@ -203,19 +167,6 @@ cdk-virtual-scroll-viewport {
     font-weight: 500;
     margin-bottom: 0.5rem;
     color: var(--text-secondary);
-}
-
-.address-button,
-.name-button {
-    width: 100%;
-    margin-bottom: 0.5rem;
-    text-align: left;
-    justify-content: flex-start;
-    
-    &--selected {
-        background-color: var(--accent-color);
-        color: white;
-    }
 }
 
 .trips-table {
@@ -576,78 +527,5 @@ cdk-virtual-scroll-viewport {
         &.field-full-width {
             width: 100% !important;
             flex: 1 !important;
-        }
-    }
-}
-
-// Form actions - override global styles to keep buttons side by side with larger size
-.form-actions {
-    .form-actions__row {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-        
-        button {
-            flex: 0 0 35% !important;
-            width: 35% !important;
-            min-width: 150px !important;
-            max-width: 250px !important;
-            min-height: 56px !important;
-            margin-bottom: 0 !important;
-            padding: 12px 24px !important;
-            font-size: 1.1rem !important;
-            font-weight: 500 !important;
-            
-            mat-icon {
-                font-size: 24px !important;
-                width: 24px !important;
-                height: 24px !important;
-                margin-right: 8px !important;
-            }
-            
-            @media (max-width: 768px) {
-                flex: 0 0 35% !important;
-                width: 35% !important;
-                min-width: 130px !important;
-                max-width: 180px !important;
-                min-height: 52px !important;
-                padding: 10px 20px !important;
-                font-size: 1rem !important;
-                
-                mat-icon {
-                    font-size: 22px !important;
-                    width: 22px !important;
-                    height: 22px !important;
-                    margin-right: 6px !important;
-                }
-            }
-            
-            @media (max-width: 480px) {
-                flex: 0 0 40% !important;
-                width: 40% !important;
-                min-width: 110px !important;
-                max-width: 140px !important;
-                min-height: 48px !important;
-                padding: 8px 16px !important;
-                font-size: 0.95rem !important;
-                
-                mat-icon {
-                    font-size: 20px !important;
-                    width: 20px !important;
-                    height: 20px !important;
-                    margin-right: 4px !important;
-                }
-            }
-        }
-        
-        @media (max-width: 768px) {
-            gap: 0.75rem;
-        }
-        
-        @media (max-width: 480px) {
-            gap: 0.5rem;
-        }
-    }
+        }    }
 }
