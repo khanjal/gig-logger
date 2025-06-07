@@ -18,7 +18,6 @@
   display: block;
   width: 100%;
   overflow-x: auto;
-  padding-bottom: 0.5rem;
   position: relative;
   // Enhanced touch scrolling
   -webkit-overflow-scrolling: touch;
@@ -75,24 +74,27 @@ mat-table {
   max-width: 100%;
   margin: 0;
   display: table;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: $surface-color;
 }
 
+// Row Styling with Proper Spacing
 mat-row,
 mat-header-row {
   display: table-row;
   transition: all 0.2s ease;
+  border-bottom: 1px solid rgba($border-light, 0.5);
 }
 
-// Enhanced Row Styling
 mat-header-row {
   background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
   color: $primary-700;
   font-weight: 600;
+  border-bottom: 2px solid $primary-200;
 }
 
-// Alternating Row Colors with Gradients
+// Alternating Row Colors with Better Spacing
 .alt-row {
   &.odd {
     background: linear-gradient(135deg, $surface-color 0%, rgba($accent-50, 0.2) 100%);
@@ -109,21 +111,26 @@ mat-header-row {
   }
 }
 
-// Cell Styling - Mobile First
+// Cell Styling with Consistent Spacing
 mat-cell,
 mat-header-cell {
   word-wrap: initial;
   display: table-cell;
-  padding: 0.75rem 0.5rem;
+  padding: 0.875rem 0.625rem; // Increased base padding for better spacing
   line-break: unset;
   width: auto;
   white-space: nowrap;
   overflow: hidden;
   vertical-align: middle;
   font-size: 0.875rem;
+  border-right: 1px solid rgba($border-light, 0.3);
+  
+  &:last-child {
+    border-right: none;
+  }
   
   @media (min-width: 768px) {
-    padding: 1rem 0.75rem;
+    padding: 1.125rem 0.875rem; // Better spacing for tablets
     font-size: 0.9rem;
   }
 }
@@ -134,9 +141,13 @@ mat-header-cell {
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   
   @media (min-width: 768px) {
     font-size: 0.8rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
   }
 }
 
@@ -148,8 +159,7 @@ mat-header-cell {
 }
 
 .tip-good {
-  color: $success-color !important;
-  font-weight: 600;
+  color: $success-color !important;  font-weight: 600;
   
   &::after {
     content: ' ✓';
@@ -183,7 +193,7 @@ mat-header-cell {
     }
   }
   
-  // Table adjustments for mobile
+  // Table adjustments for mobile with better spacing
   mat-table {
     min-width: 650px; // Ensure table is wide enough to scroll
     font-size: 0.8rem;
@@ -191,7 +201,7 @@ mat-header-cell {
   
   mat-cell,
   mat-header-cell {
-    padding: 0.5rem 0.4rem;
+    padding: 0.625rem 0.5rem; // Improved mobile spacing
     font-size: 0.8rem;
     min-width: 80px; // Ensure minimum column width
     
@@ -237,247 +247,13 @@ mat-header-cell {
     top: 0;
     z-index: 10;
     background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
-  }
-}
-
-// Enhanced responsive improvements
-@media (min-width: 768px) and (max-width: 1023px) {
-  // Tablet optimizations
-  .trips-container {
-    border-radius: 1.25rem;
-  }
-  
-  mat-cell,
-  mat-header-cell {
-    padding: 1rem 0.75rem;
-    font-size: 0.95rem;
-  }
-  
-  mat-header-cell {
-    font-size: 0.85rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  // Desktop optimizations
-  .trips-container {
-    margin-bottom: 2rem;
-  }
-  
-  mat-cell,
-  mat-header-cell {
-    padding: 1.25rem 1rem;
-    font-size: 1rem;
-  }
-  
-  mat-header-cell {
-    font-size: 0.9rem;
-  }
-  
-  .alt-row:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px $shadow-medium;
-  }
-}
-
-// Loading and empty states
-.trips-container:empty {
-  padding: 2rem;
-  text-align: center;
-  color: $text-secondary;
-  
-  &::after {
-    content: 'No trips to display';
-    font-style: italic;
-  }
-}
-
-// Print styles
-@media print {
-  .trips-container {
-    box-shadow: none;
-    border: 1px solid #000;
-  }
-  
-  .table-responsive {
-    display: block !important;
-  }
-  
-  mat-cell,
-  mat-header-cell {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.8rem;
-  }
-}
-
-// Table Styles - Mobile First
-mat-table {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  display: table;
-  border-collapse: collapse;
-  background: $surface-color;
-}
-
-mat-row,
-mat-header-row {
-  display: table-row;
-  transition: all 0.2s ease;
-}
-
-// Enhanced Row Styling
-mat-header-row {
-  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
-  color: $primary-700;
-  font-weight: 600;
-}
-
-// Alternating Row Colors with Gradients
-.alt-row {
-  &.odd {
-    background: linear-gradient(135deg, $surface-color 0%, rgba($accent-50, 0.2) 100%);
-  }
-
-  &.even {
-    background: linear-gradient(135deg, $primary-50 0%, rgba($primary-100, 0.3) 100%);
-  }
-  
-  &:hover {
-    background: linear-gradient(135deg, $primary-100 0%, $accent-100 100%) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px $shadow-light;
-  }
-}
-
-// Cell Styling - Mobile First
-mat-cell,
-mat-header-cell {
-  word-wrap: initial;
-  display: table-cell;
-  padding: 0.75rem 0.5rem;
-  line-break: unset;
-  width: auto;
-  white-space: nowrap;
-  overflow: hidden;
-  vertical-align: middle;
-  font-size: 0.875rem;
-  
-  @media (min-width: 768px) {
-    padding: 1rem 0.75rem;
-    font-size: 0.9rem;
-  }
-}
-
-mat-header-cell {
-  font-weight: 600;
-  color: $primary-700;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  
-  @media (min-width: 768px) {
-    font-size: 0.8rem;
-  }
-}
-
-// Tip Styling Classes
-.tip-none {
-  color: $warn-color !important;
-  font-weight: 500;
-  opacity: 0.8;
-}
-
-.tip-good {
-  color: $success-color !important;
-  font-weight: 600;
-  
-  &::after {
-    content: ' ✓';
-    color: $success-color;
-    font-weight: bold;
-  }
-}
-
-// Mobile table optimizations for horizontal scrolling
-@media (max-width: 480px) {
-  .trips-container {
-    margin: 0 -0.5rem 1.5rem -0.5rem; // Extend container to screen edges
-    border-radius: 0.5rem;
-    border-left: none;
-    border-right: none;
-  }
-  
-  .table-responsive {
-    padding: 0;
+    padding-top: 0.75rem;
     padding-bottom: 0.75rem;
-    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
-    
-    // Enhanced mobile scrollbar
-    &::-webkit-scrollbar {
-      height: 8px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: linear-gradient(45deg, $primary-color, $accent-color);
-      border-radius: 4px;
-    }
   }
   
-  // Table adjustments for mobile
-  mat-table {
-    min-width: 650px; // Ensure table is wide enough to scroll
-    font-size: 0.8rem;
-  }
-  
-  mat-cell,
-  mat-header-cell {
-    padding: 0.5rem 0.4rem;
-    font-size: 0.8rem;
-    min-width: 80px; // Ensure minimum column width
-    
-    // Specific column widths for better mobile experience
-    &.cdk-column-date {
-      min-width: 90px;
-    }
-    
-    &.cdk-column-platform {
-      min-width: 85px;
-    }
-    
-    &.cdk-column-hours {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-miles {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-gas {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-earnings {
-      min-width: 80px;
-    }
-    
-    &.cdk-column-tips {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-total {
-      min-width: 80px;
-      font-weight: 600;
-    }
-  }
-  
-  mat-header-cell {
-    font-size: 0.7rem;
-    letter-spacing: 0.3px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+  // Better row spacing on mobile
+  mat-row {
+    height: 3rem; // Consistent row height
   }
 }
 
@@ -490,12 +266,16 @@ mat-header-cell {
   
   mat-cell,
   mat-header-cell {
-    padding: 1rem 0.75rem;
+    padding: 1.125rem 0.875rem; // Improved tablet spacing
     font-size: 0.95rem;
   }
   
   mat-header-cell {
     font-size: 0.85rem;
+  }
+  
+  mat-row {
+    height: 3.5rem; // Consistent tablet row height
   }
 }
 
@@ -507,12 +287,16 @@ mat-header-cell {
   
   mat-cell,
   mat-header-cell {
-    padding: 1.25rem 1rem;
+    padding: 1.375rem 1.125rem; // Better desktop spacing
     font-size: 1rem;
   }
   
   mat-header-cell {
     font-size: 0.9rem;
+  }
+  
+  mat-row {
+    height: 4rem; // Consistent desktop row height
   }
   
   .alt-row:hover {
@@ -538,10 +322,6 @@ mat-header-cell {
   .trips-container {
     box-shadow: none;
     border: 1px solid #000;
-  }
-  
-  .mobile-card-layout {
-    display: none !important;
   }
   
   .table-responsive {

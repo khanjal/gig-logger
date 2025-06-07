@@ -13,6 +13,19 @@
     }
 }
 
+// Address list styling - adds spacing below previous pickup addresses accordion
+.address-list {
+    margin-bottom: 1.5rem;
+    
+    @media (max-width: 768px) {
+        margin-bottom: 1.25rem;
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 1rem;
+    }
+}
+
 // Specific styling for the customer information section name field
 .form-section:nth-child(4) { // Customer Information section
     .form-row {
