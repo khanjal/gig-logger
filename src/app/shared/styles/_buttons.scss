@@ -62,6 +62,14 @@
             font-size: 18px;
         }
     }
+
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
 }
 
 // Address and name selection buttons
@@ -78,11 +86,26 @@
     }
 }
 
-// Enhanced Material Design icon buttons for mobile
+// Enhanced Material Design icon buttons for mobile - with proper icon centering
 .mat-icon-button {
     margin: 0;
     min-height: 44px;
     min-width: 44px;
+    
+    // Fix icon vertical centering in all icon buttons
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
     
     @media (max-width: 768px) {
         &:not(:last-child) {
@@ -227,14 +250,6 @@
     }
 }
 
-// Floating Action Button (FAB) mobile optimizations
-@media (max-width: 480px) {
-    .mat-mdc-fab.mat-mdc-mini-fab {
-        width: 40px;
-        height: 40px;
-    }
-}
-
 // Button icon styling
 .button-icon {
     margin-top: 0.5rem;
@@ -279,6 +294,178 @@
             button {
                 width: 100%;
             }
+        }
+    }
+}
+
+// Floating Action Button (FAB) mobile optimizations
+@media (max-width: 480px) {
+    .mat-mdc-fab.mat-mdc-mini-fab {
+        width: 40px;
+        height: 40px;
+        
+        // Fix icon vertical centering in mini FABs
+        .mat-mdc-button-touch-target {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .mdc-fab__icon,
+        mat-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+    }
+}
+
+// Comprehensive Material Design Icon Centering Fix
+// This addresses vertical alignment issues across all Material button types
+
+// Universal icon centering for all Material buttons
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab,
+.mat-icon-button {
+    // Ensure proper flexbox alignment for button containers
+    .mat-mdc-button-touch-target,
+    .mdc-button,
+    .mdc-fab {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    // Universal icon styling for perfect centering
+    mat-icon,
+    .mat-icon,
+    .mdc-fab__icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        vertical-align: middle !important;
+        
+        // Fix for font-based icons (Material Icons font)
+        &::before {
+            vertical-align: middle !important;
+            line-height: 1 !important;
+        }
+    }
+    
+    // Fix for ripple effect alignment
+    .mat-ripple,
+    .mdc-button__ripple,
+    .mdc-fab__ripple {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+// Specific fix for mini FAB buttons (commonly used in forms)
+.mat-mdc-mini-fab {
+    // Override any inherited line-height that might cause misalignment
+    line-height: 1 !important;
+    
+    // Ensure the button content is properly centered
+    .mat-mdc-button-wrapper,
+    .mdc-fab__icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    // Mobile-specific adjustments
+    @media (max-width: 480px) {
+        width: 40px;
+        height: 40px;
+        
+        mat-icon {
+            font-size: 18px !important;
+            width: 18px !important;
+            height: 18px !important;
+        }
+    }
+}
+
+// Fix for Material Design typography that might interfere with icon alignment
+.mat-typography {
+    mat-icon {
+        vertical-align: middle !important;
+    }
+}
+
+// Additional Material Design button icon centering fixes
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+    // Ensure proper icon centering in all FAB buttons
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .mdc-fab__icon,
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+}
+
+// Fix for Material Design button ripple effect alignment
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+    }
+}
+
+// Enhanced Material Design icon buttons for mobile - with proper icon centering
+.mat-icon-button {
+    margin: 0;
+    min-height: 44px;
+    min-width: 44px;
+    
+    // Fix icon vertical centering in all icon buttons
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    
+    @media (max-width: 768px) {
+        &:not(:last-child) {
+            margin-right: 0.5rem;
         }
     }
 }
