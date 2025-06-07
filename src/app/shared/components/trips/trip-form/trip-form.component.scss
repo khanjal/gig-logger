@@ -1,285 +1,37 @@
 @import "color-vars";
 
-// Mobile-first trip form with PWA-optimized touch targets
+// Component-specific overrides and customizations
 .trip-form {
+    // Uses global .form-content class styles - apply via HTML classes instead of @extend
     margin-bottom: 1rem;
     min-width: 100px;
     width: 100%;
     padding: 0.5rem;
     
-    // Mobile-first form styling
     @media (max-width: 480px) {
         padding: 0.25rem;
     }
 }
 
-.bold {
-    font-weight: 600; // Slightly bolder for mobile readability
-}
+// Global form utility classes - use .form-bold, .form-button-icon, .form-tab, etc.
 
-.button-icon {
-    margin-top: 0.5rem;
-    
-    @media (max-width: 768px) {
-        margin-top: 0.25rem;
-    }
-}
+// Enhanced address selection for mobile - use global .selected-content class
+// Global .selected-content class available
 
-// Enhanced tabbed content for mobile
-.tab {
-    margin-left: 1rem;
-    padding: 0.5rem 0;
-    
-    .title {
-        font-weight: 600;
-        padding-bottom: 0.75rem;
-        font-size: 1.1rem;
-        color: $primary-color;
-        
-        @media (max-width: 768px) {
-            font-size: 1rem;
-            padding-bottom: 0.5rem;
-        }
-    }
+// Global .form-header class available
 
-    .sub-tab { 
-        margin-left: 0.5rem;
-        padding: 0.25rem 0;
-    }
-    
-    @media (max-width: 768px) {
-        margin-left: 0.5rem;
-        padding: 0.25rem 0;
-    }
-    
-    @media (max-width: 480px) {
-        margin-left: 0.25rem;
-    }
-}
+// Global .form-section class available (already in global styles)
 
-.tab-itallic {
-    font-style: italic;
-    margin-left: 0.5rem;
-    color: $text-secondary;
-    
-    @media (max-width: 768px) {
-        margin-left: 0.25rem;
-        font-size: 0.9rem;
-    }
-}
+// Global .form-item and .form-item-title classes available
 
-.highlight {
-    color: $accent-color !important;
-    font-weight: 500;
-}
+// Global .form-table class available
 
-.margin-right {
-    margin-right: 1rem;
-    
-    @media (max-width: 768px) {
-        margin-right: 0.5rem;
-    }
-    
-    @media (max-width: 480px) {
-        margin-right: 0.25rem;
-    }
-}
+// Global Material Design form enhancements available in forms stylesheet
 
-// Mobile-optimized virtual scroll
-cdk-virtual-scroll-viewport {
-    height: 200px;
-    border-radius: 8px;
-    border: 1px solid $border-color;
-    
-    @media (max-width: 768px) {
-        height: 150px;
-        border-radius: 6px;
-    }
-    
-    @media (max-width: 480px) {
-        height: 120px;
-        border-radius: 4px;
-    }
-}
+// Global .form-list and .form-options classes available
 
-// Enhanced address selection for mobile
-.selected-name-address {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
-    border-radius: 12px;
-    border: 1px solid $border-light;
-    
-    @media (max-width: 768px) {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        border-radius: 8px;
-    }
-    
-    @media (max-width: 480px) {
-        margin-bottom: 0.75rem;
-        padding: 0.5rem;
-        border-radius: 6px;
-    }
-}
-
-// Component-specific styling that extends global utilities
-.form-header {
-    margin-bottom: 1.5rem;
-    
-    h1 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 500;
-        color: var(--primary-color);
-        
-        @media (max-width: 768px) {
-            font-size: 1.25rem;
-        }
-    }
-}
-
-.form-section {
-    margin-bottom: 1.5rem;
-    
-    @media (max-width: 768px) {
-        margin-bottom: 1.25rem;
-    }
-    
-    @media (max-width: 480px) {
-        margin-bottom: 1rem;
-    }
-}
-
-// Component-specific styling that doesn't use global utilities
-.delivery-item {
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.02);
-    
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.delivery-title {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: var(--text-secondary);
-}
-
-.trips-table {
-    margin-top: 0.5rem;
-}
-
-// Mobile-specific adjustments for Material expansion panels
-@media (max-width: 768px) {
-    .mat-expansion-panel-body {
-        padding: 0.75rem 1rem;
-    }
-    
-    .mat-expansion-panel-header {
-        padding: 0 1rem;
-        height: 48px;
-    }
-}
-
-@media (max-width: 480px) {
-    .mat-expansion-panel-body {
-        padding: 0.5rem 0.75rem;
-    }
-    
-    .mat-expansion-panel-header {
-        padding: 0 0.75rem;
-        height: 44px;
-    }
-    
-    .mat-mdc-fab.mat-mdc-mini-fab {
-        width: 40px;
-        height: 40px;
-    }
-}
-
-// Address lists
-.address-list {
-    margin: 1rem 0;
-    
-    mat-expansion-panel {
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-}
-
-.address-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-}
-
-// Custom styling for form rows with buttons - ensures proper field width adjustment
-.form-row {
-    &:has(.toggle-button) {
-        .field-full-width {
-            flex: 1;
-            margin-right: 0.75rem;
-            
-            @media (max-width: 768px) {
-                margin-right: 0.5rem;
-            }
-        }
-        
-        .toggle-button {
-            flex-shrink: 0;
-        }
-    }
-}
-
-// Alternative approach using direct styling for better browser support
-.form-row {
-    .field-full-width + .toggle-button {
-        margin-left: 0.75rem;
-        
-        @media (max-width: 768px) {
-            margin-left: 0.5rem;
-        }
-    }
-}
-
-// Fallback approach for browsers that don't support :has() selector
-.form-row {
-    // Direct child selector approach for better browser support
-    > .field-full-width:not(:only-child) {
-        @media (max-width: 768px) {
-            flex: 1;
-            width: auto;
-            max-width: none;
-        }
-    }
-    
-    > app-search-input.field-full-width:not(:only-child) {
-        @media (max-width: 768px) {
-            flex: 1;
-            width: auto;
-            max-width: none;
-            min-width: 0;
-        }
-    }
-    
-    // Ensure toggle buttons don't grow
-    > .toggle-button {
-        @media (max-width: 768px) {
-            flex-shrink: 0;
-            width: 44px;
-            height: 44px;
-        }
-        
-        @media (max-width: 480px) {
-            width: 40px;
-            height: 40px;
-        }
-    }
-}
+// Enhanced form-row styles moved to global forms stylesheet
+// Component-specific overrides remain here
 
 // Specific styling for the customer information section name field
 .form-section:nth-child(4) { // Customer Information section
