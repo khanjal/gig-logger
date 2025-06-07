@@ -224,33 +224,29 @@ cdk-virtual-scroll-viewport {
 
 // Mobile-specific adjustments for Material expansion panels
 @media (max-width: 768px) {
-    ::ng-deep {
-        .mat-expansion-panel-body {
-            padding: 0.75rem 1rem;
-        }
-        
-        .mat-expansion-panel-header {
-            padding: 0 1rem;
-            height: 48px;
-        }
+    .mat-expansion-panel-body {
+        padding: 0.75rem 1rem;
+    }
+    
+    .mat-expansion-panel-header {
+        padding: 0 1rem;
+        height: 48px;
     }
 }
 
 @media (max-width: 480px) {
-    ::ng-deep {
-        .mat-expansion-panel-body {
-            padding: 0.5rem 0.75rem;
-        }
-        
-        .mat-expansion-panel-header {
-            padding: 0 0.75rem;
-            height: 44px;
-        }
-        
-        .mat-mdc-fab.mat-mdc-mini-fab {
-            width: 40px;
-            height: 40px;
-        }
+    .mat-expansion-panel-body {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .mat-expansion-panel-header {
+        padding: 0 0.75rem;
+        height: 44px;
+    }
+    
+    .mat-mdc-fab.mat-mdc-mini-fab {
+        width: 40px;
+        height: 40px;
     }
 }
 
@@ -546,8 +542,7 @@ cdk-virtual-scroll-viewport {
             width: calc(33.333% - 0.08rem);
             max-width: calc(33.333% - 0.08rem);
             min-width: 60px;
-            
-            ::ng-deep .mat-mdc-form-field {
+              .mat-mdc-form-field {
                 .mat-mdc-form-field-infix {
                     padding: 8px 0;
                 }

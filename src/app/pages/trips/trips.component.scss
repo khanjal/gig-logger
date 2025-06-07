@@ -313,7 +313,7 @@
 }
 
 // Ensure trip form doesn't overlap with current average
-::ng-deep .trip-form-container trip-form .form-header {
+.trip-form-container trip-form .form-header {
   padding-right: 200px; // Space for current average component
   
   @media (max-width: 768px) {

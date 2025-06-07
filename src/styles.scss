@@ -454,16 +454,6 @@ mat-card-actions {
 }
 
 /* Material Button Overrides */
-.mat-mdc-fab,
-.mat-mdc-mini-fab {
-  border-radius: 0.75rem !important;
-  box-shadow: 0 2px 4px $shadow-light, 0 1px 2px $shadow-medium !important;
-  
-  &:hover {
-    box-shadow: 0 4px 8px $shadow-light, 0 2px 4px $shadow-medium !important;
-  }
-}
-
 .mat-mdc-fab.mat-primary {
   background-color: $primary-color !important;
   color: $text-inverse !important;
@@ -606,7 +596,7 @@ mat-card-actions {
   .form-field {
     flex: 1;
   }
-  
+
   @media (max-width: 480px) {
     .form-field {
       flex: none;
@@ -622,9 +612,8 @@ mat-card-actions {
   .form-field {
     flex: 1;
     min-width: 0; // Prevent flex items from overflowing
-    
-    // Ensure Material form fields fit properly in mobile
-    ::ng-deep .mat-mdc-form-field {
+      // Ensure Material form fields fit properly in mobile
+    .mat-mdc-form-field {
       width: 100%;
       min-width: 80px; // Minimum touch-friendly width
     }
@@ -648,8 +637,7 @@ mat-card-actions {
       flex: 1;
       min-width: calc(33.333% - 0.17rem);
       max-width: calc(33.333% - 0.17rem);
-      
-      ::ng-deep .mat-mdc-form-field {
+        .mat-mdc-form-field {
         min-width: 70px; // Slightly smaller for very small screens
       }
     }
@@ -791,51 +779,14 @@ mat-card-actions {
 
 /* Material Form Field Utilities with consistent heights */
 .form-field-compact {
-  ::ng-deep {
-    .mat-mdc-form-field {
-      width: 100%;
-      margin-bottom: 0;
-      
-      .mat-mdc-form-field-infix {
-        min-height: 48px;
-        display: flex;
-        align-items: center;
-        
-        @media (max-width: 768px) {
-          min-height: 44px;
-        }
-      }
-      
-      .mat-mdc-text-field-wrapper {
-        height: 48px;
-        display: flex;
-        align-items: center;
-        
-        @media (max-width: 768px) {
-          height: 44px;
-        }
-      }
-      
-      // Remove subscript wrapper spacing
-      .mat-mdc-form-field-subscript-wrapper {
-        margin-top: 0 !important;
-        min-height: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-        display: none !important;
-      }
-    }
-  }
-}
-
-/* Centered Input Utility (for pay/distance fields) */
-.form-field-centered {
-  ::ng-deep {
-    .mat-mdc-form-field {
-      align-items: center;
-      display: flex;
-      height: auto;
+  .mat-mdc-form-field {
+    width: 100%;
+    margin-bottom: 0;
+    
+    .mat-mdc-form-field-infix {
       min-height: 48px;
+      display: flex;
+      align-items: center;
       
       @media (max-width: 768px) {
         min-height: 44px;
@@ -843,7 +794,6 @@ mat-card-actions {
     }
     
     .mat-mdc-text-field-wrapper {
-      align-self: center;
       height: 48px;
       display: flex;
       align-items: center;
@@ -852,29 +802,61 @@ mat-card-actions {
         height: 44px;
       }
     }
-    
-    .mat-mdc-form-field-infix {
-      min-height: 48px;
-      padding: 8px 0;
-      display: flex;
-      align-items: center;
-      
-      @media (max-width: 768px) {
-        min-height: 44px;
-      }
+      // Remove subscript wrapper spacing
+    .mat-mdc-form-field-subscript-wrapper {
+      margin-top: 0 !important;
+      min-height: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      display: none !important;
     }
+  }
+}
+
+/* Centered Input Utility (for pay/distance fields) */
+.form-field-centered {
+  .mat-mdc-form-field {
+    align-items: center;
+    display: flex;
+    height: auto;
+    min-height: 48px;
     
-    input {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      text-align: center;
-      line-height: normal;
-      
-      @media (max-width: 768px) {
-        height: 44px;
-        min-height: 44px;
-      }
+    @media (max-width: 768px) {
+      min-height: 44px;
+    }
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    align-self: center;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      height: 44px;
+    }
+  }
+    .mat-mdc-form-field-infix {
+    min-height: 48px;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      min-height: 44px;
+    }
+  }
+  
+  input {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    line-height: normal;
+    
+    @media (max-width: 768px) {
+      height: 44px;
+      min-height: 44px;
     }
   }
 }
