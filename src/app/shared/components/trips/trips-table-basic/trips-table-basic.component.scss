@@ -11,6 +11,22 @@
   border-radius: 1rem;
   box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
   border: 1px solid $border-light;
+  width: 100%;
+  max-width: 100%;
+  
+  @media (max-width: 768px) {
+    margin: 0 0.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+    width: calc(100% - 1rem);
+  }
+  
+  @media (max-width: 480px) {
+    margin: 0 0.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    width: calc(100% - 0.5rem);
+  }
 }
 
 // Enhanced mobile table optimizations
@@ -40,6 +56,19 @@
     
     &:hover {
       background: linear-gradient(45deg, $primary-600, $accent-600);
+    }
+  }
+    // Dynamic table sizing
+  mat-table {
+    width: 100%;
+    min-width: 100%;
+    
+    @media (max-width: 768px) {
+      min-width: 380px; // Optimized for trips table readability
+    }
+    
+    @media (max-width: 480px) {
+      min-width: 320px; // Fits better on small screens
     }
   }
   
@@ -124,14 +153,63 @@ mat-header-cell {
   vertical-align: middle;
   font-size: 0.875rem;
   border-right: 1px solid rgba($border-light, 0.3);
+  text-overflow: ellipsis;
   
   &:last-child {
     border-right: none;
   }
   
+  // Dynamic column widths for better mobile experience
+  &.cdk-column-date {
+    width: 25%;
+    min-width: 90px;
+    max-width: 120px;
+  }
+  
+  &.cdk-column-service {
+    width: 25%;
+    min-width: 80px;
+    max-width: 100px;
+  }
+  
+  &.cdk-column-place {
+    width: 35%;
+    min-width: 100px;
+    flex: 1;
+  }
+  
+  &.cdk-column-tips {
+    width: 15%;
+    min-width: 70px;
+    max-width: 90px;
+    text-align: right;
+    font-weight: 600;
+  }
+  
   @media (min-width: 768px) {
     padding: 1.125rem 0.875rem; // Better spacing for tablets
     font-size: 0.9rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.625rem 0.375rem;
+    font-size: 0.8rem;
+    
+    &.cdk-column-date {
+      min-width: 75px;
+    }
+    
+    &.cdk-column-service {
+      min-width: 65px;
+    }
+    
+    &.cdk-column-place {
+      min-width: 85px;
+    }
+    
+    &.cdk-column-tips {
+      min-width: 60px;
+    }
   }
 }
 
@@ -171,10 +249,10 @@ mat-header-cell {
 // Mobile table optimizations for horizontal scrolling
 @media (max-width: 480px) {
   .trips-container {
-    margin: 0 -0.5rem 1.5rem -0.5rem; // Extend container to screen edges
+    margin: 0 0.25rem 1.5rem 0.25rem; // Better mobile margins
     border-radius: 0.5rem;
-    border-left: none;
-    border-right: none;
+    width: calc(100% - 0.5rem);
+    max-width: calc(100vw - 0.5rem);
   }
   
   .table-responsive {
@@ -192,51 +270,37 @@ mat-header-cell {
       border-radius: 4px;
     }
   }
-  
-  // Table adjustments for mobile with better spacing
+    // Table adjustments for mobile with better spacing
   mat-table {
-    min-width: 650px; // Ensure table is wide enough to scroll
+    min-width: 400px; // Optimized for trips table with 4 columns
     font-size: 0.8rem;
   }
   
   mat-cell,
   mat-header-cell {
-    padding: 0.625rem 0.5rem; // Improved mobile spacing
+    padding: 0.5rem 0.375rem; // Compact mobile spacing
     font-size: 0.8rem;
-    min-width: 80px; // Ensure minimum column width
     
-    // Specific column widths for better mobile experience
+    // Optimized column widths for trips table specifically
     &.cdk-column-date {
-      min-width: 90px;
+      width: 22%;
+      min-width: 75px;
     }
     
-    &.cdk-column-platform {
-      min-width: 85px;
-    }
-    
-    &.cdk-column-hours {
+    &.cdk-column-service {
+      width: 23%;
       min-width: 70px;
     }
     
-    &.cdk-column-miles {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-gas {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-earnings {
-      min-width: 80px;
+    &.cdk-column-place {
+      width: 40%;
+      min-width: 100px;
     }
     
     &.cdk-column-tips {
-      min-width: 70px;
-    }
-    
-    &.cdk-column-total {
-      min-width: 80px;
-      font-weight: 600;
+      width: 15%;
+      min-width: 60px;
+      text-align: right;
     }
   }
   
