@@ -1,4 +1,4 @@
-<div class="trips-container">
+<div class="table-container">
     @if (link) {
         <h2>
             <span class="title-content">
@@ -18,8 +18,7 @@
             <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
         </h3>
         <div class='table-responsive' #tableContainer>
-            <mat-table [dataSource]="tripGroup.trips">
-                <!-- ...existing table content... -->
+            <mat-table [dataSource]="tripGroup.trips" class="table-responsive-sizing">
                 <ng-container matColumnDef="service">
                     <mat-header-cell *matHeaderCellDef> Service </mat-header-cell>
                     <mat-cell *matCellDef="let trip"> {{trip.service}}-{{ trip.number ? trip.number : 0}} </mat-cell>
@@ -50,7 +49,7 @@
                 </ng-container>                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
             </mat-table>
-            <div class="scroll-more-indicator" 
+            <div class="table-scroll-indicator" 
                  [class.visible]="tableContainer.scrollWidth > tableContainer.clientWidth">
                 ← scroll for more →
             </div>
