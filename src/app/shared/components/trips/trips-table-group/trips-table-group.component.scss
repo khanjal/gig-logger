@@ -126,6 +126,46 @@ h3 {
   }
 }
 
+// Bottom scroll indicator with text
+.scroll-more-indicator {
+  text-align: center;
+  font-size: 0.75rem;
+  color: $primary-600;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, rgba($primary-50, 0.8) 0%, rgba($accent-50, 0.6) 100%);
+  border-top: 1px solid rgba($primary-200, 0.5);
+  border-radius: 0 0 6px 6px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  user-select: none;
+  
+  &.visible {
+    opacity: 0.6;
+    visibility: visible;
+    
+    &:hover {
+      opacity: 1;
+      background: linear-gradient(135deg, rgba($primary-100, 0.9) 0%, rgba($accent-100, 0.7) 100%);
+      color: $primary-700;
+      transform: translateY(-1px);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+    padding: 0.4rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.65rem;
+    padding: 0.35rem;
+    letter-spacing: 0.3px;
+  }
+}
+
 // Enhanced mobile table optimizations
 .table-responsive {
   display: block;
