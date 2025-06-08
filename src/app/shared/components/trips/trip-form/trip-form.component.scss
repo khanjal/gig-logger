@@ -274,3 +274,63 @@
             flex: 1 !important;
         }    }
 }
+
+// Desktop styles - ensure field-full-width elements are properly sized on larger screens
+@media (min-width: 769px) {
+    // Ensure all field-full-width elements are truly full width on desktop
+    .field-full-width,
+    app-search-input.field-full-width {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        display: block !important;
+    }
+    
+    // Specific targeting for search input components
+    .form-row app-search-input[formControlName="service"],
+    .form-row app-search-input[formControlName="region"], 
+    .form-row app-search-input[formControlName="place"],
+    .form-row app-search-input[formControlName="type"],
+    .form-row app-search-input[formControlName="name"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        display: block !important;
+    }
+    
+    // Ensure form rows without specific layout classes use full width
+    .form-row:not(.form-row--halves):not(.form-row--thirds) {
+        .form-field,
+        mat-form-field,
+        app-search-input {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 1 1 100% !important;
+        }
+        
+        .field-full-width {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 1 1 100% !important;
+        }
+    }
+    
+    // Handle form rows with buttons - fields should still be full width minus button space
+    .form-row:has(.toggle-button) {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        
+        .field-full-width,
+        app-search-input {
+            flex: 1 !important;
+            width: auto !important;
+            max-width: none !important;
+            min-width: 0 !important;
+        }
+        
+        .toggle-button {
+            flex-shrink: 0;
+        }
+    }
+}
