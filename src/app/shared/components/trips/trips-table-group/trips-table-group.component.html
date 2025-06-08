@@ -1,13 +1,22 @@
 <div class="trips-container">
     @if (link) {
-        <h2>{{ title }} <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
+        <h2>
+            <span class="title-content">
+                {{ title }} 
+                <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank" class="link-icon">
+                    <mat-icon>open_in_new</mat-icon>
+                </a>
+            </span>
+        </h2>
     }
     @else {
         <h2>{{ title }}</h2>
     }
     <div *ngFor="let tripGroup of tripGroups">
-        <h3>{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}}) <span class="button-right">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span></h3>
-        <div class='table-responsive'>
+        <h3>
+            <span class="trip-info">{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}})</span>
+            <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
+        </h3>        <div class='table-responsive'>
             <mat-table [dataSource]="tripGroup.trips">
                 <ng-container matColumnDef="service">
                     <mat-header-cell *matHeaderCellDef> Service </mat-header-cell>
