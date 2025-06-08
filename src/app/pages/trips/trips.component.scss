@@ -1,6 +1,32 @@
 // Mobile-First Trips Component Styles
 @import "../../shared/styles/color-vars";
 
+// Header with right-aligned toggle
+h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  // Keep items on same line for most screen sizes
+  @media (min-width: 480px) {
+    flex-wrap: nowrap;
+  }
+  
+  // Only stack on very small screens
+  @media (max-width: 479px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+    
+    .field-right {
+      align-self: flex-end;
+    }
+  }
+}
+
 :host {
   display: flex;
   flex-direction: column;
