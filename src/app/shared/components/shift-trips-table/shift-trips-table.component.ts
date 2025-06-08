@@ -3,16 +3,15 @@ import { CommonModule, NgIf, NgStyle } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { NgClass, CurrencyPipe } from '@angular/common';
-import { TruncatePipe } from '@pipes/truncate.pipe';
-import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftTripsQuickViewComponent } from '@components/shift-trips-quick-view/shift-trips-quick-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCard } from '@angular/material/card';
 import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { NoSecondsPipe as NoSecondsPipe_1 } from '../../pipes/no-seconds.pipe';
-import { TruncatePipe as TruncatePipe_1 } from '../../pipes/truncate.pipe';
+import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
+import { TruncatePipe as TruncatePipe_1 } from '@pipes/truncate.pipe';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-shift-trips-table',
@@ -51,6 +50,7 @@ export class ShiftTripsTableComponent {
   constructor(
     private tripService: TripService,
     private dialog: MatDialog,
+    private _logger: LoggerService
   ) {}
 
   async ngOnInit() { 
@@ -69,7 +69,7 @@ export class ShiftTripsTableComponent {
       
       this.trips = [...trips, ...excludedTrips];
     } catch (error) {
-      console.error('Error fetching trips:', error);
+      this._logger.error('Error fetching trips', { error, shiftKey });
     }
   }
 

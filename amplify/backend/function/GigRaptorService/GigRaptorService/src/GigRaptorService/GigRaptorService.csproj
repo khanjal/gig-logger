@@ -14,8 +14,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.1.1" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.3.0" />
-    <PackageReference Include="RaptorSheets.Gig" Version="1.1.0" />
+    <PackageReference Include="RaptorSheets.Gig" Version="1.1.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />
   </ItemGroup>
   <ItemGroup>

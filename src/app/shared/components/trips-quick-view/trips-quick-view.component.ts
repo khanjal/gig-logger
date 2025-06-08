@@ -9,16 +9,16 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { DateHelper } from '@helpers/date.helper';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { updateAction } from '@utils/action.utils';
 import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { NoSecondsPipe } from '../../pipes/no-seconds.pipe';
-import { ShortAddressPipe } from '../../pipes/short-address.pipe';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
     selector: 'trips-quick-view',
@@ -39,7 +39,7 @@ export class TripsQuickViewComponent {
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
-        private _gigLoggerService: GigLoggerService,
+        private _gigLoggerService: GigWorkflowService,
         private _tripService: TripService,
         private _shiftService: ShiftService,
       ) { }

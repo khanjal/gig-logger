@@ -2,13 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { MatFabButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
   selector: 'app-sheet-link',
@@ -25,10 +26,11 @@ export class SheetLinkComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   constructor(
-    private _gigLoggerService: GigLoggerService,
+    private _gigLoggerService: GigWorkflowService,
     private _spreadsheetService: SpreadsheetService,
     private _snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private _logger: LoggerService
   ) { }
 
   openCreateSheetDialog() {
@@ -42,12 +44,12 @@ export class SheetLinkComponent {
       if (result) {
         if (result.error) {
           // Handle error
-          console.error('Sheet creation failed:', result.error);
+          this._logger.error('Sheet creation failed', { error: result.error });
           this._snackBar.open('Error creating sheet', 'Close');
         } else {
           // Handle success
           this.linkSheet(result);
-          console.log('Sheet created successfully:', result);
+          this._logger.info('Sheet created successfully', { result });
           this._snackBar.open('Sheet created successfully', 'Close');
           this.parentReload.emit(); // Emit event to reload parent component
         }
@@ -66,7 +68,7 @@ export class SheetLinkComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // User selected a sheet
-        console.log('Selected sheet:', result);
+        this._logger.info('Selected sheet', { result });
         
         let sheetData = {} as ISheet;
         sheetData.properties = {
@@ -93,7 +95,7 @@ export class SheetLinkComponent {
           this._snackBar.open('Sheet linked successfully', 'Close');
           this.parentReload.emit(); // Emit event to reload parent component
         }).catch((error) => {
-          console.error('Error linking sheet:', error);
+          this._logger.error('Error linking sheet', { error });
           this._snackBar.open('Error linking sheet', 'Close');
         });
       }

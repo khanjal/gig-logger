@@ -29,6 +29,15 @@ export class DateHelper {
         return date.toLocaleDateString("sv-SE"); // Use Swedish (Sweden) since it has the format we want (yyyy-MM-dd).
     }
 
+    // Add missing methods TODO: fix these
+    static getDateISO(date: Date): string {
+        return date.toLocaleDateString("sv-SE");
+    }
+
+    static getDateKey(date: Date): string {
+        return date.toLocaleDateString("sv-SE");
+    }
+
     static getDays(): number {
         var date = new Date("01/01/1900");
         let time = new Date().getTime() - date.getTime();

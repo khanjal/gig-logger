@@ -2,12 +2,15 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IType } from '@interfaces/type.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
+import { LoggerService } from '../logger.service';
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TypeService extends GenericCrudService<IType> {
+    private _logger = new LoggerService();
+    
     constructor() {
       super(spreadsheetDB.types); // Pass the table reference
     }
@@ -32,7 +35,7 @@ export class TypeService extends GenericCrudService<IType> {
             let foundItem = items.find(x => x.type === item.type);
 
             if (foundItem) {
-                console.log(foundItem);
+                this._logger.debug('Found existing type item', foundItem);
                 item.id = foundItem.id;
                 item.bonus += foundItem.bonus;
                 item.cash += foundItem.cash;

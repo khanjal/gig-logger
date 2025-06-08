@@ -36,6 +36,7 @@ import { IType } from '@interfaces/type.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
+import { LoggerService } from '@services/logger.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
@@ -84,10 +85,10 @@ export class SearchInputComponent {
   filteredItems: Observable<ISearchItem[]> | undefined;
   showSearch: boolean = false;
   placeSearch: boolean = false;
-
   constructor(
     public dialog: MatDialog,
     private _addressService: AddressService,
+    private _logger: LoggerService,
     private _nameService: NameService,
     private _placeService: PlaceService,
     private _regionService: RegionService,
@@ -212,7 +213,7 @@ export class SearchInputComponent {
       const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.value)}`;
       window.open(googleMapsUrl, '_blank');
     } else {
-      console.error('No value provided for Google Maps navigation.');
+      this._logger.warn('No value provided for Google Maps navigation');
     }
   }
 
@@ -338,8 +339,10 @@ export class SearchInputComponent {
       }
     });
   }
-
-  // TODO See if this is needed: Set the proper cased value based on the search type
+  /**
+   * Sets the proper casing for the value based on the search type
+   * This ensures consistent data formatting across different search types
+   */
   private async setProperValue(value: string): Promise<string> {
     let properValue = "";
 

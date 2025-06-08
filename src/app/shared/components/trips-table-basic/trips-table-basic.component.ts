@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ITrip } from '@interfaces/trip.interface';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { NgClass, NgIf, CurrencyPipe, DatePipe } from '@angular/common';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
     selector: 'app-trips-table-basic',
