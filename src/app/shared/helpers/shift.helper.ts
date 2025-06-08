@@ -36,9 +36,7 @@ export class ShiftHelper {
     }
 
     static getTodaysShifts():  IShift[] {
-        //let shifts: ShiftModel[] = this.getUniqueShifts();
         let shifts: IShift[] = [];
-
         let todaysShifts: IShift[] = [];
 
         shifts.forEach(shift => {

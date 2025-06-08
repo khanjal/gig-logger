@@ -5,6 +5,8 @@ import { MatInput } from '@angular/material/input';
 import { NgIf, PercentPipe, CurrencyPipe } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { inject } from '@angular/core';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Component({
     selector: 'app-uber-calculator',
@@ -14,6 +16,8 @@ import { MatIcon } from '@angular/material/icon';
     imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatButton, MatIcon, PercentPipe, CurrencyPipe]
 })
 export class UberCalculatorComponent {
+  private logger = inject(LoggerService);
+  
   uberForm = new FormGroup({
     paidFare: new FormControl(''),
     paidPromotion: new FormControl(''),
@@ -33,21 +37,16 @@ export class UberCalculatorComponent {
     const paidFare: number = +(this.uberForm.value.paidFare ?? "1");
     const paidBoost: number = +(this.uberForm.value.paidPromotion ?? "1");
     const customer1Price: number = +(this.uberForm.value.customer1Price ?? "1");
-    const customer2Price: number = +(this.uberForm.value.customer2Price ?? "1");
-
-    const ratio = +((customer2Price * (customer1Price / 100)).toFixed(2));
-    console.log(ratio);
+    const customer2Price: number = +(this.uberForm.value.customer2Price ?? "1");    const ratio = +((customer2Price * (customer1Price / 100)).toFixed(2));
+    this.logger.debug('Calculated ratio:', ratio);
 
     if (customer1Price > customer2Price) {
       this.customer1Ratio = 1 - ratio;
-      this.customer2Ratio = ratio;
-    }
+      this.customer2Ratio = ratio;    }
     else {
       this.customer1Ratio = ratio;
       this.customer2Ratio = 1 - ratio;
     }
-
-    // this.ratio = +((customer1Price * (customer2Price/100)).toFixed(2));
 
     this.customer1Fare = +((paidFare * this.customer1Ratio).toFixed(2));
     this.customer2Fare = +((paidFare * this.customer2Ratio).toFixed(2));

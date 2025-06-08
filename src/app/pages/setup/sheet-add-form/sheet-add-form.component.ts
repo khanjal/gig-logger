@@ -39,12 +39,10 @@ export class SheetAddFormComponent {
   async load() {
     this.defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
   }
-
   public async addSheet() {
     this.saving = true;
 
     let spreadsheetId: string = this.sheetForm.value.sheetId ?? "";
-    // console.log(sheetId);
 
     if(spreadsheetId.includes("/")) {
       let spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
@@ -59,7 +57,6 @@ export class SheetAddFormComponent {
       return;
     }
 
-    // console.log(spreadsheetId);
     await this.setupSheet(spreadsheetId);
 
     this.sheetForm.reset();
@@ -75,11 +72,9 @@ export class SheetAddFormComponent {
     await this.addSheet();
     await this.load();
   }
-
   public async setupSheet(id: string) {
     await this.load();
   
-    // console.log(sheetName);
     let spreadsheet = {} as ISpreadsheet;
     spreadsheet.id = id;
     spreadsheet.default = "false";

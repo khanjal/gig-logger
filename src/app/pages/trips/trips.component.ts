@@ -11,11 +11,12 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { LoggerService } from '@services/logger.service';
 
 import { CurrentAverageComponent } from '@components/current-average/current-average.component';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
@@ -28,15 +29,16 @@ import { Subscription } from 'rxjs';
 import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { TripsQuickViewComponent } from '../../shared/components/trips-quick-view/trips-quick-view.component';
+import { TripsQuickViewComponent } from '@components/trips-quick-view/trips-quick-view.component';
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import { TruncatePipe } from "@pipes/truncate.pipe";
 
 @Component({
     selector: 'app-trip',
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, NgClass, TripsQuickViewComponent, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableGroupComponent]
+    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, NgClass, TripsQuickViewComponent, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableGroupComponent, TruncatePipe]
 })
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
@@ -59,21 +61,25 @@ export class TripComponent implements OnInit, OnDestroy {
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
   parentReloadSubscription!: Subscription;
-
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
-      private _gigLoggerService: GigLoggerService,
+      private _gigLoggerService: GigWorkflowService,
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
-      private viewportScroller: ViewportScroller
+      private viewportScroller: ViewportScroller,
+      private logger: LoggerService
     ) { }
-
   ngOnDestroy(): void {
     this._pollingService.stopPolling();
+    
+    // Unsubscribe from parent reload subscription to prevent memory leaks
+    if (this.parentReloadSubscription) {
+      this.parentReloadSubscription.unsubscribe();
+    }
   }
 
   async ngOnInit(): Promise<void> {
@@ -227,13 +233,12 @@ export class TripComponent implements OnInit, OnDestroy {
       return;
     }
     
-    console.log('Starting polling');
+    this.logger.debug('Starting polling');
     this._pollingService.stopPolling();
     await this._pollingService.startPolling();
   }
-
   stopPolling() {
-    console.log('Stopping polling');
+    this.logger.debug('Stopping polling');
     this._pollingService.stopPolling();
   }
 }

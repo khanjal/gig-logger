@@ -6,6 +6,7 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-header',
@@ -14,16 +15,17 @@ import { MatIcon } from '@angular/material/icon';
     standalone: true,
     imports: [MatToolbar, RouterLink, MatIcon, RouterOutlet]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   defaultSheet: ISpreadsheet | undefined;
   isAuthenticated = false;
+  private headerSubscription: Subscription;
   
   constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
     private authService: AuthGoogleService,
   ) { 
-    this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
+    this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
         this.load();
     });
   }
@@ -44,7 +46,6 @@ export class HeaderComponent implements OnInit {
       this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
     }
   }
-
   public getToolbarColor(): string {
     const subdomain = window.location.hostname.split('.')[0];
     switch (subdomain) {
@@ -54,6 +55,13 @@ export class HeaderComponent implements OnInit {
         return 'accent';
       default:
         return 'warn';
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.headerSubscription) {
+      this.headerSubscription.unsubscribe();
     }
   }
 }

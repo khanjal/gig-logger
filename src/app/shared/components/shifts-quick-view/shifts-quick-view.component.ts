@@ -1,10 +1,8 @@
-import { CommonModule, NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatCardModule, MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
-import { MatIconModule, MatIcon } from '@angular/material/icon';
+import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
 import { IShift } from '@interfaces/shift.interface';
-import { NoSecondsPipe } from "@pipes/no-seconds.pipe";
-import { ShiftTripsTableComponent } from "@components/shift-trips-table/shift-trips-table.component";
 import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
@@ -14,7 +12,7 @@ import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent as ShiftTripsTableComponent_1 } from '../shift-trips-table/shift-trips-table.component';
 import { MatFabButton } from '@angular/material/button';
-import { NoSecondsPipe as NoSecondsPipe_1 } from '../../pipes/no-seconds.pipe';
+import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
 
 @Component({
     selector: 'app-shifts-quick-view',

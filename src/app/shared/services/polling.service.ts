@@ -1,10 +1,11 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, interval } from 'rxjs';
-import { GigLoggerService } from './gig-logger.service';
+import { GigWorkflowService } from './gig-workflow.service';
 import { ShiftService } from './sheets/shift.service';
 import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
+import { LoggerService } from './logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
 
 const INTERVAL = 60000;
@@ -18,13 +19,13 @@ export class PollingService implements OnDestroy {
   private timerSubscription: Subscription | undefined;
   private enablePolling = false;
   private processing = false;
-
   constructor(
       private _snackBar: MatSnackBar,
       private _sheetService: SpreadsheetService,
-      private _gigLoggerService: GigLoggerService,
+      private _gigLoggerService: GigWorkflowService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
+      private _logger: LoggerService
     ) { }
 
   async startPolling() {
@@ -33,11 +34,11 @@ export class PollingService implements OnDestroy {
 
     this.timerSubscription = interval(INTERVAL) // Then every INTERVAL
       .subscribe(async () => {
-        console.log(`Processing: ${this.processing}`);
+        this._logger.debug(`Processing status: ${this.processing}`);
 
         // Failsafe to stop polling if it's disabled
         if (this.timerSubscription && !this.enablePolling) {
-          console.log('Forcing timer stop');
+          this._logger.info('Force stopping polling timer');
           this.timerSubscription.unsubscribe();
         }
 
@@ -48,30 +49,26 @@ export class PollingService implements OnDestroy {
         this.processing = true;
         // Functions to call
         await this.saveData();
-        console.log('Timer tick');
+        this._logger.debug('Timer tick completed');
         this.processing = false;
       });
   }
-
   stopPolling() {
     this.enablePolling = false;
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
-      console.log('Timer stopped');
+      this._logger.info('Polling timer stopped');
     }
   }
 
   async saveData() {
     let sheetData = {} as ISheet;
     let defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
-    sheetData.properties = {id: defaultSheet.id, name: ""};
-
-    // Get unsaved    
+    sheetData.properties = {id: defaultSheet.id, name: ""};    // Get unsaved    
     sheetData.trips = await this._tripService.getUnsaved();
     sheetData.shifts = await this._shiftService.getUnsavedShifts();
     
-    console.log('Unsaved trips:', sheetData.trips.length);
-    console.log('Unsaved shifts:', sheetData.shifts.length);
+    this._logger.info(`Found ${sheetData.trips.length} unsaved trips and ${sheetData.shifts.length} unsaved shifts`);
 
     if (sheetData.trips.length == 0 && sheetData.shifts.length == 0) {
       return;
@@ -79,16 +76,17 @@ export class PollingService implements OnDestroy {
 
     let warmupResult = await this._sheetService.warmUpLambda();
     if (!warmupResult) {
+      this._logger.error('Lambda warmup failed');
       return;
     }
 
-    console.log('Saving data');
+    this._logger.info('Saving data to spreadsheet');
 
     // Post data to Google Sheets
     let postResult = await this._gigLoggerService.postSheetData(sheetData);
     if (!postResult) {
       this._snackBar.open("Error saving data to spreadsheet");
-      console.error('Error saving data to spreadsheet');
+      this._logger.error('Error saving data to spreadsheet');
       return
     }
 
@@ -99,11 +97,10 @@ export class PollingService implements OnDestroy {
     this._snackBar.open("Trip(s) Saved to Spreadsheet");
     this.parentReload.emit();
   }
-
   async verifyData() {
-    console.log('Verifying data');
+    this._logger.info('Starting data verification');
     let result = await this._sheetService.warmUpLambda();
-    console.log('Lambda warm up result:', result);
+    this._logger.info('Lambda warm up result:', result);
     // Check to make sure all the trips and shifts are stored locally
     
   }

@@ -6,7 +6,8 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
   selector: 'app-sheet-create',
@@ -23,7 +24,8 @@ export class SheetCreateComponent {
   });
 
   constructor(
-    private _gigLoggerService: GigLoggerService,
+    private _gigLoggerService: GigWorkflowService,
+    private _logger: LoggerService,
     private dialogRef: MatDialogRef<SheetCreateComponent>
   ) { }
 
@@ -42,7 +44,7 @@ export class SheetCreateComponent {
       // Close modal and pass the result back to parent
       this.dialogRef.close(result);
     } catch (error) {
-      console.error('Error creating sheet:', error);
+      this._logger.error('Error creating sheet', { error, sheetName: this.sheetCreate.value.sheetName });
       
       // Close modal and pass error back to parent
       this.dialogRef.close({ error: error });

@@ -1,5 +1,5 @@
 // Angular imports
-import { Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
@@ -13,7 +13,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ISheet } from '@interfaces/sheet.interface';
 
 // Application-specific imports - Services
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
@@ -46,7 +46,7 @@ interface SyncState {
     standalone: true,
     imports: [NgFor, NgClass, MatFabButton]
 })
-export class DataSyncModalComponent {
+export class DataSyncModalComponent implements OnInit, OnDestroy {
     @ViewChild('terminal') terminalElement!: ElementRef;
     
     // Timer related properties
@@ -79,7 +79,7 @@ export class DataSyncModalComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public type: SyncType,
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
-        private _gigLoggerService: GigLoggerService,
+        private _gigLoggerService: GigWorkflowService,
         private _sheetService: SpreadsheetService,
         private _shiftService: ShiftService,
         private _tripService: TripService,
@@ -306,5 +306,10 @@ export class DataSyncModalComponent {
                     this.terminalElement.nativeElement.scrollHeight;
             }
         }, 0);
+    }
+
+    ngOnDestroy(): void {
+        // Clean up timer subscription to prevent memory leaks
+        this.stopTimer();
     }
 }

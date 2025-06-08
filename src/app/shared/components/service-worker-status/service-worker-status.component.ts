@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
+import { LoggerService } from '@services/logger.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-service-worker-status',
@@ -11,22 +13,24 @@ import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-work
   templateUrl: './service-worker-status.component.html',
   styleUrl: './service-worker-status.component.scss',
 })
-export class ServiceWorkerStatusComponent {
+export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   serviceWorkerStatus: string = 'Checking...';
   isUpdateAvailable: boolean = false;
+  private versionUpdateSubscription: Subscription | undefined;
 
-  constructor(private swUpdate: SwUpdate) {}
+  constructor(
+    private swUpdate: SwUpdate,
+    private logger: LoggerService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     // Check if the service worker is enabled
     if (this.swUpdate.isEnabled) {
-      this.serviceWorkerStatus = 'Active';
-
-      // Listen for version updates
-      this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
+      this.serviceWorkerStatus = 'Active';      // Listen for version updates
+      this.versionUpdateSubscription = this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
         if (event.type === 'VERSION_READY') {
           const versionReadyEvent = event as VersionReadyEvent;
-          console.log(`New version available: ${versionReadyEvent.latestVersion.hash}`);
+          this.logger.info(`New version available: ${versionReadyEvent.latestVersion.hash}`);
           this.serviceWorkerStatus = 'Update Available';
           this.isUpdateAvailable = true;
         }
@@ -44,6 +48,13 @@ export class ServiceWorkerStatusComponent {
       this.serviceWorkerStatus = 'Online';
     });
   }
+
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.versionUpdateSubscription) {
+      this.versionUpdateSubscription.unsubscribe();
+    }
+  }
   
   // Trigger an update if available
   updateApp(): void {
@@ -53,7 +64,6 @@ export class ServiceWorkerStatusComponent {
       });
     }
   }
-
   forceCacheUpdate(): void {
     if ('caches' in window) {
       // Clear all caches
@@ -61,7 +71,7 @@ export class ServiceWorkerStatusComponent {
         cacheNames.forEach(cacheName => {
           caches.delete(cacheName).then(deleted => {
             if (deleted) {
-              console.log(`Cache ${cacheName} deleted successfully.`);
+              this.logger.debug(`Cache ${cacheName} deleted successfully.`);
             }
           });
         });
@@ -72,21 +82,21 @@ export class ServiceWorkerStatusComponent {
             registrations.forEach(registration => {
               registration.unregister().then(unregistered => {
                 if (unregistered) {
-                  console.log('Service worker unregistered successfully.');
+                  this.logger.debug('Service worker unregistered successfully.');
                 }
               });
             });
           }).finally(() => {
-            console.log('All caches cleared and service worker unregistered. Reloading the page...');
+            this.logger.info('All caches cleared and service worker unregistered. Reloading the page...');
             document.location.reload();
           });
         } else {
-          console.warn('Service Worker API not supported in this browser.');
+          this.logger.warn('Service Worker API not supported in this browser.');
           document.location.reload();
         }
       });
     } else {
-      console.warn('Caches API not supported in this browser.');
+      this.logger.warn('Caches API not supported in this browser.');
       document.location.reload();
     }
   }

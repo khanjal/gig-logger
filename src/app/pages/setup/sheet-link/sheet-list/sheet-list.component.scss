@@ -1,50 +1,60 @@
 .sheet-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   max-width: 800px;
-  margin: 0 auto;
-  padding: 16px;
 }
 
-.search-field {
-  width: 100%;
-  margin-bottom: 16px;
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  margin: 0 auto;
 }
 
 .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px; // Reduced from 40px
+  justify-content: center;
+  padding: 24px;
+  min-height: 200px;
   
   p {
-    margin-top: 12px; // Reduced from 16px
+    margin-top: 12px;
     color: rgba(0, 0, 0, 0.6);
   }
 }
 
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 24px; // Reduced from 40px
+  padding: 24px;
+  min-height: 200px;
   color: rgba(0, 0, 0, 0.6);
   
   .empty-icon {
-    font-size: 48px; // Reduced from 64px
+    font-size: 48px;
     width: 48px;
     height: 48px;
-    margin-bottom: 12px; // Reduced from 16px
+    margin-bottom: 12px;
     opacity: 0.5;
   }
   
   h3 {
-    margin: 12px 0 6px 0; // Reduced margins
+    margin: 12px 0 6px 0;
     color: rgba(0, 0, 0, 0.8);
   }
 }
 
 .sheets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // Slightly smaller cards
-  gap: 12px; // Reduced from 16px
-  margin-bottom: 16px; // Reduced from 24px
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  padding-bottom: 20px; // Space before sticky buttons
 }
 
 .sheet-card {
@@ -54,12 +64,12 @@
   position: relative;
   
   mat-card-content {
-    padding: 12px !important; // Reduced padding inside cards
+    padding: 12px !important;
   }
   
   &:hover {
-    transform: translateY(-1px); // Reduced from -2px
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); // Smaller shadow
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
   }
   
   &.selected {
@@ -71,12 +81,12 @@
 .sheet-header {
   display: flex;
   align-items: flex-start;
-  gap: 10px; // Reduced from 12px
+  gap: 10px;
 }
 
 .sheet-icon {
   color: #0f9d58;
-  font-size: 24px; // Reduced from 32px
+  font-size: 24px;
   width: 24px;
   height: 24px;
   flex-shrink: 0;
@@ -88,63 +98,61 @@
 }
 
 .sheet-name {
-  margin: 0 0 4px 0; // Reduced from 8px
-  font-size: 14px; // Reduced from 16px
+  margin: 0 0 4px 0;
+  font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.sheet-meta {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px; // Reduced from 4px
-  font-size: 11px; // Reduced from 12px
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.created-date, .file-size {
-  display: flex;
-  align-items: center;
-  gap: 3px; // Reduced from 4px
-}
-
-.meta-icon {
-  font-size: 12px; // Reduced from 14px
-  width: 12px;
-  height: 12px;
-}
-
 .selection-indicator {
   position: absolute;
-  top: 6px; // Reduced from 8px
+  top: 6px;
   right: 6px;
   color: #1976d2;
   
   mat-icon {
-    font-size: 18px; // Reduced from 20px
+    font-size: 18px;
     width: 18px;
     height: 18px;
   }
 }
 
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px; // Reduced from 12px
-  padding-top: 12px; // Reduced from 16px
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+// Sticky bottom buttons
+.button-container {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  padding: 16px;
+  z-index: 10;
 }
 
 // Responsive design
 @media (max-width: 768px) {
-  .sheets-grid {
-    grid-template-columns: 1fr;
+  .sheet-list-container {
+    height: 100vh;
   }
   
-  .sheet-card {
-    margin-bottom: 6px; // Reduced from 8px
+  .content-area {
+    padding: 12px;
+  }
+  
+  .sheets-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .button-container {
+    padding: 12px;
+  }
+  
+  .row-flex {
+    gap: 12px;
+    
+    button {
+      min-width: 120px;
+    }
   }
 }
