@@ -33,7 +33,7 @@
 h2 {
   margin: 0 0 1rem 0;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, $primary-200 0%, $primary-100 100%);
+  background: $primary-100;
   color: $primary-800;
   font-weight: 700;
   font-size: 1.5rem;
@@ -78,7 +78,7 @@ h2 {
 h3 {
   margin: 1rem 0 0.5rem 0;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, $primary-100 0%, $primary-50 100%);
+  background: $primary-50;
   border-radius: 0.5rem;
   color: $primary-700;
   font-weight: 600;
@@ -234,7 +234,7 @@ mat-header-row {
 
 // Enhanced Header Row Styling
 mat-header-row {
-  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+  background: $primary-50;
   color: $primary-700;
   font-weight: 600;
   border-bottom: 2px solid $primary-200;
@@ -243,15 +243,15 @@ mat-header-row {
 // Alternating Row Colors
 mat-row {
   &:nth-child(even) {
-    background: linear-gradient(135deg, $primary-50 0%, rgba($primary-100, 0.3) 100%);
+    background: $primary-50;
   }
 
   &:nth-child(odd) {
-    background: linear-gradient(135deg, $surface-color 0%, rgba($accent-50, 0.2) 100%);
+    background: $surface-color;
   }
   
   &:hover {
-    background: linear-gradient(135deg, $primary-100 0%, $accent-100 100%) !important;
+    background: $primary-100 !important;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px $shadow-light;
   }
