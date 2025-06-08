@@ -243,11 +243,11 @@ mat-header-row {
 // Alternating Row Colors
 mat-row {
   &:nth-child(even) {
-    background: $primary-50;
+    background: $surface-color;
   }
 
   &:nth-child(odd) {
-    background: $surface-color;
+    background: rgba($primary-50, 0.3);
   }
   
   &:hover {
