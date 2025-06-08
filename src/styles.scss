@@ -423,9 +423,19 @@ div.mat-expansion-panel-body {
   padding: 0;
 }
 
+.mat-expansion-panel-content {
+  background: none !important;
+  border: none !important;
+  
+  .mat-expansion-panel-body {
+    background: none !important;
+    border: none !important;
+  }
+}
+
 .mat-expansion-indicator,
 .mat-expansion-indicator:after {
-  color: $accent-color !important;
+  color: $primary-color !important;
 }
 
 /* Material Card Overrides */
