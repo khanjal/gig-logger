@@ -27,7 +27,7 @@
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; let i = dataIndex; columns: displayedColumns;" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
-            <mat-row *matRowDef="let row; let i = dataIndex; columns: ['secondary'];" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
+            <mat-row *matRowDef="let row; let i = dataIndex; columns: ['secondary']; when: hasSecondaryData" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
         </mat-table>
     </div>
 </div>

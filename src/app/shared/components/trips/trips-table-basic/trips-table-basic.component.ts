@@ -19,4 +19,8 @@ export class TripsTableBasicComponent implements OnInit {
   ngOnInit() { 
     this.displayedColumns = ['date', 'service', 'place', 'tips'];
   }
+
+  hasSecondaryData = (index: number, trip: ITrip): boolean => {
+    return !!(trip.endUnit || trip.note);
+  };
 }
