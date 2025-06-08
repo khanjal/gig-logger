@@ -87,7 +87,7 @@ mat-table {
   border-collapse: separate;
   border-spacing: 0;
   background: $surface-color;
-    // Dynamic sizing for responsive behavior
+  // Dynamic sizing for responsive behavior
   &.table-responsive-sizing {
     width: 100%;
     min-width: 100%;
@@ -99,6 +99,13 @@ mat-table {
     @media (max-width: 480px) {
       min-width: 720px; // Increased from 580px for wider address display
     }
+  }
+  
+  // Compact sizing for tables that should fit within container
+  &.table-fit-container {
+    width: 100%;
+    min-width: 100%;
+    // No forced minimum widths - table will fit available space
   }
 }
 
@@ -495,6 +502,29 @@ mat-header-cell {
   width: 90px;
   min-width: 80px;
   max-width: 110px;
+  
+  // Reduced padding for date/time columns
+  &.date-compact {
+    width: 75px;
+    min-width: 65px;
+    max-width: 85px;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+    
+    @media (max-width: 768px) {
+      width: 70px;
+      min-width: 60px;
+      padding-left: 0.2rem !important;
+      padding-right: 0.2rem !important;
+    }
+    
+    @media (max-width: 480px) {
+      width: 65px;
+      min-width: 55px;
+      padding-left: 0.15rem !important;
+      padding-right: 0.15rem !important;
+    }
+  }
 }
 
 .table-col-currency {
@@ -502,6 +532,29 @@ mat-header-cell {
   min-width: 80px;
   max-width: 120px;
   text-align: right;
+  
+  // Reduced padding for tips/currency columns
+  &.tips-compact {
+    width: 80px;
+    min-width: 70px;
+    max-width: 90px;
+    padding-left: 0.25rem !important;
+    padding-right: 0.3rem !important;
+    
+    @media (max-width: 768px) {
+      width: 75px;
+      min-width: 65px;
+      padding-left: 0.2rem !important;
+      padding-right: 0.25rem !important;
+    }
+    
+    @media (max-width: 480px) {
+      width: 70px;
+      min-width: 60px;
+      padding-left: 0.15rem !important;
+      padding-right: 0.2rem !important;
+    }
+  }
 }
 
 // =============================================================================
