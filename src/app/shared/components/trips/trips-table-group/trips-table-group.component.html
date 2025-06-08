@@ -12,7 +12,7 @@
     @else {
         <h2>{{ title }}</h2>
     }
-    <div *ngFor="let tripGroup of tripGroups">
+    <div *ngFor="let tripGroup of tripGroups" class="trip-group">
         <h3>
             <span class="trip-info">{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}})</span>
             <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>

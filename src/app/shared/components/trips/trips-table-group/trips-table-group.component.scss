@@ -107,6 +107,35 @@ h3 {
 }
 
 // =============================================================================
+// TRIP GROUP SPACING
+// =============================================================================
+
+// Trip group container spacing
+.trip-group {
+  margin-bottom: 2rem;
+  
+  &:last-child {
+    margin-bottom: 1rem; // Reduced margin for the last group
+  }
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1.5rem;
+    
+    &:last-child {
+      margin-bottom: 0.75rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 1.25rem;
+    
+    &:last-child {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+// =============================================================================
 // COMPONENT-SPECIFIC DATA STYLING
 // =============================================================================
 
