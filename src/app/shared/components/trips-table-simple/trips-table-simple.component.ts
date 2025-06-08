@@ -3,9 +3,9 @@ import { ITrip } from '@interfaces/trip.interface';
 import { NgIf, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
-import { NoSecondsPipe } from '../../pipes/no-seconds.pipe';
-import { ShortAddressPipe } from '../../pipes/short-address.pipe';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 @Component({
     selector: 'trips-table-simple',
@@ -19,7 +19,11 @@ export class TripsTableSimpleComponent implements OnInit {
   @Input() link: string = "";
   @Input() trips: ITrip[] = [];
   
-  // TODO: Add grouping: https://stackblitz.com/edit/angular-material-table-row-grouping?file=src%2Fapp%2Fapp.module.ts
+  /**
+   * Future enhancement: Add row grouping functionality
+   * Reference implementation: https://stackblitz.com/edit/angular-material-table-row-grouping
+   * This would allow grouping trips by date, service, or other criteria
+   */
   displayedColumns: string[] = [];
 
   ngOnInit() { 

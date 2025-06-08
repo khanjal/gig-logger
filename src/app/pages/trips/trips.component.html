@@ -50,7 +50,7 @@
     </mat-accordion>
     <br/>
     <div class="row-grid">
-        <app-trips-table-group class="table" title="{{ defaultSheet?.name }} - Trips" link="{{defaultSheet?.id}}" [days]=6></app-trips-table-group>
+        <app-trips-table-group class="table" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>
     </div>
 
     <!-- Floating "Back to Top" button -->

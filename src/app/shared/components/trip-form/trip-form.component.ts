@@ -23,7 +23,7 @@ import { ITrip } from '@interfaces/trip.interface';
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
 import { DeliveryService } from '@services/delivery.service';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -34,6 +34,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { sort } from '@helpers/sort.helper';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
+import { ShiftCreationHelper } from '@helpers/shift-creation.helper';
 
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
@@ -120,7 +121,7 @@ export class TripFormComponent implements OnInit {
       private _snackBar: MatSnackBar,
       private _addressService: AddressService,
       private _deliveryService: DeliveryService,
-      private _gigLoggerService: GigLoggerService,
+      private _gigLoggerService: GigWorkflowService,
       private _nameService: NameService,
       private _placeService: PlaceService,
       private _shiftService: ShiftService,
@@ -147,12 +148,9 @@ export class TripFormComponent implements OnInit {
 
     await this.setDefaultShift();
   }
-
-  // TODO move this to a helper or service
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
     if (!this.tripForm.value.shift || this.tripForm.value.shift == "new") {
-      // console.log("New Shift!");
       let shifts: IShift[] = [];
       let today: string = DateHelper.getISOFormat();
 
@@ -277,10 +275,8 @@ export class TripFormComponent implements OnInit {
       }
     });
   }
-
   private async setDefaultShift() {
     this.shifts = await this._shiftService.getPreviousWeekShifts();
-    // console.log(this.shifts);
 
     if (this.shifts.length > 0) {
       sort(this.shifts, '-key');
@@ -334,8 +330,8 @@ export class TripFormComponent implements OnInit {
     await this.formReset();
     this.parentReload.emit();
     
-    // console.log(trip);
-    await this._timerService.delay(1000); // TODO: see if parent will scroll after done.
+    // Give the UI time to update before scrolling
+    await this._timerService.delay(1000);
     this._viewportScroller.scrollToAnchor("todaysTrips");
   }
 

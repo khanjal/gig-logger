@@ -12,9 +12,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 // App Components
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
-import { DiagnosticsComponent } from '../../shared/components/diagnostics/diagnostics.component';
+import { DiagnosticsComponent } from '@components/diagnostics/diagnostics.component';
 import { LoginComponent } from "@components/login/login.component";
-import { ServiceWorkerStatusComponent } from '../../shared/components/service-worker-status/service-worker-status.component';
+import { ServiceWorkerStatusComponent } from '@components/service-worker-status/service-worker-status.component';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
@@ -27,11 +27,12 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';
 import { CommonService } from '@services/common.service';
+import { LoggerService } from '@services/logger.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
-import { AuthStatusComponent } from "../../shared/components/auth-status/auth-status.component";
+import { AuthStatusComponent } from "@components/auth-status/auth-status.component";
 
 @Component({
     selector: 'app-setup',
@@ -66,11 +67,11 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
-
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
     private _commonService: CommonService,
+    private _logger: LoggerService,
     private _spreadsheetService: SpreadsheetService,
     private _shiftService: ShiftService,
     private _tripService: TripService,
@@ -156,7 +157,7 @@ export class SetupComponent {
 
     // Add spreadsheets back to DB
     for (const spreadsheet of this.spreadsheets) {
-      console.log(`Adding spreadsheet: ${spreadsheet.name}`);
+      this._logger.info(`Adding spreadsheet: ${spreadsheet.name}`);
       await this._spreadsheetService.update(spreadsheet);
     };
 
@@ -177,18 +178,21 @@ export class SetupComponent {
   public async deleteLocalData() {
     this.deleting = true;
     this._spreadsheetService.deleteLocalData();
-    this.deleting = false;
-
+    this.deleting = false;    
     localStorage.clear();
-    // window.location.reload();
 
     this._snackBar.open("All Data Deleted");
 
     await this.load();
   }
-
   public getDataSize() {
-    // return LocalStorageHelper.formatBytes(LocalStorageHelper.getDataSize());
+    /**
+     * Data size calculation placeholder
+     * Future implementation: Create LocalStorageHelper utility to calculate
+     * total storage usage across all IndexedDB stores and localStorage
+     * Should return formatted string like "2.5 MB" or "500 KB"
+     */
+    return "0 bytes";
   }
 
   private updateHeader(){

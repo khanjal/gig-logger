@@ -4,7 +4,7 @@ import { TripFormComponent } from './trip-form.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AddressService } from '@services/sheets/address.service';
 import { DeliveryService } from '@services/delivery.service';
-import { GigLoggerService } from '@services/gig-logger.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
@@ -26,7 +26,7 @@ describe('TripFormComponent', () => {
   let fixture: ComponentFixture<TripFormComponent>;
   const mockAddressService = jasmine.createSpyObj("AddressService", ["getRemoteAddress", "getRemoteAddresses"]);
   const mockDeliveryService = jasmine.createSpyObj("DeliveryService", ["queryRemoteDeliveries", "getRemoteAddresses"]);
-  const mockGigLoggerService = jasmine.createSpyObj("GigLoggerService", ["calculateShiftTotals"]);
+  const mockGigWorkflowService = jasmine.createSpyObj("GigWorkflowService", ["calculateShiftTotals"]);
   const mockNameService = jasmine.createSpyObj("NameService", ["findRemoteName", "getRemoteNames"]);
   const mockPlaceService = jasmine.createSpyObj("PlaceService", ["getRemotePlace", "getRemotePlaces"]);
   const mockRegionService = jasmine.createSpyObj("RegionService", ["filter", "get"]);
@@ -44,7 +44,7 @@ describe('TripFormComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: AddressService, useValue: mockAddressService },
         { provide: DeliveryService, useValue: mockDeliveryService },
-        { provide: GigLoggerService, useValue: mockGigLoggerService },
+        { provide: GigWorkflowService, useValue: mockGigWorkflowService },
         { provide: NameService, useValue: mockNameService },
         { provide: PlaceService, useValue: mockPlaceService },
         { provide: RegionService, useValue: mockRegionService },

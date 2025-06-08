@@ -2,12 +2,15 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IRegion } from '@interfaces/region.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
+import { LoggerService } from '../logger.service';
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegionService extends GenericCrudService<IRegion> {
+    private _logger = new LoggerService();
+    
     constructor() {
       super(spreadsheetDB.regions); // Pass the table reference
     }
@@ -27,12 +30,11 @@ export class RegionService extends GenericCrudService<IRegion> {
 
      public async append(regions: IRegion[]) {
         let items = await this.list();
-
         regions.forEach(async item => {
             let foundItem = items.find(x => x.region === item.region);
 
             if (foundItem) {
-                console.log(foundItem);
+                this._logger.debug('Found existing region item', foundItem);
                 item.id = foundItem.id;
                 item.bonus += foundItem.bonus;
                 item.cash += foundItem.cash;
