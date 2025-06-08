@@ -131,7 +131,7 @@ mat-header-row {
 
 /* Header Row Styling */
 mat-header-row {
-  background: $primary-50;
+  background: $primary-50 !important;
   color: $primary-700;
   font-weight: 600;
   border-bottom: 2px solid $primary-200;
@@ -150,14 +150,14 @@ mat-header-row {
   
   // Alternative light theme
   &.table-header-light {
-    background: $surface-secondary;
+    background: $surface-secondary !important;
     color: $text-primary;
     border-bottom: 1px solid $border-light;
   }
   
   // Alternative accent theme
   &.table-header-accent {
-    background: $accent-50;
+    background: $accent-50 !important;
     color: $accent-700;
     border-bottom: 2px solid $accent-200;
   }
