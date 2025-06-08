@@ -72,30 +72,6 @@
       min-width: 260px; // Very small to prevent scrolling
     }
   }
-  
-  // Mobile-specific scroll indicator
-  @media (max-width: 768px) {
-    &::after {
-      content: '← Scroll for more →';
-      position: absolute;
-      bottom: 0.25rem;
-      right: 1rem;
-      font-size: 0.7rem;
-      color: $text-secondary;
-      opacity: 0.6;
-      pointer-events: none;
-      animation: fadeInOut 3s ease-in-out infinite;
-    }
-    
-    &::-webkit-scrollbar {
-      height: 8px;
-    }
-  }
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
 }
 
 // Table Styles - Mobile First
@@ -159,15 +135,29 @@ mat-header-cell {
   &:last-child {
     border-right: none;
   }
-  
-  // Dynamic column widths for better mobile experience
-  &.cdk-column-date,
-  &.cdk-column-service,
-  &.cdk-column-place,
-  &.cdk-column-tips {
+    // Dynamic column widths for better mobile experience
+  &.cdk-column-date {
     width: 25%;
     min-width: 50px;
     max-width: 70px;
+  }
+  
+  &.cdk-column-service {
+    width: 25%;
+    min-width: 50px;
+    max-width: 70px;
+  }
+  
+  &.cdk-column-place {
+    width: 35%;
+    min-width: 60px;
+    max-width: 90px;
+  }
+  
+  &.cdk-column-tips {
+    width: 15%;
+    min-width: 40px;
+    max-width: 50px;
   }
   
   @media (min-width: 768px) {
@@ -178,13 +168,28 @@ mat-header-cell {
   @media (max-width: 480px) {
     padding: 0.2rem 0.1rem; // Very compact mobile spacing
     font-size: 0.7rem;
-    
-    &.cdk-column-date,
-    &.cdk-column-service,
-    &.cdk-column-place,
-    &.cdk-column-tips {
+      &.cdk-column-date {
+      width: 25%;
       min-width: 40px;
       max-width: 60px;
+    }
+    
+    &.cdk-column-service {
+      width: 25%;
+      min-width: 40px;
+      max-width: 60px;
+    }
+    
+    &.cdk-column-place {
+      width: 35%;
+      min-width: 50px;
+      max-width: 70px;
+    }
+    
+    &.cdk-column-tips {
+      width: 15%;
+      min-width: 30px;
+      max-width: 45px;
     }
   }
 }
@@ -195,13 +200,13 @@ mat-header-cell {
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   
   @media (min-width: 768px) {
     font-size: 0.8rem;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 }
 
@@ -257,15 +262,29 @@ mat-header-cell {
   mat-header-cell {
     padding: 0.2rem 0.1rem; // Very compact mobile spacing
     font-size: 0.7rem;
-    
-    // Optimized column widths for trips table specifically
-    &.cdk-column-date,
-    &.cdk-column-service,
-    &.cdk-column-place,
-    &.cdk-column-tips {
+      // Optimized column widths for trips table specifically
+    &.cdk-column-date {
       width: 25%;
       min-width: 40px;
       max-width: 60px;
+    }
+    
+    &.cdk-column-service {
+      width: 25%;
+      min-width: 40px;
+      max-width: 60px;
+    }
+    
+    &.cdk-column-place {
+      width: 35%;
+      min-width: 50px;
+      max-width: 70px;
+    }
+    
+    &.cdk-column-tips {
+      width: 15%;
+      min-width: 30px;
+      max-width: 45px;
     }
   }
   
@@ -276,8 +295,6 @@ mat-header-cell {
     top: 0;
     z-index: 10;
     background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
   }
   
   // Better row spacing on mobile
@@ -313,15 +330,16 @@ mat-header-cell {
   .trips-container {
     margin-bottom: 2rem;
   }
-  
-  mat-cell,
+    mat-cell,
   mat-header-cell {
-    padding: 1.375rem 1.125rem; // Better desktop spacing
+    padding: 1.125rem 1.125rem; // Better desktop spacing
     font-size: 1rem;
   }
   
   mat-header-cell {
     font-size: 0.9rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
   
   mat-row {
