@@ -1,0 +1,423 @@
+// Mobile-First Shift Trips Table Component Styles
+@import "color-vars";
+
+// Container - Mobile First
+.shift-trips-container {
+  padding: 1rem;
+  background: $background-color;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+  
+  @media (min-width: 1024px) {
+    padding: 2rem;
+  }
+}
+
+// Header Section
+.header-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  
+  @media (min-width: 480px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-primary;
+    
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// Mini Button
+.mini-button {
+  min-height: 36px;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-700 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba($primary-color, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (min-width: 768px) {
+    min-height: 40px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+// Trips Container
+.trips-container {
+  background: $surface-color;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  overflow: hidden;
+  margin: 0 auto;
+  
+  @media (min-width: 768px) {
+    padding: 0.5rem;
+  }
+}
+
+// Table Responsive Container
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $surface-secondary;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 3px;
+    
+    &:hover {
+      background: $text-tertiary;
+    }
+  }
+}
+
+// Mobile Card View (for small screens)
+@media (max-width: 767px) {
+  .table-responsive {
+    display: none;
+  }
+  
+  .mobile-cards {
+    display: block;
+    
+    .trip-card {
+      background: $surface-color;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid $border-light;
+      box-shadow: 0 1px 3px $shadow-light;
+      transition: all 0.2s ease-in-out;
+      
+      &:hover {
+        box-shadow: 0 4px 12px $shadow-medium;
+        transform: translateY(-1px);
+      }
+      
+      &:nth-child(even) {
+        background: linear-gradient(135deg, $primary-50 0%, $surface-color 100%);
+      }
+      
+      &:nth-child(odd) {
+        background: linear-gradient(135deg, $secondary-50 0%, $surface-color 100%);
+      }
+      
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid $border-light;
+        
+        .trip-time {
+          font-weight: 600;
+          color: $primary-color;
+          font-size: 1rem;
+        }
+        
+        .trip-earnings {
+          font-weight: 600;
+          color: $success-color;
+          font-size: 1rem;
+        }
+      }
+      
+      .card-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        
+        .detail-item {
+          .detail-label {
+            font-size: 0.75rem;
+            color: $text-tertiary;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+          }
+          
+          .detail-value {
+            font-size: 0.875rem;
+            color: $text-primary;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Desktop Table View
+@media (min-width: 768px) {
+  .mobile-cards {
+    display: none;
+  }
+  
+  .table-responsive {
+    display: block;
+  }
+}
+
+// Material Table Styling
+mat-table {
+  width: 100%;
+  background: transparent;
+  margin: 0;
+  
+  // Header Row
+  mat-header-row {
+    background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
+    border-bottom: 1px solid $border-color;
+    height: 56px;
+    
+    mat-header-cell {
+      font-weight: 600;
+      color: $text-primary;
+      font-size: 0.875rem;
+      padding: 1rem 0.75rem;
+      border-right: 1px solid $border-light;
+      
+      &:last-child {
+        border-right: none;
+      }
+      
+      @media (min-width: 1024px) {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  // Data Rows
+  mat-row {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    min-height: 52px;
+    
+    &:hover {
+      background: $primary-50 !important;
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px $shadow-light;
+    }
+    
+    &:nth-child(even) {
+      background: linear-gradient(135deg, $primary-50 0%, rgba($primary-color, 0.02) 100%);
+    }
+    
+    &:nth-child(odd) {
+      background: linear-gradient(135deg, $secondary-50 0%, rgba($secondary-color, 0.02) 100%);
+    }
+    
+    mat-cell {
+      padding: 0.75rem;
+      border-right: 1px solid $border-light;
+      font-size: 0.875rem;
+      color: $text-primary;
+      line-height: 1.4;
+      
+      &:last-child {
+        border-right: none;
+      }
+      
+      @media (min-width: 1024px) {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+      }
+      
+      // Special cell types
+      &.currency-cell {
+        font-weight: 600;
+        color: $success-color;
+        text-align: right;
+      }
+      
+      &.time-cell {
+        font-weight: 500;
+        color: $primary-color;
+      }
+      
+      &.distance-cell {
+        color: $info-color;
+        font-weight: 500;
+      }
+      
+      &.platform-cell {
+        .platform-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-transform: uppercase;
+          
+          &.uber {
+            background: rgba(0, 0, 0, 0.1);
+            color: $text-primary;
+          }
+          
+          &.lyft {
+            background: rgba(255, 0, 191, 0.1);
+            color: #ff00bf;
+          }
+          
+          &.doordash {
+            background: rgba(255, 105, 0, 0.1);
+            color: #ff6900;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-trips {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: $text-secondary;
+  
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: $text-tertiary;
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+    color: $text-primary;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 4rem 2rem;
+    
+    mat-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+    
+    p {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Loading State
+.loading-trips {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid $border-color;
+    border-top: 3px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Action Buttons in Table
+.action-button {
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 0 0.25rem;
+  
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  &.edit-button {
+    background: rgba($info-color, 0.1);
+    color: $info-color;
+    border: 1px solid rgba($info-color, 0.2);
+    
+    &:hover {
+      background: rgba($info-color, 0.2);
+      transform: scale(1.1);
+    }
+  }
+  
+  &.delete-button {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+    border: 1px solid rgba($danger-color, 0.2);
+    
+    &:hover {
+      background: rgba($danger-color, 0.2);
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Accessibility
+button:focus {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+mat-row:focus {
+  outline: 2px solid $primary-color;
+  outline-offset: -2px;
+}

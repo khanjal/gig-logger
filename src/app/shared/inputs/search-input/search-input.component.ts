@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 // Application-specific imports - Components
-import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
+import { AddressDialogComponent } from '@components/forms/address-dialog/address-dialog.component';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';

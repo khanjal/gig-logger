@@ -1,0 +1,303 @@
+@import "color-vars";
+
+// Mobile-first address dialog styling
+.address-dialog {
+  padding: 1.5rem;
+  min-width: 400px;
+  max-width: 600px;
+  border-radius: 16px;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    min-width: 320px;
+    max-width: calc(100vw - 2rem);
+    border-radius: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    min-width: 280px;
+    max-width: calc(100vw - 1rem);
+    border-radius: 8px;
+  }
+}
+
+// Enhanced dialog header
+.address-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid $border-light;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $text-primary;
+    
+    @media (max-width: 768px) {
+      font-size: 1.3rem;
+      text-align: center;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .close-button {
+    min-height: 44px;
+    min-width: 44px;
+    
+    @media (max-width: 768px) {
+      align-self: flex-end;
+    }
+  }
+}
+
+// Enhanced address input field
+.address-input-container {
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 0.75rem;
+  }
+  
+  .address-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    border: 2px solid $border-color;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:focus {
+      border-color: $accent-color;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      outline: none;
+    }
+    
+    @media (max-width: 768px) {
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    
+    @media (max-width: 480px) {
+      min-height: 42px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .input-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: $text-primary;
+    font-size: 0.95rem;
+    
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+  }
+}
+
+// Enhanced address suggestions list
+.address-suggestions {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    max-height: 250px;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    max-height: 200px;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid $border-light;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    @media (max-width: 768px) {
+      padding: 10px 14px;
+      font-size: 0.95rem;
+    }
+    
+    @media (max-width: 480px) {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+    
+    .primary-text {
+      font-weight: 500;
+      color: $text-primary;
+      margin-bottom: 0.25rem;
+    }
+    
+    .secondary-text {
+      font-size: 0.85rem;
+      color: $text-secondary;
+      
+      @media (max-width: 768px) {
+        font-size: 0.8rem;
+      }
+      
+      @media (max-width: 480px) {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
+
+// Enhanced dialog actions
+.address-dialog-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid $border-light;
+  
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+    flex-direction: column;
+    justify-content: stretch;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+  }
+  
+  button {
+    min-height: 44px;
+    min-width: 100px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    @media (max-width: 768px) {
+      min-height: 48px;
+      flex: 1;
+    }
+    
+    @media (max-width: 480px) {
+      min-height: 44px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Save button styling
+.save-button {
+  background: linear-gradient(135deg, $success-color 0%, $success-600 100%);
+  color: white;
+  border: none;
+  
+  &:hover {
+    background: linear-gradient(135deg, $success-600 0%, $success-700 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Cancel button styling
+.cancel-button {
+  background: linear-gradient(135deg, $background-light 0%, $border-color 100%);
+  color: $text-primary;
+  border: 1px solid $border-color;
+  
+  &:hover {
+    background: linear-gradient(135deg, $border-light 0%, $background-light 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Loading state
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
+}
+
+// Empty state
+.no-suggestions {
+  padding: 2rem;
+  text-align: center;
+  color: $text-secondary;
+  font-style: italic;
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+}

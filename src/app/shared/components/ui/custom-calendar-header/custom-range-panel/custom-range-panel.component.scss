@@ -1,0 +1,195 @@
+@import "color-vars";
+
+// Mobile-first variables
+$panel-border-radius: 16px;
+$button-border-radius: 12px;
+$touch-target-size: 44px;
+$panel-padding: 16px;
+$button-gap: 8px;
+
+// Mobile-first styles
+:host {
+    display: block;
+    position: absolute;
+    width: 100%;
+    min-width: 280px;
+    max-width: 320px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    
+    @media (min-width: 480px) {
+        width: 320px;
+        max-width: 360px;
+    }
+    
+    @media (min-width: 768px) {
+        width: 360px;
+        max-width: 400px;
+        position: fixed;
+        bottom: auto;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+:host(.touch-ui) {
+    position: relative;
+    left: 0;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+}
+
+// Panel container
+.mat-elevation-z3 {
+    background: linear-gradient(145deg, $surface-color 0%, lighten($surface-color, 2%) 100%);
+    border-radius: $panel-border-radius;
+    padding: $panel-padding;
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $button-gap;
+    animation: slideUpFadeIn 0.3s ease-out;
+    
+    @media (min-width: 480px) {
+        padding: 20px;
+        gap: 12px;
+    }
+    
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 24px;
+        gap: 16px;
+    }
+}
+
+// Button styles
+button {
+    min-height: $touch-target-size;
+    padding: 8px 12px;
+    border-radius: $button-border-radius;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.025em;
+    transition: all 0.2s ease;
+    background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%);
+    color: white;
+    border: none;
+    box-shadow: 
+        0 2px 8px rgba($primary-color, 0.3),
+        0 1px 3px rgba($primary-color, 0.2);
+    position: relative;
+    overflow: hidden;
+    
+    // Ripple effect
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.6s ease;
+    }
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            0 4px 12px rgba($primary-color, 0.4),
+            0 2px 6px rgba($primary-color, 0.3);
+        background: linear-gradient(145deg, lighten($primary-color, 5%) 0%, $primary-color 100%);
+        
+        &::before {
+            width: 300px;
+            height: 300px;
+        }
+    }
+    
+    &:active {
+        transform: translateY(0);
+        box-shadow: 
+            0 2px 4px rgba($primary-color, 0.3),
+            0 1px 2px rgba($primary-color, 0.2);
+    }
+    
+    &:focus {
+        outline: 2px solid $accent-color;
+        outline-offset: 2px;
+    }
+    
+    // Enhanced touch targets for mobile
+    @media (max-width: 479px) {
+        min-height: 48px;
+        font-size: 15px;
+        padding: 12px 16px;
+    }
+    
+    @media (min-width: 768px) {
+        font-size: 15px;
+        padding: 10px 16px;
+        min-height: 42px;
+    }
+}
+
+// Responsive grid adjustments
+@media (max-width: 479px) {
+    .mat-elevation-z3 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+// Animation keyframes
+@keyframes slideUpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+    button,
+    .mat-elevation-z3 {
+        animation: none;
+        transition: none;
+    }
+    
+    button:hover {
+        transform: none;
+    }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+    button {
+        border: 2px solid $primary-color;
+        background: $surface-color;
+        color: $primary-color;
+        
+        &:hover {
+            background: $primary-color;
+            color: white;
+        }
+    }
+    
+    .mat-elevation-z3 {
+        border: 2px solid $primary-color;
+    }
+}

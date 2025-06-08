@@ -1,0 +1,318 @@
+// Mobile-First Auth Status Component Styles
+@import "color-vars";
+
+// Auth Status Card Container - Mobile First
+.auth-status-card {
+  margin: 1rem 0;
+  background: $surface-color;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  overflow: hidden;
+  
+  mat-card-header {
+    background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+    padding: 1rem;
+    margin-bottom: 0;
+    
+    @media (min-width: 768px) {
+      padding: 1.5rem;
+    }
+    
+    mat-card-title {
+      color: $text-primary;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      
+      @media (min-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+    
+    mat-card-subtitle {
+      color: $text-secondary;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      
+      @media (min-width: 768px) {
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  mat-card-content {
+    padding: 1rem;
+    
+    @media (min-width: 768px) {
+      padding: 1.5rem;
+    }
+  }
+  
+  mat-card-actions {
+    padding: 1rem;
+    margin: 0;
+    border-top: 1px solid $border-light;
+    background: $surface-secondary;
+    
+    @media (min-width: 768px) {
+      padding: 1.5rem;
+    }
+  }
+}
+
+// Status Grid Layout
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Status Item
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: $surface-color;
+  border-radius: 0.75rem;
+  border: 1px solid $border-light;
+  box-shadow: 0 1px 3px $shadow-light;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 4px 12px $shadow-medium;
+    transform: translateY(-2px);
+  }
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+// Status Icon
+.status-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  color: white;
+  font-weight: 600;
+  
+  &.online {
+    background: $success-color;
+  }
+  
+  &.offline {
+    background: $status-offline;
+  }
+  
+  &.syncing {
+    background: $info-color;
+    animation: pulse 2s infinite;
+  }
+  
+  &.error {
+    background: $danger-color;
+  }
+  
+  @media (min-width: 768px) {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+// Status Label
+.status-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $text-primary;
+  text-align: center;
+  margin-bottom: 0.25rem;
+  
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+// Status Value
+.status-value {
+  font-size: 0.75rem;
+  color: $text-secondary;
+  text-align: center;
+  
+  @media (min-width: 768px) {
+    font-size: 0.875rem;
+  }
+}
+
+// Connection Status Banner
+.connection-banner {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+  
+  &.connected {
+    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
+    color: $success-700;
+    border-bottom: 1px solid $success-200;
+  }
+  
+  &.disconnected {
+    background: linear-gradient(135deg, $danger-50 0%, $danger-100 100%);
+    color: $danger-700;
+    border-bottom: 1px solid $danger-200;
+  }
+  
+  &.syncing {
+    background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
+    color: $info-700;
+    border-bottom: 1px solid $info-200;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+// Auth Status Actions
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  @media (min-width: 480px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+// Action Button
+.action-button {
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+  
+  &.primary {
+    background: linear-gradient(135deg, $primary-color 0%, $primary-700 100%);
+    color: white;
+    border: none;
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+      transform: translateY(-1px);
+    }
+  }
+  
+  &.secondary {
+    background: $surface-color;
+    color: $text-primary;
+    border: 1px solid $border-color;
+    
+    &:hover {
+      background: $surface-secondary;
+      box-shadow: 0 2px 8px $shadow-light;
+    }
+  }
+  
+  &.danger {
+    background: linear-gradient(135deg, $danger-color 0%, $danger-700 100%);
+    color: white;
+    border: none;
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba($danger-color, 0.3);
+      transform: translateY(-1px);
+    }
+  }
+  
+  @media (min-width: 768px) {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+// Status Details
+.status-details {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: $surface-secondary;
+  border-radius: 0.5rem;
+  border: 1px solid $border-light;
+  
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $border-light;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .detail-label {
+      font-weight: 500;
+      color: $text-primary;
+      font-size: 0.875rem;
+    }
+    
+    .detail-value {
+      color: $text-secondary;
+      font-size: 0.875rem;
+      text-align: right;
+      
+      &.status-good {
+        color: $success-color;
+      }
+      
+      &.status-bad {
+        color: $danger-color;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .status-row {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .status-label {
+    min-width: auto;
+  }
+}

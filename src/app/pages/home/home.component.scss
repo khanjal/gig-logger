@@ -1,145 +1,296 @@
+// Mobile-First Home Component Styles
+@import "../../shared/styles/color-vars";
+
 .container {
   max-width: 100%;
   padding: 0;
   margin: 0;
 }
 
-// Hero Section
+// Hero Section - Mobile First
 .hero-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 60px 20px 40px;
+  background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+  color: $text-inverse;
+  padding: 3rem 1rem 2.5rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  
+  // Animated background overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
   
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin: 0 0 16px 0;
+    margin: 0 0 1rem 0;
     line-height: 1.2;
+    position: relative;
+    z-index: 1;
+    
+    // Tablet and up
+    @media (min-width: 768px) {
+      font-size: 2.5rem;
+    }
+    
+    // Desktop
+    @media (min-width: 1024px) {
+      font-size: 3rem;
+    }
   }
   
   .hero-subtitle {
-    font-size: 1.1rem;
-    margin: 0 0 32px 0;
+    font-size: 1rem;
+    margin: 0 0 2rem 0;
     opacity: 0.9;
     line-height: 1.4;
+    position: relative;
+    z-index: 1;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+    
+    @media (min-width: 768px) {
+      font-size: 1.1rem;
+    }
   }
   
   .cta-button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: white;
-    color: #667eea;
-    padding: 16px 32px;
-    border-radius: 50px;
+    gap: 0.5rem;
+    background: $surface-color;
+    color: $primary-color;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
     text-decoration: none;
     font-weight: 600;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px $shadow-medium;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+    min-height: 44px; // Touch target
     
     &:hover {
       transform: translateY(-2px);
+      box-shadow: 0 8px 24px $shadow-heavy;
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    @media (min-width: 768px) {
+      font-size: 1.1rem;
+      padding: 1rem 2.5rem;
     }
   }
 }
 
-// Benefits Section
+// Benefits Section - Mobile First
 .benefits-section {
-  padding: 40px 20px;
-  background: #f8f9fa;
+  padding: 2.5rem 1rem;
+  background: $background-secondary;
   
   h2 {
     text-align: center;
-    margin-bottom: 32px;
-    color: #333;
+    margin-bottom: 2rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 2.5rem;
+    }
   }
 }
 
 .benefits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  max-width: 1000px;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 64rem;
   margin: 0 auto;
+  
+  // Tablet - 2 columns
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  // Desktop - 3 columns
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
 }
 
 .benefit-card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
+  background: $surface-color;
+  padding: 1.5rem;
+  border-radius: 1rem;
   text-align: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid $border-light;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px $shadow-medium, 0 4px 12px $shadow-heavy;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
   
   mat-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    color: #667eea;
-    margin-bottom: 16px;
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: $primary-color;
+    margin-bottom: 1rem;
+    
+    @media (min-width: 768px) {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+    }
   }
   
   h3 {
-    margin: 0 0 12px 0;
-    color: #333;
+    margin: 0 0 0.75rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 1.25rem;
+    }
   }
   
   p {
     margin: 0;
-    color: #666;
-    line-height: 1.4;
+    color: $text-secondary;
+    line-height: 1.5;
+    font-size: 0.875rem;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
   }
 }
 
-// Quick Start Section
+// Quick Start Section - Mobile First
 .quick-start-section {
-  padding: 40px 20px;
-  max-width: 800px;
+  padding: 2.5rem 1rem;
+  max-width: 50rem;
   margin: 0 auto;
+  
+  @media (min-width: 768px) {
+    padding: 3rem 1.5rem;
+  }
   
   h2 {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 2rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 2.5rem;
+    }
   }
 }
 
 .steps {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  
+  @media (min-width: 768px) {
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
 }
 
 .step {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: $surface-color;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 4px $shadow-light;
+  border: 1px solid $border-light;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px $shadow-medium;
+    transform: translateY(-1px);
+  }
+  
+  @media (min-width: 768px) {
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
   
   .step-number {
-    background: #667eea;
-    color: white;
-    width: 40px;
-    height: 40px;
+    background: linear-gradient(135deg, $primary-color, $primary-light);
+    color: $text-inverse;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     flex-shrink: 0;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px $shadow-medium;
+    
+    @media (min-width: 768px) {
+      width: 3rem;
+      height: 3rem;
+      font-size: 1rem;
+    }
   }
   
   .step-content {
     flex: 1;
     
     h3 {
-      margin: 0 0 4px 0;
-      color: #333;
+      margin: 0 0 0.5rem 0;
+      color: $text-primary;
+      font-size: 1rem;
+      font-weight: 600;
+      
+      @media (min-width: 768px) {
+        font-size: 1.125rem;
+      }
     }
     
     p {
       margin: 0;
-      color: #666;
+      color: $text-secondary;
+      line-height: 1.5;
+      font-size: 0.875rem;
+      
+      @media (min-width: 768px) {
+        font-size: 1rem;
+      }
     }
   }
 }
@@ -147,117 +298,262 @@
 .setup-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #667eea;
+  gap: 0.5rem;
+  color: $primary-color;
   text-decoration: none;
   font-weight: 600;
   margin: 0 auto;
-  display: flex;
   justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background: $primary-50;
+  border: 1px solid $primary-200;
+  transition: all 0.3s ease;
+  min-height: 44px; // Touch target
   
   &:hover {
-    text-decoration: underline;
+    background: $primary-100;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 }
 
-.install-section {
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+// Navigation Cards - Mobile First
+.navigation-section {
+  padding: 2.5rem 1rem;
+  background: $background-secondary;
   
   h2 {
     text-align: center;
-    margin-bottom: 32px;
-    color: #333;
+    margin-bottom: 2rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 2.5rem;
+    }
+  }
+}
+
+.nav-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 50rem;
+  margin: 0 auto;
+  
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.nav-card {
+  background: $surface-color;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid $border-light;
+  min-height: 44px; // Touch target
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px $shadow-medium, 0 4px 12px $shadow-heavy;
+    text-decoration: none;
+  }
+  
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: $primary-color;
+    margin-bottom: 0.75rem;
+  }
+  
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: $text-primary;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+}
+
+// Install Section - Mobile First PWA Focus
+.install-section {
+  padding: 2.5rem 1rem;
+  background: linear-gradient(135deg, $accent-50 0%, $primary-50 100%);
+  
+  @media (min-width: 768px) {
+    padding: 3rem 1.5rem;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 2.5rem;
+    }
   }
 }
 
 .install-content {
-  max-width: 800px;
+  max-width: 50rem;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
+  gap: 2rem;
+  
+  @media (min-width: 768px) {
+    gap: 2.5rem;
+  }
 }
 
 .install-info {
   text-align: center;
   
   h3 {
-    margin-bottom: 16px;
-    color: #333;
-    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: $text-primary;
+    font-size: 1.25rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
   }
   
   p {
-    margin-bottom: 24px;
-    color: #666;
-    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: $text-secondary;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+    
+    @media (min-width: 768px) {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
   }
 }
 
 .install-benefits {
   display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-bottom: 32px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+  }
 }
 
 .install-benefit {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: $surface-color;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px $shadow-light;
+  border: 1px solid $border-light;
+  min-width: 200px;
+  justify-content: center;
   
   mat-icon {
-    color: #667eea;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    color: $primary-color;
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
   
   span {
     font-weight: 500;
-    color: #333;
+    color: $text-primary;
+    font-size: 0.875rem;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
   }
 }
 
 .install-steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
 }
 
 .platform-instructions {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background: $surface-color;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
   
   h4 {
-    margin: 0 0 16px 0;
-    color: #333;
-    font-size: 1.1rem;
+    margin: 0 0 1rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
   }
   
   ol {
     margin: 0;
-    padding-left: 20px;
+    padding-left: 1.25rem;
     
     li {
-      margin-bottom: 8px;
-      color: #666;
-      line-height: 1.4;
+      margin-bottom: 0.5rem;
+      color: $text-secondary;
+      line-height: 1.5;
+      font-size: 0.875rem;
+      
+      @media (min-width: 768px) {
+        font-size: 1rem;
+      }
       
       .inline-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
         vertical-align: middle;
-        color: #667eea;
+        color: $primary-color;
       }
     }
   }
@@ -265,165 +561,293 @@
 
 .install-button-container {
   text-align: center;
-  margin-top: 32px;
+  margin-top: 2rem;
   
   .install-button {
-    padding: 16px 32px;
-    font-size: 1.1rem;
-    margin-bottom: 12px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
     min-width: 200px;
+    min-height: 44px; // Touch target
+    
+    @media (min-width: 768px) {
+      font-size: 1.1rem;
+    }
     
     mat-icon {
-      margin-right: 8px;
+      margin-right: 0.5rem;
     }
   }
   
   .install-note {
     margin: 0;
-    color: #666;
-    font-size: 0.9rem;
+    color: $text-secondary;
+    font-size: 0.875rem;
   }
 }
 
-// Responsive design
-@media (max-width: 768px) {
-  .install-benefits {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .install-steps {
-    grid-template-columns: 1fr;
-  }
-}
-
-// Navigation Cards
-.navigation-section {
-  padding: 40px 20px;
-  background: #f8f9fa;
+// Support Section - Mobile First
+.support-section {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: $background-secondary;
   
   h2 {
-    text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 1.5rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
   }
 }
 
-.nav-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  max-width: 800px;
-  margin: 0 auto;
+.support-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+  }
 }
 
-.nav-card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
+.support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: $surface-color;
+  color: $primary-color;
   text-decoration: none;
-  color: inherit;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px $shadow-light;
+  border: 1px solid $border-light;
+  min-height: 44px; // Touch target
+  transition: all 0.3s ease;
   
   &:hover {
-    transform: translateY(-4px);
-  }
-  
-  mat-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-    color: #667eea;
-    margin-bottom: 12px;
-  }
-  
-  h3 {
-    margin: 0 0 8px 0;
-    color: #333;
-  }
-  
-  p {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
+    box-shadow: 0 4px 12px $shadow-medium;
+    transform: translateY(-1px);
+    text-decoration: none;
   }
 }
 
-// Workflow Section
-.workflow-section {
-  padding: 40px 20px;
-  max-width: 1000px;
+.support-text {
+  color: $text-secondary;
+  font-size: 0.875rem;
+  max-width: 32rem;
   margin: 0 auto;
   
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+// Footer - Mobile First
+.app-footer {
+  padding: 2.5rem 1rem 1.25rem;
+  text-align: center;
+  background: $text-primary;
+  color: $text-inverse;
+  
+  .legal-links {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    @media (min-width: 480px) {
+      flex-direction: row;
+      justify-content: center;
+      gap: 0;
+    }
+    
+    a {
+      color: $text-tertiary;
+      text-decoration: none;
+      font-size: 0.875rem;
+      
+      &:hover {
+        color: $text-inverse;
+      }
+    }
+    
+    span {
+      display: none;
+      
+      @media (min-width: 480px) {
+        display: inline;
+        margin: 0 0.75rem;
+        color: $text-secondary;
+      }
+    }
+  }
+  
+  .footer-text {
+    margin: 0;
+    color: $text-tertiary;
+    font-size: 0.875rem;
+  }
+}
+
+// Workflow Section - Mobile First
+.workflow-section {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: $surface-color;
+  
   h2 {
-    text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 2rem;
+    color: $text-primary;
+    font-size: 1.75rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 2rem;
+      margin-bottom: 3rem;
+    }
   }
 }
 
 .workflow-steps {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
+  gap: 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 2rem;
+  }
 }
 
 .workflow-step {
+  background: $background-color;
+  padding: 2rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px $shadow-light, 0 2px 8px $shadow-medium;
+  border: 1px solid $border-light;
   text-align: center;
-  max-width: 200px;
+  flex: 1;
+  max-width: 20rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px $shadow-medium, 0 4px 12px $shadow-heavy;
+  }
+  
+  @media (min-width: 768px) {
+    max-width: 18rem;
+  }
   
   mat-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    color: #667eea;
-    margin-bottom: 12px;
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: $primary-color;
+    margin-bottom: 1rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   h3 {
-    margin: 0 0 8px 0;
-    color: #333;
-    font-size: 1rem;
+    margin: 0 0 0.75rem 0;
+    color: $text-primary;
+    font-size: 1.25rem;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      font-size: 1.375rem;
+    }
   }
   
   p {
     margin: 0;
-    color: #666;
-    font-size: 0.9rem;
+    color: $text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
   }
 }
 
 .workflow-arrow {
   font-size: 2rem;
-  color: #667eea;
+  color: $accent-color;
   font-weight: bold;
+  user-select: none;
+  transform: rotate(90deg);
+  
+  @media (min-width: 768px) {
+    transform: rotate(0deg);
+    font-size: 2.5rem;
+  }
 }
 
-// Collapsible Sections
-.features-section, .faq-section {
-  padding: 20px;
+// Features Section - Mobile First (Collapsible)
+.features-section {
+  padding: 2.5rem 1rem;
+  background: $background-secondary;
   
   details {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 64rem;
+    margin: 0 auto;
     
     summary {
-      padding: 20px;
-      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      list-style: none;
+      padding: 1rem;
+      background: $surface-color;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+      border: 1px solid $border-light;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 12px $shadow-medium;
+        transform: translateY(-1px);
+      }
+      
+      &::-webkit-details-marker {
+        display: none;
+      }
       
       h2 {
         margin: 0;
-        color: #333;
+        color: $text-primary;
+        font-size: 1.75rem;
+        font-weight: 600;
+        
+        @media (min-width: 768px) {
+          font-size: 2rem;
+        }
       }
       
       mat-icon {
-        transition: transform 0.2s ease;
+        color: $primary-color;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: transform 0.3s ease;
       }
     }
     
@@ -434,161 +858,187 @@
 }
 
 .features-content {
-  padding: 0 20px 20px;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
   
-  .feature-group {
-    margin-bottom: 24px;
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-group {
+  background: $surface-color;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  
+  h3 {
+    margin: 0 0 1rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
     
-    h3 {
-      color: #667eea;
-      margin-bottom: 12px;
+    @media (min-width: 768px) {
+      font-size: 1.25rem;
+    }
+  }
+  
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    
+    li {
+      margin-bottom: 0.5rem;
+      color: $text-secondary;
+      line-height: 1.5;
+      font-size: 0.875rem;
+      
+      @media (min-width: 768px) {
+        font-size: 1rem;
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// FAQ Section - Mobile First (Collapsible)
+.faq-section {
+  padding: 2.5rem 1rem;
+  background: $surface-color;
+  
+  details {
+    max-width: 64rem;
+    margin: 0 auto;
+    
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      list-style: none;
+      padding: 1rem;
+      background: $background-color;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+      border: 1px solid $border-light;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 12px $shadow-medium;
+        transform: translateY(-1px);
+      }
+      
+      &::-webkit-details-marker {
+        display: none;
+      }
+      
+      h2 {
+        margin: 0;
+        color: $text-primary;
+        font-size: 1.75rem;
+        font-weight: 600;
+        
+        @media (min-width: 768px) {
+          font-size: 2rem;
+        }
+      }
+      
+      mat-icon {
+        color: $primary-color;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: transform 0.3s ease;
+      }
     }
     
-    ul {
-      margin: 0;
-      padding-left: 20px;
-      
-      li {
-        margin-bottom: 4px;
-        color: #666;
-      }
+    &[open] summary mat-icon {
+      transform: rotate(180deg);
     }
   }
 }
 
 .faq-content {
-  padding: 0 20px 20px;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
   
-  .faq-item {
-    margin-bottom: 20px;
-    
-    h3 {
-      color: #333;
-      margin-bottom: 8px;
-      font-size: 1rem;
-    }
-    
-    p {
-      margin: 0;
-      color: #666;
-      line-height: 1.4;
-    }
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
-// Support Section
-.support-section {
-  padding: 40px 20px;
-  text-align: center;
-  background: #f8f9fa;
-  
-  h2 {
-    margin-bottom: 24px;
-  }
-}
-
-.support-options {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.support-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: white;
-  color: #667eea;
-  text-decoration: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.faq-item {
+  background: $background-color;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px $shadow-medium;
+    transform: translateY(-1px);
   }
-}
-
-.support-text {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-// Footer
-.app-footer {
-  padding: 40px 20px 20px;
-  text-align: center;
-  background: #333;
-  color: white;
   
-  .legal-links {
-    margin-bottom: 16px;
+  h3 {
+    margin: 0 0 0.75rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
     
-    a {
-      color: #ccc;
-      text-decoration: none;
-      
-      &:hover {
-        color: white;
-      }
-    }
-    
-    span {
-      margin: 0 12px;
-      color: #666;
+    @media (min-width: 768px) {
+      font-size: 1.25rem;
     }
   }
   
-  .footer-text {
+  p {
     margin: 0;
-    color: #999;
-    font-size: 0.9rem;
-  }
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem !important;
-  }
-  
-  .workflow-steps {
-    flex-direction: column;
-  }
-  
-  .workflow-arrow {
-    transform: rotate(90deg);
-  }
-  
-  .steps {
-    .step {
-      gap: 16px;
+    color: $text-secondary;
+    line-height: 1.6;
+    font-size: 0.875rem;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
     }
   }
-  
-  .benefits-grid, .nav-cards {
-    grid-template-columns: 1fr;
-  }
 }
 
+// Small mobile adjustments
 @media (max-width: 480px) {
   .hero-section {
-    padding: 40px 16px 32px;
+    padding: 2rem 1rem 2rem;
   }
   
   .hero-title {
-    font-size: 1.8rem !important;
+    font-size: 1.75rem !important;
   }
   
   .cta-button {
-    padding: 14px 28px;
-    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem;
   }
   
-  .support-options {
-    flex-direction: column;
-    align-items: center;
+  .benefit-card, .nav-card {
+    padding: 1.25rem;
+  }
+  
+  .step {
+    gap: 0.75rem;
+    padding: 0.75rem;
   }
 }

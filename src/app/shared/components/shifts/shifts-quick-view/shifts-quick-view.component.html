@@ -1,0 +1,105 @@
+<mat-card>
+    <div>
+        <mat-card-header>
+            @if (!shift.saved && shift.action === 'ADD') {
+                <mat-icon class="warn">add</mat-icon> 
+            }
+            @else if (!shift.saved && shift.action === 'UPDATE') {
+                <mat-icon class="warn">edit</mat-icon>
+            }
+            @else if (!shift.saved && shift.action === 'DELETE') {
+                <mat-icon class="warn">delete</mat-icon> 
+            }
+            @else if (duplicateShift) {
+                <mat-icon [ngClass]="{'warn': !shift.saved}">content_copy</mat-icon> 
+            }
+            @else {
+                <mat-icon [ngClass]="{'warn': !shift.saved}">save</mat-icon> 
+            }
+            <h3 [ngClass]="duplicateShift ? 'warn' : ''"><strong>#{{shift.rowId}} {{shift.date | date:"E, MMM d ''yy"}} ({{shift.service}} {{ shift.number == 0 ? "" : '#' + shift.number }})</strong></h3>
+        </mat-card-header>
+        <mat-card-content [ngClass]="shift.action === 'DELETE' ? 'strike' : ''">
+            
+            <!-- Time Section -->
+            <div class="section-container">
+                <mat-icon class="icon-display">schedule</mat-icon>
+                <div class="section-content">
+                    <div><strong>Time:</strong>&nbsp;<span [ngClass]="{'primary': shift.amountPerTime > 25, 'warn': shift.amountPerTime < 20, 'rainbow-text-animated': shift.amountPerTime > 30}">{{shift.start | noseconds}} {{!shift.time ? '' : '- ' + (shift.finish | noseconds)}}</span></div>
+                    <div *ngIf="shift.time || shift.totalActive"><strong>Duration:</strong> {{shift.time | noseconds}} <strong>Active:</strong> {{ (shift.active === "" ? shift.totalActive : shift.active) | noseconds}}</div>
+                </div>
+            </div>
+            
+            <!-- Location Section with Enhanced Styling -->
+            @if (shift.region || shift.totalDistance) {
+                <div class="section-container">
+                    <mat-icon class="icon-display">map</mat-icon>
+                    <div class="section-content">
+                        <div class="info-badge" *ngIf="shift.region">
+                            <mat-icon class="info-badge__icon">place</mat-icon>
+                            <span class="info-badge__text">{{shift.region}}</span>
+                        </div>
+                        <div *ngIf="shift.totalDistance" style="margin-top: 0.5rem;">
+                            <strong>Distance:</strong>
+                            <span *ngIf="shift.totalDistance"> (<span [ngClass]="{'primary': shift.amountPerDistance > 2, 'warn': shift.amountPerDistance < 1, 'rainbow-text-animated': shift.amountPerDistance > 5}">{{shift.totalDistance | number:'1.1'}}</span> mi)</span>
+                        </div>
+                    </div>
+                </div>
+            }            
+            <!-- Payments Section -->
+            @if (shift.totalPay || shift.grandTotal) {
+                <div class="section-container">
+                    <mat-icon class="icon-display">payments</mat-icon>
+                    <div class="section-content">
+                        <div class="payment-grid">
+                            <div class="payment-row">
+                                <span class="detail-item" *ngIf="shift.totalPay">
+                                    <span class="detail-item__label">Pay</span>
+                                    <span class="detail-item__value">{{shift.totalPay | currency}}</span>
+                                </span>
+                                <span class="detail-item" *ngIf="shift.totalTips">
+                                    <span class="detail-item__label">Tips</span>
+                                    <span class="detail-item__value">{{shift.totalTips | currency}}</span>
+                                </span>
+                                <span class="detail-item" *ngIf="shift.totalBonus">
+                                    <span class="detail-item__label">Bonus</span>
+                                    <span class="detail-item__value">{{shift.totalBonus | currency}}</span>
+                                </span>
+                            </div>
+                            <div class="payment-row" style="margin-top: 0.75rem;">
+                                <span class="detail-item" *ngIf="shift.grandTotal > shift.totalPay">
+                                    <span class="detail-item__label">Total</span>
+                                    <span class="detail-item__value">{{shift.grandTotal | currency}}</span>
+                                </span>
+                                <span class="detail-item" *ngIf="shift.totalCash">
+                                    <span class="detail-item__label">Cash</span>
+                                    <span class="detail-item__value">{{shift.totalCash | currency}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Note Section with Enhanced Styling -->
+            @if (shift.note) {
+                <div class="section-container">
+                    <mat-icon class="icon-display">description</mat-icon>
+                    <div class="section-content">
+                        <div class="shift-note">
+                            <mat-icon class="note-icon">format_quote</mat-icon>
+                            <span class="note-text">{{shift.note}}</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <br/>
+            <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
+        </mat-card-content>
+        <div mat-card class="row-flex button-bar">
+            <button mat-fab extended color="primary" class="button-left" disabled="true"><mat-icon>edit</mat-icon> Edit</button>
+            <button mat-fab extended color="warn" [disabled]="!duplicateShift && !(shift.grandTotal === 0 && shift.totalTrips === 0)" (click)="confirmDeleteShiftDialog(shift)"><mat-icon>delete</mat-icon> Delete</button>
+        </div>
+    </div>
+    
+</mat-card>

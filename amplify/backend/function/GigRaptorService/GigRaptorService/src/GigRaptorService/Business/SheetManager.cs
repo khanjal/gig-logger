@@ -25,14 +25,19 @@ public class SheetManager : ISheetManager
         TimeSpan.FromMinutes(1)
     );
 
-    public SheetManager(string token, string sheetId, IConfiguration configuration)
+    private SheetManager(string token, string sheetId, IConfiguration configuration)
     {
         _configuration = configuration;
-        if (FeatureFlags.IsRateLimitingEnabled(_configuration))
-        {
-            EnforceRateLimitAsync(sheetId).GetAwaiter().GetResult();
-        }
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
+    }
+
+    public static async Task<SheetManager> CreateAsync(string token, string sheetId, IConfiguration configuration)
+    {
+        if (FeatureFlags.IsRateLimitingEnabled(configuration))
+        {
+            await EnforceRateLimitAsync(sheetId);
+        }
+        return new SheetManager(token, sheetId, configuration);
     }
 
     private static async Task EnforceRateLimitAsync(string spreadsheetId)

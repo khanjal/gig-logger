@@ -1,0 +1,327 @@
+<div class="form-container">
+    <div class="form-header">
+        <h1>{{title}}</h1>
+    </div>
+
+    <form class="trip-form" [formGroup]="tripForm">
+        <!-- Shift Selection -->
+        <div class="form-section">
+            <div class="form-row">
+                <mat-form-field class="field-full-width" appearance="outline">
+                    <mat-label>Shift/Batch/Group</mat-label>
+                    <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)'>
+                        <mat-option value="">New</mat-option>
+                        <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.totalTrips }} &#64; {{ shift.grandTotal | currency }})</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- New Shift Fields -->
+        @if (isNewShift) {
+            <div class="form-section">
+                <div class="form-row">
+                    <app-search-input 
+                        class="field-full-width"
+                        fieldName="Service" 
+                        searchType="Service" 
+                        formControlName="service"
+                        [isRequired]="true">
+                    </app-search-input>
+                </div>
+                
+                <div class="form-row">
+                    <app-search-input 
+                        class="field-full-width"
+                        fieldName="Region" 
+                        searchType="Region" 
+                        formControlName="region">
+                    </app-search-input>
+                </div>
+            </div>
+        }
+
+        <!-- Location Information -->
+        <div class="form-section">
+            <div class="form-row">
+                <app-search-input 
+                    class="field-full-width"
+                    fieldName="Place" 
+                    searchType="Place" 
+                    formControlName="place"
+                    googleSearch="place"
+                    (valueChanged)="selectPlace()"
+                    (auxiliaryData)="setPickupAddress($event)">
+                </app-search-input>
+            </div>
+            
+            <div class="form-row">
+                <app-search-input 
+                    class="field-full-width"
+                    fieldName="Type" 
+                    searchType="Type" 
+                    formControlName="type">
+                </app-search-input>
+            </div>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="form-section">
+            <div class="form-row">
+                <button 
+                    mat-mini-fab
+                    type="button"
+                    class="toggle-button"
+                    [class.toggle-button--active]="showAdvancedPay"
+                    [color]="showAdvancedPay ? 'accent' : 'primary'" 
+                    aria-label="Toggle Advanced Pay" 
+                    (click)="toggleAdvancedPay()">
+                    <mat-icon>account_balance</mat-icon>
+                </button>
+
+                <mat-form-field class="form-field form-field--thirty" appearance="outline">
+                    <mat-label>Pay</mat-label>
+                    <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay">
+                </mat-form-field>
+
+                <mat-form-field class="form-field form-field--thirty" appearance="outline">
+                    <mat-label>Distance</mat-label>
+                    <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance">
+                </mat-form-field>
+                
+                <button 
+                    mat-mini-fab
+                    type="button"
+                    class="toggle-button"
+                    [class.toggle-button--active]="showOdometer"
+                    [color]="showOdometer ? 'accent' : 'primary'" 
+                    aria-label="Toggle Odometer" 
+                    (click)="toggleOdometer()">
+                    <mat-icon>drive_eta</mat-icon>
+                </button>
+            </div>
+
+            <!-- Advanced Payment Fields -->
+            <div class="form-row form-row--thirds" *ngIf="showAdvancedPay">
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Tip</mat-label>
+                    <input matInput type="number" name="tip" placeholder="3.5" formControlName="tip">
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Bonus</mat-label>
+                    <input matInput type="number" name="bonus" placeholder="2" formControlName="bonus">
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Cash</mat-label>
+                    <input matInput type="number" name="cash" placeholder="5" formControlName="cash">
+                </mat-form-field>
+            </div>
+
+            <!-- Odometer Fields -->
+            <div class="form-row form-row--halves" *ngIf="showOdometer">
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Start Odometer</mat-label>
+                    <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer">
+                </mat-form-field>
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>End Odometer</mat-label>
+                    <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer">
+                </mat-form-field>
+            </div>
+        </div>        
+        <!-- Customer Information -->
+        <div class="form-section">
+            <div class="form-row">
+                <app-search-input 
+                    class="field-full-width"
+                    fieldName="Name" 
+                    searchType="Name" 
+                    formControlName="name"
+                    (valueChanged)="showNameAddresses()">
+                </app-search-input>
+                  <button
+                    mat-mini-fab
+                    type="button"
+                    class="toggle-button"
+                    [class.toggle-button--active]="showPickupAddress"
+                    [color]="showPickupAddress ? 'accent' : 'primary'" 
+                    aria-label="Show Pickup Address" 
+                    (click)="togglePickupAddress()">
+                    <mat-icon>contact_mail</mat-icon>
+                </button>
+            </div>
+
+            <!-- Pickup Address List -->
+            <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="address-list">
+                <mat-accordion>
+                    <mat-expansion-panel [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{ selectedPlaceAddresses.length }} Previous Pickup Addresses
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="address-options">
+                            <button 
+                                *ngFor="let address of selectedPlaceAddresses"
+                                type="button"
+                                mat-stroked-button 
+                                color="primary" 
+                                class="address-button"
+                                [class.address-button--selected]="address.address === tripForm.value.startAddress"
+                                (click)="setPickupAddress(address.address)">
+                                {{ address.address | shortaddress:selectedPlace.place | truncate:30 }} ({{ address.trips }})
+                            </button>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+
+            <!-- Pickup Address Input -->
+            <div class="form-row" *ngIf="showPickupAddress">
+                <app-search-input 
+                    class="field-full-width"
+                    fieldName="Pickup Address" 
+                    searchType="Address" 
+                    formControlName="startAddress"
+                    googleSearch="address">
+                </app-search-input>
+            </div>
+        </div>
+
+        <!-- Address List/Notes -->
+        <div class="form-section" *ngIf="selectedNameDeliveries?.length">
+            <mat-expansion-panel [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
+                <mat-expansion-panel-header [expandedHeight]="'auto'">
+                    <mat-panel-title>
+                        {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngFor="let delivery of selectedNameDeliveries" class="delivery-item">
+                    <div class="delivery-title" *ngIf="!delivery.address">
+                        Unknown Address ({{delivery.visits}})
+                    </div>
+                    <button 
+                        mat-stroked-button 
+                        color="primary" 
+                        class="address-button" 
+                        [class.address-button--selected]="delivery.address === tripForm.value.endAddress" 
+                        (click)="setDestinationAddress(delivery.address)" 
+                        *ngIf="delivery.address">
+                        {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
+                    </button>
+                    <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
+                </div>            </mat-expansion-panel>
+        </div>
+
+        <!-- Destination Address -->
+        <div class="form-section">
+            <div class="form-row">
+                <app-search-input 
+                    class="field-full-width"
+                    fieldName="Destination Address" 
+                    searchType="Address" 
+                    formControlName="endAddress"
+                    googleSearch="address"
+                    (valueChanged)="showAddressNames()">
+                </app-search-input>
+            </div>
+        </div>
+
+        <!-- Name List/Notes -->
+        <div class="form-section" *ngIf="selectedAddressDeliveries?.length">
+            <mat-expansion-panel [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
+                <mat-expansion-panel-header [expandedHeight]="'auto'">
+                    <mat-panel-title>
+                        {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div *ngFor="let delivery of selectedAddressDeliveries" class="delivery-item">
+                    <div class="delivery-title" *ngIf="!delivery.name">
+                        Unknown Name ({{delivery.visits}})
+                    </div>
+                    <button 
+                        mat-stroked-button 
+                        color="primary" 
+                        class="name-button" 
+                        [class.name-button--selected]="delivery.name === tripForm.value.name" 
+                        (click)="setName(delivery.name)" 
+                        *ngIf="delivery.name">
+                        {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
+                    </button>
+                    <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
+                </div>
+            </mat-expansion-panel>
+        </div>
+
+        <!-- Time Inputs -->
+        <div class="form-section" *ngIf="data?.id">
+            <div class="form-row form-row--halves">
+                <app-time-input 
+                    label="Pickup Time"
+                    formControlName="pickupTime">
+                </app-time-input>
+                
+                <app-time-input 
+                    label="Dropoff Time"
+                    formControlName="dropoffTime">
+                </app-time-input>            </div>
+        </div>
+
+        <!-- Note and Order -->
+        <div class="form-section">
+            <div class="form-row">
+                <mat-form-field class="field-full-width" appearance="outline">
+                    <mat-label>Note</mat-label>
+                    <input matInput type="text" name="note" placeholder="" formControlName="note">
+                </mat-form-field>
+
+                <button 
+                    mat-mini-fab
+                    type="button"
+                    class="toggle-button"
+                    [color]="showOrder ? 'accent' : 'primary'" 
+                    aria-label="Toggle Address/Order" 
+                    (click)="toggleOrder()">                    <mat-icon>business</mat-icon>
+                </button>
+            </div>
+
+            <!-- Address 2/Order/Exclude -->
+            <div class="form-row form-row--halves" *ngIf="showOrder">
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Apt/Unit/Room</mat-label>
+                    <input matInput type="text" name="endUnit" placeholder="104" formControlName="endUnit">
+                </mat-form-field>
+                
+                <mat-form-field class="form-field" appearance="outline">
+                    <mat-label>Order Number</mat-label>
+                    <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber">
+                </mat-form-field>
+            </div>
+            
+            <div class="form-row" *ngIf="showOrder">
+                <mat-slide-toggle name="exclude" formControlName="exclude">
+                    Exclude from calculations
+                </mat-slide-toggle>
+            </div>
+        </div>
+    </form>    <!-- Form Actions -->
+    <div class="form-actions">
+        <div class="form-actions__row" *ngIf="!data?.id">
+            <button mat-fab extended color="warn" (click)="formReset()">
+                <mat-icon>refresh</mat-icon> Reset
+            </button>
+            <button mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid">
+                <mat-icon>add</mat-icon> Store
+            </button>
+        </div>
+        
+        <div class="form-actions__row" *ngIf="data?.id">
+            <button mat-fab extended color="warn" (click)="close()">
+                <mat-icon>cancel</mat-icon> Cancel
+            </button>
+            <button mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
+                <mat-icon>save</mat-icon> Update
+            </button>
+        </div>
+    </div>
+</div>

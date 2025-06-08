@@ -1,0 +1,59 @@
+<div class="table-container">
+    @if (link) {
+        <h2>
+            <span class="title-content">
+                {{ title }} 
+                <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank" class="link-icon">
+                    <mat-icon>open_in_new</mat-icon>
+                </a>
+            </span>
+        </h2>
+    }
+    @else {
+        <h2>{{ title }}</h2>
+    }
+    <div *ngFor="let tripGroup of tripGroups" class="trip-group">
+        <h3>
+            <span class="trip-info">{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}})</span>
+            <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
+        </h3>
+        <div class='table-responsive' #tableContainer>
+            <mat-table [dataSource]="tripGroup.trips" class="table-responsive-sizing table-compact">
+                <ng-container matColumnDef="service">
+                    <mat-header-cell *matHeaderCellDef class="table-col-service"> Service </mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-service"> {{trip.service}}-{{ trip.number ? trip.number : 0}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="place">
+                    <mat-header-cell *matHeaderCellDef class="table-col-medium"> Place </mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-medium"> {{trip.place | truncate:15}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="pickup">
+                    <mat-header-cell *matHeaderCellDef class="table-col-time">Pickup</mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-time"> {{trip.pickupTime | noseconds}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="dropoff">
+                    <mat-header-cell *matHeaderCellDef class="table-col-time">Dropoff</mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-time"> {{trip.dropoffTime | noseconds}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="total">
+                    <mat-header-cell *matHeaderCellDef class="table-col-currency"> Total </mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-currency" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef class="table-col-medium"> Name </mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-medium"> {{trip.name | truncate:10}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="address">
+                    <mat-header-cell *matHeaderCellDef class="table-col-address"> Address </mat-header-cell>
+                    <mat-cell *matCellDef="let trip" class="table-col-address"> {{trip.endAddress | truncate:75}} </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
+            </mat-table>
+            <div class="table-scroll-indicator" 
+                 [class.visible]="tableContainer.scrollWidth > tableContainer.clientWidth">
+                ← scroll for more →
+            </div>
+        </div>
+    </div>
+</div>

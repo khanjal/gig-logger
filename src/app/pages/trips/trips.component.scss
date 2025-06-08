@@ -1,76 +1,358 @@
-@import "color-vars";
+// Mobile-First Trips Component Styles
+@import "../../shared/styles/color-vars";
+
+// Header with right-aligned toggle
+h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0;
+  line-height: 1.2;
+  font-size: 1.25rem;
+  
+  // Keep items on same line for most screen sizes
+  @media (min-width: 480px) {
+    flex-wrap: nowrap;
+    gap: 1rem;
+  }
+  
+  // Only stack on very small screens
+  @media (max-width: 479px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1.1rem;
+    
+    .field-right {
+      align-self: center;
+    }
+  }
+}
 
 :host {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  min-height: 100vh;
+  background: $background-color;
 }
 
+// Address Link - Mobile First
 .address-link {
-    overflow: visible;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-bottom: 1rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: $surface-color;
+  border-radius: 0.5rem;
+  border: 1px solid $border-light;
+  color: $primary-color;
+  text-decoration: none;
+  font-weight: 500;
+  width: 100%;
+  display: block;
+  box-shadow: 0 1px 3px $shadow-light;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: $primary-50;
+    box-shadow: 0 2px 6px $shadow-medium;
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+  }
 }
 
+// Table Container - Mobile First
 .table {
-    overflow-x: auto;
+  overflow-x: auto;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  
+  // Mobile table styling
+  @media (max-width: 767px) {
+    // Hide table headers on mobile
+    table thead {
+      display: none;
+    }
+    
+    table tr {
+      display: block;
+      background: $surface-color;
+      margin-bottom: 0.75rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px $shadow-light;
+      border: 1px solid $border-light;
+    }
+    
+    table td {
+      display: block;
+      padding: 0.5rem 1rem;
+      border: none;
+      position: relative;
+      
+      &:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: $text-secondary;
+        display: block;
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+      }
+    }
+  }
+  
+  @media (min-width: 768px) {
+    overflow-x: visible;
+  }
 }
 
+// Button Bar - Mobile First
 .button-bar {
-    margin: 0;
-    padding: 1rem .5rem;
+  margin: 0;
+  padding: 1rem;
+  background: $surface-color;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
+  border: 1px solid $border-light;
+  margin-bottom: 1rem;
+  width: 100%;
+  
+  // Button styling for mobile
+  .mat-button, .mat-raised-button, .mat-flat-button {
+    margin: 0.25rem;
+    min-height: 44px; // Touch target
+    font-size: 0.875rem;
+    
+    @media (min-width: 768px) {
+      margin: 0.5rem;
+      font-size: 1rem;
+    }
+  }
+  
+  // Stack buttons on mobile
+  @media (max-width: 480px) {
+    .mat-button, .mat-raised-button, .mat-flat-button {
+      width: 100%;
+      margin: 0.25rem 0;
+    }
+  }
 }
 
+// Card Styles - Mobile First
 .mat-card {
-    margin-bottom: 1rem;
-
-    &:nth-child(even){
-        background-color: $primary-light-color;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem !important;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px $shadow-medium, 0 2px 8px $shadow-heavy !important;
+    transform: translateY(-2px);
+  }
+  
+  // Alternating background colors for visual separation
+  &:nth-child(even) {
+    background-color: $primary-50 !important;
+  }
+  
+  &:nth-child(odd) {
+    background-color: $accent-50 !important;
+  }
+  
+  // Card content padding
+  .mat-card-content {
+    padding: 1rem;
+    
+    @media (min-width: 768px) {
+      padding: 1.5rem;
     }
-
-    &:nth-child(odd){
-        background-color: $tertiary-light-color;
+  }
+  
+  // Card header styling
+  .mat-card-header {
+    padding: 1rem 1rem 0.5rem;
+    
+    @media (min-width: 768px) {
+      padding: 1.5rem 1.5rem 0.75rem;
     }
+  }
+  
+  // Card actions padding
+  .mat-card-actions {
+    padding: 0.5rem 1rem 1rem;
+    margin: 0;
+    
+    @media (min-width: 768px) {
+      padding: 0.75rem 1.5rem 1.5rem;
+    }
+    
+    .mat-button {
+      min-height: 44px; // Touch target
+      margin: 0.25rem;
+      
+      @media (max-width: 480px) {
+        width: 100%;
+        margin: 0.25rem 0;
+      }
+    }
+  }
 }
 
-.mat-card-reverse {
-    margin-bottom: 1rem;
-
-    &:nth-child(even){
-        background-color: $tertiary-light-color;
-    }
-
-    &:nth-child(odd){
-        background-color: $primary-light-color;
-    }
-}
-
+// Disabled card styling
 .mat-card-disabled {
-    background-color: $disabled-color !important;
+  background-color: $background-secondary !important;
+  opacity: 0.6;
+  
+  &:hover {
+    transform: none;
+    box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium !important;
+  }
+  
+  // Keep buttons interactive while making card content appear disabled
+  .mat-card-content,
+  .mat-card-header {
+    pointer-events: none;
+  }
+  
+  .mat-card-actions {
+    pointer-events: auto;
+  }
 }
 
+// Panel Headers - Mobile First
 .mat-panel-header {
-    padding-left: .5rem;
+  padding-left: 1rem;
+  
+  @media (min-width: 768px) {
+    padding-left: 1.5rem;
+  }
 }
 
 .mat-panel-title {
-    margin-top: 1rem;
-}
-
-.row-grid {
-    margin-bottom: 2rem;
-}
-
-.back-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+  margin-top: 1rem;
+  font-weight: 600;
+  color: $text-primary;
   
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
+  }
+}
+
+// Grid Layout - Mobile First
+.row-grid {
+  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 1024px) {
+    gap: 2rem;
+  }
+}
+
+// Back to Top Button - Mobile Optimized
+.back-to-top {
+  position: fixed;
+  bottom: 80px; // Account for mobile navigation
+  right: 1rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: $primary-color;
+  color: $text-inverse;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px $shadow-medium, 0 2px 6px $shadow-heavy;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  
+  &:hover {
+    background: $primary-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px $shadow-heavy, 0 3px 8px $shadow-heavy;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  mat-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    bottom: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+// Container for positioning current average relative to trip form
+.trip-form-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+// Current average overlay positioned next to form title
+.current-average-overlay {
+  position: absolute;
+  top: 1.5rem; // Align with form header margin
+  right: 0;
+  z-index: 10;
+  
+  @media (max-width: 768px) {
+    top: 1.25rem;
+    right: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    position: absolute;
+    top: 0.5rem; // Adjust to align better with mobile form header
+    right: 0.5rem;
+    z-index: 10;
+  }
+}
+
+// Ensure trip form doesn't overlap with current average
+.trip-form-container trip-form .form-header {
+  padding-right: 200px; // Space for current average component
+  
+  @media (max-width: 768px) {
+    padding-right: 180px;
+  }
+  
+  @media (max-width: 480px) {
+    padding-right: 120px; // Reduced padding for smaller current average on mobile
+  }
+}
+

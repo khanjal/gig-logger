@@ -1,0 +1,37 @@
+// Trips Table Basic Component Styles
+@import "color-vars";
+
+// Component-specific styles only - global table styles are in _tables.scss
+
+// Tip Styling Classes
+.tip-none {
+  color: $warn-color !important;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.tip-good {
+  color: $success-color !important;
+  font-weight: 600;
+  
+  &::after {
+    content: ' ✓';
+    color: $success-color;
+    font-weight: bold;
+  }
+}
+
+// Secondary row styling for additional trip details
+.mat-row {
+  &.secondary-row {
+    font-size: 0.8rem;
+    color: $text-secondary;
+    font-style: italic;
+    
+    mat-cell {
+      padding-top: 0.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: none;
+    }
+  }
+}

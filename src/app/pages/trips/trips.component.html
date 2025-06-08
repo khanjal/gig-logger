@@ -1,7 +1,8 @@
 <div class="container" id="addTrip">
-    <div><app-current-average class="field-right"></app-current-average></div>
-    
-    <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    <div class="trip-form-container">
+        <app-current-average class="current-average-overlay"></app-current-average>
+        <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    </div>
 
     @if (unsavedData && !pollingEnabled) {
         <div class="row-grid">
@@ -25,11 +26,9 @@
         <mat-slide-toggle class="field-right" (change)="changePolling()">
             Auto Save
         </mat-slide-toggle>
-    </h2>
-
-    @for (trip of todaysTrips; track $index) {
+    </h2>    @for (trip of todaysTrips; track $index) {
         <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()"></trips-quick-view>
+            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTodaysTrips)="scrollToTodaysTrips()"></trips-quick-view>
         </div>
     }
 
@@ -43,7 +42,7 @@
             </mat-expansion-panel-header>
             @for (trip of yesrterdaysTrips; track $index) {
                 <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                    <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()"></trips-quick-view>
+                    <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTodaysTrips)="scrollToTodaysTrips()"></trips-quick-view>
                 </div>
             }
         </mat-expansion-panel>

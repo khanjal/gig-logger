@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CustomCalendarHeaderComponent } from '@components/custom-calendar-header/custom-calendar-header.component';
+import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
 import { DateHelper } from '@helpers/date.helper';
 import { IShift } from '@interfaces/shift.interface';

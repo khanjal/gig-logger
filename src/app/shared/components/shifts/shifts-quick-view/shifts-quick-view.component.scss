@@ -1,0 +1,170 @@
+﻿// Mobile-First Shifts Quick View Component Styles
+@import "color-vars";
+@import "../../../styles/components";
+
+/* ========================================
+   SECTION CONTAINER STYLES
+   ======================================== */
+
+.section-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: $surface-secondary;
+  border-radius: 0.75rem;
+  border: 1px solid $border-light;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: $surface-color;
+    box-shadow: 0 2px 8px $shadow-light;
+  }
+  
+  &:first-child {
+    margin-top: 0;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  @media (min-width: 768px) {
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+}
+
+.icon-display {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $primary-color, $secondary-color);
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba($primary-color, 0.3);
+  font-size: 1.25rem !important;
+  flex-shrink: 0;
+  
+  @media (min-width: 768px) {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem !important;
+  }
+}
+
+.section-content {
+  flex: 1;
+  
+  div {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  strong {
+    color: $text-primary;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+}
+
+/* ========================================
+   PAYMENT GRID STYLES
+   ======================================== */
+
+.payment-grid {
+  margin-top: 0.75rem;
+  
+  .payment-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+  }
+}
+
+/* ========================================
+   SHIFT NOTE STYLES
+   ======================================== */
+
+.shift-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, $info-50, rgba($info-color, 0.05));
+  border: 1px solid $info-100;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  
+  .note-icon {
+    color: $info-color;
+    font-size: 1.25rem !important;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+  
+  .note-text {
+    font-style: italic;
+    color: $text-primary;
+    line-height: 1.5;
+    flex: 1;
+  }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.primary {
+  color: $primary-color !important;
+}
+
+.warn {
+  color: $danger-color !important;
+}
+
+.success {
+  color: $success-color !important;
+}
+
+.info {
+  color: $info-color !important;
+}
+
+.strike {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.rainbow-text-animated {
+  background: linear-gradient(45deg, $primary-color, $secondary-color, $accent-color, $success-color);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 2s ease-in-out infinite;
+}
+
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}

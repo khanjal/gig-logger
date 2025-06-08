@@ -1,0 +1,149 @@
+@import "color-vars";
+
+// Mobile-first authentication section
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  
+  @media (max-width: 768px) {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    padding: 0.5rem;
+  }
+}
+
+// Enhanced login/logout buttons with mobile-first design
+.login-button, .logout-button {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding: 16px 32px;
+  min-width: 280px;
+  min-height: 56px; // Enhanced touch target
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 768px) {
+    min-width: 240px;
+    min-height: 52px;
+    padding: 14px 28px;
+    font-size: 1rem;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    min-width: 200px;
+    min-height: 48px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    
+    @media (max-width: 768px) {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    transition-duration: 0.1s;
+  }
+}
+
+// Google login button styling
+.login-button {
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  color: white;
+  border: none;
+  
+  &:hover {
+    background: linear-gradient(135deg, $primary-600 0%, $secondary-600 100%);
+  }
+}
+
+// Enhanced Google icon
+.google-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 12px;
+  
+  @media (max-width: 768px) {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+}
+
+// Enhanced user info display
+.user-info {
+  font-size: 1rem;
+  color: $text-secondary;
+  margin-top: 0.75rem;
+  text-align: center;
+  padding: 0.5rem;
+  background: $background-light;
+  border-radius: 8px;
+  border: 1px solid $border-light;
+  
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    padding: 0.4rem;
+    border-radius: 6px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    padding: 0.3rem;
+    border-radius: 4px;
+  }
+}
+
+// Enhanced logout button
+.logout-button {
+  background: linear-gradient(135deg, $danger-color 0%, $warn-color 100%);
+  color: white;
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, $danger-600 0%, $warn-600 100%);
+  }
+
+  mat-icon {
+    margin-right: 8px;
+    
+    @media (max-width: 768px) {
+      margin-right: 6px;
+    }
+    
+    @media (max-width: 480px) {
+      margin-right: 4px;
+    }
+  }
+}

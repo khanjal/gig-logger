@@ -1,66 +1,289 @@
 @import "color-vars";
 
+// Enhanced address links for mobile
 .address-link {
     overflow: visible;
     white-space: nowrap;
     text-overflow: ellipsis;
     margin-bottom: 1rem;
+    color: $accent-color;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+    
+    &:hover {
+        color: $accent-600;
+        text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        white-space: normal;
+        text-overflow: unset;
+    }
 }
 
+// Mobile-first header container
 .header-container {
     display: flex; 
     align-items: center; 
     justify-content: space-between;
     vertical-align: middle;
+    padding: 0.5rem 0;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    @media (max-width: 480px) {
+        gap: 0.5rem;
+    }
 }
 
+// Enhanced add button for mobile
 .add-button {
-    transform: scale(0.8);
+    transform: scale(0.9);
+    min-height: 44px;
+    min-width: 44px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+        transform: scale(0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    @media (max-width: 768px) {
+        transform: scale(0.85);
+        
+        &:hover {
+            transform: scale(0.9);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        transform: scale(0.8);
+        
+        &:hover {
+            transform: scale(0.85);
+        }
+    }
 }
 
+// Enhanced responsive table
 .table {
     overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    @media (max-width: 768px) {
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 480px) {
+        border-radius: 6px;
+    }
 }
 
+// Enhanced button bar with mobile-first design
 .button-bar {
     margin: 0;
-    padding: 1rem .5rem;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    
+    @media (max-width: 768px) {
+        padding: 0.75rem 0.25rem;
+        gap: 0.75rem;
+        flex-direction: column;
+    }
+    
+    @media (max-width: 480px) {
+        padding: 0.5rem 0;
+        gap: 0.5rem;
+    }
+    
+    button {
+        min-height: 44px;
+        flex: 1;
+        max-width: 200px;
+        
+        @media (max-width: 768px) {
+            max-width: none;
+            min-height: 48px;
+        }
+        
+        @media (max-width: 480px) {
+            min-height: 44px;
+        }
+    }
 }
 
+// Enhanced card styling with mobile-first approach
 .mat-card {
     margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
     &:nth-child(even){
-        background-color: $primary-light-color;
+        background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
     }
 
     &:nth-child(odd){
-        background-color: $tertiary-light-color;
+        background: linear-gradient(135deg, $secondary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+    }
+    
+    @media (max-width: 768px) {
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        
+        &:hover {
+            transform: none;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
     }
 }
 
+// Enhanced reverse card styling
 .mat-card-reverse {
     margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
     &:nth-child(even){
-        background-color: $tertiary-light-color;
+        background: linear-gradient(135deg, $secondary-50 0%, rgba(255, 255, 255, 0.8) 100%);
     }
 
     &:nth-child(odd){
-        background-color: $primary-light-color;
+        background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+    }
+    
+    @media (max-width: 768px) {
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        
+        &:hover {
+            transform: none;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
     }
 }
 
+// Enhanced disabled card state
 .mat-card-disabled {
-    background-color: $disabled-color !important;
+    background: linear-gradient(135deg, $disabled-color 0%, rgba(128, 128, 128, 0.1) 100%) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    
+    &:hover {
+        transform: none !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    }
 }
 
+// Enhanced grid layout
 .row-grid {
     margin-bottom: 2rem;
+    
+    @media (max-width: 768px) {
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 480px) {
+        margin-bottom: 1rem;
+    }
 }
 
+// Enhanced scrollable area with mobile optimizations
 .shifts-scrollable {
-    height: 80vh; /* Adjust height as needed */
-    overflow-y: auto; /* Enable vertical scrolling */
+    height: 80vh;
+    overflow-y: auto;
     box-sizing: border-box;
+    padding-right: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: $accent-color $background-light;
+    
+    @media (max-width: 768px) {
+        height: calc(100vh - 180px); // Account for mobile navigation
+        padding-right: 0.25rem;
+    }
+    
+    @media (max-width: 480px) {
+        height: calc(100vh - 160px);
+        padding-right: 0;
+    }
+    
+    // Custom scrollbar for webkit browsers
+    &::-webkit-scrollbar {
+        width: 8px;
+        
+        @media (max-width: 768px) {
+            width: 6px;
+        }
+        
+        @media (max-width: 480px) {
+            width: 4px;
+        }
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: $background-light;
+        border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: $accent-color;
+        border-radius: 4px;
+        
+        &:hover {
+            background: $accent-600;
+        }
+    }
 }
