@@ -103,12 +103,24 @@ mat-table {
   }
 }
 
-/* Row Base Styling */
+/* Row Base Styling - Compact Design */
 mat-row,
 mat-header-row {
   display: table-row;
   transition: all 0.2s ease;
   border-bottom: 1px solid rgba($border-light, 0.5);
+  height: 2.75rem; // Fixed compact height
+  min-height: 2.75rem;
+  
+  @media (max-width: 768px) {
+    height: 2.5rem; // Even more compact on tablets
+    min-height: 2.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    height: 2.25rem; // Most compact on mobile
+    min-height: 2.25rem;
+  }
 }
 
 /* Header Row Styling */
@@ -180,12 +192,12 @@ mat-row {
 // CELL STYLING - RESPONSIVE PATTERNS
 // =============================================================================
 
-/* Base Cell Styling */
+/* Base Cell Styling - Compact Design */
 mat-cell,
 mat-header-cell {
   word-wrap: initial;
   display: table-cell;
-  padding: 0.875rem 0.625rem;
+  padding: 0.5rem 0.625rem; // Reduced from 0.875rem to 0.5rem
   line-break: unset;
   width: auto;
   white-space: nowrap;
@@ -194,43 +206,45 @@ mat-header-cell {
   font-size: 0.875rem;
   border-right: 1px solid rgba($border-light, 0.3);
   text-overflow: ellipsis;
+  line-height: 1.2; // Tighter line height
   
   &:last-child {
     border-right: none;
   }
   
   @media (max-width: 768px) {
-    padding: 0.75rem 0.5rem;
+    padding: 0.4rem 0.5rem; // Reduced from 0.75rem to 0.4rem
     font-size: 0.8rem;
   }
   
   @media (max-width: 480px) {
-    padding: 0.5rem 0.375rem;
+    padding: 0.35rem 0.375rem; // Reduced from 0.5rem to 0.35rem
     font-size: 0.75rem;
   }
 }
 
-/* Header Cell Specific Styling */
+/* Header Cell Specific Styling - Compact */
 mat-header-cell {
   font-weight: 600;
   color: $primary-700;
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0.5rem; // Reduced from 0.75rem to 0.5rem
+  padding-bottom: 0.5rem; // Reduced from 0.75rem to 0.5rem
+  line-height: 1.1; // Tighter line height for headers
   
   @media (max-width: 768px) {
     font-size: 0.7rem;
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
+    padding-top: 0.4rem; // Reduced from 0.625rem to 0.4rem
+    padding-bottom: 0.4rem; // Reduced from 0.625rem to 0.4rem
   }
   
   @media (max-width: 480px) {
     font-size: 0.65rem;
     letter-spacing: 0.3px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.35rem; // Reduced from 0.5rem to 0.35rem
+    padding-bottom: 0.35rem; // Reduced from 0.5rem to 0.35rem
   }
 }
 

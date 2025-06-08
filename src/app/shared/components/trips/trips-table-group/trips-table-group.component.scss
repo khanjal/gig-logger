@@ -133,3 +133,50 @@ h3 {
   text-decoration: line-through;
   opacity: 0.7;
 }
+
+// Compact table styling for this component
+.table-responsive {
+  mat-table {
+    // Override global styles for extra compactness
+    mat-row {
+      height: 2.5rem !important;
+      min-height: 2.5rem !important;
+      
+      @media (max-width: 768px) {
+        height: 2.25rem !important;
+        min-height: 2.25rem !important;
+      }
+      
+      @media (max-width: 480px) {
+        height: 2rem !important;
+        min-height: 2rem !important;
+      }
+    }
+    
+    mat-cell {
+      padding: 0.4rem 0.625rem !important;
+      line-height: 1.1 !important;
+      
+      @media (max-width: 768px) {
+        padding: 0.35rem 0.5rem !important;
+      }
+      
+      @media (max-width: 480px) {
+        padding: 0.3rem 0.375rem !important;
+      }
+    }
+    
+    mat-header-cell {
+      padding: 0.4rem 0.625rem !important;
+      line-height: 1 !important;
+      
+      @media (max-width: 768px) {
+        padding: 0.35rem 0.5rem !important;
+      }
+      
+      @media (max-width: 480px) {
+        padding: 0.3rem 0.375rem !important;
+      }
+    }
+  }
+}
