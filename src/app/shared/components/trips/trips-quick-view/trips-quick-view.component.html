@@ -140,7 +140,7 @@
           <a href="https://www.google.com/maps/search/?api=1&query={{trip.startAddress}}" 
              target="_blank" 
              class="address-link__text">
-            {{ trip.startAddress | shortaddress:trip.place | truncate:45}}
+            {{ trip.startAddress | shortaddress:trip.place | truncate:40}}
             <mat-icon class="external-link-icon">open_in_new</mat-icon>
           </a>
         </div>
@@ -161,7 +161,7 @@
           <a href="https://www.google.com/maps/search/?api=1&query={{trip.endAddress}}" 
              target="_blank" 
              class="address-link__text">
-            {{ trip.endAddress | shortaddress | truncate:45}}
+            {{ trip.endAddress | shortaddress | truncate:40}}
             <mat-icon class="external-link-icon">open_in_new</mat-icon>
           </a>
         </div>

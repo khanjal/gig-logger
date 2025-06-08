@@ -434,6 +434,26 @@ div.mat-expansion-panel-body {
   }
 }
 
+/* Expansion panel header alignment */
+.mat-expansion-panel-header {
+  &.mat-panel-header {
+    display: flex !important;
+    align-items: center !important;
+    
+    .mat-panel-title {
+      display: flex !important;
+      align-items: center !important;
+      margin: 0 !important;
+      
+      h2 {
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+    }
+  }
+}
+
 .mat-expansion-indicator,
 .mat-expansion-indicator:after {
   color: $primary-color !important;
