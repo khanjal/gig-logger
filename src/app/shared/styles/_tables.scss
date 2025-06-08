@@ -502,27 +502,26 @@ mat-header-cell {
   width: 90px;
   min-width: 80px;
   max-width: 110px;
-  
-  // Reduced padding for date/time columns
+    // Reduced padding for date/time columns
   &.date-compact {
     width: 75px;
     min-width: 65px;
     max-width: 85px;
-    padding-left: 0.25rem !important;
-    padding-right: 0.25rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
     
     @media (max-width: 768px) {
       width: 70px;
       min-width: 60px;
-      padding-left: 0.2rem !important;
-      padding-right: 0.2rem !important;
+      padding-left: 0.3rem !important;
+      padding-right: 0.3rem !important;
     }
     
     @media (max-width: 480px) {
       width: 65px;
       min-width: 55px;
-      padding-left: 0.15rem !important;
-      padding-right: 0.15rem !important;
+      padding-left: 0.25rem !important;
+      padding-right: 0.25rem !important;
     }
   }
 }
