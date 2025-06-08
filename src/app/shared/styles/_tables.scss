@@ -558,6 +558,49 @@ mat-header-cell {
 }
 
 // =============================================================================
+// MOBILE-SPECIFIC COMPACT STYLING FOR BASIC TABLE
+// =============================================================================
+
+/* Mobile-optimized styling for trips-table-basic component */
+.table-fit-container {
+  // Additional mobile-specific column adjustments for basic table
+  .table-col-service {
+    @media (max-width: 768px) {
+      width: 70px;
+      min-width: 60px;
+      max-width: 80px;
+    }
+    
+    @media (max-width: 480px) {
+      width: 60px;
+      min-width: 50px;
+      max-width: 70px;
+    }
+  }
+  
+  .table-col-wide {
+    @media (max-width: 768px) {
+      width: 140px;
+      min-width: 120px;
+      max-width: 160px;
+    }
+    
+    @media (max-width: 480px) {
+      width: 100px;
+      min-width: 90px;
+      max-width: 120px;
+    }
+  }
+  
+  // Even more compact truncation for mobile
+  .table-col-wide mat-cell {
+    @media (max-width: 480px) {
+      font-size: 0.65rem;
+    }
+  }
+}
+
+// =============================================================================
 // TABLE DENSITY VARIANTS
 // =============================================================================
 

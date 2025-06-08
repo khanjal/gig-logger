@@ -10,8 +10,8 @@
                 <mat-cell *matCellDef="let trip" class="table-col-service"> {{trip.service}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="place">
-                <mat-header-cell *matHeaderCellDef class="table-col-address"> Place </mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-address"> {{trip.place | truncate:75}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-wide"> Place </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-wide"> {{trip.place | truncate:20}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tips">
                 <mat-header-cell *matHeaderCellDef class="table-col-currency tips-compact">Tips</mat-header-cell>
