@@ -559,8 +559,8 @@ mat-form-field {
   }
 }
 
-// Default state: buttons stay inside form field (all screen sizes except extremely small)
-@media (min-width: 281px) {
+// Default state: buttons stay inside form field (all screen sizes except very small)
+@media (min-width: 361px) {
   .search-input-wrapper {
     // Hide compact menu on larger screens
     .compact-menu {
@@ -574,13 +574,13 @@ mat-form-field {
   }
 }
 
-// Only extremely small screens (≤280px): switch to menu
-@media (max-width: 280px) {
+// Only very small screens (≤360px): switch to menu
+@media (max-width: 360px) {
   .search-input-wrapper {
     gap: 0.25rem;
     align-items: center;
     
-    // Hide standard buttons on extremely small screens
+    // Hide standard buttons on very small screens
     .standard-button {
       display: none !important;
     }
@@ -617,10 +617,10 @@ mat-form-field {
   
   // Medium screens - still good touch targets
   @media (max-width: 768px) {
-    min-width: 42px !important;
-    min-height: 42px !important;
-    width: 42px !important;
-    height: 42px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
     
     mat-icon {
       font-size: 1.125rem !important;
@@ -629,12 +629,12 @@ mat-form-field {
     }
   }
   
-  // Small screens - compact but usable
+  // Small screens - more compact
   @media (max-width: 480px) {
-    min-width: 40px !important;
-    min-height: 40px !important;
-    width: 40px !important;
-    height: 40px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    width: 36px !important;
+    height: 36px !important;
     
     mat-icon {
       font-size: 1rem !important;
@@ -643,12 +643,12 @@ mat-form-field {
     }
   }
   
-  // Extra compact for very small screens (but still in form field)
-  @media (max-width: 320px) {
-    min-width: 36px !important;
-    min-height: 36px !important;
-    width: 36px !important;
-    height: 36px !important;
+  // Very small screens but still in form field
+  @media (max-width: 400px) {
+    min-width: 32px !important;
+    min-height: 32px !important;
+    width: 32px !important;
+    height: 32px !important;
     
     mat-icon {
       font-size: 0.875rem !important;
@@ -768,8 +768,7 @@ mat-form-field {
             width: 100% !important;
           }
         }
-        
-        // Ensure suffix buttons don't wrap
+          // Ensure suffix buttons don't wrap
         .mat-mdc-form-field-suffix {
           display: flex !important;
           flex-direction: row !important;
@@ -801,10 +800,19 @@ mat-form-field {
   }
 }
 
-// Even more aggressive label sizing for small screens (but buttons still in field)
-@media (max-width: 480px) {
+// Extra aggressive spacing for small screens to prevent wrapping at 375px
+@media (max-width: 400px) {
   .search-input-wrapper {
+    gap: 0.125rem !important;
+    
     mat-form-field {
+      .mat-mdc-text-field-wrapper {
+        .mat-mdc-form-field-suffix {
+          gap: 1px !important;
+          margin-left: 2px !important;
+        }
+      }
+      
       .mat-mdc-form-field-label-wrapper {
         max-width: 60% !important;
         
@@ -814,13 +822,6 @@ mat-form-field {
           &.mat-mdc-form-field-label-floating {
             font-size: 0.7rem !important;
           }
-        }
-      }
-      
-      .mat-mdc-text-field-wrapper {
-        .mat-mdc-form-field-suffix {
-          gap: 1px !important;
-          margin-left: 2px !important;
         }
       }
     }
