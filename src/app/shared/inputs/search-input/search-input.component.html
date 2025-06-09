@@ -1,5 +1,6 @@
 <form [formGroup]="searchForm">
-    <div class="search-input-wrapper">
+    <div class="search-input-wrapper" 
+         [class.show-compact-menu]="hasAvailableActions((filteredItems | async)?.length)">
         <mat-form-field class="field-full-width" appearance="outline">
             <mat-label>{{fieldName}}</mat-label>
             <input 
@@ -40,9 +41,8 @@
                 <mat-icon>clear</mat-icon>
             </button>
         </mat-form-field>
-        
-        <!-- Compact menu (very small screens only) -->
-        <div class="compact-menu" *ngIf="hasAvailableActions()">
+          <!-- Compact menu (very small screens only) -->
+        <div class="compact-menu" *ngIf="hasAvailableActions((filteredItems | async)?.length)">
             <button class="mat-mdc-icon-button menu-trigger-button" 
                     mat-icon-button 
                     [matMenuTriggerFor]="actionsMenu"

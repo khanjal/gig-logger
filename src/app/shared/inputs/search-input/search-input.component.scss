@@ -554,20 +554,36 @@ mat-form-field {
   }
 }
 
-// Small to medium screens (≤400px): switch to menu to prevent button stacking
+// Small to medium screens (≤400px): responsive button handling
 @media (max-width: 400px) {
   .search-input-wrapper {
     gap: 0.25rem;
     align-items: center;
     
-    // Hide standard buttons on very small screens
+    // Default: show standard buttons (for single button case)
     .standard-button {
-      display: none !important;
+      display: inline-flex !important;
+      min-width: 32px !important;
+      min-height: 32px !important;
     }
     
-    // Show only compact menu
+    // When compact menu is active, hide standard buttons
+    &.show-compact-menu {
+      .standard-button {
+        display: none !important;
+      }
+      
+      .compact-menu {
+        display: flex !important;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    // Default compact menu state (hidden)
     .compact-menu {
-      display: flex !important;
+      display: none;
       flex-shrink: 0;
       align-items: center;
       justify-content: center;

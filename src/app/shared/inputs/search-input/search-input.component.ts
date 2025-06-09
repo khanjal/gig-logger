@@ -372,18 +372,30 @@ export class SearchInputComponent {
 
     if (properValue.toLocaleLowerCase() === value.toLocaleLowerCase()) {
       return properValue;
-    }
-
-    return value;
+    }    return value;
   }
 
-  // Check if there are any available actions to show in the menu
-  hasAvailableActions(): boolean {
-    return !!(
-      (this.showSearch && this.value && this.googleSearch) ||
-      (!this.showSearch && this.value && this.googleSearch) ||
-      this.value
-    );
+  // Check if there are 2 or more available actions to show in the menu
+  hasAvailableActions(filteredItemsLength?: number): boolean {
+    let buttonCount = 0;
+    
+    // Count Google Search button (only shows when no filtered items)
+    if (this.showSearch && this.value && this.googleSearch && (filteredItemsLength === 0 || filteredItemsLength === undefined)) {
+      buttonCount++;
+    }
+    
+    // Count Google Maps button (mutually exclusive with search button)
+    if (!this.showSearch && this.value && this.googleSearch) {
+      buttonCount++;
+    }
+    
+    // Count Clear button
+    if (this.value) {
+      buttonCount++;
+    }
+    
+    // Only show menu if there are 2 or more buttons
+    return buttonCount >= 2;
   }
 
   // Filter items based on the search type
