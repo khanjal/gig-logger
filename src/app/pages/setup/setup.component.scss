@@ -190,6 +190,44 @@
   }
 }
 
+// Button Row Layout for Action Buttons - Uses global utilities where possible
+// .row-flex, .justify-between, .items-center, .button-right are already defined globally
+
+// Specific styling for the bottom action buttons section
+.section:last-child {
+  > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    
+    button:first-child {
+      margin-right: auto;
+    }
+    
+    .button-right {
+      margin-left: auto;
+    }
+    
+    @media (max-width: 768px) {
+      gap: 0.75rem;
+    }
+    
+    @media (max-width: 480px) {
+      gap: 0.5rem;
+      // Keep buttons on same row on mobile
+      flex-direction: row;
+      
+      // Ensure buttons are sized appropriately for mobile
+      button {
+        flex: 1;
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+      }
+    }
+  }
+}
+
 // Progress Indicators - Mobile First
 .setup-progress {
   display: flex;
