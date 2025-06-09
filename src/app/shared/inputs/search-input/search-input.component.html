@@ -1,40 +1,69 @@
 <form [formGroup]="searchForm">
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>{{fieldName}}</mat-label>
-        <input 
-            matInput
-            type="text"
-            [matAutocomplete]="autoInput"
-            formControlName="searchInput"
-            (input)="onInputChange($event)"
-            (blur)="onBlur()"
-            [required]="isRequired"
-            focus-scroll
-            #searchInput
-        />
-        <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
-            <cdk-virtual-scroll-viewport 
-                [itemSize]="48" 
-                [style.height.px]="getViewportHeight(filteredItems | async)" 
-                class="virtual-scroll-viewport"
-            >
-            <mat-option 
-                *cdkVirtualFor="let item of filteredItems | async" 
-                [value]="item.name" 
-                (click)="onInputSelect(item.value)"
-                #matOption>
-                {{ item.name }} {{ item.saved ? '(' + (item.trips ?? 0) + ')' : '' }}
-            </mat-option>
-            </cdk-virtual-scroll-viewport>
-        </mat-autocomplete>
-        <button class="mat-icon-button" *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" color="primary" matSuffix mat-icon-button aria-label="Search Google" (click)="onSearch()">
-            <mat-icon>search</mat-icon>
-        </button>
-        <button class="mat-icon-button" *ngIf="!showSearch && value && googleSearch" color="primary" matSuffix mat-icon-button aria-label="Google Maps" (click)="openMap()">
-            <mat-icon>map</mat-icon>
-        </button>
-        <button class="mat-icon-button" *ngIf="value" color="accent" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-form-field>
+    <div class="search-input-wrapper">
+        <mat-form-field class="field-full-width" appearance="outline">
+            <mat-label>{{fieldName}}</mat-label>
+            <input 
+                matInput
+                type="text"
+                [matAutocomplete]="autoInput"
+                formControlName="searchInput"
+                (input)="onInputChange($event)"
+                (blur)="onBlur()"
+                [required]="isRequired"
+                focus-scroll
+                #searchInput
+            />
+            <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
+                <cdk-virtual-scroll-viewport 
+                    [itemSize]="48" 
+                    [style.height.px]="getViewportHeight(filteredItems | async)" 
+                    class="virtual-scroll-viewport"
+                >
+                <mat-option 
+                    *cdkVirtualFor="let item of filteredItems | async" 
+                    [value]="item.name" 
+                    (click)="onInputSelect(item.value)"
+                    #matOption>
+                    {{ item.name }} {{ item.saved ? '(' + (item.trips ?? 0) + ')' : '' }}
+                </mat-option>
+                </cdk-virtual-scroll-viewport>
+            </mat-autocomplete>
+            
+            <!-- Standard buttons (inside form field) - shown on all screens except very small -->
+            <button class="mat-icon-button standard-button" *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" color="primary" matSuffix mat-icon-button aria-label="Search Google" (click)="onSearch()">
+                <mat-icon>search</mat-icon>
+            </button>
+            <button class="mat-icon-button standard-button" *ngIf="!showSearch && value && googleSearch" color="primary" matSuffix mat-icon-button aria-label="Google Maps" (click)="openMap()">
+                <mat-icon>map</mat-icon>
+            </button>
+            <button class="mat-icon-button standard-button" *ngIf="value" color="accent" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </mat-form-field>
+        
+        <!-- Compact menu (very small screens only) -->
+        <div class="compact-menu" *ngIf="hasAvailableActions()">
+            <button class="mat-mdc-icon-button menu-trigger-button" 
+                    mat-icon-button 
+                    [matMenuTriggerFor]="actionsMenu"
+                    aria-label="Search Actions">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #actionsMenu="matMenu" class="search-actions-menu">
+                <button mat-menu-item *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
+                    <mat-icon>search</mat-icon>
+                    <span>Search Google</span>
+                </button>
+                <button mat-menu-item *ngIf="!showSearch && value && googleSearch" (click)="openMap()">
+                    <mat-icon>map</mat-icon>
+                    <span>Open Map</span>
+                </button>
+                <button mat-menu-item *ngIf="value" (click)="onClear()">
+                    <mat-icon>clear</mat-icon>
+                    <span>Clear Field</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
 </form>

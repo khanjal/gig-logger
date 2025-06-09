@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 
 // Application-specific imports - Components
 import { AddressDialogComponent } from '@components/forms/address-dialog/address-dialog.component';
@@ -51,7 +52,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
+  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, MatMenuModule, ReactiveFormsModule, ScrollingModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -374,6 +375,15 @@ export class SearchInputComponent {
     }
 
     return value;
+  }
+
+  // Check if there are any available actions to show in the menu
+  hasAvailableActions(): boolean {
+    return !!(
+      (this.showSearch && this.value && this.googleSearch) ||
+      (!this.showSearch && this.value && this.googleSearch) ||
+      this.value
+    );
   }
 
   // Filter items based on the search type
