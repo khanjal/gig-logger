@@ -13,67 +13,58 @@
     max-width: none !important;
     min-width: 0 !important;
   }
-}
-
-// Time Input Container - Mobile First
-.time-input-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
   
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
+  // Ensure the mat-form-field takes full width of its container
+  mat-form-field {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
   }
 }
 
-// Time Input Field
-.time-input-field {
-  flex: 1;
+// Direct mat-form-field styling
+mat-form-field {
+  width: 100% !important;
+  max-width: 100% !important;
   
-  mat-form-field {
-    width: 100%;
+  .mat-mdc-form-field-flex {
+    background: $surface-color;
+    border-radius: 0.75rem;
+    border: 1px solid $border-color;
+    transition: all 0.2s ease-in-out;
     
-    .mat-mdc-form-field-flex {
-      background: $surface-color;
-      border-radius: 0.75rem;
-      border: 1px solid $border-color;
-      transition: all 0.2s ease-in-out;
-      
-      &:hover {
-        border-color: $primary-300;
-        box-shadow: 0 2px 8px $shadow-light;
-      }
-      
-      &.mdc-text-field--focused {
-        border-color: $primary-color;
-        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
-      }
+    &:hover {
+      border-color: $primary-300;
+      box-shadow: 0 2px 8px $shadow-light;
     }
     
-    .mat-mdc-form-field-infix {
-      padding: 1rem;
-      min-height: 44px;
-      
-      @media (min-width: 768px) {
-        padding: 1.25rem;
-      }
+    &.mdc-text-field--focused {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
     }
+  }
+  
+  .mat-mdc-form-field-infix {
+    padding: 1rem;
+    min-height: 44px;
     
-    input {
-      font-size: 1rem;
-      color: $text-primary;
-      
-      &::placeholder {
-        color: $text-tertiary;
-      }
+    @media (min-width: 768px) {
+      padding: 1.25rem;
     }
+  }
+  
+  input {
+    font-size: 1rem;
+    color: $text-primary;
     
-    .mat-mdc-form-field-label {
-      color: $text-secondary;
-      font-weight: 500;
+    &::placeholder {
+      color: $text-tertiary;
     }
+  }
+  
+  .mat-mdc-form-field-label {
+    color: $text-secondary;
+    font-weight: 500;
   }
 }
 
