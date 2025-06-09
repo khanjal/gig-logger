@@ -525,17 +525,9 @@ mat-form-field {
   align-items: center;
   gap: 0.25rem;
   width: 100%;
-  
-  mat-form-field {
+    mat-form-field {
     flex: 1;
     min-width: 0;
-  }
-  
-  // Ensure compact menu is hidden by default
-  .compact-menu {
-    display: none;
-    align-items: center;
-    justify-content: center;
   }
 }
 
@@ -543,7 +535,7 @@ mat-form-field {
 @media (min-width: 401px) {
   .search-input-wrapper {
     // Hide compact menu on larger screens
-    .compact-menu {
+    .compact-menu-button {
       display: none !important;
     }
     
@@ -557,9 +549,6 @@ mat-form-field {
 // Small to medium screens (≤400px): responsive button handling
 @media (max-width: 400px) {
   .search-input-wrapper {
-    gap: 0.25rem;
-    align-items: center;
-    
     // Default: show standard buttons (for single button case)
     .standard-button {
       display: inline-flex !important;
@@ -567,26 +556,20 @@ mat-form-field {
       min-height: 32px !important;
     }
     
-    // When compact menu is active, hide standard buttons
+    // When compact menu is active, hide standard buttons and show menu
     &.show-compact-menu {
       .standard-button {
         display: none !important;
       }
       
-      .compact-menu {
-        display: flex !important;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: center;
+      .compact-menu-button {
+        display: inline-flex !important;
       }
     }
     
-    // Default compact menu state (hidden)
-    .compact-menu {
-      display: none;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
+    // Default compact menu state (hidden when not active)
+    .compact-menu-button {
+      display: none !important;
     }
   }
 }
@@ -621,22 +604,37 @@ mat-form-field {
   }
 }
 
-// Compact menu styling (for very small screens only)
-.menu-trigger-button {
-  min-width: 40px !important;
-  min-height: 40px !important;
-  border-radius: 50% !important;
-  background: $surface-color !important;
-  border: 1px solid $border-color !important;
+// Compact menu button styling (as matSuffix inside form field)
+.compact-menu-button {
   transition: all 0.2s ease-in-out !important;
-  flex-shrink: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  border-radius: 50% !important;
+  // Match standard button sizing
+  min-width: 44px !important;
+  min-height: 44px !important;
+  
+  // Medium screens - still good touch targets
+  @media (max-width: 768px) {
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  
+  // Small screens - more compact but still usable
+  @media (max-width: 480px) {
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+  
+  // Very small screens but still in form field
+  @media (max-width: 400px) {
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
   
   &:hover {
     background: $surface-secondary !important;
-    border-color: $primary-color !important;
     box-shadow: 0 2px 8px $shadow-light !important;
   }
   
