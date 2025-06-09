@@ -1,6 +1,5 @@
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -18,13 +17,9 @@ import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
     selector: 'app-shifts-quick-view',
     templateUrl: './shifts-quick-view.component.html',
     styleUrl: './shifts-quick-view.component.scss',
-    standalone: true,
-    imports: [
-        MatCard,
-        MatCardHeader,
+    standalone: true,    imports: [
         MatIcon,
         NgClass,
-        MatCardContent,
         NgIf,
         ShiftTripsTableComponent_1,
         MatFabButton,
@@ -39,11 +34,16 @@ export class ShiftsQuickViewComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   duplicateShift: boolean = false;
+  isExpanded: boolean = false;
 
   constructor(public dialog: MatDialog, private shiftService: ShiftService) {}
 
   async ngOnInit() {
     await this.checkForDuplicates();
+  }
+
+  toggleExpansion() {
+    this.isExpanded = !this.isExpanded;
   }
 
   async checkForDuplicates() {

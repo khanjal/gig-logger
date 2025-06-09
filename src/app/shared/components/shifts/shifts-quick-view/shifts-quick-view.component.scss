@@ -1,87 +1,429 @@
-﻿// Mobile-First Shifts Quick View Component Styles
+﻿// Mobile-First Shift Quick View Component Styles
 @import "color-vars";
 @import "../../../styles/components";
 
 /* ========================================
-   SECTION CONTAINER STYLES
+   SHIFT-SPECIFIC STYLES
    ======================================== */
 
-.section-container {
+/* ========================================
+   COMPONENT STYLES
+   ======================================== */
+
+/* Shift Card Container */
+.shift-card {
+  @extend .card;
+  @extend .card--shadow;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  
+  /* Card States */
+  &--excluded {
+    opacity: 0.6;
+    background: $background-secondary;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, transparent, transparent 10px, $warn-color 10px, $warn-color 12px);
+      opacity: 0.1;
+      pointer-events: none;
+    }
+  }
+  
+  &--unsaved { border-left: 4px solid $warn-color; box-shadow: 0 2px 12px $shadow-medium, 0 1px 6px $shadow-heavy; }
+  &--add { border-left-color: $success-color; }
+  &--edit { border-left-color: $info-color; }
+  &--delete { border-left-color: $warn-color; }
+  &--duplicate { border-left-color: $accent-color; }
+  
+  &:hover:not(.shift-card--excluded) {
+    box-shadow: 0 4px 16px $shadow-light, 0 2px 8px $shadow-medium;
+    transform: translateY(-1px);
+  }
+  
+  &:focus-within { box-shadow: 0 0 0 2px $border-focus; }
+}
+
+/* Shift Header */
+.shift-header {
+  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+  padding: 0.75rem;
+  border-bottom: 1px solid $border-light;
+  
+  &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+  }
+  
+  &__secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  &__toggle-bar {
+    @extend .badge;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+    color: $primary-color;
+    cursor: pointer;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    padding: 0.375rem 0.75rem;
+    height: auto;
+    min-height: 1.75rem;
+    border-radius: 0.875rem;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 100%);
+      border-color: rgba(37, 99, 235, 0.3);
+      transform: scale(1.02);
+    }
+    
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+/* Shift ID Display */
+.shift-id {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  
+  .shift-number {
+    @extend .badge;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-600 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba($primary-color, 0.3);
+  }
+  
+  .shift-date {
+    color: $text-secondary;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+/* Service Display */
+.shift-service {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  
+  .service-name {
+    @extend .badge;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+    color: $text-primary;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+  }
+  
+  .service-number {
+    @extend .badge;
+    background: $accent-100;
+    color: $accent-color;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+  }
+}
+
+/* Status Badge */
+.status-badge {
+  @extend .badge;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  
+  &--saved {
+    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
+    color: $success-color;
+    border-color: $success-200;
+  }
+  
+  &--add {
+    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
+    color: $success-color;
+    border-color: $success-200;
+  }
+  
+  &--edit {
+    background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
+    color: $info-color;
+    border-color: $info-200;
+  }
+  
+  &--delete {
+    background: linear-gradient(135deg, $warn-50 0%, $warn-100 100%);
+    color: $warn-color;
+    border-color: $warn-200;
+  }
+  
+  &--duplicate {
+    background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
+    color: $accent-color;
+    border-color: $accent-200;
+  }
+  
+  .status-icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Time Display */
+.shift-time {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: $text-primary;
+  font-weight: 600;
+  font-size: 0.875rem;
+  
+  .time-separator {
+    color: $text-secondary;
+    margin: 0 0.125rem;
+  }
+  
+  .start-time, .finish-time {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Total Amount Display */
+.shift-total {
+  .total-amount {
+    @extend .badge;
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, $success-100 0%, $success-50 100%);
+    color: $success-color;
+    border: 1px solid $success-200;
+    
+    &.efficiency--excellent {
+      background: linear-gradient(135deg, $success-color 0%, $success-600 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba($success-color, 0.3);
+    }
+    
+    &.efficiency--good {
+      background: linear-gradient(135deg, $info-color 0%, $info-600 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba($info-color, 0.3);
+    }
+    
+    &.efficiency--average {
+      background: linear-gradient(135deg, $warn-100 0%, $warn-200 100%);
+      color: $warn-color;
+      border-color: $warn-200;
+    }
+    
+    &.efficiency--poor {
+      background: linear-gradient(135deg, $danger-100 0%, $danger-200 100%);
+      color: $danger-color;
+      border-color: $danger-200;
+    }
+  }
+}
+
+/* Duration Information */
+.duration-info {
+  display: flex;
+  align-items: center;
   gap: 1rem;
-  margin: 1rem 0;
+  
+  .duration-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    
+    .duration-icon {
+      font-size: 1rem !important;
+      width: 1rem;
+      height: 1rem;
+      color: $text-secondary;
+    }
+    
+    .duration-text {
+      color: $text-primary;
+      font-weight: 500;
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  }
+}
+
+/* Toggle Bar */
+.toggle-bar__content {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  
+  .toggle-bar__text {
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  
+  .toggle-bar__icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s ease;
+  }
+}
+
+/* Shift Content */
+.shift-content {
+  background: $surface-color;
   padding: 1rem;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+/* Info Cards */
+.info-card {
+  @extend .card;
   background: $surface-secondary;
-  border-radius: 0.75rem;
   border: 1px solid $border-light;
-  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
   
   &:hover {
     background: $surface-color;
     box-shadow: 0 2px 8px $shadow-light;
   }
   
-  &:first-child {
-    margin-top: 0;
-  }
-  
   &:last-child {
     margin-bottom: 0;
   }
   
-  @media (min-width: 768px) {
-    gap: 1.25rem;
-    padding: 1.25rem;
-  }
-}
-
-.icon-display {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, $primary-color, $secondary-color);
-  color: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba($primary-color, 0.3);
-  font-size: 1.25rem !important;
-  flex-shrink: 0;
-  
-  @media (min-width: 768px) {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1.5rem !important;
-  }
-}
-
-.section-content {
-  flex: 1;
-  
-  div {
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-bottom: 1px solid $border-light;
     
-    &:last-child {
-      margin-bottom: 0;
+    .info-icon {
+      color: $primary-color;
+      font-size: 1.25rem !important;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    
+    h4 {
+      margin: 0;
+      color: $text-primary;
+      font-weight: 600;
+      font-size: 0.875rem;
     }
   }
   
-  strong {
-    color: $text-primary;
-    font-weight: 600;
-    margin-right: 0.5rem;
+  &__content {
+    padding: 1rem;
   }
 }
 
-/* ========================================
-   PAYMENT GRID STYLES
-   ======================================== */
-
-.payment-grid {
+/* Info Badges */
+.info-badge {
+  @extend .badge;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
+  color: $accent-color;
+  border: 1px solid $accent-200;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  
+  &__icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+  
+  /* Distance Display */
+.distance-info {
   margin-top: 0.75rem;
   
+  .distance-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    strong {
+      color: $text-primary;
+      font-weight: 600;
+    }
+    
+    span {
+      font-weight: 600;
+      
+      &.primary { color: $primary-color !important; }
+      &.warn { color: $danger-color !important; }
+      &.rainbow-text-animated {
+        background: linear-gradient(45deg, $primary-color, $secondary-color, $accent-color, $success-color);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow 2s ease-in-out infinite;
+      }
+    }
+  }
+}
+
+/* Payment Grid */
+.payment-grid {
   .payment-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -99,10 +441,31 @@
   }
 }
 
-/* ========================================
-   SHIFT NOTE STYLES
-   ======================================== */
+/* Detail Items */
+.detail-item {
+  @extend .badge;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  border: 1px solid $border-light;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  
+  &__label {
+    color: $text-secondary;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  &__value {
+    color: $text-primary;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+}
 
+/* Shift Note */
 .shift-note {
   display: flex;
   align-items: flex-start;
@@ -111,7 +474,6 @@
   border: 1px solid $info-100;
   border-radius: 0.75rem;
   padding: 1rem;
-  margin-top: 0.5rem;
   
   .note-icon {
     color: $info-color;
@@ -130,41 +492,166 @@
   }
 }
 
-/* ========================================
-   UTILITY CLASSES
-   ======================================== */
-
-.primary {
-  color: $primary-color !important;
+/* Action Buttons */
+.shift-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border-light;
+  
+  @media (max-width: 767px) {
+    flex-direction: column;
+    
+    .action-button {
+      width: 100%;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    justify-content: center;
+  }
 }
 
-.warn {
-  color: $danger-color !important;
+.action-button {
+  flex: 1;
+  max-width: 200px;
+  
+  @media (min-width: 768px) {
+    flex: 0 1 auto;
+  }
 }
 
-.success {
-  color: $success-color !important;
-}
-
-.info {
-  color: $info-color !important;
-}
-
-.strike {
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-
-.rainbow-text-animated {
-  background: linear-gradient(45deg, $primary-color, $secondary-color, $accent-color, $success-color);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: rainbow 2s ease-in-out infinite;
-}
-
+/* Animations */
 @keyframes rainbow {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .shift-header {
+    padding: 1rem;
+    
+    &__main {
+      margin-bottom: 0.75rem;
+    }
+    
+    &__secondary {
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    &__bottom {
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+    }
+  }
+  
+  .shift-id {
+    gap: 0.75rem;
+    
+    .shift-number {
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+    }
+    
+    .shift-date {
+      font-size: 1rem;
+    }
+  }
+  
+  .shift-service {
+    gap: 0.5rem;
+    
+    .service-name, .service-number {
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+    }
+  }
+  
+  .status-badge {
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    
+    .status-icon {
+      font-size: 1.125rem !important;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+  
+  .shift-time {
+    font-size: 1rem;
+  }
+  
+  .shift-total .total-amount {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .duration-info {
+    gap: 1.5rem;
+    
+    .duration-item {
+      gap: 0.5rem;
+      
+      .duration-icon {
+        font-size: 1.125rem !important;
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+      
+      .duration-text {
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .info-card {
+    &__header {
+      padding: 1rem 1.25rem;
+      gap: 1rem;
+      
+      .info-icon {
+        font-size: 1.5rem !important;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+      
+      h4 {
+        font-size: 1rem;
+      }
+    }
+    
+    &__content {
+      padding: 1.25rem;
+    }
+  }
+  
+  .info-badge {
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    
+    &__icon {
+      font-size: 1.125rem !important;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+  
+  .detail-item {
+    padding: 0.75rem 1rem;
+    
+    &__label {
+      font-size: 0.875rem;
+    }
+    
+    &__value {
+      font-size: 1rem;
+    }
+  }
 }
