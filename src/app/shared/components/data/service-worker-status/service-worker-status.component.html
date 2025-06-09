@@ -9,16 +9,24 @@
       {{ serviceWorkerStatus }}
     </strong>
   </p>
-  
-  <div class="text-right">
-    @if(isUpdateAvailable) {
-      <button mat-fab extended color="primary" (click)="updateApp()">
-        <mat-icon>update</mat-icon> Update App
-      </button>
-    }
-    @else {
-    <button mat-fab extended color="primary" (click)="forceCacheUpdate()">
-      <mat-icon>refresh</mat-icon> Reset Cache
-    </button>
-    }
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      @if(showInstallButton) {
+        <button mat-fab extended color="accent" (click)="installApp()">
+          <mat-icon>get_app</mat-icon> Install App
+        </button>
+      }
+    </div>
+    <div>
+      @if(isUpdateAvailable) {
+        <button mat-fab extended color="primary" (click)="updateApp()">
+          <mat-icon>update</mat-icon> Update App
+        </button>
+      }
+      @else {
+        <button mat-fab extended color="primary" (click)="forceCacheUpdate()">
+          <mat-icon>refresh</mat-icon> Reset Cache
+        </button>
+      }
+    </div>
   </div>

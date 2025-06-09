@@ -16,13 +16,14 @@ import { Subscription } from 'rxjs';
 export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   serviceWorkerStatus: string = 'Checking...';
   isUpdateAvailable: boolean = false;
+  showInstallButton: boolean = false;
   private versionUpdateSubscription: Subscription | undefined;
+  private deferredPrompt: any;
 
   constructor(
     private swUpdate: SwUpdate,
     private logger: LoggerService
   ) {}
-
   async ngOnInit(): Promise<void> {
     // Check if the service worker is enabled
     if (this.swUpdate.isEnabled) {
@@ -38,6 +39,20 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
     } else {
       this.serviceWorkerStatus = 'Not Enabled';
     }
+
+    // Listen for the install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      this.showInstallButton = true;
+      this.logger.info('PWA install prompt available');
+    });
+
+    // Hide button if already installed
+    window.addEventListener('appinstalled', () => {
+      this.showInstallButton = false;
+      this.logger.info('PWA installed successfully');
+    });
 
     // Check if the app is offline
     window.addEventListener('offline', () => {
@@ -55,13 +70,27 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
       this.versionUpdateSubscription.unsubscribe();
     }
   }
-  
-  // Trigger an update if available
+    // Trigger an update if available
   updateApp(): void {
     if (this.isUpdateAvailable) {
       this.swUpdate.activateUpdate().then(() => {
         document.location.reload();
       });
+    }
+  }
+
+  // Install the PWA if prompt is available
+  async installApp(): Promise<void> {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      const { outcome } = await this.deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        this.logger.info('PWA installed successfully');
+      } else {
+        this.logger.info('PWA installation declined');
+      }
+      this.deferredPrompt = null;
+      this.showInstallButton = false;
     }
   }
   forceCacheUpdate(): void {
