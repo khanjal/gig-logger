@@ -539,8 +539,8 @@ mat-form-field {
   }
 }
 
-// Default state: buttons stay inside form field (all screen sizes except very small)
-@media (min-width: 361px) {
+// Default state: buttons stay inside form field (larger screens only)
+@media (min-width: 401px) {
   .search-input-wrapper {
     // Hide compact menu on larger screens
     .compact-menu {
@@ -554,8 +554,8 @@ mat-form-field {
   }
 }
 
-// Only very small screens (≤360px): switch to menu
-@media (max-width: 360px) {
+// Small to medium screens (≤400px): switch to menu to prevent button stacking
+@media (max-width: 400px) {
   .search-input-wrapper {
     gap: 0.25rem;
     align-items: center;
