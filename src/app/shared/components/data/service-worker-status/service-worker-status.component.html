@@ -10,13 +10,15 @@
     </strong>
   </p>
   
-  @if(isUpdateAvailable) {
-    <button mat-fab extended color="primary" class="button-right" (click)="updateApp()">
-      <mat-icon>update</mat-icon> Update App
+  <div class="text-right">
+    @if(isUpdateAvailable) {
+      <button mat-fab extended color="primary" (click)="updateApp()">
+        <mat-icon>update</mat-icon> Update App
+      </button>
+    }
+    @else {
+    <button mat-fab extended color="primary" (click)="forceCacheUpdate()">
+      <mat-icon>refresh</mat-icon> Reset Cache
     </button>
-  }
-  @else {
-  <button mat-fab extended color="primary" class="button-right" (click)="forceCacheUpdate()">
-    <mat-icon>refresh</mat-icon> Reset Cache
-  </button>
-  }
+    }
+  </div>
