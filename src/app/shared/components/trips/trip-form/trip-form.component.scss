@@ -31,7 +31,6 @@
     .form-row {
         @media (max-width: 768px) {
             display: flex;
-            align-items: center;
             gap: 0.5rem;
             
             app-search-input.field-full-width {
