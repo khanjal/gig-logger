@@ -117,13 +117,24 @@
 // Form action buttons container
 .form-actions {
     margin-top: 1.5rem;
-    
-    .form-actions__row {
+      .form-actions__row {
         display: flex;
         flex-direction: row;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
         gap: 1rem;
+        
+        // Reset/Cancel buttons (warn color) align left
+        button[color="warn"] {
+            margin-right: auto;
+            order: 1;
+        }
+        
+        // Store/Update buttons (primary color) align right  
+        button[color="primary"] {
+            margin-left: auto;
+            order: 2;
+        }
         
         button {
             flex: 0 0 35%;
