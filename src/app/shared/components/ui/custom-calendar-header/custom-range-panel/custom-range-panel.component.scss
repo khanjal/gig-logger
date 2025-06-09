@@ -7,7 +7,7 @@
   width: 100%;
 }
 
-// Range Panel Container
+// Range Panel Container positioned to appear after calendar
 .range-panel {
   background: linear-gradient(135deg, $surface-color 0%, lighten($surface-color, 2%) 100%);
   border-radius: 0 0 1rem 1rem;
@@ -18,19 +18,30 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   animation: slideDown 0.3s ease-out;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  
+  // Use transform to position after the calendar table
+  // The calendar body height is approximately 6 rows * 40px = 240px + header ~= 280px
+  transform: translateY(280px);
   
   @media (min-width: 480px) {
     padding: 1.25rem;
     gap: 1rem;
+    transform: translateY(300px);
   }
   
   @media (min-width: 768px) {
     padding: 1.5rem;
     gap: 1rem;
+    transform: translateY(320px);
   }
   
   @media (min-width: 1024px) {
     gap: 1.25rem;
+    transform: translateY(340px);
   }
 }
 
