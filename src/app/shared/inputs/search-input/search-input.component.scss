@@ -207,17 +207,11 @@ mat-form-field {
   top: 50%;
   transform: translateY(-50%);
   color: $text-tertiary;
-  font-size: 1.25rem;
-  width: 1.25rem;
-  height: 1.25rem;
   z-index: 2;
   transition: color 0.2s ease-in-out;
   
   @media (min-width: 768px) {
     left: 1.25rem;
-    font-size: 1.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
   }
   
   &.active {
@@ -283,13 +277,10 @@ mat-form-field {
   @media (min-width: 768px) {
     gap: 0.75rem;
   }
-  
-  .mat-icon-button,
+    .mat-icon-button,
   .mat-mdc-icon-button {
     min-width: 44px;
     min-height: 44px;
-    width: 44px;
-    height: 44px;
     border-radius: 0.75rem;
     margin: 0;
     transition: all 0.2s ease-in-out;
@@ -308,23 +299,12 @@ mat-form-field {
     }
     
     @media (min-width: 768px) {
-      width: 48px;
-      height: 48px;
       min-width: 48px;
       min-height: 48px;
     }
     
     mat-icon {
-      font-size: 1.25rem;
-      width: 1.25rem;
-      height: 1.25rem;
       color: $text-primary;
-      
-      @media (min-width: 768px) {
-        font-size: 1.5rem;
-        width: 1.5rem;
-        height: 1.5rem;
-      }
     }
   }
 }
@@ -602,59 +582,26 @@ mat-form-field {
   align-items: center !important;
   justify-content: center !important;
   border-radius: 50% !important;
-  
-  // Default larger size for desktop and tablet
+  // Default size for desktop and tablet - allow natural expansion
   min-width: 44px !important;
   min-height: 44px !important;
-  width: 44px !important;
-  height: 44px !important;
-  
-  mat-icon {
-    font-size: 1.5rem !important;
-    width: 1.5rem !important;
-    height: 1.5rem !important;
-  }
   
   // Medium screens - still good touch targets
   @media (max-width: 768px) {
     min-width: 40px !important;
     min-height: 40px !important;
-    width: 40px !important;
-    height: 40px !important;
-    
-    mat-icon {
-      font-size: 1.375rem !important;
-      width: 1.375rem !important;
-      height: 1.375rem !important;
-    }
   }
   
-  // Small screens - more compact
+  // Small screens - more compact but still usable
   @media (max-width: 480px) {
     min-width: 36px !important;
     min-height: 36px !important;
-    width: 36px !important;
-    height: 36px !important;
-    
-    mat-icon {
-      font-size: 1.25rem !important;
-      width: 1.25rem !important;
-      height: 1.25rem !important;
-    }
   }
   
   // Very small screens but still in form field
   @media (max-width: 400px) {
     min-width: 32px !important;
     min-height: 32px !important;
-    width: 32px !important;
-    height: 32px !important;
-    
-    mat-icon {
-      font-size: 1.125rem !important;
-      width: 1.125rem !important;
-      height: 1.125rem !important;
-    }
   }
 }
 
@@ -662,8 +609,6 @@ mat-form-field {
 .menu-trigger-button {
   min-width: 40px !important;
   min-height: 40px !important;
-  width: 40px !important;
-  height: 40px !important;
   border-radius: 50% !important;
   background: $surface-color !important;
   border: 1px solid $border-color !important;
@@ -680,9 +625,6 @@ mat-form-field {
   }
   
   mat-icon {
-    font-size: 1.375rem !important;
-    width: 1.375rem !important;
-    height: 1.375rem !important;
     color: $text-primary !important;
     margin: 0 !important;
     line-height: 1 !important;
@@ -703,11 +645,7 @@ mat-form-field {
     align-items: center !important;
     gap: 0.75rem !important;
     font-size: 0.875rem !important;
-    
-    mat-icon {
-      font-size: 1.25rem !important;
-      width: 1.25rem !important;
-      height: 1.25rem !important;
+      mat-icon {
       color: $text-secondary !important;
     }
     
