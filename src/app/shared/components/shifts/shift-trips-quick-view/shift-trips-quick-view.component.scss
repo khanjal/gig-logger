@@ -122,8 +122,6 @@
 .mat-card {
   margin-bottom: 1rem;
   border-radius: 0.75rem;
-  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
-  border: 1px solid $border-light;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
   
@@ -134,15 +132,6 @@
   
   &:last-child {
     margin-bottom: 0;
-  }
-  
-  // Alternating backgrounds
-  &:nth-child(even) {
-    background: linear-gradient(135deg, $primary-50 0%, $surface-color 100%);
-  }
-  
-  &:nth-child(odd) {
-    background: linear-gradient(135deg, $secondary-50 0%, $surface-color 100%);
   }
   
   mat-card-header {
