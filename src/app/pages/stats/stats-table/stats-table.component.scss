@@ -6,212 +6,174 @@ $card-border-radius: 12px;
 $table-padding: 16px;
 $touch-target-size: 44px;
 
-// Mobile-first container
+// Mobile-first container with horizontal scrolling
 .table-responsive {
     display: block;
     width: 100%;
     margin: 0 0 1.5rem 0;
     border-radius: $table-border-radius;
-    overflow: hidden;
+    overflow-x: auto;
+    position: relative;
     box-shadow: 
         0 4px 16px rgba(0, 0, 0, 0.1),
         0 2px 8px rgba(0, 0, 0, 0.05);
     background: linear-gradient(145deg, $surface-color 0%, lighten($surface-color, 2%) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+    
+    // Enhanced touch scrolling for mobile
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: $primary-color $background-secondary;
+    
+    // Custom scrollbar styling
+    &::-webkit-scrollbar {
+        height: 8px;
+        
+        @media (max-width: 768px) {
+            height: 6px;
+        }
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(45deg, $primary-color, $accent-color);
+        border-radius: 3px;
+        
+        &:hover {
+            background: linear-gradient(45deg, darken($primary-color, 10%), darken($accent-color, 10%));
+        }
+    }
     
     @media (min-width: 768px) {
         margin: 0 0 2rem 0;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
     }
 }
 
-// Enhanced table styling
-.mat-mdc-table {
+
+
+
+
+// Mobile layout test - removed debug styles for production
+
+// Table styling with horizontal scrolling on all screen sizes
+.mat-mdc-table,
+.mat-table {
     width: 100%;
     background: transparent;
     border-collapse: separate;
     border-spacing: 0;
+    display: table !important; // Always show as table, never as cards
     
-    // Mobile: Stack as cards instead of table
-    @media (max-width: 767px) {
-        display: block;
-        
-        .mat-mdc-header-row {
-            display: none; // Hide header on mobile
-        }
-        
-        .mat-mdc-row {
-            display: block;
-            background: linear-gradient(145deg, $surface-color 0%, lighten($surface-color, 1%) 100%);
-            margin: 8px $table-padding;
-            border-radius: $card-border-radius;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid $border-light;
-            
-            &:nth-child(even) {
-                background: linear-gradient(145deg, $primary-50 0%, lighten($primary-50, 1%) 100%);
-            }
-            
-            &:nth-child(odd) {
-                background: linear-gradient(145deg, $accent-50 0%, lighten($accent-50, 1%) 100%);
-            }
-              .mat-mdc-cell {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-                min-height: $touch-target-size;
-                
-                &:last-child {
-                    border-bottom: none;
-                }
-                
-                // Add labels for mobile view based on column position
-                &::before {
-                    font-weight: 600;
-                    color: $text-secondary;
-                    font-size: 0.875rem;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                
-                // Define labels for each column position
-                &:nth-child(1)::before { content: 'Name'; }
-                &:nth-child(2)::before { content: 'Trips'; }
-                &:nth-child(3)::before { content: 'Distance'; }
-                &:nth-child(4)::before { content: 'Pay'; }
-                &:nth-child(5)::before { content: 'Tips'; }
-                &:nth-child(6)::before { content: 'Bonus'; }
-                &:nth-child(7)::before { content: 'Total'; }
-                &:nth-child(8)::before { content: 'Cash'; }
-                &:nth-child(9)::before { content: 'Amt/Time'; }
-                &:nth-child(10)::before { content: 'Amt/Trip'; }
-                &:nth-child(11)::before { content: 'Amt/Dist'; }
-            }
-        }
-        
-        .mat-mdc-footer-row {
-            display: block;
-            background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%);
-            margin: 8px $table-padding 0;
-            border-radius: $card-border-radius;
-            padding: 16px;
-            color: white;
-              .mat-mdc-footer-cell {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                color: white;
-                font-weight: 600;
-                min-height: $touch-target-size;
-                
-                &::before {
-                    color: rgba(255, 255, 255, 0.8);
-                    font-size: 0.875rem;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                
-                // Define labels for each column position
-                &:nth-child(1)::before { content: 'Total'; }
-                &:nth-child(2)::before { content: 'Trips'; }
-                &:nth-child(3)::before { content: 'Distance'; }
-                &:nth-child(4)::before { content: 'Pay'; }
-                &:nth-child(5)::before { content: 'Tips'; }
-                &:nth-child(6)::before { content: 'Bonus'; }
-                &:nth-child(7)::before { content: 'Total'; }
-                &:nth-child(8)::before { content: 'Cash'; }
-                &:nth-child(9)::before { content: 'Amt/Time'; }
-                &:nth-child(10)::before { content: 'Amt/Trip'; }
-                &:nth-child(11)::before { content: 'Amt/Dist'; }
-            }
-        }
+    // Force minimum width to enable horizontal scrolling on mobile
+    min-width: 800px; // Adjust this value based on your column count and content
+    
+    @media (max-width: 768px) {
+        min-width: 700px; // Slightly smaller but still forces scrolling
     }
     
-    // Tablet and desktop table view
-    @media (min-width: 768px) {
-        display: table;
+    @media (max-width: 480px) {
+        min-width: 600px; // Minimum width to ensure horizontal scroll
     }
 }
 
-// Desktop table row styling
-@media (min-width: 768px) {
-    .mat-mdc-row,
-    .mat-mdc-header-row,
-    .mat-mdc-footer-row {
-        display: table-row;
-        transition: all 0.2s ease;
+
+
+// Row styling for all screen sizes
+.mat-mdc-row,
+.mat-row,
+.mat-mdc-header-row,
+.mat-header-row,
+.mat-mdc-footer-row,
+.mat-footer-row {
+    display: table-row !important;
+    transition: all 0.2s ease;
+}
+
+.mat-mdc-row,
+.mat-row {
+    &:hover {
+        background: linear-gradient(145deg, lighten($primary-color, 45%) 0%, lighten($primary-color, 47%) 100%) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
-    .mat-mdc-row {
-        &:hover {
-            background: linear-gradient(145deg, $primary-50 0%, lighten($primary-50, 2%) 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        &:nth-child(even) {
-            background: linear-gradient(145deg, $primary-50 0%, lighten($primary-50, 1%) 100%);
-        }
-        
-        &:nth-child(odd) {
-            background: linear-gradient(145deg, $accent-50 0%, lighten($accent-50, 1%) 100%);
-        }
+    &:nth-child(even) {
+        background: linear-gradient(145deg, lighten($primary-color, 45%) 0%, lighten($primary-color, 46%) 100%);
     }
     
-    .mat-mdc-header-row {
-        background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%);
-        color: white;
-        height: 56px;
-    }
-    
-    .mat-mdc-footer-row {
-        background: linear-gradient(145deg, $secondary-color 0%, darken($secondary-color, 5%) 100%);
-        color: white;
-        font-weight: 600;
-        height: 56px;
+    &:nth-child(odd) {
+        background: linear-gradient(145deg, lighten($accent-color, 45%) 0%, lighten($accent-color, 46%) 100%);
     }
 }
 
-// Cell styling
+.mat-mdc-header-row,
+.mat-header-row {
+    background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%) !important;
+    color: white;
+    height: 56px;
+}
+
+.mat-mdc-footer-row,
+.mat-footer-row {
+    background: linear-gradient(145deg, $secondary-color 0%, darken($secondary-color, 5%) 100%) !important;
+    color: white;
+    font-weight: 600;
+    height: 56px;
+}
+
+// Cell styling for all screen sizes
 .mat-mdc-cell,
+.mat-cell,
 .mat-mdc-header-cell,
-.mat-mdc-footer-cell {
+.mat-header-cell,
+.mat-mdc-footer-cell,
+.mat-footer-cell {
     font-size: 14px;
     line-height: 1.4;
+    padding: 12px 8px !important;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     
-    @media (min-width: 768px) {
-        padding: 12px 16px;
-        vertical-align: middle;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px;
+    @media (max-width: 768px) {
+        padding: 10px 6px !important;
+        font-size: 13px;
     }
     
-    @media (min-width: 1024px) {
-        font-size: 15px;
-        max-width: 200px;
+    @media (max-width: 480px) {
+        padding: 8px 4px !important;
+        font-size: 12px;
     }
 }
 
 .mat-mdc-header-cell,
-.mat-mdc-footer-cell {
+.mat-header-cell,
+.mat-mdc-footer-cell,
+.mat-footer-cell {
     font-weight: 600;
+    color: white !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     
-    @media (min-width: 768px) {
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-size: 13px;
+    @media (max-width: 768px) {
+        font-size: 12px;
+        letter-spacing: 0.3px;
+    }
+    
+    @media (max-width: 480px) {
+        font-size: 11px;
+        letter-spacing: 0.2px;
     }
 }
 
-.mat-mdc-cell {
+.mat-mdc-cell,
+.mat-cell {
     color: $text-primary;
     
     &:first-child {
@@ -220,10 +182,16 @@ $touch-target-size: 44px;
     }
 }
 
-// Sticky first column
+// Sticky first column with fallback selectors
 @media (min-width: 768px) {
     td:first-child, 
-    th:first-child {
+    th:first-child,
+    .mat-mdc-cell:first-child,
+    .mat-cell:first-child,
+    .mat-mdc-header-cell:first-child,
+    .mat-header-cell:first-child,
+    .mat-mdc-footer-cell:first-child,
+    .mat-footer-cell:first-child {
         position: sticky;
         left: 0;
         z-index: 10;
@@ -231,12 +199,42 @@ $touch-target-size: 44px;
         box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
     }
     
-    .mat-mdc-header-cell:first-child {
-        background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%);
+    .mat-mdc-header-cell:first-child,
+    .mat-header-cell:first-child {
+        background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%) !important;
     }
     
-    .mat-mdc-footer-cell:first-child {
-        background: linear-gradient(145deg, $secondary-color 0%, darken($secondary-color, 5%) 100%);
+    .mat-mdc-footer-cell:first-child,
+    .mat-footer-cell:first-child {
+        background: linear-gradient(145deg, $secondary-color 0%, darken($secondary-color, 5%) 100%) !important;
+    }
+}
+
+// Scroll indicator for horizontal scrolling
+.table-scroll-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.7rem;
+    color: $primary-600;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 6px 0 0 0;
+    font-weight: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 5;
+    
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    @media (max-width: 768px) {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
     }
 }
 
@@ -244,63 +242,108 @@ $touch-target-size: 44px;
 .section {
     margin: 1.5rem 0;
     
+    @media (max-width: 767px) {
+        margin: 1rem 0;
+        padding: 0 0.5rem;
+    }
+    
     @media (min-width: 768px) {
         margin: 2rem 0;
     }
 }
 
-// Animation for mobile cards
-@media (max-width: 767px) {
-    .mat-mdc-row {
-        animation: slideInUp 0.3s ease-out;
-        
-        &:nth-child(even) {
-            animation-delay: 0.1s;
-        }
-        
-        &:nth-child(odd) {
-            animation-delay: 0.2s;
-        }
-    }
-}
 
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-// Accessibility improvements
+// Accessibility improvements with fallback selectors
 @media (prefers-reduced-motion: reduce) {
     .mat-mdc-row,
-    .mat-mdc-table {
-        animation: none;
-        transition: none;
+    .mat-row,
+    .mat-mdc-table,
+    .mat-table {
+        animation: none !important;
+        transition: none !important;
     }
     
-    .mat-mdc-row:hover {
-        transform: none;
+    .mat-mdc-row:hover,
+    .mat-row:hover {
+        transform: none !important;
     }
 }
 
-// High contrast mode support
+// High contrast mode support with fallback selectors
 @media (prefers-contrast: high) {
-    .mat-mdc-table {
-        border: 2px solid $text-primary;
+    .mat-mdc-table,
+    .mat-table {
+        border: 2px solid $text-primary !important;
     }
     
-    .mat-mdc-row {
-        border: 1px solid $text-primary;
+    .mat-mdc-row,
+    .mat-row {
+        border: 1px solid $text-primary !important;
     }
     
     .mat-mdc-header-row,
-    .mat-mdc-footer-row {
-        background: $text-primary;
-        color: $surface-color;
+    .mat-header-row,
+    .mat-mdc-footer-row,
+    .mat-footer-row {
+        background: $text-primary !important;
+        color: $surface-color !important;
+    }
+}
+
+// Empty state styling
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    padding: 2rem;
+    text-align: center;
+    color: $text-secondary;
+    
+    .empty-state-content {
+        max-width: 300px;
+        
+        .empty-state-icon {
+            font-size: 48px;
+            width: 48px;
+            height: 48px;
+            color: $border-light;
+            margin-bottom: 1rem;
+        }
+        
+        h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: $text-primary;
+        }
+        
+        p {
+            margin: 0;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        min-height: 150px;
+        padding: 1.5rem;
+        
+        .empty-state-content {
+            .empty-state-icon {
+                font-size: 40px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            h3 {
+                font-size: 1.125rem;
+            }
+            
+            p {
+                font-size: 0.8125rem;
+            }
+        }
     }
 }
