@@ -11,11 +11,12 @@
   </p>
   
   @if(isUpdateAvailable) {
-    <button mat-fab extended color="primary" (click)="updateApp()">
+    <button mat-fab extended color="primary" class="button-right" (click)="updateApp()">
       <mat-icon>update</mat-icon> Update App
     </button>
   }
-
-  <button mat-fab extended color="accent" class="button-right" (click)="forceCacheUpdate()">
+  @else {
+  <button mat-fab extended color="primary" class="button-right" (click)="forceCacheUpdate()">
     <mat-icon>refresh</mat-icon> Reset Cache
   </button>
+  }
