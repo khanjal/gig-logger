@@ -29,15 +29,32 @@
                 </mat-option>
                 </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
-            
-            <!-- Standard buttons (inside form field) - shown on all screens except very small -->            <!-- Standard buttons (inside form field) - shown on all screens except very small -->
-            <button class="mat-icon-button standard-button" *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" color="primary" matSuffix mat-icon-button aria-label="Search Google" (click)="onSearch()">
+              <!-- Standard buttons (inside form field) - shown on all screens except very small -->
+            <button class="mat-icon-button standard-button" 
+                    *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" 
+                    color="primary" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Search Google" 
+                    (click)="onSearch(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>search</mat-icon>
             </button>
-            <button class="mat-icon-button standard-button" *ngIf="!showSearch && value && googleSearch" color="primary" matSuffix mat-icon-button aria-label="Google Maps" (click)="openMap()">
+            <button class="mat-icon-button standard-button" 
+                    *ngIf="!showSearch && value && googleSearch" 
+                    color="primary" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Google Maps" 
+                    (click)="openMap(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>map</mat-icon>
             </button>
-            <button class="mat-icon-button standard-button" *ngIf="value" color="accent" matSuffix mat-icon-button aria-label="Clear Field" (click)="onClear()">
+            <button class="mat-icon-button standard-button" 
+                    *ngIf="value" 
+                    color="accent" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Clear Field" 
+                    (click)="onClear(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>clear</mat-icon>
             </button>
             
@@ -47,7 +64,8 @@
                     matSuffix 
                     mat-icon-button 
                     [matMenuTriggerFor]="actionsMenu"
-                    aria-label="Search Actions">
+                    aria-label="Search Actions"
+                    (click)="$event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>more_vert</mat-icon>
             </button>
             
