@@ -220,6 +220,7 @@
   color: $text-primary;
   font-weight: 600;
   font-size: 0.875rem;
+  white-space: nowrap;
   
   // Ensure content is left-aligned within the time container
   > * {
@@ -233,6 +234,31 @@
   
   .start-time, .finish-time {
     font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+  
+  // Responsive font scaling to prevent AM/PM wrapping
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    gap: 0.125rem;
+    
+    .time-separator {
+      margin: 0 0.0625rem;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    font-size: 0.6875rem;
+    gap: 0.0625rem;
+  }
+  
+  @media (max-width: 320px) {
+    font-size: 0.625rem;
+    gap: 0;
+    
+    .time-separator {
+      margin: 0;
+    }
   }
 }
 
@@ -638,9 +664,12 @@
       height: 1.125rem;
     }
   }
-  
-  .shift-time {
-    font-size: 1rem;
+    .shift-time {
+    font-size: 0.9375rem;
+    
+    @media (min-width: 1024px) {
+      font-size: 1rem;
+    }
   }
     .shift-total .total-amount {
     font-size: 1rem;
