@@ -63,10 +63,10 @@
     
     <!-- Shift Duration and Active Time -->
     <div class="shift-header__bottom">
-      <div class="duration-info" *ngIf="shift.time || shift.totalActive">
-        <div class="duration-item" *ngIf="shift.time">
+      <div class="duration-info" *ngIf="shift.totalTime || shift.totalActive">
+        <div class="duration-item" *ngIf="shift.totalTime">
           <mat-icon class="duration-icon">schedule</mat-icon>
-          <span class="duration-text">{{shift.time | noseconds}}</span>
+          <span class="duration-text">{{shift.totalTime | noseconds}}</span>
         </div>
         <div class="duration-item" *ngIf="shift.totalActive">
           <mat-icon class="duration-icon">directions_car</mat-icon>
