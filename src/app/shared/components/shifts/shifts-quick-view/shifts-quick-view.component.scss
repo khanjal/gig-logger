@@ -183,30 +183,10 @@
   font-weight: 600;
   border: 1px solid transparent;
   
-  &--saved {
-    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
-    color: $success-color;
-    border-color: $success-200;
-  }
-  
-  &--add {
-    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
-    color: $success-color;
-    border-color: $success-200;
-  }
-  
-  &--edit {
-    background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
-    color: $info-color;
-    border-color: $info-200;
-  }
-  
-  &--delete {
-    background: linear-gradient(135deg, $warn-50 0%, $warn-100 100%);
-    color: $warn-color;
-    border-color: $warn-200;
-  }
-  
+  &--add { @extend .badge--success; }
+  &--edit { @extend .badge--info; }
+  &--delete { @extend .badge--warning; }
+  &--saved { @extend .badge--primary; }
   &--duplicate {
     background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
     color: $accent-color;
