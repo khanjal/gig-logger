@@ -117,6 +117,7 @@ export class TripsQuickViewComponent implements OnInit {
     }
     updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
+    this.isExpanded = false;
   }
 
   async setPickupTime() {
