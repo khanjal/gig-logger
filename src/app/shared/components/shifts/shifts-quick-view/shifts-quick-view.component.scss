@@ -138,14 +138,22 @@
   }
 }
 
+/* Service-Time Grouping (Upper Right) */
+.shift-service-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 /* Service Display */
 .shift-service {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
-  margin-left: auto;
-  flex-shrink: 0;
   
   .service-name {
     font-size: 1rem;
@@ -204,11 +212,25 @@
     color: $accent-color;
     border-color: $accent-200;
   }
-  
-  .status-icon {
+    .status-icon {
     font-size: 1rem !important;
     width: 1rem;
     height: 1rem;
+  }
+}
+
+/* Trips Badge */
+.shift-trips {
+  @extend .info-badge;
+  
+  .trips-icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .trips-count {
+    white-space: nowrap;
   }
 }
 
@@ -388,25 +410,7 @@
 }
 
 /* Info Badges */
-.info-badge {
-  @extend .badge;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
-  color: $accent-color;
-  border: 1px solid $accent-200;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  
-  &__icon {
-    font-size: 1rem !important;
-    width: 1rem;
-    height: 1rem;
-  }
-}
+// Remove local override to use shared info-badge styling from _components.scss
   
   /* Distance Display */
 .distance-info {

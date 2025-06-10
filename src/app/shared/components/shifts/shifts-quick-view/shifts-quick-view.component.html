@@ -15,9 +15,17 @@
         <span class="shift-date">{{shift.date | date:'E, MMM d, y'}}</span>
       </div>
       
-      <div class="shift-service">
-        <span class="service-name">{{shift.service}}</span>
-        <span class="service-number" *ngIf="shift.number > 0">#{{shift.number}}</span>
+      <div class="shift-service-time">
+        <div class="shift-service">
+          <span class="service-name">{{shift.service}}</span>
+          <span class="service-number" *ngIf="shift.number > 0">#{{shift.number}}</span>
+        </div>
+        
+        <div class="shift-time">
+          <span class="start-time">{{shift.start | noseconds}}</span>
+          <span class="time-separator" *ngIf="shift.finish">-</span>
+          <span class="finish-time" *ngIf="shift.finish">{{shift.finish | noseconds}}</span>
+        </div>
       </div>
     </div>
     
@@ -44,11 +52,9 @@
           @else { Saved }
         </span>
       </div>
-      
-      <div class="shift-time">
-        <span class="start-time">{{shift.start | noseconds}}</span>
-        <span class="time-separator" *ngIf="shift.finish">-</span>
-        <span class="finish-time" *ngIf="shift.finish">{{shift.finish | noseconds}}</span>
+        <div class="shift-trips" *ngIf="shift.totalTrips">
+        <mat-icon class="trips-icon">route</mat-icon>
+        <span class="trips-count">{{shift.totalTrips}} trips</span>
       </div>
       
       <div class="shift-total" *ngIf="shift.grandTotal">
