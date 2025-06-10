@@ -186,7 +186,7 @@
       <mat-icon>edit</mat-icon> Edit
     </button>
     <button mat-fab extended color="warn" class="action-button action-button--right" 
-            [disabled]="!duplicateShift && !(shift.grandTotal === 0 && shift.totalTrips === 0)" 
+            [disabled]="!duplicateShift && !((shift.grandTotal === 0 || !shift.grandTotal) && (shift.totalTrips === 0 || !shift.totalTrips))" 
             (click)="confirmDeleteShiftDialog(shift)">
       <mat-icon>delete</mat-icon> Delete
     </button>
