@@ -18,7 +18,6 @@ import { MatCalendar } from '@angular/material/datepicker';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CustomRangePanelComponent } from './custom-range-panel/custom-range-panel.component';
-import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
@@ -27,7 +26,7 @@ import { MatIcon } from '@angular/material/icon';
     styleUrls: ['./custom-calendar-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [CustomRangePanelComponent, MatIconButton, MatIcon]
+    imports: [CustomRangePanelComponent, MatIcon]
 })
 export class CustomCalendarHeaderComponent<D> implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
