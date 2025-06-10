@@ -78,8 +78,7 @@ mat-form-field {
   @media (min-width: 768px) {
     gap: 0.75rem;
   }
-  
-  .mat-icon-button,
+    .mat-icon-button,
   .mat-mdc-icon-button {
     min-width: 44px;
     min-height: 44px;
@@ -88,6 +87,25 @@ mat-form-field {
     border-radius: 0.75rem;
     transition: all 0.2s ease-in-out;
     
+    // Override global align-self: center that may be applied elsewhere
+    align-self: stretch;
+    
+    // Explicit flexbox centering for icons - override any global styles
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    // Ensure touch target and button wrapper are also centered
+    .mat-mdc-button-touch-target,
+    .mdc-icon-button__touch,
+    .mat-mdc-button-wrapper {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
     @media (min-width: 768px) {
       width: 48px;
       height: 48px;
@@ -95,10 +113,16 @@ mat-form-field {
       min-height: 48px;
     }
     
+    // Icon sizing and centering
     .mat-icon {
       font-size: 1.25rem;
       width: 1.25rem;
       height: 1.25rem;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      line-height: 1 !important;
       
       @media (min-width: 768px) {
         font-size: 1.5rem;
