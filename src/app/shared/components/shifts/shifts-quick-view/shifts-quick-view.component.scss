@@ -569,6 +569,24 @@
     &--right {
       margin-left: auto;
     }
+    
+    // Explicit disabled styling for edit button
+    &[disabled] {
+      opacity: 0.6 !important;
+      background-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.26) !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      
+      .mat-icon {
+        color: rgba(0, 0, 0, 0.26) !important;
+      }
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.12) !important;
+        box-shadow: none !important;
+      }
+    }
   }
 }
 
