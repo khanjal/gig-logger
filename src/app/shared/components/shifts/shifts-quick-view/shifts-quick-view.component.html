@@ -121,32 +121,34 @@
       <div class="info-card__header">
         <mat-icon class="info-icon">payments</mat-icon>
         <h4>Earnings</h4>
-      </div>
-      <div class="info-card__content">
+      </div>      <div class="info-card__content">
         <div class="payment-grid">
-          <div class="payment-row">
-            <span class="detail-item" *ngIf="shift.totalPay">
-              <span class="detail-item__label">Pay</span>
-              <span class="detail-item__value">{{shift.totalPay | currency}}</span>
-            </span>
-            <span class="detail-item" *ngIf="shift.totalTips">
-              <span class="detail-item__label">Tips</span>
-              <span class="detail-item__value">{{shift.totalTips | currency}}</span>
-            </span>
-            <span class="detail-item" *ngIf="shift.totalBonus">
-              <span class="detail-item__label">Bonus</span>
-              <span class="detail-item__value">{{shift.totalBonus | currency}}</span>
-            </span>
+          <!-- First row: Pay, Tips, Bonus -->
+          <div class="payment-row payment-row--primary">
+            <div class="payment-item" *ngIf="shift.totalPay">
+              <span class="payment-label">Pay</span>
+              <span class="payment-value payment-value--pay">{{shift.totalPay | currency}}</span>
+            </div>
+            <div class="payment-item" *ngIf="shift.totalTips">
+              <span class="payment-label">Tips</span>
+              <span class="payment-value payment-value--tip">{{shift.totalTips | currency}}</span>
+            </div>
+            <div class="payment-item" *ngIf="shift.totalBonus">
+              <span class="payment-label">Bonus</span>
+              <span class="payment-value payment-value--bonus">{{shift.totalBonus | currency}}</span>
+            </div>
           </div>
-          <div class="payment-row" *ngIf="shift.grandTotal > shift.totalPay || shift.totalCash">
-            <span class="detail-item" *ngIf="shift.grandTotal > shift.totalPay">
-              <span class="detail-item__label">Total</span>
-              <span class="detail-item__value">{{shift.grandTotal | currency}}</span>
-            </span>
-            <span class="detail-item" *ngIf="shift.totalCash">
-              <span class="detail-item__label">Cash</span>
-              <span class="detail-item__value">{{shift.totalCash | currency}}</span>
-            </span>
+
+          <!-- Second row: Total, Cash -->
+          <div class="payment-row payment-row--secondary" *ngIf="shift.grandTotal > shift.totalPay || shift.totalCash">
+            <div class="payment-item payment-item--total" *ngIf="shift.grandTotal > shift.totalPay">
+              <span class="payment-label">Total</span>
+              <span class="payment-value payment-value--total">{{shift.grandTotal | currency}}</span>
+            </div>
+            <div class="payment-item payment-item--cash" *ngIf="shift.totalCash">
+              <span class="payment-label">Cash</span>
+              <span class="payment-value payment-value--cash">{{shift.totalCash | currency}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -165,7 +167,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- Trips Table -->
     <div class="info-card">
       <div class="info-card__header">
@@ -176,17 +178,17 @@
         <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
       </div>
     </div>
+  </div>
 
-    <!-- Action Buttons -->
-    <div class="shift-actions">
-      <button mat-fab extended color="primary" class="action-button" disabled="true">
-        <mat-icon>edit</mat-icon> Edit
-      </button>
-      <button mat-fab extended color="warn" class="action-button" 
-              [disabled]="!duplicateShift && !(shift.grandTotal === 0 && shift.totalTrips === 0)" 
-              (click)="confirmDeleteShiftDialog(shift)">
-        <mat-icon>delete</mat-icon> Delete
-      </button>
-    </div>
+  <!-- Action Buttons - Always visible outside expandable content -->
+  <div class="shift-actions">
+    <button mat-fab extended color="primary" class="action-button action-button--left" disabled="true">
+      <mat-icon>edit</mat-icon> Edit
+    </button>
+    <button mat-fab extended color="warn" class="action-button action-button--right" 
+            [disabled]="!duplicateShift && !(shift.grandTotal === 0 && shift.totalTrips === 0)" 
+            (click)="confirmDeleteShiftDialog(shift)">
+      <mat-icon>delete</mat-icon> Delete
+    </button>
   </div>
 </div>

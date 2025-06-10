@@ -427,19 +427,79 @@
 
 /* Payment Grid */
 .payment-grid {
-  .payment-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-row {
+  display: flex;
+  gap: 0.75rem;
+  
+  &--primary {
+    flex-wrap: wrap;
     
-    &:last-child {
-      margin-bottom: 0;
+    .payment-item {
+      @extend .grid-item;
+      flex: 1;
+      min-width: 0;
+      background: $surface-color;
+      border: 1px solid $border-light;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
     }
+  }
+  
+  &--secondary {
+    .payment-item {
+      @extend .grid-item;
+      flex: 1;
+      background: $surface-secondary;
+      border: 1px solid $border-light;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      
+      &--total {
+        background: $primary-50;
+        border: 1px solid $primary-200;
+      }
+      
+      &--cash {
+        background: $success-50;
+        border: 1px solid $success-200;
+      }
+    }
+  }
+}
+
+.payment-item {
+  .payment-label {
+    @extend .grid-item__label;
+  }
+  
+  .payment-value {
+    @extend .grid-item__value;
     
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
+    &--pay { 
+      @extend .payment-color--pay; 
+      color: $payment-card !important;
+    }
+    &--tip { 
+      @extend .payment-color--tip; 
+      color: $payment-tip !important;
+    }
+    &--bonus { 
+      @extend .payment-color--bonus; 
+      color: $payment-bonus !important;
+    }
+    &--cash { 
+      @extend .payment-color--cash; 
+      color: $payment-cash !important;
+    }
+    &--total { 
+      @extend .payment-color--total; 
+      @extend .grid-item__value--lg; 
+      color: $primary-color !important;
     }
   }
 }
@@ -494,30 +554,21 @@
 /* Action Buttons */
 .shift-actions {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
   gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
+  background: $surface-color;
   border-top: 1px solid $border-light;
   
-  @media (max-width: 767px) {
-    flex-direction: column;
-    
-    .action-button {
-      width: 100%;
+  .action-button {
+    &--left {
+      margin-left: 0;
     }
-  }
-  
-  @media (min-width: 768px) {
-    justify-content: center;
-  }
-}
-
-.action-button {
-  flex: 1;
-  max-width: 200px;
-  
-  @media (min-width: 768px) {
-    flex: 0 1 auto;
+    
+    &--right {
+      margin-left: auto;
+    }
   }
 }
 
