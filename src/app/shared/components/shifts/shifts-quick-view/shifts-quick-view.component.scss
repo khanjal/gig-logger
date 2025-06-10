@@ -61,13 +61,25 @@
     align-items: flex-start;
     margin-bottom: 0.5rem;
   }
-  
   &__secondary {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
     margin-bottom: 0.75rem;
+    
+    // When there's no total amount, center the shift-time container
+    .shift-time {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      
+      // Override centering when total amount is present
+      &:not(:last-child) {
+        justify-content: flex-start;
+        flex: initial;
+      }
+    }
   }
 
   &__bottom {
@@ -218,6 +230,11 @@
   color: $text-primary;
   font-weight: 600;
   font-size: 0.875rem;
+  
+  // Ensure content is left-aligned within the time container
+  > * {
+    text-align: left;
+  }
   
   .time-separator {
     color: $text-secondary;
