@@ -1,6 +1,6 @@
 <!-- Mobile-First Trip Quick View Component -->
 <div class="trip-card" [ngClass]="{
-  'trip-card--excluded': trip.exclude || trip.action === 'DELETE',
+  'trip-card--excluded': trip.exclude,
   'trip-card--unsaved': !trip.saved,
   'trip-card--add': !trip.saved && trip.action === 'ADD',
   'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
