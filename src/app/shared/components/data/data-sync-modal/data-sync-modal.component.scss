@@ -22,7 +22,7 @@
 // Enhanced terminal with mobile optimizations
 .terminal {
     flex: 1;
-    max-height: 400px;
+    max-height: calc(100% - 80px); // Account for button container height
     overflow-y: auto;
     border: 2px solid $border-color;
     padding: 1rem;
@@ -35,7 +35,7 @@
     scrollbar-color: $accent-color $background-dark;
     
     @media (max-width: 768px) {
-        max-height: 300px;
+        max-height: calc(100% - 70px); // Smaller button container on tablet
         padding: 0.75rem;
         border-radius: 8px;
         border-width: 1px;
@@ -44,7 +44,7 @@
     }
     
     @media (max-width: 480px) {
-        max-height: 250px;
+        max-height: calc(100% - 60px); // Even smaller button container on mobile
         padding: 0.5rem;
         border-radius: 6px;
         font-size: 0.85rem;
@@ -80,22 +80,45 @@
     position: sticky;
     bottom: 0;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
-    padding: 1.5rem 1rem 0 1rem;
-    text-align: center;
+    padding: 1rem 1rem 1rem 1rem;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 12px 12px 0 0;
     backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.25rem; // Very minimal gap for desktop
+    position: relative; // For absolute positioning of middle button
     
     @media (max-width: 768px) {
-        padding: 1rem 0.75rem 0 0.75rem;
+        padding: 0.75rem 0.75rem 0.75rem 0.75rem;
         border-radius: 8px 8px 0 0;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        gap: 0.125rem; // Even smaller gap for tablet
     }
     
     @media (max-width: 480px) {
-        padding: 0.75rem 0.5rem 0 0.5rem;
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
         border-radius: 6px 6px 0 0;
         box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+        gap: 0.0625rem; // Extremely minimal gap for mobile (1px)
+    }
+    
+    // Continue button stays on the left (default flexbox behavior)
+    .button-left {
+        // No special positioning needed
+    }
+    
+    // Center the retry button
+    .button-middle {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    // Push cancel button to the right
+    .button-right {
+        margin-left: auto;
     }
     
     // Ensure buttons are touch-friendly
