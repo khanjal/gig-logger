@@ -7,6 +7,7 @@
             <mat-icon>view_agenda</mat-icon>
         </button>
     </div>
+    
     <div class='table-responsive'>
         <mat-table [dataSource]="trips">
             <ng-container matColumnDef="place">
@@ -37,5 +38,35 @@
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
         </mat-table>
+    </div>
+    
+    <!-- Mobile Card View -->
+    <div class="mobile-cards">
+        <div class="trip-card" *ngFor="let trip of trips" [ngClass]="{'excluded': trip.exclude}">
+            <div class="card-header">
+                <div class="trip-time">
+                    <div class="pickup-time">{{trip.pickupTime | noseconds}}</div>
+                    <div class="arrow">→</div>
+                    <div class="dropoff-time">{{trip.dropoffTime | noseconds}}</div>
+                </div>
+                <div class="trip-earnings" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}">
+                    {{trip.total | currency}}
+                </div>
+            </div>
+            <div class="card-details">
+                <div class="detail-item">
+                    <div class="detail-label">Place</div>
+                    <div class="detail-value">{{trip.place | truncate:20}}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Customer</div>
+                    <div class="detail-value">{{trip.name | truncate:15}}</div>
+                </div>
+                <div class="detail-item address-full">
+                    <div class="detail-label">Address</div>
+                    <div class="detail-value">{{trip.endAddress | truncate:40}}</div>
+                </div>
+            </div>
+        </div>
     </div>
 </mat-card>
