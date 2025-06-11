@@ -22,7 +22,7 @@
 // Enhanced terminal with mobile optimizations
 .terminal {
     flex: 1;
-    max-height: calc(100% - 80px); // Account for button container height
+    max-height: 380px; // Even bigger terminal for better visibility
     overflow-y: auto;
     border: 2px solid $border-color;
     padding: 1rem;
@@ -35,7 +35,7 @@
     scrollbar-color: $accent-color $background-dark;
     
     @media (max-width: 768px) {
-        max-height: calc(100% - 70px); // Smaller button container on tablet
+        max-height: 295px; // Bigger for tablet
         padding: 0.75rem;
         border-radius: 8px;
         border-width: 1px;
@@ -44,7 +44,7 @@
     }
     
     @media (max-width: 480px) {
-        max-height: calc(100% - 60px); // Even smaller button container on mobile
+        max-height: 310px; // Bigger for mobile
         padding: 0.5rem;
         border-radius: 6px;
         font-size: 0.85rem;
