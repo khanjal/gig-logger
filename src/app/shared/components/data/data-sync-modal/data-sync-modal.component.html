@@ -11,14 +11,12 @@
                 <span [ngClass]="message.type">{{ message.text }}</span>
             </p>
         </div>
-    </div>
-
-    <!-- Button pinned at the bottom -->
+    </div>    <!-- Button pinned at the bottom -->
     <div class="button-container button-bar">
         @if (syncState.canContinue) {
-            <button mat-fab extended color="warn" class="button-left" (click)="continueLoad()">Continue</button>
+            <button mat-fab extended color="accent" class="button-left" (click)="continueLoad()">Continue</button>
             <button mat-fab extended color="primary" class="button-middle" (click)="retryLoad()">Retry</button>
         }
-        <button mat-fab extended color="accent" class="button-right" [disabled]="currentTime < 60 && syncState.isAutoClose" (click)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</button>
+        <button mat-fab extended color="warn" class="button-right" [disabled]="currentTime < 60 && syncState.isAutoClose" (click)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</button>
     </div>
 </div>
