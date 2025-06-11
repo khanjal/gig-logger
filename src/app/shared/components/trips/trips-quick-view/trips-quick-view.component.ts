@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum'; 
 import { MatDialog } from '@angular/material/dialog';
@@ -26,7 +26,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     imports: [MatIcon, NgClass, NgIf, MatFabButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
 })
 
-export class TripsQuickViewComponent implements OnInit {
+export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -41,11 +41,19 @@ export class TripsQuickViewComponent implements OnInit {
         private _gigLoggerService: GigWorkflowService,
         private _tripService: TripService,
         private _shiftService: ShiftService,
-      ) { }
+      ) { }  ngOnInit() {
+    this.setExpansionState();
+  }
 
-  ngOnInit() {
-    // Show details by default if there is no dropoff time
-    this.isExpanded = !this.trip.dropoffTime && !this.trip.exclude;
+  ngOnChanges(changes: SimpleChanges) {
+    // Re-evaluate expansion state when trip data changes
+    if (changes['trip'] && changes['trip'].currentValue) {
+      this.setExpansionState();
+    }
+  }
+
+  private setExpansionState() {
+    this.isExpanded = (!this.trip.dropoffTime && !this.trip.exclude);
   }
 
   toggleExpansion() {
