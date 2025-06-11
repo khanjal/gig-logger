@@ -1,16 +1,23 @@
-<mat-card class="auth-status-card">
-  <mat-card-header>
+<mat-card class="auth-status-card">  <mat-card-header>
     <mat-card-title>
-      <mat-icon [color]="getAuthStatusColor()">{{ getStatusIcon() }}</mat-icon>
+      <mat-icon [ngClass]="{
+        'text-success': isAuthenticated && hasAccessToken && localStorageAuth,
+        'text-warning': (localStorageAuth || hasAccessToken) && !isAuthenticated,
+        'text-error': !localStorageAuth && !hasAccessToken && !isAuthenticated
+      }">{{ getStatusIcon() }}</mat-icon>
       Authentication Status
     </mat-card-title>
   </mat-card-header>
-  
-  <mat-card-content>
+    <mat-card-content>
     <!-- Overall Status -->
     <div class="status-row">
       <span class="status-label">Overall Status:</span>
-      <mat-chip [color]="getAuthStatusColor()" selected>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': isAuthenticated,
+          'chip-error': !isAuthenticated
+        }"
+        selected>
         {{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}
       </mat-chip>
     </div>
@@ -18,7 +25,12 @@
     <!-- localStorage Status -->
     <div class="status-row">
       <span class="status-label">Local Storage:</span>
-      <mat-chip [color]="localStorageAuth ? 'primary' : 'warn'" selected>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': localStorageAuth,
+          'chip-error': !localStorageAuth
+        }"
+        selected>
         {{ localStorageAuth ? 'TRUE' : 'FALSE' }}
       </mat-chip>
     </div>
@@ -26,7 +38,12 @@
     <!-- Access Token Status -->
     <div class="status-row">
       <span class="status-label">Access Token:</span>
-      <mat-chip [color]="hasAccessToken ? 'primary' : 'warn'" selected>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': hasAccessToken,
+          'chip-error': !hasAccessToken
+        }"
+        selected>
         {{ hasAccessToken ? 'Present' : 'Missing' }}
       </mat-chip>
     </div>
@@ -41,25 +58,6 @@
     <div class="status-row">
       <span class="status-label">Last Updated:</span>
       <span class="timestamp">{{ lastUpdated | date:'medium' }}</span>
-    </div>
-
-    <!-- Detailed Breakdown -->
-    <div class="status-breakdown">
-      <h4>Status Breakdown:</h4>
-      <ul>
-        <li [class.status-good]="localStorageAuth" [class.status-bad]="!localStorageAuth">
-          <mat-icon>{{ localStorageAuth ? 'check' : 'close' }}</mat-icon>
-          localStorage 'is_authenticated'
-        </li>
-        <li [class.status-good]="hasAccessToken" [class.status-bad]="!hasAccessToken">
-          <mat-icon>{{ hasAccessToken ? 'check' : 'close' }}</mat-icon>
-          Access Token Cookie
-        </li>
-        <li [class.status-good]="isAuthenticated" [class.status-bad]="!isAuthenticated">
-          <mat-icon>{{ isAuthenticated ? 'check' : 'close' }}</mat-icon>
-          Service Authentication Check
-        </li>
-      </ul>
     </div>
   </mat-card-content>
 </mat-card>

@@ -85,18 +85,7 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
     
     // Check overall authentication
     this.isAuthenticated = await this.authService.isAuthenticated();
-    
-    this.lastUpdated = new Date();
-  }
-
-  getAuthStatusColor(): string {
-    if (this.isAuthenticated && this.hasAccessToken && this.localStorageAuth) {
-      return 'primary';
-    } else if (this.localStorageAuth || this.hasAccessToken) {
-      return 'accent';
-    } else {
-      return 'warn';
-    }
+      this.lastUpdated = new Date();
   }
 
   getStatusIcon(): string {

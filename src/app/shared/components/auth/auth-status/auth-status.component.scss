@@ -463,6 +463,36 @@ mat-chip {
     min-height: 28px;
     padding: 0 8px;
   }
+  // Custom color classes for authentication status
+  &.chip-success {
+    background-color: $success-100 !important;
+    color: $success-700 !important;
+    border: 1px solid $success-200;
+    
+    &:hover {
+      background-color: $success-200 !important;
+    }
+  }
+
+  &.chip-error {
+    background-color: $error-100 !important;
+    color: $error-700 !important;
+    border: 1px solid $error-200;
+    
+    &:hover {
+      background-color: $error-200 !important;
+    }
+  }
+
+  &.chip-warning {
+    background-color: $warning-100 !important;
+    color: $warning-700 !important;
+    border: 1px solid $warning-200;
+    
+    &:hover {
+      background-color: $warning-200 !important;
+    }
+  }
 }
 
 // Card title icon styling
@@ -481,6 +511,17 @@ mat-card-title {
       width: 2rem;
       height: 2rem;
       font-size: 2rem;
+    }    // Custom color classes for header icon
+    &.text-success {
+      color: $success-600;
+    }
+
+    &.text-warning {
+      color: $warning-600;
+    }
+
+    &.text-error {
+      color: $error-600;
     }
   }
 }
