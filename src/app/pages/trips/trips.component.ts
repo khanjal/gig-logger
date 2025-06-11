@@ -113,13 +113,25 @@ export class TripComponent implements OnInit, OnDestroy {
   // Scroll to the top of the page
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
-  }
-
-  // Scroll to today's trips section or specific trip
+  }  // Scroll to today's trips section or specific trip
   scrollToTrip(tripId?: string): void {
     if (tripId) {
-      // Scroll to specific trip by ID
-      this._viewportScroller.scrollToAnchor(tripId);
+      // Scroll to specific trip by ID with offset
+      const element = document.getElementById(tripId);
+      if (element) {
+        // Calculate position with offset (80px above the element)
+        const elementPosition = element.offsetTop;
+        const offsetPosition = elementPosition - 80;
+        
+        // Scroll to the calculated position
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback to scrolling to today's trips section
+        this._viewportScroller.scrollToAnchor("todaysTrips");
+      }
     } else {
       // Scroll to today's trips section
       this._viewportScroller.scrollToAnchor("todaysTrips");

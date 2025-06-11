@@ -5,7 +5,10 @@
   'trip-card--add': !trip.saved && trip.action === 'ADD',
   'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
   'trip-card--delete': !trip.saved && trip.action === 'DELETE'
-}">    <!-- Trip Header -->  <div class="trip-header">    <div class="trip-header__main">
+}">
+  <!-- Trip Header -->
+ <div class="trip-header">
+  <div class="trip-header__main">
       <div class="trip-id">
         <span class="trip-number">#{{trip.rowId}}</span>
         <span class="trip-date">{{trip.date | date:'MMM d'}}</span>

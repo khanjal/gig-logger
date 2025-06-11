@@ -41,7 +41,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
         private _gigLoggerService: GigWorkflowService,
         private _tripService: TripService,
         private _shiftService: ShiftService,
-      ) { }  ngOnInit() {
+      ) { }
+   
+  ngOnInit() {
     this.setExpansionState();
   }
 
@@ -125,13 +127,13 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     if (this.trip.total && duration) {
       this.trip.amountPerTime = this.trip.total / DateHelper.getHoursFromSeconds(duration);
     }
-    
+
     updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
     this.isExpanded = false;
     
-    // Emit the trip ID to scroll to this specific trip
-    this.scrollToTrip.emit(this.trip.id?.toString());
+    // Emit the trip rowId to scroll to this specific trip (matches the HTML id attribute)
+    this.scrollToTrip.emit(this.trip.rowId?.toString());
   }
 
   async setPickupTime() {
