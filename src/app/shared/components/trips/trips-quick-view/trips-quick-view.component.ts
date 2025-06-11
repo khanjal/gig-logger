@@ -31,7 +31,7 @@ export class TripsQuickViewComponent implements OnInit {
   @Input() showActions: boolean = true;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
-  @Output("scrollToTodaysTrips") scrollToTodaysTrips: EventEmitter<void> = new EventEmitter();
+  @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   
@@ -82,20 +82,22 @@ export class TripsQuickViewComponent implements OnInit {
         await this.deleteTrip();
       }
     });
-  }  async cloneUnsavedTrip() {
+  }
+  
+  async cloneUnsavedTrip() {
    await this._tripService.clone(this.trip);
    this.parentReload.emit();
    this._snackBar.open("Cloned Trip");
    // Scroll to today's trips section
-   this.scrollToTodaysTrips.emit();
+   this.scrollToTrip.emit(undefined);
   }
-
+  
   async nextStopTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
     this._snackBar.open("Added Next Trip");
     // Scroll to today's trips section
-    this.scrollToTodaysTrips.emit();
+    this.scrollToTrip.emit(undefined);
   }
 
   async setDropoffTime() {
@@ -115,9 +117,13 @@ export class TripsQuickViewComponent implements OnInit {
     if (this.trip.total && duration) {
       this.trip.amountPerTime = this.trip.total / DateHelper.getHoursFromSeconds(duration);
     }
+    
     updateAction(this.trip, ActionEnum.Update);
     await this._tripService.update([this.trip]);
     this.isExpanded = false;
+    
+    // Emit the trip ID to scroll to this specific trip
+    this.scrollToTrip.emit(this.trip.id?.toString());
   }
 
   async setPickupTime() {

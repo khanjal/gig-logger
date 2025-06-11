@@ -110,15 +110,25 @@ export class TripComponent implements OnInit, OnDestroy {
     // Show the button if scrolled past the form
     this.showBackToTop = scrollPosition > formHeight;
   }
-
   // Scroll to the top of the page
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
   }
 
-  // Scroll to today's trips section
+  // Scroll to today's trips section or specific trip
+  scrollToTrip(tripId?: string): void {
+    if (tripId) {
+      // Scroll to specific trip by ID
+      this._viewportScroller.scrollToAnchor(tripId);
+    } else {
+      // Scroll to today's trips section
+      this._viewportScroller.scrollToAnchor("todaysTrips");
+    }
+  }
+
+  // Legacy method for backward compatibility
   scrollToTodaysTrips(): void {
-    this._viewportScroller.scrollToAnchor("todaysTrips");
+    this.scrollToTrip();
   }
 
   async loadSheetDialog(inputValue: string) {
