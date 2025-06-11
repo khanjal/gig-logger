@@ -203,13 +203,17 @@
 .shift-trips {
   @extend .info-badge;
   
-  .trips-icon {
+  // Override info-badge flex behavior to match status badge consistency
+  flex: 0 0 auto !important;
+  max-width: fit-content !important;
+  
+  .info-badge__icon {
     font-size: 1rem !important;
     width: 1rem;
     height: 1rem;
   }
   
-  .trips-count {
+  .info-badge__text {
     white-space: nowrap;
   }
 }

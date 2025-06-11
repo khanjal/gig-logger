@@ -52,9 +52,9 @@
           @else { Saved }
         </span>
       </div>
-        <div class="shift-trips" *ngIf="shift.totalTrips">
-        <mat-icon class="trips-icon">route</mat-icon>
-        <span class="trips-count">{{shift.totalTrips}} trips</span>
+      <div class="shift-trips" *ngIf="shift.totalTrips">
+        <mat-icon class="info-badge__icon">route</mat-icon>
+        <span class="info-badge__text">{{shift.totalTrips}} trips</span>
       </div>
       
       <div class="shift-total" *ngIf="shift.grandTotal">
