@@ -5,13 +5,33 @@
             <h1 class="hero-title">Track Your Gig Work</h1>
             <p class="hero-subtitle">Seamlessly log deliveries, rides, and earnings directly to your Google Spreadsheet</p>
         </div>        <div class="hero-cta">
-            <!-- Show "Start Logging" button when user is authenticated and has default sheet -->
+            <!-- App Update Notification -->
+            <div *ngIf="showUpdateNotification" class="update-notification">
+                <div class="update-card">
+                    <mat-icon class="update-icon">update</mat-icon>
+                    <div class="update-content">
+                        <h3>App Update Available</h3>
+                        <p>A new version of the app is ready. Update now for the latest features and improvements.</p>
+                    </div>
+                    <div class="update-actions">
+                        <button mat-raised-button color="primary" (click)="updateApp()">
+                            <mat-icon>update</mat-icon>
+                            Update Now
+                        </button>
+                        <button mat-button (click)="dismissUpdate()">
+                            Later
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Show "Start Logging" button when user is authenticated and has default sheet and no update pending -->
             <a *ngIf="showStartLoggingButton" href="/trips" class="cta-button">
                 <mat-icon>add_circle</mat-icon>
                 Start Logging
             </a>
-            <!-- Show "Get Started" button when user is not ready to log -->
-            <a *ngIf="!showStartLoggingButton" href="/setup" class="cta-button">
+            <!-- Show "Get Started" button when user is not ready to log and no update pending -->
+            <a *ngIf="!showStartLoggingButton && !showUpdateNotification" href="/setup" class="cta-button">
                 <mat-icon>play_arrow</mat-icon>
                 Get Started
             </a>

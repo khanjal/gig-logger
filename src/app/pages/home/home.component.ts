@@ -1,29 +1,45 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon]
+    imports: [CommonModule, MatIcon, MatButtonModule]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);
   private authService = inject(AuthGoogleService);
   private spreadsheetService = inject(SpreadsheetService);
+  private appUpdateService = inject(AppUpdateService);
   
   showInstallButton = false;
   isAuthenticated = false;
   hasDefaultSheet = false;
   showStartLoggingButton = false;
+  isUpdateAvailable = false;
+  showUpdateNotification = false;
   private deferredPrompt: any;
-  async ngOnInit() {
+  private updateStatusSubscription: Subscription | undefined;  async ngOnInit() {
+    // Subscribe to app update status
+    this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
+      (status: AppUpdateStatus) => {
+        this.isUpdateAvailable = status.isUpdateAvailable;
+        this.showUpdateNotification = status.isUpdateAvailable;
+        
+        // Re-evaluate showing the start logging button when update status changes
+        this.evaluateStartLoggingButton();
+      }
+    );
+    
     // Check authentication and spreadsheet status
     await this.checkUserStatus();
     
@@ -40,7 +56,17 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  private async checkUserStatus() {
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.updateStatusSubscription) {
+      this.updateStatusSubscription.unsubscribe();
+    }
+  }
+
+  private evaluateStartLoggingButton(): void {
+    // Show "Start Logging" button if user is authenticated, has default sheet, and no update is pending
+    this.showStartLoggingButton = this.isAuthenticated && this.hasDefaultSheet && !this.showUpdateNotification;
+  }  private async checkUserStatus() {
     try {
       this.isAuthenticated = await this.authService.isAuthenticated();
       
@@ -54,14 +80,28 @@ export class HomeComponent implements OnInit {
         }
       }
       
-      // Show "Start Logging" button if user is authenticated and has default sheet
-      this.showStartLoggingButton = this.isAuthenticated && this.hasDefaultSheet;
+      // Evaluate showing the start logging button
+      this.evaluateStartLoggingButton();
     } catch (error) {
       this.logger.error('Error checking user status', error);
       this.isAuthenticated = false;
       this.hasDefaultSheet = false;
       this.showStartLoggingButton = false;
     }
+  }
+
+  async updateApp(): Promise<void> {
+    try {
+      await this.appUpdateService.activateUpdate();
+    } catch (error) {
+      this.logger.error('Error updating app', error);
+    }
+  }
+
+  dismissUpdate(): void {
+    this.showUpdateNotification = false;
+    // Re-evaluate showing the start logging button
+    this.evaluateStartLoggingButton();
   }
 
   async installApp() {

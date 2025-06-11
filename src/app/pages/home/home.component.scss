@@ -62,8 +62,7 @@
       font-size: 1.1rem;
     }
   }
-  
-  .cta-button {
+    .cta-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -92,6 +91,76 @@
     @media (min-width: 768px) {
       font-size: 1.1rem;
       padding: 1rem 2.5rem;
+    }
+  }
+
+  // Update notification styles
+  .update-notification {
+    margin-bottom: 2rem;
+    
+    .update-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: left;
+      color: $text-primary;
+      max-width: 500px;
+      margin: 0 auto;
+
+      .update-icon {
+        font-size: 2rem;
+        color: $primary-color;
+        margin-bottom: 1rem;
+        display: block;
+        text-align: center;
+      }
+
+      .update-content {
+        margin-bottom: 1.5rem;
+
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: $text-primary;
+          text-align: center;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.9rem;
+          color: $text-secondary;
+          line-height: 1.5;
+          text-align: center;
+        }
+      }
+
+      .update-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        @media (max-width: 480px) {
+          flex-direction: column;
+          
+          button {
+            width: 100%;
+          }
+        }
+
+        button {
+          min-height: 44px; // Touch target
+          border-radius: 0.5rem;
+          
+          &[color="primary"] {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          }
+        }
+      }
     }
   }
 }

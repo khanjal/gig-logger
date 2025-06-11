@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
 import { LoggerService } from '@services/logger.service';
+import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -17,28 +17,27 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   serviceWorkerStatus: string = 'Checking...';
   isUpdateAvailable: boolean = false;
   showInstallButton: boolean = false;
-  private versionUpdateSubscription: Subscription | undefined;
+  private updateStatusSubscription: Subscription | undefined;
   private deferredPrompt: any;
 
   constructor(
-    private swUpdate: SwUpdate,
+    private appUpdateService: AppUpdateService,
     private logger: LoggerService
   ) {}
+  
   async ngOnInit(): Promise<void> {
-    // Check if the service worker is enabled
-    if (this.swUpdate.isEnabled) {
-      this.serviceWorkerStatus = 'Active';      // Listen for version updates
-      this.versionUpdateSubscription = this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
-        if (event.type === 'VERSION_READY') {
-          const versionReadyEvent = event as VersionReadyEvent;
-          this.logger.info(`New version available: ${versionReadyEvent.latestVersion.hash}`);
-          this.serviceWorkerStatus = 'Update Available';
-          this.isUpdateAvailable = true;
+    // Subscribe to app update status
+    this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
+      (status: AppUpdateStatus) => {
+        this.isUpdateAvailable = status.isUpdateAvailable;
+        
+        if (status.isEnabled) {
+          this.serviceWorkerStatus = status.isUpdateAvailable ? 'Update Available' : 'Active';
+        } else {
+          this.serviceWorkerStatus = 'Not Enabled';
         }
-      });
-    } else {
-      this.serviceWorkerStatus = 'Not Enabled';
-    }
+      }
+    );
 
     // Listen for the install prompt
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -60,22 +59,27 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
     });
 
     window.addEventListener('online', () => {
-      this.serviceWorkerStatus = 'Online';
+      // Restore previous status when coming back online
+      const currentStatus = this.appUpdateService.getCurrentStatus();
+      if (currentStatus.isEnabled) {
+        this.serviceWorkerStatus = currentStatus.isUpdateAvailable ? 'Update Available' : 'Active';
+      } else {
+        this.serviceWorkerStatus = 'Not Enabled';
+      }
     });
   }
-
   ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
-    if (this.versionUpdateSubscription) {
-      this.versionUpdateSubscription.unsubscribe();
+    if (this.updateStatusSubscription) {
+      this.updateStatusSubscription.unsubscribe();
     }
   }
     // Trigger an update if available
-  updateApp(): void {
-    if (this.isUpdateAvailable) {
-      this.swUpdate.activateUpdate().then(() => {
-        document.location.reload();
-      });
+  async updateApp(): Promise<void> {
+    try {
+      await this.appUpdateService.activateUpdate();
+    } catch (error) {
+      this.logger.error('Error updating app', error);
     }
   }
 
@@ -93,40 +97,12 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
       this.showInstallButton = false;
     }
   }
-  forceCacheUpdate(): void {
-    if ('caches' in window) {
-      // Clear all caches
-      caches.keys().then(cacheNames => {
-        cacheNames.forEach(cacheName => {
-          caches.delete(cacheName).then(deleted => {
-            if (deleted) {
-              this.logger.debug(`Cache ${cacheName} deleted successfully.`);
-            }
-          });
-        });
-      }).finally(() => {
-        // Unregister the service worker
-        if (navigator.serviceWorker) {
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => {
-              registration.unregister().then(unregistered => {
-                if (unregistered) {
-                  this.logger.debug('Service worker unregistered successfully.');
-                }
-              });
-            });
-          }).finally(() => {
-            this.logger.info('All caches cleared and service worker unregistered. Reloading the page...');
-            document.location.reload();
-          });
-        } else {
-          this.logger.warn('Service Worker API not supported in this browser.');
-          document.location.reload();
-        }
-      });
-    } else {
-      this.logger.warn('Caches API not supported in this browser.');
-      document.location.reload();
+
+  async forceCacheUpdate(): Promise<void> {
+    try {
+      await this.appUpdateService.forceCacheUpdate();
+    } catch (error) {
+      this.logger.error('Error during force cache update', error);
     }
   }
 }
