@@ -15,7 +15,8 @@ import { filter } from 'rxjs/operators';
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    standalone: true,    imports: [
+    standalone: true,
+    imports: [
       MatToolbar, 
       RouterLink, 
       MatIcon, 
@@ -24,17 +25,16 @@ import { filter } from 'rxjs/operators';
       NgIf
     ]
 })
-export class HeaderComponent implements OnInit, OnDestroy {  defaultSheet: ISpreadsheet | undefined;
+export class HeaderComponent implements OnInit, OnDestroy {
+  defaultSheet: ISpreadsheet | undefined;
   isAuthenticated = false;
   isLoading = false;
   currentRoute = '/';
   isMenuOpen = false;
-  pageTitle = 'Home';
   
   private headerSubscription: Subscription;
   private routerSubscription: Subscription;
-  
-  constructor(
+    constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
     private authService: AuthGoogleService,
@@ -44,16 +44,15 @@ export class HeaderComponent implements OnInit, OnDestroy {  defaultSheet: ISpre
     this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
         this.load();
     });
-      // Subscribe to route changes for loading indicator
+    
+    // Subscribe to route changes for loading indicator
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.url;
-        this.updatePageTitle(event.url);
         this.setLoadingState(false); // Hide loading when navigation completes
       });
-  }
-  async ngOnInit(): Promise<void> {
+  }  async ngOnInit(): Promise<void> {
     // Show loading indicator
     this.setLoadingState(true);
     
@@ -65,9 +64,6 @@ export class HeaderComponent implements OnInit, OnDestroy {  defaultSheet: ISpre
       if (this.isAuthenticated) {
         await this.load();
       }
-      
-      // Set initial page title
-      this.updatePageTitle(this.router.url);
     } catch (error) {
       console.error('Error during header initialization:', error);
     } finally {
@@ -126,32 +122,11 @@ export class HeaderComponent implements OnInit, OnDestroy {  defaultSheet: ISpre
    */
   public toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
-  }
-  /**
+  }  /**
    * Closes the mobile menu
    */
   public closeMenu(): void {
     this.isMenuOpen = false;
-  }
-
-  /**
-   * Updates the page title based on the current route
-   * @param route - The current route URL
-   */
-  private updatePageTitle(route: string): void {
-    const routeMap: { [key: string]: string } = {
-      '/': 'Home',
-      '/trips': 'Trips',
-      '/shifts': 'Shifts',
-      '/stats': 'Statistics',
-      '/calculator': 'Calculator',
-      '/setup': 'Settings'
-    };
-
-    // Handle route parameters and query strings
-    const cleanRoute = route.split('?')[0].split(';')[0];
-    
-    this.pageTitle = routeMap[cleanRoute] || 'Gig Logger';
   }
 
   ngOnDestroy(): void {

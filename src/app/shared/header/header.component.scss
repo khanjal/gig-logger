@@ -38,13 +38,9 @@
     flex: 0 0 auto;
   }
   
-  &--title {
-    flex: 0 0 auto;
-    margin-left: 1rem;
-  }
-  
   &--actions {
     flex: 0 0 auto;
+    gap: 0.5rem; /* Add spacing between action buttons */
   }
 }
 
@@ -74,26 +70,12 @@
     outline: 2px solid rgba(255, 255, 255, 0.8);
     outline-offset: 2px;
   }
-  
-  mat-icon {
+    mat-icon {
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
     color: $text-inverse !important;
   }
-}
-
-/* Page Title */
-.page-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: $text-inverse;
-  margin: 0;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 12rem;
 }
 
 /* Action Button */

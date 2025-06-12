@@ -1,8 +1,7 @@
 <!-- Mobile-First PWA Header Component -->
-<header class="app-header">
-  <!-- Main Toolbar -->
+<header class="app-header">  <!-- Main Toolbar -->
   <mat-toolbar class="main-toolbar" [color]="getToolbarColor()">
-      <!-- Menu Button -->
+    <!-- Menu Button -->
     <div class="toolbar-section toolbar-section--menu">
       <button (click)="toggleMenu()" 
               class="menu-button" 
@@ -10,11 +9,7 @@
               matTooltip="Menu"
               matTooltipPosition="below">
         <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
-      </button>    </div>
-    
-    <!-- Page Title -->
-    <div class="toolbar-section toolbar-section--title">
-      <h1 class="page-title">{{ pageTitle }}</h1>
+      </button>
     </div>
     
     <!-- Spacer -->
@@ -29,6 +24,32 @@
          matTooltipPosition="below">
         <mat-icon>home</mat-icon>
       </a>
+      
+      <!-- Authenticated user navigation -->
+      <ng-container *ngIf="isAuthenticated">
+        <a routerLink="/trips" 
+           class="action-button" 
+           aria-label="View trips"
+           matTooltip="Trips"
+           matTooltipPosition="below">
+          <mat-icon>navigation</mat-icon>
+        </a>
+        <a routerLink="/shifts" 
+           class="action-button" 
+           aria-label="View shifts"
+           matTooltip="Shifts"
+           matTooltipPosition="below">
+          <mat-icon>today</mat-icon>
+        </a>
+        <a routerLink="/stats" 
+           class="action-button" 
+           aria-label="View statistics"
+           matTooltip="Statistics"
+           matTooltipPosition="below">
+          <mat-icon>poll</mat-icon>
+        </a>
+      </ng-container>
+      
       <a routerLink="/setup" 
          class="action-button" 
          aria-label="Open settings"
