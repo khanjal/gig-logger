@@ -79,7 +79,8 @@
 // =============================================================================
 
 /* Base Material Table Styling */
-mat-table {
+mat-table,
+table[mat-table] {
   width: 100%;
   max-width: 100%;
   margin: 0;
@@ -111,7 +112,9 @@ mat-table {
 
 /* Row Base Styling - Compact Design */
 mat-row,
-mat-header-row {
+mat-header-row,
+tr[mat-row],
+tr[mat-header-row] {
   display: table-row;
   transition: all 0.2s ease;
   border-bottom: 1px solid rgba($border-light, 0.5);
@@ -130,7 +133,8 @@ mat-header-row {
 }
 
 /* Header Row Styling */
-mat-header-row {
+mat-header-row,
+tr[mat-header-row] {
   background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%) !important;
   color: $primary-700;
   font-weight: 600;
@@ -244,7 +248,9 @@ mat-row {
 
 /* Base Cell Styling - Compact Design */
 mat-cell,
-mat-header-cell {
+mat-header-cell,
+td[mat-cell],
+th[mat-header-cell] {
   word-wrap: initial;
   display: table-cell;
   padding: 0.5rem 0.625rem; // Reduced from 0.875rem to 0.5rem
@@ -803,13 +809,40 @@ mat-header-cell {
 
 /* Standard Table Theme - Default styling with gradient headers */
 .table-theme-standard {
-  mat-header-row {
+  mat-header-row,
+  tr[mat-header-row] {
     background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%) !important;
     color: $primary-700;
     border-bottom: 2px solid $primary-200;
+    
+    mat-header-cell,
+    th[mat-header-cell] {
+      // Mobile responsive font sizing
+      @media (max-width: 768px) {
+        font-size: 0.75rem;
+        padding: 0 8px;
+      }
+      
+      @media (max-width: 480px) {
+        font-size: 0.65rem;
+        padding: 0 6px;
+      }
+    }
+    
+    // Mobile responsive row height
+    @media (max-width: 768px) {
+      height: 2.5rem;
+      min-height: 2.5rem;
+    }
+    
+    @media (max-width: 480px) {
+      height: 2.2rem;
+      min-height: 2.2rem;
+    }
   }
   
-  mat-row {
+  mat-row,
+  tr[mat-row] {
     &:nth-child(even) {
       background: linear-gradient(135deg, $primary-50 0%, rgba($primary-color, 0.03) 100%);
     }
@@ -826,46 +859,122 @@ mat-header-cell {
 
 /* Premium Table Theme - Branded headers with enhanced styling */
 .table-theme-premium {
-  mat-header-row {
-    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%) !important;
-    color: white;
-    border-bottom: 3px solid $primary-600;
+  mat-header-row,
+  tr[mat-header-row] {
+    background: linear-gradient(135deg, rgba($primary-color, 0.03) 0%, rgba($secondary-color, 0.05) 100%) !important;
+    color: $primary-700;
+    border-bottom: 2px solid $primary-300;
     font-weight: 700;
+    height: 3rem;
+    min-height: 3rem;
     
-    mat-header-cell {
-      color: white !important;
+    mat-header-cell,
+    th[mat-header-cell] {
+      color: $primary-700 !important;
       font-weight: 700;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 0 12px;
+      
+      // Mobile responsive font sizing
+      @media (max-width: 768px) {
+        font-size: 0.7rem;
+        letter-spacing: 0.1px;
+        padding: 0 8px;
+      }
+      
+      @media (max-width: 480px) {
+        font-size: 0.6rem;
+        letter-spacing: 0px;
+        padding: 0 6px;
+      }
+    }
+    
+    // Mobile responsive row height
+    @media (max-width: 768px) {
+      height: 2.5rem;
+      min-height: 2.5rem;
+    }
+    
+    @media (max-width: 480px) {
+      height: 2.2rem;
+      min-height: 2.2rem;
     }
   }
   
-  mat-row {
+  mat-row,
+  tr[mat-row] {
     &:nth-child(even) {
-      background: linear-gradient(135deg, lighten($primary-color, 45%) 0%, lighten($primary-color, 47%) 100%);
+      background: linear-gradient(135deg, rgba($primary-color, 0.02) 0%, rgba($primary-color, 0.04) 100%);
     }
     
     &:nth-child(odd) {
-      background: linear-gradient(135deg, lighten($accent-color, 45%) 0%, lighten($accent-color, 47%) 100%);
+      background: linear-gradient(135deg, rgba($accent-color, 0.02) 0%, rgba($accent-color, 0.04) 100%);
     }
     
     &:hover {
-      background: linear-gradient(135deg, lighten($primary-color, 40%) 0%, lighten($primary-color, 42%) 100%) !important;
+      background: linear-gradient(135deg, rgba($primary-color, 0.06) 0%, rgba($primary-color, 0.08) 100%) !important;
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }  mat-footer-row,
+  tr[mat-footer-row] {
+    background: linear-gradient(135deg, rgba($secondary-color, 0.04) 0%, rgba($primary-color, 0.06) 100%) !important;
+    color: $secondary-700;
+    font-weight: 700;
+    border-top: 3px solid $secondary-600;
+    height: 2.8rem;
+    min-height: 2.8rem;
+    
+    mat-footer-cell,
+    td[mat-footer-cell] {
+      color: $secondary-700 !important;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      
+      // Mobile responsive font sizing
+      @media (max-width: 768px) {
+        font-size: 0.7rem;
+        letter-spacing: 0.1px;
+        padding: 0 8px;
+      }
+      
+      @media (max-width: 480px) {
+        font-size: 0.6rem;
+        letter-spacing: 0px;
+        padding: 0 6px;
+      }
+    }
+    
+    // Mobile responsive row height
+    @media (max-width: 768px) {
+      height: 2.3rem;
+      min-height: 2.3rem;
+    }
+    
+    @media (max-width: 480px) {
+      height: 2rem;
+      min-height: 2rem;
     }
   }
 }
 
 /* Minimal Table Theme - Clean, subtle styling */
 .table-theme-minimal {
-  mat-header-row {
+  mat-header-row,
+  tr[mat-header-row] {
     background: transparent !important;
     color: $text-primary;
     border-bottom: 2px solid $border-light;
     font-weight: 600;
   }
   
-  mat-row {
+  mat-row,
+  tr[mat-row] {
     border-bottom: 1px solid rgba($border-light, 0.3);
     
     &:nth-child(even) {
@@ -889,7 +998,8 @@ mat-header-cell {
 
 /* Compact Table Theme - Dense data presentation */
 .table-theme-compact {
-  mat-header-row {
+  mat-header-row,
+  tr[mat-header-row] {
     height: 1.875rem !important;
     min-height: 1.875rem !important;
     background: $primary-100 !important;
@@ -901,7 +1011,8 @@ mat-header-cell {
     }
   }
   
-  mat-row {
+  mat-row,
+  tr[mat-row] {
     height: 2rem !important;
     min-height: 2rem !important;
     
@@ -948,7 +1059,8 @@ mat-header-cell {
 }
 
 /* Footer Row Styling - For table footers */
-mat-footer-row {
+mat-footer-row,
+tr[mat-footer-row] {
   background: linear-gradient(135deg, $secondary-100 0%, $primary-100 100%) !important;
   color: $primary-700;
   font-weight: 600;
@@ -956,7 +1068,8 @@ mat-footer-row {
   height: 2.5rem;
   min-height: 2.5rem;
   
-  mat-footer-cell {
+  mat-footer-cell,
+  td[mat-footer-cell] {
     font-weight: 600;
     color: $primary-700;
     font-size: 0.875rem;

@@ -1,349 +1,77 @@
+// Stats Table Component Styles
 @import "color-vars";
 
-// Mobile-first variables
-$table-border-radius: 16px;
-$card-border-radius: 12px;
-$table-padding: 16px;
-$touch-target-size: 44px;
+// Component-specific styles only - global table styles are in _tables.scss
 
-// Mobile-first container with horizontal scrolling
-.table-responsive {
-    display: block;
-    width: 100%;
-    margin: 0 0 1.5rem 0;
-    border-radius: $table-border-radius;
-    overflow-x: auto;
-    position: relative;
-    box-shadow: 
-        0 4px 16px rgba(0, 0, 0, 0.1),
-        0 2px 8px rgba(0, 0, 0, 0.05);
-    background: linear-gradient(145deg, $surface-color 0%, lighten($surface-color, 2%) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.5rem;
-    
-    // Enhanced touch scrolling for mobile
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: $primary-color $background-secondary;
-    
-    // Custom scrollbar styling
-    &::-webkit-scrollbar {
-        height: 8px;
-        
-        @media (max-width: 768px) {
-            height: 6px;
-        }
-    }
-    
-    &::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-        background: linear-gradient(45deg, $primary-color, $accent-color);
-        border-radius: 3px;
-        
-        &:hover {
-            background: linear-gradient(45deg, darken($primary-color, 10%), darken($accent-color, 10%));
-        }
-    }
-    
-    @media (min-width: 768px) {
-        margin: 0 0 2rem 0;
-    }
-}
-
-
-
-
-
-// Mobile layout test - removed debug styles for production
-
-// Table styling with horizontal scrolling on all screen sizes
-.mat-mdc-table,
-.mat-table {
-    width: 100%;
-    background: transparent;
-    border-collapse: separate;
-    border-spacing: 0;
-    display: table !important; // Always show as table, never as cards
-    
-    // Force minimum width to enable horizontal scrolling on mobile
-    min-width: 800px; // Adjust this value based on your column count and content
-    
-    @media (max-width: 768px) {
-        min-width: 700px; // Slightly smaller but still forces scrolling
-    }
-    
-    @media (max-width: 480px) {
-        min-width: 600px; // Minimum width to ensure horizontal scroll
-    }
-}
-
-
-
-// Row styling for all screen sizes
-.mat-mdc-row,
-.mat-row,
-.mat-mdc-header-row,
-.mat-header-row,
-.mat-mdc-footer-row,
-.mat-footer-row {
-    display: table-row !important;
-    transition: all 0.2s ease;
-}
-
-.mat-mdc-row,
-.mat-row {
-    &:hover {
-        background: linear-gradient(145deg, lighten($primary-color, 45%) 0%, lighten($primary-color, 47%) 100%) !important;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    &:nth-child(even) {
-        background: linear-gradient(145deg, lighten($primary-color, 45%) 0%, lighten($primary-color, 46%) 100%);
-    }
-    
-    &:nth-child(odd) {
-        background: linear-gradient(145deg, lighten($accent-color, 45%) 0%, lighten($accent-color, 46%) 100%);
-    }
-}
-
-.mat-mdc-header-row,
-.mat-header-row {
-    background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%) !important;
-    color: white;
-    height: 56px;
-}
-
-.mat-mdc-footer-row,
-.mat-footer-row {
-    background: linear-gradient(145deg, $secondary-color 0%, darken($secondary-color, 5%) 100%) !important;
-    color: white;
-    font-weight: 600;
-    height: 56px;
-}
-
-// Cell styling for all screen sizes
-.mat-mdc-cell,
-.mat-cell,
-.mat-mdc-header-cell,
-.mat-header-cell,
-.mat-mdc-footer-cell,
-.mat-footer-cell {
-    font-size: 14px;
-    line-height: 1.4;
-    padding: 12px 8px !important;
-    vertical-align: middle;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    
-    @media (max-width: 768px) {
-        padding: 10px 6px !important;
-        font-size: 13px;
-    }
-    
-    @media (max-width: 480px) {
-        padding: 8px 4px !important;
-        font-size: 12px;
-    }
-}
-
-.mat-mdc-header-cell,
-.mat-header-cell,
-.mat-mdc-footer-cell,
-.mat-footer-cell {
-    font-weight: 600;
-    color: white !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    
-    @media (max-width: 768px) {
-        font-size: 12px;
-        letter-spacing: 0.3px;
-    }
-    
-    @media (max-width: 480px) {
-        font-size: 11px;
-        letter-spacing: 0.2px;
-    }
-}
-
-.mat-mdc-cell,
-.mat-cell {
-    color: $text-primary;
-    
-    &:first-child {
-        font-weight: 600;
-        color: $primary-color;
-    }
-}
-
-// Sticky first column with fallback selectors
+// Sticky first column enhancement for stats table
 @media (min-width: 768px) {
-    td:first-child, 
-    th:first-child,
-    .mat-mdc-cell:first-child,
-    .mat-cell:first-child,
-    .mat-mdc-header-cell:first-child,
-    .mat-header-cell:first-child,
-    .mat-mdc-footer-cell:first-child,
-    .mat-footer-cell:first-child {
-        position: sticky;
-        left: 0;
-        z-index: 10;
-        background: inherit;
-        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .mat-mdc-header-cell:first-child,
-    .mat-header-cell:first-child {
-        background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%) !important;
-    }
-    
-    .mat-mdc-footer-cell:first-child,
-    .mat-footer-cell:first-child {
-        background: linear-gradient(145deg, $secondary-color 0%, darken($secondary-color, 5%) 100%) !important;
-    }
+  .mat-mdc-cell:first-child,
+  .mat-cell:first-child,
+  .mat-mdc-header-cell:first-child,
+  .mat-header-cell:first-child,
+  .mat-mdc-footer-cell:first-child,
+  .mat-footer-cell:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: inherit;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
-// Scroll indicator for horizontal scrolling
-.table-scroll-indicator {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    text-align: center;
-    font-size: 0.7rem;
-    color: $primary-600;
-    padding: 0.25rem 0.5rem;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 6px 0 0 0;
-    font-weight: 500;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 5;
-    
-    &.visible {
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    @media (max-width: 768px) {
-        font-size: 0.65rem;
-        padding: 0.2rem 0.4rem;
-    }
-}
-
-// Section styling
-.section {
-    margin: 1.5rem 0;
-    
-    @media (max-width: 767px) {
-        margin: 1rem 0;
-        padding: 0 0.5rem;
-    }
-    
-    @media (min-width: 768px) {
-        margin: 2rem 0;
-    }
-}
-
-
-
-// Accessibility improvements with fallback selectors
-@media (prefers-reduced-motion: reduce) {
-    .mat-mdc-row,
-    .mat-row,
-    .mat-mdc-table,
-    .mat-table {
-        animation: none !important;
-        transition: none !important;
-    }
-    
-    .mat-mdc-row:hover,
-    .mat-row:hover {
-        transform: none !important;
-    }
-}
-
-// High contrast mode support with fallback selectors
-@media (prefers-contrast: high) {
-    .mat-mdc-table,
-    .mat-table {
-        border: 2px solid $text-primary !important;
-    }
-    
-    .mat-mdc-row,
-    .mat-row {
-        border: 1px solid $text-primary !important;
-    }
-    
-    .mat-mdc-header-row,
-    .mat-header-row,
-    .mat-mdc-footer-row,
-    .mat-footer-row {
-        background: $text-primary !important;
-        color: $surface-color !important;
-    }
-}
-
-// Empty state styling
+// Empty state styling - component specific
 .empty-state {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 200px;
-    padding: 2rem;
-    text-align: center;
-    color: $text-secondary;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 2rem;
+  text-align: center;
+  color: $text-secondary;
+  
+  .empty-state-content {
+    max-width: 300px;
+    
+    .empty-state-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: $border-light;
+      margin-bottom: 1rem;
+    }
+    
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: $text-primary;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    min-height: 150px;
+    padding: 1.5rem;
     
     .empty-state-content {
-        max-width: 300px;
-        
-        .empty-state-icon {
-            font-size: 48px;
-            width: 48px;
-            height: 48px;
-            color: $border-light;
-            margin-bottom: 1rem;
-        }
-        
-        h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: $text-primary;
-        }
-        
-        p {
-            margin: 0;
-            font-size: 0.875rem;
-            line-height: 1.4;
-        }
+      .empty-state-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+      }
+      
+      h3 {
+        font-size: 1.125rem;
+      }
+      
+      p {
+        font-size: 0.8125rem;
+      }
     }
-    
-    @media (max-width: 767px) {
-        min-height: 150px;
-        padding: 1.5rem;
-        
-        .empty-state-content {
-            .empty-state-icon {
-                font-size: 40px;
-                width: 40px;
-                height: 40px;
-            }
-            
-            h3 {
-                font-size: 1.125rem;
-            }
-            
-            p {
-                font-size: 0.8125rem;
-            }
-        }
-    }
+  }
 }
