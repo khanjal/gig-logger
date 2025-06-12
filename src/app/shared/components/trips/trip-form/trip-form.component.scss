@@ -333,3 +333,24 @@
         }
     }
 }
+
+// Hide checkmarks in shift dropdown
+::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+    .mat-pseudo-checkbox {
+        display: none !important;
+    }
+}
+
+::ng-deep .mat-mdc-option {
+    .mat-pseudo-checkbox,
+    .mat-pseudo-checkbox-minimal {
+        display: none !important;
+    }
+}
+
+// Alternative approach - hide all option checkmarks globally for this component
+::ng-deep mat-option {
+    .mat-option-pseudo-checkbox {
+        display: none !important;
+    }
+}
