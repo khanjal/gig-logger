@@ -1,4 +1,5 @@
 @import "color-vars";
+@import "../../../styles/modal-mixins";
 
 // Mobile-first confirm dialog styling
 .confirm-dialog {
@@ -188,36 +189,8 @@
   
   @media (max-width: 480px) {
     font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
+    margin-bottom: 0.5rem;  }
 }
 
-// Dialog backdrop blur effect
-::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-// Enhanced blur for dark backdrops
-::ng-deep .cdk-overlay-dark-backdrop {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(0, 0, 0, 0.6) !important;
-}
-
-// Additional blur for modal dialogs specifically
-::ng-deep .mat-mdc-dialog-container {
-  .cdk-overlay-backdrop {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-}
-
-// Fallback for browsers that don't support backdrop-filter
-@supports not (backdrop-filter: blur(1px)) {
-  ::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-  }
-}
+// Use global modal backdrop styling
+@include setup-modal-backdrop('medium');

@@ -1,4 +1,5 @@
 @import "color-vars";
+@import "../../../styles/modal-mixins";
 
 // Component-specific overrides and customizations
 .trip-form {
@@ -355,46 +356,5 @@
     }
 }
 
-// Trip Form Modal backdrop blur effect
-::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-// Enhanced blur for the custom modal when trip form is used
-::ng-deep .custom-modalbox .cdk-overlay-backdrop {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(0, 0, 0, 0.6) !important;
-}
-
-// Additional blur for trip form modal dialogs specifically
-::ng-deep .mat-mdc-dialog-container {
-  .cdk-overlay-backdrop {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-}
-
-// Enhanced backdrop blur for trip editing operations
-::ng-deep .cdk-overlay-dark-backdrop {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(0, 0, 0, 0.7) !important;
-}
-
-// Smooth animation when trip form modal opens
-::ng-deep .mat-mdc-dialog-container.mat-mdc-dialog-container-with-actions {
-  .cdk-overlay-backdrop {
-    transition: backdrop-filter 0.3s ease-in-out, background-color 0.3s ease-in-out;
-  }
-}
-
-// Fallback for browsers that don't support backdrop-filter
-@supports not (backdrop-filter: blur(1px)) {
-  ::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
-    background-color: rgba(0, 0, 0, 0.8) !important;
-  }
-}
+// Use global modal backdrop styling for trip form modals
+@include setup-modal-backdrop('medium');

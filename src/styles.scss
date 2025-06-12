@@ -1,5 +1,6 @@
 /* Mobile-First Global Styles for Gig Logger PWA */
 @import "color-vars";
+@import "app/shared/styles/modal-mixins";
 @import "app/shared/styles/buttons";
 @import "app/shared/styles/forms";
 @import "app/shared/styles/components";
@@ -1399,4 +1400,37 @@ a {
 
 /* ==============================================
    END MOBILE FORM ENHANCEMENTS
+   ============================================== */
+
+/* ==============================================
+   GLOBAL MODAL BACKDROP BLUR STYLES
+   ============================================== */
+
+// Light blur for subtle modals
+.modal-backdrop-light {
+  @include setup-modal-backdrop('light');
+}
+
+// Medium blur for standard modals (default)
+.modal-backdrop-medium {
+  @include setup-modal-backdrop('medium');
+}
+
+// Strong blur for important modals
+.modal-backdrop-strong {
+  @include setup-modal-backdrop('strong');
+}
+
+// Heavy blur for critical modals
+.modal-backdrop-heavy {
+  @include setup-modal-backdrop('heavy');
+}
+
+// Default modal backdrop - medium strength
+.modal-backdrop {
+  @include setup-modal-backdrop('medium');
+}
+
+/* ==============================================
+   END GLOBAL MODAL BACKDROP BLUR STYLES
    ============================================== */
