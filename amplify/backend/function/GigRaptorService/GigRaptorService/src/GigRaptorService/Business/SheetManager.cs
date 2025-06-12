@@ -18,14 +18,9 @@ public class SheetManager : ISheetManager
 {
     private readonly IGoogleSheetManager _googleSheetManager;
     private readonly IConfiguration _configuration;
-    private static readonly DynamoDbRateLimiter _rateLimiter = new DynamoDbRateLimiter(
-        new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
-        "RaptorSheetsRateLimit",
-        5,
-        TimeSpan.FromMinutes(1)
-    );
+    // Removed static initialization of DynamoDbRateLimiter to avoid cold start penalty
 
-    private SheetManager(string token, string sheetId, IConfiguration configuration)
+    public SheetManager(string token, string sheetId, IConfiguration configuration)
     {
         _configuration = configuration;
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
@@ -42,8 +37,15 @@ public class SheetManager : ISheetManager
 
     private static async Task EnforceRateLimitAsync(string spreadsheetId)
     {
+        // Lazily create the rate limiter only if needed
+        var rateLimiter = new DynamoDbRateLimiter(
+            new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
+            "RaptorSheetsRateLimit",
+            5,
+            TimeSpan.FromMinutes(1)
+        );
         var hashedSpreadsheetId = HashHelper.HashSpreadsheetId(spreadsheetId);
-        if (!await _rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
+        if (!await rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
         {
             throw new InvalidOperationException($"Rate limit exceeded for spreadsheet ID: {hashedSpreadsheetId}. Please try again later.");
         }
