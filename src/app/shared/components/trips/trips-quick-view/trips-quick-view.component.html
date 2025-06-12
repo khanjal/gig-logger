@@ -228,11 +228,11 @@
       </div>
       <div class="info-card__content">
         <div class="details-grid">
-          <div class="detail-item" *ngIf="trip.endUnit">
+          <div class="detail-item detail-item--unit" *ngIf="trip.endUnit">
             <span class="detail-label">Unit #</span>
             <span class="detail-value">{{trip.endUnit}}</span>
           </div>
-          <div class="detail-item" *ngIf="trip.orderNumber">
+          <div class="detail-item detail-item--order" *ngIf="trip.orderNumber">
             <span class="detail-label">Order #</span>
             <span class="detail-value">{{trip.orderNumber}}</span>
           </div>
