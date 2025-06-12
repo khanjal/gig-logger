@@ -1,8 +1,8 @@
-<div class="trips-container">
+<div class="table-container">
     <h2 *ngIf="!link">{{ title }}</h2>
     <h2 *ngIf="link">{{ title }} <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
     <div class='table-responsive'>
-        <mat-table [dataSource]="trips">
+        <mat-table [dataSource]="trips" class="table-theme-standard">
             <ng-container matColumnDef="date">
                 <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
                 <mat-cell *matCellDef="let trip"> {{trip.date | date:'MMM d'}} </mat-cell>

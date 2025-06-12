@@ -9,7 +9,7 @@
     </div>
     
     <div class='table-responsive'>
-        <mat-table [dataSource]="trips">
+        <mat-table [dataSource]="trips" class="table-theme-standard">
             <ng-container matColumnDef="place">
                 <mat-header-cell *matHeaderCellDef> Place </mat-header-cell>
                 <mat-cell *matCellDef="let trip"> {{trip.place | truncate:15}} </mat-cell>

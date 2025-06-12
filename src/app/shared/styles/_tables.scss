@@ -131,7 +131,7 @@ mat-header-row {
 
 /* Header Row Styling */
 mat-header-row {
-  background: $primary-50 !important;
+  background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%) !important;
   color: $primary-700;
   font-weight: 600;
   border-bottom: 2px solid $primary-200;
@@ -155,28 +155,41 @@ mat-header-row {
     border-bottom: 1px solid $border-light;
   }
   
-  // Alternative accent theme
+  // Alternative accent theme  
   &.table-header-accent {
-    background: $accent-50 !important;
+    background: linear-gradient(135deg, $accent-50 0%, $primary-50 100%) !important;
     color: $accent-700;
     border-bottom: 2px solid $accent-200;
+  }
+  
+  // Primary branded theme
+  &.table-header-primary {
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%) !important;
+    color: white;
+    border-bottom: 2px solid $primary-600;
+    
+    mat-header-cell {
+      color: white !important;
+      font-weight: 600;
+    }
   }
 }
 
 /* Data Row Styling with Alternating Colors */
 mat-row {
   &:nth-child(even) {
-    background: $surface-color;
+    background: linear-gradient(135deg, $primary-50 0%, rgba($primary-color, 0.03) 100%);
   }
 
   &:nth-child(odd) {
-    background: rgba($primary-50, 0.3);
+    background: linear-gradient(135deg, $secondary-50 0%, rgba($secondary-color, 0.03) 100%);
   }
   
   &:hover {
-    background: $primary-100 !important;
+    background: linear-gradient(135deg, $primary-100 0%, rgba($primary-color, 0.08) 100%) !important;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px $shadow-light;
+    cursor: pointer;
   }
   
   // Alternative subtle alternating pattern
@@ -186,7 +199,7 @@ mat-row {
     }
     
     &:nth-child(odd) {
-      background: rgba($primary-50, 0.5);
+      background: rgba($primary-50, 0.3);
     }
     
     &:hover {
@@ -202,6 +215,25 @@ mat-row {
     
     &:nth-child(odd) {
       background: $surface-color;
+    }
+    
+    &:hover {
+      background: $primary-100 !important;
+    }
+  }
+  
+  // High contrast alternating for accessibility
+  &.table-rows-contrast {
+    &:nth-child(even) {
+      background: white;
+    }
+    
+    &:nth-child(odd) {
+      background: rgba($primary-50, 0.6);
+    }
+    
+    &:hover {
+      background: rgba($accent-100, 0.7) !important;
     }
   }
 }
@@ -766,5 +798,167 @@ mat-header-cell {
   mat-header-cell {
     color: $text-inverse;
     border-right: 1px solid rgba($border-light, 0.2);
+  }
+}
+
+/* Standard Table Theme - Default styling with gradient headers */
+.table-theme-standard {
+  mat-header-row {
+    background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%) !important;
+    color: $primary-700;
+    border-bottom: 2px solid $primary-200;
+  }
+  
+  mat-row {
+    &:nth-child(even) {
+      background: linear-gradient(135deg, $primary-50 0%, rgba($primary-color, 0.03) 100%);
+    }
+    
+    &:nth-child(odd) {
+      background: linear-gradient(135deg, $secondary-50 0%, rgba($secondary-color, 0.03) 100%);
+    }
+    
+    &:hover {
+      background: linear-gradient(135deg, $primary-100 0%, rgba($primary-color, 0.08) 100%) !important;
+    }
+  }
+}
+
+/* Premium Table Theme - Branded headers with enhanced styling */
+.table-theme-premium {
+  mat-header-row {
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%) !important;
+    color: white;
+    border-bottom: 3px solid $primary-600;
+    font-weight: 700;
+    
+    mat-header-cell {
+      color: white !important;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  mat-row {
+    &:nth-child(even) {
+      background: linear-gradient(135deg, lighten($primary-color, 45%) 0%, lighten($primary-color, 47%) 100%);
+    }
+    
+    &:nth-child(odd) {
+      background: linear-gradient(135deg, lighten($accent-color, 45%) 0%, lighten($accent-color, 47%) 100%);
+    }
+    
+    &:hover {
+      background: linear-gradient(135deg, lighten($primary-color, 40%) 0%, lighten($primary-color, 42%) 100%) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+/* Minimal Table Theme - Clean, subtle styling */
+.table-theme-minimal {
+  mat-header-row {
+    background: transparent !important;
+    color: $text-primary;
+    border-bottom: 2px solid $border-light;
+    font-weight: 600;
+  }
+  
+  mat-row {
+    border-bottom: 1px solid rgba($border-light, 0.3);
+    
+    &:nth-child(even) {
+      background: transparent;
+    }
+    
+    &:nth-child(odd) {
+      background: rgba($primary-50, 0.2);
+    }
+    
+    &:hover {
+      background: rgba($primary-50, 0.4) !important;
+    }
+  }
+  
+  mat-cell,
+  mat-header-cell {
+    border-right: none;
+  }
+}
+
+/* Compact Table Theme - Dense data presentation */
+.table-theme-compact {
+  mat-header-row {
+    height: 1.875rem !important;
+    min-height: 1.875rem !important;
+    background: $primary-100 !important;
+    color: $primary-800;
+    
+    @media (max-width: 768px) {
+      height: 1.75rem !important;
+      min-height: 1.75rem !important;
+    }
+  }
+  
+  mat-row {
+    height: 2rem !important;
+    min-height: 2rem !important;
+    
+    @media (max-width: 768px) {
+      height: 1.875rem !important;
+      min-height: 1.875rem !important;
+    }
+  }
+  
+  mat-cell,
+  mat-header-cell {
+    padding: 0.25rem 0.375rem !important;
+    font-size: 0.75rem;
+    line-height: 1.1;
+  }
+}
+
+// =============================================================================
+// TOTAL ROW AND FOOTER STYLING
+// =============================================================================
+
+/* Total Row Styling - For summary/total rows */
+.table-total-row {
+  background: linear-gradient(135deg, $accent-100 0%, $primary-100 100%) !important;
+  font-weight: 700;
+  color: $primary-800;
+  border-top: 2px solid $primary-300;
+  border-bottom: 2px solid $primary-300;
+  
+  mat-cell {
+    font-weight: 700;
+    color: $primary-800;
+    
+    &:last-child {
+      font-size: 1.1rem;
+      color: $accent-700;
+    }
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, $accent-200 0%, $primary-200 100%) !important;
+    transform: none; // Disable hover transform for total rows
+  }
+}
+
+/* Footer Row Styling - For table footers */
+mat-footer-row {
+  background: linear-gradient(135deg, $secondary-100 0%, $primary-100 100%) !important;
+  color: $primary-700;
+  font-weight: 600;
+  border-top: 2px solid $primary-200;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  
+  mat-footer-cell {
+    font-weight: 600;
+    color: $primary-700;
+    font-size: 0.875rem;
   }
 }
