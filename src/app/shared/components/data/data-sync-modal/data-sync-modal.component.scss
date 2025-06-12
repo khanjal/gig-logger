@@ -160,3 +160,40 @@
     }
 }
 
+// Data Sync Modal backdrop blur effect
+::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Enhanced blur for the custom modal
+::ng-deep .custom-modalbox .cdk-overlay-backdrop {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+// Additional blur for modal dialogs specifically
+::ng-deep .mat-mdc-dialog-container {
+  .cdk-overlay-backdrop {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+// Enhanced backdrop blur for data sync operations
+::ng-deep .cdk-overlay-dark-backdrop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+// Fallback for browsers that don't support backdrop-filter
+@supports not (backdrop-filter: blur(1px)) {
+  ::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
