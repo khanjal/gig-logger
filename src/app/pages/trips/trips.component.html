@@ -15,10 +15,9 @@
             <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
-    
-    <h2 id="todaysTrips">
+      <h2 id="todaysTrips">
         @if (todaysTrips.length > 0) {
-            Today's Trips
+            Today's Trips ({{todaysTrips.length}})
         }
         @else {
             No Trips Today
@@ -39,7 +38,7 @@
         <mat-expansion-panel>
             <mat-expansion-panel-header [expandedHeight]="'auto'" class="mat-panel-header">
                 <mat-panel-title class="mat-panel-title">
-                    <h2 id="yesrterdaysTrips">Yesterday's Trips</h2>
+                    <h2 id="yesrterdaysTrips">Yesterday's Trips ({{yesrterdaysTrips.length}})</h2>
                 </mat-panel-title>
             </mat-expansion-panel-header>
             @for (trip of yesrterdaysTrips; track $index) {
