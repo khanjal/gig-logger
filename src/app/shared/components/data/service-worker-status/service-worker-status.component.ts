@@ -17,6 +17,7 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   serviceWorkerStatus: string = 'Checking...';
   isUpdateAvailable: boolean = false;
   showInstallButton: boolean = false;
+  isOnline: boolean = navigator.onLine;
   private updateStatusSubscription: Subscription | undefined;
   private deferredPrompt: any;
 
@@ -55,10 +56,12 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
 
     // Check if the app is offline
     window.addEventListener('offline', () => {
+      this.isOnline = false;
       this.serviceWorkerStatus = 'Offline';
     });
 
     window.addEventListener('online', () => {
+      this.isOnline = true;
       // Restore previous status when coming back online
       const currentStatus = this.appUpdateService.getCurrentStatus();
       if (currentStatus.isEnabled) {
@@ -99,8 +102,17 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   }
 
   async forceCacheUpdate(): Promise<void> {
+    // Check for internet connectivity before attempting cache update
+    if (!navigator.onLine) {
+      this.logger.warn('Cannot force cache update - no internet connectivity');
+      // Optionally show a user-friendly message here
+      return;
+    }
+
     try {
+      this.logger.info('Starting force cache update...');
       await this.appUpdateService.forceCacheUpdate();
+      this.logger.info('Force cache update completed successfully');
     } catch (error) {
       this.logger.error('Error during force cache update', error);
     }

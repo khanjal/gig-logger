@@ -24,7 +24,13 @@
         </button>
       }
       @else {
-        <button mat-fab extended color="primary" (click)="forceCacheUpdate()">
+        <button 
+          mat-fab 
+          extended 
+          color="primary" 
+          (click)="forceCacheUpdate()"
+          [disabled]="!isOnline"
+          [title]="!isOnline ? 'Cache reset requires internet connectivity' : 'Reset cached data'">
           <mat-icon>refresh</mat-icon> Reset Cache
         </button>
       }
