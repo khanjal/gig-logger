@@ -34,20 +34,26 @@
     }
 
     <br/>
-    <mat-accordion *ngIf="yesrterdaysTrips.length > 0">
-        <mat-expansion-panel>
-            <mat-expansion-panel-header [expandedHeight]="'auto'" class="mat-panel-header">
-                <mat-panel-title class="mat-panel-title">
-                    <h2 id="yesrterdaysTrips">Yesterday's Trips ({{yesrterdaysTrips.length}})</h2>
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            @for (trip of yesrterdaysTrips; track $index) {
-                <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                    <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+    @if (yesrterdaysTrips.length > 0) {
+        <div class="yesterday-section">
+            <h2 id="yesrterdaysTrips" class="yesterday-header" (click)="toggleYesterdayTrips()">
+                <mat-icon class="toggle-icon" [class.expanded]="showYesterdayTrips">
+                    {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+                Yesterday's Trips ({{yesrterdaysTrips.length}})
+            </h2>
+            
+            @if (showYesterdayTrips) {
+                <div class="yesterday-trips-container">
+                    @for (trip of yesrterdaysTrips; track $index) {
+                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+                            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+                        </div>
+                    }
                 </div>
             }
-        </mat-expansion-panel>
-    </mat-accordion>
+        </div>
+    }
     <br/>
     <div class="row-grid">
         <app-trips-table-group class="table" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>

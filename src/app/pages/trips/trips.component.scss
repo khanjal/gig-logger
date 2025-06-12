@@ -356,3 +356,52 @@ h2 {
   }
 }
 
+// Yesterday's trips section styling
+.yesterday-section {
+  margin: 1rem 0;
+  
+  .yesterday-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+    margin: 0.5rem 0;
+    
+    &:hover {
+      color: $primary-color;
+    }
+    
+    .toggle-icon {
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+      
+      &.expanded {
+        transform: rotate(0deg);
+      }
+      
+      &:not(.expanded) {
+        transform: rotate(0deg);
+      }
+    }
+  }
+  
+  .yesterday-trips-container {
+    margin-top: 1rem;
+    
+    // Smooth slide-in animation
+    animation: slideIn 0.3s ease-out;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
