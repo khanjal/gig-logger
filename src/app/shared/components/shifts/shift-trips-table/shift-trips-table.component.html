@@ -1,7 +1,7 @@
 <mat-card class="trips-container" *ngIf="trips && trips.length > 0">
-    <div class="info-card__header">
+    <div class="flex items-center justify-between gap-md header-style">
         <mat-icon class="info-icon">route</mat-icon>
-        <h4>Trips ({{ trips.length }})</h4>
+        <h4 class="flex-1 header-title">Trips ({{ trips.length }})</h4>
         <button mat-mini-fab color="primary" class="flex-shrink-0 mini-button" (click)="viewTrips(trips)">
             <mat-icon>view_agenda</mat-icon>
         </button>
