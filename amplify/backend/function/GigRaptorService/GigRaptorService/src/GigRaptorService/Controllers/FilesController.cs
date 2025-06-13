@@ -1,4 +1,5 @@
 ﻿using GigRaptorService.Business;
+using GigRaptorService.Models;
 using Microsoft.AspNetCore.Mvc;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
@@ -41,7 +42,7 @@ public class FilesController : ControllerBase
 
     // POST api/files/create  
     [HttpPost("create")]
-    public async Task<SheetEntity> Create([FromBody] PropertyEntity property)
+    public async Task<SheetResponse> Create([FromBody] PropertyEntity property)
     {
         InitializeSheetmanager();
         var sheet = await _fileManager!.CreateSheet(property.Name);
@@ -53,7 +54,15 @@ public class FilesController : ControllerBase
 
             if (sheetData != null)
             {
-                sheetData.Properties = sheet;
+                // Access the SheetEntity and set its Properties
+                if (sheetData.SheetEntity != null)
+                {
+                    sheetData.SheetEntity.Properties = sheet;
+                }
+                else
+                {
+                    throw new Exception("Failed to create sheet data: SheetEntity is null.");
+                }
             }
             else
             {
