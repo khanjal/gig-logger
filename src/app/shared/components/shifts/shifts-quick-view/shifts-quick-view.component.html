@@ -183,17 +183,8 @@
         </div>
       </div>
     </div>
-    
-    <!-- Trips Table -->
-    <div class="info-card">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">route</mat-icon>
-        <h4>Trips</h4>
-      </div>
-      <div class="info-card__content">
-        <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
-      </div>
-    </div>
+      <!-- Trips Table -->
+    <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
   </div>
 
   <!-- Action Buttons - Always visible outside expandable content -->
