@@ -56,7 +56,20 @@
   top: 0.75rem;
   right: 0.75rem;
   transform: scale(0.9);
+  min-height: 44px;
+  min-width: 44px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Ensure icon maintains proper proportions
+  mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   
   &:hover {
     transform: scale(0.95);
