@@ -144,9 +144,8 @@
               <span class="payment-value payment-value--bonus">{{shift.totalBonus | currency}}</span>
             </div>
           </div>
-
-          <!-- Second row: Total, Cash -->
-          <div class="payment-row payment-row--secondary" *ngIf="shift.grandTotal > shift.totalPay || shift.totalCash">
+          <!-- Second row: Total, Cash, and Efficiency -->
+          <div class="payment-row payment-row--secondary" *ngIf="shift.grandTotal > shift.totalPay || shift.totalCash || shift.amountPerTime">
             <div class="payment-item payment-item--total" *ngIf="shift.grandTotal > shift.totalPay">
               <span class="payment-label">Total</span>
               <span class="payment-value payment-value--total">{{shift.grandTotal | currency}}</span>
@@ -154,6 +153,17 @@
             <div class="payment-item payment-item--cash" *ngIf="shift.totalCash">
               <span class="payment-label">Cash</span>
               <span class="payment-value payment-value--cash">{{shift.totalCash | currency}}</span>
+            </div>
+            <div class="payment-item payment-item--efficiency" *ngIf="shift.amountPerTime">
+              <span class="payment-label">Efficiency</span>
+              <span class="payment-value payment-value--efficiency" [ngClass]="{
+                'efficiency--excellent': shift.amountPerTime > 30,
+                'efficiency--good': shift.amountPerTime >= 25 && shift.amountPerTime <= 30,
+                'efficiency--average': shift.amountPerTime >= 20 && shift.amountPerTime < 25,
+                'efficiency--poor': shift.amountPerTime < 20
+              }">
+                ${{shift.amountPerTime | number:'1.0-2'}}/hr
+              </span>
             </div>
           </div>
         </div>
