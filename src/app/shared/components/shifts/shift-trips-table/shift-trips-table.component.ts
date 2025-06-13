@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule, NgIf, NgStyle, NgFor } from '@angular/common';
+import { CommonModule, NgIf, NgStyle } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { NgClass, CurrencyPipe } from '@angular/common';
@@ -19,7 +19,6 @@ import { LoggerService } from '@services/logger.service';
     styleUrl: './shift-trips-table.component.scss',
     standalone: true,    imports: [
         NgIf,
-        NgFor,
         MatCard,
         MatMiniFabButton,
         MatIcon,
