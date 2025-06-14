@@ -105,6 +105,17 @@
     outline: none;
     box-shadow: 0 1px 3px 1px rgba(60, 64, 67, 0.15), 0 0 0 2px rgba(26, 115, 232, 0.25);
   }
+  
+  // Remove Material Design overrides
+  &.mat-mdc-raised-button:not(:disabled) {
+    background-color: #ffffff;
+    color: #1f1f1f;
+  }
+  
+  &.mat-mdc-raised-button:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    color: #1f1f1f;
+  }
 }
 
 // Enhanced Google icon - Using official Google colors SVG
@@ -113,6 +124,27 @@
   height: 20px;
   margin-right: 12px;
   flex-shrink: 0;
+  
+  @media (max-width: 768px) {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+  }
+}
+
+// Logout icon styling
+.logout-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  color: inherit;
   
   @media (max-width: 768px) {
     width: 18px;
@@ -153,7 +185,7 @@
   }
 }
 
-// Enhanced logout button - Modern design
+// Enhanced logout button - Modern design with consistent styling
 .logout-button {
   background: #ffffff;
   color: #d93025;
@@ -164,13 +196,15 @@
 
   &:hover {
     background: #fef7f0;
-    border-color: #d93025;
+    border-color: #f28b82;
     box-shadow: 0 1px 3px 1px rgba(217, 48, 37, 0.15);
+    color: #c5221f;
   }
   
   &:active {
     background: #fce8e6;
     border-color: #d93025;
+    color: #b52d20;
   }
   
   &:focus {
@@ -178,16 +212,14 @@
     box-shadow: 0 1px 3px 1px rgba(217, 48, 37, 0.15), 0 0 0 2px rgba(217, 48, 37, 0.25);
   }
 
-  mat-icon {
-    margin-right: 8px;
+  // Remove Material Design overrides
+  &.mat-mdc-raised-button:not(:disabled) {
+    background-color: #ffffff;
     color: #d93025;
-    
-    @media (max-width: 768px) {
-      margin-right: 6px;
-    }
-    
-    @media (max-width: 480px) {
-      margin-right: 4px;
-    }
+  }
+  
+  &.mat-mdc-raised-button:hover:not(:disabled) {
+    background-color: #fef7f0;
+    color: #c5221f;
   }
 }
