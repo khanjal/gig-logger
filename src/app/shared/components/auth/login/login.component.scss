@@ -26,39 +26,46 @@
   display: flex;
   flex-wrap: nowrap;
   justify-content: center;
-  padding: 16px 32px;
+  padding: 12px 24px;
   min-width: 280px;
-  min-height: 56px; // Enhanced touch target
-  border-radius: 12px;
-  font-size: 1.1rem;
+  min-height: 48px; // Google-recommended touch target
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  line-height: 20px;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Remove Material Design button defaults
+  &.mat-mdc-raised-button:not(:disabled) {
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.30), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  }
   
   @media (max-width: 768px) {
     min-width: 240px;
-    min-height: 52px;
-    padding: 14px 28px;
-    font-size: 1rem;
-    border-radius: 10px;
+    min-height: 44px;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 6px;
   }
   
   @media (max-width: 480px) {
     min-width: 200px;
-    min-height: 48px;
-    padding: 12px 24px;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 4px;
   }
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
     
     @media (max-width: 768px) {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transform: none; // Disable transform on mobile for better performance
     }
   }
   
@@ -66,35 +73,56 @@
     transform: translateY(0);
     transition-duration: 0.1s;
   }
-}
-
-// Google login button styling
-.login-button {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-  color: white;
-  border: none;
   
-  &:hover {
-    background: linear-gradient(135deg, $primary-600 0%, $secondary-600 100%);
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
 
-// Enhanced Google icon
+// Google login button styling - Official Google brand colors
+.login-button {
+  background: #ffffff;
+  color: #1f1f1f;
+  border: 1px solid #dadce0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  
+  &:hover {
+    background: #f8f9fa;
+    border-color: #c6c6c6;
+    box-shadow: 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  }
+  
+  &:active {
+    background: #f1f3f4;
+    border-color: #c6c6c6;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 1px 3px 1px rgba(60, 64, 67, 0.15), 0 0 0 2px rgba(26, 115, 232, 0.25);
+  }
+}
+
+// Enhanced Google icon - Using official Google colors SVG
 .google-icon {
-  width: 24px;
-  height: 24px;
-  vertical-align: middle;
+  width: 20px;
+  height: 20px;
   margin-right: 12px;
+  flex-shrink: 0;
   
   @media (max-width: 768px) {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     margin-right: 10px;
   }
   
   @media (max-width: 480px) {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     margin-right: 8px;
   }
 }
@@ -125,18 +153,34 @@
   }
 }
 
-// Enhanced logout button
+// Enhanced logout button - Modern design
 .logout-button {
-  background: linear-gradient(135deg, $danger-color 0%, $warn-color 100%);
-  color: white;
-  border: none;
+  background: #ffffff;
+  color: #d93025;
+  border: 1px solid #dadce0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.25px;
 
   &:hover {
-    background: linear-gradient(135deg, $danger-600 0%, $warn-600 100%);
+    background: #fef7f0;
+    border-color: #d93025;
+    box-shadow: 0 1px 3px 1px rgba(217, 48, 37, 0.15);
+  }
+  
+  &:active {
+    background: #fce8e6;
+    border-color: #d93025;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 1px 3px 1px rgba(217, 48, 37, 0.15), 0 0 0 2px rgba(217, 48, 37, 0.25);
   }
 
   mat-icon {
     margin-right: 8px;
+    color: #d93025;
     
     @media (max-width: 768px) {
       margin-right: 6px;
