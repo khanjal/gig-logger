@@ -5,41 +5,40 @@
         <button mat-mini-fab color="primary" class="flex-shrink-0 mini-button" (click)="viewTrips(trips)">
             <mat-icon>view_agenda</mat-icon>
         </button>
-    </div>
-      <div class='table-responsive' #tableContainer>
-        <mat-table [dataSource]="trips" class="table-theme-standard table-responsive-sizing">
+    </div>      <div class='table-responsive-auto' #tableContainer>
+        <mat-table [dataSource]="trips" class="table-theme-standard table-auto-size">
             <ng-container matColumnDef="place">
-                <mat-header-cell *matHeaderCellDef class="table-col-medium"> Place </mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-medium"> {{trip.place | truncate:20}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-flexible"> Place </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-flexible"> {{trip.place | truncate:20}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="pickup">
-                <mat-header-cell *matHeaderCellDef class="table-col-time">Pickup</mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-time"> {{trip.pickupTime | noseconds}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-time">Pickup</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.pickupTime | noseconds}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="dropoff">
-                <mat-header-cell *matHeaderCellDef class="table-col-time">Dropoff</mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-time"> {{trip.dropoffTime | noseconds}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-time">Dropoff</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.dropoffTime | noseconds}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="total">
-                <mat-header-cell *matHeaderCellDef class="table-col-currency"> Total </mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-currency" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-currency"> Total </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-currency" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef class="table-col-medium"> Name </mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-medium"> {{trip.name | truncate:15}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-medium"> Name </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-medium"> {{trip.name | truncate:15}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="address">
-                <mat-header-cell *matHeaderCellDef class="table-col-address"> Address </mat-header-cell>
-                <mat-cell *matCellDef="let trip" class="table-col-address"> {{trip.endAddress | truncate:60}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-wide"> Address </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-wide"> {{trip.endAddress | truncate:60}} </mat-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
         </mat-table>
-        
-        <div class="table-scroll-indicator" 
+          <div class="table-scroll-indicator" 
              [class.visible]="tableContainer.scrollWidth > tableContainer.clientWidth">
-            ← scroll for more →
+            <span class="desktop-text">← scroll for more →</span>
+            <span class="mobile-text">← swipe →</span>
         </div>
     </div>
 </mat-card>

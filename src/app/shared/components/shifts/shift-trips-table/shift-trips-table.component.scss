@@ -39,13 +39,106 @@
   }
 }
 
-.table-responsive {
+.table-responsive-auto {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   
   mat-table {
-    min-width: 600px; // Ensure table has enough width for data
+    width: 100%; // Let table auto-size to content
+    min-width: 500px; // Minimum width for readability
+  }
+  
+  // Mobile optimizations
+  @media (max-width: 768px) {
+    mat-table {
+      min-width: 450px; // Slightly smaller for tablets
+    }
+  }
+  
+  @media (max-width: 480px) {
+    mat-table {
+      min-width: 400px; // Ensure mobile readability
+    }
+    
+    // Mobile-specific scroll indicator
+    + .table-scroll-indicator {
+      font-size: 0.75rem;
+      padding: 0.375rem;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    mat-table {
+      min-width: 380px; // Minimum for extra small screens
+    }
+  }
+}
+
+// Mobile touch enhancements for tables
+@media (max-width: 768px) {
+  .table-responsive-auto {
+    // Better touch scrolling
+    scroll-behavior: smooth;
+    
+    // Touch-friendly padding
+    padding: 0.25rem;
+    margin: -0.25rem;
+    
+    // Momentum scrolling on iOS
+    -webkit-overflow-scrolling: touch;
+    
+    // Better scroll indicators
+    &::-webkit-scrollbar {
+      height: 6px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+      
+      &:active {
+        background: rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+  
+  // Enhanced mobile table rows
+  .table-auto-size {
+    mat-row {
+      // Touch-friendly row interaction
+      transition: background-color 0.2s ease;
+      
+      &:active {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+}
+
+// Extra mobile optimizations
+@media (max-width: 480px) {
+  .trips-container {
+    // Reduce container padding on mobile
+    .mat-card {
+      padding: 0 !important;
+      margin: 0.5rem 0 !important;
+    }
+  }
+  
+  // Mobile-specific header adjustments
+  .header-style {
+    padding: 0.5rem 0.75rem !important;
+    
+    .header-title {
+      font-size: 0.875rem !important;
+    }
+    
+    .mini-button {
+      margin-left: 0.5rem !important;
+    }
   }
 }
 
@@ -59,6 +152,28 @@
   
   &.visible {
     opacity: 1;
+  }
+  
+  .mobile-text {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.8125rem;
+    padding: 0.375rem;
+    
+    .desktop-text {
+      display: none;
+    }
+    
+    .mobile-text {
+      display: inline;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    padding: 0.25rem;
   }
 }
 

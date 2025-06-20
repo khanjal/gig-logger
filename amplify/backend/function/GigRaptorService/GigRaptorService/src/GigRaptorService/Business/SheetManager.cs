@@ -17,12 +17,11 @@ public interface ISheetManager
 public class SheetManager : ISheetManager
 {
     private readonly IGoogleSheetManager _googleSheetManager;
-    private readonly IConfiguration _configuration;
-    // Removed static initialization of DynamoDbRateLimiter to avoid cold start penalty
+    // Removed _configuration field as it's not used in instance methods
 
     public SheetManager(string token, string sheetId, IConfiguration configuration)
     {
-        _configuration = configuration;
+        // Removed storing configuration as it's not used in instance methods
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
     }
 

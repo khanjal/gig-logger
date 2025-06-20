@@ -1084,3 +1084,354 @@ tr[mat-footer-row] {
     font-size: 0.875rem;
   }
 }
+
+// =============================================================================
+// AUTO-SIZING TABLE UTILITIES
+// =============================================================================
+
+/* Auto-sizing table layout that adjusts columns based on content */
+.table-auto-size {
+  table-layout: auto !important;
+  width: 100% !important;
+  
+  // Override fixed widths for auto-sizing behavior
+  mat-header-cell, mat-cell {
+    width: auto !important;
+    min-width: unset !important;
+    max-width: unset !important;
+  }
+  
+  // Smart column sizing based on content type
+  .table-col-auto-narrow {
+    width: 1% !important; // Forces minimal width, expands as needed
+    white-space: nowrap;
+    min-width: 60px;
+  }
+  
+  .table-col-auto-medium {
+    width: 15% !important;
+    min-width: 100px;
+  }
+  
+  .table-col-auto-wide {
+    width: 25% !important;
+    min-width: 150px;
+  }
+  
+  .table-col-auto-flexible {
+    width: auto !important; // Takes remaining space
+    min-width: 120px;
+  }
+  
+  .table-col-auto-time {
+    width: 1% !important;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: center;
+  }
+  
+  .table-col-auto-currency {
+    width: 1% !important;
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: right;
+  }
+  
+  .table-col-auto-service {
+    width: 1% !important;
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: center;
+  }
+  
+  // Mobile-first responsive adjustments for auto-sizing
+  @media (max-width: 768px) {
+    // Reduce minimum widths for tablet view
+    .table-col-auto-narrow {
+      min-width: 50px;
+    }
+    
+    .table-col-auto-medium {
+      width: 20% !important;
+      min-width: 80px;
+    }
+    
+    .table-col-auto-wide {
+      width: 30% !important;
+      min-width: 100px;
+    }
+    
+    .table-col-auto-flexible {
+      min-width: 90px;
+    }
+    
+    .table-col-auto-time {
+      min-width: 60px;
+      font-size: 0.875rem;
+    }
+    
+    .table-col-auto-currency {
+      min-width: 70px;
+      font-size: 0.875rem;
+    }
+    
+    .table-col-auto-service {
+      min-width: 50px;
+      font-size: 0.875rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    // Aggressive mobile optimization
+    .table-col-auto-narrow {
+      min-width: 45px;
+    }
+    
+    .table-col-auto-medium {
+      width: 25% !important;
+      min-width: 70px;
+    }
+    
+    .table-col-auto-wide {
+      width: 35% !important;
+      min-width: 80px;
+    }
+    
+    .table-col-auto-flexible {
+      min-width: 70px;
+    }
+    
+    .table-col-auto-time {
+      min-width: 55px;
+      font-size: 0.8125rem;
+      padding-left: 0.25rem !important;
+      padding-right: 0.25rem !important;
+    }
+    
+    .table-col-auto-currency {
+      min-width: 60px;
+      font-size: 0.8125rem;
+      padding-left: 0.25rem !important;
+      padding-right: 0.25rem !important;
+    }
+    
+    .table-col-auto-service {
+      min-width: 40px;
+      font-size: 0.8125rem;
+      padding-left: 0.2rem !important;
+      padding-right: 0.2rem !important;
+    }
+    
+    // Hide text overflow gracefully on mobile
+    .table-col-auto-medium,
+    .table-col-auto-wide,
+    .table-col-auto-flexible {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    // Extra small mobile devices
+    .table-col-auto-narrow {
+      min-width: 40px;
+    }
+    
+    .table-col-auto-medium {
+      width: 30% !important;
+      min-width: 60px;
+    }
+    
+    .table-col-auto-wide {
+      width: 40% !important;
+      min-width: 70px;
+    }
+    
+    .table-col-auto-flexible {
+      min-width: 60px;
+    }
+    
+    .table-col-auto-time,
+    .table-col-auto-currency,
+    .table-col-auto-service {
+      font-size: 0.75rem;
+      padding-left: 0.15rem !important;
+      padding-right: 0.15rem !important;
+    }
+    
+    .table-col-auto-time {
+      min-width: 50px;
+    }
+    
+    .table-col-auto-currency {
+      min-width: 55px;
+    }
+    
+    .table-col-auto-service {
+      min-width: 35px;
+    }
+  }
+}
+
+// Enhanced responsive table with auto-sizing and mobile optimization
+.table-responsive-auto {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  .mat-table {
+    @extend .table-auto-size;
+    min-width: 100%; // Ensure table fills container
+  }
+  
+  // Mobile-specific enhancements
+  @media (max-width: 768px) {
+    // Improve mobile scrolling experience
+    scrollbar-width: thin;
+    
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 2px;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+  
+  @media (max-width: 480px) {
+    // Ensure minimum table width for mobile readability
+    .mat-table {
+      min-width: 400px; // Minimum width to prevent over-compression
+    }
+  }
+  
+  @media (max-width: 360px) {
+    // Extra small screens
+    .mat-table {
+      min-width: 350px;
+    }
+  }
+}
+
+// Mobile-optimized table theme additions
+@media (max-width: 768px) {
+  .table-auto-size {
+    // Reduce overall table padding on mobile
+    mat-header-cell,
+    mat-cell {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    
+    // Tighter row height for mobile
+    mat-header-row,
+    mat-row {
+      min-height: 44px !important; // Maintain touch target size
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .table-auto-size {
+    // Even tighter spacing for small mobile
+    mat-header-cell,
+    mat-cell {
+      padding-left: 0.375rem !important;
+      padding-right: 0.375rem !important;
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+    
+    mat-header-row,
+    mat-row {
+      min-height: 40px !important;
+    }
+    
+    // Smaller font sizes for dense mobile display
+    mat-header-cell {
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+    }
+    
+    mat-cell {
+      font-size: 0.875rem !important;
+    }
+  }
+}
+
+// =============================================================================
+// MOBILE-OPTIMIZED COMPACT TABLE VARIANT
+// =============================================================================
+
+/* Mobile-optimized compact table variant */
+.table-auto-size-mobile-compact {
+  @extend .table-auto-size;
+  
+  @media (max-width: 480px) {
+    // Ultra-compact mobile layout
+    .table-col-auto-time {
+      min-width: 50px !important;
+      font-size: 0.75rem !important;
+    }
+    
+    .table-col-auto-currency {
+      min-width: 55px !important;
+      font-size: 0.75rem !important;
+    }
+    
+    .table-col-auto-service {
+      min-width: 35px !important;
+      font-size: 0.75rem !important;
+    }
+    
+    .table-col-auto-medium {
+      width: 30% !important;
+      min-width: 60px !important;
+      font-size: 0.8125rem !important;
+    }
+    
+    .table-col-auto-wide {
+      width: 35% !important;
+      min-width: 70px !important;
+      font-size: 0.8125rem !important;
+    }
+    
+    .table-col-auto-flexible {
+      min-width: 65px !important;
+      font-size: 0.8125rem !important;
+    }
+    
+    // Tighter cell padding
+    mat-header-cell,
+    mat-cell {
+      padding-left: 0.25rem !important;
+      padding-right: 0.25rem !important;
+      padding-top: 0.375rem !important;
+      padding-bottom: 0.375rem !important;
+    }
+    
+    // Smaller row heights
+    mat-header-row,
+    mat-row {
+      min-height: 36px !important;
+    }
+    
+    // Compact header text
+    mat-header-cell {
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      line-height: 1.2 !important;
+    }
+  }
+}
