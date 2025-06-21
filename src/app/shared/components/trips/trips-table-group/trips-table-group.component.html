@@ -19,34 +19,34 @@
                 <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
             </h3>
             <div class='table-responsive-auto' #tableContainer>
-                <mat-table [dataSource]="tripGroup.trips" class="table-theme-standard table-auto-size table-compact">
+                <mat-table [dataSource]="tripGroup.trips" class="table-theme-standard" style="table-layout:auto;">
                     <ng-container matColumnDef="service">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-service"> Service </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-service"> {{trip.service}}-{{ trip.number ? trip.number : 0}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-service"> Service </mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-service"> {{trip.service}}-{{ trip.number ? trip.number : 0}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="place">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-medium"> Place </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-medium"> {{trip.place | truncate:15}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-place"> Place </mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-place"> {{trip.place | truncate:15}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="pickup">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-time">Pickup</mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.pickupTime | noseconds}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-pickup">Pickup</mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-pickup"> {{trip.pickupTime | noseconds}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="dropoff">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-time">Dropoff</mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.dropoffTime | noseconds}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-dropoff">Dropoff</mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-dropoff"> {{trip.dropoffTime | noseconds}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="total">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-currency"> Total </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-currency" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-total"> Total </mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-total" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-medium"> Name </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-medium"> {{trip.name | truncate:10}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-name"> Name </mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-name"> {{trip.name | truncate:10}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="address">
-                        <mat-header-cell *matHeaderCellDef class="table-col-auto-flexible"> Address </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-auto-flexible"> {{trip.endAddress | truncate:75}} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef class="table-col-address"> Address </mat-header-cell>
+                        <mat-cell *matCellDef="let trip" class="table-col-address"> {{trip.endAddress | truncate:75}} </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
