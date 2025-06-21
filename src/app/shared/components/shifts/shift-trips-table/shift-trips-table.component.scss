@@ -197,3 +197,18 @@
     }
   }
 }
+
+.table-col-service {
+  text-align: left;
+  padding-left: .5rem;
+  min-width: 80px;
+}
+.table-col-place {
+  min-width: 130px;
+}
+.table-col-total, .table-col-name, .table-col-pickup, .table-col-dropoff {
+  min-width: 100px;
+}
+.table-col-address {
+  min-width: 260px;
+}

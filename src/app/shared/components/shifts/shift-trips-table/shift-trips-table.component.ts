@@ -12,6 +12,7 @@ import { MatIcon } from '@angular/material/icon';
 import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
 import { TruncatePipe as TruncatePipe_1 } from '@pipes/truncate.pipe';
 import { LoggerService } from '@services/logger.service';
+import { DateHelper } from '@helpers/date.helper';
 
 @Component({
     selector: 'app-shift-trips-table',
@@ -42,7 +43,7 @@ import { LoggerService } from '@services/logger.service';
 
 export class ShiftTripsTableComponent {
   @Input() tripKey: string = '';
-  
+  prefers24Hour: boolean = false;
   displayedColumns: string[] = [];
   trips: ITrip[] = [];
 
@@ -53,6 +54,7 @@ export class ShiftTripsTableComponent {
   ) {}
 
   async ngOnInit() { 
+    this.prefers24Hour = DateHelper.prefers24Hour();
     this.displayedColumns = ['place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     await this.getTripsByShiftKey(this.tripKey);
   }

@@ -12,7 +12,7 @@ import { DateHelper } from '@helpers/date.helper';
     templateUrl: './trips-table-basic.component.html',
     styleUrls: ['./trips-table-basic.component.scss'],
     standalone: true,
-    imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatIcon, NgClass, NgIf, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
+    imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatIcon, NgClass, NgIf, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, TruncatePipe]
 })
 export class TripsTableBasicComponent implements OnInit {
   @Input() trips: ITrip[] = [];
