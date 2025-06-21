@@ -135,14 +135,40 @@
   }
   
   &__right { display: flex; align-items: center; }
-    &__secondary {
+  
+  &__secondary {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
     margin-bottom: 0.75rem;
   }
 
+  &__col--left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex: 1 1 0;
+    text-align: left;
+  }
+
+  &__col--center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 0;
+    text-align: center;
+  }
+
+  &__col--right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1 1 0;
+    text-align: right;
+  }
+  
   &__bottom {
     display: flex;
     justify-content: space-between;
