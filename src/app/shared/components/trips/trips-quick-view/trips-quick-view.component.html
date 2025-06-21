@@ -11,6 +11,9 @@
   <div class="trip-header__main">
       <div class="trip-id">
         <span class="trip-number">#{{trip.rowId}}</span>
+      </div>
+      
+      <div class="trip-date">
         <span class="trip-date">{{trip.date | date:'MMM d'}}</span>
       </div>
       
@@ -67,8 +70,8 @@
            tabindex="0"
            (keydown.enter)="toggleExpansion()"
            (keydown.space)="toggleExpansion()">
-        <div class="toggle-bar__content">
-          <span class="toggle-bar__text">{{isExpanded ? 'Less' : 'More'}}</span>
+           <div class="toggle-bar__content">
+          <span class="toggle-bar__text">{{isExpanded ? 'Hide' : 'Show'}}</span>
           <mat-icon class="toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         </div>
       </div>
