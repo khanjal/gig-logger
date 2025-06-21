@@ -178,6 +178,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
       height: '600px',
       width: '500px',
       panelClass: 'custom-modalbox',
+      autoFocus: true,
       position: {
         top: '25px' // Adjust this value to position the dialog higher
       }
