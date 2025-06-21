@@ -32,16 +32,16 @@
                         <mat-header-cell *matHeaderCellDef class="table-col-pickup">Pickup</mat-header-cell>
                         <mat-cell *matCellDef="let trip" class="table-col-pickup">
                           <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
-                            {{trip.pickupTime | date: prefers24Hour ? 'HH:mm' : 'h:mm a'}}
-                          </span>
+                              {{ trip.pickupTime | noseconds:prefers24Hour }}
+                            </span>
                         </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="dropoff">
                         <mat-header-cell *matHeaderCellDef class="table-col-dropoff">Dropoff</mat-header-cell>
                         <mat-cell *matCellDef="let trip" class="table-col-dropoff">
                           <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
-                            {{trip.dropoffTime | date: prefers24Hour ? 'HH:mm' : 'h:mm a'}}
-                          </span>
+                              {{ trip.dropoffTime | noseconds:prefers24Hour }}
+                            </span>
                         </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="total">

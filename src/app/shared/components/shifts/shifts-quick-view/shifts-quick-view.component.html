@@ -27,11 +27,11 @@
     <div class="shift-header__time-row">
       <div class="shift-time">
         <span class="start-time" [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
-          {{shift.start | date: prefers24Hour ? 'HH:mm' : 'h:mm a'}}
+          {{ shift.start | noseconds:prefers24Hour }}
         </span>
         <span class="time-separator" *ngIf="shift.finish">-</span>
         <span class="finish-time" [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}" *ngIf="shift.finish">
-          {{shift.finish | date: prefers24Hour ? 'HH:mm' : 'h:mm a'}}
+          {{ shift.finish | noseconds:prefers24Hour }}
         </span>
       </div>
     </div>
