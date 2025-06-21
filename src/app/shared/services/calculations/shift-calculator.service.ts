@@ -76,7 +76,43 @@ export class ShiftCalculatorService {
             .reduce((acc, value) => acc + value, 0);
     }
 
+    // Converts minutes since midnight to 'HH:mm' string
+    private minutesToTimeString(minutes: number): string {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
+
     public calculateDurations(shift: IShift, trips: ITrip[]): IShift {
+        // Find earliest pickup and latest pickup/dropoff
+        const pickupTimes = trips
+            .map(trip => trip.pickupTime)
+            .filter(Boolean)
+            .map(time => DateHelper.convertToTimestamp(time));
+        const dropoffTimes = trips
+            .map(trip => trip.dropoffTime)
+            .filter(Boolean)
+            .map(time => DateHelper.convertToTimestamp(time));
+
+        if (pickupTimes.length) {
+            const earliestPickup = Math.min(...pickupTimes);
+            shift.start = this.minutesToTimeString(earliestPickup);
+        }
+        if (pickupTimes.length || dropoffTimes.length) {
+            const latestPickup = pickupTimes.length ? Math.max(...pickupTimes) : 0;
+            const latestDropoff = dropoffTimes.length ? Math.max(...dropoffTimes) : 0;
+            const latest = Math.max(latestPickup, latestDropoff);
+            if (latest > 0) {
+                shift.finish = this.minutesToTimeString(latest);
+            }
+        }
+
+        // Calculate total time as the duration between new start and finish
+        if (shift.start && shift.finish) {
+            const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+            shift.time = DateHelper.getDurationString(duration);
+        }
+
         const tripsActiveTime = trips
             .map(trip => DateHelper.getTimeNumber(trip.duration))
             .filter(duration => duration > 0)
@@ -125,10 +161,11 @@ export class ShiftCalculatorService {
             shift.active = "";
         }
 
-        let duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
-        if (duration) {
-            shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
-            shift.time = DateHelper.getDurationString(duration);
+        if (shift.start && shift.finish) {
+            const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+            if (duration) {
+                shift.amountPerTime = shift.grandTotal / DateHelper.getHoursFromSeconds(duration);
+            }
         }
 
         return shift;
