@@ -153,8 +153,8 @@
 
             <!-- Pickup Address List -->
             <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="address-list">
-                <mat-accordion>
-                    <mat-expansion-panel [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
+                <mat-accordion class="seamless-accordion">
+                    <mat-expansion-panel class="seamless-panel" [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
                         <mat-expansion-panel-header>
                             <mat-panel-title>
                                 {{ selectedPlaceAddresses.length }} Previous Pickup Addresses
@@ -169,7 +169,7 @@
                                 class="address-button"
                                 [class.address-button--selected]="address.address === tripForm.value.startAddress"
                                 (click)="setPickupAddress(address.address)">
-                                {{ address.address | shortaddress:selectedPlace.place | truncate:30 }} ({{ address.trips }})
+                                {{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})
                             </button>
                         </div>
                     </mat-expansion-panel>
@@ -190,27 +190,30 @@
 
         <!-- Address List/Notes -->
         <div class="form-section" *ngIf="selectedNameDeliveries?.length">
-            <mat-expansion-panel [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
-                <mat-expansion-panel-header [expandedHeight]="'auto'">
-                    <mat-panel-title>
-                        {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <div *ngFor="let delivery of selectedNameDeliveries" class="delivery-item">
-                    <div class="delivery-title" *ngIf="!delivery.address">
-                        Unknown Address ({{delivery.visits}})
+            <mat-accordion class="seamless-accordion">
+                <mat-expansion-panel class="seamless-panel" [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
+                    <mat-expansion-panel-header [expandedHeight]="'auto'">
+                        <mat-panel-title>
+                            {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let delivery of selectedNameDeliveries" class="delivery-item">
+                        <div class="delivery-title" *ngIf="!delivery.address">
+                            Unknown Address ({{delivery.visits}})
+                        </div>
+                        <button 
+                            mat-stroked-button 
+                            color="primary" 
+                            class="address-button" 
+                            [class.address-button--selected]="delivery.address === tripForm.value.endAddress" 
+                            (click)="setDestinationAddress(delivery.address)" 
+                            *ngIf="delivery.address">
+                            {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
+                        </button>
+                        <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
                     </div>
-                    <button 
-                        mat-stroked-button 
-                        color="primary" 
-                        class="address-button" 
-                        [class.address-button--selected]="delivery.address === tripForm.value.endAddress" 
-                        (click)="setDestinationAddress(delivery.address)" 
-                        *ngIf="delivery.address">
-                        {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
-                    </button>
-                    <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
-                </div>            </mat-expansion-panel>
+                </mat-expansion-panel>
+            </mat-accordion>
         </div>
 
         <!-- Destination Address -->
@@ -229,28 +232,30 @@
 
         <!-- Name List/Notes -->
         <div class="form-section" *ngIf="selectedAddressDeliveries?.length">
-            <mat-expansion-panel [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
-                <mat-expansion-panel-header [expandedHeight]="'auto'">
-                    <mat-panel-title>
-                        {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <div *ngFor="let delivery of selectedAddressDeliveries" class="delivery-item">
-                    <div class="delivery-title" *ngIf="!delivery.name">
-                        Unknown Name ({{delivery.visits}})
+            <mat-accordion class="seamless-accordion">
+                <mat-expansion-panel class="seamless-panel" [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
+                    <mat-expansion-panel-header [expandedHeight]="'auto'">
+                        <mat-panel-title>
+                            {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let delivery of selectedAddressDeliveries" class="delivery-item">
+                        <div class="delivery-title" *ngIf="!delivery.name">
+                            Unknown Name ({{delivery.visits}})
+                        </div>
+                        <button 
+                            mat-stroked-button 
+                            color="primary" 
+                            class="name-button" 
+                            [class.name-button--selected]="delivery.name === tripForm.value.name" 
+                            (click)="setName(delivery.name)" 
+                            *ngIf="delivery.name">
+                            {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
+                        </button>
+                        <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
                     </div>
-                    <button 
-                        mat-stroked-button 
-                        color="primary" 
-                        class="name-button" 
-                        [class.name-button--selected]="delivery.name === tripForm.value.name" 
-                        (click)="setName(delivery.name)" 
-                        *ngIf="delivery.name">
-                        {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
-                    </button>
-                    <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
-                </div>
-            </mat-expansion-panel>
+                </mat-expansion-panel>
+            </mat-accordion>
         </div>
 
         <!-- Time Inputs -->

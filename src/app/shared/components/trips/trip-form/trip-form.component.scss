@@ -413,3 +413,26 @@
 
 // Use global modal backdrop styling for trip form modals
 @include setup-modal-backdrop('medium');
+
+// Seamless accordion styles
+.seamless-accordion {
+  background: transparent;
+  box-shadow: none;
+  .seamless-panel {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0;
+    .mat-expansion-panel-header {
+      background: transparent !important;
+      min-height: 36px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      font-weight: 500;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .mat-expansion-panel-content {
+      padding: 0.5rem 0 0.5rem 0.5rem;
+    }
+  }
+}
