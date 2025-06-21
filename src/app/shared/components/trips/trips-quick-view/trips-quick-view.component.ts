@@ -34,7 +34,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
-  
+  prefers24Hour: boolean = false;
+
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
@@ -45,6 +46,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
    
   ngOnInit() {
     this.setExpansionState();
+    this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
   ngOnChanges(changes: SimpleChanges) {

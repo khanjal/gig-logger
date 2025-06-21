@@ -188,4 +188,11 @@ export class DateHelper {
 
         return numberString;
     }
+
+    // Returns true if the user's browser prefers 24-hour time format
+    static prefers24Hour(): boolean {
+        const testDate = new Date(Date.UTC(2020, 0, 1, 13, 0, 0));
+        const formatted = testDate.toLocaleTimeString(undefined, { hour: 'numeric' });
+        return !formatted.match(/AM|PM/i);
+    }
 }

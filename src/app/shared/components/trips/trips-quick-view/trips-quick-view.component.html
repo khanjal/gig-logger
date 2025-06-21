@@ -48,7 +48,9 @@
         </div>
         <div class="trip-header__col trip-header__col--center">
           <div class="trip-time">
-            <span class="pickup-time">{{trip.pickupTime | noseconds}}</span>
+            <span class="pickup-time" [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
+              {{trip.pickupTime | date: prefers24Hour ? 'HH:mm' : 'h:mm a'}}
+            </span>
           </div>
         </div>
         <div class="trip-header__col trip-header__col--right trip-header__col--reserve">

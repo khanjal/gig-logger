@@ -12,6 +12,7 @@ import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent as ShiftTripsTableComponent_1 } from '../shift-trips-table/shift-trips-table.component';
 import { MatFabButton } from '@angular/material/button';
 import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
+import { DateHelper } from '@helpers/date.helper';
 
 @Component({
     selector: 'app-shifts-quick-view',
@@ -35,11 +36,13 @@ export class ShiftsQuickViewComponent {
 
   duplicateShift: boolean = false;
   isExpanded: boolean = false;
+  prefers24Hour: boolean = false;
 
   constructor(public dialog: MatDialog, private shiftService: ShiftService) {}
 
   async ngOnInit() {
     await this.checkForDuplicates();
+    this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
   toggleExpansion() {
