@@ -26,6 +26,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
   tripGroups: ITripGroup[] = [];
   @ViewChildren('tableContainer') tableContainers!: QueryList<ElementRef>;
   isScrollable: boolean[] = [];
+  prefers24Hour: boolean = false;
 
   constructor(
     private _tripService: TripService,
@@ -40,6 +41,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
 
   async ngOnInit() {
     this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
+    this.prefers24Hour = DateHelper.prefers24Hour();
     await this.load();
     this.checkScrollable();
   }
