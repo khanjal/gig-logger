@@ -25,7 +25,7 @@
     
     <div class="trip-header__secondary trip-header__secondary--flex-row">
         <div class="trip-header__col trip-header__col--left">
-          <div class="status-badge" *ngIf="!trip.saved || trip.action === 'DELETE' || trip.action === 'ADD' || trip.action === 'UPDATE'"
+          <div class="status-badge"
             [ngClass]="{
               'status-badge--add': !trip.saved && trip.action === 'ADD',
               'status-badge--edit': !trip.saved && trip.action === 'UPDATE',
