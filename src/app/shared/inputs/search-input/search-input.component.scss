@@ -780,4 +780,29 @@ mat-form-field {
   }
 }
 
-// ...existing code...
+// Prevent input shifting on focus for outline appearance
+.mat-mdc-form-field-outline-start,
+.mat-mdc-form-field-outline-gap,
+.mat-mdc-form-field-outline-end {
+  border-width: 1px !important;
+  transition: border-width 0s !important;
+}
+
+.mdc-text-field--focused .mat-mdc-form-field-outline-start,
+.mdc-text-field--focused .mat-mdc-form-field-outline-gap,
+.mdc-text-field--focused .mat-mdc-form-field-outline-end {
+  border-width: 1px !important;
+}
+
+// Prevent infix padding/margin changes on focus
+.mat-mdc-form-field-infix {
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+}
+
+// Remove mobile margin-top on focus
+@media (max-width: 768px) {
+  mat-form-field.mat-focused {
+    margin-top: 0 !important;
+  }
+}
