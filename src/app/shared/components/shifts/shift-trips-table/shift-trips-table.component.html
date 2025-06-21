@@ -5,7 +5,8 @@
         <button mat-mini-fab color="primary" class="flex-shrink-0 mini-button" (click)="viewTrips(trips)">
             <mat-icon>view_agenda</mat-icon>
         </button>
-    </div>      <div class='table-responsive-auto' #tableContainer>
+    </div>
+    <div class='table-responsive-auto' #tableContainer>
         <mat-table [dataSource]="trips" class="table-theme-standard table-auto-size">
             <ng-container matColumnDef="place">
                 <mat-header-cell *matHeaderCellDef class="table-col-auto-flexible"> Place </mat-header-cell>
