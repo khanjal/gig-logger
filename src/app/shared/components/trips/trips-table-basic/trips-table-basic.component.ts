@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ITrip } from '@interfaces/trip.interface';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
+import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, NgFor, CurrencyPipe, DatePipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 
@@ -9,7 +10,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trips-table-basic.component.html',
     styleUrls: ['./trips-table-basic.component.scss'],
     standalone: true,
-    imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, NgIf, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, TruncatePipe]
+    imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatIcon, NgClass, NgIf, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, TruncatePipe]
 })
 export class TripsTableBasicComponent implements OnInit {
   @Input() trips: ITrip[] = [];
