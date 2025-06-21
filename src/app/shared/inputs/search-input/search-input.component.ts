@@ -185,6 +185,24 @@ export class SearchInputComponent {
     }
   }
 
+  /**
+   * Scrolls the closest scrollable parent to the top when the input is focused.
+   * Works for modals and main window. Handles virtual keyboard pop-up as well.
+   */
+  onInputFocus(event: FocusEvent) {
+    let el = (event.target as HTMLElement).parentElement;
+    // Traverse up to find the closest scrollable parent
+    while (el) {
+      const style = window.getComputedStyle(el);
+      const overflowY = style.overflowY;
+      if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+        el.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      }
+      el = el.parentElement;
+    }
+  }
+
   onSearch() {
     if (!this.googleSearch) {
       return;
