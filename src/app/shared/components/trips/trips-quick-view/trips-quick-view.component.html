@@ -23,40 +23,46 @@
       </div>
     </div>
     
-    <div class="trip-header__secondary">
-      <div class="status-badge" [ngClass]="{
-        'status-badge--add': !trip.saved && trip.action === 'ADD',
-        'status-badge--edit': !trip.saved && trip.action === 'UPDATE',
-        'status-badge--delete': !trip.saved && trip.action === 'DELETE',
-        'status-badge--saved': trip.saved
-      }">
-        <mat-icon class="status-icon">
-          @if (!trip.saved && trip.action === 'ADD') { add }
-          @else if (!trip.saved && trip.action === 'UPDATE') { edit }
-          @else if (!trip.saved && trip.action === 'DELETE') { delete }
-          @else { check_circle }
-        </mat-icon>
-        <span class="status-text">
-          @if (!trip.saved && trip.action === 'ADD') { New }
-          @else if (!trip.saved && trip.action === 'UPDATE') { Modified }
-          @else if (!trip.saved && trip.action === 'DELETE') { Deleted }
-          @else { Saved }
-        </span>
+    <div class="trip-header__secondary trip-header__secondary--flex-row">
+        <div class="trip-header__col trip-header__col--left">
+          <div class="status-badge" *ngIf="!trip.saved || trip.action === 'DELETE' || trip.action === 'ADD' || trip.action === 'UPDATE'"
+            [ngClass]="{
+              'status-badge--add': !trip.saved && trip.action === 'ADD',
+              'status-badge--edit': !trip.saved && trip.action === 'UPDATE',
+              'status-badge--delete': !trip.saved && trip.action === 'DELETE',
+              'status-badge--saved': trip.saved
+            }">
+            <mat-icon class="status-icon">
+              @if (!trip.saved && trip.action === 'ADD') { add }
+              @else if (!trip.saved && trip.action === 'UPDATE') { edit }
+              @else if (!trip.saved && trip.action === 'DELETE') { delete }
+              @else { check_circle }
+            </mat-icon>
+            <span class="status-text">
+              @if (!trip.saved && trip.action === 'ADD') { New }
+              @else if (!trip.saved && trip.action === 'UPDATE') { Modified }
+              @else if (!trip.saved && trip.action === 'DELETE') { Deleted }
+              @else { Saved }
+            </span>
+          </div>
+        </div>
+        <div class="trip-header__col trip-header__col--center">
+          <div class="trip-time">
+            <span class="pickup-time">{{trip.pickupTime | noseconds}}</span>
+          </div>
+        </div>
+        <div class="trip-header__col trip-header__col--right trip-header__col--reserve">
+          <div class="trip-total">
+            <span class="total-amount" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash" [ngClass]="{
+              'efficiency--excellent': trip.amountPerTime > 30,
+              'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+              'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+              'efficiency--poor': trip.amountPerTime < 20
+            }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
+          </div>
+        </div>
       </div>
-      
-      <div class="trip-time">
-        <span class="pickup-time">{{trip.pickupTime | noseconds}}</span>
-      </div>
-        <div class="trip-total" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
-        <span class="total-amount" [ngClass]="{
-          'efficiency--excellent': trip.amountPerTime > 30,
-          'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-          'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-          'efficiency--poor': trip.amountPerTime < 20
-        }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
-      </div>
-    </div>
-        <!-- Combined place and toggle bar -->
+    <!-- Combined place and toggle bar -->
     <div class="trip-header__bottom">
       <div class="place-info" *ngIf="trip.place">
         <mat-icon class="info-badge__icon">place</mat-icon>
