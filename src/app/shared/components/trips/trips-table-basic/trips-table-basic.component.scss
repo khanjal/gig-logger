@@ -36,6 +36,17 @@
   }
 }
 
+// Ensure note text wraps in secondary row
+.mat-row.secondary-row, td[mat-cell] {
+  .note-text, em {
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+    display: inline;
+  }
+}
+
 // =============================================================================
 // NO TRIPS MESSAGE STYLING  
 // =============================================================================
