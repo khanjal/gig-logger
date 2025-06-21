@@ -98,15 +98,15 @@
       <div class="info-card__content">
         <div class="time-display">
           <span class="pickup-time">
-            {{trip.pickupTime | noseconds}}
+            {{trip.pickupTime | noseconds:prefers24Hour}}
           </span>
           <span class="time-separator" *ngIf="trip.duration && trip.dropoffTime">-</span>
           <span class="dropoff-time" *ngIf="trip.dropoffTime">
-            {{trip.dropoffTime | noseconds}}
+            {{trip.dropoffTime | noseconds:prefers24Hour}}
           </span>
         </div>
         <div class="duration" *ngIf="trip.duration">
-          <strong>Duration:</strong> {{trip.duration | noseconds}}
+          <strong>Duration:</strong> {{trip.duration | noseconds:prefers24Hour}}
         </div>
       </div>
     </div>
