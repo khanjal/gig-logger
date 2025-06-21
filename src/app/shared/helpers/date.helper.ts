@@ -136,9 +136,13 @@ export class DateHelper {
         if (!time) {
             return 0;
         }
-        
         const [hoursMinutes, period] = time.split(' ');
         const [hours, minutes] = hoursMinutes.split(':').map(Number);
+        if (!period) {
+            // 24-hour format
+            return hours * 60 + minutes;
+        }
+        // 12-hour format
         let totalHours = hours % 12 + (period.toLowerCase() === 'pm' ? 12 : 0);
         return totalHours * 60 + minutes;
     };
