@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
@@ -17,25 +17,44 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     standalone: true,
     imports: [MatIcon, NgFor, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgStyle, CurrencyPipe, DatePipe, NoSecondsPipe, TruncatePipe]
 })
-export class TripsTableGroupComponent implements OnInit, OnChanges {
+export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() title: string = "";
   @Input() link: string = "";
   @Input() days: number = 6;
   
   displayedColumns: string[] = [];
   tripGroups: ITripGroup[] = [];
-  
+  @ViewChildren('tableContainer') tableContainers!: QueryList<ElementRef>;
+  isScrollable: boolean[] = [];
+
   constructor(
     private _tripService: TripService,
-    private _weekdayService: WeekdayService
+    private _weekdayService: WeekdayService,
+    private cdr: ChangeDetectorRef
   ) {}
-    async ngOnChanges() {
+
+  async ngOnChanges() {
     await this.load();
+    this.checkScrollable();
   }
 
   async ngOnInit() {
     this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     await this.load();
+    this.checkScrollable();
+  }
+
+  ngAfterViewInit() {
+    this.checkScrollable();
+  }
+
+  checkScrollable() {
+    if (!this.tableContainers) return;
+    this.isScrollable = this.tableContainers.map((container: ElementRef) => {
+      const el = container.nativeElement;
+      return el.scrollWidth > el.clientWidth;
+    });
+    this.cdr.detectChanges();
   }
 
   async load() {
