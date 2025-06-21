@@ -18,17 +18,17 @@
         <span class="shift-date">{{shift.date | date:'E, MMM d'}}</span>
       </div>
       
-      <div class="shift-service-time">
-        <div class="shift-service">
-          <span class="service-name">{{shift.service}}</span>
-          <span class="service-number" *ngIf="shift.number > 0">#{{shift.number}}</span>
-        </div>
-        
-        <div class="shift-time">
-          <span class="start-time">{{shift.start | noseconds}}</span>
-          <span class="time-separator" *ngIf="shift.finish">-</span>
-          <span class="finish-time" *ngIf="shift.finish">{{shift.finish | noseconds}}</span>
-        </div>
+      <div class="shift-service">
+        <span class="service-name">{{shift.service}}</span>
+        <span class="service-number" *ngIf="shift.number > 0">#{{shift.number}}</span>
+      </div>
+    </div>
+    
+    <div class="shift-header__time-row">
+      <div class="shift-time">
+        <span class="start-time">{{shift.start | noseconds}}</span>
+        <span class="time-separator" *ngIf="shift.finish">-</span>
+        <span class="finish-time" *ngIf="shift.finish">{{shift.finish | noseconds}}</span>
       </div>
     </div>
     
