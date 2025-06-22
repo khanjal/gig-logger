@@ -7,98 +7,38 @@ import { Directive, ElementRef, EventEmitter, HostListener, Output, Renderer2 } 
 export class FocusScrollDirective {
   @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private el: ElementRef, private renderer: Renderer2) { }  @HostListener('focus', ['$event.target']) onFocus() {
+  constructor(private el: ElementRef, private renderer: Renderer2) { }
+
+  @HostListener('focus')
+  onFocus() {
     this.renderer.addClass(this.el.nativeElement, 'focus-scroll');
-    
-    const inputElement = this.el.nativeElement;
+    const input = this.el.nativeElement as HTMLElement;
     const isMobile = window.innerWidth <= 768;
-    
-    // Find the scrollable container (modal or window)
-    const getScrollableContainer = (element: HTMLElement): HTMLElement | Window => {
-      let parent = element.parentElement;
-      
+    const topOffset = isMobile ? 80 : 60;
+    setTimeout(() => {
+      // Find the nearest scrollable parent (or window)
+      let parent = input.parentElement;
+      let scrollParent: HTMLElement | Window = window;
       while (parent) {
         const style = window.getComputedStyle(parent);
-        const overflowY = style.overflowY;
-        
-        // Check if this is a modal container (look for common modal classes)
-        if (parent.classList.contains('cdk-overlay-pane') || 
-            parent.classList.contains('mat-dialog-container') ||
-            parent.classList.contains('mat-mdc-dialog-container') ||
-            parent.classList.contains('modal') ||
-            parent.classList.contains('mat-dialog-content')) {
-          // Look for the actual scrollable element within the modal
-          const scrollableChild = parent.querySelector('[cdk-scrollable], .mat-dialog-content, .modal-body');
-          if (scrollableChild && scrollableChild instanceof HTMLElement) {
-            return scrollableChild;
-          }
-          return parent;
+        if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && parent.scrollHeight > parent.clientHeight) {
+          scrollParent = parent;
+          break;
         }
-        
-        // Check if this is a scrollable container
-        if ((overflowY === 'auto' || overflowY === 'scroll') && parent.scrollHeight > parent.clientHeight) {
-          return parent;
-        }
-        
         parent = parent.parentElement;
       }
-      
-      return window; // Default to window if no scrollable container found
-    };
-    
-    // Small delay to ensure any layout changes from focus are complete
-    setTimeout(() => {
-      const scrollContainer = getScrollableContainer(inputElement);
-      const rect = inputElement.getBoundingClientRect();
-      const topOffset = isMobile ? 80 : 60; // More space to keep input visible
-      
-      if (scrollContainer === window) {
-        // Window scrolling (main page)
-        const scrollTo = window.pageYOffset + rect.top - topOffset;
-        
-        if (rect.top > topOffset + 20 || rect.top < topOffset - 20) {
-          window.scrollTo({
-            top: Math.max(0, scrollTo),
-            behavior: 'smooth'
-          });
-        }
+      // Get bounding rects
+      const inputRect = input.getBoundingClientRect();
+      if (scrollParent === window) {
+        const scrollTo = window.pageYOffset + inputRect.top - topOffset;
+        window.scrollTo({ top: Math.max(0, scrollTo), behavior: 'smooth' });
       } else {
-        // Modal/container scrolling
-        const containerElement = scrollContainer as HTMLElement;
-        const containerRect = containerElement.getBoundingClientRect();
-        const relativeTop = rect.top - containerRect.top;
-        const scrollTo = containerElement.scrollTop + relativeTop - topOffset;
-        
-        if (relativeTop > topOffset + 20 || relativeTop < topOffset - 20) {
-          containerElement.scrollTo({
-            top: Math.max(0, scrollTo),
-            behavior: 'smooth'
-          });
-        }
+        const parentRect = (scrollParent as HTMLElement).getBoundingClientRect();
+        const relativeTop = inputRect.top - parentRect.top;
+        const scrollTo = (scrollParent as HTMLElement).scrollTop + relativeTop - topOffset;
+        (scrollParent as HTMLElement).scrollTo({ top: Math.max(0, scrollTo), behavior: 'smooth' });
       }
-      
-      // On mobile, also handle viewport changes from virtual keyboard
-      if (isMobile && scrollContainer === window) {
-        const handleViewportChange = () => {
-          const newRect = inputElement.getBoundingClientRect();
-          const newViewportHeight = window.innerHeight;
-          
-          if (newRect.bottom > newViewportHeight - 100) {
-            const newScrollTo = window.pageYOffset + newRect.top - topOffset;
-            window.scrollTo({
-              top: Math.max(0, newScrollTo),
-              behavior: 'smooth'
-            });
-          }
-        };
-        
-        setTimeout(handleViewportChange, 300);
-      }
-      
-      // Emit scroll complete after a delay to ensure scroll animation finishes
-      setTimeout(() => {
-        this.scrollComplete.emit();
-      }, 300);
-    }, 50);
+      setTimeout(() => this.scrollComplete.emit(), 300);
+    }, 30);
   }
 }
