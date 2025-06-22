@@ -52,10 +52,26 @@ public class SheetManager : ISheetManager
         return new SheetManager(token, sheetId, configuration, s3Service);
     }
 
+    public static async Task<SheetManager> CreateAsync(string token, string sheetId, IConfiguration configuration)
+    {
+        if (FeatureFlags.IsRateLimitingEnabled(configuration))
+        {
+            await EnforceRateLimitAsync(sheetId);
+        }
+        return new SheetManager(token, sheetId, configuration);
+    }
+
     private static async Task EnforceRateLimitAsync(string spreadsheetId)
     {
+        // Lazily create the rate limiter only if needed
+        var rateLimiter = new DynamoDbRateLimiter(
+            new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
+            "RaptorSheetsRateLimit",
+            5,
+            TimeSpan.FromMinutes(1)
+        );
         var hashedSpreadsheetId = HashHelper.HashSpreadsheetId(spreadsheetId);
-        if (!await _rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
+        if (!await rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
         {
             throw new InvalidOperationException($"Rate limit exceeded for spreadsheet ID: {hashedSpreadsheetId}. Please try again later.");
         }

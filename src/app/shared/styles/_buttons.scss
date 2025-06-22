@@ -1,0 +1,485 @@
+@import "color-vars";
+
+// =============================================================================
+// GLOBAL BUTTON STYLES
+// =============================================================================
+
+// Touch-friendly field buttons - Used for interactive form elements
+.field-button {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 44px; // Touch target minimum
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (max-width: 768px) {
+        margin-right: 0.25rem;
+        margin-bottom: 0.75rem;
+        flex: 1;
+        max-width: calc(50% - 0.125rem);
+    }
+    
+    @media (max-width: 480px) {
+        max-width: 100%;
+        margin-right: 0;
+    }
+}
+
+// Toggle buttons - Round buttons for toggling states
+.toggle-button {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0;
+    
+    &--active,
+    &.active {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    @media (min-width: 769px) {
+        min-width: 48px;
+        min-height: 48px;
+    }
+    
+    @media (max-width: 768px) {
+        min-width: 44px;
+        min-height: 44px;
+    }
+      @media (max-width: 480px) {
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+}
+
+// Address and name selection buttons
+.address-button,
+.name-button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    justify-content: flex-start;
+    
+    &--selected {
+        background-color: var(--accent-color);
+        color: white;
+    }
+}
+
+// Enhanced Material Design icon buttons for mobile - with proper icon centering
+.mat-icon-button {
+    margin: 0;
+    min-height: 44px;
+    min-width: 44px;
+    
+    // Fix icon vertical centering in all icon buttons
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    
+    @media (max-width: 768px) {
+        &:not(:last-child) {
+            margin-right: 0.5rem;
+        }
+    }
+}
+
+// Form action buttons container
+.form-actions {
+    margin-top: 1.5rem;
+      .form-actions__row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        
+        // Reset/Cancel buttons (warn color) align left
+        button[color="warn"] {
+            margin-right: auto;
+            order: 1;
+        }
+        
+        // Store/Update buttons (primary color) align right  
+        button[color="primary"] {
+            margin-left: auto;
+            order: 2;
+        }
+        
+        button {
+            flex: 0 0 35%;
+            width: 35%;
+            min-width: 150px;
+            max-width: 250px;
+            min-height: 56px;
+            margin-bottom: 0;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+              mat-icon {
+                margin-right: 12px !important;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+            
+            @media (max-width: 768px) {
+                flex: 0 0 35%;
+                width: 35%;
+                min-width: 130px;
+                max-width: 180px;
+                min-height: 52px;
+                padding: 10px 20px;
+                font-size: 1rem;
+                  mat-icon {
+                    font-size: 22px;
+                    width: 22px;
+                    height: 22px;
+                    margin-right: 10px !important;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                flex: 0 0 40%;
+                width: 40%;
+                min-width: 110px;                max-width: 140px;
+                min-height: 48px;
+                padding: 8px 16px;
+                font-size: 0.95rem;
+                  mat-icon {
+                    margin-right: 8px !important;
+                }
+            }
+        }
+        
+        @media (max-width: 768px) {
+            gap: 0.75rem;
+        }
+        
+        @media (max-width: 480px) {
+            gap: 0.5rem;
+        }
+    }
+    
+    // Primary action button styling
+    .btn-primary {
+        background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+        color: white;
+        border: none;
+          &:hover {
+            background: linear-gradient(135deg, darken($primary-color, 5%) 0%, darken($primary-color, 15%) 100%);
+        }
+        
+        &:disabled {
+            background: map-get($gray, 300);
+            color: map-get($gray, 500);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    }
+    
+    // Secondary action button styling
+    .btn-secondary {
+        background: transparent;
+        color: $primary-color;
+        border: 2px solid $primary-color;
+          &:hover {
+            background: $primary-color;
+            color: white;
+        }
+        
+        &:disabled {
+            border-color: map-get($gray, 300);
+            color: map-get($gray, 500);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    }
+    
+    // Danger/delete action button styling
+    .btn-danger {
+        background: linear-gradient(135deg, $error-color 0%, darken($error-color, 10%) 100%);
+        color: white;
+        border: none;
+        
+        &:hover {
+            background: linear-gradient(135deg, darken($error-color, 5%) 0%, darken($error-color, 15%) 100%);
+        }
+          &:disabled {
+            background: map-get($gray, 300);
+            color: map-get($gray, 500);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    }
+}
+
+// Button icon styling
+.button-icon {
+    margin-top: 0.5rem;
+    
+    @media (max-width: 768px) {
+        margin-top: 0.25rem;
+    }
+}
+
+// General button utilities
+.btn-full-width {
+    width: 100%;
+}
+
+.btn-center {
+    display: block;
+    margin: 0 auto;
+}
+
+.btn-group {
+    display: flex;
+    gap: 0.5rem;
+    
+    &--vertical {
+        flex-direction: column;
+    }
+    
+    &--center {
+        justify-content: center;
+    }
+    
+    &--end {
+        justify-content: flex-end;
+    }
+    
+    @media (max-width: 480px) {
+        gap: 0.375rem;
+        
+        &--stack-mobile {
+            flex-direction: column;
+            
+            button {
+                width: 100%;
+            }
+        }
+    }
+}
+
+// Floating Action Button (FAB) mobile optimizations
+@media (max-width: 480px) {
+    .mat-mdc-fab.mat-mdc-mini-fab {
+        width: 40px;
+        height: 40px;
+        
+        // Fix icon vertical centering in mini FABs
+        .mat-mdc-button-touch-target {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .mdc-fab__icon,
+        mat-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+    }
+}
+
+// Comprehensive Material Design Icon Centering Fix
+// This addresses vertical alignment issues across all Material button types
+
+// Universal icon centering for all Material buttons
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab,
+.mat-icon-button {
+    // Ensure proper flexbox alignment for button containers
+    .mat-mdc-button-touch-target,
+    .mdc-button,
+    .mdc-fab {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    // Universal icon styling for perfect centering
+    mat-icon,
+    .mat-icon,
+    .mdc-fab__icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        vertical-align: middle !important;
+        
+        // Fix for font-based icons (Material Icons font)
+        &::before {
+            vertical-align: middle !important;
+            line-height: 1 !important;
+        }
+    }
+    
+    // Fix for ripple effect alignment
+    .mat-ripple,
+    .mdc-button__ripple,
+    .mdc-fab__ripple {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+// Specific fix for mini FAB buttons (commonly used in forms)
+.mat-mdc-mini-fab {
+    // Override any inherited line-height that might cause misalignment
+    line-height: 1 !important;
+    
+    // Ensure the button content is properly centered
+    .mat-mdc-button-wrapper,
+    .mdc-fab__icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+      // Mobile-specific adjustments
+    @media (max-width: 480px) {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+// Fix for Material Design typography that might interfere with icon alignment
+.mat-typography {
+    mat-icon {
+        vertical-align: middle !important;
+    }
+}
+
+// Additional Material Design button icon centering fixes
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+    // Ensure proper icon centering in all FAB buttons
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .mdc-fab__icon,
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+}
+
+// Fix for Material Design button ripple effect alignment
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+    }
+}
+
+// Enhanced Material Design icon buttons for mobile - with proper icon centering
+.mat-icon-button {
+    margin: 0;
+    min-height: 44px;
+    min-width: 44px;
+    
+    // Fix icon vertical centering in all icon buttons
+    .mat-mdc-button-touch-target {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    mat-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    
+    @media (max-width: 768px) {
+        &:not(:last-child) {
+            margin-right: 0.5rem;
+        }
+    }
+}
+
+// Additional spacing for Angular Material extended fab buttons
+.mat-mdc-extended-fab {
+    .mat-icon {
+        margin-right: 12px !important;
+        margin-inline-end: 12px !important;
+    }
+    
+    @media (max-width: 768px) {
+        .mat-icon {
+            margin-right: 10px !important;
+            margin-inline-end: 10px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .mat-icon {
+            margin-right: 8px !important;
+            margin-inline-end: 8px !important;
+        }
+    }
+}

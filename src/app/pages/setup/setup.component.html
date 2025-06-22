@@ -23,7 +23,7 @@
             <h2>Current Spreadsheets</h2>
             <div *ngFor="let spreadsheet of spreadsheets" class="section">
                 <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
-                <div class="row row-block">
+                <div class="row-flex justify-between items-center">
                     <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
                     <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
                     <button mat-fab extended color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
@@ -50,10 +50,10 @@
             <app-diagnostics></app-diagnostics>
         </mat-card-content>
     </mat-card>
-      <div class="section">
-        <div>
-            <button mat-fab extended color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length"><mat-icon>refresh</mat-icon> Delete & Reload</button>
-            <button mat-fab extended color="warn" class="button-right" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAllDialog()"><mat-icon>delete</mat-icon> Delete All Data</button>
+    <div class="section">
+        <div class="row-flex justify-between items-center">
+            <button mat-fab extended color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length"><mat-icon>refresh</mat-icon> Refresh Data</button>
+            <button mat-fab extended color="warn" class="button-right" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAllDialog()"><mat-icon>delete</mat-icon> Delete Data</button>
         </div>
     </div>
 </div>

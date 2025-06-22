@@ -1,0 +1,42 @@
+<div class="table-container">
+    <h2 *ngIf="!link">{{ title }}</h2>
+    <h2 *ngIf="link">{{ title }} <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
+    <div class='table-responsive-auto'>
+        <mat-table [dataSource]="trips" class="table-theme-standard table-auto-size">
+            <ng-container matColumnDef="date">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-time"> Date </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.date | date:'MMM d'}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="service">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-service"> Service </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-service"> {{trip.service}}{{ trip.number ? '-' : ''}}{{ trip.number}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="place">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-flexible"> Place </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-flexible"> {{trip.place | truncate:15}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="pickup">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-time">Pickup</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.pickupTime | noseconds}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="dropoff">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-time">Dropoff</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-time"> {{trip.dropoffTime | noseconds}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="total">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-currency"> Total </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-currency"> {{trip.total | currency}} </mat-cell>
+            </ng-container>            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-medium"> Name </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-medium"> {{trip.name | truncate:10}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="address">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-wide"> Address </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-wide"> {{trip.endAddress | shortaddress | truncate:20}} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </div>
+</div>

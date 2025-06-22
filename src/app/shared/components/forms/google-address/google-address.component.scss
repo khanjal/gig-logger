@@ -1,0 +1,200 @@
+// Mobile-First Google Address Component Styles
+@import "color-vars";
+
+// Full width field container
+.field-full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+// Address Input Field - Mobile First
+.address-input-container {
+  position: relative;
+  width: 100%;
+  
+  .address-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid $border-light;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    background: $surface-color;
+    color: $text-primary;
+    transition: all 0.3s ease;
+    outline: none;
+    
+    &::placeholder {
+      color: $text-secondary;
+      opacity: 1;
+    }
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      background: $surface-color;
+    }
+    
+    &:disabled {
+      background: $background-secondary;
+      color: $text-disabled;
+      cursor: not-allowed;
+    }
+    
+    // Tablet and up
+    @media (min-width: 768px) {
+      padding: 1rem 1.25rem;
+      font-size: 1.1rem;
+    }
+  }
+  
+  // Loading indicator
+  .loading-indicator {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $primary-color;
+    
+    @media (min-width: 768px) {
+      right: 1.25rem;
+    }
+  }
+}
+
+// Address Suggestions Dropdown - Mobile First
+.address-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: $surface-color;
+  border: 1px solid $border-light;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px $shadow-medium, 0 2px 6px $shadow-light;
+  margin-top: 0.25rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $background-secondary;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, $primary-color, $accent-color);
+    border-radius: 3px;
+    
+    &:hover {
+      background: linear-gradient(45deg, $primary-600, $accent-600);
+    }
+  }
+  
+  .suggestion-item {
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid $border-light;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+      color: $primary-700;
+    }
+    
+    &:active {
+      background: linear-gradient(135deg, $primary-100 0%, $accent-100 100%);
+    }
+    
+    .suggestion-icon {
+      color: $primary-color;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+    
+    .suggestion-text {
+      flex: 1;
+      font-size: 0.875rem;
+      color: $text-primary;
+      
+      .suggestion-main {
+        font-weight: 500;
+        margin-bottom: 0.125rem;
+      }
+      
+      .suggestion-secondary {
+        font-size: 0.75rem;
+        color: $text-secondary;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      padding: 1rem 1.25rem;
+      
+      .suggestion-text {
+        font-size: 0.9rem;
+        
+        .suggestion-secondary {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+// Address Validation States
+.address-input-container {
+  &.valid {
+    .address-input {
+      border-color: $success-color;
+    }
+  }
+  
+  &.invalid {
+    .address-input {
+      border-color: $danger-color;
+    }
+  }
+  
+  &.warning {
+    .address-input {
+      border-color: $warn-color;
+    }
+  }
+}
+
+// Validation Messages
+.validation-message {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  &.success {
+    color: $success-color;
+  }
+  
+  &.error {
+    color: $danger-color;
+  }
+  
+  &.warning {
+    color: $warn-color;
+  }
+  
+  .validation-icon {
+    font-size: 1rem;
+  }
+}

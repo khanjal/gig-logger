@@ -1,0 +1,96 @@
+// =============================================================================
+// MODAL BACKDROP MIXINS - Global Modal Styling
+// =============================================================================
+
+// Base backdrop blur mixin
+@mixin backdrop-blur($blur: 8px, $opacity: 0.5, $color: null) {
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  background-color: if($color, $color, rgba(0, 0, 0, $opacity)) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Modal backdrop blur variations
+@mixin modal-backdrop-light {
+  @include backdrop-blur(6px, 0.4, rgba(0, 0, 0, 0.4));
+}
+
+@mixin modal-backdrop-medium {
+  @include backdrop-blur(8px, 0.5, rgba(0, 0, 0, 0.5));
+}
+
+@mixin modal-backdrop-strong {
+  @include backdrop-blur(10px, 0.6, rgba(0, 0, 0, 0.6));
+}
+
+@mixin modal-backdrop-heavy {
+  @include backdrop-blur(12px, 0.7, rgba(0, 0, 0, 0.7));
+}
+
+// Custom modal panel class backdrop
+@mixin custom-modal-backdrop($blur: 10px, $opacity: 0.6) {
+  .cdk-overlay-backdrop {
+    @include backdrop-blur($blur, $opacity, rgba(0, 0, 0, $opacity));
+  }
+}
+
+// Smooth animation for modal transitions
+@mixin modal-backdrop-animation {
+  transition: backdrop-filter 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+// Fallback for browsers that don't support backdrop-filter
+@mixin backdrop-fallback($opacity: 0.8) {
+  @supports not (backdrop-filter: blur(1px)) {
+    background-color: rgba(0, 0, 0, $opacity) !important;
+  }
+}
+
+// Complete modal backdrop setup - use this for most modals
+@mixin setup-modal-backdrop($strength: 'medium') {
+  ::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+    @if $strength == 'light' {
+      @include modal-backdrop-light;
+    } @else if $strength == 'medium' {
+      @include modal-backdrop-medium;
+    } @else if $strength == 'strong' {
+      @include modal-backdrop-strong;
+    } @else if $strength == 'heavy' {
+      @include modal-backdrop-heavy;
+    }
+    
+    @include backdrop-fallback;
+  }
+
+  // Enhanced blur for custom modal panel classes
+  ::ng-deep .custom-modalbox {
+    @include custom-modal-backdrop;
+  }
+
+  // Additional blur for Material dialog containers
+  ::ng-deep .mat-mdc-dialog-container {
+    .cdk-overlay-backdrop {
+      @if $strength == 'light' {
+        @include backdrop-blur(6px, 0.4);
+      } @else if $strength == 'medium' {
+        @include backdrop-blur(8px, 0.5);
+      } @else if $strength == 'strong' {
+        @include backdrop-blur(10px, 0.6);
+      } @else if $strength == 'heavy' {
+        @include backdrop-blur(12px, 0.7);
+      }
+    }
+  }
+
+  // Dark backdrop enhancement
+  ::ng-deep .cdk-overlay-dark-backdrop {
+    @include backdrop-blur(12px, 0.7, rgba(0, 0, 0, 0.7));
+  }
+
+  // Smooth animations
+  ::ng-deep .mat-mdc-dialog-container.mat-mdc-dialog-container-with-actions {
+    .cdk-overlay-backdrop {
+      @include modal-backdrop-animation;
+    }
+  }
+}
