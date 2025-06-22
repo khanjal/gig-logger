@@ -2,6 +2,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using RaptorSheets.Gig.Entities;
 using System.Text.Json;
+using System.Text;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
@@ -94,7 +95,7 @@ public class S3Service : IS3Service
     }
 
     /// <summary>
-    /// Uploads a SheetEntity to S3 and returns the presigned URL that's valid for 1 hour
+    /// Uploads a SheetEntity to S3 and returns the presigned URL that's valid for 10 minutes
     /// </summary>
     public async Task<string> UploadSheetEntityToS3Async(SheetEntity sheetEntity, string sheetId, string requestType)
     {
@@ -117,12 +118,12 @@ public class S3Service : IS3Service
             
             await _s3Client.PutObjectAsync(putRequest);
             
-            // Generate a presigned URL that's valid for 1 hour
+            // Generate a presigned URL that's valid for 10 minutes
             var urlRequest = new GetPreSignedUrlRequest
             {
                 BucketName = _bucketName,
                 Key = key,
-                Expires = DateTime.UtcNow.AddHours(1)
+                Expires = DateTime.UtcNow.AddMinutes(10)
             };
             
             return _s3Client.GetPreSignedURL(urlRequest);
@@ -140,13 +141,14 @@ public class S3Service : IS3Service
     }
 
     /// <summary>
-    /// Gets the approximate byte size of a SheetEntity
+    /// Gets the accurate byte size of a SheetEntity in UTF-8 encoding
     /// </summary>
     public long GetSheetEntitySize(SheetEntity sheetEntity)
     {
         // Use serialization to get the approximate size
         string json = JsonSerializer.Serialize(sheetEntity, _jsonOptions);
-        return json.Length;
+
+        return Encoding.UTF8.GetByteCount(json);
     }
     
     /// <summary>
@@ -156,14 +158,7 @@ public class S3Service : IS3Service
     {
         if (sheetEntity == null)
             return false;
-            
-        // Check message count first as a quick check
-        if (sheetEntity.Messages != null && sheetEntity.Messages.Count > 100)
-        {
-            return true;
-        }
         
-        // For more accurate check, use actual size calculation
         return GetSheetEntitySize(sheetEntity) > SizeThresholdInBytes;
     }
 }
