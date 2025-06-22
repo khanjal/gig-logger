@@ -166,7 +166,7 @@ export class ApiService {
     // FILE METHODS
     // ========================================
     
-    public async createFile(properties: ISheetProperties): Promise<ISheet | null> {
+    public async createFile(properties: ISheetProperties): Promise<ISheetProperties | null> {
         try {
             const response = await firstValueFrom(
                 this._http.post<any>(

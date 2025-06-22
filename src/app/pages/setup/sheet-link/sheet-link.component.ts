@@ -48,7 +48,12 @@ export class SheetLinkComponent {
           this._snackBar.open('Error creating sheet', 'Close');
         } else {
           // Handle success
-          this.linkSheet(result);
+          let sheetData = {} as ISheet;
+          sheetData.properties = {
+            id: result.id,
+            name: result.name
+          };
+          this.linkSheet(sheetData);
           this._logger.info('Sheet created successfully', { result });
           this._snackBar.open('Sheet created successfully', 'Close');
           this.parentReload.emit(); // Emit event to reload parent component
