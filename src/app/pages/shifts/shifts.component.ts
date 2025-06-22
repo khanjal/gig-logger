@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
@@ -9,7 +9,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
-import { ShiftsQuickViewComponent } from '@components/shifts-quick-view/shifts-quick-view.component';
+import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 
 @Component({
     selector: 'app-shifts',

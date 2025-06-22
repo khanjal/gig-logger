@@ -1,0 +1,340 @@
+// Component-Specific Styles for Trips Table Group
+@import "color-vars";
+
+// =============================================================================
+// COMPONENT-SPECIFIC TITLE STYLING
+// =============================================================================
+
+// Title styling - responsive
+h2 {
+  margin: 0 0 1rem 0;
+  padding: 1rem 1.5rem;
+  background: $primary-100;
+  color: $primary-800;
+  font-weight: 700;
+  font-size: 1.5rem;
+  border-bottom: 3px solid $primary-color;
+  
+  .title-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .link-icon {
+    color: $primary-600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    
+    &:hover {
+      color: $primary-700;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    padding: 0.875rem 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.125rem;
+    padding: 0.75rem 0.75rem;
+  }
+}
+
+// =============================================================================
+// COMPONENT-SPECIFIC GROUP HEADERS
+// =============================================================================
+
+// Group Headers - Slimmed down design
+h3 {
+  margin: 1rem 0 0.5rem 0;
+  padding: 0.5rem 1rem;
+  background: $primary-50;
+  border-radius: 0.5rem;
+  color: $primary-700;
+  font-weight: 600;
+  font-size: 1rem;
+  border-left: 4px solid $primary-color;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  
+  .trip-info {
+    flex-shrink: 0;
+  }
+  
+  .amount-info {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $primary-600;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    margin: 0.75rem 0 0.4rem 0;
+    
+    .amount-info {
+      font-size: 0.8rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
+    margin: 0.5rem 0 0.3rem 0;
+    // Keep items on same line even on mobile
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    
+    .amount-info {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// =============================================================================
+// TRIP GROUP SPACING
+// =============================================================================
+
+// Trip group container spacing
+.trip-group {
+  margin-bottom: 2rem;
+  
+  &:last-child {
+    margin-bottom: 1rem; // Reduced margin for the last group
+  }
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1.5rem;
+    
+    &:last-child {
+      margin-bottom: 0.75rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 1.25rem;
+    
+    &:last-child {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+// =============================================================================
+// COMPONENT-SPECIFIC DATA STYLING
+// =============================================================================
+
+// Tip styling classes
+.tip-none {
+  color: $warn-color !important;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.tip-good {
+  color: $success-color !important;
+  font-weight: 600;
+  
+  &::after {
+    content: ' ✓';
+    color: $success-color;
+    font-weight: bold;
+  }
+}
+
+// Strike-through styling for excluded trips
+.strike {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+// Compact table styling for this component
+.table-responsive {
+  mat-table {
+    // Override global styles for extra compactness
+    mat-row {
+      height: 2.5rem !important;
+      min-height: 2.5rem !important;
+      
+      @media (max-width: 768px) {
+        height: 2.25rem !important;
+        min-height: 2.25rem !important;
+      }
+      
+      @media (max-width: 480px) {
+        height: 2rem !important;
+        min-height: 2rem !important;
+      }
+    }
+    
+    mat-cell {
+      padding: 0.4rem 0.625rem !important;
+      line-height: 1.1 !important;
+      
+      @media (max-width: 768px) {
+        padding: 0.35rem 0.5rem !important;
+      }
+      
+      @media (max-width: 480px) {
+        padding: 0.3rem 0.375rem !important;
+      }
+    }
+    
+    mat-header-cell {
+      padding: 0.4rem 0.625rem !important;
+      line-height: 1 !important;
+      
+      @media (max-width: 768px) {
+        padding: 0.35rem 0.5rem !important;
+      }
+      
+      @media (max-width: 480px) {
+        padding: 0.3rem 0.375rem !important;
+      }
+    }
+  }
+}
+
+// Table column widths and alignment
+.table-col-service {
+  text-align: left;
+  padding-left: .5rem;
+  min-width: 80px;
+}
+.table-col-place {
+  min-width: 130px;
+}
+.table-col-total, .table-col-name, .table-col-pickup, .table-col-dropoff {
+  min-width: 100px;
+}
+.table-col-address {
+  min-width: 260px;
+}
+
+// =============================================================================
+// NO TRIPS MESSAGE STYLING
+// =============================================================================
+
+.no-trips-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: $background-light;
+  border: 1px solid $border-light;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  
+  .no-trips-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: $text-secondary;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+  
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: $text-primary;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    max-width: 400px;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+    
+    .no-trips-icon {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    
+    h3 {
+      font-size: 1.125rem;
+    }
+    
+    p {
+      font-size: 0.875rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+    margin: 0.75rem 0;
+    
+    .no-trips-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 0.375rem;
+    }
+    
+    p {
+      font-size: 0.8125rem;
+    }
+  }
+}
+
+// Table scroll indicator styling
+.table-responsive-auto {
+  position: relative;
+  padding-bottom: 1.2rem; // Smaller reserved space for scroll indicator
+}
+
+.table-scroll-indicator {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.25rem;
+  left: auto;
+  width: auto;
+  min-width: 80px;
+  max-width: 160px;
+  text-align: right;
+  background: rgba(255,255,255,0.85);
+  color: $primary-light;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.12rem 0.5rem 0.12rem 0.75rem;
+  border-radius: 1rem 0 0 1rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 2;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

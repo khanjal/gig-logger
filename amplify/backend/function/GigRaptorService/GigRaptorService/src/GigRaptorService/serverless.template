@@ -5,18 +5,150 @@
   "Parameters": {},
   "Conditions": {},
   "Resources": {
+    "RaptorSheetsDataBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "raptor-sheets-data-316675302119",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "DeleteOldData",
+              "Status": "Enabled",
+              "ExpirationInDays": 30,
+              "Prefix": "sheets/"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "RaptorGigServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "RaptorGigServiceRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "RaptorGigServiceS3Policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:GetObjectVersion",
+                    "s3:GetPresignedUrl",
+                    "s3:ListBucket"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::",
+                          {
+                            "Ref": "RaptorSheetsDataBucket"
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::",
+                          {
+                            "Ref": "RaptorSheetsDataBucket"
+                          },
+                          "/*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "RaptorGigServiceDynamoDBPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Query",
+                    "dynamodb:Scan",
+                    "dynamodb:DescribeTable"
+                  ],
+                  "Resource": "arn:aws:dynamodb:*:*:table/RaptorSheetsRateLimit"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "AspNetCoreFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
+        "FunctionName": "raptor-gig-service",
         "Handler": "GigRaptorService::GigRaptorService.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnet8",
         "CodeUri": "",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Timeout": 30,
-        "Role": null,
-        "Policies": [
-          "AWSLambda_FullAccess"
-        ],
+        "Role": {
+          "Fn::GetAtt": [
+            "RaptorGigServiceRole",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "AWS__S3__BucketName": {
+              "Ref": "RaptorSheetsDataBucket"
+            },
+            "AWS__S3__SizeThresholdInMB": "5"
+          }
+        },
+        "SnapStart": {
+          "ApplyOn": "PublishedVersions"
+        },
         "Events": {
           "ProxyResource": {
             "Type": "Api",
@@ -41,6 +173,21 @@
       "Description": "API endpoint URL for Prod environment",
       "Value": {
         "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+      }
+    },
+    "LambdaRoleARN": {
+      "Description": "ARN of the IAM role used by the Lambda function",
+      "Value": {
+        "Fn::GetAtt": [
+          "RaptorGigServiceRole",
+          "Arn"
+        ]
+      }
+    },
+    "S3BucketName": {
+      "Description": "S3 bucket for storing large sheet data",
+      "Value": {
+        "Ref": "RaptorSheetsDataBucket"
       }
     }
   }

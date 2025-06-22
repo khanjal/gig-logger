@@ -10,9 +10,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 
 // Application-specific imports - Components
-import { AddressDialogComponent } from '@components/address-dialog/address-dialog.component';
+import { AddressDialogComponent } from '@components/forms/address-dialog/address-dialog.component';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -51,7 +52,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
+  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, MatMenuModule, ReactiveFormsModule, ScrollingModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -181,6 +182,24 @@ export class SearchInputComponent {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
       }, 100); // Delay by 100ms
+    }
+  }
+
+  /**
+   * Scrolls the closest scrollable parent to the top when the input is focused.
+   * Works for modals and main window. Handles virtual keyboard pop-up as well.
+   */
+  onInputFocus(event: FocusEvent) {
+    let el = (event.target as HTMLElement).parentElement;
+    // Traverse up to find the closest scrollable parent
+    while (el) {
+      const style = window.getComputedStyle(el);
+      const overflowY = style.overflowY;
+      if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+        el.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      }
+      el = el.parentElement;
     }
   }
 
@@ -372,8 +391,30 @@ export class SearchInputComponent {
     if (properValue.toLocaleLowerCase() === value.toLocaleLowerCase()) {
       return properValue;
     }
-
     return value;
+  }
+
+  // Check if there are 2 or more available actions to show in the menu
+  hasAvailableActions(filteredItemsLength?: number): boolean {
+    let buttonCount = 0;
+    
+    // Count Google Search button (only shows when no filtered items)
+    if (this.showSearch && this.value && this.googleSearch && (filteredItemsLength === 0 || filteredItemsLength === undefined)) {
+      buttonCount++;
+    }
+    
+    // Count Google Maps button (mutually exclusive with search button)
+    if (!this.showSearch && this.value && this.googleSearch) {
+      buttonCount++;
+    }
+    
+    // Count Clear button
+    if (this.value) {
+      buttonCount++;
+    }
+    
+    // Only show menu if there are 2 or more buttons
+    return buttonCount >= 2;
   }
 
   // Filter items based on the search type

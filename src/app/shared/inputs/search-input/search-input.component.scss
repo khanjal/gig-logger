@@ -1,16 +1,808 @@
-.field-button-width {
-    width: 80%;
+// Mobile-First Search Input Component Styles
+@import "color-vars";
+
+// Host element styling to ensure proper width inheritance
+:host {
+  display: block;
+  width: 100%;
+  
+  &.field-full-width {
+    width: 100% !important;
+    flex: 1 !important;
+  }
 }
 
-.field-full-width {
+// Search Input Container - Mobile First
+.search-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  
+  @media (min-width: 768px) {
+    gap: 1rem;
+  }
+}
+
+// Search Field Container
+.search-field-container {
+  position: relative;
+  width: 100%;
+  
+  &.field-button-width {
     width: 100%;
+    
+    @media (min-width: 768px) {
+      width: 80%;
+    }
+  }
+  
+  &.field-full-width {
+    width: 100%;
+  }
 }
 
-.mat-icon-button {
+// Search Input Field
+.search-input-field {
+  width: 100%;
+  
+  mat-form-field {
+    width: 100%;
+    
+    .mat-mdc-form-field-flex {
+      background: $surface-color;
+      border-radius: 1rem;
+      border: 1px solid $border-color;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 1px 3px $shadow-light;
+      
+      &:hover {
+        border-color: $primary-300;
+        box-shadow: 0 2px 8px $shadow-medium;
+      }
+      
+      &.mdc-text-field--focused {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+    }
+    
+    .mat-mdc-form-field-infix {
+      padding: 1rem 1rem 1rem 3rem;
+      min-height: 44px;
+      
+      @media (min-width: 768px) {
+        padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+        min-height: 48px;
+      }
+    }
+    
+    input {
+      font-size: 1rem;
+      color: $text-primary;
+      
+      &::placeholder {
+        color: $text-tertiary;
+      }
+      
+      @media (min-width: 768px) {
+        font-size: 1.125rem;
+      }
+    }
+    
+    .mat-mdc-form-field-label {
+      color: $text-secondary;
+      font-weight: 500;
+    }
+  }
+}
+
+// Material Form Field Focus Improvements
+mat-form-field {
+  width: 100%;
+  
+  &.field-full-width {
+    width: 100% !important;
+  }
+  
+  // Ensure proper label positioning on focus
+  .mat-mdc-form-field-label-wrapper {
+    .mat-mdc-form-field-label {
+      transition: all 0.2s ease-in-out;
+      
+      &.mat-mdc-form-field-label-floating {
+        transform: translateY(-50%) scale(0.75);
+        top: 14px;
+      }
+    }
+  }
+  
+  // Fix outline positioning to prevent label cutoff
+  .mat-mdc-text-field-wrapper {
+    .mat-mdc-form-field-flex {
+      .mat-mdc-form-field-outline {
+        .mat-mdc-form-field-outline-start,
+        .mat-mdc-form-field-outline-gap,
+        .mat-mdc-form-field-outline-end {
+          border-width: 1px;
+          border-style: solid;
+          border-color: $border-color;
+        }
+      }
+      
+      &.mdc-text-field--focused {
+        .mat-mdc-form-field-outline {
+          .mat-mdc-form-field-outline-start,
+          .mat-mdc-form-field-outline-gap,
+          .mat-mdc-form-field-outline-end {
+            border-color: $primary-color;
+            border-width: 2px;
+          }
+        }
+      }
+    }
+  }
+  
+  // Ensure proper infix container positioning
+  .mat-mdc-form-field-infix {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: none;
+    
+    input {
+      padding: 0;
+      margin: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+    }
+  }
+  
+  // Mobile-specific adjustments for virtual keyboard and dropdown visibility
+  @media (max-width: 768px) {
+    // Ensure form field has enough top margin when focused to keep label visible
+    &.mat-focused {
+      margin-top: 1rem;
+      transition: margin-top 0.3s ease;
+    }
+    
+    // Better label positioning for mobile
+    .mat-mdc-form-field-label-wrapper {
+      .mat-mdc-form-field-label {
+        &.mat-mdc-form-field-label-floating {
+          transform: translateY(-50%) scale(0.75);
+          top: 8px; // Adjusted for mobile to stay visible
+          z-index: 10; // Ensure label stays above other elements
+        }
+      }
+    }
+    
+    // Enhanced outline visibility on mobile
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-flex {
+        .mat-mdc-form-field-outline {
+          .mat-mdc-form-field-outline-start,
+          .mat-mdc-form-field-outline-gap,
+          .mat-mdc-form-field-outline-end {
+            border-width: 2px; // Thicker border for better visibility on mobile
+          }
+        }
+      }
+    }
+  }
+  
+  // Ensure autocomplete panel has enough space below on mobile
+  @media (max-width: 768px) and (max-height: 800px) {
+    .mat-mdc-autocomplete-panel {
+      max-height: 200px; // Limit height for small mobile screens
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+// Search Icon
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $text-tertiary;
+  z-index: 2;
+  transition: color 0.2s ease-in-out;
+  
+  @media (min-width: 768px) {
+    left: 1.25rem;
+  }
+  
+  &.active {
+    color: $primary-color;
+  }
+}
+
+// Clear Button
+.clear-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba($text-tertiary, 0.1);
+  color: $text-tertiary;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  z-index: 2;
+  
+  &:hover {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    right: 0.75rem;
+    min-width: 36px;
+    min-height: 36px;
+    width: 36px;
+    height: 36px;
+    
+    mat-icon {
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+}
+
+// Action Buttons Container
+.search-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  @media (min-width: 768px) {
+    gap: 0.75rem;
+  }
+    .mat-icon-button,
+  .mat-mdc-icon-button {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 0.75rem;
     margin: 0;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid $border-color;
+    background: $surface-color;
+    
+    &:hover {
+      background: $surface-secondary;
+      border-color: $primary-color;
+      box-shadow: 0 2px 8px $shadow-light;
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    @media (min-width: 768px) {
+      min-width: 48px;
+      min-height: 48px;
+    }
+    
+    mat-icon {
+      color: $text-primary;
+    }
+  }
 }
 
+// Search Results Container
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: $surface-color;
+  border: 1px solid $border-color;
+  border-radius: 0 0 1rem 1rem;
+  box-shadow: 0 4px 16px $shadow-medium;
+  z-index: 1000;
+  max-height: 300px;
+  overflow: hidden;
+  
+  @media (min-width: 768px) {
+    max-height: 400px;
+  }
+}
+
+// Virtual Scroll Viewport
 .virtual-scroll-viewport {
-    width: 100%; /* Full width */
-    overflow: auto; /* Enable scrolling */
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $surface-secondary;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 3px;
+    
+    &:hover {
+      background: $text-tertiary;
+    }
+  }
+}
+
+// Search Result Item
+.search-result-item {
+  padding: 1rem;
+  border-bottom: 1px solid $border-light;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background: $primary-50;
+    color: $primary-color;
+  }
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &.selected {
+    background: linear-gradient(135deg, $primary-50 0%, $primary-100 100%);
+    color: $primary-color;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 1.25rem;
+  }
+  
+  .result-title {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+  
+  .result-subtitle {
+    font-size: 0.75rem;
+    color: $text-secondary;
+    
+    @media (min-width: 768px) {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// No Results State
+.no-results {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: $text-secondary;
+  font-size: 0.875rem;
+  
+  mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.5rem;
+    color: $text-tertiary;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 2.5rem 1.5rem;
+    font-size: 1rem;
+    
+    mat-icon {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+}
+
+// Loading State
+.search-loading {
+  padding: 1rem;
+  text-align: center;
+  
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid $border-color;
+    border-top: 2px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 0.5rem;
+  }
+  
+  .loading-text {
+    font-size: 0.875rem;
+    color: $text-secondary;
+  }
+}
+
+// Search Suggestions
+.search-suggestions {
+  padding: 0.5rem;
+  border-bottom: 1px solid $border-light;
+  
+  .suggestions-title {
+    font-size: 0.75rem;
+    color: $text-tertiary;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem;
+  }
+  
+  .suggestion-chip {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem;
+    background: $surface-secondary;
+    border: 1px solid $border-light;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background: $primary-50;
+      border-color: $primary-color;
+      color: $primary-color;
+    }
+  }
+}
+
+// Mobile-specific focus scroll adjustments
+@media (max-width: 768px) {
+  // Add padding to top of viewport when form fields are focused
+  .focus-scroll {
+    scroll-margin-top: 2rem; // Ensures label stays visible after scroll
+  }
+  
+  // Better spacing for search input containers on mobile
+  .search-input-container {
+    padding-top: 0.5rem;
+    
+    &.focused {
+      padding-top: 1rem;
+      transition: padding-top 0.3s ease;
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Focus States for Accessibility
+.search-input-field mat-form-field input:focus {
+  outline: none;
+}
+
+.mat-icon-button:focus,
+.clear-button:focus {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+.search-result-item:focus {
+  outline: 2px solid $primary-color;
+  outline-offset: -2px;
+}
+
+// Search Input Wrapper for responsive button layout
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+    mat-form-field {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// Default state: buttons stay inside form field (larger screens only)
+@media (min-width: 401px) {
+  .search-input-wrapper {
+    // Hide compact menu on larger screens
+    .compact-menu-button {
+      display: none !important;
+    }
+    
+    // Show standard buttons inside form field
+    .standard-button {
+      display: inline-flex !important;
+    }
+  }
+}
+
+// Small to medium screens (≤400px): responsive button handling
+@media (max-width: 400px) {
+  .search-input-wrapper {
+    // Default: show standard buttons (for single button case)
+    .standard-button {
+      display: inline-flex !important;
+      min-width: 32px !important;
+      min-height: 32px !important;
+    }
+    
+    // When compact menu is active, hide standard buttons and show menu
+    &.show-compact-menu {
+      .standard-button {
+        display: none !important;
+      }
+      
+      .compact-menu-button {
+        display: inline-flex !important;
+      }
+    }
+    
+    // Default compact menu state (hidden when not active)
+    .compact-menu-button {
+      display: none !important;
+    }
+  }
+}
+
+// Standard button styling (for inside form field)
+.standard-button {
+  transition: all 0.2s ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  // Default size for desktop and tablet - allow natural expansion
+  min-width: 44px !important;
+  min-height: 44px !important;
+  
+  // Medium screens - still good touch targets
+  @media (max-width: 768px) {
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  
+  // Small screens - more compact but still usable
+  @media (max-width: 480px) {
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+  
+  // Very small screens but still in form field
+  @media (max-width: 400px) {
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+}
+
+// Compact menu button styling (as matSuffix inside form field)
+.compact-menu-button {
+  transition: all 0.2s ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  // Match standard button sizing
+  min-width: 44px !important;
+  min-height: 44px !important;
+  
+  // Medium screens - still good touch targets
+  @media (max-width: 768px) {
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  
+  // Small screens - more compact but still usable
+  @media (max-width: 480px) {
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+  
+  // Very small screens but still in form field
+  @media (max-width: 400px) {
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+  
+  &:hover {
+    background: $surface-secondary !important;
+    box-shadow: 0 2px 8px $shadow-light !important;
+  }
+  
+  mat-icon {
+    color: $text-primary !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+}
+
+// Search actions menu styling
+.search-actions-menu {
+  .mat-mdc-menu-content {
+    padding: 0.5rem 0 !important;
+    min-width: 180px !important;
+  }
+  
+  .mat-mdc-menu-item {
+    min-height: 44px !important;
+    padding: 0 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    font-size: 0.875rem !important;
+      mat-icon {
+      color: $text-secondary !important;
+    }
+    
+    span {
+      flex: 1 !important;
+      color: $text-primary !important;
+    }
+    
+    &:hover {
+      background: $primary-50 !important;
+      
+      mat-icon,
+      span {
+        color: $primary-color !important;
+      }
+    }
+  }
+}
+
+// Form field responsive adjustments to prevent internal wrapping
+@media (max-width: 768px) {
+  :host {
+    display: block !important;
+    width: 100% !important;
+    
+    &.field-full-width {
+      width: 100% !important;
+      flex: 1 !important;
+    }
+  }
+  
+  form {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  
+  .search-input-wrapper {
+    mat-form-field {
+      flex: 1 !important;
+      min-width: 0 !important;
+      width: auto !important;
+      
+      .mat-mdc-text-field-wrapper {
+        min-width: 0 !important;
+        
+        .mat-mdc-form-field-flex {
+          min-width: 0 !important;
+          white-space: nowrap !important;
+          flex-wrap: nowrap !important;
+        }
+        
+        .mat-mdc-form-field-infix {
+          min-width: 0 !important;
+          flex: 1 !important;
+          
+          input {
+            min-width: 0 !important;
+            width: 100% !important;
+          }
+        }
+          // Ensure suffix buttons don't wrap
+        .mat-mdc-form-field-suffix {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          gap: 2px !important;
+          flex-shrink: 0 !important;
+          margin-left: 4px !important;
+        }
+      }
+      
+      // Label adjustments for mobile
+      .mat-mdc-form-field-label-wrapper {
+        max-width: 70% !important;
+        
+        .mat-mdc-form-field-label {
+          font-size: 0.875rem !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          
+          &.mat-mdc-form-field-label-floating {
+            font-size: 0.75rem !important;
+            max-width: 90% !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Extra aggressive spacing for small screens to prevent wrapping at 375px
+@media (max-width: 400px) {
+  .search-input-wrapper {
+    gap: 0.125rem !important;
+    
+    mat-form-field {
+      .mat-mdc-text-field-wrapper {
+        .mat-mdc-form-field-suffix {
+          gap: 1px !important;
+          margin-left: 2px !important;
+        }
+      }
+      
+      .mat-mdc-form-field-label-wrapper {
+        max-width: 60% !important;
+        
+        .mat-mdc-form-field-label {
+          font-size: 0.8rem !important;
+          
+          &.mat-mdc-form-field-label-floating {
+            font-size: 0.7rem !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Prevent input shifting on focus for outline appearance
+.mat-mdc-form-field-outline-start,
+.mat-mdc-form-field-outline-gap,
+.mat-mdc-form-field-outline-end {
+  border-width: 1px !important;
+  transition: border-width 0s !important;
+}
+
+.mdc-text-field--focused .mat-mdc-form-field-outline-start,
+.mdc-text-field--focused .mat-mdc-form-field-outline-gap,
+.mdc-text-field--focused .mat-mdc-form-field-outline-end {
+  border-width: 1px !important;
+}
+
+// Prevent infix padding/margin changes on focus
+.mat-mdc-form-field-infix {
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+}
+
+// Remove mobile margin-top on focus
+@media (max-width: 768px) {
+  mat-form-field.mat-focused {
+    margin-top: 0 !important;
+  }
 }

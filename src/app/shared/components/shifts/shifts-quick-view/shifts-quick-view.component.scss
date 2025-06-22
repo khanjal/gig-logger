@@ -1,0 +1,782 @@
+﻿// Mobile-First Shift Quick View Component Styles
+@import "color-vars";
+@import "../../../styles/components";
+
+/* ========================================
+   SHIFT-SPECIFIC STYLES
+   ======================================== */
+
+/* ========================================
+   COMPONENT STYLES
+   ======================================== */
+
+/* Shift Card Container */
+.shift-card {
+  @extend .card;
+  @extend .card--shadow;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  
+  /* Card States */
+  &--excluded {
+    opacity: 0.6;
+    background: $background-secondary;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, transparent, transparent 10px, $warn-color 10px, $warn-color 12px);
+      opacity: 0.1;
+      pointer-events: none;
+    }
+  }
+  
+  &--unsaved { border-left: 4px solid $warn-color; box-shadow: 0 2px 12px $shadow-medium, 0 1px 6px $shadow-heavy; }
+  &--add { border-left-color: $success-color; }
+  &--edit { border-left-color: $info-color; }
+  &--delete { border-left-color: $warn-color; }
+  &--duplicate { border-left-color: $accent-color; }
+  
+  &:hover:not(.shift-card--excluded) {
+    box-shadow: 0 4px 16px $shadow-light, 0 2px 8px $shadow-medium;
+    transform: translateY(-1px);
+  }
+  
+  &:focus-within { box-shadow: 0 0 0 2px $border-focus; }
+}
+
+/* Shift Header */
+.shift-header {
+  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+  padding: 0.75rem;
+  border-bottom: 1px solid $border-light;    &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    
+    // Create three equal sections for proper centering
+    > * {
+      flex: 1;
+    }
+    
+    // Center the middle item (shift-date)
+    .shift-date {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    // Align service to the right
+    .shift-service {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+  
+  &__time-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    width: 100%;
+  }
+  &__secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+    
+    // When there's no total amount, center the shift-time container
+    .shift-time {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      
+      // Override centering when total amount is present
+      &:not(:last-child) {
+        justify-content: flex-start;
+        flex: initial;
+      }
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  &__toggle-bar {
+    @extend .badge;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+    color: $primary-color;
+    cursor: pointer;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    padding: 0.375rem 0.75rem;
+    height: auto;
+    min-height: 1.75rem;
+    border-radius: 0.875rem;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.95) 100%);
+      border-color: rgba(37, 99, 235, 0.3);
+      transform: scale(1.02);
+    }
+    
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+/* Shift ID Display */
+.shift-id {
+  @extend .grid-item;
+  
+  .shift-number {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $text-primary;
+  }
+  
+  .shift-date {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+}
+
+/* Shift Date Display */
+.shift-date {
+  @extend .grid-item;
+  
+  .shift-date {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+/* Service-Time Grouping (Upper Right) */
+.shift-service-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Service Display */
+.shift-service {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  
+  .service-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $primary-color;
+    white-space: nowrap;
+  }
+  
+  .service-number {
+    @extend .badge;
+    @extend .badge--primary;
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    white-space: nowrap;
+  }
+}
+
+/* Status Badge */
+.status-badge {
+  @extend .badge;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  
+  &--add { @extend .badge--success; }
+  &--edit { @extend .badge--info; }
+  &--delete { @extend .badge--warning; }
+  &--saved { @extend .badge--primary; }
+  &--duplicate {
+    background: linear-gradient(135deg, $accent-50 0%, $accent-100 100%);
+    color: $accent-color;
+    border-color: $accent-200;
+  }
+    .status-icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Trips Badge */
+.shift-trips {
+  @extend .info-badge;
+  
+  // Override info-badge flex behavior to match status badge consistency
+  flex: 0 0 auto !important;
+  max-width: fit-content !important;
+  
+  .info-badge__icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .info-badge__text {
+    white-space: nowrap;
+  }
+}
+
+/* Time Display */
+.shift-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  color: $text-primary;
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 280px;
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    border-color: rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px) scale(1.02);
+  }
+  
+  .time-separator {
+    color: $primary-color;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin: 0 0.375rem;
+    opacity: 0.7;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  }
+  
+  .start-time, .finish-time {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-weight: 700;
+    color: $primary-color;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.02em;
+  }
+  
+  // Responsive font scaling to prevent AM/PM wrapping
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    max-width: 240px;
+    
+    .time-separator {
+      margin: 0 0.25rem;
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    font-size: 0.75rem;
+    gap: 0.125rem;
+    padding: 0.25rem 0.5rem;
+    max-width: 200px;
+    
+    .time-separator {
+      margin: 0 0.125rem;
+      font-size: 0.8rem;
+    }  }
+}
+
+/* Total Amount Display */
+.shift-total {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  
+  .total-amount {
+    @extend .badge;
+    @extend .badge--pill;
+    background: linear-gradient(135deg, $success-color 0%, $accent-color 100%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 700;
+    
+    // Use utility classes for efficiency colors
+    &.efficiency--excellent { 
+      @extend .efficiency--excellent; 
+      @extend .efficiency--excellent-bg; 
+      text-shadow: 0 0 8px rgba(34, 197, 94, 0.3); 
+    }
+    &.efficiency--good { @extend .efficiency--good; @extend .efficiency--good-bg; }
+    &.efficiency--average { @extend .efficiency--average; @extend .efficiency--average-bg; }
+    &.efficiency--poor { @extend .efficiency--poor; @extend .efficiency--poor-bg; }
+  }
+}
+
+/* Duration Information */
+.duration-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .duration-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    
+    .duration-icon {
+      font-size: 1rem !important;
+      width: 1rem;
+      height: 1rem;
+      color: $text-secondary;
+    }
+    
+    .duration-text {
+      color: $text-primary;
+      font-weight: 500;
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  }
+}
+
+/* Toggle Bar */
+.toggle-bar__content {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  
+  .toggle-bar__text {
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  
+  .toggle-bar__icon {
+    font-size: 1rem !important;
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s ease;
+  }
+}
+
+/* Shift Content */
+.shift-content {
+  background: $surface-color;
+  padding: 1rem;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+/* Info Cards */
+.info-card {
+  @extend .card;
+  background: $surface-secondary;
+  border: 1px solid $border-light;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $surface-color;
+    box-shadow: 0 2px 8px $shadow-light;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-bottom: 1px solid $border-light;
+      .info-icon {
+      color: $primary-color;
+    }
+    
+    h4 {
+      margin: 0;
+      color: $text-primary;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+  }
+  
+  &__content {
+    padding: 1rem;
+  }
+}
+
+/* Info Badges */
+// Remove local override to use shared info-badge styling from _components.scss
+  
+  /* Distance Display */
+.distance-info {
+  margin-top: 0.75rem;
+  
+  .distance-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    strong {
+      color: $text-primary;
+      font-weight: 600;
+    }
+    
+    span {
+      font-weight: 600;
+      
+      &.primary { color: $primary-color !important; }
+      &.warn { color: $danger-color !important; }
+      &.rainbow-text-animated {
+        background: linear-gradient(45deg, $primary-color, $secondary-color, $accent-color, $success-color);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow 2s ease-in-out infinite;
+      }
+    }
+  }
+}
+
+/* Payment Grid */
+.payment-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-row {
+  display: flex;
+  gap: 0.75rem;
+  
+  &--primary {
+    flex-wrap: wrap;
+    
+    .payment-item {
+      @extend .grid-item;
+      flex: 1;
+      min-width: 0;
+      background: $surface-color;
+      border: 1px solid $border-light;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+    }
+  }
+  
+  &--secondary {
+    .payment-item {
+      @extend .grid-item;
+      flex: 1;
+      background: $surface-secondary;
+      border: 1px solid $border-light;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      
+      &--total {
+        background: $primary-50;
+        border: 1px solid $primary-200;
+      }
+      
+      &--cash {
+        background: $success-50;
+        border: 1px solid $success-200;
+      }
+    }
+  }
+}
+
+.payment-item {
+  .payment-label {
+    @extend .grid-item__label;
+  }
+  
+  .payment-value {
+    @extend .grid-item__value;
+    
+    &--pay { 
+      @extend .payment-color--pay; 
+      color: $payment-card !important;
+    }
+    &--tip { 
+      @extend .payment-color--tip; 
+      color: $payment-tip !important;
+    }
+    &--bonus { 
+      @extend .payment-color--bonus; 
+      color: $payment-bonus !important;
+    }
+    &--cash { 
+      @extend .payment-color--cash; 
+      color: $payment-cash !important;
+    }
+    &--total { 
+      @extend .payment-color--total; 
+      @extend .grid-item__value--lg; 
+      color: $primary-color !important;
+    }
+  }
+}
+
+/* Detail Items */
+.detail-item {
+  @extend .badge;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  border: 1px solid $border-light;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  
+  &__label {
+    color: $text-secondary;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  &__value {
+    color: $text-primary;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+}
+
+/* Shift Note */
+.shift-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, $info-50, rgba($info-color, 0.05));
+  border: 1px solid $info-100;
+  border-radius: 0.75rem;
+  padding: 1rem;
+    .note-icon {
+    color: $info-color;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+  
+  .note-text {
+    font-style: italic;
+    color: $text-primary;
+    line-height: 1.5;
+    flex: 1;
+  }
+}
+
+/* Action Buttons */
+.shift-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  background: $surface-color;
+  border-top: 1px solid $border-light;
+  
+  .action-button {
+    &--left {
+      margin-left: 0;
+    }
+    
+    &--right {
+      margin-left: auto;
+    }
+    
+    // Explicit disabled styling for edit button
+    &[disabled] {
+      opacity: 0.6 !important;
+      background-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.26) !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      
+      .mat-icon {
+        color: rgba(0, 0, 0, 0.26) !important;
+      }
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.12) !important;
+        box-shadow: none !important;
+      }
+    }
+  }
+}
+
+/* Animations */
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .shift-header {
+    padding: 1rem;
+    
+    &__main {
+      margin-bottom: 0.75rem;
+    }
+    
+    &__secondary {
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    &__bottom {
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+    }
+  }
+  
+  .shift-id {
+    gap: 0.75rem;
+    
+    .shift-number {
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+    }
+    
+    .shift-date {
+      font-size: 1rem;
+    }
+  }
+  
+  .shift-service {
+    gap: 0.5rem;
+    
+    .service-name, .service-number {
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+    }
+  }
+  
+  .status-badge {
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    
+    .status-icon {
+      font-size: 1.125rem !important;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+    .shift-time {
+    font-size: 0.9375rem;
+    
+    @media (min-width: 1024px) {
+      font-size: 1rem;
+    }
+  }
+    .shift-total .total-amount {
+    font-size: 1rem;
+  }
+  
+  .duration-info {
+    gap: 1.5rem;
+    
+    .duration-item {
+      gap: 0.5rem;
+      
+      .duration-icon {
+        font-size: 1.125rem !important;
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+      
+      .duration-text {
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .info-card {
+    &__header {
+      padding: 1rem 1.25rem;
+      gap: 1rem;
+        .info-icon {
+        color: $primary-color;
+      }
+      
+      h4 {
+        font-size: 1rem;
+      }
+    }
+    
+    &__content {
+      padding: 1.25rem;
+    }
+  }
+  
+  .info-badge {
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    
+    &__icon {
+      font-size: 1.125rem !important;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+  
+  .detail-item {
+    padding: 0.75rem 1rem;
+    
+    &__label {
+      font-size: 0.875rem;
+    }
+    
+    &__value {
+      font-size: 1rem;
+    }
+  }
+}
