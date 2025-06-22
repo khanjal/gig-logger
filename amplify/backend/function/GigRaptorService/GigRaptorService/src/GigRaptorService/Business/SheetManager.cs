@@ -5,6 +5,7 @@ using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
 using RaptorSheets.Gig.Managers;
+using RaptorSheets.Core.Entities;
 using System.Text.Json;
 
 namespace GigRaptorService.Business;
@@ -161,7 +162,7 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetResponse> SaveData(SheetEntity sheetEntity)
     {
-        var returnEntity = new SheetEntity { Messages = [] };
+        var returnEntity = new SheetEntity { Messages = new List<MessageEntity>() };
         returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), RaptorSheets.Common.Enums.SheetEnum.SETUP.GetDescription()], sheetEntity)).Messages);
         
         // Save operations typically have small responses, so we don't need to check size
