@@ -229,7 +229,8 @@ export class ApiService {
             
             return await this.handleSheetResponse(response, `single sheet '${sheetName}'`);
         } catch (error) {
-            this.handleError('getSheetSingle', error);            throw error;
+            this.handleError('getSheetSingle', error);
+            throw error;
         }
     }
 
