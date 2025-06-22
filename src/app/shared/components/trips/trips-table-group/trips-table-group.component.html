@@ -3,7 +3,7 @@
         <h2>
             <span class="title-content">
                 {{ title }} 
-                <a href="https://docs.google.com/spreadsheets/d/{{link}}" target="_blank" class="link-icon">
+                <a [href]="'https://docs.google.com/spreadsheets/d/' + link" target="_blank" class="link-icon">
                     <mat-icon>open_in_new</mat-icon>
                 </a>
             </span>
