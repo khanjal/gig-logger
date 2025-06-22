@@ -114,6 +114,10 @@ export class SearchInputComponent {
     if (this.placeSearch) {
       this.showSearch = true;
     }
+    // Show Google Search button for gig-test subdomain or localhost
+    if (window.location.hostname.includes('gig-test') || window.location.hostname === 'localhost') {
+      this.showSearch = true;
+    }
   }
   
   async ngOnChanges(): Promise<void> {
@@ -173,7 +177,6 @@ export class SearchInputComponent {
       this.showSearch = true;
     }
   }
-
   async onInputSelect(inputValue: string): Promise<void> {
     this.value = inputValue; // Update the value and trigger onChange
 
@@ -182,24 +185,6 @@ export class SearchInputComponent {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
       }, 100); // Delay by 100ms
-    }
-  }
-
-  /**
-   * Scrolls the closest scrollable parent to the top when the input is focused.
-   * Works for modals and main window. Handles virtual keyboard pop-up as well.
-   */
-  onInputFocus(event: FocusEvent) {
-    let el = (event.target as HTMLElement).parentElement;
-    // Traverse up to find the closest scrollable parent
-    while (el) {
-      const style = window.getComputedStyle(el);
-      const overflowY = style.overflowY;
-      if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
-        el.scrollTo({ top: 0, behavior: 'smooth' });
-        break;
-      }
-      el = el.parentElement;
     }
   }
 
