@@ -1,0 +1,63 @@
+<mat-card class="auth-status-card">  <mat-card-header>
+    <mat-card-title>
+      <mat-icon [ngClass]="{
+        'text-success': isAuthenticated && hasAccessToken && localStorageAuth,
+        'text-warning': (localStorageAuth || hasAccessToken) && !isAuthenticated,
+        'text-error': !localStorageAuth && !hasAccessToken && !isAuthenticated
+      }">{{ getStatusIcon() }}</mat-icon>
+      Authentication Status
+    </mat-card-title>
+  </mat-card-header>
+    <mat-card-content>
+    <!-- Overall Status -->
+    <div class="status-row">
+      <span class="status-label">Overall Status:</span>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': isAuthenticated,
+          'chip-error': !isAuthenticated
+        }"
+        selected>
+        {{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}
+      </mat-chip>
+    </div>
+
+    <!-- localStorage Status -->
+    <div class="status-row">
+      <span class="status-label">Local Storage:</span>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': localStorageAuth,
+          'chip-error': !localStorageAuth
+        }"
+        selected>
+        {{ localStorageAuth ? 'TRUE' : 'FALSE' }}
+      </mat-chip>
+    </div>
+
+    <!-- Access Token Status -->
+    <div class="status-row">
+      <span class="status-label">Access Token:</span>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': hasAccessToken,
+          'chip-error': !hasAccessToken
+        }"
+        selected>
+        {{ hasAccessToken ? 'Present' : 'Missing' }}
+      </mat-chip>
+    </div>
+
+    <!-- Token Preview -->
+    <div class="status-row" *ngIf="hasAccessToken">
+      <span class="status-label">Token Preview:</span>
+      <code class="token-preview">{{ accessTokenPreview }}</code>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="status-row">
+      <span class="status-label">Last Updated:</span>
+      <span class="timestamp">{{ lastUpdated | date:'medium' }}</span>
+    </div>
+  </mat-card-content>
+</mat-card>

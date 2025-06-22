@@ -1,0 +1,361 @@
+// Mobile-first responsive utilities extracted from trip-form patterns
+// Consolidated from 628 lines of repetitive responsive code
+
+// BREAKPOINTS - Consistent mobile-first approach
+$mobile-small: 480px;
+$tablet: 768px;
+
+// SPACING UTILITIES - Mobile-first responsive spacing
+@mixin spacing-responsive($base-value, $scale-tablet: 0.85, $scale-mobile: 0.7) {
+  margin-bottom: $base-value;
+  
+  @media (max-width: $tablet) {
+    margin-bottom: $base-value * $scale-tablet;
+  }
+  
+  @media (max-width: $mobile-small) {
+    margin-bottom: $base-value * $scale-mobile;
+  }
+}
+
+@mixin padding-responsive($base-value, $scale-tablet: 0.75, $scale-mobile: 0.5) {
+  padding: $base-value;
+  
+  @media (max-width: $tablet) {
+    padding: $base-value * $scale-tablet;
+  }
+  
+  @media (max-width: $mobile-small) {
+    padding: $base-value * $scale-mobile;
+  }
+}
+
+@mixin margin-right-responsive($base-value) {
+  margin-right: $base-value;
+  
+  @media (max-width: $tablet) {
+    margin-right: $base-value * 0.5;
+  }
+  
+  @media (max-width: $mobile-small) {
+    margin-right: $base-value * 0.25;
+  }
+}
+
+// TOUCH TARGET UTILITIES - PWA-optimized minimum sizes
+@mixin touch-target-base {
+  min-height: 44px;
+  min-width: 44px;
+  
+  @media (max-width: $mobile-small) {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+@mixin touch-button {
+  @include touch-target-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// FONT SIZE UTILITIES - Mobile-first typography
+@mixin font-size-responsive($base-size, $scale: 0.9) {
+  font-size: $base-size;
+  
+  @media (max-width: $tablet) {
+    font-size: $base-size * $scale;
+  }
+}
+
+// BORDER RADIUS UTILITIES - Progressive enhancement from mobile
+@mixin border-radius-responsive($base-radius) {
+  border-radius: $base-radius;
+  
+  @media (max-width: $tablet) {
+    border-radius: $base-radius * 0.75;
+  }
+  
+  @media (max-width: $mobile-small) {
+    border-radius: $base-radius * 0.5;
+  }
+}
+
+// FORM FIELD UTILITIES - Common form field patterns
+@mixin form-field-full-width {
+  width: 100%;
+  max-width: 100%;
+  flex: 1 1 100%;
+}
+
+@mixin form-field-half-width {
+  flex: 1 !important;
+  width: calc(50% - 0.25rem) !important;
+  max-width: calc(50% - 0.25rem) !important;
+  min-width: 0;
+  
+  @media (max-width: $mobile-small) {
+    width: calc(50% - 0.1875rem) !important;
+    max-width: calc(50% - 0.1875rem) !important;
+  }
+}
+
+@mixin form-field-third-width {
+  flex: 1;
+  width: calc(33.333% - 0.17rem);
+  max-width: calc(33.333% - 0.17rem);
+  min-width: 70px;
+  
+  @media (max-width: $mobile-small) {
+    width: calc(33.333% - 0.08rem);
+    max-width: calc(33.333% - 0.08rem);
+    min-width: 60px;
+  }
+}
+
+// FLEX LAYOUT UTILITIES - Common responsive flex patterns
+@mixin flex-row-responsive($gap: 0.5rem) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $gap;
+  
+  @media (max-width: $tablet) {
+    gap: $gap * 0.75;
+  }
+  
+  @media (max-width: $mobile-small) {
+    gap: $gap * 0.75;
+  }
+}
+
+@mixin flex-column-to-row($breakpoint: $tablet) {
+  display: flex;
+  flex-direction: column;
+  
+  @media (min-width: $breakpoint) {
+    flex-direction: row;
+  }
+}
+
+// UTILITY CLASSES - Ready-to-use classes
+.spacing-section {
+  @include spacing-responsive(1.5rem);
+}
+
+.spacing-item {
+  @include spacing-responsive(1rem);
+}
+
+.spacing-small {
+  @include spacing-responsive(0.5rem);
+}
+
+.padding-responsive {
+  @include padding-responsive(1rem);
+}
+
+.padding-small-responsive {
+  @include padding-responsive(0.5rem);
+}
+
+.touch-button {
+  @include touch-button;
+}
+
+.margin-right-responsive {
+  @include margin-right-responsive(1rem);
+}
+
+.margin-right-small-responsive {
+  @include margin-right-responsive(0.5rem);
+}
+
+.font-title-responsive {
+  @include font-size-responsive(1.5rem);
+  font-weight: 500;
+}
+
+.font-subtitle-responsive {
+  @include font-size-responsive(1.1rem);
+  font-weight: 600;
+}
+
+.border-radius-card {
+  @include border-radius-responsive(12px);
+}
+
+.border-radius-button {
+  @include border-radius-responsive(8px);
+}
+
+// FORM LAYOUT UTILITIES
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  
+  @media (min-width: $tablet) {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  &--halves {
+    @include flex-row-responsive(0.5rem);
+    flex-wrap: nowrap !important;
+    
+    > * {
+      @include form-field-half-width;
+    }
+  }
+  
+  &--thirds {
+    @include flex-row-responsive(0.25rem);
+    
+    > * {
+      @include form-field-third-width;
+    }
+  }
+  
+  &--with-button {
+    @include flex-row-responsive(0.5rem);
+    
+    .field-full-width,
+    app-search-input {
+      flex: 1;
+      width: auto;
+      max-width: none;
+      min-width: 0;
+    }
+    
+    .toggle-button {
+      flex-shrink: 0;
+      @include touch-target-base;
+    }
+  }
+}
+
+.form-field-full {
+  @include form-field-full-width;
+}
+
+// RESPONSIVE VISIBILITY UTILITIES
+.mobile-only {
+  display: block;
+  
+  @media (min-width: $tablet) {
+    display: none;
+  }
+}
+
+.desktop-only {
+  display: none;
+  
+  @media (min-width: $tablet) {
+    display: block;
+  }
+}
+
+// RESPONSIVE CONTAINER UTILITIES
+.container-responsive {
+  width: 100%;
+  padding: 0.5rem;
+  
+  @media (max-width: $mobile-small) {
+    padding: 0.25rem;
+  }
+}
+
+.card-responsive {
+  @include padding-responsive(1rem);
+  @include border-radius-responsive(12px);
+  background: linear-gradient(135deg, var(--primary-50, #f8f9ff) 0%, var(--secondary-50, #f5f7fa) 100%);
+  border: 1px solid var(--border-light, #e0e0e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// RESPONSIVE GRID UTILITIES
+.grid-responsive {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  
+  @media (min-width: $mobile-small) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  @media (min-width: $tablet) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+.grid-halves {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  
+  @media (max-width: $mobile-small) {
+    gap: 0.375rem;
+  }
+}
+
+// RESPONSIVE BUTTON UTILITIES
+.button-row {
+  @include flex-row-responsive(1rem);
+  justify-content: center;
+  
+  button {
+    flex: 0 0 25%;
+    min-width: 120px;
+    max-width: 200px;
+    
+    @media (max-width: $tablet) {
+      min-width: 100px;
+      max-width: 150px;
+    }
+    
+    @media (max-width: $mobile-small) {
+      min-width: 80px;
+      max-width: 120px;
+    }
+  }
+}
+
+// ACCESSIBILITY UTILITIES
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.focus-visible {
+  &:focus-visible {
+    outline: 2px solid var(--accent-color, #007bff);
+    outline-offset: 2px;
+  }
+}
+
+// SCROLLABLE CONTAINER UTILITIES
+.scrollable-responsive {
+  height: 200px;
+  @include border-radius-responsive(8px);
+  border: 1px solid var(--border-color, #ccc);
+  
+  @media (max-width: $tablet) {
+    height: 150px;
+  }
+  
+  @media (max-width: $mobile-small) {
+    height: 120px;
+  }
+}

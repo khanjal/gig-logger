@@ -10,11 +10,11 @@ import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // App Components
-import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
-import { DataSyncModalComponent } from '@components/data-sync-modal/data-sync-modal.component';
-import { DiagnosticsComponent } from '@components/diagnostics/diagnostics.component';
-import { LoginComponent } from "@components/login/login.component";
-import { ServiceWorkerStatusComponent } from '@components/service-worker-status/service-worker-status.component';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { DiagnosticsComponent } from '@components/settings/diagnostics/diagnostics.component';
+import { LoginComponent } from "@components/auth/login/login.component";
+import { ServiceWorkerStatusComponent } from '@components/data/service-worker-status/service-worker-status.component';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
@@ -32,7 +32,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
-import { AuthStatusComponent } from "@components/auth-status/auth-status.component";
+import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
 
 @Component({
     selector: 'app-setup',

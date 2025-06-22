@@ -1,0 +1,45 @@
+<div class="table-container">
+    @if (trips && trips.length > 0) {
+        <div class='table-responsive-auto' #tableContainer>
+        <mat-table [dataSource]="trips" multiTemplateDataRows class="table-theme-minimal table-auto-size table-compact">
+            <ng-container matColumnDef="date">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-time"> Date </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-time">
+                  <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
+                    {{ trip.date | date:'YY MMM d' }}
+                  </span>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="service">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-service"> Service </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-service"> {{trip.service}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="place">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-flexible"> Place </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-flexible"> {{trip.place | truncate:20}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="tips">
+                <mat-header-cell *matHeaderCellDef class="table-col-auto-currency">Tips</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-auto-currency" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.tip + trip.cash | currency}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="secondary">
+                <td mat-cell [attr.colspan]="displayedColumns.length"
+                    *matCellDef="let trip">
+                    <span *ngIf="trip.endUnit"><strong>Apt/Unit:</strong> {{trip.endUnit}}</span>
+                    <span *ngIf="trip.endUnit && trip.note">, </span>
+                    <span *ngIf="trip.note"><em>"{{trip.note}}"</em></span>
+                </td>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; let i = dataIndex; columns: displayedColumns;" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
+            <mat-row *matRowDef="let row; let i = dataIndex; columns: ['secondary']; when: hasSecondaryData" class="alt-row" [ngClass]="i%2===0 ? 'even' : 'odd'"></mat-row>
+        </mat-table>
+    </div>
+    } @else {
+        <div class="no-trips-message">
+            <mat-icon class="no-trips-icon">info_outline</mat-icon>
+            <h3>No trips to display</h3>
+            <p>There are currently no trips available.</p>
+        </div>
+    }
+</div>

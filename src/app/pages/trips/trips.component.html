@@ -1,7 +1,8 @@
 <div class="container" id="addTrip">
-    <div><app-current-average class="field-right"></app-current-average></div>
-    
-    <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    <div class="trip-form-container">
+        <app-current-average class="current-average-overlay"></app-current-average>
+        <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    </div>
 
     @if (unsavedData && !pollingEnabled) {
         <div class="row-grid">
@@ -14,10 +15,9 @@
             <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
-    
-    <h2 id="todaysTrips">
+      <h2 id="todaysTrips">
         @if (todaysTrips.length > 0) {
-            Today's Trips
+            Today's Trips ({{todaysTrips.length}})
         }
         @else {
             No Trips Today
@@ -26,28 +26,34 @@
             Auto Save
         </mat-slide-toggle>
     </h2>
-
+    
     @for (trip of todaysTrips; track $index) {
         <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()"></trips-quick-view>
+            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
         </div>
     }
 
     <br/>
-    <mat-accordion *ngIf="yesrterdaysTrips.length > 0">
-        <mat-expansion-panel>
-            <mat-expansion-panel-header [expandedHeight]="'auto'" class="mat-panel-header">
-                <mat-panel-title class="mat-panel-title">
-                    <h2 id="yesrterdaysTrips">Yesterday's Trips</h2>
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            @for (trip of yesrterdaysTrips; track $index) {
-                <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                    <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()"></trips-quick-view>
+    @if (yesrterdaysTrips.length > 0) {
+        <div class="yesterday-section">
+            <h2 id="yesrterdaysTrips" class="yesterday-header" (click)="toggleYesterdayTrips()">
+                <mat-icon class="toggle-icon" [class.expanded]="showYesterdayTrips">
+                    {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+                Yesterday's Trips ({{yesrterdaysTrips.length}})
+            </h2>
+            
+            @if (showYesterdayTrips) {
+                <div class="yesterday-trips-container">
+                    @for (trip of yesrterdaysTrips; track $index) {
+                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+                            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+                        </div>
+                    }
                 </div>
             }
-        </mat-expansion-panel>
-    </mat-accordion>
+        </div>
+    }
     <br/>
     <div class="row-grid">
         <app-trips-table-group class="table" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>

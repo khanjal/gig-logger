@@ -1,5 +1,6 @@
 ﻿using GigRaptorService.Attributes;
 using GigRaptorService.Business;
+using GigRaptorService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RaptorSheets.Core.Entities;
@@ -46,7 +47,7 @@ public class SheetsController : ControllerBase
     // GET api/sheets/all  
     [HttpGet("all")]
     [RequireSheetId]
-    public async Task<SheetEntity?> GetAll()
+    public async Task<SheetResponse> GetAll()
     {
         InitializeSheetmanager();
         return await _sheetmanager!.GetSheets();
@@ -55,7 +56,7 @@ public class SheetsController : ControllerBase
     // GET api/sheets/get/single  
     [HttpGet("single/{sheetName}")]
     [RequireSheetId]
-    public async Task<SheetEntity?> GetSingle(string sheetName)
+    public async Task<SheetResponse> GetSingle(string sheetName)
     {
         InitializeSheetmanager();
         return await _sheetmanager!.GetSheet(sheetName);
@@ -63,7 +64,7 @@ public class SheetsController : ControllerBase
 
     [HttpGet("multiple")]
     [RequireSheetId]
-    public async Task<SheetEntity?> GetMultiple([FromQuery] string[] sheetName)
+    public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName)
     {
         InitializeSheetmanager();
         return await _sheetmanager!.GetSheets(sheetName);
@@ -82,7 +83,7 @@ public class SheetsController : ControllerBase
     // POST api/sheets/create  
     [HttpPost("create")]
     [RequireSheetId]
-    public async Task<SheetEntity> Create([FromBody] PropertyEntity properties)
+    public async Task<SheetResponse> Create([FromBody] PropertyEntity properties)
     {
         InitializeSheetmanager();
         return await _sheetmanager!.CreateSheet();
@@ -91,7 +92,7 @@ public class SheetsController : ControllerBase
     // POST api/sheets/save  
     [HttpPost("save")]
     [RequireSheetId]
-    public async Task<SheetEntity> Save([FromBody] SheetEntity sheetEntity)
+    public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
     {
         InitializeSheetmanager(sheetEntity.Properties.Id);
         return await _sheetmanager!.SaveData(sheetEntity);

@@ -10,11 +10,21 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- Trim unused assemblies to reduce package size -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <!-- Enable tiered compilation for better performance -->
+    <TieredCompilation>true</TieredCompilation>
+    <!-- Enable server garbage collection for better memory management -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <!-- Enable compilation optimizations -->
+    <Optimize>true</Optimize>
     <UserSecretsId>e4bf42c1-9b3d-472f-948c-f2ff8cf7bbfa</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.1.1" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.1.1" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.301.17" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.300" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.305.29" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.3.0" />
     <PackageReference Include="RaptorSheets.Gig" Version="1.1.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />

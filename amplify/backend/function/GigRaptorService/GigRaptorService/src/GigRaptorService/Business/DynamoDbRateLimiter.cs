@@ -5,14 +5,22 @@ namespace GigRaptorService.Business;
 
 public class DynamoDbRateLimiter
 {
-    private readonly IAmazonDynamoDB _dynamoDbClient;
+    private readonly Lazy<IAmazonDynamoDB> _lazyDynamoDbClient;
     private readonly string _tableName;
     private readonly int _maxRequests;
     private readonly TimeSpan _timeWindow;
 
     public DynamoDbRateLimiter(IAmazonDynamoDB dynamoDbClient, string tableName, int maxRequests, TimeSpan timeWindow)
     {
-        _dynamoDbClient = dynamoDbClient;
+        _lazyDynamoDbClient = new Lazy<IAmazonDynamoDB>(() => dynamoDbClient, LazyThreadSafetyMode.ExecutionAndPublication);
+        _tableName = tableName;
+        _maxRequests = maxRequests;
+        _timeWindow = timeWindow;
+    }
+
+    public DynamoDbRateLimiter(Lazy<IAmazonDynamoDB> lazyDynamoDbClient, string tableName, int maxRequests, TimeSpan timeWindow)
+    {
+        _lazyDynamoDbClient = lazyDynamoDbClient;
         _tableName = tableName;
         _maxRequests = maxRequests;
         _timeWindow = timeWindow;
@@ -21,9 +29,10 @@ public class DynamoDbRateLimiter
     public async Task<bool> IsRequestAllowedAsync(string spreadsheetId)
     {
         var now = DateTime.UtcNow;
+        var dynamoDbClient = _lazyDynamoDbClient.Value;
 
         // Get the current rate limit record for the spreadsheet ID
-        var response = await _dynamoDbClient.GetItemAsync(new GetItemRequest
+        var response = await dynamoDbClient.GetItemAsync(new GetItemRequest
         {
             TableName = _tableName,
             Key = new Dictionary<string, AttributeValue>
@@ -35,7 +44,7 @@ public class DynamoDbRateLimiter
         if (response.Item == null || !response.Item.ContainsKey("RequestCount"))
         {
             // No record exists, create a new one
-            await _dynamoDbClient.PutItemAsync(new PutItemRequest
+            await dynamoDbClient.PutItemAsync(new PutItemRequest
             {
                 TableName = _tableName,
                 Item = new Dictionary<string, AttributeValue>
@@ -56,7 +65,7 @@ public class DynamoDbRateLimiter
         if (now - lastRequestTime > _timeWindow)
         {
             // Reset the rate limit
-            await _dynamoDbClient.UpdateItemAsync(new UpdateItemRequest
+            await dynamoDbClient.UpdateItemAsync(new UpdateItemRequest
             {
                 TableName = _tableName,
                 Key = new Dictionary<string, AttributeValue>
@@ -79,7 +88,7 @@ public class DynamoDbRateLimiter
         }
 
         // Increment the request count
-        await _dynamoDbClient.UpdateItemAsync(new UpdateItemRequest
+        await dynamoDbClient.UpdateItemAsync(new UpdateItemRequest
         {
             TableName = _tableName,
             Key = new Dictionary<string, AttributeValue>

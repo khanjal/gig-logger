@@ -1,62 +1,77 @@
+// Stats Table Component Styles
 @import "color-vars";
 
-.table-responsive {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: .5rem;
+// Component-specific styles only - global table styles are in _tables.scss
+
+// Sticky first column enhancement for stats table
+@media (min-width: 768px) {
+  .mat-mdc-cell:first-child,
+  .mat-cell:first-child,
+  .mat-mdc-header-cell:first-child,
+  .mat-header-cell:first-child,
+  .mat-mdc-footer-cell:first-child,
+  .mat-footer-cell:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: inherit;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
-.mat-mdc-table {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 1rem;
-    display: table;
-    border-collapse: collapse;
-}
-
-.mat-mdc-row,
-.mat-mdc-header-row,
-.mat-mdc-footer-row {
-    display: table-row;
-    height: 1.5rem;
-}
-
-.mat-mdc-row:nth-child(even){
-    background-color: $primary-light-color;
-}
-
-.mat-mdc-row:nth-child(odd){
-    background-color: $tertiary-light-color;
-}
-
-.mat-mdc-cell,
-.mat-mdc-header-cell,
-.mat-mdc-footer-cell {
-    padding-left: 0;
-    word-wrap: initial;
-    display: table-cell;
-    padding: 0px 5px;
-    line-break: unset;
-    width: auto;
-    white-space: nowrap;
-    overflow: hidden;
-    vertical-align: middle;
-}
-
-.mat-mdc-cell:first-child,
-.mat-mdc-footer-cell:first-child,
-.mat-mdc-header-cell:first-child {
-    padding-left: 0px !important;
-}
-
-.mat-mdc-header-cell,
-.mat-mdc-footer-cell {
-    font-weight: bold;
-}
-
-td:first-child, th:first-child {
-    position:sticky;
-    left:0;
-    z-index:100;
+// Empty state styling - component specific
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 2rem;
+  text-align: center;
+  color: $text-secondary;
+  
+  .empty-state-content {
+    max-width: 300px;
+    
+    .empty-state-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: $border-light;
+      margin-bottom: 1rem;
+    }
+    
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: $text-primary;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    min-height: 150px;
+    padding: 1.5rem;
+    
+    .empty-state-content {
+      .empty-state-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+      }
+      
+      h3 {
+        font-size: 1.125rem;
+      }
+      
+      p {
+        font-size: 0.8125rem;
+      }
+    }
+  }
 }

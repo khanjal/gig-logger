@@ -1,0 +1,196 @@
+@import "color-vars";
+@import "../../../styles/modal-mixins";
+
+// Mobile-first confirm dialog styling
+.confirm-dialog {
+  padding: 1.5rem;
+  min-width: 320px;
+  max-width: 500px;
+  border-radius: 16px;
+  height: auto;
+  min-height: auto;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    min-width: 280px;
+    max-width: calc(100vw - 2rem);
+    border-radius: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    min-width: 260px;
+    max-width: calc(100vw - 1rem);
+    border-radius: 8px;
+  }
+}
+
+// Enhanced dialog title
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 1rem;
+  text-align: center;
+  
+  @media (max-width: 768px) {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Enhanced dialog content
+.dialog-content {
+  font-size: 1rem;
+  color: $text-secondary;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+}
+
+// Enhanced dialog actions with mobile-first design
+.dialog-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+  }
+  
+  button {
+    min-height: 44px;
+    min-width: 100px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    @media (max-width: 480px) {
+      min-width: 90px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Confirm button styling
+.confirm-button {
+  background: linear-gradient(135deg, $success-color 0%, $success-600 100%) !important;
+  color: white !important;
+  border: none !important;
+  
+  &:hover {
+    background: linear-gradient(135deg, $success-600 0%, $success-700 100%) !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Cancel button styling
+.cancel-button {
+  background: linear-gradient(135deg, $background-light 0%, $border-color 100%);
+  color: $text-primary;
+  border: 1px solid $border-color;
+  
+  &:hover {
+    background: linear-gradient(135deg, $border-light 0%, $background-light 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Danger/Delete button styling
+.danger-button {
+  background: linear-gradient(135deg, $danger-color 0%, $danger-600 100%);
+  color: white;
+  border: none;
+  
+  &:hover {
+    background: linear-gradient(135deg, $danger-600 0%, $danger-700 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Warning icon styling
+.warning-icon {
+  font-size: 3rem;
+  color: $warn-color;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Success icon styling
+.success-icon {
+  font-size: 3rem;
+  color: $success-color;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Confirm dialog info icon styling - large display icon
+.confirm-info-icon {
+  font-size: 3rem;
+  color: $info-color;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;  }
+}
+
+// Use global modal backdrop styling
+@include setup-modal-backdrop('medium');

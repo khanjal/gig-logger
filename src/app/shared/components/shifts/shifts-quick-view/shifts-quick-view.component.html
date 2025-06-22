@@ -1,0 +1,208 @@
+<!-- Mobile-First Shift Quick View Component -->
+<div class="shift-card" [ngClass]="{
+  'shift-card--excluded': shift.action === 'DELETE',
+  'shift-card--unsaved': !shift.saved,
+  'shift-card--add': !shift.saved && shift.action === 'ADD',
+  'shift-card--edit': !shift.saved && shift.action === 'UPDATE',
+  'shift-card--delete': !shift.saved && shift.action === 'DELETE',
+  'shift-card--duplicate': duplicateShift
+}">
+  
+  <!-- Shift Header -->
+  <div class="shift-header">    <div class="shift-header__main">
+      <div class="shift-id">
+        <span class="shift-number">#{{shift.rowId}}</span>
+      </div>
+      
+      <div class="shift-date">
+        <span class="shift-date">{{shift.date | date:'E, MMM d'}}</span>
+      </div>
+      
+      <div class="shift-service">
+        <span class="service-name">{{shift.service}}</span>
+        <span class="service-number" *ngIf="shift.number > 0">#{{shift.number}}</span>
+      </div>
+    </div>
+    
+    <div class="shift-header__time-row">
+      <div class="shift-time">
+        <span class="start-time" [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
+          {{ shift.start | noseconds:prefers24Hour }}
+        </span>
+        <span class="time-separator" *ngIf="shift.finish">-</span>
+        <span class="finish-time" [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}" *ngIf="shift.finish">
+          {{ shift.finish | noseconds:prefers24Hour }}
+        </span>
+      </div>
+    </div>
+    
+    <div class="shift-header__secondary">
+      <div class="status-badge" [ngClass]="{
+        'status-badge--add': !shift.saved && shift.action === 'ADD',
+        'status-badge--edit': !shift.saved && shift.action === 'UPDATE',
+        'status-badge--delete': !shift.saved && shift.action === 'DELETE',
+        'status-badge--duplicate': duplicateShift,
+        'status-badge--saved': shift.saved
+      }">
+        <mat-icon class="status-icon">
+          @if (!shift.saved && shift.action === 'ADD') { add }
+          @else if (!shift.saved && shift.action === 'UPDATE') { edit }
+          @else if (!shift.saved && shift.action === 'DELETE') { delete }
+          @else if (duplicateShift) { content_copy }
+          @else { check_circle }
+        </mat-icon>
+        <span class="status-text">
+          @if (!shift.saved && shift.action === 'ADD') { New }
+          @else if (!shift.saved && shift.action === 'UPDATE') { Modified }
+          @else if (!shift.saved && shift.action === 'DELETE') { Deleted }
+          @else if (duplicateShift) { Duplicate }
+          @else { Saved }
+        </span>
+      </div>
+      <div class="shift-trips" *ngIf="shift.totalTrips">
+        <mat-icon class="info-badge__icon">route</mat-icon>
+        <span class="info-badge__text">{{shift.totalTrips}} trips</span>
+      </div>
+      
+      <div class="shift-total" *ngIf="shift.grandTotal">
+        <span class="total-amount" [ngClass]="{
+          'efficiency--excellent': shift.amountPerTime > 30,
+          'efficiency--good': shift.amountPerTime >= 25 && shift.amountPerTime <= 30,
+          'efficiency--average': shift.amountPerTime >= 20 && shift.amountPerTime < 25,
+          'efficiency--poor': shift.amountPerTime < 20
+        }">{{shift.grandTotal | currency}}</span>
+      </div>
+    </div>
+    
+    <!-- Shift Duration and Active Time -->
+    <div class="shift-header__bottom">
+      <div class="duration-info" *ngIf="shift.totalTime || shift.totalActive">
+        <div class="duration-item" *ngIf="shift.totalTime">
+          <mat-icon class="duration-icon">schedule</mat-icon>
+          <span class="duration-text">{{shift.totalTime | noseconds}}</span>
+        </div>
+        <div class="duration-item" *ngIf="shift.totalActive">
+          <mat-icon class="duration-icon">directions_car</mat-icon>
+          <span class="duration-text">{{shift.totalActive | noseconds}} active</span>
+        </div>
+      </div>
+      
+      <div class="shift-header__toggle-bar" 
+           (click)="toggleExpansion()" 
+           [attr.aria-label]="isExpanded ? 'Collapse shift details' : 'Expand shift details'"
+           role="button"
+           tabindex="0"
+           (keydown.enter)="toggleExpansion()"
+           (keydown.space)="toggleExpansion()">
+        <div class="toggle-bar__content">
+          <span class="toggle-bar__text">{{isExpanded ? 'Hide' : 'Show'}}</span>
+          <mat-icon class="toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Shift Content - Only show when expanded -->
+  <div class="shift-content" *ngIf="isExpanded">
+  
+    <!-- Location Card -->
+    <div class="info-card" *ngIf="shift.region || shift.totalDistance">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">map</mat-icon>
+        <h4>Location</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="info-badge" *ngIf="shift.region">
+          <mat-icon class="info-badge__icon">place</mat-icon>
+          <span class="info-badge__text">{{shift.region}}</span>
+        </div>
+        <div class="distance-info" *ngIf="shift.totalDistance">
+          <div class="distance-display">
+            <strong>Distance:</strong>
+            <span [ngClass]="{
+              'primary': shift.amountPerDistance > 2, 
+              'warn': shift.amountPerDistance < 1, 
+              'rainbow-text-animated': shift.amountPerDistance > 5
+            }">{{shift.totalDistance | number:'1.1'}} mi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Card -->
+    <div class="info-card" *ngIf="shift.totalPay || shift.grandTotal">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">payments</mat-icon>
+        <h4>Earnings</h4>
+      </div>      <div class="info-card__content">
+        <div class="payment-grid">
+          <!-- First row: Pay, Tips, Bonus -->
+          <div class="payment-row payment-row--primary">
+            <div class="payment-item" *ngIf="shift.totalPay">
+              <span class="payment-label">Pay</span>
+              <span class="payment-value payment-value--pay">{{shift.totalPay | currency}}</span>
+            </div>
+            <div class="payment-item" *ngIf="shift.totalTips">
+              <span class="payment-label">Tips</span>
+              <span class="payment-value payment-value--tip">{{shift.totalTips | currency}}</span>
+            </div>
+            <div class="payment-item" *ngIf="shift.totalBonus">
+              <span class="payment-label">Bonus</span>
+              <span class="payment-value payment-value--bonus">{{shift.totalBonus | currency}}</span>
+            </div>
+          </div>
+          <!-- Second row: Total, Cash, and Efficiency -->
+          <div class="payment-row payment-row--secondary" *ngIf="shift.grandTotal > shift.totalPay || shift.totalCash || shift.amountPerTime">
+            <div class="payment-item payment-item--total" *ngIf="shift.grandTotal > shift.totalPay">
+              <span class="payment-label">Total</span>
+              <span class="payment-value payment-value--total">{{shift.grandTotal | currency}}</span>
+            </div>
+            <div class="payment-item payment-item--cash" *ngIf="shift.totalCash">
+              <span class="payment-label">Cash</span>
+              <span class="payment-value payment-value--cash">{{shift.totalCash | currency}}</span>
+            </div>
+            <div class="payment-item payment-item--efficiency" *ngIf="shift.amountPerTime">
+              <span class="payment-label">Efficiency</span>
+              <span class="payment-value payment-value--efficiency" [ngClass]="{
+                'efficiency--excellent': shift.amountPerTime > 30,
+                'efficiency--good': shift.amountPerTime >= 25 && shift.amountPerTime <= 30,
+                'efficiency--average': shift.amountPerTime >= 20 && shift.amountPerTime < 25,
+                'efficiency--poor': shift.amountPerTime < 20
+              }">
+                ${{shift.amountPerTime | number:'1.0-2'}}/hr
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note Card -->
+    <div class="info-card" *ngIf="shift.note">
+      <div class="info-card__header">
+        <mat-icon class="info-icon">description</mat-icon>
+        <h4>Notes</h4>
+      </div>
+      <div class="info-card__content">
+        <div class="shift-note">
+          <mat-icon class="note-icon">format_quote</mat-icon>
+          <span class="note-text">{{shift.note}}</span>
+        </div>
+      </div>
+    </div>
+      <!-- Trips Table -->
+    <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
+  </div>
+
+  <!-- Action Buttons - Always visible outside expandable content -->
+  <div class="shift-actions">
+    <button mat-fab extended color="primary" class="action-button action-button--left" disabled="true">
+      <mat-icon>edit</mat-icon> Edit
+    </button>
+    <button mat-fab extended color="warn" class="action-button action-button--right" 
+            [disabled]="!duplicateShift && !((shift.grandTotal === 0 || !shift.grandTotal) && (shift.totalTrips === 0 || !shift.totalTrips))" 
+            (click)="confirmDeleteShiftDialog(shift)">
+      <mat-icon>delete</mat-icon> Delete
+    </button>
+  </div>
+</div>

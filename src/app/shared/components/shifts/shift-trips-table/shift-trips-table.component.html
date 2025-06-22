@@ -1,0 +1,45 @@
+<mat-card class="trips-container" *ngIf="trips && trips.length > 0">
+    <div class="flex items-center justify-between gap-md header-style">
+        <mat-icon class="info-icon">route</mat-icon>
+        <h4 class="flex-1 header-title">Trips ({{ trips.length }})</h4>
+        <button mat-mini-fab color="primary" class="flex-shrink-0 mini-button" (click)="viewTrips(trips)">
+            <mat-icon>view_agenda</mat-icon>
+        </button>
+    </div>
+    <div class='table-responsive-auto' #tableContainer>
+        <mat-table [dataSource]="trips" class="table-theme-standard">
+            <ng-container matColumnDef="place">
+                <mat-header-cell *matHeaderCellDef class="table-col-place"> Place </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-place"> {{trip.place | truncate:15}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="pickup">
+                <mat-header-cell *matHeaderCellDef class="table-col-pickup">Pickup</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-pickup"> {{trip.pickupTime | noseconds:prefers24Hour}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="dropoff">
+                <mat-header-cell *matHeaderCellDef class="table-col-dropoff">Dropoff</mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-dropoff"> {{trip.dropoffTime | noseconds:prefers24Hour}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="total">
+                <mat-header-cell *matHeaderCellDef class="table-col-total"> Total </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-total" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef class="table-col-name"> Name </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-name"> {{trip.name | truncate:10}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="address">
+                <mat-header-cell *matHeaderCellDef class="table-col-address"> Address </mat-header-cell>
+                <mat-cell *matCellDef="let trip" class="table-col-address"> {{trip.endAddress | truncate:75}} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
+        </mat-table>
+          <div class="table-scroll-indicator" 
+             [class.visible]="tableContainer.scrollWidth > tableContainer.clientWidth">
+            <span class="desktop-text">← scroll for more →</span>
+            <span class="mobile-text">← swipe →</span>
+        </div>
+    </div>
+</mat-card>
