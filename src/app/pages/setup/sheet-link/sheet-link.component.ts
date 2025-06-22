@@ -36,7 +36,7 @@ export class SheetLinkComponent {
   openCreateSheetDialog() {
     const dialogRef = this.dialog.open(SheetCreateComponent, {
       width: '400px',
-      height: '150px',
+      height: '200px',
       panelClass: 'custom-modalbox'
     });
 
