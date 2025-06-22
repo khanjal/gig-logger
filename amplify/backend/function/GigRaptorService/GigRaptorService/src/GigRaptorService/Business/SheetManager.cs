@@ -27,11 +27,15 @@ public class SheetManager : ISheetManager
     private readonly IS3Service _s3Service;
     private readonly string _sheetId;
 
-    private static readonly DynamoDbRateLimiter _rateLimiter = new DynamoDbRateLimiter(
-        new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
-        "RaptorSheetsRateLimit",
-        5,
-        TimeSpan.FromMinutes(1)
+    // Use Lazy<T> to only create the rate limiter when it's needed
+    private static readonly Lazy<DynamoDbRateLimiter> _lazyRateLimiter = new Lazy<DynamoDbRateLimiter>(() => 
+        new DynamoDbRateLimiter(
+            new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
+            "RaptorSheetsRateLimit",
+            5,
+            TimeSpan.FromMinutes(1)
+        ),
+        LazyThreadSafetyMode.ExecutionAndPublication
     );
 
     public SheetManager(string token, string sheetId, IConfiguration configuration, IS3Service? s3Service = null)
@@ -64,15 +68,9 @@ public class SheetManager : ISheetManager
 
     private static async Task EnforceRateLimitAsync(string spreadsheetId)
     {
-        // Lazily create the rate limiter only if needed
-        var rateLimiter = new DynamoDbRateLimiter(
-            new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
-            "RaptorSheetsRateLimit",
-            5,
-            TimeSpan.FromMinutes(1)
-        );
+        // Use the lazy-initialized rate limiter
         var hashedSpreadsheetId = HashHelper.HashSpreadsheetId(spreadsheetId);
-        if (!await rateLimiter.IsRequestAllowedAsync(hashedSpreadsheetId))
+        if (!await _lazyRateLimiter.Value.IsRequestAllowedAsync(hashedSpreadsheetId))
         {
             throw new InvalidOperationException($"Rate limit exceeded for spreadsheet ID: {hashedSpreadsheetId}. Please try again later.");
         }

@@ -130,7 +130,7 @@
         "Handler": "GigRaptorService::GigRaptorService.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnet8",
         "CodeUri": "",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Timeout": 30,
         "Role": {
           "Fn::GetAtt": [
@@ -144,6 +144,9 @@
               "Ref": "RaptorSheetsDataBucket"
             }
           }
+        },
+        "SnapStart": {
+          "ApplyOn": "PublishedVersions"
         },
         "Events": {
           "ProxyResource": {

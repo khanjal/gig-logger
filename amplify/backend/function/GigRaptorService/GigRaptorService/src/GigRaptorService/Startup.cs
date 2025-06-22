@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using Amazon.S3;
 using Amazon.Extensions.NETCore.Setup;
+using Amazon.DynamoDBv2;
+using System.Threading;
 
 namespace GigRaptorService;
 
@@ -66,11 +68,14 @@ public class Startup
 
         services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
-        services.AddScoped<GoogleOAuthService>();
         
-        // Register LazyS3Service instead of S3Service to improve cold start time
-        services.AddScoped<IS3Service, LazyS3Service>();
+        // Register GoogleOAuthService as a singleton to reuse across requests
+        services.AddSingleton<GoogleOAuthService>();
+        
+        // Register LazyS3Service as a singleton since it uses lazy initialization
+        services.AddSingleton<IS3Service, LazyS3Service>();
 
+        // Register HTTP client factory
         services.AddHttpClient();
 
         // Register AWS services with default options
@@ -80,21 +85,30 @@ public class Startup
         // Set specific region to match updateLambda.bat
         awsOptions.Region = Amazon.RegionEndpoint.USEast1;
         
-        // Bucket name should be set via environment variables - not setting a default
-        // The S3Service will throw an exception if AWS:S3:BucketName is not configured
-        
         // Add AWS default options first
         services.AddDefaultAWSOptions(awsOptions);
         
-        // Then add the AWS S3 service with proper configuration
-        services.AddAWSService<IAmazonS3>();
-        
-        // Configure S3 client options
-        services.Configure<AmazonS3Config>(options =>
+        // Use lazy initialization for AWS clients via factory pattern
+        services.AddSingleton<IAmazonS3>(sp => 
         {
-            options.ForcePathStyle = true;
-            options.RegionEndpoint = Amazon.RegionEndpoint.USEast1;
+            var s3Config = new AmazonS3Config
+            {
+                ForcePathStyle = true,
+                RegionEndpoint = Amazon.RegionEndpoint.USEast1
+            };
+            return new AmazonS3Client(s3Config);
         });
+        
+        // Add DynamoDB client with lazy initialization
+        services.AddSingleton<Lazy<IAmazonDynamoDB>>(sp => 
+            new Lazy<IAmazonDynamoDB>(() => 
+                new AmazonDynamoDBClient(new AmazonDynamoDBConfig 
+                { 
+                    RegionEndpoint = Amazon.RegionEndpoint.USEast1 
+                }),
+                LazyThreadSafetyMode.ExecutionAndPublication
+            )
+        );
         
         // Add logging
         services.AddLogging(builder =>
@@ -119,6 +133,7 @@ public class Startup
         // Use response compression middleware
         app.UseResponseCompression();
 
+        // Only apply the token refresh middleware on specific paths
         app.UseWhen(
             context => context.Request.Path.StartsWithSegments("/sheets", StringComparison.OrdinalIgnoreCase),
             appBuilder => appBuilder.UseMiddleware<TokenRefreshMiddleware>()

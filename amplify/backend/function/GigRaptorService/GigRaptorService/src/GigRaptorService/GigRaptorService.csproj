@@ -10,6 +10,14 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- Trim unused assemblies to reduce package size -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <!-- Enable tiered compilation for better performance -->
+    <TieredCompilation>true</TieredCompilation>
+    <!-- Enable server garbage collection for better memory management -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <!-- Enable compilation optimizations -->
+    <Optimize>true</Optimize>
     <UserSecretsId>e4bf42c1-9b3d-472f-948c-f2ff8cf7bbfa</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
