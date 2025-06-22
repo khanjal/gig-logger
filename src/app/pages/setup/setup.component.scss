@@ -310,3 +310,17 @@
     line-height: 1.4;
   }
 }
+
+// Disabled mat-fab button styles
+button[mat-fab][disabled],
+button.mat-fab[disabled],
+button[mat-fab][disabled]:hover,
+button.mat-fab[disabled]:hover {
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+  background: #ccc !important;
+  color: #888 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  border: 1px solid #bbb !important;
+}
