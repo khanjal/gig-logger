@@ -1,0 +1,15 @@
+<div class="range-panel">
+    <div
+        *ngFor="let item of customPresets; let i = index"
+        class="range-item"
+        [class.alternate]="i % 2 === 1"
+        (click)="selectRange(item)"
+        (keydown.enter)="selectRange(item)"
+        (keydown.space)="selectRange(item)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Select ' + item + ' date range'"
+    >
+        {{ item }}
+    </div>
+</div>

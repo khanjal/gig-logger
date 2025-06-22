@@ -1,17 +1,164 @@
-<mat-toolbar [color]="getToolbarColor()">
-    <span class="gap"><a routerLink="/"><mat-icon>home</mat-icon> </a></span>
-    @if (defaultSheet) {
-        <span class="gap"><a routerLink="/trips"><mat-icon>navigation</mat-icon></a></span>
-        <span class="gap"><a routerLink="/shifts"><mat-icon>today</mat-icon></a></span>
-        <span class="gap"><a routerLink="/stats"><mat-icon>poll</mat-icon></a></span>
-    }
+<!-- Mobile-First PWA Header Component -->
+<header class="app-header">  <!-- Main Toolbar -->
+  <mat-toolbar class="main-toolbar" [color]="getToolbarColor()">
+    <!-- Menu Button -->
+    <div class="toolbar-section toolbar-section--menu">
+      <button (click)="toggleMenu()" 
+              class="menu-button" 
+              aria-label="Toggle menu"
+              matTooltip="Menu"
+              matTooltipPosition="below">
+        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      </button>
+    </div>
     
-    <!-- <span class="gap"><a routerLink="/lookup"><mat-icon>search</mat-icon></a></span> -->
-    <!--<span class="gap"><a routerLink="/ratings"><mat-icon>star-half</mat-icon></a></span>
-    <span class="gap"><a routerLink="/quick-replies"><mat-icon>chat</mat-icon></a></span> -->
-    <span class="filler"></span>
-    <span class="end"><a routerLink="/setup"><mat-icon>settings</mat-icon></a></span>
-    <!-- <span><a routerLink="/about">About</a></span> -->
-    <!-- <profile></profile> -->
-</mat-toolbar>
-<router-outlet></router-outlet>
+    <!-- Spacer -->
+    <div class="toolbar-spacer"></div>
+    
+    <!-- Action Buttons -->
+    <div class="toolbar-section toolbar-section--actions">
+      <a routerLink="/" 
+         class="action-button" 
+         aria-label="Go to home page"
+         matTooltip="Home"
+         matTooltipPosition="below">
+        <mat-icon>home</mat-icon>
+      </a>
+      
+      <!-- Authenticated user navigation -->
+      <ng-container *ngIf="isAuthenticated">
+        <a routerLink="/trips" 
+           class="action-button" 
+           aria-label="View trips"
+           matTooltip="Trips"
+           matTooltipPosition="below">
+          <mat-icon>navigation</mat-icon>
+        </a>
+        <a routerLink="/shifts" 
+           class="action-button" 
+           aria-label="View shifts"
+           matTooltip="Shifts"
+           matTooltipPosition="below">
+          <mat-icon>today</mat-icon>
+        </a>
+        <a routerLink="/stats" 
+           class="action-button" 
+           aria-label="View statistics"
+           matTooltip="Statistics"
+           matTooltipPosition="below">
+          <mat-icon>poll</mat-icon>
+        </a>
+      </ng-container>
+      
+      <a routerLink="/setup" 
+         class="action-button" 
+         aria-label="Open settings"
+         matTooltip="Settings"
+         matTooltipPosition="below">
+        <mat-icon>settings</mat-icon>
+      </a>
+    </div>
+      </mat-toolbar>
+  
+  <!-- Slide-out Menu Overlay -->
+  <div class="menu-overlay" 
+       [class.menu-overlay--open]="isMenuOpen" 
+       (click)="closeMenu()"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="menu-title">
+    
+    <nav class="slide-menu" 
+         (click)="$event.stopPropagation()"
+         role="navigation"
+         aria-label="Main menu">
+      
+      <div class="menu-header">
+        <h2 id="menu-title" class="menu-title">Menu</h2>
+        <button (click)="closeMenu()" 
+                class="menu-close" 
+                aria-label="Close menu">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+        <div class="menu-content">
+        <!-- Always available navigation items -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">Navigation</h3>
+          <a routerLink="/" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="Go to home">
+            <mat-icon class="menu-icon">home</mat-icon>
+            <span class="menu-text">Home</span>
+          </a>
+          
+          <!-- Authenticated user navigation items -->
+          <ng-container *ngIf="isAuthenticated">
+            <a routerLink="/trips" 
+               (click)="closeMenu()"
+               class="menu-item"
+               aria-label="View trips">
+              <mat-icon class="menu-icon">navigation</mat-icon>
+              <span class="menu-text">Trips</span>
+            </a>
+            <a routerLink="/shifts" 
+               (click)="closeMenu()"
+               class="menu-item"
+               aria-label="View shifts">
+              <mat-icon class="menu-icon">today</mat-icon>
+              <span class="menu-text">Shifts</span>
+            </a>
+          </ng-container>
+        </div>
+        
+        <!-- Tools section - only for authenticated users -->
+        <div class="menu-section" *ngIf="isAuthenticated">
+          <h3 class="menu-section-title">Tools</h3>
+          <a routerLink="/stats" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="View statistics">
+            <mat-icon class="menu-icon">poll</mat-icon>
+            <span class="menu-text">Statistics</span>
+          </a>
+          <!-- Future menu items will go here -->
+          <div class="menu-item menu-item--disabled">
+            <mat-icon class="menu-icon">search</mat-icon>
+            <span class="menu-text">Search</span>
+            <span class="menu-badge">Coming Soon</span>
+          </div>
+          <div class="menu-item menu-item--disabled">
+            <mat-icon class="menu-icon">receipt</mat-icon>
+            <span class="menu-text">Expenses</span>
+            <span class="menu-badge">Coming Soon</span>
+          </div>
+        </div>
+        
+        <!-- Settings section - always available -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">Settings</h3>
+          <a routerLink="/setup" 
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="Open settings">
+            <mat-icon class="menu-icon">settings</mat-icon>
+            <span class="menu-text">Settings</span>
+          </a>
+        </div>
+      </div>
+      
+    </nav>
+  </div>
+  
+  <!-- Progress Indicator for PWA Loading -->
+  <div class="loading-indicator" [class.loading-indicator--visible]="isLoading">
+    <div class="loading-bar"></div>
+  </div>
+  
+</header>
+
+<!-- Main Content Area -->
+<main class="main-content" role="main">
+  <router-outlet></router-outlet>
+</main>

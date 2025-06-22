@@ -1,0 +1,128 @@
+// Trips Table Basic Component Styles
+@import "color-vars";
+
+// Component-specific styles only - global table styles are in _tables.scss
+
+// Tip Styling Classes
+.tip-none {
+  color: $warn-color !important;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.tip-good {
+  color: $success-color !important;
+  font-weight: 600;
+  
+  &::after {
+    content: ' ✓';
+    color: $success-color;
+    font-weight: bold;
+  }
+}
+
+// Secondary row styling for additional trip details
+.mat-row {
+  &.secondary-row {
+    font-size: 0.8rem;
+    color: $text-secondary;
+    font-style: italic;
+    
+    mat-cell {
+      padding-top: 0.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: none;
+    }
+  }
+}
+
+// Ensure note text wraps in secondary row
+.mat-row.secondary-row, td[mat-cell] {
+  .note-text, em {
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+    display: inline;
+  }
+}
+
+// =============================================================================
+// NO TRIPS MESSAGE STYLING  
+// =============================================================================
+
+.no-trips-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: $background-light;
+  border: 1px solid $border-light;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  
+  .no-trips-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: $text-secondary;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+  
+  h3 {
+    margin: 0 0 0.375rem 0;
+    color: $text-primary;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    max-width: 300px;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem 1rem;
+    
+    .no-trips-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+    }
+    
+    h3 {
+      font-size: 1rem;
+    }
+    
+    p {
+      font-size: 0.8125rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem 0.75rem;
+    margin: 0.5rem 0;
+    
+    .no-trips-icon {
+      font-size: 1.75rem;
+      width: 1.75rem;
+      height: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    h3 {
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    p {
+      font-size: 0.75rem;
+    }
+  }
+}

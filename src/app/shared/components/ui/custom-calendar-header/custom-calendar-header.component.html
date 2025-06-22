@@ -1,0 +1,37 @@
+<div class="calendar-header">
+    <!-- "previous" navigation -->
+    <div class="nav-icon-group">
+        <mat-icon 
+            class="nav-icon double-arrow" 
+            (click)="previousClicked('year')"
+        >
+            keyboard_double_arrow_left
+        </mat-icon>
+        <mat-icon 
+            class="nav-icon" 
+            (click)="previousClicked('month')"
+        >
+            keyboard_arrow_left
+        </mat-icon>
+    </div>
+
+    <!-- center label -->
+    <span class="calendar-header-label">{{ periodLabel }}</span>
+
+    <!-- "next" navigation -->
+    <div class="nav-icon-group">
+        <mat-icon 
+            class="nav-icon" 
+            (click)="nextClicked('month')"
+        >
+            keyboard_arrow_right
+        </mat-icon>
+        <mat-icon 
+            class="nav-icon double-arrow" 
+            (click)="nextClicked('year')"
+        >
+            keyboard_double_arrow_right
+        </mat-icon>    </div>
+</div>
+
+<app-custom-range-panel></app-custom-range-panel>
