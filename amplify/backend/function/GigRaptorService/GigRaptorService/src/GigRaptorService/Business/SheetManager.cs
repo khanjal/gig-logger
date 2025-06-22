@@ -5,6 +5,7 @@ using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
 using RaptorSheets.Gig.Managers;
+using System.Text.Json;
 
 namespace GigRaptorService.Business;
 
@@ -21,6 +22,7 @@ public class SheetManager : ISheetManager
 {
     private readonly IGoogleSheetManager _googleSheetManager;
     private readonly IConfiguration _configuration;
+    private readonly JsonSerializerOptions _jsonOptions;
     private readonly IS3Service _s3Service;
     private readonly string _sheetId;
 
@@ -42,6 +44,12 @@ public class SheetManager : ISheetManager
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
         _s3Service = s3Service ?? new S3Service(configuration);
         _sheetId = sheetId;
+
+        _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        };
     }
 
     public static async Task<SheetManager> CreateAsync(string token, string sheetId, IConfiguration configuration)
@@ -78,11 +86,13 @@ public class SheetManager : ISheetManager
     /// <returns>SheetResponse with either direct data or S3 link</returns>
     private async Task<SheetResponse> ProcessResponseSize(SheetEntity sheetEntity, string requestType, Dictionary<string, string>? metadata = null)
     {
+        string jsonContent = JsonSerializer.Serialize(sheetEntity, _jsonOptions);
+
         // Check if the response is too large using the optimized method
-        if (_s3Service.ExceedsSizeThreshold(sheetEntity))
+        if (_s3Service.ExceedsSizeThreshold(jsonContent))
         {
             // Upload to S3 and return the link
-            string s3Link = await _s3Service.UploadSheetEntityToS3Async(sheetEntity, _sheetId, requestType);
+            string s3Link = await _s3Service.UploadSheetEntityToS3Async(jsonContent, _sheetId, requestType);
             
             // Ensure metadata includes sheetId
             metadata ??= new Dictionary<string, string>();

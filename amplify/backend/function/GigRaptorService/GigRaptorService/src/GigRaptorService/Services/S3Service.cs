@@ -1,10 +1,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
-using RaptorSheets.Gig.Entities;
-using System.Text.Json;
 using System.Text;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
+using System.Text.Json;
 
 namespace GigRaptorService.Services;
 
@@ -16,17 +13,17 @@ public interface IS3Service
     /// <summary>
     /// Uploads a SheetEntity to S3 and returns the URL
     /// </summary>
-    Task<string> UploadSheetEntityToS3Async(SheetEntity sheetEntity, string sheetId, string requestType);
+    Task<string> UploadSheetEntityToS3Async(string jsonContent, string sheetId, string requestType);
     
     /// <summary>
     /// Gets the byte size of a SheetEntity
     /// </summary>
-    long GetSheetEntitySize(SheetEntity sheetEntity);
+    long GetSheetEntitySize(string jsonContent);
     
     /// <summary>
     /// Checks if a SheetEntity exceeds the size threshold
     /// </summary>
-    bool ExceedsSizeThreshold(SheetEntity sheetEntity);
+    bool ExceedsSizeThreshold(string content);
 }
 
 /// <summary>
@@ -41,19 +38,19 @@ public class LazyS3Service : IS3Service
         _lazyS3Service = new Lazy<S3Service>(() => new S3Service(configuration), LazyThreadSafetyMode.ExecutionAndPublication);
     }
     
-    public Task<string> UploadSheetEntityToS3Async(SheetEntity sheetEntity, string sheetId, string requestType)
+    public Task<string> UploadSheetEntityToS3Async(string jsonContent, string sheetId, string requestType)
     {
-        return _lazyS3Service.Value.UploadSheetEntityToS3Async(sheetEntity, sheetId, requestType);
+        return _lazyS3Service.Value.UploadSheetEntityToS3Async(jsonContent, sheetId, requestType);
     }
     
-    public long GetSheetEntitySize(SheetEntity sheetEntity)
+    public long GetSheetEntitySize(string jsonContent)
     {
-        return _lazyS3Service.Value.GetSheetEntitySize(sheetEntity);
+        return _lazyS3Service.Value.GetSheetEntitySize(jsonContent);
     }
     
-    public bool ExceedsSizeThreshold(SheetEntity sheetEntity)
+    public bool ExceedsSizeThreshold(string jsonContent)
     {
-        return _lazyS3Service.Value.ExceedsSizeThreshold(sheetEntity);
+        return _lazyS3Service.Value.ExceedsSizeThreshold(jsonContent);
     }
 }
 
@@ -62,7 +59,6 @@ public class S3Service : IS3Service
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
     private readonly IConfiguration _configuration;
-    private readonly JsonSerializerOptions _jsonOptions;
     private readonly ILogger<S3Service>? _logger;
 
     // Size limit for direct responses (3MB)
@@ -86,26 +82,17 @@ public class S3Service : IS3Service
         
         // Initialize S3 client
         _s3Client = new AmazonS3Client(s3Config);
-        
-        _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = false
-        };
     }
 
     /// <summary>
     /// Uploads a SheetEntity to S3 and returns the presigned URL that's valid for 10 minutes
     /// </summary>
-    public async Task<string> UploadSheetEntityToS3Async(SheetEntity sheetEntity, string sheetId, string requestType)
+    public async Task<string> UploadSheetEntityToS3Async(string jsonContent, string sheetId, string requestType)
     {
         try
         {
             // Create a unique key for the object
             string key = $"sheets/{sheetId}/{requestType}/{Guid.NewGuid()}.json";
-            
-            // Serialize the SheetEntity to JSON
-            string jsonContent = JsonSerializer.Serialize(sheetEntity, _jsonOptions);
             
             // Upload to S3
             var putRequest = new PutObjectRequest
@@ -143,22 +130,16 @@ public class S3Service : IS3Service
     /// <summary>
     /// Gets the accurate byte size of a SheetEntity in UTF-8 encoding
     /// </summary>
-    public long GetSheetEntitySize(SheetEntity sheetEntity)
+    public long GetSheetEntitySize(string jsonContent)
     {
-        // Use serialization to get the approximate size
-        string json = JsonSerializer.Serialize(sheetEntity, _jsonOptions);
-
-        return Encoding.UTF8.GetByteCount(json);
+        return Encoding.UTF8.GetByteCount(jsonContent);
     }
     
     /// <summary>
     /// Checks if a SheetEntity exceeds the size threshold
     /// </summary>
-    public bool ExceedsSizeThreshold(SheetEntity sheetEntity)
+    public bool ExceedsSizeThreshold(string jsonContent)
     {
-        if (sheetEntity == null)
-            return false;
-        
-        return GetSheetEntitySize(sheetEntity) > SizeThresholdInBytes;
+        return GetSheetEntitySize(jsonContent) > SizeThresholdInBytes;
     }
 }
