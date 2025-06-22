@@ -1,7 +1,6 @@
 ﻿using GigRaptorService.Helpers;
 using GigRaptorService.Models;
 using GigRaptorService.Services;
-using Microsoft.Extensions.Configuration;
 using RaptorSheets.Core.Extensions;
 using RaptorSheets.Gig.Entities;
 using RaptorSheets.Gig.Enums;
@@ -22,34 +21,27 @@ public class SheetManager : ISheetManager
 {
     private readonly IGoogleSheetManager _googleSheetManager;
     private readonly IConfiguration _configuration;
+    private readonly IS3Service _s3Service;
+    private readonly string _sheetId;
+
     private static readonly DynamoDbRateLimiter _rateLimiter = new DynamoDbRateLimiter(
         new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
         "RaptorSheetsRateLimit",
         5,
         TimeSpan.FromMinutes(1)
     );
-    private readonly IS3Service _s3Service;
-    private readonly string _sheetId;
-    
-    // Removed static initialization of DynamoDbRateLimiter to avoid cold start penalty
 
     public SheetManager(string token, string sheetId, IConfiguration configuration, IS3Service? s3Service = null)
     {
         _configuration = configuration;
         if (FeatureFlags.IsRateLimitingEnabled(_configuration))
-        _googleSheetManager = new GoogleSheetManager(token, sheetId);
-        _s3Service = s3Service ?? new S3Service(configuration);
-        _sheetId = sheetId;
-    }
-
-    public static async Task<SheetManager> CreateAsync(string token, string sheetId, IConfiguration configuration, IS3Service? s3Service = null)
-    {
-        if (FeatureFlags.IsRateLimitingEnabled(configuration))
         {
+            // Apply rate limiting as needed
             EnforceRateLimitAsync(sheetId).GetAwaiter().GetResult();
         }
         _googleSheetManager = new GoogleSheetManager(token, sheetId);
-        return new SheetManager(token, sheetId, configuration, s3Service);
+        _s3Service = s3Service ?? new S3Service(configuration);
+        _sheetId = sheetId;
     }
 
     public static async Task<SheetManager> CreateAsync(string token, string sheetId, IConfiguration configuration)

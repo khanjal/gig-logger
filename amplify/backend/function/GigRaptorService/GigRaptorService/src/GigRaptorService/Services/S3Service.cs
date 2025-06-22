@@ -2,6 +2,8 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using RaptorSheets.Gig.Entities;
 using System.Text.Json;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 
 namespace GigRaptorService.Services;
 
@@ -60,15 +62,29 @@ public class S3Service : IS3Service
     private readonly string _bucketName;
     private readonly IConfiguration _configuration;
     private readonly JsonSerializerOptions _jsonOptions;
+    private readonly ILogger<S3Service>? _logger;
 
-    // Size limit for direct responses (6MB)
-    public const int SizeThresholdInBytes = 6 * 1024 * 1024;
+    // Size limit for direct responses (3MB)
+    public const int SizeThresholdInBytes = 3 * 1024 * 1024;
 
-    public S3Service(IConfiguration configuration)
+    public S3Service(IConfiguration configuration, ILogger<S3Service>? logger = null)
     {
         _configuration = configuration;
-        _bucketName = _configuration["AWS:S3:BucketName"] ?? "raptor-sheets-data";
-        _s3Client = new AmazonS3Client();
+        _logger = logger;
+        
+        // Get bucket name from configuration, throw if not found
+        _bucketName = _configuration["AWS:S3:BucketName"] 
+            ?? throw new InvalidOperationException("S3 bucket name not configured. Please set AWS:S3:BucketName in configuration.");
+        
+        // Configure S3 client with explicit region
+        var s3Config = new AmazonS3Config
+        {
+            RegionEndpoint = Amazon.RegionEndpoint.USEast1,
+            ForcePathStyle = true
+        };
+        
+        // Initialize S3 client
+        _s3Client = new AmazonS3Client(s3Config);
         
         _jsonOptions = new JsonSerializerOptions
         {
@@ -82,32 +98,45 @@ public class S3Service : IS3Service
     /// </summary>
     public async Task<string> UploadSheetEntityToS3Async(SheetEntity sheetEntity, string sheetId, string requestType)
     {
-        // Create a unique key for the object
-        string key = $"sheets/{sheetId}/{requestType}/{Guid.NewGuid()}.json";
-        
-        // Serialize the SheetEntity to JSON
-        string jsonContent = JsonSerializer.Serialize(sheetEntity, _jsonOptions);
-        
-        // Upload to S3
-        var putRequest = new PutObjectRequest
+        try
         {
-            BucketName = _bucketName,
-            Key = key,
-            ContentBody = jsonContent,
-            ContentType = "application/json"
-        };
-        
-        await _s3Client.PutObjectAsync(putRequest);
-        
-        // Generate a presigned URL that's valid for 1 hour
-        var urlRequest = new GetPreSignedUrlRequest
+            // Create a unique key for the object
+            string key = $"sheets/{sheetId}/{requestType}/{Guid.NewGuid()}.json";
+            
+            // Serialize the SheetEntity to JSON
+            string jsonContent = JsonSerializer.Serialize(sheetEntity, _jsonOptions);
+            
+            // Upload to S3
+            var putRequest = new PutObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = key,
+                ContentBody = jsonContent,
+                ContentType = "application/json"
+            };
+            
+            await _s3Client.PutObjectAsync(putRequest);
+            
+            // Generate a presigned URL that's valid for 1 hour
+            var urlRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = _bucketName,
+                Key = key,
+                Expires = DateTime.UtcNow.AddHours(1)
+            };
+            
+            return _s3Client.GetPreSignedURL(urlRequest);
+        }
+        catch (AmazonS3Exception ex)
         {
-            BucketName = _bucketName,
-            Key = key,
-            Expires = DateTime.UtcNow.AddHours(1)
-        };
-        
-        return _s3Client.GetPreSignedURL(urlRequest);
+            _logger?.LogError(ex, $"S3 Error: Code={ex.ErrorCode}, StatusCode={ex.StatusCode}, Bucket={_bucketName}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, $"Error uploading to S3: {ex.Message}");
+            throw;
+        }
     }
 
     /// <summary>
