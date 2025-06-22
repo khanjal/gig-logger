@@ -76,6 +76,28 @@ export class ApiService {
         };
 
         return options;
+    }
+
+    /**
+     * Handles response that may contain direct sheet data or S3 link
+     * @param response API response containing either sheetEntity or s3Link
+     * @param operation Operation name for logging
+     * @returns Sheet data or null
+     */
+    private async handleSheetResponse(response: any, operation: string): Promise<any> {
+        if (response.isStoredInS3 && response.s3Link) {
+            this.logger.debug(`Large ${operation} data stored in S3, fetching from: ${response.s3Link}`);
+            const s3Response = await firstValueFrom(
+                this._http.get<any>(response.s3Link)
+            );
+            return s3Response;
+        } else if (response.sheetEntity) {
+            this.logger.debug(`${operation} data loaded directly`);
+            return response.sheetEntity;
+        } else {
+            this.logger.warn(`Invalid response format for ${operation}: no sheetEntity or s3Link provided`);
+            return null;
+        }
     }    
     
     // ========================================
@@ -176,7 +198,7 @@ export class ApiService {
             return [];
         }
     }    
-    
+
     // ========================================
     // SHEET METHODS
     // ========================================
@@ -184,41 +206,43 @@ export class ApiService {
     public async getSheetData(sheetId: string): Promise<ISheet | null> {
         try {
             const response = await firstValueFrom(
-                this._http.get<ISheet>(
+                this._http.get<any>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_ALL}`, 
                     this.setOptions(sheetId)
                 )
             );
-            this.logger.debug(`Sheet data loaded: ${sheetId}`);
-            return response;
+            
+            return await this.handleSheetResponse(response, 'sheet');
         } catch (error) {
             this.handleError('getSheetData', error);
             return null;
         }
     }
-
-    public async getSheetSingle(sheetId: string, sheetName: string) {
+      public async getSheetSingle(sheetId: string, sheetName: string) {
         try {
-            const response = this._http.get(
-                `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_SINGLE}/${sheetName}`, 
-                this.setOptions(sheetId)
+            const response = await firstValueFrom(
+                this._http.get<any>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_SINGLE}/${sheetName}`, 
+                    this.setOptions(sheetId)
+                )
             );
-            this.logger.debug(`Single sheet data requested: ${sheetName}`);
-            return response;
+            
+            return await this.handleSheetResponse(response, `single sheet '${sheetName}'`);
         } catch (error) {
-            this.handleError('getSheetSingle', error);
-            throw error;
+            this.handleError('getSheetSingle', error);            throw error;
         }
     }
 
     public async getSecondarySheetData(sheetId: string) {
         try {
-            const response = this._http.get(
-                `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_MULTIPLE}?sheetName=names&sheetName=places&sheetName=trips`, 
-                this.setOptions(sheetId)
+            const response = await firstValueFrom(
+                this._http.get<any>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_MULTIPLE}?sheetName=names&sheetName=places&sheetName=trips`, 
+                    this.setOptions(sheetId)
+                )
             );
-            this.logger.debug('Secondary sheet data requested');
-            return response;
+            
+            return await this.handleSheetResponse(response, 'secondary sheet');
         } catch (error) {
             this.handleError('getSecondarySheetData', error);
             throw error;
