@@ -188,6 +188,22 @@ export class SearchInputComponent {
     }
   }
 
+  onInputFocus(event: FocusEvent) {
+    // Close autocomplete before scrolling to prevent disconnect
+    if (this.autocompleteTrigger) {
+      this.autocompleteTrigger.closePanel();
+    }
+  }
+
+  onScrollComplete() {
+    // Reopen autocomplete after scroll completes
+    setTimeout(() => {
+      if (this.autocompleteTrigger && this.value) {
+        this.autocompleteTrigger.openPanel();
+      }
+    }, 100);
+  }
+
   onSearch() {
     if (!this.googleSearch) {
       return;

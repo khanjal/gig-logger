@@ -10,8 +10,10 @@
                 formControlName="searchInput"
                 (input)="onInputChange($event)"
                 (blur)="onBlur()"
+                (focus)="onInputFocus($event)"
                 [required]="isRequired"
                 focus-scroll
+                (scrollComplete)="onScrollComplete()"
                 #searchInput
             />
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">

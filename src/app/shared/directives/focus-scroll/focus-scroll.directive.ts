@@ -21,11 +21,17 @@ export class FocusScrollDirective {
         const style = window.getComputedStyle(parent);
         const overflowY = style.overflowY;
         
-        // Check if this is a modal container
+        // Check if this is a modal container (look for common modal classes)
         if (parent.classList.contains('cdk-overlay-pane') || 
             parent.classList.contains('mat-dialog-container') ||
+            parent.classList.contains('mat-mdc-dialog-container') ||
             parent.classList.contains('modal') ||
             parent.classList.contains('mat-dialog-content')) {
+          // Look for the actual scrollable element within the modal
+          const scrollableChild = parent.querySelector('[cdk-scrollable], .mat-dialog-content, .modal-body');
+          if (scrollableChild && scrollableChild instanceof HTMLElement) {
+            return scrollableChild;
+          }
           return parent;
         }
         
@@ -89,7 +95,10 @@ export class FocusScrollDirective {
         setTimeout(handleViewportChange, 300);
       }
       
-      this.scrollComplete.emit(); // Emit event after scroll completes
+      // Emit scroll complete after a delay to ensure scroll animation finishes
+      setTimeout(() => {
+        this.scrollComplete.emit();
+      }, 300);
     }, 50);
   }
 }
