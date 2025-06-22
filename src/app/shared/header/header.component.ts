@@ -52,7 +52,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentRoute = event.url;
         this.setLoadingState(false); // Hide loading when navigation completes
       });
-  }  async ngOnInit(): Promise<void> {
+  }
+
+  async ngOnInit(): Promise<void> {
     // Show loading indicator
     this.setLoadingState(true);
     

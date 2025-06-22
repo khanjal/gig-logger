@@ -390,7 +390,8 @@ export class SearchInputComponent {
 
     if (properValue.toLocaleLowerCase() === value.toLocaleLowerCase()) {
       return properValue;
-    }    return value;
+    }
+    return value;
   }
 
   // Check if there are 2 or more available actions to show in the menu
