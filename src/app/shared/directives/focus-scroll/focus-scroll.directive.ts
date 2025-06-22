@@ -7,7 +7,8 @@ import { Directive, ElementRef, EventEmitter, HostListener, Output, Renderer2 } 
 export class FocusScrollDirective {
   @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private el: ElementRef, private renderer: Renderer2) { }  @HostListener('focus', ['$event.target']) onFocus() {
+  constructor(private el: ElementRef, private renderer: Renderer2) { }
+  @HostListener('focus', ['$event.target']) onFocus() {
     this.renderer.addClass(this.el.nativeElement, 'focus-scroll');
     
     // Check if we're on mobile (viewport width <= 768px)
