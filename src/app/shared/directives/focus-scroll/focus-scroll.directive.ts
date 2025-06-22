@@ -12,30 +12,71 @@ export class FocusScrollDirective {
     
     const inputElement = this.el.nativeElement;
     const isMobile = window.innerWidth <= 768;
-      // Small delay to ensure any layout changes from focus are complete
+    
+    // Find the scrollable container (modal or window)
+    const getScrollableContainer = (element: HTMLElement): HTMLElement | Window => {
+      let parent = element.parentElement;
+      
+      while (parent) {
+        const style = window.getComputedStyle(parent);
+        const overflowY = style.overflowY;
+        
+        // Check if this is a modal container
+        if (parent.classList.contains('cdk-overlay-pane') || 
+            parent.classList.contains('mat-dialog-container') ||
+            parent.classList.contains('modal') ||
+            parent.classList.contains('mat-dialog-content')) {
+          return parent;
+        }
+        
+        // Check if this is a scrollable container
+        if ((overflowY === 'auto' || overflowY === 'scroll') && parent.scrollHeight > parent.clientHeight) {
+          return parent;
+        }
+        
+        parent = parent.parentElement;
+      }
+      
+      return window; // Default to window if no scrollable container found
+    };
+    
+    // Small delay to ensure any layout changes from focus are complete
     setTimeout(() => {
+      const scrollContainer = getScrollableContainer(inputElement);
       const rect = inputElement.getBoundingClientRect();
       const topOffset = isMobile ? 80 : 60; // More space to keep input visible
       
-      // Calculate scroll position to place input near top of viewport
-      const scrollTo = window.pageYOffset + rect.top - topOffset;
-      
-      // Only scroll if the input isn't already positioned properly
-      if (rect.top > topOffset + 20 || rect.top < topOffset - 20) {
-        window.scrollTo({
-          top: Math.max(0, scrollTo),
-          behavior: 'smooth'
-        });
+      if (scrollContainer === window) {
+        // Window scrolling (main page)
+        const scrollTo = window.pageYOffset + rect.top - topOffset;
+        
+        if (rect.top > topOffset + 20 || rect.top < topOffset - 20) {
+          window.scrollTo({
+            top: Math.max(0, scrollTo),
+            behavior: 'smooth'
+          });
+        }
+      } else {
+        // Modal/container scrolling
+        const containerElement = scrollContainer as HTMLElement;
+        const containerRect = containerElement.getBoundingClientRect();
+        const relativeTop = rect.top - containerRect.top;
+        const scrollTo = containerElement.scrollTop + relativeTop - topOffset;
+        
+        if (relativeTop > topOffset + 20 || relativeTop < topOffset - 20) {
+          containerElement.scrollTo({
+            top: Math.max(0, scrollTo),
+            behavior: 'smooth'
+          });
+        }
       }
       
       // On mobile, also handle viewport changes from virtual keyboard
-      if (isMobile) {
-        // Listen for viewport changes that might indicate keyboard open/close
+      if (isMobile && scrollContainer === window) {
         const handleViewportChange = () => {
           const newRect = inputElement.getBoundingClientRect();
           const newViewportHeight = window.innerHeight;
           
-          // If input is now too close to bottom (keyboard likely opened), scroll again
           if (newRect.bottom > newViewportHeight - 100) {
             const newScrollTo = window.pageYOffset + newRect.top - topOffset;
             window.scrollTo({
@@ -45,7 +86,6 @@ export class FocusScrollDirective {
           }
         };
         
-        // Use a short timeout to detect keyboard opening
         setTimeout(handleViewportChange, 300);
       }
       
