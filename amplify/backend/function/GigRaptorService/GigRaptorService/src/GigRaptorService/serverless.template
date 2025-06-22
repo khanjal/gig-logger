@@ -142,7 +142,8 @@
           "Variables": {
             "AWS__S3__BucketName": {
               "Ref": "RaptorSheetsDataBucket"
-            }
+            },
+            "AWS__S3__SizeThresholdInMB": "5"
           }
         },
         "SnapStart": {

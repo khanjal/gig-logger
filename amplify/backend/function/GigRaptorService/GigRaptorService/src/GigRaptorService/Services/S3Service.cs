@@ -60,9 +60,10 @@ public class S3Service : IS3Service
     private readonly string _bucketName;
     private readonly IConfiguration _configuration;
     private readonly ILogger<S3Service>? _logger;
+    private readonly int _sizeThresholdInBytes;
 
-    // Size limit for direct responses (3MB)
-    public const int SizeThresholdInBytes = 3 * 1024 * 1024;
+    // Default size limit for direct responses (5MB)
+    private const int DefaultSizeThresholdInMB = 5;
 
     public S3Service(IConfiguration configuration, ILogger<S3Service>? logger = null)
     {
@@ -72,6 +73,15 @@ public class S3Service : IS3Service
         // Get bucket name from configuration, throw if not found
         _bucketName = _configuration["AWS:S3:BucketName"] 
             ?? throw new InvalidOperationException("S3 bucket name not configured. Please set AWS:S3:BucketName in configuration.");
+
+        // Get size threshold from configuration with default of 5MB
+        if (!int.TryParse(_configuration["AWS:S3:SizeThresholdInMB"], out int configuredThreshold))
+        {
+            configuredThreshold = DefaultSizeThresholdInMB;
+        }
+        
+        // Convert MB to bytes
+        _sizeThresholdInBytes = configuredThreshold * 1024 * 1024;
         
         // Configure S3 client with explicit region
         var s3Config = new AmazonS3Config
@@ -140,6 +150,6 @@ public class S3Service : IS3Service
     /// </summary>
     public bool ExceedsSizeThreshold(string jsonContent)
     {
-        return GetSheetEntitySize(jsonContent) > SizeThresholdInBytes;
+        return GetSheetEntitySize(jsonContent) > _sizeThresholdInBytes;
     }
 }
