@@ -27,7 +27,7 @@
       </a>
       
       <!-- Authenticated user navigation -->
-      <ng-container *ngIf="isAuthenticated">
+      <ng-container *ngIf="isAuthenticated && defaultSheet">
         <a routerLink="/trips" 
            class="action-button" 
            aria-label="View trips"
@@ -95,7 +95,7 @@
           </a>
           
           <!-- Authenticated user navigation items -->
-          <ng-container *ngIf="isAuthenticated">
+          <ng-container *ngIf="isAuthenticated && defaultSheet">
             <a routerLink="/trips" 
                (click)="closeMenu()"
                class="menu-item"
@@ -114,7 +114,7 @@
         </div>
         
         <!-- Tools section - only for authenticated users -->
-        <div class="menu-section" *ngIf="isAuthenticated">
+        <div class="menu-section" *ngIf="isAuthenticated && defaultSheet">
           <h3 class="menu-section-title">Tools</h3>
           <a routerLink="/stats" 
              (click)="closeMenu()"
