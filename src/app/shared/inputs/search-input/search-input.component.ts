@@ -113,6 +113,9 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
       startWith(''),
       switchMap(async value => {
         const trimmedValue = value || '';
+        if (!trimmedValue) {
+          return [];
+        }
         return await this._filterItems(trimmedValue);
       })
     );
