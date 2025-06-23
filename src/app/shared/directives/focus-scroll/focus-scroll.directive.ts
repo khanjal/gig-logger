@@ -10,6 +10,9 @@ export class FocusScrollDirective {
 
   constructor(private el: ElementRef) { }  @HostListener('focus')
   onFocus() {
+    const isMobile = window.innerWidth <= 768;
+    const delay = isMobile ? 300 : 100; // Longer delay on mobile for virtual keyboard
+    
     setTimeout(() => {
       const element = this.el.nativeElement as HTMLElement;
       
@@ -32,8 +35,8 @@ export class FocusScrollDirective {
         parent = parent.parentElement;
       }
       
-      // Determine offset based on scroll position setting
-      let topOffset = 60;
+      // Determine offset based on scroll position setting and device
+      let topOffset = 60; // More offset on mobile for virtual keyboard
       if (this.scrollPosition === 'top') {
         topOffset = 90;
       }
@@ -75,6 +78,6 @@ export class FocusScrollDirective {
       
       // Emit completion event
       setTimeout(() => this.scrollComplete.emit(), 300);
-    }, 100);
+    }, delay);
   }
 }

@@ -64,8 +64,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   ]
 })
 
-export class SearchInputComponent {
-  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
   @Input() searchType: string = '';
@@ -78,6 +77,8 @@ export class SearchInputComponent {
   // Callbacks for ControlValueAccessor
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
+  public isInModal: boolean = false;
+  private hasTyped: boolean = false;
 
   searchForm = new FormGroup({
     searchInput: new FormControl('')
@@ -102,6 +103,11 @@ export class SearchInputComponent {
     if (this.isRequired) {
       this.searchForm.controls.searchInput.setValidators([Validators.required]);
     }
+
+    // Check if we're in a modal during initialization
+    setTimeout(() => {
+      this.checkIfInModal();
+    }, 0);
 
     this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
       startWith(''),
@@ -166,18 +172,28 @@ export class SearchInputComponent {
 
   public onClear() {
     this.value = '';
-  }
-
-  async onInputChange(event: Event): Promise<void> {
+  }  async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
     this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
     
+    // Set hasTyped to true when user starts typing
+    this.hasTyped = true;
+    
+    // Open autocomplete panel only after user has typed (and not in modal on first character)
+    if (this.autocompleteTrigger && inputValue.length > 0) {
+      // Small delay to allow the filtered items to update
+      setTimeout(() => {
+        if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
+          this.autocompleteTrigger.openPanel();
+        }
+      }, 50);
+    }
+    
     if (this.placeSearch) {
       this.showSearch = true;
     }
-  }
-  async onInputSelect(inputValue: string): Promise<void> {
+  }async onInputSelect(inputValue: string): Promise<void> {
     this.value = inputValue; // Update the value and trigger onChange
 
     // Delay the blur to avoid race conditions
@@ -189,27 +205,53 @@ export class SearchInputComponent {
   }
 
   onInputFocus(event: FocusEvent) {
-    // Close autocomplete before scrolling to prevent disconnect
-    if (this.autocompleteTrigger) {
-      this.autocompleteTrigger.closePanel();
-    }
+    // Reset hasTyped when focusing
+    this.hasTyped = false;
+    
+    // Don't auto-open autocomplete on focus - wait for user to type
+    // This prevents positioning issues in modals
   }
 
-  onScrollComplete() {
-    // Reopen autocomplete after scroll completes
-    setTimeout(() => {
-      if (this.autocompleteTrigger && this.value) {
-        this.autocompleteTrigger.openPanel();
+  private checkIfInModal(): void {
+    const element = this.inputElement?.nativeElement;
+    if (!element) return;
+    
+    let currentElement = element;
+    
+    while (currentElement && currentElement.parentElement) {
+      const parent = currentElement.parentElement;
+      if (parent.classList.contains('mat-dialog-container') || 
+          parent.classList.contains('modal') || 
+          parent.classList.contains('cdk-overlay-pane') ||
+          parent.hasAttribute('role') && parent.getAttribute('role') === 'dialog') {
+        this.isInModal = true;
+        return;
       }
-    }, 100);
+      currentElement = parent;
+    }
+    this.isInModal = false;
   }
 
-  onSearch() {
+  // Get the active input element
+  private getActiveInputElement(): ElementRef | undefined {
+    return this.inputElement;
+  }  onScrollComplete() {
+    // Only reopen autocomplete if user has been typing and there's content
+    if (this.hasTyped && this.value && this.autocompleteTrigger) {
+      setTimeout(() => {
+        if (this.autocompleteTrigger && this.value && document.activeElement === this.inputElement?.nativeElement) {
+          this.autocompleteTrigger.openPanel();
+        }
+      }, 300); // Shorter delay since we're not dealing with initial focus issues
+    }
+  }  onSearch() {
     if (!this.googleSearch) {
       return;
     }
 
     this.showSearch = false;
+    if (!this.inputElement) return;
+
     this._googleAddressService.getPlaceAutocomplete(
       this.inputElement, this.googleSearch, (result: { place: string, address: string }) => {
         if (this.googleSearch === 'address') {

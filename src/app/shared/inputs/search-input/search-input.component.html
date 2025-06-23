@@ -2,7 +2,7 @@
     <div class="search-input-wrapper" 
          [class.show-compact-menu]="hasAvailableActions((filteredItems | async)?.length)">
         <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>{{fieldName}}</mat-label>
+            <mat-label>{{fieldName}}</mat-label>            <!-- Single input with conditional autocomplete behavior -->
             <input 
                 matInput
                 type="text"
