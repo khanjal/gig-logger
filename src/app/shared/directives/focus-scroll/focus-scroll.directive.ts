@@ -5,7 +5,6 @@ import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from
   standalone: true
 })
 export class FocusScrollDirective {
-  @Input('focus-scroll') scrollPosition: string = 'default';
   @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private el: ElementRef) { }  @HostListener('focus')
@@ -36,14 +35,7 @@ export class FocusScrollDirective {
       }
       
       // Determine offset based on scroll position setting and device
-      let topOffset = 10; // More offset on mobile for virtual keyboard
-      if (this.scrollPosition === 'top') {
-        topOffset = 90;
-      }
-
-      if (isInModal) {
-        topOffset = 25;
-      }
+      let topOffset = 90; // More offset on mobile for virtual keyboard
       
       if (isInModal && modalParent) {
         // Find scrollable area within the modal
