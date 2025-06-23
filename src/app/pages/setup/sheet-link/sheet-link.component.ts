@@ -37,7 +37,10 @@ export class SheetLinkComponent {
     const dialogRef = this.dialog.open(SheetCreateComponent, {
       width: '400px',
       height: '200px',
-      panelClass: 'custom-modalbox'
+      panelClass: 'custom-modalbox',
+      position: {
+        top: '125px' // Adjust this value to position the dialog higher
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
