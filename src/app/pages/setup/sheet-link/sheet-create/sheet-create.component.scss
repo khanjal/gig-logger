@@ -5,3 +5,21 @@
 .field-full-width {
     width: 100%;
 }
+
+.creating-sheet-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 0;
+
+  .mat-spinner {
+    margin-bottom: 1rem;
+  }
+
+  .creating-sheet-text {
+    font-weight: 500;
+    margin-top: 0;
+  }
+}
