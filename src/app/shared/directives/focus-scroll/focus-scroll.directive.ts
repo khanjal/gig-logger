@@ -1,44 +1,80 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Output, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Directive({
   selector: '[focus-scroll]',
   standalone: true
 })
 export class FocusScrollDirective {
+  @Input('focus-scroll') scrollPosition: string = 'default';
   @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private el: ElementRef, private renderer: Renderer2) { }
-
-  @HostListener('focus')
+  constructor(private el: ElementRef) { }  @HostListener('focus')
   onFocus() {
-    this.renderer.addClass(this.el.nativeElement, 'focus-scroll');
-    const input = this.el.nativeElement as HTMLElement;
-    const isMobile = window.innerWidth <= 768;
-    const topOffset = isMobile ? 80 : 60;
     setTimeout(() => {
-      // Find the nearest scrollable parent (or window)
-      let parent = input.parentElement;
-      let scrollParent: HTMLElement | Window = window;
+      const element = this.el.nativeElement as HTMLElement;
+      
+      // Check if we're in a modal by looking for specific modal classes/attributes
+      let isInModal = false;
+      let modalParent: HTMLElement | null = null;
+      let parent = element.parentElement;
+      
       while (parent) {
-        const style = window.getComputedStyle(parent);
-        if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && parent.scrollHeight > parent.clientHeight) {
-          scrollParent = parent;
+        const classList = parent.classList;
+        // Common modal class names
+        if (classList.contains('mat-dialog-container') || 
+            classList.contains('modal') || 
+            classList.contains('cdk-overlay-pane') ||
+            parent.hasAttribute('role') && parent.getAttribute('role') === 'dialog') {
+          isInModal = true;
+          modalParent = parent;
           break;
         }
         parent = parent.parentElement;
       }
-      // Get bounding rects
-      const inputRect = input.getBoundingClientRect();
-      if (scrollParent === window) {
-        const scrollTo = window.pageYOffset + inputRect.top - topOffset;
-        window.scrollTo({ top: Math.max(0, scrollTo), behavior: 'smooth' });
-      } else {
-        const parentRect = (scrollParent as HTMLElement).getBoundingClientRect();
-        const relativeTop = inputRect.top - parentRect.top;
-        const scrollTo = (scrollParent as HTMLElement).scrollTop + relativeTop - topOffset;
-        (scrollParent as HTMLElement).scrollTo({ top: Math.max(0, scrollTo), behavior: 'smooth' });
+      
+      // Determine offset based on scroll position setting
+      let topOffset = 60;
+      if (this.scrollPosition === 'top') {
+        topOffset = 90;
       }
+      
+      if (isInModal && modalParent) {
+        // Find scrollable area within the modal
+        let scrollableElement = modalParent;
+        const descendants = modalParent.querySelectorAll('*');
+        for (let i = 0; i < descendants.length; i++) {
+          const desc = descendants[i] as HTMLElement;
+          const style = window.getComputedStyle(desc);
+          if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && 
+              desc.scrollHeight > desc.clientHeight) {
+            scrollableElement = desc;
+            break;
+          }
+        }
+        
+        // Scroll within modal
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = scrollableElement.getBoundingClientRect();
+        const relativeTop = elementRect.top - containerRect.top;
+        const scrollTo = scrollableElement.scrollTop + relativeTop - topOffset;
+        
+        scrollableElement.scrollTo({
+          top: Math.max(0, scrollTo),
+          behavior: 'smooth'
+        });
+      } else {
+        // Scroll the window for non-modal contexts
+        const rect = element.getBoundingClientRect();
+        const scrollY = window.pageYOffset + rect.top - topOffset;
+        
+        window.scrollTo({
+          top: Math.max(0, scrollY),
+          behavior: 'smooth'
+        });
+      }
+      
+      // Emit completion event
       setTimeout(() => this.scrollComplete.emit(), 300);
-    }, 30);
+    }, 100);
   }
 }
