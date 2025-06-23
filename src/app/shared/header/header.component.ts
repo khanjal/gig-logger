@@ -8,8 +8,10 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgIf } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
     selector: 'app-header',
@@ -31,14 +33,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoading = false;
   currentRoute = '/';
   isMenuOpen = false;
+
+  // Notification badge counts for unsaved trips and shifts
+  public unsavedTripsCount: number = 0;
+  public unsavedShiftsCount: number = 0;
   
   private headerSubscription: Subscription;
   private routerSubscription: Subscription;
-    constructor(
+  private unsavedCountInterval: Subscription;
+
+  constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
     private authService: AuthGoogleService,
-    private router: Router
+    private router: Router,
+    private shiftService: ShiftService,
+    private tripService: TripService
   ) { 
     // Subscribe to header updates
     this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
@@ -52,6 +62,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentRoute = event.url;
         this.setLoadingState(false); // Hide loading when navigation completes
       });
+    
+    // Poll for unsaved counts every 5 seconds
+    this.unsavedCountInterval = interval(5000).subscribe(() => this.updateUnsavedCounts());
+    // Initial fetch
+    this.updateUnsavedCounts();
   }
 
   async ngOnInit(): Promise<void> {
@@ -88,6 +103,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
   
+  private async updateUnsavedCounts() {
+    // Only update if authenticated
+    if (!this.isAuthenticated) {
+      this.unsavedTripsCount = 0;
+      this.unsavedShiftsCount = 0;
+      return;
+    }
+    this.unsavedTripsCount = (await this.tripService.getUnsaved()).length;
+    this.unsavedShiftsCount = (await this.shiftService.getUnsavedShifts()).length;
+  }
+
   public getToolbarColor(): string {
     const subdomain = window.location.hostname.split('.')[0];
     switch (subdomain) {      case 'gig':
@@ -139,6 +165,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
+    }
+    if (this.unsavedCountInterval) {
+      this.unsavedCountInterval.unsubscribe();
     }
   }
 }

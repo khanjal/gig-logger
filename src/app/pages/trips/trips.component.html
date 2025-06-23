@@ -6,7 +6,7 @@
 
     @if (unsavedData && !pollingEnabled) {
         <div class="row-grid">
-            <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Trips to Spreadsheet</button>
+            <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
         </div>
     }
     
