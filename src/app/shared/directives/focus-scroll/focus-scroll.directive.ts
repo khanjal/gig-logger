@@ -36,9 +36,13 @@ export class FocusScrollDirective {
       }
       
       // Determine offset based on scroll position setting and device
-      let topOffset = 60; // More offset on mobile for virtual keyboard
+      let topOffset = 10; // More offset on mobile for virtual keyboard
       if (this.scrollPosition === 'top') {
         topOffset = 90;
+      }
+
+      if (isInModal) {
+        topOffset = 25;
       }
       
       if (isInModal && modalParent) {
