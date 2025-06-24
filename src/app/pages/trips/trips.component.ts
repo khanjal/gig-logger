@@ -57,7 +57,6 @@ export class TripComponent implements OnInit, OnDestroy {
   // Edit mode properties
   isEditMode: boolean = false;
   editingTripId: string | null = null;
-  returnScrollId: string | null = null;
 
   savedTrips: ITrip[] = [];
   todaysTrips: ITrip[] = [];
@@ -101,11 +100,6 @@ export class TripComponent implements OnInit, OnDestroy {
         this.isEditMode = false;
         this.editingTripId = null;
       }
-    });
-
-    // Check for return scroll parameter
-    this._route.queryParamMap.subscribe(queryParams => {
-      this.returnScrollId = queryParams.get('returnScroll');
     });
 
     await this.load();
@@ -189,7 +183,6 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-
         if (result) {
             await this.reload("todaysTrips");
         }
@@ -305,22 +298,24 @@ export class TripComponent implements OnInit, OnDestroy {
     this.logger.debug('Stopping polling');
     this._pollingService.stopPolling();
   }
+
   async loadTripForEditing() {
     if (!this.editingTripId) return;
     
     try {
       const tripId = parseInt(this.editingTripId);
-      const trip = await this._tripService.queryById(tripId);
+      const trip = await this._tripService.getByRowId(tripId);
       if (trip && this.tripForm) {
         // Set the trip data and load the form
         this.tripForm.data = trip;
         await this.tripForm.load();
         // Scroll to the form
         setTimeout(() => {
-          this._viewportScroller.scrollToAnchor("tripForm");
+          this._viewportScroller.scrollToAnchor("addTrip");
         }, 100);
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error loading trip for editing:', error);
       // If trip not found, redirect to normal trips page
       this._router.navigate(['/trips']);
@@ -342,16 +337,14 @@ export class TripComponent implements OnInit, OnDestroy {
     // Reload data and scroll to the trip if specified
     await this.load();
     
-    if (scrollToTripId || this.returnScrollId) {
+    if (scrollToTripId) {
       setTimeout(() => {
-        this.scrollToTrip(scrollToTripId || this.returnScrollId!);
+        this.scrollToTrip(scrollToTripId);
       }, 100);
     } else {
       setTimeout(() => {
         this.scrollToTrip();
       }, 100);
     }
-    
-    this.returnScrollId = null;
   }
 }
