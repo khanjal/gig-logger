@@ -2,7 +2,8 @@
     <div class="search-input-wrapper" 
          [class.show-compact-menu]="hasAvailableActions((filteredItems | async)?.length)">
         <mat-form-field class="field-full-width" appearance="outline">
-            <mat-label>{{fieldName}}</mat-label>            <!-- Single input with conditional autocomplete behavior -->
+            <mat-label>{{fieldName}}</mat-label>
+            <!-- Single input with conditional autocomplete behavior -->
             <input 
                 matInput
                 type="text"
@@ -11,7 +12,6 @@
                 (input)="onInputChange($event)"
                 (blur)="onBlur()"
                 [required]="isRequired"
-                focus-scroll="top"
                 #searchInput
             />
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
