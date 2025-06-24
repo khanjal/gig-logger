@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum'; 
 import { MatDialog } from '@angular/material/dialog';
@@ -35,13 +36,13 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
-
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
         private _gigLoggerService: GigWorkflowService,
         private _tripService: TripService,
         private _shiftService: ShiftService,
+        private _router: Router,
       ) { }
    
   ngOnInit() {
@@ -172,23 +173,12 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
     this.parentReload.emit();
   }
-
   async openTripDialog() {
-    this.pollingToggle.emit(false);
-    let dialogRef = this.dialog.open(TripFormComponent, {
-      data: this.trip,
-      height: '600px',
-      width: '500px',
-      panelClass: 'custom-modalbox',
-      autoFocus: true,
-      position: {
-        top: '25px' // Adjust this value to position the dialog higher
+    // Navigate to trips page with edit mode and trip ID
+    this._router.navigate(['/trips/edit', this.trip.id], {
+      queryParams: { 
+        returnScroll: this.trip.rowId?.toString() 
       }
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      this.pollingToggle.emit(true);
-      this.parentReload.emit();
     });
   }
 }

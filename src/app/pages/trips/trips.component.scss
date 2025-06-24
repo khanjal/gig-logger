@@ -1,6 +1,17 @@
 // Mobile-First Trips Component Styles
 @import "../../shared/styles/color-vars";
 
+// Edit mode styling
+.edit-mode {
+  .current-average-overlay.hidden {
+    display: none;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
 // Header with right-aligned toggle
 h2 {
     display: flex;

@@ -2,6 +2,7 @@
 import { ViewportScroller, NgFor, NgIf, NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 // Angular material imports
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
@@ -63,6 +64,8 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Output("editModeExit") editModeExit: EventEmitter<string | undefined> = new EventEmitter();
+  @Input() isInEditMode: boolean = false;
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
   tripForm = new FormGroup({
@@ -114,7 +117,6 @@ export class TripFormComponent implements OnInit {
   selectedShift: IShift | undefined;
 
   title: string = "Add Trip";
-
   constructor(
       @Optional() public dialogRef: MatDialogRef<TripFormComponent>,
       @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
@@ -127,7 +129,8 @@ export class TripFormComponent implements OnInit {
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
-      private _viewportScroller: ViewportScroller
+      private _viewportScroller: ViewportScroller,
+      private _router: Router
     ) {}
 
   async ngOnInit(): Promise<void> {
@@ -334,7 +337,6 @@ export class TripFormComponent implements OnInit {
     await this._timerService.delay(1000);
     this._viewportScroller.scrollToAnchor("todaysTrips");
   }
-
   public async editTrip() {
     let shifts: IShift[] = [];
 
@@ -364,7 +366,14 @@ export class TripFormComponent implements OnInit {
 
     this._snackBar.open("Trip Updated");
 
-    this.dialogRef.close();
+    // Handle different scenarios for closing
+    if (this.isInEditMode) {
+      // We're in edit mode on the trips page, emit event to exit edit mode
+      this.editModeExit.emit(trip.rowId?.toString());
+    } else if (this.dialogRef) {
+      // We're in a dialog, close it
+      this.dialogRef.close();
+    }
   }
 
   public async formReset() {
@@ -565,8 +574,13 @@ export class TripFormComponent implements OnInit {
   setDropoffTime() {
     this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString());
   }
-
   close() {
-    this.dialogRef.close();
+    if (this.isInEditMode) {
+      // We're in edit mode on the trips page, emit event to exit edit mode
+      this.editModeExit.emit(undefined);
+    } else if (this.dialogRef) {
+      // We're in a dialog, close it
+      this.dialogRef.close();
+    }
   }
 }

@@ -1,21 +1,27 @@
 <div class="container" id="addTrip">
-    <div class="trip-form-container">
-        <app-current-average class="current-average-overlay"></app-current-average>
-        <trip-form (parentReload)="load()" id="tripForm"></trip-form>
+    <div class="trip-form-container" [ngClass]="{'edit-mode': isEditMode}">
+        <app-current-average class="current-average-overlay" [ngClass]="{'hidden': isEditMode}"></app-current-average>
+        <trip-form 
+            (parentReload)="load()" 
+            (editModeExit)="exitEditMode($event)" 
+            [isInEditMode]="isEditMode" 
+            id="tripForm">
+        </trip-form>
     </div>
 
-    @if (unsavedData && !pollingEnabled) {
+    @if (unsavedData && !pollingEnabled && !isEditMode) {
         <div class="row-grid">
             <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
         </div>
     }
-    
-    @if (!unsavedData || pollingEnabled) {
+
+    @if ((!unsavedData || pollingEnabled) && !isEditMode) {
         <div class="row-grid">
             <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
-      <h2 id="todaysTrips">
+
+    <h2 id="todaysTrips" [ngClass]="{'hidden': isEditMode}">
         @if (todaysTrips.length > 0) {
             Today's Trips ({{todaysTrips.length}})
         }
@@ -27,14 +33,14 @@
         </mat-slide-toggle>
     </h2>
     
-    @for (trip of todaysTrips; track $index) {
-        <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
-        </div>
-    }
-
-    <br/>
-    @if (yesrterdaysTrips.length > 0) {
+    @if (!isEditMode) {
+        @for (trip of todaysTrips; track $index) {
+            <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+                <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+            </div>
+        }
+    }    <br/>
+    @if (yesrterdaysTrips.length > 0 && !isEditMode) {
         <div class="yesterday-section">
             <h2 id="yesrterdaysTrips" class="yesterday-header" (click)="toggleYesterdayTrips()">
                 <mat-icon class="toggle-icon" [class.expanded]="showYesterdayTrips">
@@ -55,9 +61,11 @@
         </div>
     }
     <br/>
-    <div class="row-grid">
-        <app-trips-table-group class="table" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>
-    </div>
+    @if (!isEditMode) {
+        <div class="row-grid">
+            <app-trips-table-group class="table" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>
+        </div>
+    }
 
     <!-- Floating "Back to Top" button -->
     <button 

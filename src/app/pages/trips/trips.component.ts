@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller, NgClass, NgIf, CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -47,10 +48,16 @@ export class TripComponent implements OnInit, OnDestroy {
   demoSheetId = environment.demoSheet;
 
   clearing: boolean = false;
-  reloading: boolean = false;  saving: boolean = false;
+  reloading: boolean = false;
+  saving: boolean = false;
   pollingEnabled: boolean = false;
   showBackToTop: boolean = false; // Controls the visibility of the "Back to Top" button
   showYesterdayTrips: boolean = false; // Controls the visibility of yesterday's trips section
+  
+  // Edit mode properties
+  isEditMode: boolean = false;
+  editingTripId: string | null = null;
+  returnScrollId: string | null = null;
 
   savedTrips: ITrip[] = [];
   todaysTrips: ITrip[] = [];
@@ -60,6 +67,7 @@ export class TripComponent implements OnInit, OnDestroy {
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
   parentReloadSubscription!: Subscription;
+  
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
@@ -70,7 +78,9 @@ export class TripComponent implements OnInit, OnDestroy {
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
       private viewportScroller: ViewportScroller,
-      private logger: LoggerService
+      private logger: LoggerService,
+      private _route: ActivatedRoute,
+      private _router: Router
     ) { }
   ngOnDestroy(): void {
     this._pollingService.stopPolling();
@@ -80,10 +90,32 @@ export class TripComponent implements OnInit, OnDestroy {
       this.parentReloadSubscription.unsubscribe();
     }
   }
-
   async ngOnInit(): Promise<void> {
+    // Check if we're in edit mode based on route
+    this._route.paramMap.subscribe(params => {
+      const tripId = params.get('id');
+      if (tripId) {
+        this.isEditMode = true;
+        this.editingTripId = tripId;
+      } else {
+        this.isEditMode = false;
+        this.editingTripId = null;
+      }
+    });
+
+    // Check for return scroll parameter
+    this._route.queryParamMap.subscribe(queryParams => {
+      this.returnScrollId = queryParams.get('returnScroll');
+    });
+
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    
+    // Load trip data for editing if in edit mode
+    if (this.isEditMode && this.editingTripId) {
+      await this.loadTripForEditing();
+    }
+    
     this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
       await this.reload();
     });
@@ -272,5 +304,54 @@ export class TripComponent implements OnInit, OnDestroy {
   stopPolling() {
     this.logger.debug('Stopping polling');
     this._pollingService.stopPolling();
+  }
+  async loadTripForEditing() {
+    if (!this.editingTripId) return;
+    
+    try {
+      const tripId = parseInt(this.editingTripId);
+      const trip = await this._tripService.queryById(tripId);
+      if (trip && this.tripForm) {
+        // Set the trip data and load the form
+        this.tripForm.data = trip;
+        await this.tripForm.load();
+        // Scroll to the form
+        setTimeout(() => {
+          this._viewportScroller.scrollToAnchor("tripForm");
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Error loading trip for editing:', error);
+      // If trip not found, redirect to normal trips page
+      this._router.navigate(['/trips']);
+    }
+  }
+
+  async exitEditMode(scrollToTripId?: string) {
+    this.isEditMode = false;
+    this.editingTripId = null;
+    
+    // Clear the form
+    if (this.tripForm) {
+      await this.tripForm.formReset();
+    }
+    
+    // Navigate back to trips page
+    this._router.navigate(['/trips']);
+    
+    // Reload data and scroll to the trip if specified
+    await this.load();
+    
+    if (scrollToTripId || this.returnScrollId) {
+      setTimeout(() => {
+        this.scrollToTrip(scrollToTripId || this.returnScrollId!);
+      }, 100);
+    } else {
+      setTimeout(() => {
+        this.scrollToTrip();
+      }, 100);
+    }
+    
+    this.returnScrollId = null;
   }
 }
