@@ -133,7 +133,7 @@ export class TripComponent implements OnInit, OnDestroy {
     const formHeight = formElement ? formElement.offsetHeight / 2 : 0;
 
     // Show the button if scrolled past the form
-    this.showBackToTop = scrollPosition > formHeight;
+    this.showBackToTop = (scrollPosition > formHeight) && !this.editingTripId;
   }  // Scroll to the top of the page
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
@@ -309,10 +309,7 @@ export class TripComponent implements OnInit, OnDestroy {
         // Set the trip data and load the form
         this.tripForm.data = trip;
         await this.tripForm.load();
-        // Scroll to the form
-        setTimeout(() => {
-          this._viewportScroller.scrollToAnchor("addTrip");
-        }, 100);
+        this.scrollToTop();
       }
     }
     catch (error) {
