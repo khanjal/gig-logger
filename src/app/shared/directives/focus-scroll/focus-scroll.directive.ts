@@ -8,21 +8,24 @@ export class FocusScrollDirective {
   @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private el: ElementRef) { }
-
   @HostListener('focus')
   onFocus() {
     const isMobile = window.innerWidth <= 768;
-    const delay = isMobile ? 300 : 100;
+    const delay = isMobile ? 600 : 200; // Longer delay for mobile to account for keyboard
+    
     setTimeout(() => {
       const element = this.el.nativeElement as HTMLElement;
-      const topOffset = 90;
+      const topOffset = isMobile ? 120 : 90; // More offset on mobile for keyboard
       const rect = element.getBoundingClientRect();
       const scrollY = window.pageYOffset + rect.top - topOffset;
+      
       window.scrollTo({
         top: Math.max(0, scrollY),
         behavior: 'smooth'
       });
-      setTimeout(() => this.scrollComplete.emit(), 300);
+      
+      // Emit immediately after scroll is initiated
+      this.scrollComplete.emit();
     }, delay);
   }
 }
