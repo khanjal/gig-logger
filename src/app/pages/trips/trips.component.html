@@ -1,6 +1,6 @@
 <div class="container" id="addTrip">
-    <!-- Loading overlay for transitions -->
-    @if (isTransitioning) {
+    <!-- Loading overlay for transitions and page loads -->
+    @if (isLoading) {
         <div class="loading-overlay">
             <div class="loading-spinner">
                 <mat-icon class="spinner-icon">refresh</mat-icon>
