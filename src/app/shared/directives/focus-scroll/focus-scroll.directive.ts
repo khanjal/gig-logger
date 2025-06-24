@@ -11,21 +11,40 @@ export class FocusScrollDirective {
   @HostListener('focus')
   onFocus() {
     const isMobile = window.innerWidth <= 768;
-    const delay = isMobile ? 600 : 200; // Longer delay for mobile to account for keyboard
     
-    setTimeout(() => {
+    if (!isMobile) {
+      // Desktop behavior - simple and immediate
       const element = this.el.nativeElement as HTMLElement;
-      const topOffset = isMobile ? 120 : 90; // More offset on mobile for keyboard
       const rect = element.getBoundingClientRect();
-      const scrollY = window.pageYOffset + rect.top - topOffset;
+      const scrollY = window.pageYOffset + rect.top - 90;
       
       window.scrollTo({
         top: Math.max(0, scrollY),
         behavior: 'smooth'
       });
       
-      // Emit immediately after scroll is initiated
       this.scrollComplete.emit();
-    }, delay);
+      return;
+    }
+    
+    // Mobile behavior - calculate position before keyboard affects viewport
+    const element = this.el.nativeElement as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    const currentScrollY = window.pageYOffset;
+    const elementTop = currentScrollY + rect.top;
+    
+    // Calculate target scroll position based on current viewport (before keyboard)
+    const viewportHeight = window.innerHeight;
+    const targetScrollY = elementTop - (viewportHeight * 0.3); // Position element in top 30% of screen
+    
+    // Wait for keyboard to appear, then scroll to pre-calculated position
+    setTimeout(() => {
+      window.scrollTo({
+        top: Math.max(0, targetScrollY),
+        behavior: 'smooth'
+      });
+      
+      this.scrollComplete.emit();
+    }, 300);
   }
 }
