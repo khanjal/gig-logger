@@ -10,10 +10,8 @@
                 formControlName="searchInput"
                 (input)="onInputChange($event)"
                 (blur)="onBlur()"
-                (focus)="onInputFocus($event)"
                 [required]="isRequired"
                 focus-scroll="top"
-                (scrollComplete)="onScrollComplete()"
                 #searchInput
             />
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
@@ -42,7 +40,7 @@
                 <mat-icon>search</mat-icon>
             </button>
             <button class="mat-icon-button standard-button" 
-                    *ngIf="!showSearch && value && googleSearch" 
+                    *ngIf="value && googleSearch" 
                     color="primary" 
                     matSuffix 
                     mat-icon-button 
@@ -72,11 +70,11 @@
             </button>
             
             <mat-menu #actionsMenu="matMenu" class="search-actions-menu">
-                <button mat-menu-item *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
+                <button mat-menu-item *ngIf="value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
                     <mat-icon>search</mat-icon>
                     <span>Search Google</span>
                 </button>
-                <button mat-menu-item *ngIf="!showSearch && value && googleSearch" (click)="openMap()">
+                <button mat-menu-item *ngIf="value" (click)="openMap()">
                     <mat-icon>map</mat-icon>
                     <span>Open Map</span>
                 </button>

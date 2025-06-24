@@ -113,9 +113,6 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
       startWith(''),
       switchMap(async value => {
         const trimmedValue = value || '';
-        if (!trimmedValue) {
-          return [];
-        }
         return await this._filterItems(trimmedValue);
       })
     );
@@ -175,28 +172,19 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
 
   public onClear() {
     this.value = '';
-  }  async onInputChange(event: Event): Promise<void> {
+  }
+
+  async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
     this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
     
-    // Set hasTyped to true when user starts typing
-    this.hasTyped = true;
-    
-    // Open autocomplete panel only after user has typed (and not in modal on first character)
-    if (this.autocompleteTrigger && inputValue.length > 0) {
-      // Small delay to allow the filtered items to update
-      setTimeout(() => {
-        if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
-          this.autocompleteTrigger.openPanel();
-        }
-      }, 50);
-    }
-    
     if (this.placeSearch) {
       this.showSearch = true;
     }
-  }async onInputSelect(inputValue: string): Promise<void> {
+  }
+
+  async onInputSelect(inputValue: string): Promise<void> {
     this.value = inputValue; // Update the value and trigger onChange
 
     // Delay the blur to avoid race conditions
@@ -205,14 +193,6 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
         this.inputElement.nativeElement.blur();
       }, 100); // Delay by 100ms
     }
-  }
-
-  onInputFocus(event: FocusEvent) {
-    // Reset hasTyped when focusing
-    this.hasTyped = false;
-    
-    // Don't auto-open autocomplete on focus - wait for user to type
-    // This prevents positioning issues in modals
   }
 
   private checkIfInModal(): void {
@@ -238,16 +218,9 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
   // Get the active input element
   private getActiveInputElement(): ElementRef | undefined {
     return this.inputElement;
-  }  onScrollComplete() {
-    // Only reopen autocomplete if user has been typing and there's content
-    if (this.hasTyped && this.value && this.autocompleteTrigger) {
-      setTimeout(() => {
-        if (this.autocompleteTrigger && this.value && document.activeElement === this.inputElement?.nativeElement) {
-          this.autocompleteTrigger.openPanel();
-        }
-      }, 300); // Shorter delay since we're not dealing with initial focus issues
-    }
-  }  onSearch() {
+  }
+  
+  onSearch() {
     if (!this.googleSearch) {
       return;
     }
