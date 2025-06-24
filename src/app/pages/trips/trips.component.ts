@@ -53,10 +53,10 @@ export class TripComponent implements OnInit, OnDestroy {
   pollingEnabled: boolean = false;
   showBackToTop: boolean = false; // Controls the visibility of the "Back to Top" button
   showYesterdayTrips: boolean = false; // Controls the visibility of yesterday's trips section
-  
-  // Edit mode properties
+    // Edit mode properties
   isEditMode: boolean = false;
   editingTripId: string | null = null;
+  isTransitioning: boolean = false; // Loading overlay state
 
   savedTrips: ITrip[] = [];
   todaysTrips: ITrip[] = [];
@@ -135,6 +135,7 @@ export class TripComponent implements OnInit, OnDestroy {
     // Show the button if scrolled past the form
     this.showBackToTop = (scrollPosition > formHeight) && !this.editingTripId;
   }  // Scroll to the top of the page
+
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
   }
@@ -167,11 +168,6 @@ export class TripComponent implements OnInit, OnDestroy {
       // Scroll to today's trips section
       this._viewportScroller.scrollToAnchor("todaysTrips");
     }
-  }
-
-  // Legacy method for backward compatibility
-  scrollToTodaysTrips(): void {
-    this.scrollToTrip();
   }
 
   async loadSheetDialog(inputValue: string) {
@@ -302,6 +298,8 @@ export class TripComponent implements OnInit, OnDestroy {
   async loadTripForEditing() {
     if (!this.editingTripId) return;
     
+    this.isTransitioning = true;
+    
     try {
       const tripId = parseInt(this.editingTripId);
       const trip = await this._tripService.getByRowId(tripId);
@@ -309,39 +307,44 @@ export class TripComponent implements OnInit, OnDestroy {
         // Set the trip data and load the form
         this.tripForm.data = trip;
         await this.tripForm.load();
+        // Simple scroll to top
         this.scrollToTop();
+        this.isTransitioning = false;
+      } else {
+        this.isTransitioning = false;
       }
     }
     catch (error) {
       console.error('Error loading trip for editing:', error);
+      this.isTransitioning = false;
       // If trip not found, redirect to normal trips page
       this._router.navigate(['/trips']);
     }
   }
 
   async exitEditMode(scrollToTripId?: string) {
+    this.isTransitioning = true;
+    
     this.isEditMode = false;
     this.editingTripId = null;
-    
-    // Clear the form
-    if (this.tripForm) {
-      await this.tripForm.formReset();
-    }
     
     // Navigate back to trips page
     this._router.navigate(['/trips']);
     
-    // Reload data and scroll to the trip if specified
+    // Clear the form and reload data
+    if (this.tripForm) {
+      await this.tripForm.formReset();
+    }
+    
     await this.load();
     
+    // Simple scroll handling
     if (scrollToTripId) {
-      setTimeout(() => {
-        this.scrollToTrip(scrollToTripId);
-      }, 100);
+      this.scrollToTrip(scrollToTripId);
     } else {
-      setTimeout(() => {
-        this.scrollToTrip();
-      }, 100);
+      this.scrollToTrip();
     }
+    
+    this.isTransitioning = false;
   }
 }
