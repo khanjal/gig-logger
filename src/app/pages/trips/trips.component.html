@@ -52,11 +52,12 @@
     }    <br/>
     @if (yesrterdaysTrips.length > 0 && !isEditMode) {
         <div class="yesterday-section">
-            <h2 id="yesrterdaysTrips" class="yesterday-header" (click)="toggleYesterdayTrips()">
+            <h2 id="yesrterdaysTrips" class="yesterday-header clickable" (click)="toggleYesterdayTrips()">
                 <mat-icon class="toggle-icon" [class.expanded]="showYesterdayTrips">
                     {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
                 Yesterday's Trips ({{yesrterdaysTrips.length}})
+                <span class="show-hide-label">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
             </h2>
             
             @if (showYesterdayTrips) {
@@ -89,3 +90,32 @@
         <mat-icon>arrow_upward</mat-icon>
     </button>
 </div>
+
+<style>
+.yesterday-header.clickable {
+    cursor: pointer;
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 8px 16px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+.yesterday-header.clickable:hover {
+    background: #e0e0e0;
+}
+.toggle-icon {
+    margin-right: 8px;
+    transition: transform 0.2s;
+}
+.toggle-icon.expanded {
+    transform: rotate(180deg);
+}
+.show-hide-label {
+    margin-left: 12px;
+    font-size: 0.95em;
+    color: #666;
+    font-weight: 500;
+}
+</style>
