@@ -29,7 +29,8 @@
                 </mat-option>
                 </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
-              <!-- Standard buttons (inside form field) - shown on all screens except very small -->
+            
+            <!-- Standard buttons (inside form field) - shown on all screens except very small -->
             <button class="mat-icon-button standard-button" 
                     *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" 
                     color="primary" 
@@ -70,7 +71,7 @@
             </button>
             
             <mat-menu #actionsMenu="matMenu" class="search-actions-menu">
-                <button mat-menu-item *ngIf="value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
+                <button mat-menu-item *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
                     <mat-icon>search</mat-icon>
                     <span>Search Google</span>
                 </button>

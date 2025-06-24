@@ -77,8 +77,6 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
   // Callbacks for ControlValueAccessor
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
-  public isInModal: boolean = false;
-  private hasTyped: boolean = false;
 
   searchForm = new FormGroup({
     searchInput: new FormControl('')
@@ -103,11 +101,6 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
     if (this.isRequired) {
       this.searchForm.controls.searchInput.setValidators([Validators.required]);
     }
-
-    // Check if we're in a modal during initialization
-    setTimeout(() => {
-      this.checkIfInModal();
-    }, 0);
 
     this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
       startWith(''),
@@ -195,31 +188,6 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
     }
   }
 
-  private checkIfInModal(): void {
-    const element = this.inputElement?.nativeElement;
-    if (!element) return;
-    
-    let currentElement = element;
-    
-    while (currentElement && currentElement.parentElement) {
-      const parent = currentElement.parentElement;
-      if (parent.classList.contains('mat-dialog-container') || 
-          parent.classList.contains('modal') || 
-          parent.classList.contains('cdk-overlay-pane') ||
-          parent.hasAttribute('role') && parent.getAttribute('role') === 'dialog') {
-        this.isInModal = true;
-        return;
-      }
-      currentElement = parent;
-    }
-    this.isInModal = false;
-  }
-
-  // Get the active input element
-  private getActiveInputElement(): ElementRef | undefined {
-    return this.inputElement;
-  }
-  
   onSearch() {
     if (!this.googleSearch) {
       return;
