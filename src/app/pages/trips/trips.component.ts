@@ -127,7 +127,7 @@ export class TripComponent implements OnInit, OnDestroy {
     // Small delay to ensure smooth loading experience
     setTimeout(() => {
       this.isLoading = false;
-    }, 200);
+    }, 400);
   }
 
   // Listen for scroll events
