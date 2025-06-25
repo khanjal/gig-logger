@@ -84,7 +84,6 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
-  showSearch: boolean = false;
   placeSearch: boolean = false;
   
   constructor(
@@ -112,13 +111,7 @@ export class SearchInputComponent {
       })
     );
 
-    if (this.placeSearch) {
-      this.showSearch = true;
-    }
-    // Show Google Search button for gig-test subdomain or localhost
-    if (window.location.hostname.includes('gig-test') || window.location.hostname === 'localhost') {
-      this.showSearch = true;
-    }
+    // No need for showSearch logic anymore - Google predictions appear automatically in dropdown
   }
   
   async ngOnChanges(): Promise<void> {
@@ -175,9 +168,7 @@ export class SearchInputComponent {
     // Clear listeners from autocomplete service
     this._googleAutocompleteService.clearAddressListeners(this.inputElement);
     
-    if (this.placeSearch) {
-      this.showSearch = true;
-    }
+    // No need for showSearch logic anymore - Google predictions appear automatically in dropdown
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
@@ -188,67 +179,6 @@ export class SearchInputComponent {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
       }, 100); // Delay by 100ms
-    }
-  }
-  async onSearch() {
-    if (!this.googleSearch) {
-      return;
-    }
-
-    // For Address and Place search types, trigger Google autocomplete in dropdown
-    if ((this.searchType === 'Address' && this.googleSearch === 'address') || 
-        (this.searchType === 'Place' && this.googleSearch === 'place')) {
-      
-      // Force refresh the filtered items to include Google results
-      const currentValue = this.value;
-      if (currentValue.length >= 2) {
-        // Trigger the autocomplete trigger to show dropdown with Google results
-        this.autocompleteTrigger.openPanel();
-        
-        // Manually trigger the value change to refresh dropdown with Google results
-        this.searchForm.controls.searchInput.updateValueAndValidity();
-        
-        // Set focus back to input
-        setTimeout(() => {
-          if (this.inputElement?.nativeElement) {
-            this.inputElement.nativeElement.focus();
-          }
-        }, 100);
-      }
-      return;
-    }
-
-    // For other cases, use the PlaceAutocompleteElement approach
-    this.showSearch = false;
-    if (!this.inputElement) return;
-
-    if (this._googleAutocompleteService.isGoogleMapsLoaded()) {
-      try {
-        await this._googleAutocompleteService.getPlaceAutocomplete(
-          this.inputElement, 
-          this.googleSearch, 
-          (result: AutocompleteResult) => {
-            if (this.googleSearch === 'address') {
-              this.value = result.address;
-            } else {
-              this.value = result.place;
-              this.auxiliaryData.emit(result.address);
-            }
-          }
-        );
-
-        setTimeout(() => {
-          this._googleAutocompleteService.attachToModal();
-          if (this.inputElement?.nativeElement) {
-            this.inputElement.nativeElement.blur();
-            this.inputElement.nativeElement.focus();
-          }
-        }, 100);
-      } catch (error) {
-        console.warn('Google Autocomplete failed:', error);
-      }
-    } else {
-      console.warn('Google Maps API not loaded');
     }
   }
 
@@ -312,10 +242,10 @@ export class SearchInputComponent {
           trips: item.trips
         }));
 
-        // If we have a Google search type and few results, add Google predictions
-        if (this.googleSearch === 'address' && addressResults.length < 3 && value.length >= 2) {
-          const googleResults = await this.getGooglePredictions(value);
-          addressResults = [...addressResults, ...googleResults];
+        // Add Google predictions to the dropdown as requested
+        if (value && value.length >= 2) {
+          const googlePredictions = await this.getGooglePredictions(value);
+          addressResults = [...addressResults, ...googlePredictions];
         }
 
         return addressResults;
@@ -336,16 +266,17 @@ export class SearchInputComponent {
           trips: item.trips
         }));
 
+        // If no local places found, try JSON fallback
         if (places.length === 0) {
           places = await this.searchJson('places', value);
         }
 
-        // If we have a Google search type and few results, add Google predictions
-        if (this.googleSearch === 'place' && places.length < 3 && value.length >= 2) {
-          const googleResults = await this.getGooglePredictions(value);
-          places = [...places, ...googleResults];
+        // Add Google predictions to the dropdown as requested
+        if (value && value.length >= 2) {
+          const googlePredictions = await this.getGooglePredictions(value);
+          places = [...places, ...googlePredictions];
         }
-
+        
         return places;
       case 'Region':
         return (await this._filterRegion(value)).map(item => ({
@@ -465,13 +396,8 @@ export class SearchInputComponent {
   hasAvailableActions(filteredItemsLength?: number): boolean {
     let buttonCount = 0;
     
-    // Count Google Search button (only shows when no filtered items)
-    if (this.showSearch && this.value && this.googleSearch && (filteredItemsLength === 0 || filteredItemsLength === undefined)) {
-      buttonCount++;
-    }
-    
-    // Count Google Maps button (mutually exclusive with search button)
-    if (!this.showSearch && this.value && this.googleSearch) {
+    // Count Google Maps button
+    if (this.value && this.googleSearch) {
       buttonCount++;
     }
     

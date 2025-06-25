@@ -47,15 +47,6 @@
             
             <!-- Standard buttons (inside form field) - shown on all screens except very small -->
             <button class="mat-icon-button standard-button" 
-                    *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" 
-                    color="primary" 
-                    matSuffix 
-                    mat-icon-button 
-                    aria-label="Search Google" 
-                    (click)="onSearch(); $event.stopPropagation(); $event.preventDefault()">
-                <mat-icon>search</mat-icon>
-            </button>
-            <button class="mat-icon-button standard-button" 
                     *ngIf="value && googleSearch" 
                     color="primary" 
                     matSuffix 
@@ -86,10 +77,6 @@
             </button>
             
             <mat-menu #actionsMenu="matMenu" class="search-actions-menu">
-                <button mat-menu-item *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
-                    <mat-icon>search</mat-icon>
-                    <span>Search Google</span>
-                </button>
                 <button mat-menu-item *ngIf="value" (click)="openMap()">
                     <mat-icon>map</mat-icon>
                     <span>Open Map</span>
