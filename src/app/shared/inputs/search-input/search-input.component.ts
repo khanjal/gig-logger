@@ -256,12 +256,13 @@ export class SearchInputComponent {
   }
 
   /**
-   * Helper method to add Google predictions if conditions are met
+   * Helper method to add Google predictions only if no local results exist
    */
   private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
-    if (value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+    // Only use Google predictions if no local results and search criteria are met
+    if (results.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
       const googlePredictions = await this.getGooglePredictions(value);
-      return [...results, ...googlePredictions];
+      return googlePredictions;
     }
     return results;
   }
@@ -288,7 +289,9 @@ export class SearchInputComponent {
 
       case 'Place':
         let places = (await this._filterPlace(value)).map(item => this.createSearchItem(item, 'place'));
+        // Try JSON fallback first if no local results
         places = await this.handleJsonFallback(places, 'places', value);
+        // Only use Google if still no results after JSON fallback
         return await this.addGooglePredictionsIfNeeded(value, places);
 
       case 'Region':
