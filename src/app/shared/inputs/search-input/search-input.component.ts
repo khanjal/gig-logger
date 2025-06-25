@@ -1,6 +1,6 @@
 // Angular core imports
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
@@ -38,13 +38,13 @@ import { TypeService } from '@services/sheets/type.service';
 import { GoogleAutocompleteService, AutocompleteResult } from '@services/google-autocomplete.service';
 
 // RxJS imports
-import { Observable, startWith, switchMap } from 'rxjs';
+import { Observable, startWith, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -56,7 +56,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   ]
 })
 
-export class SearchInputComponent {
+export class SearchInputComponent implements OnDestroy {
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
@@ -76,12 +76,18 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
+  filteredItemsArray: ISearchItem[] = []; // Single subscription result
   
   // Constants
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly MAX_VISIBLE_ITEMS = 5;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
+  private readonly DEBOUNCE_TIME = 300; // 300ms debounce for API calls
+  
+  // Simple cache for Google predictions to avoid duplicate API calls
+  private googlePredictionsCache = new Map<string, ISearchItem[]>();
+  private searchSubscription?: Subscription;
   
   constructor(
     public dialog: MatDialog,
@@ -105,6 +111,12 @@ export class SearchInputComponent {
     this.updateValidators();
     this.setGoogleSearchType();
     this.searchForm.controls.searchInput.updateValueAndValidity();
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -131,16 +143,34 @@ export class SearchInputComponent {
   }
 
   /**
-   * Sets up the filtered items observable
+   * Sets up the filtered items observable with debouncing and caching
    */
   private setupFilteredItems(): void {
+    // Clean up existing subscription
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+
     this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
-      startWith(''),
+      debounceTime(this.DEBOUNCE_TIME), // Wait 300ms after user stops typing
+      distinctUntilChanged(), // Only emit if value actually changed
       switchMap(async value => {
-        const trimmedValue = value || '';
+        const trimmedValue = value?.trim() || '';
+        // Clear Google listeners on each search to prevent conflicts
+        if (this.inputElement) {
+          this._googleAutocompleteService.clearAddressListeners(this.inputElement);
+        }
         return await this._filterItems(trimmedValue);
       })
     );
+    
+    // Single subscription to prevent duplicate calls
+    this.searchSubscription = this.filteredItems.subscribe(items => {
+      this.filteredItemsArray = items;
+    });
+    
+    // Initialize with empty results
+    this.filteredItemsArray = [];
   }
 
   // Getter and setter for the value
@@ -149,13 +179,18 @@ export class SearchInputComponent {
   }
 
   set value(val: string) {
-    this.searchForm.controls.searchInput.setValue(val); // Update the FormControl value
-    this.onChange(val); // Notify Angular forms of the change
+    // Only update if value is actually different to prevent loops
+    const currentValue = this.searchForm.controls.searchInput.value || '';
+    if (currentValue !== val) {
+      this.searchForm.controls.searchInput.setValue(val, { emitEvent: false }); // Don't emit to prevent duplicate triggers
+      this.onChange(val); // Notify Angular forms of the change
+    }
   }
 
   // ControlValueAccessor methods
   writeValue(value: string): void {
-    this.searchForm.controls.searchInput.setValue(value || ''); // Set the FormControl value
+    // Don't emit valueChanges event to prevent triggering search
+    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: false });
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -172,23 +207,30 @@ export class SearchInputComponent {
 
   // Event handlers
   onBlur(): void {
-    this.value = this.value.trim(); // Trim the value
+    const trimmedValue = this.value.trim();
+    
+    // Only update if the trimmed value is different to prevent unnecessary triggers
+    if (this.value !== trimmedValue) {
+      this.searchForm.controls.searchInput.setValue(trimmedValue, { emitEvent: false });
+      this.onChange(trimmedValue);
+    }
+    
     this.onTouched(); // Notify Angular forms that the input was touched
-    this.valueChanged.emit(this.value); // Emit the event to the parent
+    this.valueChanged.emit(trimmedValue); // Emit the event to the parent
   }
 
   public onClear(): void {
-    this.value = '';
-  }
-
-  async onInputChange(event: Event): Promise<void> {
-    const inputValue = (event.target as HTMLInputElement).value;
-    this.value = inputValue;
-    this._googleAutocompleteService.clearAddressListeners(this.inputElement);
+    // Clear the value without triggering search, then notify form
+    this.searchForm.controls.searchInput.setValue('', { emitEvent: false });
+    this.onChange('');
+    // Clear Google predictions cache when user clears input
+    this.googlePredictionsCache.clear();
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
-    this.value = inputValue;
+    // Set value without triggering additional search since user selected from existing results
+    this.searchForm.controls.searchInput.setValue(inputValue, { emitEvent: false });
+    this.onChange(inputValue);
 
     // Delay the blur to avoid race conditions
     if (this.inputElement) {
@@ -198,11 +240,12 @@ export class SearchInputComponent {
     }
   }
 
-  getViewportHeight(items: ISearchItem[] | null): number {
-    if (!items || items.length === 0) {
+  getViewportHeight(items?: ISearchItem[]): number {
+    const itemsToUse = items || this.filteredItemsArray;
+    if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
     }
-    return Math.min(items.length, this.MAX_VISIBLE_ITEMS) * this.ITEM_HEIGHT;
+    return Math.min(itemsToUse.length, this.MAX_VISIBLE_ITEMS) * this.ITEM_HEIGHT;
   }
 
   /**
@@ -216,10 +259,19 @@ export class SearchInputComponent {
   /**
    * Get Google autocomplete predictions and format them as ISearchItem[]
    * Restricted to localhost and gig-test subdomain only
+   * Includes caching to reduce API calls
    */
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
     if (!this.isGoogleAllowed() || !this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
       return [];
+    }
+
+    // Create cache key with search type and value
+    const cacheKey = `${this.googleSearch}:${value.toLowerCase()}`;
+    
+    // Check cache first
+    if (this.googlePredictionsCache.has(cacheKey)) {
+      return this.googlePredictionsCache.get(cacheKey)!;
     }
 
     try {
@@ -229,13 +281,25 @@ export class SearchInputComponent {
         { componentRestrictions: { country: 'US' } }
       );
 
-      return predictions.map(prediction => ({
+      const results = predictions.map(prediction => ({
         id: undefined,
         name: this.googleSearch === 'address' ? prediction.address : prediction.place,
         saved: false,
         value: this.googleSearch === 'address' ? prediction.address : prediction.place,
         trips: 0
       }));
+
+      // Cache the results (limit cache size to prevent memory issues)
+      if (this.googlePredictionsCache.size >= 50) {
+        // Clear oldest entry if cache gets too large
+        const firstKey = this.googlePredictionsCache.keys().next().value;
+        if (firstKey) {
+          this.googlePredictionsCache.delete(firstKey);
+        }
+      }
+      this.googlePredictionsCache.set(cacheKey, results);
+
+      return results;
     } catch (error) {
       console.warn('Error getting Google predictions:', error);
       return [];
@@ -279,6 +343,11 @@ export class SearchInputComponent {
 
   // Filter items based on the search type
   private async _filterItems(value: string): Promise<ISearchItem[]> {
+    // Early return for empty values
+    if (!value || value.length === 0) {
+      return [];
+    }
+
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => this.createSearchItem(item, 'address'));

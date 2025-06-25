@@ -7,7 +7,6 @@
                 type="text"
                 [matAutocomplete]="autoInput"
                 formControlName="searchInput"
-                (input)="onInputChange($event)"
                 (blur)="onBlur()"
                 [required]="isRequired"
                 focus-scroll
@@ -16,11 +15,11 @@
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
                 <cdk-virtual-scroll-viewport 
                     [itemSize]="48" 
-                    [style.height.px]="getViewportHeight(filteredItems | async)" 
+                    [style.height.px]="getViewportHeight(filteredItemsArray)" 
                     class="virtual-scroll-viewport"
                 >
                 <mat-option 
-                    *cdkVirtualFor="let item of filteredItems | async" 
+                    *cdkVirtualFor="let item of filteredItemsArray" 
                     [value]="item.name" 
                     (click)="onInputSelect(item.value)"
                     class="search-result-option"
