@@ -41,7 +41,19 @@
                 </mat-option>
                 </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
-            
+
+            <!-- Google Maps icon - shown when rate limited -->
+            <button class="mat-icon-button standard-button" 
+                    *ngIf="showGoogleMapsIcon" 
+                    color="primary" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Search in Google Maps" 
+                    title="API quota exceeded - search in Google Maps"
+                    (click)="openGoogleMaps(); $event.stopPropagation(); $event.preventDefault()">
+                <mat-icon>map</mat-icon>
+            </button>
+
             <!-- Standard buttons (inside form field) - shown on all screens except very small -->
             <button class="mat-icon-button standard-button" 
                     *ngIf="value" 

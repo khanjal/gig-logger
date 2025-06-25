@@ -77,6 +77,7 @@ export class SearchInputComponent implements OnDestroy {
 
   filteredItems: Observable<ISearchItem[]> | undefined;
   filteredItemsArray: ISearchItem[] = []; // Single subscription result
+  showGoogleMapsIcon = false; // Show Google Maps icon when rate limited
   
   // Constants
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
@@ -156,6 +157,12 @@ export class SearchInputComponent implements OnDestroy {
       distinctUntilChanged(), // Only emit if value actually changed
       switchMap(async value => {
         const trimmedValue = value?.trim() || '';
+        
+        // Reset Google Maps icon when user starts typing again
+        if (trimmedValue && this.showGoogleMapsIcon) {
+          this.showGoogleMapsIcon = false;
+        }
+        
         // Clear Google listeners on each search to prevent conflicts
         if (this.inputElement) {
           this._googleAutocompleteService.clearAddressListeners(this.inputElement);
@@ -281,6 +288,9 @@ export class SearchInputComponent implements OnDestroy {
         { componentRestrictions: { country: 'US' } }
       );
 
+      // If we successfully get predictions, hide the Google Maps icon
+      this.showGoogleMapsIcon = false;
+
       const results = predictions.map(prediction => ({
         id: undefined,
         name: this.googleSearch === 'address' ? prediction.address : prediction.place,
@@ -300,8 +310,15 @@ export class SearchInputComponent implements OnDestroy {
       this.googlePredictionsCache.set(cacheKey, results);
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error getting Google predictions:', error);
+      
+      // Check if this is a rate limit error and show Google Maps icon if needed
+      if (this.isRateLimitError(error) && (this.searchType === 'Address' || this.searchType === 'Place')) {
+        console.log('Rate limit detected - showing Google Maps icon as fallback');
+        this.showGoogleMapsIcon = true;
+      }
+      
       return [];
     }
   }
@@ -453,4 +470,45 @@ export class SearchInputComponent implements OnDestroy {
     return item.id === undefined && item.trips === 0 && !item.saved;
   }
 
+  /**
+   * Check if the error is a rate limit error from Google API
+   */
+  private isRateLimitError(error: any): boolean {
+    if (!error) return false;
+    
+    // Check for common rate limit error indicators
+    const errorMessage = error.message?.toLowerCase() || '';
+    const errorCode = error.code?.toLowerCase() || '';
+    
+    return (
+      errorCode === 'over_query_limit' ||
+      errorCode === 'request_denied' ||
+      errorMessage.includes('over query limit') ||
+      errorMessage.includes('quota exceeded') ||
+      errorMessage.includes('rate limit') ||
+      errorMessage.includes('too many requests') ||
+      error.status === 429
+    );
+  }
+
+  /**
+   * Open Google Maps in a new tab when rate limited
+   * Provides a fallback search option when API quota is exceeded
+   */
+  public openGoogleMaps(): void {
+    const searchQuery = encodeURIComponent(this.value || this.fieldName);
+    const baseUrl = 'https://www.google.com/maps/search/';
+    window.open(`${baseUrl}${searchQuery}`, '_blank');
+  }
+
+  /**
+   * Manually trigger Google Maps icon (for testing rate limit scenarios)
+   * This can be useful for testing the rate limit fallback functionality
+   */
+  public triggerRateLimitFallback(): void {
+    if (this.searchType === 'Address' || this.searchType === 'Place') {
+      console.log('Manually triggering rate limit fallback - showing Google Maps icon');
+      this.showGoogleMapsIcon = true;
+    }
+  }
 }
