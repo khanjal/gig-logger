@@ -289,7 +289,7 @@ export class SearchInputComponent {
 
       return predictions.map((prediction, index) => ({
         id: undefined, // Google results don't have database IDs
-        name: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        name: StringHelper.truncate(this.googleSearch === 'address' ? prediction.address : prediction.place, 35),
         saved: false,
         value: this.googleSearch === 'address' ? prediction.address : prediction.place,
         trips: 0
@@ -306,7 +306,7 @@ export class SearchInputComponent {
       case 'Address':
         let addressResults: ISearchItem[] = (await this._filterAddress(value)).map(item => ({
           id: item.id,
-          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
+          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, ""), 35),
           saved: item.saved,
           value: item.address,
           trips: item.trips

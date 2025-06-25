@@ -352,6 +352,23 @@ mat-form-field {
   }
 }
 
+// Virtual scroll viewport styling to prevent horizontal scrolling
+::ng-deep .virtual-scroll-viewport {
+  overflow-x: hidden !important; // Prevent horizontal scrolling
+  overflow-y: auto; // Allow vertical scrolling
+}
+
+// Ensure autocomplete panel doesn't create horizontal scroll
+::ng-deep .mat-mdc-autocomplete-panel {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+  
+  .mat-mdc-option {
+    overflow: hidden !important;
+    max-width: 100% !important;
+  }
+}
+
 // Search Result Item
 .search-result-item {
   padding: 1rem;
@@ -516,15 +533,15 @@ mat-form-field {
     height: 48px !important;
     line-height: 48px !important;
     padding: 0 16px !important;
+    overflow: hidden !important; // Prevent any overflow on the option itself
     
     .option-content {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       width: 100%;
       height: 100%;
-      white-space: nowrap;
-      overflow: hidden;
+      max-width: 100%; // Ensure content doesn't exceed container
+      overflow: hidden; // Prevent overflow
       
       .option-text {
         flex: 1;
@@ -533,13 +550,17 @@ mat-form-field {
         text-overflow: ellipsis !important;
         margin-right: 8px;
         line-height: 1.2;
+        min-width: 0; // Allow text to shrink below its content size
+        max-width: calc(100% - 32px); // Reserve space for Google logo (24px + 8px margin)
       }
       
       .google-indicator {
-        flex-shrink: 0;
+        flex-shrink: 0; // Never shrink the Google logo
         display: flex;
         align-items: center;
-        margin-left: auto;
+        justify-content: center;
+        width: 24px; // Fixed width to reserve space
+        height: 24px;
         
         .google-logo {
           width: 16px;
