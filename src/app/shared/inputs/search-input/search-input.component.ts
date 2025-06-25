@@ -17,10 +17,6 @@ import { AddressDialogComponent } from '@components/forms/address-dialog/address
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
-// Application-specific imports - Helpers
-import { AddressHelper } from '@helpers/address.helper';
-import { StringHelper } from '@helpers/string.helper';
-
 // Application-specific imports - Interfaces
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -30,9 +26,6 @@ import { IRegion } from '@interfaces/region.interface';
 import { ISearchItem } from '@interfaces/search-item.interface';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
-
-// Application-specific imports - Pipes
-
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
@@ -83,7 +76,12 @@ export class SearchInputComponent {
   });
 
   filteredItems: Observable<ISearchItem[]> | undefined;
-  placeSearch: boolean = false;
+  
+  // Constants
+  private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
+  private readonly MAX_VISIBLE_ITEMS = 5;
+  private readonly ITEM_HEIGHT = 48;
+  private readonly BLUR_DELAY = 100;
   
   constructor(
     public dialog: MatDialog,
@@ -98,17 +96,44 @@ export class SearchInputComponent {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    if (this.isRequired) {
-      this.searchForm.controls.searchInput.setValidators([Validators.required]);
-    }
+    this.updateValidators();
+    this.setGoogleSearchType();
+    this.setupFilteredItems();
+  }
+  
+  async ngOnChanges(): Promise<void> {
+    this.updateValidators();
+    this.setGoogleSearchType();
+    this.searchForm.controls.searchInput.updateValueAndValidity();
+  }
 
-    // Automatically set googleSearch based on searchType for Address and Place
+  /**
+   * Updates form validators based on isRequired property
+   */
+  private updateValidators(): void {
+    const control = this.searchForm.controls.searchInput;
+    if (this.isRequired) {
+      control.setValidators([Validators.required]);
+    } else {
+      control.clearValidators();
+    }
+  }
+
+  /**
+   * Sets Google search type based on searchType for Address and Place
+   */
+  private setGoogleSearchType(): void {
     if (this.searchType === 'Address') {
       this.googleSearch = 'address';
     } else if (this.searchType === 'Place') {
       this.googleSearch = 'place';
     }
+  }
 
+  /**
+   * Sets up the filtered items observable
+   */
+  private setupFilteredItems(): void {
     this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
       startWith(''),
       switchMap(async value => {
@@ -116,25 +141,6 @@ export class SearchInputComponent {
         return await this._filterItems(trimmedValue);
       })
     );
-
-    // No need for showSearch logic anymore - Google predictions appear automatically in dropdown
-  }
-  
-  async ngOnChanges(): Promise<void> {
-    if (this.isRequired) {
-      this.searchForm.controls.searchInput.setValidators([Validators.required]);
-    } else {
-      this.searchForm.controls.searchInput.clearValidators();
-    }
-
-    // Automatically set googleSearch based on searchType for Address and Place
-    if (this.searchType === 'Address') {
-      this.googleSearch = 'address';
-    } else if (this.searchType === 'Place') {
-      this.googleSearch = 'place';
-    }
-
-    this.searchForm.controls.searchInput.updateValueAndValidity(); // Ensure the form control is updated
   }
 
   // Getter and setter for the value
@@ -171,39 +177,40 @@ export class SearchInputComponent {
     this.valueChanged.emit(this.value); // Emit the event to the parent
   }
 
-  public onClear() {
+  public onClear(): void {
     this.value = '';
   }
+
   async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
-    this.value = inputValue; // Update the value
-    
-    // Clear listeners from autocomplete service
+    this.value = inputValue;
     this._googleAutocompleteService.clearAddressListeners(this.inputElement);
-    
-    // No need for showSearch logic anymore - Google predictions appear automatically in dropdown
   }
 
   async onInputSelect(inputValue: string): Promise<void> {
-    this.value = inputValue; // Update the value and trigger onChange
+    this.value = inputValue;
 
     // Delay the blur to avoid race conditions
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
-      }, 100); // Delay by 100ms
+      }, this.BLUR_DELAY);
     }
   }
 
   getViewportHeight(items: ISearchItem[] | null): number {
     if (!items || items.length === 0) {
-      return 0; // No items, collapse the viewport
+      return 0;
     }
-  
-    const maxVisibleItems = 5; // Maximum number of items to show without scrolling
-    const itemHeight = 48; // Height of each item in pixels
-  
-    return Math.min(items.length, maxVisibleItems) * itemHeight;
+    return Math.min(items.length, this.MAX_VISIBLE_ITEMS) * this.ITEM_HEIGHT;
+  }
+
+  /**
+   * Check if Google functionality is allowed (localhost or gig-test subdomain only)
+   */
+  private isGoogleAllowed(): boolean {
+    const hostname = window.location.hostname;
+    return hostname.includes('gig-test') || hostname === 'localhost';
   }
 
   /**
@@ -211,12 +218,7 @@ export class SearchInputComponent {
    * Restricted to localhost and gig-test subdomain only
    */
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
-    // Restrict Google search to localhost or gig-test subdomain only
-    if (!window.location.hostname.includes('gig-test') && window.location.hostname !== 'localhost') {
-      return [];
-    }
-
-    if (!this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
+    if (!this.isGoogleAllowed() || !this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
       return [];
     }
 
@@ -227,9 +229,9 @@ export class SearchInputComponent {
         { componentRestrictions: { country: 'US' } }
       );
 
-      return predictions.map((prediction, index) => ({
-        id: undefined, // Google results don't have database IDs
-        name: this.googleSearch === 'address' ? prediction.address : prediction.place, // No truncation - let CSS handle overflow
+      return predictions.map(prediction => ({
+        id: undefined,
+        name: this.googleSearch === 'address' ? prediction.address : prediction.place,
         saved: false,
         value: this.googleSearch === 'address' ? prediction.address : prediction.place,
         trips: 0
@@ -240,169 +242,113 @@ export class SearchInputComponent {
     }
   }
 
+  /**
+   * Helper method to create ISearchItem from various data types
+   */
+  private createSearchItem(item: any, nameProperty: string): ISearchItem {
+    return {
+      id: item.id,
+      name: item[nameProperty],
+      saved: item.saved,
+      value: item[nameProperty],
+      trips: item.trips
+    };
+  }
+
+  /**
+   * Helper method to add Google predictions if conditions are met
+   */
+  private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
+    if (value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+      const googlePredictions = await this.getGooglePredictions(value);
+      return [...results, ...googlePredictions];
+    }
+    return results;
+  }
+
+  /**
+   * Helper method to handle JSON fallback search
+   */
+  private async handleJsonFallback(results: ISearchItem[], searchType: string, value: string): Promise<ISearchItem[]> {
+    if (results.length === 0) {
+      return await this.searchJson(searchType, value);
+    }
+    return results;
+  }
+
   // Filter items based on the search type
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
-        let addressResults: ISearchItem[] = (await this._filterAddress(value)).map(item => ({
-          id: item.id,
-          name: item.address, // Use full address - let CSS handle overflow
-          saved: item.saved,
-          value: item.address,
-          trips: item.trips
-        }));
+        const addressResults = (await this._filterAddress(value)).map(item => this.createSearchItem(item, 'address'));
+        return await this.addGooglePredictionsIfNeeded(value, addressResults);
 
-        // Add Google predictions to the dropdown as requested
-        if (value && value.length >= 2) {
-          const googlePredictions = await this.getGooglePredictions(value);
-          addressResults = [...addressResults, ...googlePredictions];
-        }
-
-        return addressResults;
       case 'Name':
-        return (await this._filterName(value)).map(item => ({
-          id: item.id,
-          name: item.name,
-          saved: item.saved,
-          value: item.name,
-          trips: item.trips
-        }));
+        return (await this._filterName(value)).map(item => this.createSearchItem(item, 'name'));
+
       case 'Place':
-        let places: ISearchItem[] = (await this._filterPlace(value)).map(item => ({
-          id: item.id,
-          name: item.place,
-          saved: item.saved,
-          value: item.place,
-          trips: item.trips
-        }));
+        let places = (await this._filterPlace(value)).map(item => this.createSearchItem(item, 'place'));
+        places = await this.handleJsonFallback(places, 'places', value);
+        return await this.addGooglePredictionsIfNeeded(value, places);
 
-        // If no local places found, try JSON fallback
-        if (places.length === 0) {
-          places = await this.searchJson('places', value);
-        }
-
-        // Add Google predictions to the dropdown as requested
-        if (value && value.length >= 2) {
-          const googlePredictions = await this.getGooglePredictions(value);
-          places = [...places, ...googlePredictions];
-        }
-        
-        return places;
       case 'Region':
-        return (await this._filterRegion(value)).map(item => ({
-          id: item.id,
-          name: item.region,
-          saved: item.saved,
-          value: item.region,
-          trips: item.trips
-        }));
+        return (await this._filterRegion(value)).map(item => this.createSearchItem(item, 'region'));
+
       case 'Service':
-        let services = (await this._filterService(value)).map(item => ({
-          id: item.id,
-          name: item.service,
-          saved: item.saved,
-          value: item.service,
-          trips: item.trips
-        }));
+        let services = (await this._filterService(value)).map(item => this.createSearchItem(item, 'service'));
+        return await this.handleJsonFallback(services, 'services', value);
 
-        if (services.length === 0) {
-          services = await this.searchJson('services', value);
-        }
-
-        return services;
       case 'Type':
-        let types = (await this._filterType(value)).map(item => ({
-          id: item.id,
-          name: item.type,
-          saved: item.saved,
-          value: item.type,
-          trips: item.trips
-        }));
+        let types = (await this._filterType(value)).map(item => this.createSearchItem(item, 'type'));
+        return await this.handleJsonFallback(types, 'types', value);
 
-        if (types.length === 0) {
-          types = await this.searchJson('types', value);
-        }
-
-        return types;
       default:
         return [];
     }
   }
 
-  private async searchJson(searchType: string, value: string ) {
-    let items = [];
-    const itemsJson = await fetch('/assets/json/'+searchType+'.json').then(res => res.json());
-    items = itemsJson
-      .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
-      .map((item: string) => ({
-        id: item,
-        name: item,
-        saved: false,
-        value: item,
-        trips: 0
-      }));
-
-      return items;
+  private async searchJson(searchType: string, value: string): Promise<ISearchItem[]> {
+    try {
+      const itemsJson = await fetch(`/assets/json/${searchType}.json`).then(res => res.json());
+      return itemsJson
+        .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
+        .map((item: string) => ({
+          id: item,
+          name: item,
+          saved: false,
+          value: item,
+          trips: 0
+        }));
+    } catch (error) {
+      console.warn(`Error loading ${searchType}.json:`, error);
+      return [];
+    }
   }
 
   // Open the address dialog
-  public searchAddress() {
-    let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = `Search ${this.fieldName}`;
-    dialogData.address = this.value ?? "";
-    dialogData.trueText = "OK";
-    dialogData.falseText = "Cancel";
+  public searchAddress(): void {
+    const dialogData: IAddressDialog = {
+      title: `Search ${this.fieldName}`,
+      address: this.value ?? "",
+      trueText: "OK",
+      falseText: "Cancel",
+      trueColor: "primary",
+      falseColor: "warn"
+    };
 
     const dialogRef = this.dialog.open(AddressDialogComponent, {
       width: "350px",
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
-      if(result) {
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
         this.value = result;
       }
     });
   }
-  /**
-   * Sets the proper casing for the value based on the search type
-   * This ensures consistent data formatting across different search types
-   */
-  private async setProperValue(value: string): Promise<string> {
-    let properValue = "";
 
-    switch (this.searchType) {
-      case "Address":
-        properValue = (await this._filterAddress(value))[0]?.address ?? "";
-        break;
-      case "Name":
-        properValue =  (await this._filterName(value))[0]?.name ?? "";
-        break;
-      case "Place":
-        properValue = (await this._filterPlace(value))[0]?.place ?? "";
-        break;
-      case "Region":
-        properValue = (await this._filterRegion(value))[0]?.region ?? "";
-        break;
-      case "Service":
-        properValue = (await this._filterService(value))[0]?.service ?? "";
-        break;
-      case "Type":
-        properValue = (await this._filterType(value))[0]?.type ?? "";
-        break;
-      default:
-        return value;
-    }
-
-    if (properValue.toLocaleLowerCase() === value.toLocaleLowerCase()) {
-      return properValue;
-    }
-    return value;
-  }
-
-  // Filter items based on the search type
+  // Filter methods for different data types
   private async _filterAddress(value: string): Promise<IAddress[]> {
     return await this._addressService.includes('address', value);
   }
@@ -416,21 +362,15 @@ export class SearchInputComponent {
   }
 
   private async _filterRegion(value: string): Promise<IRegion[]> {
-    const filterValue = value;
-
-    return await this._regionService.filter('region', filterValue);
+    return await this._regionService.filter('region', value);
   }
 
   private async _filterService(value: string): Promise<IService[]> {
-    const filterValue = value;
-
-    return await this._serviceService.filter('service', filterValue);
+    return await this._serviceService.filter('service', value);
   }
 
   private async _filterType(value: string): Promise<IType[]> {
-    const filterValue = value;
-
-    return await this._typeService.filter('type', filterValue);
+    return await this._typeService.filter('type', value);
   }
 
   /**
