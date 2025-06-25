@@ -39,13 +39,20 @@ export class AuthGoogleService {
       
       const params = new URLSearchParams(window.location.search);
       if (params.has('code')) {
-        await this.handleAuthorizationCode(params.get('code')!);
+        try {
+          await this.handleAuthorizationCode(params.get('code')!);
+        } catch (codeError) {
+          this.logger.error('Failed to handle authorization code, continuing without authentication', codeError);
+          // Clear URL parameters and continue
+          window.history.replaceState(null, '', window.location.pathname);
+        }
       }
 
       this.isInitialized = true;
     } catch (error) {
-      this.logger.error('Error during OAuth configuration', error);
-      throw error;
+      this.logger.error('Error during OAuth configuration, continuing without auth', error);
+      this.isInitialized = true; // Mark as initialized to prevent retry loops
+      // Don't throw - allow app to continue without auth
     }
   }
 
@@ -136,6 +143,22 @@ export class AuthGoogleService {
   }
 
   async isAuthenticated(): Promise<boolean> {
+    try {
+      // Add timeout to prevent hanging
+      return await Promise.race([
+        this.checkAuthenticationStatus(),
+        new Promise<boolean>((_, reject) => 
+          setTimeout(() => reject(new Error('Authentication check timeout')), 5000)
+        )
+      ]);
+    } catch (error) {
+      this.logger.error('Authentication check failed, assuming not authenticated', error);
+      this.setAuthenticationState(false);
+      return false;
+    }
+  }
+
+  private async checkAuthenticationStatus(): Promise<boolean> {
     const hasToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
     
     // If we have an access token, we're authenticated

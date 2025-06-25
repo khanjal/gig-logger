@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">  <title>Raptor Gig - Gig Logging Tool</title>
+  <meta charset="utf-8">
+  <title>Raptor Gig - Gig Logging Tool</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   
@@ -21,9 +22,89 @@
   </script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   <meta name="theme-color" content="#1976d2">
+  
+  <style>
+    /* Fallback styles for loading state */
+    .app-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Roboto', sans-serif;
+      background-color: #fafafa;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e0e0e0;
+      border-top: 4px solid #2196F3;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    /* Hide loading when Angular starts */
+    app-root:not(:empty) ~ .app-loading {
+      display: none;
+    }
+  </style>
 </head>
 <body class="mat-typography">
   <app-root></app-root>
-  <noscript>Please enable JavaScript to continue using this application.</noscript>
+  
+  <!-- Fallback loading indicator -->
+  <div class="app-loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading Raptor Gig...</div>
+  </div>
+  
+  <noscript>
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif;">
+      <div>
+        <h2>JavaScript Required</h2>
+        <p>Please enable JavaScript to continue using this application.</p>
+      </div>
+    </div>
+  </noscript>
+  
+  <script>
+    // Hide loading indicator after 15 seconds as fallback
+    setTimeout(function() {
+      var loading = document.querySelector('.app-loading');
+      if (loading) {
+        loading.style.display = 'none';
+      }
+    }, 15000);
+    
+    // Show error message if app doesn't load in 20 seconds
+    setTimeout(function() {
+      var appRoot = document.querySelector('app-root');
+      if (!appRoot || appRoot.children.length === 0) {
+        document.body.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; background: #fafafa; padding: 20px;">
+            <h2 style="color: #f44336; margin-bottom: 16px;">Application Loading Failed</h2>
+            <p style="color: #666; margin-bottom: 24px; max-width: 400px;">
+              The application took too long to load. This might be due to a slow network connection or a temporary issue.
+            </p>
+            <button onclick="window.location.reload()" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+              Reload Page
+            </button>
+          </div>
+        `;
+      }
+    }, 20000);
+  </script>
 </body>
 </html>
