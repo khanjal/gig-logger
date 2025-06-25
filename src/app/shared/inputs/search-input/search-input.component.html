@@ -1,7 +1,5 @@
 <form [formGroup]="searchForm">
-    <div class="search-input-wrapper" 
-         [class.show-compact-menu]="hasAvailableActions((filteredItems | async)?.length)">
-        <mat-form-field class="field-full-width" appearance="outline">
+    <mat-form-field class="field-full-width" appearance="outline">
             <mat-label>{{fieldName}}</mat-label>
             <!-- Single input with conditional autocomplete behavior -->
             <input 
@@ -47,15 +45,6 @@
             
             <!-- Standard buttons (inside form field) - shown on all screens except very small -->
             <button class="mat-icon-button standard-button" 
-                    *ngIf="value && googleSearch" 
-                    color="primary" 
-                    matSuffix 
-                    mat-icon-button 
-                    aria-label="Google Maps" 
-                    (click)="openMap(); $event.stopPropagation(); $event.preventDefault()">
-                <mat-icon>map</mat-icon>
-            </button>
-            <button class="mat-icon-button standard-button" 
                     *ngIf="value" 
                     color="accent" 
                     matSuffix 
@@ -64,28 +53,5 @@
                     (click)="onClear(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>clear</mat-icon>
             </button>
-            
-            <!-- Compact menu button (inside form field as suffix) - shown only on very small screens with 2+ actions -->
-            <button class="mat-icon-button compact-menu-button" 
-                    *ngIf="hasAvailableActions((filteredItems | async)?.length)"
-                    matSuffix 
-                    mat-icon-button 
-                    [matMenuTriggerFor]="actionsMenu"
-                    aria-label="Search Actions"
-                    (click)="$event.stopPropagation(); $event.preventDefault()">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            
-            <mat-menu #actionsMenu="matMenu" class="search-actions-menu">
-                <button mat-menu-item *ngIf="value" (click)="openMap()">
-                    <mat-icon>map</mat-icon>
-                    <span>Open Map</span>
-                </button>
-                <button mat-menu-item *ngIf="value" (click)="onClear()">
-                    <mat-icon>clear</mat-icon>
-                    <span>Clear Field</span>
-                </button>
-            </mat-menu>
         </mat-form-field>
-    </div>
 </form>

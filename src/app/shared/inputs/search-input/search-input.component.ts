@@ -10,7 +10,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 
 // Application-specific imports - Components
 import { AddressDialogComponent } from '@components/forms/address-dialog/address-dialog.component';
@@ -52,7 +51,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, MatMenuModule, ReactiveFormsModule, ScrollingModule],
+  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -196,15 +195,6 @@ export class SearchInputComponent {
     }
   }
 
-  openMap() {
-    if (this.value) {
-      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.value)}`;
-      window.open(googleMapsUrl, '_blank');
-    } else {
-      this._logger.warn('No value provided for Google Maps navigation');
-    }
-  }
-
   getViewportHeight(items: ISearchItem[] | null): number {
     if (!items || items.length === 0) {
       return 0; // No items, collapse the viewport
@@ -218,8 +208,14 @@ export class SearchInputComponent {
 
   /**
    * Get Google autocomplete predictions and format them as ISearchItem[]
+   * Restricted to localhost and gig-test subdomain only
    */
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
+    // Restrict Google search to localhost or gig-test subdomain only
+    if (!window.location.hostname.includes('gig-test') && window.location.hostname !== 'localhost') {
+      return [];
+    }
+
     if (!this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
       return [];
     }
@@ -404,24 +400,6 @@ export class SearchInputComponent {
       return properValue;
     }
     return value;
-  }
-
-  // Check if there are 2 or more available actions to show in the menu
-  hasAvailableActions(filteredItemsLength?: number): boolean {
-    let buttonCount = 0;
-    
-    // Count Google Maps button
-    if (this.value && this.googleSearch) {
-      buttonCount++;
-    }
-    
-    // Count Clear button
-    if (this.value) {
-      buttonCount++;
-    }
-    
-    // Only show menu if there are 2 or more buttons
-    return buttonCount >= 2;
   }
 
   // Filter items based on the search type
