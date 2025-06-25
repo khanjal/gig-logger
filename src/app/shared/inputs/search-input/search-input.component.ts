@@ -247,6 +247,16 @@ export class SearchInputComponent implements OnDestroy {
     }
   }
 
+  onInputChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    
+    // Update the form control and notify Angular forms
+    this.searchForm.controls.searchInput.setValue(value, { emitEvent: false });
+    this.onChange(value);
+    this.valueChanged.emit(value);
+  }
+
   getViewportHeight(items?: ISearchItem[]): number {
     const itemsToUse = items || this.filteredItemsArray;
     if (!itemsToUse || itemsToUse.length === 0) {
