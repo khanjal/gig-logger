@@ -28,7 +28,6 @@
                     class="search-result-option"
                     #matOption>
                     <div class="option-content">
-                        <span class="option-text">{{ item.name }}{{ item.saved ? ' (' + (item.trips ?? 0) + ')' : '' }}</span>
                         <span class="google-indicator" *ngIf="isGoogleResult(item)">
                             <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="google-logo">
                                 <path d="M17.64 9.20455C17.64 8.56827 17.5827 7.95455 17.48 7H9V10.7814H13.8436C13.635 11.97 13.0009 12.9386 12.0477 13.5614V15.8195H13.9564C16.6581 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4"/>
@@ -37,6 +36,10 @@
                                 <path d="M9 4.57955C10.3218 4.57955 11.5079 5.03364 12.4409 5.92545L15 3.36364C13.4564 1.95 11.2309 1 9 1C6.64773 1 4.43591 3.01636 1.95727 4.95818L3.96409 7.29C4.67182 5.16227 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
                             </svg>
                         </span>
+                        <span class="trips-indicator" *ngIf="item.saved && item.trips > 0">
+                            ({{ item.trips }})
+                        </span>
+                        <span class="option-text">{{ item.name }}</span>
                     </div>
                 </mat-option>
                 </cdk-virtual-scroll-viewport>

@@ -289,7 +289,7 @@ export class SearchInputComponent {
 
       return predictions.map((prediction, index) => ({
         id: undefined, // Google results don't have database IDs
-        name: StringHelper.truncate(this.googleSearch === 'address' ? prediction.address : prediction.place, 35),
+        name: this.googleSearch === 'address' ? prediction.address : prediction.place, // No truncation - let CSS handle overflow
         saved: false,
         value: this.googleSearch === 'address' ? prediction.address : prediction.place,
         trips: 0
@@ -306,7 +306,7 @@ export class SearchInputComponent {
       case 'Address':
         let addressResults: ISearchItem[] = (await this._filterAddress(value)).map(item => ({
           id: item.id,
-          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, ""), 35),
+          name: item.address, // Use full address - let CSS handle overflow
           saved: item.saved,
           value: item.address,
           trips: item.trips

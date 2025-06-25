@@ -543,30 +543,37 @@ mat-form-field {
       max-width: 100%; // Ensure content doesn't exceed container
       overflow: hidden; // Prevent overflow
       
-      .option-text {
-        flex: 1;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        margin-right: 8px;
-        line-height: 1.2;
-        min-width: 0; // Allow text to shrink below its content size
-        max-width: calc(100% - 32px); // Reserve space for Google logo (24px + 8px margin)
-      }
-      
       .google-indicator {
         flex-shrink: 0; // Never shrink the Google logo
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px; // Fixed width to reserve space
+        width: 24px; // Fixed width for logo space
         height: 24px;
+        margin-right: 8px; // Space between logo and next element
         
         .google-logo {
           width: 16px;
           height: 16px;
           flex-shrink: 0;
         }
+      }
+      
+      .trips-indicator {
+        flex-shrink: 0; // Never shrink the trips count
+        font-size: 0.875rem; // Slightly smaller than main text
+        color: #666; // Muted color
+        margin-right: 8px; // Space between trips count and address
+        font-weight: 500;
+      }
+      
+      .option-text {
+        flex: 1;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        line-height: 1.2;
+        min-width: 0; // Allow text to shrink below its content size
       }
     }
     
