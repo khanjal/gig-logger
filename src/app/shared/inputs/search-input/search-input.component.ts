@@ -103,6 +103,13 @@ export class SearchInputComponent {
       this.searchForm.controls.searchInput.setValidators([Validators.required]);
     }
 
+    // Automatically set googleSearch based on searchType for Address and Place
+    if (this.searchType === 'Address') {
+      this.googleSearch = 'address';
+    } else if (this.searchType === 'Place') {
+      this.googleSearch = 'place';
+    }
+
     this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
       startWith(''),
       switchMap(async value => {
@@ -119,6 +126,13 @@ export class SearchInputComponent {
       this.searchForm.controls.searchInput.setValidators([Validators.required]);
     } else {
       this.searchForm.controls.searchInput.clearValidators();
+    }
+
+    // Automatically set googleSearch based on searchType for Address and Place
+    if (this.searchType === 'Address') {
+      this.googleSearch = 'address';
+    } else if (this.searchType === 'Place') {
+      this.googleSearch = 'place';
     }
 
     this.searchForm.controls.searchInput.updateValueAndValidity(); // Ensure the form control is updated

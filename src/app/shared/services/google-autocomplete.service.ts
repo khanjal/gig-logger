@@ -144,6 +144,7 @@ export class GoogleAutocompleteService {
 
   /**
    * Get Google Places autocomplete predictions for dropdown integration
+   * Uses the new AutocompleteSuggestion API (March 2025+)
    * Returns an array of predictions that can be displayed in a dropdown
    */
   public async getAutocompletePredictions(
@@ -163,14 +164,6 @@ export class GoogleAutocompleteService {
       // Load the Places library dynamically
       await window.google.maps.importLibrary("places");
       
-      // Initialize services if not already done
-      if (!this.autocompleteService) {
-        this.autocompleteService = new window.google.maps.places.AutocompleteService();
-      }
-      if (!this.placesService) {
-        this.placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
-      }
-      
       const searchTypeMapping: { [key: string]: string } = {
         address: 'geocode',
         place: 'establishment', 
@@ -181,32 +174,30 @@ export class GoogleAutocompleteService {
       const selectedTypes = options?.types || [searchTypeMapping[searchType] || searchTypeMapping['default']];
       const componentRestrictions = options?.componentRestrictions || { country: 'US' };
       
-      // Get predictions from Google
-      return new Promise((resolve) => {
-        const request = {
-          input: query,
-          types: selectedTypes,
-          componentRestrictions: componentRestrictions
-        };
-        
-        this.autocompleteService.getPlacePredictions(request, (predictions: any[], status: any) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-            // Convert predictions to AutocompleteResult format
-            const results: AutocompleteResult[] = predictions.map(prediction => ({
-              place: this.extractPlaceName(prediction),
-              address: prediction.description,
-              placeDetails: {
-                placeId: prediction.place_id,
-                name: this.extractPlaceName(prediction),
-                formattedAddress: prediction.description
-              }
-            }));
-            resolve(results);
-          } else {
-            resolve([]);
+      // Use the new AutocompleteSuggestion API - simplified request without location restrictions
+      const request = {
+        input: query,
+        includedPrimaryTypes: selectedTypes
+      };
+      
+      // Get suggestions using the new API
+      const { suggestions } = await window.google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+      
+      if (suggestions && suggestions.length > 0) {
+        // Convert suggestions to AutocompleteResult format
+        const results: AutocompleteResult[] = suggestions.map((suggestion: any) => ({
+          place: this.extractPlaceNameFromSuggestion(suggestion),
+          address: suggestion.placePrediction?.text?.text || '',
+          placeDetails: {
+            placeId: suggestion.placePrediction?.placeId || '',
+            name: this.extractPlaceNameFromSuggestion(suggestion),
+            formattedAddress: suggestion.placePrediction?.text?.text || ''
           }
-        });
-      });
+        }));
+        return results;
+      } else {
+        return [];
+      }
     } catch (error) {
       console.error('Error getting Google Places predictions:', error);
       return [];
@@ -347,5 +338,11 @@ export class GoogleAutocompleteService {
     // Extract business/place name from the prediction
     const terms = prediction.terms || [];
     return terms.length > 0 ? terms[0].value : prediction.structured_formatting?.main_text || "";
+  }
+
+  private extractPlaceNameFromSuggestion(suggestion: any): string {
+    // Extract business/place name from the new AutocompleteSuggestion format
+    return suggestion.placePrediction?.structuredFormat?.mainText?.text || 
+           suggestion.placePrediction?.text?.text?.split(',')[0] || "";
   }
 }
