@@ -515,4 +515,12 @@ export class SearchInputComponent {
     return await this._typeService.filter('type', filterValue);
   }
 
+  /**
+   * Check if an item is from Google results
+   */
+  isGoogleResult(item: ISearchItem): boolean {
+    // Google results have no ID (undefined) and trips = 0 and saved = false
+    return item.id === undefined && item.trips === 0 && !item.saved;
+  }
+
 }
