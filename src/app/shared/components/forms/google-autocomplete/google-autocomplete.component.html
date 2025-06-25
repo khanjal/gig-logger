@@ -1,0 +1,8 @@
+<div class="autocomplete-container">
+  <input #address
+         [value]="addressForm.controls.address.value"
+         [placeholder]="placeholder"
+         (input)="onTextChange()"
+         class="autocomplete-input"
+         autocomplete="off">
+</div>

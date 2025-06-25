@@ -44,6 +44,7 @@ import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { GoogleAddressService } from '@services/google-address.service';
+import { GoogleAutocompleteService, AutocompleteResult } from '@services/google-autocomplete.service';
 
 // RxJS imports
 import { Observable, startWith, switchMap } from 'rxjs';
@@ -64,7 +65,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   ]
 })
 
-export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+export class SearchInputComponent {
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
   @Input() searchType: string = '';
@@ -85,6 +87,7 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
   filteredItems: Observable<ISearchItem[]> | undefined;
   showSearch: boolean = false;
   placeSearch: boolean = false;
+  
   constructor(
     public dialog: MatDialog,
     private _addressService: AddressService,
@@ -94,7 +97,8 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
     private _regionService: RegionService,
     private _serviceService: ServiceService,
     private _typeService: TypeService,
-    private _googleAddressService: GoogleAddressService
+    private _googleAddressService: GoogleAddressService,
+    private _googleAutocompleteService: GoogleAutocompleteService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -166,11 +170,13 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
   public onClear() {
     this.value = '';
   }
-
   async onInputChange(event: Event): Promise<void> {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
-    this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
+    
+    // Clear listeners from both services for compatibility
+    this._googleAddressService.clearAddressListeners(this.inputElement);
+    this._googleAutocompleteService.clearAddressListeners(this.inputElement);
     
     if (this.placeSearch) {
       this.showSearch = true;
@@ -187,8 +193,7 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
       }, 100); // Delay by 100ms
     }
   }
-
-  onSearch() {
+  async onSearch() {
     if (!this.googleSearch) {
       return;
     }
@@ -196,21 +201,56 @@ export class SearchInputComponent {  @ViewChild(MatAutocompleteTrigger) autocomp
     this.showSearch = false;
     if (!this.inputElement) return;
 
+    // Check if the new Google Maps API is available, otherwise fall back to legacy
+    if (this._googleAutocompleteService.isGoogleMapsLoaded()) {
+      try {
+        await this._googleAutocompleteService.getPlaceAutocomplete(
+          this.inputElement, 
+          this.googleSearch, 
+          (result: AutocompleteResult) => {
+            if (this.googleSearch === 'address') {
+              this.value = result.address;
+            } else {
+              this.value = result.place;
+              this.auxiliaryData.emit(result.address);
+            }
+          }
+        );
+
+        setTimeout(() => {
+          this._googleAutocompleteService.attachToModal();
+          // Note: Input element may be replaced by PlaceAutocompleteElement
+          if (this.inputElement?.nativeElement) {
+            this.inputElement.nativeElement.blur();
+            this.inputElement.nativeElement.focus();
+          }
+        }, 100);
+      } catch (error) {
+        console.warn('New Google Autocomplete failed, falling back to legacy:', error);
+        this.useLegacyAutocomplete();
+      }
+    } else {
+      // Fall back to legacy service
+      this.useLegacyAutocomplete();
+    }
+  }
+
+  private useLegacyAutocomplete() {
     this._googleAddressService.getPlaceAutocomplete(
-      this.inputElement, this.googleSearch, (result: { place: string, address: string }) => {
+      this.inputElement, this.googleSearch!, (result: { place: string, address: string }) => {
         if (this.googleSearch === 'address') {
           this.value = result.address;
-        }
-        else {
+        } else {
           this.value = result.place;
           this.auxiliaryData.emit(result.address);
         }
-    });
+      }
+    );
 
     setTimeout(() => {
-        this._googleAddressService.attachToModal();
-        this.inputElement.nativeElement.blur();
-        this.inputElement.nativeElement.focus();
+      this._googleAddressService.attachToModal();
+      this.inputElement.nativeElement.blur();
+      this.inputElement.nativeElement.focus();
     }, 100);
   }
 
