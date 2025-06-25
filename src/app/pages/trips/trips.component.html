@@ -38,7 +38,8 @@
         @else {
             No Trips Today
         }
-        <mat-slide-toggle class="field-right" (change)="changePolling()">
+
+        <mat-slide-toggle class="field-right" [checked]="pollingEnabled" (change)="changePolling()">
             Auto Save
         </mat-slide-toggle>
     </h2>
