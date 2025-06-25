@@ -43,7 +43,6 @@ import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
-import { GoogleAddressService } from '@services/google-address.service';
 import { GoogleAutocompleteService, AutocompleteResult } from '@services/google-autocomplete.service';
 
 // RxJS imports
@@ -97,7 +96,6 @@ export class SearchInputComponent {
     private _regionService: RegionService,
     private _serviceService: ServiceService,
     private _typeService: TypeService,
-    private _googleAddressService: GoogleAddressService,
     private _googleAutocompleteService: GoogleAutocompleteService
   ) { }
 
@@ -174,8 +172,7 @@ export class SearchInputComponent {
     const inputValue = (event.target as HTMLInputElement).value;
     this.value = inputValue; // Update the value
     
-    // Clear listeners from both services for compatibility
-    this._googleAddressService.clearAddressListeners(this.inputElement);
+    // Clear listeners from autocomplete service
     this._googleAutocompleteService.clearAddressListeners(this.inputElement);
     
     if (this.placeSearch) {
@@ -198,10 +195,33 @@ export class SearchInputComponent {
       return;
     }
 
+    // For Address and Place search types, trigger Google autocomplete in dropdown
+    if ((this.searchType === 'Address' && this.googleSearch === 'address') || 
+        (this.searchType === 'Place' && this.googleSearch === 'place')) {
+      
+      // Force refresh the filtered items to include Google results
+      const currentValue = this.value;
+      if (currentValue.length >= 2) {
+        // Trigger the autocomplete trigger to show dropdown with Google results
+        this.autocompleteTrigger.openPanel();
+        
+        // Manually trigger the value change to refresh dropdown with Google results
+        this.searchForm.controls.searchInput.updateValueAndValidity();
+        
+        // Set focus back to input
+        setTimeout(() => {
+          if (this.inputElement?.nativeElement) {
+            this.inputElement.nativeElement.focus();
+          }
+        }, 100);
+      }
+      return;
+    }
+
+    // For other cases, use the PlaceAutocompleteElement approach
     this.showSearch = false;
     if (!this.inputElement) return;
 
-    // Check if the new Google Maps API is available, otherwise fall back to legacy
     if (this._googleAutocompleteService.isGoogleMapsLoaded()) {
       try {
         await this._googleAutocompleteService.getPlaceAutocomplete(
@@ -219,39 +239,17 @@ export class SearchInputComponent {
 
         setTimeout(() => {
           this._googleAutocompleteService.attachToModal();
-          // Note: Input element may be replaced by PlaceAutocompleteElement
           if (this.inputElement?.nativeElement) {
             this.inputElement.nativeElement.blur();
             this.inputElement.nativeElement.focus();
           }
         }, 100);
       } catch (error) {
-        console.warn('New Google Autocomplete failed, falling back to legacy:', error);
-        this.useLegacyAutocomplete();
+        console.warn('Google Autocomplete failed:', error);
       }
     } else {
-      // Fall back to legacy service
-      this.useLegacyAutocomplete();
+      console.warn('Google Maps API not loaded');
     }
-  }
-
-  private useLegacyAutocomplete() {
-    this._googleAddressService.getPlaceAutocomplete(
-      this.inputElement, this.googleSearch!, (result: { place: string, address: string }) => {
-        if (this.googleSearch === 'address') {
-          this.value = result.address;
-        } else {
-          this.value = result.place;
-          this.auxiliaryData.emit(result.address);
-        }
-      }
-    );
-
-    setTimeout(() => {
-      this._googleAddressService.attachToModal();
-      this.inputElement.nativeElement.blur();
-      this.inputElement.nativeElement.focus();
-    }, 100);
   }
 
   openMap() {
@@ -274,17 +272,53 @@ export class SearchInputComponent {
     return Math.min(items.length, maxVisibleItems) * itemHeight;
   }
 
+  /**
+   * Get Google autocomplete predictions and format them as ISearchItem[]
+   */
+  private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
+    if (!this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
+      return [];
+    }
+
+    try {
+      const predictions = await this._googleAutocompleteService.getAutocompletePredictions(
+        value,
+        this.googleSearch,
+        { componentRestrictions: { country: 'US' } }
+      );
+
+      return predictions.map((prediction, index) => ({
+        id: undefined, // Google results don't have database IDs
+        name: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        saved: false,
+        value: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        trips: 0
+      }));
+    } catch (error) {
+      console.warn('Error getting Google predictions:', error);
+      return [];
+    }
+  }
+
   // Filter items based on the search type
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
-        return (await this._filterAddress(value)).map(item => ({
+        let addressResults: ISearchItem[] = (await this._filterAddress(value)).map(item => ({
           id: item.id,
           name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
           saved: item.saved,
           value: item.address,
           trips: item.trips
         }));
+
+        // If we have a Google search type and few results, add Google predictions
+        if (this.googleSearch === 'address' && addressResults.length < 3 && value.length >= 2) {
+          const googleResults = await this.getGooglePredictions(value);
+          addressResults = [...addressResults, ...googleResults];
+        }
+
+        return addressResults;
       case 'Name':
         return (await this._filterName(value)).map(item => ({
           id: item.id,
@@ -294,7 +328,7 @@ export class SearchInputComponent {
           trips: item.trips
         }));
       case 'Place':
-        let places = (await this._filterPlace(value)).map(item => ({
+        let places: ISearchItem[] = (await this._filterPlace(value)).map(item => ({
           id: item.id,
           name: item.place,
           saved: item.saved,
@@ -304,6 +338,12 @@ export class SearchInputComponent {
 
         if (places.length === 0) {
           places = await this.searchJson('places', value);
+        }
+
+        // If we have a Google search type and few results, add Google predictions
+        if (this.googleSearch === 'place' && places.length < 3 && value.length >= 2) {
+          const googleResults = await this.getGooglePredictions(value);
+          places = [...places, ...googleResults];
         }
 
         return places;

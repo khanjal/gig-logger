@@ -51,6 +51,9 @@ export interface GoogleAddressComponent {
   providedIn: 'root'
 })
 export class GoogleAutocompleteService {
+  private autocompleteService: any;
+  private placesService: any;
+
   public async getPlaceAutocomplete(
     inputElement: ElementRef<any>, 
     searchType: string, 
@@ -137,6 +140,113 @@ export class GoogleAutocompleteService {
     } catch (error) {
       console.error('Error initializing Google Places Autocomplete:', error);
     }
+  }
+
+  /**
+   * Get Google Places autocomplete predictions for dropdown integration
+   * Returns an array of predictions that can be displayed in a dropdown
+   */
+  public async getAutocompletePredictions(
+    query: string,
+    searchType: string,
+    options?: {
+      componentRestrictions?: { country: string };
+      types?: string[];
+    }
+  ): Promise<AutocompleteResult[]> {
+    if (!window.google || !window.google.maps) {
+      console.error('Google Maps API not loaded');
+      return [];
+    }
+
+    try {
+      // Load the Places library dynamically
+      await window.google.maps.importLibrary("places");
+      
+      // Initialize services if not already done
+      if (!this.autocompleteService) {
+        this.autocompleteService = new window.google.maps.places.AutocompleteService();
+      }
+      if (!this.placesService) {
+        this.placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
+      }
+      
+      const searchTypeMapping: { [key: string]: string } = {
+        address: 'geocode',
+        place: 'establishment', 
+        business: 'establishment',
+        default: 'geocode'
+      };
+      
+      const selectedTypes = options?.types || [searchTypeMapping[searchType] || searchTypeMapping['default']];
+      const componentRestrictions = options?.componentRestrictions || { country: 'US' };
+      
+      // Get predictions from Google
+      return new Promise((resolve) => {
+        const request = {
+          input: query,
+          types: selectedTypes,
+          componentRestrictions: componentRestrictions
+        };
+        
+        this.autocompleteService.getPlacePredictions(request, (predictions: any[], status: any) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+            // Convert predictions to AutocompleteResult format
+            const results: AutocompleteResult[] = predictions.map(prediction => ({
+              place: this.extractPlaceName(prediction),
+              address: prediction.description,
+              placeDetails: {
+                placeId: prediction.place_id,
+                name: this.extractPlaceName(prediction),
+                formattedAddress: prediction.description
+              }
+            }));
+            resolve(results);
+          } else {
+            resolve([]);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error getting Google Places predictions:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get detailed place information by place ID
+   */
+  public async getPlaceDetails(placeId: string): Promise<PlaceDetails | null> {
+    if (!this.placesService) {
+      return null;
+    }
+
+    return new Promise((resolve) => {
+      const request = {
+        placeId: placeId,
+        fields: ['place_id', 'formatted_address', 'name', 'address_components', 'geometry']
+      };
+      
+      this.placesService.getDetails(request, (place: any, status: any) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+          const placeDetails: PlaceDetails = {
+            placeId: place.place_id,
+            name: place.name || "",
+            formattedAddress: place.formatted_address,
+            addressComponents: this.convertAddressComponents(place.address_components),
+            geometry: place.geometry ? {
+              location: {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+              }
+            } : undefined
+          };
+          resolve(placeDetails);
+        } else {
+          resolve(null);
+        }
+      });
+    });
   }
 
   public attachToModal(): void {
@@ -231,5 +341,11 @@ export class GoogleAutocompleteService {
   private removePacContainers(): void {
     const pacContainers = document.querySelectorAll('.pac-container');
     pacContainers.forEach(container => container.remove());
+  }
+
+  private extractPlaceName(prediction: any): string {
+    // Extract business/place name from the prediction
+    const terms = prediction.terms || [];
+    return terms.length > 0 ? terms[0].value : prediction.structured_formatting?.main_text || "";
   }
 }
