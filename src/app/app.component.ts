@@ -23,16 +23,19 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    // Hide loading state after a maximum timeout
+    // Hide loading state after a shorter timeout
     setTimeout(() => {
       this.isLoading = false;
-    }, 10000); // 10 second fallback
+    }, 3000); // Reduced to 3 seconds
 
     // Listen for navigation events to hide loading
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.isLoading = false;
+        // Add small delay to ensure smooth transition
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 100);
       });
 
     // Hide loading state immediately if page is already loaded
