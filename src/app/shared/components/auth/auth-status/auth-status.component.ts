@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
+import { getCurrentUserId } from '../../../utils/user-id.util';
 
 // Angular Material
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
@@ -34,6 +35,9 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   hasAccessToken = false;
   localStorageAuth = false;
+
+  // User ID
+  userId = '';
   
   // Token info
   accessTokenPreview = '';
@@ -85,7 +89,9 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
     
     // Check overall authentication
     this.isAuthenticated = await this.authService.isAuthenticated();
-      this.lastUpdated = new Date();
+    // Get user ID using shared utility
+    this.userId = getCurrentUserId();
+    this.lastUpdated = new Date();
   }
 
   getStatusIcon(): string {
