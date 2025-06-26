@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { environment } from 'src/environments/environment';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
 import { LoggerService } from './logger.service';
+import { getCurrentUserId } from '../utils/user-id.util';
 
 export interface AutocompleteResult {
   place: string;
@@ -92,7 +93,7 @@ export class ServerGooglePlacesService {
       const request: PlacesAutocompleteRequest = {
         query: query.trim(),
         searchType,
-        userId: this.getCurrentUserId(),
+        userId: getCurrentUserId(() => this.getStoredAccessToken()),
         country,
         userLatitude: userLat,
         userLongitude: userLng
@@ -128,7 +129,7 @@ export class ServerGooglePlacesService {
     try {
       const request: PlaceDetailsRequest = {
         placeId,
-        userId: this.getCurrentUserId()
+        userId: getCurrentUserId(() => this.getStoredAccessToken())
       };
       const details = await this.http.post<PlaceDetails>(
         `${this.baseUrl}/places/details`, 
@@ -150,7 +151,7 @@ export class ServerGooglePlacesService {
    */
   async getUserUsage(): Promise<UserApiUsage | null> {
     try {
-      const userId = this.getCurrentUserId();
+      const userId = getCurrentUserId(() => this.getStoredAccessToken());
       return await this.http.get<UserApiUsage>(
         `${this.baseUrl}/places/usage/${userId}`,
         this.setOptions()
@@ -428,41 +429,6 @@ export class ServerGooglePlacesService {
     );
   }
 
-  private getCurrentUserId(): string {
-    // Since we have an HTTP interceptor that automatically adds the UserId header,
-    // we can rely on that for server-side user identification.
-    // This method is now primarily for fallback scenarios where the header isn't available.
-    
-    // Priority 1: Check localStorage for stored authenticated user ID
-    const storedUserId = localStorage.getItem('authenticatedUserId');
-    if (storedUserId) {
-      return storedUserId;
-    }
-
-    // Priority 2: Try to parse access token from secure storage
-    try {
-      const accessToken = this.getStoredAccessToken();
-      if (accessToken) {
-        const payload = this.parseJwtPayload(accessToken);
-        if (payload?.sub) {
-          // Store for future use
-          localStorage.setItem('authenticatedUserId', payload.sub);
-          return payload.sub;
-        }
-      }
-    } catch (error) {
-      this.logger.warn('Could not parse access token for user ID:', error);
-    }
-
-    // Fallback: Use stored/generated anonymous user ID
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = this.generateUserId();
-      localStorage.setItem('userId', userId);
-    }
-    return userId;
-  }
-
   private getStoredAccessToken(): string | null {
     // Try to get access token from secure cookie storage
     // This is a simplified approach that avoids circular dependency
@@ -479,24 +445,6 @@ export class ServerGooglePlacesService {
       this.logger.warn('Could not access stored access token:', error);
     }
     return null;
-  }
-
-  private parseJwtPayload(token: string): any {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      return JSON.parse(jsonPayload);
-    } catch {
-      return null;
-    }
-  }
-
-  private generateUserId(): string {
-    // Generate a simple UUID-like identifier
-    return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
   private handleError(error: any): void {
@@ -527,7 +475,7 @@ export class ServerGooglePlacesService {
     }
     
     // Add UserId header for rate limiting and user identification
-    const userId = this.getCurrentUserId();
+    const userId = getCurrentUserId(() => this.getStoredAccessToken());
     headers = headers.set('UserId', userId);
     
     return headers;
