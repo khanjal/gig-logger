@@ -58,9 +58,12 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
   async searchPlaces(input: string): Promise<void> {
     this.isLoading = true;
     try {
-      const results = await this.serverGooglePlacesService.getAutocomplete(
+      // Use location bias for better autocomplete results
+      const results = await this.serverGooglePlacesService.getAutocompleteWithLocation(
         input,
-        this.componentRestrictions.country
+        'address',
+        this.componentRestrictions.country,
+        true // Use location bias
       );
       this.suggestions = results;
       this.showSuggestions = true;

@@ -347,10 +347,12 @@ export class SearchInputComponent implements OnDestroy {
       return this.googlePredictionsCache.get(cacheKey)!;
     }
     try {
-      const predictions = await this._serverGooglePlacesService.getAutocomplete(
+      // Use location bias for better results
+      const predictions = await this._serverGooglePlacesService.getAutocompleteWithLocation(
         value,
         this.googleSearch,
-        'US'
+        'US',
+        true // Use location bias
       );
       this.showGoogleMapsIcon = false;
       const results = predictions.map((prediction: AutocompleteResult) => ({
