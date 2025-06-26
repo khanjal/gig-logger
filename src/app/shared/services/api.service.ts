@@ -8,7 +8,7 @@ import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
 import { LoggerService } from './logger.service';
-import { getCurrentUserId } from '../utils/user-id.util';
+import { getCurrentUserId } from '@utils/user-id.util';
 
 @Injectable({
     providedIn: 'root'

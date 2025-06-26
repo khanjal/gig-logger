@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
-import { getCurrentUserId } from '../../../utils/user-id.util';
+import { getCurrentUserId } from '@utils/user-id.util';
 
 // Angular Material
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';

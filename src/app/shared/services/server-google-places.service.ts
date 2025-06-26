@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { AUTH_CONSTANTS } from '@constants/auth.constants';
 import { LoggerService } from './logger.service';
-import { getCurrentUserId } from '../utils/user-id.util';
+import { getCurrentUserId } from '@utils/user-id.util';
 
 export interface AutocompleteResult {
   place: string;
