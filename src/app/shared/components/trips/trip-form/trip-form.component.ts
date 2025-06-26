@@ -285,6 +285,15 @@ export class TripFormComponent implements OnInit {
       sort(this.shifts, '-key');
     }
 
+    // If editing, ensure the trip's shift is present in the list
+    if (this.data?.key) {
+      const tripShift = await this._shiftService.queryShiftByKey(this.data.key);
+      if (tripShift && !this.shifts.some(s => s.key === tripShift.key)) {
+        this.shifts.push(tripShift);
+        sort(this.shifts, '-key');
+      }
+    }
+
     //Set default shift to last trip or latest shift.
     if (!this.data?.id) {
       let today = DateHelper.getISOFormat();
