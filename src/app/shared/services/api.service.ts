@@ -68,7 +68,7 @@ export class ApiService {
         }
 
         // Add UserId header for rate limiting and user identification (like Places API)
-        const userId = getCurrentUserId(() => this._secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN));
+        const userId = getCurrentUserId();
         if (userId) {
             headers = headers.set('UserId', userId);
         }

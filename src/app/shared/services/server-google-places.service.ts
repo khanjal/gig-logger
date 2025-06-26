@@ -93,7 +93,7 @@ export class ServerGooglePlacesService {
       const request: PlacesAutocompleteRequest = {
         query: query.trim(),
         searchType,
-        userId: getCurrentUserId(() => this.getStoredAccessToken()),
+        userId: getCurrentUserId(),
         country,
         userLatitude: userLat,
         userLongitude: userLng
@@ -129,7 +129,7 @@ export class ServerGooglePlacesService {
     try {
       const request: PlaceDetailsRequest = {
         placeId,
-        userId: getCurrentUserId(() => this.getStoredAccessToken())
+        userId: getCurrentUserId()
       };
       const details = await this.http.post<PlaceDetails>(
         `${this.baseUrl}/places/details`, 
@@ -151,7 +151,7 @@ export class ServerGooglePlacesService {
    */
   async getUserUsage(): Promise<UserApiUsage | null> {
     try {
-      const userId = getCurrentUserId(() => this.getStoredAccessToken());
+      const userId = getCurrentUserId();
       return await this.http.get<UserApiUsage>(
         `${this.baseUrl}/places/usage/${userId}`,
         this.setOptions()
@@ -429,24 +429,6 @@ export class ServerGooglePlacesService {
     );
   }
 
-  private getStoredAccessToken(): string | null {
-    // Try to get access token from secure cookie storage
-    // This is a simplified approach that avoids circular dependency
-    try {
-      // Check if there's a way to access the secure storage
-      const cookies = document.cookie.split(';');
-      for (const cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === AUTH_CONSTANTS.ACCESS_TOKEN && value) {
-          return decodeURIComponent(value);
-        }
-      }
-    } catch (error) {
-      this.logger.warn('Could not access stored access token:', error);
-    }
-    return null;
-  }
-
   private handleError(error: any): void {
     this.logger.error('Server Google Places API Error:', error);
     
@@ -468,14 +450,8 @@ export class ServerGooglePlacesService {
     
     headers = headers.set('Content-Type', 'application/json');
     
-    // Get access token from secure cookie storage
-    const accessToken = this.getStoredAccessToken();
-    if (accessToken) {
-      headers = headers.set('Authorization', `Bearer ${accessToken}`);
-    }
-    
     // Add UserId header for rate limiting and user identification
-    const userId = getCurrentUserId(() => this.getStoredAccessToken());
+    const userId = getCurrentUserId();
     headers = headers.set('UserId', userId);
     
     return headers;
