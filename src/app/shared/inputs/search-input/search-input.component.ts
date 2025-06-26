@@ -38,10 +38,6 @@ import { GoogleAutocompleteService } from '@services/google-autocomplete.service
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
-// #region Utility Imports
-import { createSearchItem, searchJson, isRateLimitError, isGoogleResult } from './search-input.utils';
-// #endregion
-
 @Component({
   selector: 'app-search-input',
   standalone: true,
@@ -242,17 +238,17 @@ export class SearchInputComponent implements OnDestroy {
   private async getAllItemsForType(): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
-        return (await this._filterAddress('')).map(item => createSearchItem(item, 'address'));
+        return (await this._filterAddress('')).map(item => this.createSearchItem(item, 'address'));
       case 'Name':
-        return (await this._filterName('')).map(item => createSearchItem(item, 'name'));
+        return (await this._filterName('')).map(item => this.createSearchItem(item, 'name'));
       case 'Place':
-        return (await this._filterPlace('')).map(item => createSearchItem(item, 'place'));
+        return (await this._filterPlace('')).map(item => this.createSearchItem(item, 'place'));
       case 'Region':
-        return (await this._filterRegion('')).map(item => createSearchItem(item, 'region'));
+        return (await this._filterRegion('')).map(item => this.createSearchItem(item, 'region'));
       case 'Service':
-        return (await this._filterService('')).map(item => createSearchItem(item, 'service'));
+        return (await this._filterService('')).map(item => this.createSearchItem(item, 'service'));
       case 'Type':
-        return (await this._filterType('')).map(item => createSearchItem(item, 'type'));
+        return (await this._filterType('')).map(item => this.createSearchItem(item, 'type'));
       default:
         return [];
     }
@@ -264,21 +260,21 @@ export class SearchInputComponent implements OnDestroy {
     }
     switch (this.searchType) {
       case 'Address':
-        const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
+        const addressResults = (await this._filterAddress(value)).map(item => this.createSearchItem(item, 'address'));
         return await this.addGooglePredictionsIfNeeded(value, addressResults);
       case 'Name':
-        return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+        return (await this._filterName(value)).map(item => this.createSearchItem(item, 'name'));
       case 'Place':
-        let places = (await this._filterPlace(value)).map(item => createSearchItem(item, 'place'));
+        let places = (await this._filterPlace(value)).map(item => this.createSearchItem(item, 'place'));
         places = await this.handleJsonFallback(places, 'places', value);
         return await this.addGooglePredictionsIfNeeded(value, places);
       case 'Region':
-        return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
+        return (await this._filterRegion(value)).map(item => this.createSearchItem(item, 'region'));
       case 'Service':
-        let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
+        let services = (await this._filterService(value)).map(item => this.createSearchItem(item, 'service'));
         return await this.handleJsonFallback(services, 'services', value);
       case 'Type':
-        let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
+        let types = (await this._filterType(value)).map(item => this.createSearchItem(item, 'type'));
         return await this.handleJsonFallback(types, 'types', value);
       default:
         return [];
@@ -286,11 +282,31 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   private async searchJson(searchType: string, value: string): Promise<ISearchItem[]> {
-    return await searchJson(searchType, value);
+    try {
+      const itemsJson = await fetch(`/assets/json/${searchType}.json`).then(res => res.json());
+      return itemsJson
+        .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
+        .map((item: string) => ({
+          id: item,
+          name: item,
+          saved: false,
+          value: item,
+          trips: 0
+        }));
+    } catch (error) {
+      console.warn(`Error loading ${searchType}.json:`, error);
+      return [];
+    }
   }
 
   private createSearchItem(item: any, nameProperty: string): ISearchItem {
-    return createSearchItem(item, nameProperty);
+    return {
+      id: item.id,
+      name: item[nameProperty],
+      saved: item.saved,
+      value: item[nameProperty],
+      trips: item.trips
+    };
   }
 
   private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
@@ -303,19 +319,99 @@ export class SearchInputComponent implements OnDestroy {
 
   private async handleJsonFallback(results: ISearchItem[], searchType: string, value: string): Promise<ISearchItem[]> {
     if (results.length === 0) {
-      return await searchJson(searchType, value);
+      return await this.searchJson(searchType, value);
     }
     return results;
   }
 
+  private async _filterAddress(value: string): Promise<IAddress[]> {
+    return await this._addressService.includes('address', value);
+  }
+
+  private async _filterName(value: string): Promise<IName[]> {
+    return await this._nameService.includes('name', value);
+  }
+
+  private async _filterPlace(value: string): Promise<IPlace[]> {
+    return await this._placeService.includes('place', value);
+  }
+
+  private async _filterRegion(value: string): Promise<IRegion[]> {
+    return await this._regionService.filter('region', value);
+  }
+
+  private async _filterService(value: string): Promise<IService[]> {
+    return await this._serviceService.filter('service', value);
+  }
+
+  private async _filterType(value: string): Promise<IType[]> {
+    return await this._typeService.filter('type', value);
+  }
+
+  private isGoogleAllowed(): boolean {
+    const hostname = window.location.hostname;
+    return hostname.includes('gig-test') || hostname === 'localhost';
+  }
+
+  private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
+    if (!this.isGoogleAllowed() || !this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
+      return [];
+    }
+    const cacheKey = `${this.googleSearch}:${value.toLowerCase()}`;
+    if (this.googlePredictionsCache.has(cacheKey)) {
+      return this.googlePredictionsCache.get(cacheKey)!;
+    }
+    try {
+      const predictions = await this._googleAutocompleteService.getAutocompletePredictions(
+        value,
+        this.googleSearch,
+        { componentRestrictions: { country: 'US' } }
+      );
+      this.showGoogleMapsIcon = false;
+      const results = predictions.map(prediction => ({
+        id: undefined,
+        name: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        saved: false,
+        value: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        trips: 0
+      }));
+      if (this.googlePredictionsCache.size >= 50) {
+        const firstKey = this.googlePredictionsCache.keys().next().value;
+        if (firstKey) {
+          this.googlePredictionsCache.delete(firstKey);
+        }
+      }
+      this.googlePredictionsCache.set(cacheKey, results);
+      return results;
+    } catch (error: any) {
+      console.warn('Error getting Google predictions:', error);
+      if (this.isRateLimitError(error) && (this.searchType === 'Address' || this.searchType === 'Place')) {
+        console.log('Rate limit detected - showing Google Maps icon as fallback');
+        this.showGoogleMapsIcon = true;
+      }
+      return [];
+    }
+  }
+
   private isRateLimitError(error: any): boolean {
-    return isRateLimitError(error);
+    if (!error) return false;
+    const errorMessage = error.message?.toLowerCase() || '';
+    const errorCode = error.code?.toLowerCase() || '';
+    return (
+      errorCode === 'over_query_limit' ||
+      errorCode === 'request_denied' ||
+      errorMessage.includes('over query limit') ||
+      errorMessage.includes('quota exceeded') ||
+      errorMessage.includes('rate limit') ||
+      errorMessage.includes('too many requests') ||
+      error.status === 429
+    );
   }
   // #endregion
 
   // #region Utility
   isGoogleResult(item: ISearchItem): boolean {
-    return isGoogleResult(item);
+    return item.id === undefined && item.trips === 0 && !item.saved;
   }
   // #endregion
 }
