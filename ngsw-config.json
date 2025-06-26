@@ -75,6 +75,19 @@
         "strategy": "performance",
         "timeout": "5s"
       }
+    },
+    {
+      "name": "no-cache-api",
+      "urls": [
+        "/api/auth/**",
+        "/api/places/**",
+        "/api/sheets/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxAge": "0u",
+        "maxSize": 0
+      }
     }
   ],  "navigationUrls": [
     "/**",
