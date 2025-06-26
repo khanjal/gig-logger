@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
+import { LoggerService } from './logger.service';
 
 export interface AutocompleteResult {
   place: string;
@@ -55,8 +56,10 @@ export interface PlaceDetailsRequest {
 })
 export class ServerGooglePlacesService {
   private baseUrl = environment.gigLoggerApi;
+  private cachedLocation: { lat: number; lng: number; timestamp: number } | null = null;
+  private locationCacheDuration = 5 * 60 * 1000; // 5 minutes
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private logger: LoggerService) {}
 
   /**
    * Get autocomplete suggestions from server-side Google Places API
@@ -217,31 +220,52 @@ export class ServerGooglePlacesService {
   }
 
   /**
-   * Get user's current location for location bias (optional)
+   * Get user's current location for location bias (with enhanced caching)
    */
   async getUserLocation(): Promise<{ lat: number; lng: number } | null> {
+    if (this.cachedLocation) {
+      const now = Date.now();
+      if (now - this.cachedLocation.timestamp < this.locationCacheDuration) {
+        this.logger.debug('Using cached location for Google Places');
+        return { lat: this.cachedLocation.lat, lng: this.cachedLocation.lng };
+      }
+    }
+
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
-        console.log('Geolocation is not supported by this browser');
+        this.logger.warn('Geolocation is not supported by this browser');
         resolve(null);
         return;
       }
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          resolve({
+          const location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
-          });
+          };
+          this.cachedLocation = {
+            ...location,
+            timestamp: Date.now()
+          };
+          this.logger.debug('Location obtained and cached for Google Places', location);
+          resolve(location);
         },
         (error) => {
-          console.log('Geolocation error:', error.message);
+          this.logger.warn('Geolocation error for Google Places:', error.message);
+          if (this.cachedLocation) {
+            this.logger.debug('Using last known cached location due to error');
+            return resolve({ 
+              lat: this.cachedLocation.lat, 
+              lng: this.cachedLocation.lng 
+            });
+          }
           resolve(null);
         },
         {
-          timeout: 5000,
-          enableHighAccuracy: false,
-          maximumAge: 300000 // 5 minutes
+          timeout: 8000,
+          enableHighAccuracy: true,
+          maximumAge: 60000
         }
       );
     });
@@ -249,12 +273,14 @@ export class ServerGooglePlacesService {
 
   /**
    * Get autocomplete with optional location bias
+   * Only calls Google Places API if we have user location or explicit override
    */
   async getAutocompleteWithLocation(
     query: string, 
     searchType: string = 'address',
     country: string = 'US',
-    useLocationBias: boolean = false
+    useLocationBias: boolean = false,
+    forceWithoutLocation: boolean = false
   ): Promise<AutocompleteResult[]> {
     let userLocation = null;
     
@@ -262,8 +288,13 @@ export class ServerGooglePlacesService {
       try {
         userLocation = await this.getUserLocation();
       } catch (error) {
-        console.log('Could not get user location, using default bias:', error);
+        // Silently handle location errors
       }
+    }
+
+    // If we don't have user location and it's not explicitly forced, don't call the API
+    if (useLocationBias && !userLocation && !forceWithoutLocation) {
+      return [];
     }
 
     return this.getAutocomplete(
@@ -272,6 +303,106 @@ export class ServerGooglePlacesService {
       country, 
       userLocation?.lat, 
       userLocation?.lng
+    );
+  }
+
+  /**
+   * Smart autocomplete that tries location-based only. No fallback suggestions.
+   */
+  async getSmartAutocomplete(
+    query: string, 
+    searchType: string = 'address',
+    country: string = 'US'
+  ): Promise<AutocompleteResult[]> {
+    // Only try to get location-based results
+    try {
+      const locationResults = await this.getAutocompleteWithLocation(
+        query, 
+        searchType, 
+        country, 
+        true, // use location bias
+        false // don't force without location
+      );
+      if (locationResults.length > 0) {
+        return locationResults;
+      }
+    } catch (error) {
+      // Silently handle location-based errors
+    }
+    // No fallback: just return empty
+    return [];
+  }
+
+  /**
+   * Clear cached location (useful when user moves significantly)
+   */
+  clearLocationCache(): void {
+    this.cachedLocation = null;
+  }
+
+  /**
+   * Check if location permission is granted
+   */
+  async checkLocationPermission(): Promise<'granted' | 'denied' | 'prompt'> {
+    if (!navigator.permissions) {
+      return 'prompt';
+    }
+
+    try {
+      const result = await navigator.permissions.query({ name: 'geolocation' });
+      return result.state;
+    } catch (error) {
+      return 'prompt';
+    }
+  }
+
+  /**
+   * Check if we can reliably get user location for Google Places API
+   */
+  async canGetUserLocation(): Promise<boolean> {
+    // Check if we have cached location first
+    if (this.cachedLocation) {
+      const now = Date.now();
+      if (now - this.cachedLocation.timestamp < this.locationCacheDuration) {
+        return true;
+      }
+    }
+
+    // Check permission status
+    const permission = await this.checkLocationPermission();
+    if (permission === 'denied') {
+      return false;
+    }
+
+    // If permission is granted, we can likely get location
+    if (permission === 'granted') {
+      return true;
+    }
+
+    // If we need to prompt, we can't be sure without actually prompting
+    return false;
+  }
+
+  /**
+   * Get autocomplete results only if location is available, otherwise return empty
+   */
+  async getLocationBasedAutocomplete(
+    query: string, 
+    searchType: string = 'address',
+    country: string = 'US'
+  ): Promise<AutocompleteResult[]> {
+    const canGetLocation = await this.canGetUserLocation();
+    
+    if (!canGetLocation) {
+      return [];
+    }
+
+    return this.getAutocompleteWithLocation(
+      query, 
+      searchType, 
+      country, 
+      true, // use location bias
+      false // don't force without location
     );
   }
 
@@ -298,7 +429,7 @@ export class ServerGooglePlacesService {
         }
       }
     } catch (error) {
-      console.warn('Could not parse access token for user ID:', error);
+      this.logger.warn('Could not parse access token for user ID:', error);
     }
 
     // Fallback: Use stored/generated anonymous user ID
@@ -323,7 +454,7 @@ export class ServerGooglePlacesService {
         }
       }
     } catch (error) {
-      console.warn('Could not access stored access token:', error);
+      this.logger.warn('Could not access stored access token:', error);
     }
     return null;
   }
@@ -347,7 +478,7 @@ export class ServerGooglePlacesService {
   }
 
   private handleError(error: any): void {
-    console.error('Server Google Places API Error:', error);
+    this.logger.error('Server Google Places API Error:', error);
     
     if (error instanceof HttpErrorResponse) {
       if (error.status === 429) {

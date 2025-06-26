@@ -174,8 +174,7 @@ export class SearchInputComponent implements OnDestroy {
           finalAddress = fullAddress;
         }
       } catch (error) {
-        console.warn('Error getting full address with zip:', error);
-        // Fall back to original value
+        // Error getting full address with zip; fall back to original value
       }
     }
     
@@ -347,12 +346,11 @@ export class SearchInputComponent implements OnDestroy {
       return this.googlePredictionsCache.get(cacheKey)!;
     }
     try {
-      // Use location bias for better results
-      const predictions = await this._serverGooglePlacesService.getAutocompleteWithLocation(
+      // Use smart autocomplete that only calls API with location, otherwise uses fallbacks
+      const predictions = await this._serverGooglePlacesService.getSmartAutocomplete(
         value,
         this.googleSearch,
-        'US',
-        true // Use location bias
+        'US'
       );
       this.showGoogleMapsIcon = false;
       const results = predictions.map((prediction: AutocompleteResult) => ({
@@ -374,9 +372,8 @@ export class SearchInputComponent implements OnDestroy {
       this.googlePredictionsCache.set(cacheKey, results);
       return results;
     } catch (error: any) {
-      console.warn('Error getting Google predictions:', error);
+      // Error getting Google predictions; no fallback, just return empty array
       if (this.isRateLimitError(error) && (this.searchType === 'Address' || this.searchType === 'Place')) {
-        console.log('Rate limit detected - showing Google Maps icon as fallback');
         this.showGoogleMapsIcon = true;
       }
       return [];

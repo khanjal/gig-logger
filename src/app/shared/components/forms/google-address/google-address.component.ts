@@ -57,12 +57,11 @@ export class GoogleAddressComponent implements OnInit, OnDestroy {
   async searchPlaces(input: string): Promise<void> {
     this.isLoading = true;
     try {
-      // Use location bias for better address suggestions
-      const results = await this.serverGooglePlacesService.getAutocompleteWithLocation(
+      // Use smart autocomplete that only calls Google API if we have user location
+      const results = await this.serverGooglePlacesService.getSmartAutocomplete(
         input, 
         'address', 
-        'US', 
-        true // Use location bias
+        'US'
       );
       this.suggestions = results;
       this.showSuggestions = true;
