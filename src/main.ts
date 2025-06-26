@@ -35,7 +35,9 @@ bootstrapApplication(AppComponent, {
       BrowserAnimationsModule,      
       ServiceWorkerModule.register('ngsw-worker.js', {
         enabled: environment.production,
-        registrationStrategy: 'registerWhenStable:30000'
+        registrationStrategy: 'registerWhenStable:30000',
+        // Enhanced for "works after refresh" issues
+        scope: './'
       }),
       OAuthModule.forRoot()
     ),

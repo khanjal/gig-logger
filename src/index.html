@@ -6,6 +6,11 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   
+  <!-- Cache control for HTML only - let service worker handle other assets -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.json">
 
@@ -16,11 +21,61 @@
     if (global === undefined) {
       var global = window;
     }
+    
+    // Service Worker Cache Management for "works after refresh" issues
+    (function() {
+      // Check if this is a fresh load (not a refresh)
+      var isRefresh = performance.navigation && performance.navigation.type === performance.navigation.TYPE_RELOAD;
+      var isFirstLoad = !isRefresh && !sessionStorage.getItem('app_loaded_once');
+      
+      if (isFirstLoad) {
+        sessionStorage.setItem('app_loaded_once', 'true');
+        
+        // For first loads, ensure we have fresh resources
+        if ('serviceWorker' in navigator && 'caches' in window) {
+          // Clear any potentially corrupted caches on first load
+          caches.keys().then(function(cacheNames) {
+            var shouldClear = cacheNames.some(function(name) {
+              return name.includes('ngsw') || name.includes('raptor-gig');
+            });
+            
+            if (shouldClear) {
+              console.log('Clearing potentially stale caches on first load');
+              return Promise.all(
+                cacheNames.map(function(cacheName) {
+                  if (cacheName.includes('ngsw') || cacheName.includes('raptor-gig')) {
+                    return caches.delete(cacheName);
+                  }
+                })
+              );
+            }
+          }).catch(function(err) {
+            console.warn('Cache clearing failed:', err);
+          });
+        }
+      }
+      
+      // Add base href validation and dynamic adjustment
+      var base = document.querySelector('base');
+      var href = base ? base.getAttribute('href') : '/';
+      
+      // Ensure base href ends with /
+      if (href && !href.endsWith('/')) {
+        href += '/';
+        if (base) base.setAttribute('href', href);
+      }
+      
+      // Store original base href for potential fallback
+      window.__BASE_HREF__ = href;
+    })();
   </script>
 
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRxUjCoPZOA1F3L0Psza9SdZmmmErPQVc&amp;loading=async&amp;libraries=places">
   </script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
+  
+  <!-- Enhanced service worker management for "works after refresh" issues -->
+  <script src="sw-enhancement.js"></script>
   <meta name="theme-color" content="#1976d2">
   
   <style>
@@ -80,6 +135,96 @@
   </noscript>
   
   <script>
+    // Resource loading error handler - Enhanced for "works after refresh" issues
+    window.resourceLoadErrors = [];
+    window.retryAttempts = 0;
+    window.maxRetries = 2;
+    
+    // Override resource error handling
+    window.addEventListener('error', function(e) {
+      if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+        console.error('Failed to load resource:', e.target.src || e.target.href);
+        window.resourceLoadErrors.push({
+          url: e.target.src || e.target.href,
+          tag: e.target.tagName,
+          error: e,
+          timestamp: Date.now()
+        });
+        
+        // If it's a critical script and we haven't exceeded retry limit
+        var src = e.target.src;
+        if (src && (src.includes('vendor') || src.includes('main') || src.includes('polyfills')) && window.retryAttempts < window.maxRetries) {
+          window.retryAttempts++;
+          
+          // For "works after refresh" issues, try different strategies
+          setTimeout(function() {
+            var baseHref = window.__BASE_HREF__ || '/';
+            var filename = src.split('/').pop();
+            var strategies = [
+              // Strategy 1: Absolute path with cache busting
+              window.location.origin + baseHref + filename + '?v=' + Date.now(),
+              // Strategy 2: Just absolute path
+              window.location.origin + baseHref + filename,
+              // Strategy 3: Original relative path with cache busting
+              filename + '?v=' + Date.now()
+            ];
+            
+            var newSrc = strategies[window.retryAttempts - 1];
+            if (newSrc && src !== newSrc) {
+              console.log('Retry attempt ' + window.retryAttempts + ' with strategy:', newSrc);
+              var newScript = document.createElement('script');
+              newScript.src = newSrc;
+              newScript.type = e.target.type || 'text/javascript';
+              
+              // Add cross-origin if it's an absolute URL to different domain
+              if (newSrc.startsWith('http') && !newSrc.startsWith(window.location.origin)) {
+                newScript.crossOrigin = 'anonymous';
+              }
+              
+              document.head.appendChild(newScript);
+            }
+          }, 1000 * window.retryAttempts); // Increasing delay for retries
+        }
+      }
+    }, true);
+
+    // Auto-refresh logic for "works after refresh" scenarios
+    var autoRefreshTriggered = false;
+    
+    // Check if app loads successfully within reasonable time
+    setTimeout(function() {
+      var appRoot = document.querySelector('app-root');
+      var hasAngularContent = appRoot && appRoot.children.length > 0;
+      
+      if (!hasAngularContent && !autoRefreshTriggered && window.resourceLoadErrors.length > 0) {
+        // Check if we have critical resource failures
+        var hasCriticalFailures = window.resourceLoadErrors.some(function(err) {
+          return err.url && (err.url.includes('vendor') || err.url.includes('main') || err.url.includes('polyfills'));
+        });
+        
+        if (hasCriticalFailures) {
+          console.log('Critical resource loading failure detected. Auto-refreshing...');
+          autoRefreshTriggered = true;
+          
+          // Clear service worker caches before refresh
+          if ('serviceWorker' in navigator && 'caches' in window) {
+            caches.keys().then(function(cacheNames) {
+              return Promise.all(
+                cacheNames.map(function(cacheName) {
+                  return caches.delete(cacheName);
+                })
+              );
+            }).finally(function() {
+              window.location.reload(true);
+            });
+          } else {
+            window.location.reload(true);
+          }
+          return;
+        }
+      }
+    }, 10000);
+
     // Hide loading indicator after 15 seconds as fallback
     setTimeout(function() {
       var loading = document.querySelector('.app-loading');
@@ -88,23 +233,68 @@
       }
     }, 15000);
     
-    // Show error message if app doesn't load in 20 seconds
+    // Show error message if app doesn't load in 25 seconds (increased for retry attempts)
     setTimeout(function() {
       var appRoot = document.querySelector('app-root');
       if (!appRoot || appRoot.children.length === 0) {
-        document.body.innerHTML = `
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; background: #fafafa; padding: 20px;">
-            <h2 style="color: #f44336; margin-bottom: 16px;">Application Loading Failed</h2>
-            <p style="color: #666; margin-bottom: 24px; max-width: 400px;">
-              The application took too long to load. This might be due to a slow network connection or a temporary issue.
-            </p>
-            <button onclick="window.location.reload()" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px;">
-              Reload Page
-            </button>
-          </div>
-        `;
+        var errorMessage = '<h2 style="color: #f44336; margin-bottom: 16px;">Application Loading Failed</h2>';
+        var details = '<p style="color: #666; margin-bottom: 24px; max-width: 400px;">The application failed to load properly. This often resolves with a page refresh.</p>';
+        
+        // Add specific error details if we have resource load errors
+        if (window.resourceLoadErrors && window.resourceLoadErrors.length > 0) {
+          details += '<details style="margin-bottom: 16px; text-align: left;"><summary style="cursor: pointer; color: #666;">Technical Details</summary>';
+          details += '<div style="margin-top: 8px; font-size: 12px; color: #888;">';
+          details += '<div>Retry attempts: ' + window.retryAttempts + '/' + window.maxRetries + '</div>';
+          window.resourceLoadErrors.forEach(function(err) {
+            details += '<div style="margin: 4px 0; word-break: break-all;">Failed to load: ' + err.url + '</div>';
+          });
+          details += '</div></details>';
+        }
+        
+        document.body.innerHTML = 
+          '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; background: #fafafa; padding: 20px;">' +
+            errorMessage + details +
+            '<button onclick="clearCacheAndReload()" style="background: #f44336; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px;">' +
+              'Clear Cache & Reload' +
+            '</button>' +
+            '<button onclick="window.location.reload(true)" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px;">' +
+              'Hard Refresh' +
+            '</button>' +
+            '<button onclick="window.location.href=window.location.origin" style="background: #757575; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px;">' +
+              'Go to Home' +
+            '</button>' +
+          '</div>';
       }
-    }, 20000);
+    }, 25000);
+    
+    // Helper function for cache clearing
+    function clearCacheAndReload() {
+      if ('serviceWorker' in navigator && 'caches' in window) {
+        caches.keys().then(function(cacheNames) {
+          return Promise.all(
+            cacheNames.map(function(cacheName) {
+              return caches.delete(cacheName);
+            })
+          );
+        }).then(function() {
+          // Also unregister service worker
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              registrations.forEach(function(registration) {
+                registration.unregister();
+              });
+              window.location.reload(true);
+            });
+          } else {
+            window.location.reload(true);
+          }
+        }).catch(function() {
+          window.location.reload(true);
+        });
+      } else {
+        window.location.reload(true);
+      }
+    }
   </script>
 </body>
 </html>

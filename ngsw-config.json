@@ -16,6 +16,10 @@
           "/*.js",
           "/*-es2015.*.js",
           "/*-es5.*.js",
+          "/runtime*.js",
+          "/polyfills*.js",
+          "/vendor*.js",
+          "/main*.js",
           "/assets/icons/*.png"
         ],
         "urls": [
