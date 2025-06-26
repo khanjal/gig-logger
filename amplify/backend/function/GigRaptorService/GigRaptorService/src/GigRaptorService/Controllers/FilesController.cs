@@ -1,4 +1,5 @@
-﻿using GigRaptorService.Business;
+﻿using GigRaptorService.Attributes;
+using GigRaptorService.Business;
 using GigRaptorService.Models;
 using Microsoft.AspNetCore.Mvc;
 using RaptorSheets.Core.Entities;
@@ -39,6 +40,7 @@ public class FilesController : ControllerBase
 
     // GET api/files/list
     [HttpGet("list")]
+    [RateLimitFilter(10, 60, ApiType.Files)] // 10 requests per minute per user for Files API
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -59,6 +61,7 @@ public class FilesController : ControllerBase
 
     // POST api/files/create  
     [HttpPost("create")]
+    [RateLimitFilter(5, 60, ApiType.Files)] // 5 requests per minute per user for Files API (creation is more resource-intensive)
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

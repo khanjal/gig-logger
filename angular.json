@@ -29,7 +29,6 @@
               "src/manifest.json",
               "src/offline.html",
               "src/error.html",
-              "src/sw-enhancement.js",
               "src/.htaccess",
               "src/_redirects"
             ],
@@ -42,7 +41,9 @@
                 "src/app/shared/styles"
               ]
             },
-            "scripts": [],
+            "scripts": [
+              "src/assets/js/sw-enhancement.js"
+            ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"
           },

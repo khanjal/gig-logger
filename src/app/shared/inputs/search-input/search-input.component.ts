@@ -32,7 +32,7 @@ import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
-import { GoogleAutocompleteService } from '@services/google-autocomplete.service';
+import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 
 // RxJS imports
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
@@ -116,7 +116,7 @@ export class SearchInputComponent implements OnDestroy {
     private _regionService: RegionService,
     private _serviceService: ServiceService,
     private _typeService: TypeService,
-    private _googleAutocompleteService: GoogleAutocompleteService
+    private _serverGooglePlacesService: ServerGooglePlacesService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -169,7 +169,7 @@ export class SearchInputComponent implements OnDestroy {
     // If this is a Google address result with a place ID, get full address with zip
     if (selectedItem?.placeId && this.searchType === 'Address') {
       try {
-        const fullAddress = await this._googleAutocompleteService.getFullAddressWithZip(selectedItem.placeId);
+        const fullAddress = await this._serverGooglePlacesService.getFullAddressWithZip(selectedItem.placeId);
         if (fullAddress) {
           finalAddress = fullAddress;
         }
@@ -246,9 +246,7 @@ export class SearchInputComponent implements OnDestroy {
         if (trimmedValue && this.showGoogleMapsIcon) {
           this.showGoogleMapsIcon = false;
         }
-        if (this.inputElement) {
-          this._googleAutocompleteService.clearAddressListeners(this.inputElement);
-        }
+        // No need to clear address listeners - server-side only now
         return await this._filterItems(trimmedValue);
       })
     );
@@ -341,7 +339,7 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
-    if (!this.isGoogleAllowed() || !this.googleSearch || !this._googleAutocompleteService.isGoogleMapsLoaded()) {
+    if (!this.isGoogleAllowed() || !this.googleSearch) {
       return [];
     }
     const cacheKey = `${this.googleSearch}:${value.toLowerCase()}`;
@@ -349,13 +347,13 @@ export class SearchInputComponent implements OnDestroy {
       return this.googlePredictionsCache.get(cacheKey)!;
     }
     try {
-      const predictions = await this._googleAutocompleteService.getAutocompletePredictions(
+      const predictions = await this._serverGooglePlacesService.getAutocomplete(
         value,
         this.googleSearch,
-        { componentRestrictions: { country: 'US' } }
+        'US'
       );
       this.showGoogleMapsIcon = false;
-      const results = predictions.map(prediction => ({
+      const results = predictions.map((prediction: AutocompleteResult) => ({
         id: undefined,
         name: this.googleSearch === 'address' 
           ? prediction.address 

@@ -68,7 +68,6 @@
     "@angular/cli": "~18.2.14",
     "@angular/compiler-cli": "^18.2.13",
     "@types/google-spreadsheet": "^3.3.1",
-    "@types/google.maps": "^3.54.1",
     "@types/jasmine": "~4.0.0",
     "@types/jest": "^29.5.5",
     "@types/mocha": "^10.0.2",

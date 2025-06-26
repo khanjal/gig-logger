@@ -47,6 +47,12 @@ export class TripComponent implements OnInit, OnDestroy {
 
   demoSheetId = environment.demoSheet;
 
+  // Google Places API is now handled server-side through Lambda for:
+  // - Better security (API keys protected)
+  // - Cost control and user quotas
+  // - Compliance with Google ToS
+  // - Rate limiting and usage tracking
+  
   clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
