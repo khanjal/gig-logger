@@ -59,10 +59,17 @@ export class ServerGooglePlacesService {
   private cachedLocation: { lat: number; lng: number; timestamp: number } | null = null;
   private locationCacheDuration = 5 * 60 * 1000; // 5 minutes
 
+  // In-memory caches for autocomplete and place details
+  private autocompleteCache = new Map<string, { results: AutocompleteResult[]; timestamp: number }>();
+  private placeDetailsCache = new Map<string, { details: PlaceDetails; timestamp: number }>();
+  private autocompleteCacheDuration = 2 * 60 * 1000; // 2 minutes
+  private placeDetailsCacheDuration = 5 * 60 * 1000; // 5 minutes
+
   constructor(private http: HttpClient, private logger: LoggerService) {}
 
   /**
    * Get autocomplete suggestions from server-side Google Places API
+   * Now uses in-memory cache to avoid redundant requests
    */
   async getAutocomplete(
     query: string, 
@@ -74,7 +81,13 @@ export class ServerGooglePlacesService {
     if (!query || query.trim().length === 0) {
       return [];
     }
-
+    const cacheKey = `${query.trim().toLowerCase()}|${searchType}|${country}|${userLat ?? ''}|${userLng ?? ''}`;
+    const now = Date.now();
+    const cached = this.autocompleteCache.get(cacheKey);
+    if (cached && now - cached.timestamp < this.autocompleteCacheDuration) {
+      this.logger.debug('Returning cached autocomplete results for', cacheKey);
+      return cached.results;
+    }
     try {
       const request: PlacesAutocompleteRequest = {
         query: query.trim(),
@@ -84,14 +97,14 @@ export class ServerGooglePlacesService {
         userLatitude: userLat,
         userLongitude: userLng
       };
-
       const response = await this.http.post<AutocompleteResult[]>(
         `${this.baseUrl}/places/autocomplete`, 
         request,
         this.setOptions()
       ).toPromise();
-      
-      return response || [];
+      const results = response || [];
+      this.autocompleteCache.set(cacheKey, { results, timestamp: now });
+      return results;
     } catch (error) {
       this.handleError(error);
       return [];
@@ -100,23 +113,32 @@ export class ServerGooglePlacesService {
 
   /**
    * Get detailed place information by place ID
+   * Now uses in-memory cache to avoid redundant requests
    */
   async getPlaceDetails(placeId: string): Promise<PlaceDetails | null> {
     if (!placeId) {
       return null;
     }
-
+    const now = Date.now();
+    const cached = this.placeDetailsCache.get(placeId);
+    if (cached && now - cached.timestamp < this.placeDetailsCacheDuration) {
+      this.logger.debug('Returning cached place details for', placeId);
+      return cached.details;
+    }
     try {
       const request: PlaceDetailsRequest = {
         placeId,
         userId: this.getCurrentUserId()
       };
-
-      return await this.http.post<PlaceDetails>(
+      const details = await this.http.post<PlaceDetails>(
         `${this.baseUrl}/places/details`, 
         request,
         this.setOptions()
       ).toPromise() || null;
+      if (details) {
+        this.placeDetailsCache.set(placeId, { details, timestamp: now });
+      }
+      return details;
     } catch (error) {
       this.handleError(error);
       return null;
@@ -227,6 +249,7 @@ export class ServerGooglePlacesService {
       const now = Date.now();
       if (now - this.cachedLocation.timestamp < this.locationCacheDuration) {
         this.logger.debug('Using cached location for Google Places');
+        // Return full object, but only lat/lng are used by callers
         return { lat: this.cachedLocation.lat, lng: this.cachedLocation.lng };
       }
     }
@@ -242,18 +265,16 @@ export class ServerGooglePlacesService {
         (position) => {
           const location = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          this.cachedLocation = {
-            ...location,
+            lng: position.coords.longitude,
             timestamp: Date.now()
           };
+          this.cachedLocation = location;
           this.logger.debug('Location obtained and cached for Google Places', location);
-          resolve(location);
+          resolve({ lat: location.lat, lng: location.lng });
         },
         (error) => {
           this.logger.warn('Geolocation error for Google Places:', error.message);
-          if (this.cachedLocation) {
+          if (this.cachedLocation && 'timestamp' in this.cachedLocation) {
             this.logger.debug('Using last known cached location due to error');
             return resolve({ 
               lat: this.cachedLocation.lat, 
@@ -361,9 +382,10 @@ export class ServerGooglePlacesService {
    */
   async canGetUserLocation(): Promise<boolean> {
     // Check if we have cached location first
-    if (this.cachedLocation) {
+    if (this.cachedLocation && 'timestamp' in this.cachedLocation) {
       const now = Date.now();
-      if (now - this.cachedLocation.timestamp < this.locationCacheDuration) {
+      const cached = this.cachedLocation as { lat: number; lng: number; timestamp: number };
+      if (now - cached.timestamp < this.locationCacheDuration) {
         return true;
       }
     }
