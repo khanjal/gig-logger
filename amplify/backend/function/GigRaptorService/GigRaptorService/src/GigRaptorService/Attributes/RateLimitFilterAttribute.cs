@@ -36,20 +36,7 @@ namespace GigRaptorService.Attributes
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // Check if rate limiting is enabled
-            var configuration = context.HttpContext.RequestServices.GetService<IConfiguration>();
-            if (configuration != null && !FeatureFlags.IsRateLimitingEnabled(configuration))
-            {
-                // Rate limiting is disabled, but still extract user ID for logging purposes
-                var userId = await GetUserIdAsync(context.HttpContext);
-                if (!string.IsNullOrWhiteSpace(userId))
-                {
-                    context.HttpContext.Items["AuthenticatedUserId"] = userId;
-                }
-                await next();
-                return;
-            }
-
+            // Always apply in-memory rate limiting
             var rateLimitUserId = await GetUserIdAsync(context.HttpContext);
 
             if (string.IsNullOrWhiteSpace(rateLimitUserId))
@@ -73,6 +60,15 @@ namespace GigRaptorService.Attributes
             }
 
             _cache.Set(cacheKey, requestCount + 1, TimeSpan.FromSeconds(_durationInSeconds));
+
+            // Optionally apply DynamoDB/distributed rate limiting if feature flag is enabled
+            var configuration = context.HttpContext.RequestServices.GetService<IConfiguration>();
+            if (configuration != null && FeatureFlags.IsRateLimitingEnabled(configuration))
+            {
+                // TODO: Add DynamoDB/distributed rate limiting logic here
+                // If limit exceeded, return 429 and do not call next()
+            }
+
             await next();
         }
 
