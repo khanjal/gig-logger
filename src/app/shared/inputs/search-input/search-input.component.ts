@@ -159,8 +159,28 @@ export class SearchInputComponent implements OnDestroy {
     this.googlePredictionsCache.clear();
   }
   async onInputSelect(inputValue: string): Promise<void> {
-    this.searchForm.controls.searchInput.setValue(inputValue, { emitEvent: false });
-    this.onChange(inputValue);
+    // Find the selected item to get place ID for Google results
+    const selectedItem = this.filteredItemsArray.find(item => 
+      item.name === inputValue || item.value === inputValue
+    );
+    
+    let finalAddress = inputValue;
+    
+    // If this is a Google address result with a place ID, get full address with zip
+    if (selectedItem?.placeId && this.searchType === 'Address') {
+      try {
+        const fullAddress = await this._googleAutocompleteService.getFullAddressWithZip(selectedItem.placeId);
+        if (fullAddress) {
+          finalAddress = fullAddress;
+        }
+      } catch (error) {
+        console.warn('Error getting full address with zip:', error);
+        // Fall back to original value
+      }
+    }
+    
+    this.searchForm.controls.searchInput.setValue(finalAddress, { emitEvent: false });
+    this.onChange(finalAddress);
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
@@ -337,10 +357,13 @@ export class SearchInputComponent implements OnDestroy {
       this.showGoogleMapsIcon = false;
       const results = predictions.map(prediction => ({
         id: undefined,
-        name: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        name: this.googleSearch === 'address' 
+          ? prediction.address 
+          : prediction.place,
         saved: false,
         value: this.googleSearch === 'address' ? prediction.address : prediction.place,
-        trips: 0
+        trips: 0,
+        placeId: prediction.placeDetails?.placeId // Store place ID for later lookup
       }));
       if (this.googlePredictionsCache.size >= 50) {
         const firstKey = this.googlePredictionsCache.keys().next().value;

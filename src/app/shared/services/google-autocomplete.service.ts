@@ -347,4 +347,61 @@ export class GoogleAutocompleteService {
     return suggestion.placePrediction?.structuredFormat?.mainText?.text || 
            suggestion.placePrediction?.text?.text?.split(',')[0] || "";
   }
+
+  /**
+   * Get full address with zip code using place ID
+   * Uses the new Google Places API (Place class) as recommended for 2025+
+   */
+  public async getFullAddressWithZip(placeId: string): Promise<string | null> {
+    if (!window.google || !window.google.maps) {
+      console.error('Google Maps API not loaded');
+      return null;
+    }
+
+    try {
+      // Load Places library if not already loaded
+      const { Place } = await window.google.maps.importLibrary("places");
+      
+      // Create a Place instance with the place ID
+      const place = new Place({
+        id: placeId,
+        requestedLanguage: 'en'
+      });
+
+      // Fetch place details using the new API
+      await place.fetchFields({
+        fields: ['formattedAddress', 'addressComponents']
+      });
+
+      // Get the formatted address which should include zip code
+      let fullAddress = place.formattedAddress || '';
+      
+      // If zip is missing, try to append it from address components
+      if (fullAddress && !fullAddress.match(/\b\d{5}(-\d{4})?\b/)) {
+        const addressComponents = place.addressComponents;
+        if (addressComponents) {
+          const zipComponent = addressComponents.find((comp: any) => 
+            comp.types.includes('postal_code')
+          );
+          if (zipComponent) {
+            const zip = zipComponent.shortText || zipComponent.longText;
+            if (zip) {
+              // Try to insert after state if possible
+              const stateMatch = fullAddress.match(/([A-Z]{2}),?\s*USA?$/i);
+              if (stateMatch) {
+                fullAddress = fullAddress.replace(/([A-Z]{2}),?\s*USA?$/i, `$1 ${zip}, USA`);
+              } else {
+                fullAddress = fullAddress.replace(/,?\s*USA?$/i, `, ${zip}, USA`);
+              }
+            }
+          }
+        }
+      }
+      
+      return fullAddress;
+    } catch (error) {
+      console.error('Error in getFullAddressWithZip:', error);
+      return null;
+    }
+  }
 }
