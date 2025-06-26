@@ -1,120 +1,77 @@
-import { IAddress } from "@interfaces/address.interface";
 import { StringHelper } from "./string.helper";
 
+/**
+ * Utility for address abbreviation and short address formatting.
+ */
 export class AddressHelper {
+    /**
+     * Returns a short, user-friendly address string.
+     * @param address The full address string.
+     * @param place The place name (optional).
+     * @param length How many address parts to include (default 2).
+     */
     static getShortAddress(address: string, place: string = "", length: number = 2): string {
-        if (!address) {
-            return "";
-        }
-
-        // Abbreviate address.
+        if (!address) return "";
         address = this.abbrvAddress(address);
-
-        let addressArray = address.split(", ");
-
-        // If there's only one address element just return it.
-        if (addressArray.length === 1) {
-            return address;
-        }
-
-        // Check if first element starts with place name. Also check abbreviated place name
+        let addressArray = address.split(/,\s*/);
+        if (addressArray.length === 1) return address;
         let lowerPlace = place.toLocaleLowerCase();
         let lowerAddress = addressArray[0].toLocaleLowerCase();
         let abbrvPlace = this.abbrvAddress(place).toLocaleLowerCase();
-        if (lowerPlace && 
-            (lowerAddress.startsWith(lowerPlace) || 
+        // Heuristic: If no place provided, treat first part as place if it has no digits
+        let hasPlace = false;
+        if (!lowerPlace && !/\d/.test(addressArray[0])) {
+            hasPlace = true;
+        } else if (lowerPlace && (
+            lowerAddress.startsWith(lowerPlace) ||
             lowerPlace.startsWith(lowerAddress) ||
-            lowerAddress.startsWith(abbrvPlace) || 
-            abbrvPlace.startsWith(lowerAddress))) 
-        {
-            return addressArray.slice(1, length+1).join(", ");
+            lowerAddress.startsWith(abbrvPlace) ||
+            abbrvPlace.startsWith(lowerAddress))) {
+            hasPlace = true;
         }
-
-        // Truncate the first element to 10 since it's probably a place name if more than 3 elements.
+        if (hasPlace) {
+            return addressArray.slice(1, length + 1).join(", ");
+        }
         if (length > 2) {
             addressArray[0] = StringHelper.truncate(addressArray[0], 15);
         }
-
-        return addressArray.slice(0, length+1).join(", ");
+        return addressArray.slice(0, length + 1).join(", ");
     }
 
+    /**
+     * Abbreviates common address words (directions, street types, etc.).
+     * @param address The address string to abbreviate.
+     */
     static abbrvAddress(address: string): string {
-        let addressParts = address.split(" ");
-        let abbreviatedAddress: string = "";
-
-        addressParts.forEach(addressPart => {
-            let hasComma = addressPart.includes(',') ? true : false;
-
-            // If part has a comma remove/readd       
-            addressPart = addressPart.replace(',', '');
-            switch (addressPart.toLowerCase()) {
-                // Directions
-                case "north":
-                    abbreviatedAddress = `${abbreviatedAddress} N`;
-                    break;
-                case "east":
-                    abbreviatedAddress = `${abbreviatedAddress} E`;
-                    break;
-                case "south":
-                    abbreviatedAddress = `${abbreviatedAddress} S`;
-                    break;
-                case "west":
-                    abbreviatedAddress = `${abbreviatedAddress} W`;
-                    break;
-                // Streets/Roads
-                case "avenue":
-                    abbreviatedAddress = `${abbreviatedAddress} Ave`;
-                    break;
-                case "boulevard":
-                    abbreviatedAddress = `${abbreviatedAddress} Blvd`;
-                    break;
-                case "circle":
-                    abbreviatedAddress = `${abbreviatedAddress} Cir`;
-                    break;
-                case "drive":
-                    abbreviatedAddress = `${abbreviatedAddress} Dr`;
-                    break;
-                case "lane":
-                    abbreviatedAddress = `${abbreviatedAddress} Ln`;
-                    break;
-                case "place":
-                    abbreviatedAddress = `${abbreviatedAddress} Pl`;
-                    break;
-                case "road":
-                    abbreviatedAddress = `${abbreviatedAddress} Rd`;
-                    break;
-                case "street":
-                    abbreviatedAddress = `${abbreviatedAddress} St`;
-                    break;
-                case "terrace":
-                    abbreviatedAddress = `${abbreviatedAddress} Ter`;
-                    break;
-                // Apartemnt/Suite/Unit
-                default:
-                    abbreviatedAddress = `${abbreviatedAddress} ${addressPart}`;
-                    break;
-            }
-
-            if (hasComma) {
-                abbreviatedAddress = `${abbreviatedAddress},`;
-            }
-        });
-
-        return abbreviatedAddress.trim();
+        if (!address) return "";
+        // Unique abbreviation map
+        const ABBREV_MAP: Record<string, string> = {
+            // Directions
+            north: "N", east: "E", south: "S", west: "W",
+            northeast: "NE", northwest: "NW", southeast: "SE", southwest: "SW",
+            // Standard, widely recognized street type abbreviations only
+            avenue: "Ave", boulevard: "Blvd", circle: "Cir", court: "Ct", drive: "Dr", lane: "Ln", place: "Pl", road: "Rd", street: "St", terrace: "Ter", parkway: "Pkwy", square: "Sq", trail: "Trl", highway: "Hwy", expressway: "Expy", center: "Ctr", plaza: "Plz", ridge: "Rdg", view: "Vw", heights: "Hts", manor: "Mnr", meadow: "Mdw", creek: "Crk", extension: "Ext", garden: "Gdn", gardens: "Gdns", gateway: "Gtwy", glen: "Gln", green: "Grn", grove: "Grv", harbor: "Hbr", hollow: "Holw", island: "Is", junction: "Jct", lake: "Lk", landing: "Lndg", light: "Lgt", lodge: "Ldg", meadows: "Mdws", mill: "Ml", mission: "Msn", mount: "Mt", mountain: "Mtn", orchard: "Orch", oval: "Oval", park: "Park", path: "Path", pike: "Pike", pine: "Pne", port: "Prt", prairie: "Pr", ramp: "Ramp", ranch: "Rnch", rapid: "Rpd", rapids: "Rpds", river: "Riv", shoal: "Shl", shoals: "Shls", shore: "Shr", shores: "Shrs", spring: "Spg", springs: "Spgs", station: "Sta", summit: "Smt", tunnel: "Tunl", turnpike: "Tpke", union: "Un", valley: "Vly", viaduct: "Via", village: "Vlg", villages: "Vlgs", ville: "Vl", vista: "Vis"
+        };
+        return address.split(/\s+/).map(part => {
+            let clean = part.replace(/[,\.]/g, "").toLowerCase();
+            let abbr = ABBREV_MAP[clean] || part;
+            // Preserve comma if present
+            if (part.endsWith(",")) abbr += ",";
+            return abbr;
+        }).join(" ").replace(/\s+,/g, ",").replace(/\s+/g, " ").trim();
     }
 
+    /**
+     * Abbreviates a single direction word.
+     * @param addressPart The direction word.
+     */
     static abbrvDirection(addressPart: string): string {
         switch (addressPart.toLowerCase()) {
-            case "north":
-                return 'N';
-            case "east":
-                return 'E';
-            case "south":
-                return 'S';
-            case "west":
-                return 'W';
-            default:
-                return addressPart;
+            case "north": return 'N';
+            case "east": return 'E';
+            case "south": return 'S';
+            case "west": return 'W';
+            default: return addressPart;
         }
     }
 }
