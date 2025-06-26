@@ -8,6 +8,7 @@
                 [matAutocomplete]="autoInput"
                 formControlName="searchInput"
                 (input)="onInputChange($event)"
+                (focus)="onFocus()"
                 (blur)="onBlur()"
                 [required]="isRequired"
                 focus-scroll

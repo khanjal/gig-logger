@@ -370,11 +370,6 @@ export class SearchInputComponent implements OnDestroy {
 
   // Filter items based on the search type
   private async _filterItems(value: string): Promise<ISearchItem[]> {
-    // Early return for empty values
-    if (!value || value.length === 0) {
-      return [];
-    }
-
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => this.createSearchItem(item, 'address'));
@@ -520,5 +515,14 @@ export class SearchInputComponent implements OnDestroy {
       console.log('Manually triggering rate limit fallback - showing Google Maps icon');
       this.showGoogleMapsIcon = true;
     }
+  }
+
+  onFocus(): void {
+    // Trigger a search with the current value when the field is focused
+    const value = this.value;
+    // This will update filteredItemsArray immediately
+    this._filterItems(value).then(items => {
+      this.filteredItemsArray = items;
+    });
   }
 }
