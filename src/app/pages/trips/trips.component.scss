@@ -444,14 +444,20 @@ h2 {
   min-height: 140px;
   animation: none !important;
   transform: none !important;
+  border: none;
+  outline: none;
   
   mat-icon.spinner-icon {
     font-size: 2.5rem !important;
     width: 2.5rem !important;
     height: 2.5rem !important;
     animation: tripSpinner 1s linear infinite;
-    color: #1976d2;
+    color: #1976d2 !important;
     display: inline-block !important;
+    border: none !important;
+    outline: none !important;
+    background: none !important;
+    box-shadow: none !important;
   }
   
   p {
@@ -461,11 +467,6 @@ h2 {
     animation: none !important;
     transform: none !important;
   }
-}
-
-@keyframes tripSpinner {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 @keyframes tripSpinner {
