@@ -53,6 +53,7 @@ export interface GoogleAddressComponent {
 export class GoogleAutocompleteService {
   private autocompleteService: any;
   private placesService: any;
+  private _placeSelectListener: ((event: any) => void) | null = null;
 
   public async getPlaceAutocomplete(
     inputElement: ElementRef<any>, 
@@ -114,12 +115,11 @@ export class GoogleAutocompleteService {
       }
 
       // Add place changed listener
-      autocompleteElement.addEventListener('gmp-placeselect', (event: any) => {
+      this._placeSelectListener = (event: any) => {
         const place = event.place;
         if (!place || !place.formattedAddress) {
           return;
         }
-        
         const placeName = place.displayName?.text || place.name || "";
         const address = this.formatAddress(place);
         const placeDetails: PlaceDetails = {
@@ -134,9 +134,9 @@ export class GoogleAutocompleteService {
             }
           } : undefined
         };
-
         callback({ place: placeName, address, placeDetails });
-      });
+      };
+      autocompleteElement.addEventListener('gmp-placeselect', this._placeSelectListener);
     } catch (error) {
       console.error('Error initializing Google Places Autocomplete:', error);
     }
@@ -247,10 +247,12 @@ export class GoogleAutocompleteService {
       modalContainer.appendChild(pacContainer);
     }
   }
+
   public clearAddressListeners(inputElement: ElementRef<any>): void {
     // For PlaceAutocompleteElement, we need to remove event listeners differently
-    if (inputElement.nativeElement && inputElement.nativeElement.removeEventListener) {
-      inputElement.nativeElement.removeEventListener('gmp-placeselect', null);
+    if (inputElement.nativeElement && this._placeSelectListener) {
+      inputElement.nativeElement.removeEventListener('gmp-placeselect', this._placeSelectListener);
+      this._placeSelectListener = null;
     }
     
     // Also clear any legacy listeners if they exist
