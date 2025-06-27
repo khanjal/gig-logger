@@ -74,26 +74,29 @@
       </div>
     </div>
     
-    <!-- Toggle Button Bar -->
-    <div class="toggle-bar" *ngIf="trip.place || trip.name || trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note">
-      <button class="toggle-btn" 
-              (click)="toggleExpansion()"
-              [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-              [title]="isExpanded ? 'Hide details' : 'Show details'">
-        <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+    <!-- Toggle Divider Bar -->
+    <div class="toggle-bar-container">
+      <div class="toggle-bar toggle-divider" *ngIf="trip.place || trip.name || trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note"
+           (click)="toggleExpansion()" tabindex="0" role="button"
+           [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+           [title]="isExpanded ? 'Hide details' : 'Show details'"
+           (keydown.enter)="toggleExpansion()" (keydown.space)="toggleExpansion()">
+        <span class="toggle-line"></span>
+        <mat-icon class="toggle-icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}} Details</span>
-      </button>
-    </div>
-    
-    <!-- Fallback Toggle when no place/name but has details -->
-    <div class="toggle-bar" *ngIf="(!trip.place && !trip.name) && (trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note)">
-      <button class="toggle-btn" 
-              (click)="toggleExpansion()"
-              [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-              [title]="isExpanded ? 'Hide details' : 'Show details'">
-        <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        <span class="toggle-line"></span>
+      </div>
+      <!-- Fallback Toggle when no place/name but has details -->
+      <div class="toggle-bar toggle-divider" *ngIf="(!trip.place && !trip.name) && (trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note)"
+           (click)="toggleExpansion()" tabindex="0" role="button"
+           [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+           [title]="isExpanded ? 'Hide details' : 'Show details'"
+           (keydown.enter)="toggleExpansion()" (keydown.space)="toggleExpansion()">
+        <span class="toggle-line"></span>
+        <mat-icon class="toggle-icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}} Details</span>
-      </button>
+        <span class="toggle-line"></span>
+      </div>
     </div>
   </div>
   

@@ -356,41 +356,123 @@
 }
 
 /* Toggle Button Bar - New dedicated area */
-.toggle-bar {
-  padding: 6px 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(0, 0, 0, 0.02);
+.toggle-bar-container {
+  width: 100%;
   display: flex;
   justify-content: center;
-  
-  .toggle-btn {
-    background: transparent;
-    border: 1px solid #e0e0e0;
-    border-radius: 16px;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 13px;
-    color: #666;
-    
-    &:hover {
-      background: #f5f5f5;
-      border-color: #bdbdbd;
-      color: #424242;
-    }
-    
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-    
-    .toggle-label {
-      font-weight: 500;
-    }
+  margin: 0.1rem 0 0.1rem 0;
+}
+
+.toggle-bar {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--toggle-bar-bg, #fff);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 0.5px 1.5px rgba(0,0,0,0.04);
+  border: 1.5px solid #e0e0e0;
+  padding: 0.15rem 0.25rem;
+}
+
+.toggle-btn.toggle-btn-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1976d2;
+  padding: 0.4rem 1.2rem;
+  transition: background 0.15s, color 0.15s;
+  box-shadow: none;
+  cursor: pointer;
+}
+.toggle-btn.toggle-btn-bar:hover, .toggle-btn.toggle-btn-bar:focus {
+  background: #e3f0fd;
+  color: #0d47a1;
+}
+.toggle-btn.toggle-btn-bar mat-icon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.toggle-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 600px) {
+  .toggle-bar {
+    max-width: 98vw;
+    padding: 0.1rem 0.1rem;
+  }
+  .toggle-btn.toggle-btn-bar {
+    font-size: 1rem;
+    padding: 0.35rem 0.7rem;
+  }
+  .toggle-label {
+    font-size: 1rem;
+  }
+}
+
+/* Divider Toggle Bar Style */
+.toggle-bar.toggle-divider {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background 0.15s;
+  border-bottom: none;
+}
+.toggle-bar.toggle-divider:focus {
+  background: #e3f0fd;
+}
+.toggle-bar.toggle-divider:active {
+  background: #e3f0fd;
+}
+.toggle-line {
+  flex: 1 1 0;
+  height: 1.5px;
+  background: #d0d0d0;
+  margin: 0 0.5rem;
+  border-radius: 1px;
+}
+.toggle-icon {
+  font-size: 1.2rem;
+  color: #1976d2;
+  margin: 0 0.25rem 0 0;
+  vertical-align: middle;
+}
+.toggle-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1976d2;
+  letter-spacing: 0.01em;
+  margin: 0 0.25rem;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .toggle-bar.toggle-divider {
+    max-width: 98vw;
+    padding: 0.15rem 0.1rem;
+  }
+  .toggle-label {
+    font-size: 0.98rem;
   }
 }
 
