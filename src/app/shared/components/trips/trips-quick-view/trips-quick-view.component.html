@@ -74,23 +74,29 @@
       <div class="place-route">
         <mat-icon class="place-route__icon">place</mat-icon>
         <div class="place-route__text">
-          <span class="place-route__from" *ngIf="trip.place">{{trip.place}}</span>
+          <span class="place-route__from" *ngIf="trip.place" [title]="trip.place">{{trip.place}}</span>
           <mat-icon class="place-route__arrow" *ngIf="trip.place && trip.name">arrow_forward</mat-icon>
-          <span class="place-route__to" *ngIf="trip.name">{{trip.name}}</span>
+          <span class="place-route__to" *ngIf="trip.name" [title]="trip.name">{{trip.name}}</span>
         </div>
       </div>
     </div>
-    
-    <!-- Toggle section -->
-    <div class="trip-header__bottom">
-      <div class="header-spacer"></div>
-      <button class="toggle-button" 
-              (click)="toggleExpansion()" 
-              [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
-              type="button">
-        <span class="toggle-text">{{isExpanded ? 'Less' : 'More'}}</span>
-        <mat-icon class="toggle-icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-      </button>
+  </div>
+  
+  <!-- Expandable Toggle Bar -->
+  <div class="expand-toggle-bar" 
+       (click)="toggleExpansion()" 
+       [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
+       role="button"
+       tabindex="0"
+       (keydown.enter)="toggleExpansion()"
+       (keydown.space)="toggleExpansion()">
+    <div class="expand-toggle-bar__content">
+      <div class="expand-toggle-bar__line"></div>
+      <div class="expand-toggle-bar__text">
+        <span>{{isExpanded ? 'Hide Details' : 'Show Details'}}</span>
+        <mat-icon class="expand-toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </div>
+      <div class="expand-toggle-bar__line"></div>
     </div>
   </div>
   

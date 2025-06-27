@@ -162,24 +162,16 @@
     margin-bottom: 0.75rem;
     background: rgba(255, 255, 255, 0.7);
     border-radius: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.625rem 0.875rem;
     border: 1px solid rgba(255, 255, 255, 0.5);
   }
 
-  /* Bottom Header Row */
+  /* Remove bottom section since toggle is now separate */
   &__bottom {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    display: none; // No longer needed
   }
 }
 
-/* Header Spacer */
-.header-spacer {
-  flex: 1;
-}
 
 /* Status Icon */
 .status-icon {
@@ -345,12 +337,12 @@
 .place-route {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   
   &__icon {
-    font-size: 1.125rem !important;
-    width: 1.125rem !important;
-    height: 1.125rem !important;
+    font-size: 1.25rem !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
     color: $primary-color;
     flex-shrink: 0;
   }
@@ -358,26 +350,27 @@
   &__text {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: 0.5rem;
     min-width: 0;
     flex: 1;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 500;
+    line-height: 1.3;
   }
   
   &__from {
     color: $text-primary;
     font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 8rem;
+    // Allow wrapping but limit to reasonable width
+    max-width: 12rem;
+    word-wrap: break-word;
+    hyphens: auto;
   }
   
   &__arrow {
-    font-size: 1rem !important;
-    width: 1rem !important;
-    height: 1rem !important;
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
     color: $primary-color;
     opacity: 0.7;
     flex-shrink: 0;
@@ -386,51 +379,70 @@
   &__to {
     color: $text-secondary;
     font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    // Allow wrapping but prioritize remaining space
     flex: 1;
     min-width: 0;
+    word-wrap: break-word;
+    hyphens: auto;
   }
 }
 
-/* Toggle Button */
-.toggle-button {
-  @extend .badge;
-  background: rgba(255, 255, 255, 0.95);
-  color: $primary-color;
-  border: 1px solid rgba(37, 99, 235, 0.2);
-  padding: 0.375rem 0.625rem;
-  border-radius: 0.875rem;
+/* Expandable Toggle Bar */
+.expand-toggle-bar {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  flex-shrink: 0;
   transition: all 0.2s ease;
+  user-select: none;
 
   &:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    border-top-color: rgba(37, 99, 235, 0.1);
+    border-bottom-color: rgba(37, 99, 235, 0.1);
   }
 
   &:active {
-    transform: translateY(0);
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(241, 245, 249, 0.8) 100%);
   }
-}
 
-.toggle-text {
-  font-size: inherit;
-  font-weight: inherit;
-}
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
 
-.toggle-icon {
-  font-size: 1rem !important;
-  width: 1rem !important;
-  height: 1rem !important;
+  &__line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(37, 99, 235, 0.3) 50%, transparent 100%);
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $primary-color;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  &__icon {
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+    transition: transform 0.2s ease;
+  }
+
+  // Icon rotation animation
+  &:hover &__icon {
+    transform: scale(1.1);
+  }
 }
 
 /* Animations */
@@ -455,7 +467,7 @@
     
     &__place {
       margin-bottom: 0.625rem;
-      padding: 0.375rem 0.625rem;
+      padding: 0.5rem 0.75rem;
     }
   }
   
@@ -465,7 +477,20 @@
   
   .place-route {
     &__from {
-      max-width: 5rem;
+      max-width: 8rem;
+    }
+    
+    &__text {
+      font-size: 0.875rem;
+      gap: 0.375rem;
+    }
+  }
+  
+  .expand-toggle-bar {
+    padding: 0.625rem 0.875rem;
+    
+    &__text {
+      font-size: 0.75rem;
     }
   }
 }
