@@ -231,10 +231,11 @@
 .trip-time-section {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.25rem;
   flex: 1;
   min-width: 0;
+  text-align: center;
 }
 
 .pickup-time {
@@ -314,7 +315,7 @@
 .efficiency-rate {
   display: flex;
   align-items: center;
-  gap: 0.1875rem;
+  justify-content: flex-end;
   font-size: 0.8125rem;
   color: $primary-color;
   font-weight: 500;
@@ -325,12 +326,6 @@
     opacity: 0.6;
     font-style: italic;
   }
-}
-
-.efficiency-icon {
-  font-size: 0.875rem !important;
-  width: 0.875rem !important;
-  height: 0.875rem !important;
 }
 
 /* Place Route Display */

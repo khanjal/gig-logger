@@ -46,7 +46,7 @@
         </div>
         <div class="trip-distance" 
              [class.trip-distance--placeholder]="!trip.distance">
-          {{trip.distance ? (trip.distance | number:'1.1') + ' mi' : '-- mi'}}
+          {{distanceDisplay}}
         </div>
       </div>
       
@@ -63,7 +63,6 @@
         </div>
         <div class="efficiency-rate" 
              [class.efficiency-rate--placeholder]="!trip.amountPerTime">
-          <mat-icon class="efficiency-icon">speed</mat-icon>
           ${{trip.amountPerTime ? (trip.amountPerTime | number:'1.0-2') : '0.00'}}/hr
         </div>
       </div>
@@ -147,7 +146,7 @@
               'distance--average': trip.amountPerDistance >= 1 && trip.amountPerDistance < 2,
               'distance--poor': trip.amountPerDistance < 1
             }">
-              {{trip.distance | number:'1.1'}} mi
+              {{convertDistance(trip.distance).toFixed(1)}} {{distanceUnit}}
             </span>
           </div>
         </div>

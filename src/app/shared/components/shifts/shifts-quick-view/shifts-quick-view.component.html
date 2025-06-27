@@ -123,7 +123,7 @@
               'primary': shift.amountPerDistance > 2, 
               'warn': shift.amountPerDistance < 1, 
               'rainbow-text-animated': shift.amountPerDistance > 5
-            }">{{shift.totalDistance | number:'1.1'}} mi</span>
+            }">{{formatDistance(shift.totalDistance)}}</span>
           </div>
         </div>
       </div>

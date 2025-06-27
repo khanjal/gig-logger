@@ -13,6 +13,7 @@ import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table
 import { MatFabButton } from '@angular/material/button';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DateHelper } from '@helpers/date.helper';
+import { UnitHelper } from '@helpers/unit.helper';
 
 @Component({
     selector: 'app-shifts-quick-view',
@@ -93,5 +94,12 @@ export class ShiftsQuickViewComponent {
           this.parentReload.emit(); // Emit the event to notify the parent to reload
       }
     });
+  }
+
+  /**
+   * Format distance for display with appropriate unit
+   */
+  formatDistance(distance: number): string {
+    return UnitHelper.formatDistance(distance);
   }
 }

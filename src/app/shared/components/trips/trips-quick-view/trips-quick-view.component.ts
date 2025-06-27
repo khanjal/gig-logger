@@ -8,6 +8,7 @@ import { TripFormComponent } from '@components/trips/trip-form/trip-form.compone
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { DateHelper } from '@helpers/date.helper';
+import { UnitHelper } from '@helpers/unit.helper';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -36,6 +37,16 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
+  
+  // Distance unit properties
+  get distanceUnit(): string {
+    return UnitHelper.getPreferredDistanceUnit();
+  }
+  
+  get distanceDisplay(): string {
+    return UnitHelper.formatDistance(this.trip.distance);
+  }
+  
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
@@ -44,7 +55,34 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
         private _shiftService: ShiftService,
         private _router: Router,
       ) { }
-   
+      
+  /**
+   * Convert distance value based on unit preference
+   * Delegates to UnitHelper for consistency across the app
+   */
+  convertDistance(distance: number): number {
+    return UnitHelper.convertDistance(distance);
+  }
+  
+  /**
+   * Format distance for display with appropriate unit
+   */
+  formatDistance(distance: number): string {
+    return UnitHelper.formatDistance(distance);
+  }
+  
+  /**
+   * Demo method to toggle between units (for future use)
+   * This shows how unit switching would work when user preferences are implemented
+   */
+  toggleDistanceUnit(): void {
+    const currentUnit = UnitHelper.getPreferredDistanceUnit();
+    const newUnit = currentUnit === 'mi' ? 'km' : 'mi';
+    UnitHelper.setPreferredDistanceUnit(newUnit);
+    // Note: This won't persist yet since user preferences aren't implemented
+    // but it demonstrates the intended functionality
+  }
+
   ngOnInit() {
     this.setExpansionState();
     this.prefers24Hour = DateHelper.prefers24Hour();
