@@ -212,25 +212,37 @@
   
   <!-- Micro Action Bar -->
   <div class="action-bar micro-actions" *ngIf="showActions">
-    <button mat-icon-button color="primary" class="action-btn" (click)="openTripDialog()" title="Edit Trip">
-      <mat-icon>edit</mat-icon>
-    </button>
+    <!-- Left: Edit button -->
+    <div class="action-group left">
+      <button mat-button class="action-btn edit-btn" (click)="openTripDialog()" title="Edit Trip">
+        <mat-icon>edit</mat-icon>
+        <span>Edit</span>
+      </button>
+    </div>
     
-    <button mat-icon-button color="accent" class="action-btn" (click)="setPickupTime()" 
-            *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-            title="Set Pickup Time">
-      <mat-icon>update</mat-icon>
-    </button>
+    <!-- Center: Time action buttons -->
+    <div class="action-group center">
+      <button mat-button class="action-btn pickup-btn" (click)="setPickupTime()" 
+              *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+              title="Set Pickup Time">
+        <mat-icon>update</mat-icon>
+        <span>Pickup</span>
+      </button>
+      
+      <button mat-button class="action-btn dropoff-btn" (click)="setDropoffTime()" 
+              *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+              title="Set Dropoff Time">
+        <mat-icon>schedule</mat-icon>
+        <span>Dropoff</span>
+      </button>
+    </div>
     
-    <button mat-icon-button color="accent" class="action-btn" (click)="setDropoffTime()" 
-            *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-            title="Set Dropoff Time">
-      <mat-icon>schedule</mat-icon>
-    </button>
-    
-    <button mat-icon-button class="action-btn" [matMenuTriggerFor]="menu" title="More options">
-      <mat-icon>more_vert</mat-icon>
-    </button>
+    <!-- Right: Menu button -->
+    <div class="action-group right">
+      <button mat-icon-button class="action-btn menu-btn" [matMenuTriggerFor]="menu" title="More options">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
     
     <mat-menu #menu="matMenu" class="trip-menu">
       <button mat-menu-item (click)="nextStopTrip()">

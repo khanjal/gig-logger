@@ -430,31 +430,130 @@
   }
 }
 
-/* Micro Action Bar */
+/* Micro Action Bar - Left/Center/Right Layout */
 .action-bar {
   display: flex;
-  justify-content: flex-end;
-  gap: 6px;
+  justify-content: space-between;
+  align-items: center;
   padding: 8px 12px;
   border-top: 1px solid #e9ecef;
   background: #f8f9fa;
   
-  .action-btn {
-    // Override Angular Material button styles for micro buttons
-    min-width: 32px !important;
-    width: 32px;
-    height: 32px;
-    padding: 0 !important;
-    border-radius: 6px;
+  .action-group {
+    display: flex;
+    gap: 6px;
     
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+    &.left {
+      justify-content: flex-start;
+      flex: 1;
     }
     
+    &.center {
+      justify-content: center;
+      flex: 1;
+    }
+    
+    &.right {
+      justify-content: flex-end;
+      flex: 1;
+    }
+  }
+  
+  .action-btn {
+    border-radius: 6px !important;
+    text-transform: none !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    
+    // Hover effects
     &:hover {
       transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    // Labeled buttons (Edit, Pickup, Dropoff)
+    &.edit-btn,
+    &.pickup-btn,
+    &.dropoff-btn {
+      min-width: auto !important;
+      height: 32px !important;
+      padding: 0 12px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      
+      .mat-icon,
+      mat-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+        margin: 0 !important;
+      }
+      
+      span {
+        font-size: 12px !important;
+        line-height: 1 !important;
+      }
+    }
+    
+    // Icon-only menu button
+    &.menu-btn {
+      min-width: 32px !important;
+      width: 32px !important;
+      height: 32px !important;
+      padding: 0 !important;
+      
+      .mat-icon,
+      mat-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+      }
+    }
+    
+    // Standard Material Design colors
+    &.edit-btn {
+      background-color: rgba(33, 150, 243, 0.1) !important;
+      color: #1976d2 !important;
+      border: 1px solid rgba(33, 150, 243, 0.3) !important;
+      
+      &:hover {
+        background-color: rgba(33, 150, 243, 0.2) !important;
+        border-color: rgba(33, 150, 243, 0.5) !important;
+      }
+    }
+    
+    &.pickup-btn {
+      background-color: rgba(76, 175, 80, 0.1) !important;
+      color: #388e3c !important;
+      border: 1px solid rgba(76, 175, 80, 0.3) !important;
+      
+      &:hover {
+        background-color: rgba(76, 175, 80, 0.2) !important;
+        border-color: rgba(76, 175, 80, 0.5) !important;
+      }
+    }
+    
+    &.dropoff-btn {
+      background-color: rgba(255, 152, 0, 0.1) !important;
+      color: #f57c00 !important;
+      border: 1px solid rgba(255, 152, 0, 0.3) !important;
+      
+      &:hover {
+        background-color: rgba(255, 152, 0, 0.2) !important;
+        border-color: rgba(255, 152, 0, 0.5) !important;
+      }
+    }
+    
+    &.menu-btn {
+      background-color: rgba(158, 158, 158, 0.1) !important;
+      color: #616161 !important;
+      border: 1px solid rgba(158, 158, 158, 0.3) !important;
+      
+      &:hover {
+        background-color: rgba(158, 158, 158, 0.2) !important;
+        border-color: rgba(158, 158, 158, 0.5) !important;
+      }
     }
   }
 }
@@ -552,17 +651,42 @@
   
   .action-bar {
     padding: 6px 8px;
-    gap: 4px;
+    
+    .action-group {
+      gap: 4px;
+    }
     
     .action-btn {
-      min-width: 28px !important;
-      width: 28px;
-      height: 28px;
+      &.edit-btn,
+      &.pickup-btn,
+      &.dropoff-btn {
+        height: 28px !important;
+        padding: 0 8px !important;
+        gap: 4px !important;
+        
+        .mat-icon,
+        mat-icon {
+          font-size: 14px !important;
+          width: 14px !important;
+          height: 14px !important;
+        }
+        
+        span {
+          font-size: 11px !important;
+        }
+      }
       
-      mat-icon {
-        font-size: 14px;
-        width: 14px;
-        height: 14px;
+      &.menu-btn {
+        min-width: 28px !important;
+        width: 28px !important;
+        height: 28px !important;
+        
+        .mat-icon,
+        mat-icon {
+          font-size: 14px !important;
+          width: 14px !important;
+          height: 14px !important;
+        }
       }
     }
   }
@@ -659,15 +783,41 @@
   .action-bar {
     padding: 10px 16px;
     
+    .action-group {
+      gap: 8px;
+    }
+    
     .action-btn {
-      min-width: 36px !important;
-      width: 36px;
-      height: 36px;
+      &.edit-btn,
+      &.pickup-btn,
+      &.dropoff-btn {
+        height: 36px !important;
+        padding: 0 16px !important;
+        gap: 8px !important;
+        
+        .mat-icon,
+        mat-icon {
+          font-size: 18px !important;
+          width: 18px !important;
+          height: 18px !important;
+        }
+        
+        span {
+          font-size: 13px !important;
+        }
+      }
       
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+      &.menu-btn {
+        min-width: 36px !important;
+        width: 36px !important;
+        height: 36px !important;
+        
+        .mat-icon,
+        mat-icon {
+          font-size: 18px !important;
+          width: 18px !important;
+          height: 18px !important;
+        }
       }
     }
   }
