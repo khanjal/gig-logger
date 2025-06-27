@@ -14,9 +14,11 @@ export class AddressHelper {
         if (!address) return "";
         address = this.abbrvAddress(address);
         let addressArray = address.split(/,\s*/);
-        if (addressArray.length === 1) return address;
+        // Remove empty parts
+        addressArray = addressArray.filter(part => part && part.trim().length > 0);
+        if (addressArray.length === 1) return addressArray[0];
         let lowerPlace = place.toLocaleLowerCase();
-        let lowerAddress = addressArray[0].toLocaleLowerCase();
+        let lowerAddress = addressArray[0]?.toLocaleLowerCase() || "";
         let abbrvPlace = this.abbrvAddress(place).toLocaleLowerCase();
         // Heuristic: If no place provided, treat first part as place if it has no digits
         let hasPlace = false;
@@ -30,12 +32,12 @@ export class AddressHelper {
             hasPlace = true;
         }
         if (hasPlace) {
-            return addressArray.slice(1, length + 1).join(", ");
+            return addressArray.slice(1, length + 1).filter(part => part && part.trim().length > 0).join(", ");
         }
         if (length > 2) {
             addressArray[0] = StringHelper.truncate(addressArray[0], 15);
         }
-        return addressArray.slice(0, length + 1).join(", ");
+        return addressArray.slice(0, length + 1).filter(part => part && part.trim().length > 0).join(", ");
     }
 
     /**
