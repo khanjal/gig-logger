@@ -31,7 +31,7 @@
       </div>
       
       <div class="trip-header__right">
-        <span class="service-name" [class.service-name--solo]="!trip.number || trip.number <= 0">{{trip.service}}</span>
+        <span class="service-name" [title]="trip.service">{{trip.service}}</span>
         <span class="service-number" *ngIf="trip.number > 0">#{{trip.number}}</span>
       </div>
     </div>
