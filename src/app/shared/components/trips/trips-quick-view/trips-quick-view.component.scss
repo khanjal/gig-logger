@@ -806,14 +806,13 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 6px 4px;
+  padding: 12px 8px;
   background: #ffffff;
   border: 1px solid #e9ecef;
   border-radius: 6px;
   transition: all 0.2s ease;
-  min-height: 50px;
-  justify-content: center;
-  gap: 3px;
+  min-height: 70px;
+  justify-content: space-between;
   
   &:hover {
     transform: translateY(-1px);
@@ -822,89 +821,51 @@
   }
   
   .info-icon {
-    font-size: 14px !important;
-    width: 14px !important;
-    height: 14px !important;
-    color: #6c757d !important;
-    margin-bottom: 1px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #6c757d;
     flex-shrink: 0;
+    margin-bottom: 6px;
   }
   
   .label {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
     color: #6c757d;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: 1;
-    margin-bottom: 1px;
+    margin-bottom: 4px;
   }
   
   .value {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #343a40;
     line-height: 1.2;
     word-break: break-word;
   }
   
-  @media (min-width: 481px) {
-    padding: 8px 6px;
-    min-height: 55px;
-    gap: 4px;
-    
-    .info-icon {
-      font-size: 16px !important;
-      width: 16px !important;
-      height: 16px !important;
-    }
-    
-    .label {
-      font-size: 10px;
-    }
-    
-    .value {
-      font-size: 12px;
-    }
-  }
-}
-
-/* Info Grid Responsive Behavior */
-@media (min-width: 481px) {
-  .smart-info-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  
-  .info-card {
-    min-height: 70px;
-    padding: 10px 8px;
-    
-    .info-icon {
-      font-size: 18px !important;
-      width: 18px !important;
-      height: 18px !important;
-    }
-    
-    .label {
-      font-size: 11px;
-    }
-    
-    .value {
-      font-size: 13px;
-    }
-  }
-}
-
-@media (min-width: 768px) {
-  .smart-info-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-  
-  .info-card {
-    min-height: 75px;
-    padding: 12px 10px;
+  /* Ensure Material Icons are properly loaded for info cards */
+  mat-icon.info-icon {
+    font-family: 'Material Icons' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+    word-wrap: normal !important;
+    direction: ltr !important;
+    -webkit-font-feature-settings: 'liga' !important;
+    font-feature-settings: 'liga' !important;
+    -webkit-font-smoothing: antialiased !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #6c757d !important;
   }
 }
 
