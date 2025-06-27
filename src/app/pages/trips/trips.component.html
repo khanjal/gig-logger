@@ -47,7 +47,7 @@
     @if (!isEditMode) {
         @for (trip of todaysTrips; track $index) {
             <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+                <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
             </div>
         }
     }    <br/>
@@ -65,7 +65,7 @@
                 <div class="yesterday-trips-container">
                     @for (trip of yesrterdaysTrips; track $index) {
                         <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-                            <trips-quick-view [trip]="trip" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+                            <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>
                     }
                 </div>

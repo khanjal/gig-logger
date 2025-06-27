@@ -31,6 +31,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
+  @Input() index: number = 0;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();

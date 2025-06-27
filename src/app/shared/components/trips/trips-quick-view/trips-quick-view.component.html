@@ -4,10 +4,15 @@
   'trip-card--unsaved': !trip.saved,
   'trip-card--add': !trip.saved && trip.action === 'ADD',
   'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
-  'trip-card--delete': !trip.saved && trip.action === 'DELETE'
+  'trip-card--delete': !trip.saved && trip.action === 'DELETE',
+  'trip-card--even': index % 2 === 0,
+  'trip-card--odd': index % 2 === 1
 }">
   <!-- Essential Info Header - Optimized Two-Row -->
-  <div class="trip-header ultra-header">
+  <div class="trip-header ultra-header" [ngClass]="{
+    'header--even': index % 2 === 0,
+    'header--odd': index % 2 === 1
+  }">
     <!-- Primary Row: Status, ID, Service, Time, Amount -->
     <div class="header-primary">
       <div class="status-cell">
@@ -212,16 +217,13 @@
   
   <!-- Micro Action Bar -->
   <div class="action-bar micro-actions" *ngIf="showActions">
-    <!-- Left: Edit button -->
-    <div class="action-group left">
+    <!-- All buttons right-aligned for better mobile UX -->
+    <div class="action-group right-aligned">
       <button mat-button class="action-btn edit-btn" (click)="openTripDialog()" title="Edit Trip">
         <mat-icon>edit</mat-icon>
         <span>Edit</span>
       </button>
-    </div>
-    
-    <!-- Center: Time action buttons -->
-    <div class="action-group center">
+      
       <button mat-button class="action-btn pickup-btn" (click)="setPickupTime()" 
               *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Pickup Time">
@@ -235,10 +237,7 @@
         <mat-icon>schedule</mat-icon>
         <span>Dropoff</span>
       </button>
-    </div>
-    
-    <!-- Right: Menu button -->
-    <div class="action-group right">
+      
       <button mat-icon-button class="action-btn menu-btn" [matMenuTriggerFor]="menu" title="More options">
         <mat-icon>more_vert</mat-icon>
       </button>
