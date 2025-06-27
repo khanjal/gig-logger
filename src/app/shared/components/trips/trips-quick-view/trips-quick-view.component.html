@@ -74,8 +74,10 @@
       <div class="toggle-cell">
         <button class="toggle-btn" 
                 (click)="toggleExpansion()"
-                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'">
+                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+                [title]="isExpanded ? 'Hide details' : 'Show details'">
           <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+          <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}}</span>
         </button>
       </div>
     </div>
@@ -86,8 +88,10 @@
       <div class="toggle-cell">
         <button class="toggle-btn" 
                 (click)="toggleExpansion()"
-                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'">
+                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+                [title]="isExpanded ? 'Hide details' : 'Show details'">
           <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+          <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}}</span>
         </button>
       </div>
     </div>
