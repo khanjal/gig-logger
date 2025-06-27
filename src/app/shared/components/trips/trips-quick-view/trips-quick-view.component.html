@@ -61,39 +61,37 @@
       </div>
     </div>
     
-    <!-- Secondary Row: Place/Name and Toggle -->
+    <!-- Secondary Row: Place/Name -->
     <div class="header-secondary" *ngIf="trip.place || trip.name">
       <div class="place-cell">
         <span class="place-name">
-          <span *ngIf="trip.place">{{trip.place | truncate:20}}</span>
+          <span *ngIf="trip.place">{{trip.place | truncate:25}}</span>
           <span *ngIf="trip.place && trip.name"> → </span>
-          <span *ngIf="trip.name">{{trip.name | truncate:20}}</span>
+          <span *ngIf="trip.name">{{trip.name | truncate:25}}</span>
         </span>
-      </div>
-      
-      <div class="toggle-cell">
-        <button class="toggle-btn" 
-                (click)="toggleExpansion()"
-                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-                [title]="isExpanded ? 'Hide details' : 'Show details'">
-          <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-          <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}}</span>
-        </button>
       </div>
     </div>
     
-    <!-- Toggle only row when no place/name -->
-    <div class="header-secondary" *ngIf="!trip.place && !trip.name">
-      <div></div> <!-- Empty spacer -->
-      <div class="toggle-cell">
-        <button class="toggle-btn" 
-                (click)="toggleExpansion()"
-                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-                [title]="isExpanded ? 'Hide details' : 'Show details'">
-          <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-          <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}}</span>
-        </button>
-      </div>
+    <!-- Toggle Button Bar -->
+    <div class="toggle-bar" *ngIf="trip.place || trip.name || trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note">
+      <button class="toggle-btn" 
+              (click)="toggleExpansion()"
+              [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+              [title]="isExpanded ? 'Hide details' : 'Show details'">
+        <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}} Details</span>
+      </button>
+    </div>
+    
+    <!-- Fallback Toggle when no place/name but has details -->
+    <div class="toggle-bar" *ngIf="(!trip.place && !trip.name) && (trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note)">
+      <button class="toggle-btn" 
+              (click)="toggleExpansion()"
+              [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+              [title]="isExpanded ? 'Hide details' : 'Show details'">
+        <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        <span class="toggle-label">{{isExpanded ? 'Less' : 'More'}} Details</span>
+      </button>
     </div>
   </div>
   
@@ -102,7 +100,7 @@
     <div class="details-grid">
       <!-- Time & Duration -->
       <div class="detail-group time-group" *ngIf="trip.dropoffTime || trip.duration">
-        <div class="group-header">
+        <div class="group-header time-header">
           <mat-icon>schedule</mat-icon>
           <span>Time</span>
         </div>
@@ -120,7 +118,7 @@
       
       <!-- Addresses -->
       <div class="detail-group address-group" *ngIf="trip.startAddress || trip.endAddress">
-        <div class="group-header">
+        <div class="group-header address-header">
           <mat-icon>place</mat-icon>
           <span>Addresses</span>
         </div>
@@ -146,7 +144,7 @@
       
       <!-- Payment Details -->
       <div class="detail-group payment-group" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash || trip.total">
-        <div class="group-header">
+        <div class="group-header payment-header">
           <mat-icon>payments</mat-icon>
           <span>Payment</span>
         </div>
@@ -174,13 +172,13 @@
         </div>
       </div>
       
-      <!-- Trip Info as Card Grid -->
+      <!-- Trip Info as Smart Cards -->
       <div class="detail-group info-group card-grid" *ngIf="trip.distance || trip.region || trip.type || trip.endUnit || trip.orderNumber || trip.startOdometer || trip.endOdometer || trip.amountPerDistance">
-        <div class="group-header">
+        <div class="group-header info-header">
           <mat-icon>info</mat-icon>
           <span>Details</span>
         </div>
-        <div class="info-card-grid">
+        <div class="smart-info-grid">
           <div class="info-card" *ngIf="trip.distance">
             <mat-icon class="info-icon">straighten</mat-icon>
             <span class="label">Distance</span>
@@ -188,13 +186,13 @@
           </div>
           <div class="info-card" *ngIf="trip.amountPerTime">
             <mat-icon class="info-icon">speed</mat-icon>
-            <span class="label">Rate/Hour</span>
-            <span class="value">${{trip.amountPerTime | number:'1.0'}}/hr</span>
+            <span class="label">Rate/Hr</span>
+            <span class="value">${{trip.amountPerTime | number:'1.0'}}</span>
           </div>
           <div class="info-card" *ngIf="trip.amountPerDistance">
             <mat-icon class="info-icon">local_gas_station</mat-icon>
-            <span class="label">Rate/Mile</span>
-            <span class="value">${{trip.amountPerDistance | number:'1.2'}}/mi</span>
+            <span class="label">Rate/Mi</span>
+            <span class="value">${{trip.amountPerDistance | number:'1.2'}}</span>
           </div>
           <div class="info-card" *ngIf="trip.region">
             <mat-icon class="info-icon">map</mat-icon>
@@ -219,19 +217,19 @@
           <div class="info-card" *ngIf="trip.startOdometer">
             <mat-icon class="info-icon">trip_origin</mat-icon>
             <span class="label">Start ODO</span>
-            <span class="value">{{trip.startOdometer | number:'1.0'}} mi</span>
+            <span class="value">{{trip.startOdometer | number:'1.0'}}</span>
           </div>
           <div class="info-card" *ngIf="trip.endOdometer">
             <mat-icon class="info-icon">flag</mat-icon>
             <span class="label">End ODO</span>
-            <span class="value">{{trip.endOdometer | number:'1.0'}} mi</span>
+            <span class="value">{{trip.endOdometer | number:'1.0'}}</span>
           </div>
         </div>
       </div>
       
       <!-- Note (Full Width) -->
       <div class="detail-group note-group" *ngIf="trip.note">
-        <div class="group-header">
+        <div class="group-header note-header">
           <mat-icon>format_quote</mat-icon>
           <span>Note</span>
         </div>
