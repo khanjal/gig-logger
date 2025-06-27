@@ -1165,8 +1165,11 @@
 }
 
 .status-icon--inline {
-  font-size: 1rem !important;
-  width: 1rem !important;
-  height: 1rem !important;
-  margin-right: 0.25em;
+  font-size: 1.35rem !important;
+  width: 1.35rem !important;
+  height: 1.35rem !important;
+  margin-right: 0.35em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
