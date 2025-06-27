@@ -1,16 +1,16 @@
-<!-- Mobile-First Trip Quick View Component -->
-<div class="trip-card" [ngClass]="{
+<!-- Ultra-Compact Trip Quick View -->
+<div class="trip-card ultra-compact" [ngClass]="{
   'trip-card--excluded': trip.exclude,
   'trip-card--unsaved': !trip.saved,
   'trip-card--add': !trip.saved && trip.action === 'ADD',
   'trip-card--edit': !trip.saved && trip.action === 'UPDATE',
   'trip-card--delete': !trip.saved && trip.action === 'DELETE'
 }">
-  <!-- Trip Header -->
-  <div class="trip-header">
-    <!-- Primary header row: ID + Status, Date, Service -->
-    <div class="trip-header__primary">
-      <div class="trip-header__left">
+  <!-- Essential Info Header - Optimized Two-Row -->
+  <div class="trip-header ultra-header">
+    <!-- Primary Row: Status, ID, Service, Time, Amount -->
+    <div class="header-primary">
+      <div class="status-cell">
         <mat-icon class="status-icon"
           [ngClass]="{
             'status-icon--add': !trip.saved && trip.action === 'ADD',
@@ -23,310 +23,236 @@
           @else if (!trip.saved && trip.action === 'DELETE') { delete }
           @else { check_circle }
         </mat-icon>
+      </div>
+      
+      <div class="id-cell">
         <span class="trip-id">#{{trip.rowId}}</span>
       </div>
       
-      <div class="trip-header__center">
-        <span class="trip-date">{{trip.date | date:'MMM d'}}</span>
+      <div class="service-cell">
+        <span class="service">{{trip.service}}</span>
+        <span class="number" *ngIf="trip.number > 0">#{{trip.number}}</span>
       </div>
       
-      <div class="trip-header__right">
-        <span class="service-name" [title]="trip.service">{{trip.service}}</span>
-        <span class="service-number" *ngIf="trip.number > 0">#{{trip.number}}</span>
-      </div>
-    </div>
-    
-    <!-- Secondary header row: Time, Distance, Total + Efficiency -->
-    <div class="trip-header__secondary">
-      <div class="trip-time-section">
-        <div class="pickup-time" 
-             [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}"
-             [class.pickup-time--placeholder]="!trip.pickupTime">
+      <div class="time-cell">
+        <span class="time" 
+              [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}"
+              [class.placeholder]="!trip.pickupTime">
           {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
+        </span>
+      </div>
+      
+      <div class="amount-cell">
+        <span class="amount" 
+              [class.placeholder]="!(trip.pay || trip.tip || trip.bonus || trip.cash)"
+              [ngClass]="{
+                'earnings--excellent': trip.amountPerTime > 30,
+                'earnings--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+                'earnings--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+                'earnings--poor': trip.amountPerTime < 20
+              }">
+          {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
+        </span>
+      </div>
+    </div>
+    
+    <!-- Secondary Row: Place/Name and Toggle -->
+    <div class="header-secondary" *ngIf="trip.place || trip.name">
+      <div class="place-cell">
+        <span class="place-name">
+          <span *ngIf="trip.place">{{trip.place | truncate:20}}</span>
+          <span *ngIf="trip.place && trip.name"> → </span>
+          <span *ngIf="trip.name">{{trip.name | truncate:20}}</span>
+        </span>
+      </div>
+      
+      <div class="toggle-cell">
+        <button class="toggle-btn" 
+                (click)="toggleExpansion()"
+                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'">
+          <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Toggle only row when no place/name -->
+    <div class="header-secondary" *ngIf="!trip.place && !trip.name">
+      <div></div> <!-- Empty spacer -->
+      <div class="toggle-cell">
+        <button class="toggle-btn" 
+                (click)="toggleExpansion()"
+                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'">
+          <mat-icon>{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Compact Details Grid - Only when expanded -->
+  <div class="trip-details ultra-details" *ngIf="isExpanded">
+    <div class="details-grid">
+      <!-- Time & Duration -->
+      <div class="detail-group time-group" *ngIf="trip.dropoffTime || trip.duration">
+        <div class="group-header">
+          <mat-icon>schedule</mat-icon>
+          <span>Time</span>
         </div>
-        <div class="trip-distance" 
-             [class.trip-distance--placeholder]="!trip.distance">
-          {{distanceDisplay}}
+        <div class="group-items">
+          <div class="item" *ngIf="trip.dropoffTime">
+            <span class="label">Drop:</span>
+            <span class="value">{{trip.dropoffTime | noseconds:prefers24Hour}}</span>
+          </div>
+          <div class="item" *ngIf="trip.duration">
+            <span class="label">Duration:</span>
+            <span class="value">{{trip.duration | noseconds:prefers24Hour}}</span>
+          </div>
         </div>
       </div>
       
-      <div class="trip-earnings-section">
-        <div class="total-amount" 
-             [class.total-amount--placeholder]="!(trip.pay || trip.tip || trip.bonus || trip.cash)"
-             [ngClass]="{
-               'earnings--excellent': trip.amountPerTime > 30,
-               'earnings--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-               'earnings--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-               'earnings--poor': trip.amountPerTime < 20
-             }">
-          {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
+      <!-- Addresses -->
+      <div class="detail-group address-group" *ngIf="trip.startAddress || trip.endAddress">
+        <div class="group-header">
+          <mat-icon>place</mat-icon>
+          <span>Addresses</span>
         </div>
-        <div class="efficiency-rate" 
-             [class.efficiency-rate--placeholder]="!trip.amountPerTime">
-          ${{trip.amountPerTime ? (trip.amountPerTime | number:'1.0-2') : '0.00'}}/hr
+        <div class="group-items">
+          <div class="item address-item" *ngIf="trip.startAddress">
+            <span class="label">From:</span>
+            <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.startAddress" 
+               target="_blank" class="value link">
+              {{ trip.startAddress | shortaddress:trip.place | truncate:25}}
+              <mat-icon class="link-icon">open_in_new</mat-icon>
+            </a>
+          </div>
+          <div class="item address-item" *ngIf="trip.endAddress">
+            <span class="label">To:</span>
+            <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
+               target="_blank" class="value link">
+              {{ trip.endAddress | shortaddress | truncate:25}}
+              <mat-icon class="link-icon">open_in_new</mat-icon>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Place/Name information row - More prominent -->
-    <div class="trip-header__place" *ngIf="trip.place || trip.name">
-      <div class="place-route">
-        <mat-icon class="place-route__icon">place</mat-icon>
-        <div class="place-route__text">
-          <span class="place-route__from" *ngIf="trip.place" [title]="trip.place">{{trip.place}}</span>
-          <mat-icon class="place-route__arrow" *ngIf="trip.place && trip.name">arrow_forward</mat-icon>
-          <span class="place-route__to" *ngIf="trip.name" [title]="trip.name">{{trip.name}}</span>
+      
+      <!-- Payment Details -->
+      <div class="detail-group payment-group" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
+        <div class="group-header">
+          <mat-icon>payments</mat-icon>
+          <span>Payment</span>
+        </div>
+        <div class="group-items payment-grid">
+          <div class="item" *ngIf="trip.pay">
+            <span class="label">Pay:</span>
+            <span class="value">{{trip.pay | currency}}</span>
+          </div>
+          <div class="item" *ngIf="trip.tip">
+            <span class="label">Tip:</span>
+            <span class="value">{{trip.tip | currency}}</span>
+          </div>
+          <div class="item" *ngIf="trip.bonus">
+            <span class="label">Bonus:</span>
+            <span class="value">{{trip.bonus | currency}}</span>
+          </div>
+          <div class="item" *ngIf="trip.cash">
+            <span class="label">Cash:</span>
+            <span class="value">{{trip.cash | currency}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Trip Info -->
+      <div class="detail-group info-group" *ngIf="trip.distance || trip.region || trip.type || trip.endUnit || trip.orderNumber || trip.startOdometer">
+        <div class="group-header">
+          <mat-icon>info</mat-icon>
+          <span>Details</span>
+        </div>
+        <div class="group-items info-grid">
+          <div class="item" *ngIf="trip.distance">
+            <span class="label">Distance:</span>
+            <span class="value">{{trip.distance | number:'1.1'}} mi</span>
+          </div>
+          <div class="item" *ngIf="trip.amountPerTime">
+            <span class="label">Rate:</span>
+            <span class="value">${{trip.amountPerTime | number:'1.0'}}/hr</span>
+          </div>
+          <div class="item" *ngIf="trip.region">
+            <span class="label">Region:</span>
+            <span class="value">{{trip.region}}</span>
+          </div>
+          <div class="item" *ngIf="trip.type && trip.type !== ''">
+            <span class="label">Type:</span>
+            <span class="value">{{trip.type}}</span>
+          </div>
+          <div class="item" *ngIf="trip.endUnit">
+            <span class="label">Unit:</span>
+            <span class="value">{{trip.endUnit}}</span>
+          </div>
+          <div class="item" *ngIf="trip.orderNumber">
+            <span class="label">Order:</span>
+            <span class="value">{{trip.orderNumber}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Note (Full Width) -->
+      <div class="detail-group note-group" *ngIf="trip.note">
+        <div class="group-header">
+          <mat-icon>format_quote</mat-icon>
+          <span>Note</span>
+        </div>
+        <div class="group-items">
+          <div class="item note-item">
+            <span class="value">{{trip.note}}</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
   
-  <!-- Expandable Toggle Bar -->
-  <div class="expand-toggle-bar" 
-       (click)="toggleExpansion()" 
-       [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
-       role="button"
-       tabindex="0"
-       (keydown.enter)="toggleExpansion()"
-       (keydown.space)="toggleExpansion()">
-    <div class="expand-toggle-bar__content">
-      <div class="expand-toggle-bar__line"></div>
-      <div class="expand-toggle-bar__text">
-        <span>{{isExpanded ? 'Hide Details' : 'Show Details'}}</span>
-        <mat-icon class="expand-toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-      </div>
-      <div class="expand-toggle-bar__line"></div>
-    </div>
-  </div>
-  
-  <!-- Trip Content - Only show when expanded -->
-  <div class="trip-content" *ngIf="isExpanded">
-    
-    <!-- Time Card -->
-    <div class="info-card">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">schedule</mat-icon>
-        <h4>{{ trip.type === "" ? "Time" : trip.type }}</h4>
-      </div>
-      <div class="info-card__content">
-        <div class="time-display">
-          <span class="pickup-time">
-            {{trip.pickupTime | noseconds:prefers24Hour}}
-          </span>
-          <span class="time-separator" *ngIf="trip.duration && trip.dropoffTime">-</span>
-          <span class="dropoff-time" *ngIf="trip.dropoffTime">
-            {{trip.dropoffTime | noseconds:prefers24Hour}}
-          </span>
-        </div>
-        <div class="duration" *ngIf="trip.duration">
-          <strong>Duration:</strong> {{trip.duration | noseconds:prefers24Hour}}
-        </div>
-      </div>
-    </div>
-
-    <!-- Location Card -->
-    <div class="info-card" *ngIf="trip.region || trip.distance">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">map</mat-icon>
-        <h4>Location</h4>
-      </div>
-      <div class="info-card__content">
-        <div class="region" *ngIf="trip.region">{{trip.region}}</div>
-        <div class="distance-info" *ngIf="trip.startOdometer || trip.distance">
-          <div class="odometer-range" *ngIf="trip.startOdometer">
-            <strong>Odometer:</strong> 
-            {{trip.startOdometer | number}}
-            <span *ngIf="trip.endOdometer"> - {{trip.endOdometer | number}}</span>
-          </div>
-          <div class="distance-display" *ngIf="trip.distance">
-            <strong>Distance:</strong> 
-            <span class="distance-value" [ngClass]="{
-              'distance--excellent': trip.amountPerDistance > 5,
-              'distance--good': trip.amountPerDistance >= 2 && trip.amountPerDistance <= 5,
-              'distance--average': trip.amountPerDistance >= 1 && trip.amountPerDistance < 2,
-              'distance--poor': trip.amountPerDistance < 1
-            }">
-              {{convertDistance(trip.distance).toFixed(1)}} {{distanceUnit}}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pickup Card -->
-    <div class="info-card" *ngIf="trip.place || trip.startAddress">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">storefront</mat-icon>
-        <h4>Pickup</h4>
-      </div>
-      <div class="info-card__content">
-        <div class="place-name" *ngIf="trip.place">
-          <strong>{{trip.place}}</strong>
-        </div>
-        <div class="address-link" *ngIf="trip.startAddress">
-          <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.startAddress" 
-             target="_blank" 
-             class="address-link__text">
-            {{ trip.startAddress | shortaddress:trip.place | truncate:40}}
-            <mat-icon class="external-link-icon">open_in_new</mat-icon>
-          </a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Dropoff Card -->
-    <div class="info-card" *ngIf="trip.name || trip.endAddress">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">home</mat-icon>
-        <h4>Dropoff</h4>
-      </div>
-      <div class="info-card__content">
-        <div class="customer-name" *ngIf="trip.name">
-          <strong>{{trip.name | truncate:30}}</strong>
-        </div>
-        <div class="address-link" *ngIf="trip.endAddress">
-          <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
-             target="_blank" 
-             class="address-link__text">
-            {{ trip.endAddress | shortaddress | truncate:40}}
-            <mat-icon class="external-link-icon">open_in_new</mat-icon>
-          </a>
-        </div>
-      </div>
-    </div>
-      <!-- Payment Card -->
-    <div class="info-card" *ngIf="trip.pay || trip.total">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">payments</mat-icon>
-        <h4>Payment</h4>
-      </div>
-      <div class="info-card__content">
-        <div class="payment-grid">
-          <!-- First row: Pay, Tip, Bonus -->
-          <div class="payment-row payment-row--primary">
-            <div class="payment-item" *ngIf="trip.pay">
-              <span class="payment-label">Pay</span>
-              <span class="payment-value payment-value--pay">{{trip.pay | currency}}</span>
-            </div>
-            <div class="payment-item" *ngIf="trip.tip">
-              <span class="payment-label">Tip</span>
-              <span class="payment-value payment-value--tip">{{trip.tip | currency}}</span>
-            </div>
-            <div class="payment-item" *ngIf="trip.bonus">
-              <span class="payment-label">Bonus</span>
-              <span class="payment-value payment-value--bonus">{{trip.bonus | currency}}</span>
-            </div>
-          </div>
-
-          <!-- Second row: Total, Cash, and Efficiency -->
-          <div class="payment-row payment-row--secondary">
-            <div class="payment-item payment-item--total" *ngIf="trip.total > trip.pay">
-              <span class="payment-label">Total</span>
-              <span class="payment-value payment-value--total">{{trip.total | currency}}</span>
-            </div>
-            <div class="payment-item payment-item--cash" *ngIf="trip.cash">
-              <span class="payment-label">Cash</span>
-              <span class="payment-value payment-value--cash">{{trip.cash | currency}}</span>
-            </div>
-            <div class="payment-item payment-item--efficiency" *ngIf="trip.amountPerTime">
-              <span class="payment-label">Efficiency</span>
-              <span class="payment-value payment-value--efficiency" [ngClass]="{
-                'efficiency--excellent': trip.amountPerTime > 30,
-                'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-                'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-                'efficiency--poor': trip.amountPerTime < 20
-              }">
-                ${{trip.amountPerTime | number:'1.0-2'}}/hr
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Details Card -->
-    <div class="info-card" *ngIf="trip.endUnit || trip.orderNumber || trip.note">
-      <div class="info-card__header">
-        <mat-icon class="info-icon">description</mat-icon>
-        <h4>Details</h4>
-      </div>
-      <div class="info-card__content">
-        <div class="details-grid">
-          <div class="detail-item detail-item--unit" *ngIf="trip.endUnit">
-            <span class="detail-label">Unit #</span>
-            <span class="detail-value">{{trip.endUnit}}</span>
-          </div>
-          <div class="detail-item detail-item--order" *ngIf="trip.orderNumber">
-            <span class="detail-label">Order #</span>
-            <span class="detail-value">{{trip.orderNumber}}</span>
-          </div>
-        </div>
-        <div class="trip-note" *ngIf="trip.note">
-          <mat-icon class="note-icon">format_quote</mat-icon>
-          <span class="note-text">{{trip.note}}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Action Bar - Always visible, outside collapse -->
-  <div class="action-bar" *ngIf="showActions">
-    <!-- Edit button on the left -->
-    <button mat-fab extended color="primary" class="action-button action-button--primary" (click)="openTripDialog()">
+  <!-- Micro Action Bar -->
+  <div class="action-bar micro-actions" *ngIf="showActions">
+    <button mat-icon-button color="primary" class="action-btn" (click)="openTripDialog()" title="Edit Trip">
       <mat-icon>edit</mat-icon>
-      <span>Edit Trip</span>
     </button>
     
-    <!-- Pickup/Dropoff buttons in the middle -->
-    <div class="action-bar__center">
-      <button mat-fab extended 
-              color="accent" 
-              class="action-button action-button--accent" 
-              (click)="setPickupTime()" 
-              *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude">
-        <mat-icon>update</mat-icon>
-        <span>Pickup</span>
-      </button>
-      
-      <button mat-fab extended 
-              color="accent" 
-              class="action-button action-button--accent" 
-              (click)="setDropoffTime()" 
-              *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude">
-        <mat-icon>schedule</mat-icon>
-        <span>Dropoff</span>
-      </button>
-    </div>
+    <button mat-icon-button color="accent" class="action-btn" (click)="setPickupTime()" 
+            *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+            title="Set Pickup Time">
+      <mat-icon>update</mat-icon>
+    </button>
     
-    <!-- Menu button on the right -->
-    <button mat-fab 
-            class="action-button action-button--menu" 
-            [matMenuTriggerFor]="menu" 
-            aria-label="Trip options menu">
+    <button mat-icon-button color="accent" class="action-btn" (click)="setDropoffTime()" 
+            *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+            title="Set Dropoff Time">
+      <mat-icon>schedule</mat-icon>
+    </button>
+    
+    <button mat-icon-button class="action-btn" [matMenuTriggerFor]="menu" title="More options">
       <mat-icon>more_vert</mat-icon>
     </button>
     
     <mat-menu #menu="matMenu" class="trip-menu">
-      <button mat-menu-item (click)="nextStopTrip()" class="menu-item">
+      <button mat-menu-item (click)="nextStopTrip()">
         <mat-icon>pin_drop</mat-icon>
         <span>Next Stop</span>
       </button>
-      <button mat-menu-item (click)="cloneUnsavedTrip()" class="menu-item">
+      <button mat-menu-item (click)="cloneUnsavedTrip()">
         <mat-icon>content_copy</mat-icon>
-        <span>Clone Trip</span>
+        <span>Clone</span>
       </button>
       @if (trip.action != actionEnum.Delete) {
-        <button mat-menu-item (click)="confirmDeleteTripDialog()" class="menu-item menu-item--danger">
+        <button mat-menu-item (click)="confirmDeleteTripDialog()" class="menu-danger">
           <mat-icon>delete</mat-icon>
-          <span>Delete Trip</span>
+          <span>Delete</span>
         </button>
       }
       @else {
-        <button mat-menu-item (click)="restoreTrip()" class="menu-item menu-item--restore">
+        <button mat-menu-item (click)="restoreTrip()">
           <mat-icon>restore</mat-icon>
-          <span>Restore Trip</span>
+          <span>Restore</span>
         </button>
       }
     </mat-menu>
   </div>
-  
 </div>
