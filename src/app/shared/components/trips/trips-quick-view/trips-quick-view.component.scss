@@ -321,9 +321,14 @@
 }
 
 .trip-id {
-  @extend .grid-item;
-  
-  .trip-number {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.25em !important;
+  white-space: nowrap !important;
+  flex-direction: row !important;
+}
+
+.trip-number {
     font-size: 1.125rem;
     font-weight: 700;
     color: $text-primary;
@@ -334,7 +339,7 @@
     color: $text-secondary;
     font-weight: 500;
   }
-}
+
 
 .trip-date {
   @extend .grid-item;
@@ -1157,4 +1162,11 @@
   color: $primary-color;
   font-weight: 600;
   font-size: 1.1em;
+}
+
+.status-icon--inline {
+  font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  margin-right: 0.25em;
 }
