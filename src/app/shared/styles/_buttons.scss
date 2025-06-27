@@ -483,3 +483,16 @@
         }
     }
 }
+
+// Reusable .rounded-square utility class for rounded square buttons
+.rounded-square {
+  border-radius: 8px !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
