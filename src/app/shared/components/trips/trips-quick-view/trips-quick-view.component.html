@@ -71,23 +71,24 @@
       <span *ngIf="trip.name">{{trip.name | truncate:40}}</span>
     </div>
     <!-- Toggle Button -->
-    <div class="border-t"
+    <div
          [ngClass]="{
-           'bg-blue-50 border-blue-200 rounded-b-lg': index % 2 === 0,
-           'bg-green-50 border-green-200 rounded-b-lg': index % 2 === 1
+           'bg-blue-50 rounded-b-md': index % 2 === 0,
+           'bg-green-50 rounded-b-md': index % 2 === 1
          }"
+         class="focus-within:ring-0 focus-within:outline-none"
          *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note">
-      <button class="w-full flex items-center justify-center gap-2 py-2 text-xs text-gray-500 hover:text-blue-600 transition-colors"
+      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
               (click)="toggleExpansion()" 
               tabindex="0" 
               [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
               [title]="isExpanded ? 'Hide details' : 'Show details'"
               (keydown.enter)="toggleExpansion()" 
               (keydown.space)="toggleExpansion()">
-        <span class="flex-1 h-px bg-gray-300"></span>
+        <span class="flex-1 h-px bg-gray-200"></span>
         <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-        <span class="font-medium">{{isExpanded ? 'Less' : 'More'}} Details</span>
-        <span class="flex-1 h-px bg-gray-300"></span>
+        <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
+        <span class="flex-1 h-px bg-gray-200"></span>
       </button>
     </div>
   </div>
