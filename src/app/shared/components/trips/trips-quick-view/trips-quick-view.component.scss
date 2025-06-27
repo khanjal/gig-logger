@@ -104,241 +104,377 @@
   &:focus-within { box-shadow: 0 0 0 2px $border-focus; }
 }
 
-/* Trip Header */
+/* ========================================
+   TRIP HEADER STYLES - Mobile First
+   ======================================== */
+
 .trip-header {
   background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
-  padding: 0.75rem;
+  padding: 0.875rem;
   border-bottom: 1px solid $border-light;
-    &__main {
+
+  /* Primary Header Row */
+  &__primary {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.5rem;
-    
-    // Create three equal sections for proper centering
-    > * {
-      flex: 1;
-    }
-    
-    // Center the middle item (trip-date)
-    .trip-date {
-      display: flex;
-      justify-content: center;
-      text-align: center;
-    }
-    
-    // Align service to the right
-    .trip-service {
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-  
-  &__right { display: flex; align-items: center; }
-  
-  &__secondary {
-    display: flex;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
     margin-bottom: 0.75rem;
+    gap: 0.5rem;
   }
 
-  &__col--left {
+  &__left {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
-    flex: 1 1 0;
-    text-align: left;
+    gap: 0.375rem;
+    flex: 1;
+    min-width: 0;
   }
 
-  &__col--center {
+  &__center {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex: 1 1 0;
-    text-align: center;
+    flex: 0 0 auto;
+    min-width: 4rem;
   }
 
-  &__col--right {
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    justify-content: flex-end;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Secondary Header Row */
+  &__secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    min-height: 3rem; // Ensure consistent height
+  }
+
+  /* Place/Route Information Row */
+  &__place {
+    margin-bottom: 0.75rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  /* Bottom Header Row */
+  &__bottom {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    flex: 1 1 0;
-    text-align: right;
-  }
-  
-  &__bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
-  }
-  // Place information styles - Uses shared info-badge styling
-  .place-info {
-    @extend .info-badge;
-  }  
-
-  &__toggle-bar {
-    @extend .badge;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-    color: $primary-color;
-    cursor: pointer;
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    padding: 0.375rem 0.75rem;
-    height: auto;
-    min-height: 1.75rem;
-    border-radius: 0.875rem;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    font-size: 0.75rem;
-    font-weight: 700;
-    margin-left: auto; // Push to the right side
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    &:hover {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.95) 100%);
-      border-color: rgba(37, 99, 235, 0.35);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-      transform: translateY(-2px) scale(1.02);
-    }
-      &:active { 
-      transform: translateY(-1px) scale(1.01); 
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15); 
-    }
-    &:focus { 
-      outline: 2px solid $border-focus; 
-      outline-offset: 2px; 
-    }
-    
-    .toggle-bar__content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      gap: 0.375rem;
-      
-      .toggle-bar__text { 
-        font-size: 0.75rem; 
-        font-weight: 700; 
-        color: $primary-color;
-        letter-spacing: 0.02em;
-        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-      }
-      .toggle-bar__icon {
-        font-size: 1rem;
-        width: 1rem;
-        height: 1rem;
-        color: $primary-color;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        filter: drop-shadow(0 1px 2px rgba(37, 99, 235, 0.2));
-      }
-    }
-  }
-  
-  &__minimized {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    
-    .minimized-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      
-      .minimized-top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-      }
-      
-      .minimized-bottom-row {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-      }
-      
-      .minimized-time {
-        @extend .badge;
-        @extend .badge--pill;
-        background: rgba(255, 255, 255, 0.95);
-        color: $primary-color;
-        font-weight: 600;
-        flex-shrink: 0;
-      }
-        .minimized-total {
-        @extend .badge;
-        @extend .badge--pill;
-        background: linear-gradient(135deg, $success-color 0%, $accent-color 100%);
-        color: white;
-        font-weight: 700;
-        flex-shrink: 0;
-        
-        // Use utility classes for efficiency colors
-        &.efficiency--excellent { 
-          @extend .efficiency--excellent; 
-          @extend .efficiency--excellent-bg; 
-          text-shadow: 0 0 8px rgba(34, 197, 94, 0.3); 
-        }
-        &.efficiency--good { @extend .efficiency--good; @extend .efficiency--good-bg; }
-        &.efficiency--average { @extend .efficiency--average; @extend .efficiency--average-bg; }
-        &.efficiency--poor { @extend .efficiency--poor; @extend .efficiency--poor-bg; }
-      }
-      
-      .minimized-place {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: $text-primary;
-        font-size: 0.875rem;
-        font-weight: 500;
-        opacity: 0.9;
-        padding: 0.25rem 0.75rem;
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 1rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-        max-width: 100%;
-        
-        .place-icon {
-          @extend .icon--md;
-          color: $primary-color;
-          flex-shrink: 0;
-        }
-      }
-    }
   }
 }
 
+/* Header Spacer */
+.header-spacer {
+  flex: 1;
+}
+
+/* Status Icon */
+.status-icon {
+  font-size: 1.25rem !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  flex-shrink: 0;
+  
+  &--add { color: $success-color; }
+  &--edit { color: $info-color; }
+  &--delete { color: $warning-color; }
+  &--saved { color: $primary-color; }
+}
+
+/* Trip ID */
 .trip-id {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 0.25em !important;
-  white-space: nowrap !important;
-  flex-direction: row !important;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $text-primary;
+  white-space: nowrap;
 }
 
-.trip-number {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: $text-primary;
+/* Trip Date */
+.trip-date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-secondary;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Service Info */
+.service-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $primary-color;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  &--solo {
+    // When no service number, allow more space
+    max-width: none;
+  }
+}
+
+.service-number {
+  @extend .badge;
+  @extend .badge--primary;
+  font-size: 0.6875rem;
+  padding: 0.125rem 0.25rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Time Section */
+.trip-time-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pickup-time {
+  @extend .badge;
+  @extend .badge--pill;
+  background: rgba(255, 255, 255, 0.95);
+  color: $primary-color;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  
+  &--placeholder {
+    background: rgba(255, 255, 255, 0.6);
+    color: $text-disabled;
+    font-style: italic;
+  }
+}
+
+.trip-distance {
+  font-size: 0.8125rem;
+  color: $primary-color;
+  font-weight: 500;
+  opacity: 0.8;
+  
+  &--placeholder {
+    color: $text-disabled;
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+/* Earnings Section */
+.trip-earnings-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.total-amount {
+  @extend .badge;
+  @extend .badge--pill;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  
+  &--placeholder {
+    background: rgba(255, 255, 255, 0.6);
+    color: $text-disabled;
+    font-style: italic;
   }
   
-  .trip-date {
+  &.earnings--excellent {
+    background: $success-color;
+    color: white;
+    animation: pulse-subtle 2s infinite;
+  }
+  
+  &.earnings--good {
+    background: $info-color;
+    color: white;
+  }
+  
+  &.earnings--average {
+    background: $warning-color;
+    color: white;
+  }
+  
+  &.earnings--poor {
+    background: $error-color;
+    color: white;
+  }
+}
+
+.efficiency-rate {
+  display: flex;
+  align-items: center;
+  gap: 0.1875rem;
+  font-size: 0.8125rem;
+  color: $primary-color;
+  font-weight: 500;
+  opacity: 0.8;
+  
+  &--placeholder {
+    color: $text-disabled;
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+.efficiency-icon {
+  font-size: 0.875rem !important;
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+}
+
+/* Place Route Display */
+.place-route {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  &__icon {
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+    color: $primary-color;
+    flex-shrink: 0;
+  }
+  
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    flex: 1;
     font-size: 0.875rem;
-    color: $text-secondary;
     font-weight: 500;
   }
+  
+  &__from {
+    color: $text-primary;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 8rem;
+  }
+  
+  &__arrow {
+    font-size: 1rem !important;
+    width: 1rem !important;
+    height: 1rem !important;
+    color: $primary-color;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+  
+  &__to {
+    color: $text-secondary;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Toggle Button */
+.toggle-button {
+  @extend .badge;
+  background: rgba(255, 255, 255, 0.95);
+  color: $primary-color;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.toggle-text {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.toggle-icon {
+  font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+/* Animations */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 480px) {
+  .trip-header {
+    padding: 0.75rem;
+    
+    &__primary {
+      margin-bottom: 0.625rem;
+    }
+    
+    &__secondary {
+      margin-bottom: 0.625rem;
+      gap: 0.75rem;
+    }
+    
+    &__place {
+      margin-bottom: 0.625rem;
+      padding: 0.375rem 0.625rem;
+    }
+  }
+  
+  .service-name {
+    max-width: 4rem;
+  }
+  
+  .place-route {
+    &__from {
+      max-width: 5rem;
+    }
+  }
+}
+
+/* ========================================
+   LEGACY STYLES - TO BE REMOVED/UPDATED
+   ======================================== */
+
+/* Legacy styles - keep for compatibility until all components updated */
 
 
 .trip-date {
@@ -1173,3 +1309,5 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Legacy mini styles - replaced by new header structure */

@@ -7,85 +7,90 @@
   'trip-card--delete': !trip.saved && trip.action === 'DELETE'
 }">
   <!-- Trip Header -->
- <div class="trip-header">
-  <div class="trip-header__main">
-      <div class="trip-id">
-        <mat-icon class="status-icon status-icon--inline"
+  <div class="trip-header">
+    <!-- Primary header row: ID + Status, Date, Service -->
+    <div class="trip-header__primary">
+      <div class="trip-header__left">
+        <mat-icon class="status-icon"
           [ngClass]="{
-            'status-badge--add': !trip.saved && trip.action === 'ADD',
-            'status-badge--edit': !trip.saved && trip.action === 'UPDATE',
-            'status-badge--delete': !trip.saved && trip.action === 'DELETE',
-            'status-badge--saved': trip.saved
+            'status-icon--add': !trip.saved && trip.action === 'ADD',
+            'status-icon--edit': !trip.saved && trip.action === 'UPDATE',
+            'status-icon--delete': !trip.saved && trip.action === 'DELETE',
+            'status-icon--saved': trip.saved
           }">
           @if (!trip.saved && trip.action === 'ADD') { add }
           @else if (!trip.saved && trip.action === 'UPDATE') { edit }
           @else if (!trip.saved && trip.action === 'DELETE') { delete }
           @else { check_circle }
         </mat-icon>
-        <span class="trip-number">#{{trip.rowId}}</span>
+        <span class="trip-id">#{{trip.rowId}}</span>
       </div>
       
-      <div class="trip-date">
+      <div class="trip-header__center">
         <span class="trip-date">{{trip.date | date:'MMM d'}}</span>
       </div>
       
-      <div class="trip-service">
-        <span class="service-name">{{trip.service}}</span>
+      <div class="trip-header__right">
+        <span class="service-name" [class.service-name--solo]="!trip.number || trip.number <= 0">{{trip.service}}</span>
         <span class="service-number" *ngIf="trip.number > 0">#{{trip.number}}</span>
       </div>
     </div>
     
-    <div class="trip-header__secondary trip-header__secondary--flex-row">
-        <div class="trip-header__col trip-header__col--left">
-          <!-- status-badge removed from here -->
+    <!-- Secondary header row: Time, Distance, Total + Efficiency -->
+    <div class="trip-header__secondary">
+      <div class="trip-time-section">
+        <div class="pickup-time" 
+             [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}"
+             [class.pickup-time--placeholder]="!trip.pickupTime">
+          {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
         </div>
-        <div class="trip-header__col trip-header__col--center">
-          <div class="trip-time">
-            <span class="pickup-time" [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
-              {{ trip.pickupTime | noseconds:prefers24Hour }}
-            </span>
-          </div>
+        <div class="trip-distance" 
+             [class.trip-distance--placeholder]="!trip.distance">
+          {{trip.distance ? (trip.distance | number:'1.1') + ' mi' : '-- mi'}}
         </div>
-        <div class="trip-header__col trip-header__col--right trip-header__col--reserve">
-          <div class="trip-total">
-            <span class="total-amount" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash" [ngClass]="{
-              'efficiency--excellent': trip.amountPerTime > 30,
-              'efficiency--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-              'efficiency--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-              'efficiency--poor': trip.amountPerTime < 20
-            }">{{(trip.pay + trip.tip + trip.bonus + trip.cash) | currency}}</span>
-          </div>
-        </div>
-      </div>
-    <!-- Combined place and toggle bar -->
-    <div class="trip-header__bottom">
-      <div class="place-info place-info--wide" *ngIf="trip.place || trip.name">
-        <mat-icon class="info-badge__icon">place</mat-icon>
-        <span class="info-badge__text place-info__text--wide">
-          <ng-container *ngIf="trip.place">
-            <span class="place-info__place">{{trip.place}}</span>
-          </ng-container>
-          <ng-container *ngIf="trip.place && trip.name">
-            <span class="place-info__arrow">&rarr;</span>
-          </ng-container>
-          <ng-container *ngIf="trip.name">
-            <span class="place-info__name">{{trip.name}}</span>
-          </ng-container>
-        </span>
       </div>
       
-      <div class="trip-header__toggle-bar" 
-           (click)="toggleExpansion()" 
-           [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
-           role="button"
-           tabindex="0"
-           (keydown.enter)="toggleExpansion()"
-           (keydown.space)="toggleExpansion()">
-           <div class="toggle-bar__content">
-          <span class="toggle-bar__text">{{isExpanded ? 'Hide' : 'Show'}}</span>
-          <mat-icon class="toggle-bar__icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+      <div class="trip-earnings-section">
+        <div class="total-amount" 
+             [class.total-amount--placeholder]="!(trip.pay || trip.tip || trip.bonus || trip.cash)"
+             [ngClass]="{
+               'earnings--excellent': trip.amountPerTime > 30,
+               'earnings--good': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+               'earnings--average': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+               'earnings--poor': trip.amountPerTime < 20
+             }">
+          {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
+        </div>
+        <div class="efficiency-rate" 
+             [class.efficiency-rate--placeholder]="!trip.amountPerTime">
+          <mat-icon class="efficiency-icon">speed</mat-icon>
+          ${{trip.amountPerTime ? (trip.amountPerTime | number:'1.0-2') : '0.00'}}/hr
         </div>
       </div>
+    </div>
+    
+    <!-- Place/Name information row - More prominent -->
+    <div class="trip-header__place" *ngIf="trip.place || trip.name">
+      <div class="place-route">
+        <mat-icon class="place-route__icon">place</mat-icon>
+        <div class="place-route__text">
+          <span class="place-route__from" *ngIf="trip.place">{{trip.place}}</span>
+          <mat-icon class="place-route__arrow" *ngIf="trip.place && trip.name">arrow_forward</mat-icon>
+          <span class="place-route__to" *ngIf="trip.name">{{trip.name}}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Toggle section -->
+    <div class="trip-header__bottom">
+      <div class="header-spacer"></div>
+      <button class="toggle-button" 
+              (click)="toggleExpansion()" 
+              [attr.aria-label]="isExpanded ? 'Collapse trip details' : 'Expand trip details'"
+              type="button">
+        <span class="toggle-text">{{isExpanded ? 'Less' : 'More'}}</span>
+        <mat-icon class="toggle-icon">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </button>
     </div>
   </div>
   
