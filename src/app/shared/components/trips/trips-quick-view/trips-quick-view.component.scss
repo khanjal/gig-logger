@@ -806,66 +806,39 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 12px 8px;
-  background: #ffffff;
+  padding: 14px 10px 10px 10px;
+  background: #fff;
   border: 1px solid #e9ecef;
   border-radius: 6px;
-  transition: all 0.2s ease;
-  min-height: 70px;
-  justify-content: space-between;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    border-color: #ddd;
-  }
-  
+  min-height: 80px;
+  justify-content: flex-start;
+
   .info-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: #6c757d;
-    flex-shrink: 0;
+    font-size: 24px !important;
+    color: #6c757d !important;
+    display: block !important;
     margin-bottom: 6px;
+    line-height: 1 !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-  
+
   .label {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     color: #6c757d;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    line-height: 1;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
-  
+
   .value {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: #343a40;
     line-height: 1.2;
     word-break: break-word;
-  }
-  
-  /* Ensure Material Icons are properly loaded for info cards */
-  mat-icon.info-icon {
-    font-family: 'Material Icons' !important;
-    font-weight: normal !important;
-    font-style: normal !important;
-    font-size: 18px !important;
-    line-height: 1 !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-    display: inline-block !important;
-    white-space: nowrap !important;
-    word-wrap: normal !important;
-    direction: ltr !important;
-    -webkit-font-feature-settings: 'liga' !important;
-    font-feature-settings: 'liga' !important;
-    -webkit-font-smoothing: antialiased !important;
-    width: 18px !important;
-    height: 18px !important;
-    color: #6c757d !important;
   }
 }
 
