@@ -1,3 +1,8 @@
+/* Tailwind CSS imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Mobile-First Global Styles for Gig Logger PWA */
 @import "color-vars";
 @import "app/shared/styles/modal-mixins";
