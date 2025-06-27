@@ -207,7 +207,7 @@
         </div>
         
         <!-- Trip Details -->
-        <div class="info-category" *ngIf="trip.region || trip.type || trip.orderNumber">
+        <div class="info-category" *ngIf="trip.region || trip.type || trip.orderNumber || trip.endUnit">
           <div class="category-title">Trip Info</div>
           <div class="info-grid">
             <div class="info-card" *ngIf="trip.region">
@@ -225,18 +225,18 @@
               <span class="label">Order</span>
               <span class="value">{{trip.orderNumber}}</span>
             </div>
-          </div>
-        </div>
-        
-        <!-- Vehicle Info -->
-        <div class="info-category" *ngIf="trip.endUnit || trip.startOdometer || trip.endOdometer">
-          <div class="category-title">Vehicle</div>
-          <div class="info-grid">
             <div class="info-card" *ngIf="trip.endUnit">
               <mat-icon class="info-icon">precision_manufacturing</mat-icon>
               <span class="label">Unit</span>
               <span class="value">{{trip.endUnit}}</span>
             </div>
+          </div>
+        </div>
+        
+        <!-- Vehicle Info -->
+        <div class="info-category" *ngIf="trip.startOdometer || trip.endOdometer">
+          <div class="category-title">Vehicle</div>
+          <div class="info-grid">
             <div class="info-card" *ngIf="trip.startOdometer">
               <mat-icon class="info-icon">trip_origin</mat-icon>
               <span class="label">Start ODO</span>
