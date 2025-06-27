@@ -1,16 +1,16 @@
-<div class="container" id="addTrip">
+<div class="mx-auto p-4 w-full max-w-7xl" id="addTrip">
     <!-- Loading overlay for transitions and page loads -->
     @if (isLoading) {
-        <div class="loading-overlay">
-            <div class="loading-spinner">
-                <mat-icon class="spinner-icon">refresh</mat-icon>
-                <p>Loading...</p>
+        <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div class="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-lg">
+                <mat-icon class="animate-spin text-blue-500 text-4xl mb-2">refresh</mat-icon>
+                <p class="text-lg font-semibold">Loading...</p>
             </div>
         </div>
     }
     
-    <div class="trip-form-container" [ngClass]="{'edit-mode': isEditMode}">
-        <app-current-average class="current-average-overlay" [ngClass]="{'hidden': isEditMode}"></app-current-average>
+    <div class="relative transition-all duration-300 w-full" [class.opacity-50]="isEditMode">
+        <app-current-average class="absolute top-0 right-0 m-4" [class.hidden]="isEditMode"></app-current-average>
         <trip-form 
             (parentReload)="load()" 
             (editModeExit)="exitEditMode($event)" 
@@ -20,18 +20,18 @@
     </div>
 
     @if (unsavedData && !pollingEnabled && !isEditMode) {
-        <div class="row-grid">
-            <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
+        <div class="flex justify-center my-4 w-full">
+            <button mat-fab extended class="flex items-center gap-2 px-6 py-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
         </div>
     }
 
     @if ((!unsavedData || pollingEnabled) && !isEditMode) {
-        <div class="row-grid">
-            <button mat-fab extended color="primary" class="button" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
+        <div class="flex justify-center my-4 w-full">
+            <button mat-fab extended color="primary" class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
 
-    <h2 id="todaysTrips" [ngClass]="{'hidden': isEditMode}">
+    <h2 id="todaysTrips" [class.hidden]="isEditMode" class="text-2xl font-bold flex items-center gap-4 mt-6 mb-2">
         @if (todaysTrips.length > 0) {
             Today's Trips ({{todaysTrips.length}})
         }
@@ -39,32 +39,32 @@
             No Trips Today
         }
 
-        <mat-slide-toggle class="field-right" [checked]="pollingEnabled" (change)="changePolling()">
+        <mat-slide-toggle class="ml-auto" [checked]="pollingEnabled" (change)="changePolling()">
             Auto Save
         </mat-slide-toggle>
     </h2>
     
     @if (!isEditMode) {
         @for (trip of todaysTrips; track $index) {
-            <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+            <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}" class="mb-4">
                 <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
             </div>
         }
     }    <br/>
     @if (yesrterdaysTrips.length > 0 && !isEditMode) {
-        <div class="yesterday-section">
-            <h2 id="yesrterdaysTrips" class="yesterday-header clickable" (click)="toggleYesterdayTrips()">
-                <mat-icon class="toggle-icon" [class.expanded]="showYesterdayTrips">
+        <div class="my-4">
+            <h2 id="yesrterdaysTrips" class="flex items-center cursor-pointer bg-gray-100 rounded-lg px-4 py-2 transition hover:bg-gray-200 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
+                <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips">
                     {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
                 Yesterday's Trips ({{yesrterdaysTrips.length}})
-                <span class="show-hide-label">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
+                <span class="ml-3 text-base text-gray-600 font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
             </h2>
             
             @if (showYesterdayTrips) {
-                <div class="yesterday-trips-container">
+                <div>
                     @for (trip of yesrterdaysTrips; track $index) {
-                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
+                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}" class="mb-4">
                             <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>
                     }
@@ -74,8 +74,8 @@
     }
     <br/>
     @if (!isEditMode) {
-        <div class="row-grid">
-            <app-trips-table-group class="table" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>
+        <div class="flex justify-center my-4 w-full">
+            <app-trips-table-group class="w-full max-w-5xl" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>
         </div>
     }
 
@@ -83,7 +83,7 @@
     <button 
         mat-fab 
         color="primary" 
-        class="back-to-top" 
+        class="fixed bottom-8 right-8 z-40 bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full p-4 flex items-center justify-center transition-opacity duration-200" 
         *ngIf="showBackToTop" 
         (click)="scrollToTop()"
         aria-label="Back to Top"
@@ -91,32 +91,3 @@
         <mat-icon>arrow_upward</mat-icon>
     </button>
 </div>
-
-<style>
-.yesterday-header.clickable {
-    cursor: pointer;
-    background: #f5f5f5;
-    border-radius: 6px;
-    padding: 8px 16px;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    user-select: none;
-}
-.yesterday-header.clickable:hover {
-    background: #e0e0e0;
-}
-.toggle-icon {
-    margin-right: 8px;
-    transition: transform 0.2s;
-}
-.toggle-icon.expanded {
-    transform: rotate(180deg);
-}
-.show-hide-label {
-    margin-left: 12px;
-    font-size: 0.95em;
-    color: #666;
-    font-weight: 500;
-}
-</style>

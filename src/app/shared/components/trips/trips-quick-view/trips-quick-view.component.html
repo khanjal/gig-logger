@@ -1,11 +1,13 @@
-<!-- Simplified Mobile-First Trip Quick View -->
-<div class="bg-white border border-gray-200 rounded-lg mb-3 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+<!-- Enhanced Mobile-First Trip Quick View -->
+<div class="bg-white border border-gray-200 rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
   [ngClass]="{
     'opacity-60 bg-gray-50': trip.exclude,
-    'border-l-4 border-l-orange-400': !trip.saved,
-    'border-l-4 border-l-green-500': !trip.saved && trip.action === 'ADD',
-    'border-l-4 border-l-blue-500': !trip.saved && trip.action === 'UPDATE',
-    'border-l-4 border-l-red-500': !trip.saved && trip.action === 'DELETE'
+    'border-l-8 border-l-orange-400': !trip.saved,
+    'border-l-8 border-l-green-500': !trip.saved && trip.action === 'ADD',
+    'border-l-8 border-l-blue-500': !trip.saved && trip.action === 'UPDATE',
+    'border-l-8 border-l-red-500': !trip.saved && trip.action === 'DELETE',
+    'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && !trip.exclude,
+    'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && !trip.exclude
   }">
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b"
@@ -13,84 +15,68 @@
       'bg-blue-50 border-blue-200': index % 2 === 0,
       'bg-green-50 border-green-200': index % 2 === 1
     }">
-    
-    <!-- Main Info Row - Mobile: Stack, Desktop: Horizontal -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-      
-      <!-- Left Side: Status + Service Info -->
-      <div class="flex items-center gap-3 min-w-0 flex-1">
-        <!-- Status Icon -->
-        <mat-icon class="text-xl flex-shrink-0"
-          [ngClass]="{
-            'text-green-500': trip.saved,
-            'text-blue-500': !trip.saved && trip.action === 'ADD',
-            'text-yellow-500': !trip.saved && trip.action === 'UPDATE',
-            'text-red-500': !trip.saved && trip.action === 'DELETE'
-          }">
-          @if (!trip.saved && trip.action === 'ADD') { add }
-          @else if (!trip.saved && trip.action === 'UPDATE') { edit }
-          @else if (!trip.saved && trip.action === 'DELETE') { delete }
-          @else { check_circle }
-        </mat-icon>
-        
-        <!-- Service & ID -->
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="font-bold text-gray-900 truncate text-sm sm:text-base">{{trip.service}}</span>
-            <span class="text-xs text-gray-500 font-mono">#{{trip.rowId}}</span>
-            <span class="text-xs text-gray-400 font-mono" *ngIf="trip.number > 0">#{{trip.number}}</span>
-          </div>
-          
-          <!-- Location - Mobile Only -->
-          <div class="text-xs text-gray-600 truncate sm:hidden" *ngIf="trip.place || trip.name">
-            <span *ngIf="trip.place">{{trip.place | truncate:20}}</span>
-            <span *ngIf="trip.place && trip.name"> → </span>
-            <span *ngIf="trip.name">{{trip.name | truncate:20}}</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Right Side: Time + Amount -->
-      <div class="flex items-center justify-between sm:justify-end gap-4 sm:gap-6">
-        <!-- Time -->
-        <div class="text-center">
-          <div class="text-xs text-gray-500 mb-1 sm:hidden">Time</div>
-          <span class="font-mono text-sm font-medium"
-                [ngClass]="{
-                  'text-gray-400': !trip.pickupTime,
-                  'text-gray-700': trip.pickupTime
-                }">
-            {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
-          </span>
-        </div>
-        
-        <!-- Amount -->
-        <div class="text-right">
-          <div class="text-xs text-gray-500 mb-1 sm:hidden">Total</div>
-          <span class="font-bold text-sm sm:text-base"
-                [ngClass]="{
-                  'text-gray-400': !(trip.pay || trip.tip || trip.bonus || trip.cash),
-                  'text-green-600': trip.amountPerTime > 30,
-                  'text-blue-600': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-                  'text-yellow-600': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-                  'text-red-500': trip.amountPerTime < 20
-                }">
-            {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
-          </span>
-        </div>
-      </div>
+    <!-- Single-Line Header Row -->
+    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
+      <!-- Status Icon -->
+      <mat-icon class="text-xl flex-shrink-0"
+        [ngClass]="{
+          'text-green-500': trip.saved,
+          'text-blue-500': !trip.saved && trip.action === 'ADD',
+          'text-yellow-500': !trip.saved && trip.action === 'UPDATE',
+          'text-red-500': !trip.saved && trip.action === 'DELETE'
+        }">
+        @if (!trip.saved && trip.action === 'ADD') { add }
+        @else if (!trip.saved && trip.action === 'UPDATE') { edit }
+        @else if (!trip.saved && trip.action === 'DELETE') { delete }
+        @else { check_circle }
+      </mat-icon>
+      <!-- Row ID -->
+      <span class="text-xs font-bold text-gray-700 font-mono flex-shrink-0">#{{trip.rowId}}</span>
+      <!-- Service Name -->
+      <span class="font-bold text-gray-900 truncate text-sm sm:text-base flex-shrink min-w-0">{{trip.service}}</span>
+      <!-- Trip Number -->
+      <span class="text-xs text-gray-500 font-mono flex-shrink-0" *ngIf="trip.number > 0">#{{trip.number}}</span>
+      <!-- Time -->
+      <span class="flex items-center gap-1 flex-shrink-0">
+        <mat-icon class="text-blue-400 text-base">schedule</mat-icon>
+        <span class="font-mono text-sm font-medium"
+              [ngClass]="{
+                'text-gray-400': !trip.pickupTime,
+                'text-gray-700': trip.pickupTime
+              }">
+          {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
+        </span>
+      </span>
+      <!-- Spacer -->
+      <span class="flex-1"></span>
+      <!-- Total (far right) -->
+      <span class="flex items-center gap-1 flex-shrink-0">
+        <mat-icon class="text-green-400 text-base">payments</mat-icon>
+        <span class="font-bold text-sm sm:text-base"
+              [ngClass]="{
+                'text-gray-400': !(trip.pay || trip.tip || trip.bonus || trip.cash),
+                'text-green-600': trip.amountPerTime > 30,
+                'text-blue-600': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+                'text-yellow-600': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+                'text-red-500': trip.amountPerTime < 20
+              }">
+          {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
+        </span>
+      </span>
     </div>
-    
-    <!-- Location Row - Desktop Only -->
-    <div class="hidden sm:block mt-2 text-sm text-gray-600 truncate" *ngIf="trip.place || trip.name">
+    <!-- Place -> Name Row (always visible if present) -->
+    <div class="mt-1 text-xs text-gray-600 truncate text-center" *ngIf="trip.place || trip.name">
       <span *ngIf="trip.place">{{trip.place | truncate:40}}</span>
       <span *ngIf="trip.place && trip.name"> → </span>
       <span *ngIf="trip.name">{{trip.name | truncate:40}}</span>
     </div>
-    
     <!-- Toggle Button -->
-    <div class="mt-3 pt-2 border-t border-gray-200" 
-         *ngIf="trip.dropoffTime || trip.startAddress || trip.endAddress || trip.pay || trip.tip || trip.distance || trip.note">
+    <div class="border-t"
+         [ngClass]="{
+           'bg-blue-50 border-blue-200 rounded-b-lg': index % 2 === 0,
+           'bg-green-50 border-green-200 rounded-b-lg': index % 2 === 1
+         }"
+         *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note">
       <button class="w-full flex items-center justify-center gap-2 py-2 text-xs text-gray-500 hover:text-blue-600 transition-colors"
               (click)="toggleExpansion()" 
               tabindex="0" 
@@ -107,7 +93,6 @@
   </div>
   <!-- Simplified Details Section -->
   <div class="p-3 bg-gray-50 border-t" *ngIf="isExpanded">
-    
     <!-- Quick Stats Row -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime">
       <div *ngIf="trip.dropoffTime" class="text-center p-2 bg-white rounded-lg border">
@@ -127,7 +112,6 @@
         <div class="text-sm font-bold text-green-600">${{trip.amountPerTime | number:'1.0'}}</div>
       </div>
     </div>
-    
     <!-- Payment Breakdown -->
     <div class="mb-4" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
@@ -159,7 +143,6 @@
         </div>
       </div>
     </div>
-    
     <!-- Addresses -->
     <div class="mb-4" *ngIf="trip.startAddress || trip.endAddress">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
@@ -187,18 +170,13 @@
         </div>
       </div>
     </div>
-    
-    <!-- Additional Info -->
-    <div class="mb-4" *ngIf="trip.region || trip.type || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer">
+    <!-- Additional Info: Only show if more than just region -->
+    <div class="mb-4" *ngIf="(trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
         <mat-icon class="text-purple-500 text-base">info</mat-icon>
         Trip Info
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <div *ngIf="trip.region" class="flex justify-between p-2 bg-white rounded border">
-          <span class="text-xs text-gray-600">Region</span>
-          <span class="text-sm font-medium">{{trip.region}}</span>
-        </div>
         <div *ngIf="trip.type && trip.type !== ''" class="flex justify-between p-2 bg-white rounded border">
           <span class="text-xs text-gray-600">Type</span>
           <span class="text-sm font-medium">{{trip.type}}</span>
@@ -221,7 +199,6 @@
         </div>
       </div>
     </div>
-    
     <!-- Note -->
     <div *ngIf="trip.note" class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
       <h3 class="text-sm font-semibold text-yellow-800 mb-2 flex items-center gap-2">
@@ -232,8 +209,7 @@
     </div>
   </div>
   <!-- Simplified Action Bar -->
-  <div class="flex items-center justify-between p-3 bg-gray-100 border-t" *ngIf="showActions">
-    
+  <div class="flex items-center justify-between p-3 bg-gray-100 border-t">
     <!-- Edit Button -->
     <button mat-button 
             class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition" 
@@ -242,7 +218,6 @@
       <mat-icon class="text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>
     </button>
-    
     <!-- Center Action Buttons -->
     <div class="flex gap-2">
       <button mat-button 
@@ -253,7 +228,6 @@
         <mat-icon class="text-base">schedule</mat-icon>
         <span class="hidden sm:inline">Pickup</span>
       </button>
-      
       <button mat-button 
               class="flex items-center gap-1 px-3 py-2 bg-orange-50 text-orange-700 border border-orange-200 rounded-lg text-sm font-medium hover:bg-orange-100 transition" 
               (click)="setDropoffTime()"
@@ -263,7 +237,6 @@
         <span class="hidden sm:inline">Dropoff</span>
       </button>
     </div>
-    
     <!-- Menu Button -->
     <button mat-icon-button 
             class="w-10 h-10 bg-gray-200 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-300 transition" 
@@ -271,7 +244,6 @@
             title="More options">
       <mat-icon>more_vert</mat-icon>
     </button>
-    
     <!-- Menu -->
     <mat-menu #menu="matMenu" class="trip-menu">
       <button mat-menu-item (click)="nextStopTrip()">
