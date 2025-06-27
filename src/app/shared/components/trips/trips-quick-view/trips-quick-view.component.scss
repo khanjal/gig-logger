@@ -1127,3 +1127,34 @@
     }
   }
 }
+
+.place-info--wide {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.place-info__text--wide {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.place-info__place,
+.place-info__name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.place-info__arrow {
+  flex: 0 0 auto;
+  margin: 0 0.25em;
+  color: $primary-color;
+  font-weight: 600;
+  font-size: 1.1em;
+}

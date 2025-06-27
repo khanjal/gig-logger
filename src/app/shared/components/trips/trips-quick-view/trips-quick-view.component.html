@@ -66,9 +66,19 @@
       </div>
     <!-- Combined place and toggle bar -->
     <div class="trip-header__bottom">
-      <div class="place-info" *ngIf="trip.place">
+      <div class="place-info place-info--wide" *ngIf="trip.place || trip.name">
         <mat-icon class="info-badge__icon">place</mat-icon>
-        <span class="info-badge__text">{{trip.place | truncate:30}}</span>
+        <span class="info-badge__text place-info__text--wide">
+          <ng-container *ngIf="trip.place">
+            <span class="place-info__place">{{trip.place}}</span>
+          </ng-container>
+          <ng-container *ngIf="trip.place && trip.name">
+            <span class="place-info__arrow">&rarr;</span>
+          </ng-container>
+          <ng-container *ngIf="trip.name">
+            <span class="place-info__name">{{trip.name}}</span>
+          </ng-container>
+        </span>
       </div>
       
       <div class="trip-header__toggle-bar" 
