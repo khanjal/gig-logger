@@ -137,6 +137,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     
     // Emit the trip rowId to scroll to this specific trip (matches the HTML id attribute)
     this.scrollToTrip.emit(this.trip.rowId?.toString());
+    // Notify parent to reload and update unsaved state
+    this.parentReload.emit();
   }
 
   async setPickupTime() {
