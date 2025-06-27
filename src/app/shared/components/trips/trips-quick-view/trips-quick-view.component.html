@@ -106,13 +106,13 @@
           <mat-icon>schedule</mat-icon>
           <span>Time</span>
         </div>
-        <div class="group-items">
+        <div class="group-items multi-column">
           <div class="item" *ngIf="trip.dropoffTime">
-            <span class="label">Drop:</span>
+            <span class="label">Drop</span>
             <span class="value">{{trip.dropoffTime | noseconds:prefers24Hour}}</span>
           </div>
           <div class="item" *ngIf="trip.duration">
-            <span class="label">Duration:</span>
+            <span class="label">Duration</span>
             <span class="value">{{trip.duration | noseconds:prefers24Hour}}</span>
           </div>
         </div>
@@ -126,7 +126,7 @@
         </div>
         <div class="group-items">
           <div class="item address-item" *ngIf="trip.startAddress">
-            <span class="label">From:</span>
+            <span class="label">From</span>
             <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.startAddress" 
                target="_blank" class="value link">
               {{ trip.startAddress | shortaddress:trip.place | truncate:25}}
@@ -134,7 +134,7 @@
             </a>
           </div>
           <div class="item address-item" *ngIf="trip.endAddress">
-            <span class="label">To:</span>
+            <span class="label">To</span>
             <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
                target="_blank" class="value link">
               {{ trip.endAddress | shortaddress | truncate:25}}
@@ -145,61 +145,77 @@
       </div>
       
       <!-- Payment Details -->
-      <div class="detail-group payment-group" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
+      <div class="detail-group payment-group" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash || trip.total">
         <div class="group-header">
           <mat-icon>payments</mat-icon>
           <span>Payment</span>
         </div>
-        <div class="group-items payment-grid">
+        <div class="group-items multi-column">
           <div class="item" *ngIf="trip.pay">
-            <span class="label">Pay:</span>
+            <span class="label">Pay</span>
             <span class="value">{{trip.pay | currency}}</span>
           </div>
           <div class="item" *ngIf="trip.tip">
-            <span class="label">Tip:</span>
+            <span class="label">Tip</span>
             <span class="value">{{trip.tip | currency}}</span>
           </div>
           <div class="item" *ngIf="trip.bonus">
-            <span class="label">Bonus:</span>
+            <span class="label">Bonus</span>
             <span class="value">{{trip.bonus | currency}}</span>
           </div>
           <div class="item" *ngIf="trip.cash">
-            <span class="label">Cash:</span>
+            <span class="label">Cash</span>
             <span class="value">{{trip.cash | currency}}</span>
+          </div>
+          <div class="item total-item" *ngIf="trip.total">
+            <span class="label">Total</span>
+            <span class="value total-amount">{{trip.total | currency}}</span>
           </div>
         </div>
       </div>
       
       <!-- Trip Info -->
-      <div class="detail-group info-group" *ngIf="trip.distance || trip.region || trip.type || trip.endUnit || trip.orderNumber || trip.startOdometer">
+      <div class="detail-group info-group" *ngIf="trip.distance || trip.region || trip.type || trip.endUnit || trip.orderNumber || trip.startOdometer || trip.endOdometer || trip.amountPerDistance">
         <div class="group-header">
           <mat-icon>info</mat-icon>
           <span>Details</span>
         </div>
-        <div class="group-items info-grid">
+        <div class="group-items multi-column">
           <div class="item" *ngIf="trip.distance">
-            <span class="label">Distance:</span>
+            <span class="label">Distance</span>
             <span class="value">{{trip.distance | number:'1.1'}} mi</span>
           </div>
           <div class="item" *ngIf="trip.amountPerTime">
-            <span class="label">Rate:</span>
+            <span class="label">Rate/Hour</span>
             <span class="value">${{trip.amountPerTime | number:'1.0'}}/hr</span>
           </div>
+          <div class="item" *ngIf="trip.amountPerDistance">
+            <span class="label">Rate/Mile</span>
+            <span class="value">${{trip.amountPerDistance | number:'1.2'}}/mi</span>
+          </div>
           <div class="item" *ngIf="trip.region">
-            <span class="label">Region:</span>
+            <span class="label">Region</span>
             <span class="value">{{trip.region}}</span>
           </div>
           <div class="item" *ngIf="trip.type && trip.type !== ''">
-            <span class="label">Type:</span>
+            <span class="label">Type</span>
             <span class="value">{{trip.type}}</span>
           </div>
           <div class="item" *ngIf="trip.endUnit">
-            <span class="label">Unit:</span>
+            <span class="label">Unit</span>
             <span class="value">{{trip.endUnit}}</span>
           </div>
           <div class="item" *ngIf="trip.orderNumber">
-            <span class="label">Order:</span>
+            <span class="label">Order</span>
             <span class="value">{{trip.orderNumber}}</span>
+          </div>
+          <div class="item" *ngIf="trip.startOdometer">
+            <span class="label">Start ODO</span>
+            <span class="value">{{trip.startOdometer | number:'1.0'}} mi</span>
+          </div>
+          <div class="item" *ngIf="trip.endOdometer">
+            <span class="label">End ODO</span>
+            <span class="value">{{trip.endOdometer | number:'1.0'}} mi</span>
           </div>
         </div>
       </div>

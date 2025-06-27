@@ -4,7 +4,6 @@ import { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum'; 
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TripFormComponent } from '@components/trips/trip-form/trip-form.component';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { DateHelper } from '@helpers/date.helper';
@@ -14,8 +13,7 @@ import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-di
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { updateAction } from '@utils/action.utils';
 import { MatIcon } from '@angular/material/icon';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import { MatFabButton } from '@angular/material/button';
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -25,7 +23,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatFabButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
