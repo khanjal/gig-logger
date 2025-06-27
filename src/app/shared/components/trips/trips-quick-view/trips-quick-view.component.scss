@@ -682,6 +682,62 @@
   }
 }
 
+/* Info Card Grid for Trip Info Section */
+.info-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px 12px;
+  margin: 8px 0 0 0;
+  
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px 6px;
+  }
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid #e3e6ea;
+  padding: 8px 10px 7px 8px;
+  min-width: 0;
+  min-height: 60px;
+  transition: box-shadow 0.2s, border 0.2s;
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    border-color: #90caf9;
+  }
+
+  .info-icon {
+    font-size: 18px;
+    color: #1976d2;
+    margin-bottom: 2px;
+    opacity: 0.85;
+  }
+  .label {
+    font-size: 11px;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-transform: capitalize;
+    letter-spacing: 0.01em;
+  }
+  .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+}
+
 /* Micro Action Bar - Right-Aligned Layout */
 .action-bar {
   display: flex;
@@ -798,6 +854,47 @@
         background-color: rgba(158, 158, 158, 0.2) !important;
         border-color: rgba(158, 158, 158, 0.5) !important;
       }
+    }
+  }
+}
+
+.action-bar.micro-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  gap: 0;
+
+  .action-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .left-group {
+    justify-content: flex-start;
+    flex: 1 1 0;
+  }
+  .center-group {
+    justify-content: center;
+    flex: 1 1 0;
+  }
+  .right-group {
+    justify-content: flex-end;
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .action-bar.micro-actions {
+    flex-direction: row;
+    padding: 6px 4px;
+    .action-group {
+      gap: 2px;
     }
   }
 }

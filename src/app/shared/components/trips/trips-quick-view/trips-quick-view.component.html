@@ -174,46 +174,55 @@
         </div>
       </div>
       
-      <!-- Trip Info -->
-      <div class="detail-group info-group" *ngIf="trip.distance || trip.region || trip.type || trip.endUnit || trip.orderNumber || trip.startOdometer || trip.endOdometer || trip.amountPerDistance">
+      <!-- Trip Info as Card Grid -->
+      <div class="detail-group info-group card-grid" *ngIf="trip.distance || trip.region || trip.type || trip.endUnit || trip.orderNumber || trip.startOdometer || trip.endOdometer || trip.amountPerDistance">
         <div class="group-header">
           <mat-icon>info</mat-icon>
           <span>Details</span>
         </div>
-        <div class="group-items multi-column">
-          <div class="item" *ngIf="trip.distance">
+        <div class="info-card-grid">
+          <div class="info-card" *ngIf="trip.distance">
+            <mat-icon class="info-icon">straighten</mat-icon>
             <span class="label">Distance</span>
             <span class="value">{{trip.distance | number:'1.1'}} mi</span>
           </div>
-          <div class="item" *ngIf="trip.amountPerTime">
+          <div class="info-card" *ngIf="trip.amountPerTime">
+            <mat-icon class="info-icon">speed</mat-icon>
             <span class="label">Rate/Hour</span>
             <span class="value">${{trip.amountPerTime | number:'1.0'}}/hr</span>
           </div>
-          <div class="item" *ngIf="trip.amountPerDistance">
+          <div class="info-card" *ngIf="trip.amountPerDistance">
+            <mat-icon class="info-icon">local_gas_station</mat-icon>
             <span class="label">Rate/Mile</span>
             <span class="value">${{trip.amountPerDistance | number:'1.2'}}/mi</span>
           </div>
-          <div class="item" *ngIf="trip.region">
+          <div class="info-card" *ngIf="trip.region">
+            <mat-icon class="info-icon">map</mat-icon>
             <span class="label">Region</span>
             <span class="value">{{trip.region}}</span>
           </div>
-          <div class="item" *ngIf="trip.type && trip.type !== ''">
+          <div class="info-card" *ngIf="trip.type && trip.type !== ''">
+            <mat-icon class="info-icon">category</mat-icon>
             <span class="label">Type</span>
             <span class="value">{{trip.type}}</span>
           </div>
-          <div class="item" *ngIf="trip.endUnit">
+          <div class="info-card" *ngIf="trip.endUnit">
+            <mat-icon class="info-icon">precision_manufacturing</mat-icon>
             <span class="label">Unit</span>
             <span class="value">{{trip.endUnit}}</span>
           </div>
-          <div class="item" *ngIf="trip.orderNumber">
+          <div class="info-card" *ngIf="trip.orderNumber">
+            <mat-icon class="info-icon">confirmation_number</mat-icon>
             <span class="label">Order</span>
             <span class="value">{{trip.orderNumber}}</span>
           </div>
-          <div class="item" *ngIf="trip.startOdometer">
+          <div class="info-card" *ngIf="trip.startOdometer">
+            <mat-icon class="info-icon">trip_origin</mat-icon>
             <span class="label">Start ODO</span>
             <span class="value">{{trip.startOdometer | number:'1.0'}} mi</span>
           </div>
-          <div class="item" *ngIf="trip.endOdometer">
+          <div class="info-card" *ngIf="trip.endOdometer">
+            <mat-icon class="info-icon">flag</mat-icon>
             <span class="label">End ODO</span>
             <span class="value">{{trip.endOdometer | number:'1.0'}} mi</span>
           </div>
@@ -237,32 +246,31 @@
   
   <!-- Micro Action Bar -->
   <div class="action-bar micro-actions" *ngIf="showActions">
-    <!-- All buttons right-aligned for better mobile UX -->
-    <div class="action-group right-aligned">
+    <div class="action-group left-group">
       <button mat-button class="action-btn edit-btn" (click)="openTripDialog()" title="Edit Trip">
         <mat-icon>edit</mat-icon>
         <span>Edit</span>
       </button>
-      
-      <button mat-button class="action-btn pickup-btn" (click)="setPickupTime()" 
+    </div>
+    <div class="action-group center-group">
+      <button mat-button class="action-btn pickup-btn" (click)="setPickupTime()"
               *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Pickup Time">
         <mat-icon>update</mat-icon>
         <span>Pickup</span>
       </button>
-      
-      <button mat-button class="action-btn dropoff-btn" (click)="setDropoffTime()" 
+      <button mat-button class="action-btn dropoff-btn" (click)="setDropoffTime()"
               *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Dropoff Time">
         <mat-icon>schedule</mat-icon>
         <span>Dropoff</span>
       </button>
-      
+    </div>
+    <div class="action-group right-group">
       <button mat-icon-button class="action-btn menu-btn" [matMenuTriggerFor]="menu" title="More options">
         <mat-icon>more_vert</mat-icon>
       </button>
     </div>
-    
     <mat-menu #menu="matMenu" class="trip-menu">
       <button mat-menu-item (click)="nextStopTrip()">
         <mat-icon>pin_drop</mat-icon>
