@@ -35,16 +35,12 @@
       </mat-icon>
       <!-- Row ID -->
       <span class="text-xs font-bold text-gray-700 font-mono flex-shrink-0">#{{trip.rowId}}</span>
-      <!-- Service Name -->
-      <span class="font-bold text-gray-900 truncate text-sm sm:text-base flex-shrink min-w-0">{{trip.service}}</span>
-      <!-- Trip Number -->
-      <span class="text-xs text-gray-500 font-mono flex-shrink-0" *ngIf="trip.number > 0">#{{trip.number}}</span>
-      <!-- Time -->
-      <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon [ngClass]="{
-          'text-blue-400': index % 2 === 0,
-          'text-green-400': index % 2 === 1
-        }" class="text-base">schedule</mat-icon>
+      <!-- Service Name and Trip Number (tight, number always visible, service truncates, always a space) -->
+      <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
+        <span class="truncate block max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
+      </span>
+      <!-- Time (centered by default, but shifts right if service text is long) -->
+      <span class="flex items-center gap-1 flex-shrink-0 justify-center text-center ml-2 min-w-[3.5rem]">
         <span class="font-mono text-sm font-medium"
               [ngClass]="{
                 'text-gray-400': !trip.pickupTime,
