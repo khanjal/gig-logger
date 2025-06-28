@@ -1,11 +1,12 @@
 <!-- Enhanced Mobile-First Trip Quick View -->
-<div class="bg-white border-2 border-black-900 mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
+<div class="bg-white rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
   [ngClass]="{
     'opacity-60 bg-gray-50': trip.exclude,
-    'border-l-8 border-l-green-500': !trip.saved && trip.action === 'ADD',
-    'border-l-8 border-l-blue-500': !trip.saved && trip.action === 'UPDATE',
-    'border-l-8 border-l-red-500': !trip.saved && trip.action === 'DELETE',
-    'border-l-8 border-l-orange-400': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
+    'trip-border-saved': trip.saved,
+    'trip-border-add': !trip.saved && trip.action === 'ADD',
+    'trip-border-update': !trip.saved && trip.action === 'UPDATE',
+    'trip-border-delete': !trip.saved && trip.action === 'DELETE',
+    'trip-border-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
     'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && !trip.exclude,
     'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && !trip.exclude
   }">
