@@ -51,20 +51,20 @@
             </div>
         }
     }    <br/>
-    @if (yesrterdaysTrips.length > 0 && !isEditMode) {
+    @if (yesterdaysTrips.length > 0 && !isEditMode) {
         <div class="my-4">
-            <h2 id="yesrterdaysTrips" class="flex items-center cursor-pointer bg-gray-100 rounded-lg px-4 py-2 transition hover:bg-gray-200 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
+            <h2 id="yesterdaysTrips" class="flex items-center cursor-pointer bg-gray-100 rounded-lg px-4 py-2 transition hover:bg-gray-200 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
                 <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips">
                     {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
-                Yesterday's Trips ({{yesrterdaysTrips.length}})
+                Yesterday's Trips ({{yesterdaysTrips.length}})
                 <span class="ml-3 text-base text-gray-600 font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
             </h2>
             
             @if (showYesterdayTrips) {
                 <div>
-                    @for (trip of yesrterdaysTrips; track $index) {
-                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesrterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesrterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}" class="mb-4">
+                    @for (trip of yesterdaysTrips; track $index) {
+                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}" class="mb-4">
                             <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>
                     }

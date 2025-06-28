@@ -2,10 +2,10 @@
 <div class="bg-white border border-gray-200 rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
   [ngClass]="{
     'opacity-60 bg-gray-50': trip.exclude,
-    'border-l-8 border-l-orange-400': !trip.saved,
     'border-l-8 border-l-green-500': !trip.saved && trip.action === 'ADD',
     'border-l-8 border-l-blue-500': !trip.saved && trip.action === 'UPDATE',
     'border-l-8 border-l-red-500': !trip.saved && trip.action === 'DELETE',
+    'border-l-8 border-l-orange-400': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
     'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && !trip.exclude,
     'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && !trip.exclude
   }">
@@ -84,7 +84,8 @@
               [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
               [title]="isExpanded ? 'Hide details' : 'Show details'"
               (keydown.enter)="toggleExpansion()" 
-              (keydown.space)="toggleExpansion()">
+              (keydown.space)="toggleExpansion()"
+              [attr.aria-expanded]="isExpanded">
         <span class="flex-1 h-px bg-gray-200"></span>
         <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
@@ -155,6 +156,7 @@
           <div class="text-xs text-gray-500 mb-1">From</div>
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.startAddress" 
              target="_blank" 
+             rel="noopener noreferrer"
              class="text-sm text-blue-600 hover:underline flex items-center gap-1">
             {{ trip.startAddress | shortaddress:trip.place | truncate:50}}
             <mat-icon class="text-xs">open_in_new</mat-icon>
@@ -164,6 +166,7 @@
           <div class="text-xs text-gray-500 mb-1">To</div>
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
              target="_blank" 
+             rel="noopener noreferrer"
              class="text-sm text-blue-600 hover:underline flex items-center gap-1">
             {{ trip.endAddress | shortaddress | truncate:50}}
             <mat-icon class="text-xs">open_in_new</mat-icon>
