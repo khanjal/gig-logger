@@ -9,7 +9,8 @@
     'trip-border-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
     'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && !trip.exclude,
     'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && !trip.exclude
-  }">
+  }"
+>
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b"
     [ngClass]="{
@@ -21,10 +22,11 @@
       <!-- Status Icon -->
       <mat-icon class="text-xl flex-shrink-0"
         [ngClass]="{
-          'text-green-500': trip.saved,
-          'text-blue-500': !trip.saved && trip.action === 'ADD',
-          'text-yellow-500': !trip.saved && trip.action === 'UPDATE',
-          'text-red-500': !trip.saved && trip.action === 'DELETE'
+          'trip-icon-saved': trip.saved,
+          'trip-icon-add': !trip.saved && trip.action === 'ADD',
+          'trip-icon-update': !trip.saved && trip.action === 'UPDATE',
+          'trip-icon-delete': !trip.saved && trip.action === 'DELETE',
+          'trip-icon-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE'))
         }">
         @if (!trip.saved && trip.action === 'ADD') { add }
         @else if (!trip.saved && trip.action === 'UPDATE') { edit }
@@ -39,7 +41,10 @@
       <span class="text-xs text-gray-500 font-mono flex-shrink-0" *ngIf="trip.number > 0">#{{trip.number}}</span>
       <!-- Time -->
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">schedule</mat-icon>
+        <mat-icon [ngClass]="{
+          'text-blue-400': index % 2 === 0,
+          'text-green-400': index % 2 === 1
+        }" class="text-base">schedule</mat-icon>
         <span class="font-mono text-sm font-medium"
               [ngClass]="{
                 'text-gray-400': !trip.pickupTime,
@@ -52,7 +57,10 @@
       <span class="flex-1"></span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-green-400 text-base">payments</mat-icon>
+        <mat-icon [ngClass]="{
+          'text-blue-400': index % 2 === 0,
+          'text-green-400': index % 2 === 1
+        }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
                 'text-gray-400': !(trip.pay || trip.tip || trip.bonus || trip.cash),
@@ -121,7 +129,7 @@
     <!-- Payment Breakdown -->
     <div class="mb-4" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-        <mat-icon class="text-orange-500 text-base">payments</mat-icon>
+        <mat-icon class="text-blue-400 text-base">payments</mat-icon>
         Payment Details
       </h3>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -152,7 +160,7 @@
     <!-- Addresses -->
     <div class="mb-4" *ngIf="trip.startAddress || trip.endAddress">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-        <mat-icon class="text-green-500 text-base">place</mat-icon>
+        <mat-icon class="text-green-400 text-base">place</mat-icon>
         Addresses
       </h3>
       <div class="space-y-2">
@@ -181,7 +189,7 @@
     <!-- Additional Info: Only show if more than just region -->
     <div class="mb-4" *ngIf="(trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-        <mat-icon class="text-purple-500 text-base">info</mat-icon>
+        <mat-icon class="text-purple-400 text-base">info</mat-icon>
         Trip Info
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -223,7 +231,7 @@
             class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition" 
             (click)="openTripDialog()" 
             title="Edit Trip">
-      <mat-icon class="text-base">edit</mat-icon>
+      <mat-icon class="text-blue-500 text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>
     </button>
     <!-- Center Action Buttons -->
@@ -233,7 +241,7 @@
               (click)="setPickupTime()"
               *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Pickup Time">
-        <mat-icon class="text-base">schedule</mat-icon>
+        <mat-icon class="text-green-500 text-base">schedule</mat-icon>
         <span class="hidden sm:inline">Pickup</span>
       </button>
       <button mat-button 
@@ -241,7 +249,7 @@
               (click)="setDropoffTime()"
               *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Dropoff Time">
-        <mat-icon class="text-base">schedule</mat-icon>
+        <mat-icon class="text-orange-500 text-base">schedule</mat-icon>
         <span class="hidden sm:inline">Dropoff</span>
       </button>
     </div>

@@ -1,3 +1,5 @@
+@import 'src/app/shared/styles/color-vars';
+
 /* Trips Quick View - Minimal SCSS (mostly using Tailwind classes) */
 
 /* Trip Menu Styling - only for basic mat-menu-item spacing and icon alignment */
@@ -17,25 +19,46 @@
 
 /* Trip border classes - clean CSS without !important */
 .trip-border-saved {
-  border: 2px solid #d1d5db; /* gray-300 */
+  border: 2px solid $border-dark; // gray-300
 }
 
 .trip-border-add {
-  border: 2px solid #d1d5db; /* gray-300 */
-  border-left: 8px solid #10b981; /* green-500 */
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $success-color; // green
 }
 
 .trip-border-update {
-  border: 2px solid #d1d5db; /* gray-300 */
-  border-left: 8px solid #3b82f6; /* blue-500 */
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $primary-color; // blue
 }
 
 .trip-border-delete {
-  border: 2px solid #d1d5db; /* gray-300 */
-  border-left: 8px solid #ef4444; /* red-500 */
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $error-color; // red
 }
 
 .trip-border-other {
-  border: 2px solid #d1d5db; /* gray-300 */
-  border-left: 8px solid #fb923c; /* orange-400 */
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $warning-color; // orange/yellow
+}
+
+// Trip icon color classes (sync with border color logic)
+.trip-icon-saved {
+  color: $text-secondary;
+}
+
+.trip-icon-add {
+  color: $success-color;
+}
+
+.trip-icon-update {
+  color: $primary-color;
+}
+
+.trip-icon-delete {
+  color: $error-color;
+}
+
+.trip-icon-other {
+  color: $warning-color;
 }
