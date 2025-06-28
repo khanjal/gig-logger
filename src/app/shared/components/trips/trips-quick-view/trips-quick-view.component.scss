@@ -14,3 +14,9 @@
     }
   }
 }
+
+/* Strong black border for trip quick view component */
+.trip-quick-view-border {
+  border: 2px solid #000 !important;
+  border-radius: 0.75rem; /* match rounded-xl */
+}

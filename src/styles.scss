@@ -174,30 +174,13 @@ div.mat-expansion-panel-body {
 
 /* Material Card Overrides */
 mat-card {
-  border-radius: 0.75rem !important;
-  box-shadow: 0 1px 3px $shadow-light, 0 1px 2px $shadow-medium !important;
-  border: 1px solid $border-light;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px $shadow-light, 0 1px 2px $shadow-medium;
   overflow: hidden;
   
   &:hover {
-    box-shadow: 0 4px 6px $shadow-light, 0 2px 4px $shadow-medium !important;
+    box-shadow: 0 4px 6px $shadow-light, 0 2px 4px $shadow-medium;
   }
-}
-
-mat-card-header {
-  padding: 1rem !important;
-  background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
-  border-bottom: 1px solid $border-light;
-}
-
-mat-card-content {
-  padding: 1rem !important;
-}
-
-mat-card-actions {
-  padding: 0.75rem 1rem !important;
-  border-top: 1px solid $border-light;
-  background-color: $surface-secondary;
 }
 
 /* Material Button Overrides */

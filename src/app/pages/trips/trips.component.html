@@ -46,7 +46,7 @@
     
     @if (!isEditMode) {
         @for (trip of todaysTrips; track $index) {
-            <div [id]="trip.rowId" [ngClass]="{'mat-card': todaysTrips.length % 2 != 0, 'mat-card-reverse': todaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}" class="mb-4">
+            <div [id]="trip.rowId">
                 <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
             </div>
         }
@@ -64,7 +64,7 @@
             @if (showYesterdayTrips) {
                 <div>
                     @for (trip of yesterdaysTrips; track $index) {
-                        <div [id]="trip.rowId" [ngClass]="{'mat-card': yesterdaysTrips.length % 2 != 0, 'mat-card-reverse': yesterdaysTrips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}" class="mb-4">
+                        <div [id]="trip.rowId">
                             <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>
                     }
