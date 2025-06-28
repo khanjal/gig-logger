@@ -1,24 +1,26 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { ITrip } from '@interfaces/trip.interface';
-import { ActionEnum } from '@enums/action.enum'; 
 import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TripService } from '@services/sheets/trip.service';
-import { ShiftService } from '@services/sheets/shift.service';
+
+import { ActionEnum } from '@enums/action.enum';
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { ITrip } from '@interfaces/trip.interface';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DateHelper } from '@helpers/date.helper';
 import { UnitHelper } from '@helpers/unit.helper';
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
-import { GigWorkflowService } from '@services/gig-workflow.service';
 import { updateAction } from '@utils/action.utils';
-import { MatIcon } from '@angular/material/icon';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
-import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { GigWorkflowService } from '@services/gig-workflow.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+
+import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
-import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 
 @Component({
     selector: 'trips-quick-view',
