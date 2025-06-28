@@ -18,12 +18,13 @@ import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
+import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 
 @Component({
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {

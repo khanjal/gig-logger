@@ -73,14 +73,21 @@
         </span>
       </span>
     </div>
-    <!-- Place -> Name Row (always visible if present) -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || (trip.type && trip.type !== '')">
+    <!-- Place/Type/Distance Row (always visible if present) -->
+    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || (trip.type && trip.type !== '') || trip.distance">
+      <!-- Type (left) -->
+      <span *ngIf="trip.type && trip.type !== ''" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{trip.type}}</span>
+      <!-- Place -> Name (center) -->
       <div class="flex-1 flex justify-center items-center gap-2 min-w-0 overflow-hidden">
         <span *ngIf="trip.place">{{trip.place | truncate:40}}</span>
         <span *ngIf="trip.place && trip.name"> → </span>
         <span *ngIf="trip.name">{{trip.name | truncate:40}}</span>
       </div>
-      <span *ngIf="trip.type && trip.type !== ''" class="absolute right-0 px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0 mr-2">{{trip.type}}</span>
+      <!-- Distance (right) -->
+      <span *ngIf="trip.distance" class="flex items-center gap-1 flex-shrink-0 ml-2">
+        <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
+        <span class="font-mono text-xs text-gray-700">{{trip.distance | number:'1.1'}} mi</span>
+      </span>
     </div>
     <!-- Toggle Button -->
     <div
@@ -108,18 +115,14 @@
   <!-- Simplified Details Section -->
   <div class="p-3 bg-gray-50 border-t" *ngIf="isExpanded">
     <!-- Quick Stats Row -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="trip.dropoffTime || trip.duration || trip.amountPerTime">
       <div *ngIf="trip.dropoffTime" class="text-center p-2 bg-white rounded-lg border">
         <div class="text-xs text-gray-500 mb-1">Drop Time</div>
         <div class="font-mono text-sm font-bold">{{trip.dropoffTime | noseconds:prefers24Hour}}</div>
       </div>
       <div *ngIf="trip.duration" class="text-center p-2 bg-white rounded-lg border">
         <div class="text-xs text-gray-500 mb-1">Duration</div>
-        <div class="font-mono text-sm font-bold">{{trip.duration | noseconds:prefers24Hour}}</div>
-      </div>
-      <div *ngIf="trip.distance" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Distance</div>
-        <div class="text-sm font-bold">{{trip.distance | number:'1.1'}} mi</div>
+        <div class="font-mono text-sm font-bold">{{trip.duration | durationFormat}}</div>
       </div>
       <div *ngIf="trip.amountPerTime" class="text-center p-2 bg-white rounded-lg border">
         <div class="text-xs text-gray-500 mb-1">Rate/Hr</div>
