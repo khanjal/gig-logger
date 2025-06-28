@@ -9,7 +9,7 @@
         </div>
     }
     
-    <div class="relative transition-all duration-300 w-full" [class.opacity-50]="isEditMode">
+    <div class="relative transition-all duration-300 w-full">
         <app-current-average class="absolute -top-4 right-0 m-4" [class.hidden]="isEditMode"></app-current-average>
         <trip-form 
             (parentReload)="load()" 
