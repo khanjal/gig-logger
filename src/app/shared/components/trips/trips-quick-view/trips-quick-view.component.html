@@ -66,10 +66,13 @@
       </span>
     </div>
     <!-- Place -> Name Row (always visible if present) -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center" *ngIf="trip.place || trip.name">
-      <span *ngIf="trip.place">{{trip.place | truncate:40}}</span>
-      <span *ngIf="trip.place && trip.name"> → </span>
-      <span *ngIf="trip.name">{{trip.name | truncate:40}}</span>
+    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || (trip.type && trip.type !== '')">
+      <div class="flex-1 flex justify-center items-center gap-2 min-w-0 overflow-hidden">
+        <span *ngIf="trip.place">{{trip.place | truncate:40}}</span>
+        <span *ngIf="trip.place && trip.name"> → </span>
+        <span *ngIf="trip.name">{{trip.name | truncate:40}}</span>
+      </div>
+      <span *ngIf="trip.type && trip.type !== ''" class="absolute right-0 px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0 mr-2">{{trip.type}}</span>
     </div>
     <!-- Toggle Button -->
     <div
