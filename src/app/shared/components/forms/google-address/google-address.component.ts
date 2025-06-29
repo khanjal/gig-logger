@@ -1,77 +1,105 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GoogleAddress } from '@interfaces/google-address.interface';
-import { GoogleAddressService } from '@services/google-address.service';
+import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { NgIf } from '@angular/common';
+import { NgIf, CommonModule } from '@angular/common';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
     selector: 'app-google-address',
     templateUrl: './google-address.component.html',
     styleUrls: ['./google-address.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatIconButton, MatSuffix, MatIcon]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatIconButton, MatSuffix, MatIcon, CommonModule]
 })
-
-// https://github.com/karthiktechblog/google-place-autocomplete
-
-export class GoogleAddressComponent implements OnInit {
+export class GoogleAddressComponent implements OnInit, OnDestroy {
   @Input() address!: string;
   @Output() addressChange = new EventEmitter<string>();
   
   @ViewChild('address') addressInput!: ElementRef;
 
-  place!: any;
-  formattedAddress!: string;
+  suggestions: AutocompleteResult[] = [];
+  isLoading = false;
+  showSuggestions = false;
 
   addressForm = new FormGroup({
     address: new FormControl('')
   });
 
-  googleAddress!: GoogleAddress;
-
-  constructor(private googleAddressService: GoogleAddressService) { }
+  constructor(private serverGooglePlacesService: ServerGooglePlacesService) { }
 
   async ngOnInit(): Promise<void> {
     this.addressForm.controls.address.setValue(this.address);
+    
+    // Set up server-side autocomplete with debouncing
+    this.addressForm.controls.address.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(async (value) => {
+        if (value && value.length > 2) {
+          await this.searchPlaces(value);
+        } else {
+          this.suggestions = [];
+          this.showSuggestions = false;
+        }
+      });
   }
 
   ngAfterViewInit() {
-    this.getPlaceAutocomplete();
-    
     setTimeout(() => this.addressInput?.nativeElement?.focus(), 500);
   }
 
-  onTextChange() {
-    this.addressChange.emit(this.addressForm.value.address || "");
-  }
-
-  private getPlaceAutocomplete() {
-    //@ts-ignore
-    const autocomplete = new google.maps.places.Autocomplete(
-      this.addressInput.nativeElement,
-      {
-        componentRestrictions: { country: 'US' },
-        types: ["establishment", "geocode"]  // 'establishment' / 'address' / 'geocode' // we are checking all types
-      }    );
-
-    (window as any).google.maps.event.addListener(autocomplete, 'place_changed', () => {
-      this.place = autocomplete.getPlace();
-      this.formatAddress();
-      this.addressForm.controls.address.setValue(this.formattedAddress);
-      this.addressChange.emit(this.formattedAddress);
-    });
-  }
-
-  private formatAddress() {
-    this.formattedAddress = this.googleAddressService.getFormattedAddress(this.place);
-    let name = this.place['name'];
-
-    if (!this.formattedAddress.startsWith(name)) {
-      this.formattedAddress = `${name}, ${this.formattedAddress}`;
+  async searchPlaces(input: string): Promise<void> {
+    this.isLoading = true;
+    try {
+      // Use smart autocomplete that only calls Google API if we have user location
+      const results = await this.serverGooglePlacesService.getSmartAutocomplete(
+        input, 
+        'address', 
+        'US'
+      );
+      this.suggestions = results;
+      this.showSuggestions = true;
+    } catch (error) {
+      console.error('Error fetching autocomplete suggestions:', error);
+      this.suggestions = [];
+    } finally {
+      this.isLoading = false;
     }
+  }
+
+  onTextChange() {
+    const currentValue = this.addressInput.nativeElement.value || "";
+    this.addressForm.controls.address.setValue(currentValue);
+    this.addressChange.emit(currentValue);
+  }
+
+  async selectSuggestion(suggestion: AutocompleteResult): Promise<void> {
+    this.addressForm.controls.address.setValue(suggestion.address);
+    this.addressChange.emit(suggestion.address);
+    this.showSuggestions = false;
+    this.suggestions = [];
+  }
+
+  onInputFocus(): void {
+    if (this.suggestions.length > 0) {
+      this.showSuggestions = true;
+    }
+  }
+
+  onInputBlur(): void {
+    // Delay hiding suggestions to allow click on suggestion
+    setTimeout(() => {
+      this.showSuggestions = false;
+    }, 200);
+  }
+
+  ngOnDestroy(): void {
+    // Clean up subscriptions (handled automatically by Angular for valueChanges)
   }
 }

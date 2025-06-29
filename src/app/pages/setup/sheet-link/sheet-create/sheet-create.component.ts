@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFabButton } from '@angular/material/button';
@@ -5,6 +6,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
@@ -12,7 +14,7 @@ import { LoggerService } from '@services/logger.service';
 @Component({
   selector: 'app-sheet-create',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatFabButton, MatIcon],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatFabButton, MatIcon, MatProgressSpinnerModule],
   templateUrl: './sheet-create.component.html',
   styleUrl: './sheet-create.component.scss'
 })
@@ -48,8 +50,6 @@ export class SheetCreateComponent {
       
       // Close modal and pass error back to parent
       this.dialogRef.close({ error: error });
-    } finally {
-      this.saving = false;
     }
   }
 

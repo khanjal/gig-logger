@@ -1,15 +1,34 @@
-<form [formGroup]="addressForm">
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>Search Address</mat-label>
-        <input type="text"
-            name="address"
-            placeholder="Enter Address"
-            matInput
-            formControlName="address"
-            (input)="onTextChange()"
-            #address />
-        <button type="button" class="mat-icon-button" *ngIf="address.value" color="primary" matSuffix mat-icon-button aria-label="Clear Address" (click)="addressForm.controls.address.setValue('')">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-form-field>
-</form>
+<div class="address-container">
+  <form [formGroup]="addressForm">
+      <mat-form-field class="field-full-width" appearance="outline">
+          <mat-label>Search Address</mat-label>
+          <input type="text"
+              name="address"
+              placeholder="Enter Address"
+              matInput
+              formControlName="address"
+              (input)="onTextChange()"
+              (focus)="onInputFocus()"
+              (blur)="onInputBlur()"
+              #address />
+          <button type="button" class="mat-icon-button" *ngIf="address.value" color="primary" matSuffix mat-icon-button aria-label="Clear Address" (click)="addressForm.controls.address.setValue('')">
+              <mat-icon>clear</mat-icon>
+          </button>
+      </mat-form-field>
+  </form>
+  
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Searching...
+  </div>
+  
+  <!-- Suggestions dropdown -->
+  <div *ngIf="showSuggestions && suggestions.length > 0" class="suggestions-container">
+    <div *ngFor="let suggestion of suggestions" 
+         class="suggestion-item"
+         (click)="selectSuggestion(suggestion)">
+      <div class="suggestion-main">{{ suggestion.place }}</div>
+      <div class="suggestion-secondary">{{ suggestion.address }}</div>
+    </div>
+  </div>
+</div>
