@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -40,6 +40,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public unsavedTripsCount: number = 0;
   public unsavedShiftsCount: number = 0;
   
+  // Polling interval for unsaved counts (ms)
+  public static readonly DEFAULT_UNSAVED_POLL_INTERVAL = 5000;
+  @Input() unsavedPollInterval: number = HeaderComponent.DEFAULT_UNSAVED_POLL_INTERVAL;
+
   private headerSubscription: Subscription;
   private routerSubscription: Subscription;
   private unsavedCountInterval: Subscription;
@@ -64,17 +68,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentRoute = event.url;
         this.setLoadingState(false); // Hide loading when navigation completes
       });
-    
-    // Poll for unsaved counts every 5 seconds
-    this.unsavedCountInterval = interval(5000).subscribe(() => this.updateUnsavedCounts());
-    // Initial fetch
-    this.updateUnsavedCounts();
+    // Start polling for unsaved counts at configurable interval
+    this.unsavedCountInterval = interval(this.unsavedPollInterval).subscribe(() => this.updateUnsavedCounts());
   }
 
   async ngOnInit(): Promise<void> {
     // Show loading indicator
     this.setLoadingState(true);
-    
     try {
       // Add timeout to prevent hanging
       await Promise.race([
@@ -83,6 +83,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
           setTimeout(() => reject(new Error('Header initialization timeout')), 10000)
         )
       ]);
+      // Initial fetch of unsaved counts (after authentication check)
+      await this.updateUnsavedCounts();
     } catch (error) {
       console.error('Error during header initialization:', error);
       this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
