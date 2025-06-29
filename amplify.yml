@@ -14,6 +14,10 @@ frontend:
         - echo "${AWS_BRANCH}"
         - if [ "${AWS_BRANCH}" = "test" ]; then npm run build:stage; fi
         - if [ "${AWS_BRANCH}" = "main" ]; then npm run build:prod; fi
+    postBuild:
+      commands:
+        - chmod +x amplify-post-build.sh
+        - ./amplify-post-build.sh
   artifacts:
     baseDirectory: dist/raptor-gig
     files:

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -8,8 +8,10 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgIf } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
     selector: 'app-header',
@@ -26,19 +28,36 @@ import { filter } from 'rxjs/operators';
     ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  @Output() error = new EventEmitter<Error>();
+  
   defaultSheet: ISpreadsheet | undefined;
   isAuthenticated = false;
   isLoading = false;
   currentRoute = '/';
   isMenuOpen = false;
+
+  // Notification badge counts for unsaved trips and shifts
+  public unsavedTripsCount: number = 0;
+  public unsavedShiftsCount: number = 0;
   
+  // Polling interval for unsaved counts (ms)
+  public static readonly DEFAULT_UNSAVED_POLL_INTERVAL = 5000;
+  @Input() unsavedPollInterval: number = HeaderComponent.DEFAULT_UNSAVED_POLL_INTERVAL;
+
+  // Timeout for header initialization (ms)
+  public static readonly HEADER_INIT_TIMEOUT_MS = 10000;
+
   private headerSubscription: Subscription;
   private routerSubscription: Subscription;
-    constructor(
+  private unsavedCountInterval: Subscription;
+
+  constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
     private authService: AuthGoogleService,
-    private router: Router
+    private router: Router,
+    private shiftService: ShiftService,
+    private tripService: TripService
   ) { 
     // Subscribe to header updates
     this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
@@ -52,24 +71,38 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentRoute = event.url;
         this.setLoadingState(false); // Hide loading when navigation completes
       });
+    // Start polling for unsaved counts at configurable interval
+    this.unsavedCountInterval = interval(this.unsavedPollInterval).subscribe(() => this.updateUnsavedCounts());
   }
 
   async ngOnInit(): Promise<void> {
     // Show loading indicator
     this.setLoadingState(true);
-    
     try {
-      // Check authentication state
-      this.isAuthenticated = await this.authService.isAuthenticated();
-
-      // Load initial data if authenticated
-      if (this.isAuthenticated) {
-        await this.load();
-      }
+      // Add timeout to prevent hanging
+      await Promise.race([
+        this.initializeHeader(),
+        new Promise<void>((_, reject) => 
+          setTimeout(() => reject(new Error('Header initialization timeout')), HeaderComponent.HEADER_INIT_TIMEOUT_MS)
+        )
+      ]);
+      // Initial fetch of unsaved counts (after authentication check)
+      await this.updateUnsavedCounts();
     } catch (error) {
       console.error('Error during header initialization:', error);
+      this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
+    }
+  }
+
+  private async initializeHeader(): Promise<void> {
+    // Check authentication state
+    this.isAuthenticated = await this.authService.isAuthenticated();
+
+    // Load initial data if authenticated
+    if (this.isAuthenticated) {
+      await this.load();
     }
   }
 
@@ -77,17 +110,40 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.setLoadingState(true);
     
     try {
-      // Only load data if authenticated
-      if (this.isAuthenticated) {
-        this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
-      }
+      // Add timeout to prevent hanging
+      await Promise.race([
+        this.loadHeaderData(),
+        new Promise<void>((_, reject) => 
+          setTimeout(() => reject(new Error('Header data loading timeout')), 8000)
+        )
+      ]);
     } catch (error) {
       console.error('Error loading header data:', error);
+      this.error.emit(error instanceof Error ? error : new Error('Header data loading failed'));
+      // Don't throw - allow app to continue with degraded functionality
     } finally {
       this.setLoadingState(false);
     }
   }
+
+  private async loadHeaderData(): Promise<void> {
+    // Only load data if authenticated
+    if (this.isAuthenticated) {
+      this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    }
+  }
   
+  private async updateUnsavedCounts() {
+    // Only update if authenticated
+    if (!this.isAuthenticated) {
+      this.unsavedTripsCount = 0;
+      this.unsavedShiftsCount = 0;
+      return;
+    }
+    this.unsavedTripsCount = (await this.tripService.getUnsaved()).length;
+    this.unsavedShiftsCount = (await this.shiftService.getUnsavedShifts()).length;
+  }
+
   public getToolbarColor(): string {
     const subdomain = window.location.hostname.split('.')[0];
     switch (subdomain) {      case 'gig':
@@ -139,6 +195,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
+    }
+    if (this.unsavedCountInterval) {
+      this.unsavedCountInterval.unsubscribe();
     }
   }
 }

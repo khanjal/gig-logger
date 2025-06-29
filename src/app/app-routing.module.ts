@@ -16,6 +16,7 @@ const routes: Routes = [
   { path: 'calculator', component: CalculatorComponent },
   { path: 'policy', component: PolicyComponent },
   { path: 'trips', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },
+  { path: 'trips/edit/:id', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'setup', component: SetupComponent },
   { path: 'shifts', component: ShiftsComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'stats', component: StatsComponent, canActivate: [canActivateSheet, canActivateAuth] },

@@ -140,27 +140,62 @@ async function handleApiRequest(request) {
   });
 }
 
-// Handle HTML requests
+// Handle HTML requests with stale-while-revalidate strategy
 async function handleHtmlRequest(request) {
-  try {
-    // Try cache first
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      // Fetch from network in the background to update cache
-      updateCache(request);
-      return cachedResponse;
-    }
-    // If not in cache, get from network
-    const response = await fetch(request);
-    if (isValidResponse(response)) {
-      const cache = await caches.open(CACHE_STRATEGIES.DYNAMIC.name);
-      cache.put(request, response.clone());
-      return response;
-    }
-  } catch (error) {
-    // Return offline page if available
-    return caches.match('/offline.html');
+  // Try cache first for fast response
+  const cachedResponse = await caches.match(request);
+  const fetchPromise = fetch(request)
+    .then(networkResponse => {
+      if (isValidResponse(networkResponse)) {
+        caches.open(CACHE_STRATEGIES.DYNAMIC.name).then(cache => {
+          cache.put(request, networkResponse.clone());
+        });
+        return networkResponse;
+      }
+      return null;
+    })
+    .catch(() => null);
+
+  // If we have a cached response, return it immediately and update cache in background
+  if (cachedResponse) {
+    fetchPromise.catch(() => {}); // Fire and forget
+    return cachedResponse;
   }
+
+  // If no cache, wait for network
+  const networkResponse = await fetchPromise;
+  if (networkResponse) {
+    return networkResponse;
+  }
+
+  // If both fail, serve offline page
+  const offlineResponse = await caches.match('/offline.html');
+  if (offlineResponse) {
+    console.log('[Service Worker] Serving offline page');
+    return offlineResponse;
+  }
+
+  // Last resort - return a basic HTML response
+  return new Response(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>App Loading...</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial,sans-serif;">
+        <div style="text-align:center;">
+          <h2>Loading Application...</h2>
+          <p>Please wait while the app loads, or <a href="javascript:location.reload()">refresh the page</a>.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html' }
+  });
 }
 
 // Handle static asset requests

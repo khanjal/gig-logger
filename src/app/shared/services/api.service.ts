@@ -8,6 +8,7 @@ import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
 import { LoggerService } from './logger.service';
+import { getCurrentUserId } from '@utils/user-id.util';
 
 @Injectable({
     providedIn: 'root'
@@ -64,6 +65,12 @@ export class ApiService {
         const accessToken = this._secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
         if (accessToken) {
             headers = headers.set('Authorization', `Bearer ${accessToken}`);
+        }
+
+        // Add UserId header for rate limiting and user identification (like Places API)
+        const userId = getCurrentUserId();
+        if (userId) {
+            headers = headers.set('UserId', userId);
         }
         
         return headers;
@@ -166,7 +173,7 @@ export class ApiService {
     // FILE METHODS
     // ========================================
     
-    public async createFile(properties: ISheetProperties): Promise<ISheet | null> {
+    public async createFile(properties: ISheetProperties): Promise<ISheetProperties | null> {
         try {
             const response = await firstValueFrom(
                 this._http.post<any>(

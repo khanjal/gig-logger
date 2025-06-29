@@ -4,4 +4,5 @@ export interface ISearchItem {
   saved: boolean;
   value: string;
   trips?: number;
+  placeId?: string; // For Google Places integration
 }

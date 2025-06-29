@@ -1,0 +1,10 @@
+.custom-modalbox .mat-dialog-container {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  display: flex !important;
+  min-height: unset !important;
+  top: 0 !important;
+  margin-top: 2rem !important;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}

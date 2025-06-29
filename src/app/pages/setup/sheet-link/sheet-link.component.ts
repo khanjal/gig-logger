@@ -36,8 +36,11 @@ export class SheetLinkComponent {
   openCreateSheetDialog() {
     const dialogRef = this.dialog.open(SheetCreateComponent, {
       width: '400px',
-      height: '150px',
-      panelClass: 'custom-modalbox'
+      height: '200px',
+      panelClass: 'custom-modalbox',
+      position: {
+        top: '125px' // Adjust this value to position the dialog higher
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -48,7 +51,12 @@ export class SheetLinkComponent {
           this._snackBar.open('Error creating sheet', 'Close');
         } else {
           // Handle success
-          this.linkSheet(result);
+          let sheetData = {} as ISheet;
+          sheetData.properties = {
+            id: result.id,
+            name: result.name
+          };
+          this.linkSheet(sheetData);
           this._logger.info('Sheet created successfully', { result });
           this._snackBar.open('Sheet created successfully', 'Close');
           this.parentReload.emit(); // Emit event to reload parent component

@@ -1,20 +1,23 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { ITrip } from '@interfaces/trip.interface';
-import { ActionEnum } from '@enums/action.enum'; 
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TripFormComponent } from '@components/trips/trip-form/trip-form.component';
-import { TripService } from '@services/sheets/trip.service';
-import { ShiftService } from '@services/sheets/shift.service';
-import { DateHelper } from '@helpers/date.helper';
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
-import { GigWorkflowService } from '@services/gig-workflow.service';
-import { updateAction } from '@utils/action.utils';
 import { MatIcon } from '@angular/material/icon';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import { MatFabButton } from '@angular/material/button';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { ActionEnum } from '@enums/action.enum';
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { ITrip } from '@interfaces/trip.interface';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
+import { DateHelper } from '@helpers/date.helper';
+import { UnitHelper } from '@helpers/unit.helper';
+import { updateAction } from '@utils/action.utils';
+import { GigWorkflowService } from '@services/gig-workflow.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+
+import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
@@ -23,27 +26,65 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatFabButton, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
+  @Input() index: number = 0;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
-
+  
+  // Distance unit properties
+  get distanceUnit(): string {
+    return UnitHelper.getPreferredDistanceUnit();
+  }
+  
+  get distanceDisplay(): string {
+    return UnitHelper.formatDistance(this.trip.distance);
+  }
+  
   constructor(
         public dialog: MatDialog,
         private _snackBar: MatSnackBar,
         private _gigLoggerService: GigWorkflowService,
         private _tripService: TripService,
         private _shiftService: ShiftService,
+        private _router: Router,
       ) { }
-   
+      
+  /**
+   * Convert distance value based on unit preference
+   * Delegates to UnitHelper for consistency across the app
+   */
+  convertDistance(distance: number): number {
+    return UnitHelper.convertDistance(distance);
+  }
+  
+  /**
+   * Format distance for display with appropriate unit
+   */
+  formatDistance(distance: number): string {
+    return UnitHelper.formatDistance(distance);
+  }
+  
+  /**
+   * Demo method to toggle between units (for future use)
+   * This shows how unit switching would work when user preferences are implemented
+   */
+  toggleDistanceUnit(): void {
+    const currentUnit = UnitHelper.getPreferredDistanceUnit();
+    const newUnit = currentUnit === 'mi' ? 'km' : 'mi';
+    UnitHelper.setPreferredDistanceUnit(newUnit);
+    // Note: This won't persist yet since user preferences aren't implemented
+    // but it demonstrates the intended functionality
+  }
+
   ngOnInit() {
     this.setExpansionState();
     this.prefers24Hour = DateHelper.prefers24Hour();
@@ -136,6 +177,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     
     // Emit the trip rowId to scroll to this specific trip (matches the HTML id attribute)
     this.scrollToTrip.emit(this.trip.rowId?.toString());
+    // Notify parent to reload and update unsaved state
+    this.parentReload.emit();
   }
 
   async setPickupTime() {
@@ -172,23 +215,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
     this.parentReload.emit();
   }
-
   async openTripDialog() {
-    this.pollingToggle.emit(false);
-    let dialogRef = this.dialog.open(TripFormComponent, {
-      data: this.trip,
-      height: '600px',
-      width: '500px',
-      panelClass: 'custom-modalbox',
-      autoFocus: true,
-      position: {
-        top: '25px' // Adjust this value to position the dialog higher
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      this.pollingToggle.emit(true);
-      this.parentReload.emit();
-    });
+    // Navigate to trips page with edit mode and trip rowId
+    this._router.navigate(['/trips/edit', this.trip.rowId]);
   }
 }

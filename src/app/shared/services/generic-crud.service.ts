@@ -24,6 +24,10 @@ export class GenericCrudService<T> implements ICrudService<T> {
         return await this.table.where("id").equals(id).first();
     }
 
+    public async getByRowId(rowId: number): Promise<T | undefined> {
+        return await this.table.where("rowId").equals(rowId).first();
+    }
+
     public async includes(field: keyof T, value: string): Promise<T[]> {
         const allItems = await this.table.toArray();
         return allItems.filter(item => {

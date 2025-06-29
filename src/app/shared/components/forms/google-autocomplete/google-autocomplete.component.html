@@ -1,0 +1,25 @@
+<div class="autocomplete-container">
+  <input #address
+         [value]="addressForm.controls.address.value"
+         [placeholder]="placeholder"
+         (input)="onTextChange()"
+         (focus)="onInputFocus()"
+         (blur)="onInputBlur()"
+         class="autocomplete-input"
+         autocomplete="off">
+  
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Searching...
+  </div>
+  
+  <!-- Suggestions dropdown -->
+  <div *ngIf="showSuggestions && suggestions.length > 0" class="suggestions-container">
+    <div *ngFor="let suggestion of suggestions" 
+         class="suggestion-item"
+         (click)="selectSuggestion(suggestion)">
+      <div class="suggestion-main">{{ suggestion.place }}</div>
+      <div class="suggestion-secondary">{{ suggestion.address }}</div>
+    </div>
+  </div>
+</div>
