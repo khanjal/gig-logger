@@ -1,4 +1,19 @@
+@use '../../../styles/color-vars.scss' as colors;
+
 // Hide checkmarks in shift dropdown
 ::ng-deep .mat-pseudo-checkbox {
   display: none !important;
+}
+
+.address-button--selected, .name-button--selected {
+  background-color: colors.$primary-50 !important;
+  border-color: colors.$primary-200 !important;
+  color: colors.$primary-600 !important;
+  font-weight: 500;
+}
+
+.address-button:not(.address-button--selected):hover,
+.name-button:not(.name-button--selected):hover {
+  background-color: colors.$primary-50;
+  border-color: colors.$primary-200;
 }
