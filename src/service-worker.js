@@ -140,32 +140,41 @@ async function handleApiRequest(request) {
   });
 }
 
-// Handle HTML requests
+// Handle HTML requests with stale-while-revalidate strategy
 async function handleHtmlRequest(request) {
-  try {
-    // Always try network first for HTML to avoid stale content
-    const networkResponse = await fetch(request);
-    if (isValidResponse(networkResponse)) {
-      const cache = await caches.open(CACHE_STRATEGIES.DYNAMIC.name);
-      cache.put(request, networkResponse.clone());
-      return networkResponse;
-    }
-  } catch (error) {
-    // If network fails, try cache
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      console.log('[Service Worker] Serving HTML from cache due to network error');
-      return cachedResponse;
-    }
-    
-    // If both fail, serve offline page
-    const offlineResponse = await caches.match('/offline.html');
-    if (offlineResponse) {
-      console.log('[Service Worker] Serving offline page');
-      return offlineResponse;
-    }
+  // Try cache first for fast response
+  const cachedResponse = await caches.match(request);
+  const fetchPromise = fetch(request)
+    .then(networkResponse => {
+      if (isValidResponse(networkResponse)) {
+        caches.open(CACHE_STRATEGIES.DYNAMIC.name).then(cache => {
+          cache.put(request, networkResponse.clone());
+        });
+        return networkResponse;
+      }
+      return null;
+    })
+    .catch(() => null);
+
+  // If we have a cached response, return it immediately and update cache in background
+  if (cachedResponse) {
+    fetchPromise.catch(() => {}); // Fire and forget
+    return cachedResponse;
   }
-  
+
+  // If no cache, wait for network
+  const networkResponse = await fetchPromise;
+  if (networkResponse) {
+    return networkResponse;
+  }
+
+  // If both fail, serve offline page
+  const offlineResponse = await caches.match('/offline.html');
+  if (offlineResponse) {
+    console.log('[Service Worker] Serving offline page');
+    return offlineResponse;
+  }
+
   // Last resort - return a basic HTML response
   return new Response(`
     <!DOCTYPE html>

@@ -95,12 +95,11 @@ export class SearchInputComponent implements OnDestroy {
   set value(val: string) {
     const currentValue = this.searchForm.controls.searchInput.value || '';
     if (currentValue !== val) {
-      this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
-      this.onChange(val);
+      this.searchForm.controls.searchInput.setValue(val, { emitEvent: true });
     }
   }
   writeValue(value: string): void {
-    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: false });
+    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: true });
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -140,22 +139,19 @@ export class SearchInputComponent implements OnDestroy {
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     const value = target.value;
-    this.searchForm.controls.searchInput.setValue(value, { emitEvent: false });
-    this.onChange(value);
+    this.searchForm.controls.searchInput.setValue(value, { emitEvent: true });
     this.valueChanged.emit(value);
   }
   onBlur(): void {
     const trimmedValue = this.value.trim();
     if (this.value !== trimmedValue) {
-      this.searchForm.controls.searchInput.setValue(trimmedValue, { emitEvent: false });
-      this.onChange(trimmedValue);
+      this.searchForm.controls.searchInput.setValue(trimmedValue, { emitEvent: true });
     }
     this.onTouched();
     this.valueChanged.emit(trimmedValue);
   }
   public onClear(): void {
-    this.searchForm.controls.searchInput.setValue('', { emitEvent: false });
-    this.onChange('');
+    this.searchForm.controls.searchInput.setValue('', { emitEvent: true });
     this.googlePredictionsCache.clear();
   }
   async onInputSelect(inputValue: string): Promise<void> {
@@ -178,8 +174,7 @@ export class SearchInputComponent implements OnDestroy {
       }
     }
     
-    this.searchForm.controls.searchInput.setValue(finalAddress, { emitEvent: false });
-    this.onChange(finalAddress);
+    this.searchForm.controls.searchInput.setValue(finalAddress, { emitEvent: true });
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
