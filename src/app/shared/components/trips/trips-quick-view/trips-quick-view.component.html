@@ -73,11 +73,12 @@
     <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || (trip.type && trip.type !== '') || trip.distance">
       <!-- Type (left) -->
       <span *ngIf="trip.type && trip.type !== ''" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{trip.type}}</span>
-      <!-- Place -> Name (center) -->
-      <div class="flex-1 flex justify-center items-center gap-2 min-w-0 overflow-hidden">
-        <span *ngIf="trip.place">{{trip.place | truncate:40}}</span>
-        <span *ngIf="trip.place && trip.name"> → </span>
-        <span *ngIf="trip.name">{{trip.name | truncate:40}}</span>
+      <!-- Place -> Name (center, stacks vertically on small screens or if too long) -->
+      <div class="flex-1 flex flex-col sm:flex-row justify-center items-center gap-1 min-w-0 overflow-hidden">
+        <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
+        <span *ngIf="trip.place && trip.name" class="hidden sm:inline"> → </span>
+        <span *ngIf="trip.place && trip.name" class="sm:hidden"> → </span>
+        <span *ngIf="trip.name" class="truncate max-w-full">{{trip.name | truncate:40}}</span>
       </div>
       <!-- Distance (right) -->
       <span *ngIf="trip.distance" class="flex items-center gap-1 flex-shrink-0 ml-2">

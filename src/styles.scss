@@ -413,3 +413,12 @@ a {
 .modal-backdrop {
   @include setup-modal-backdrop('medium');
 }
+
+/* Floating Back to Top Button */
+.floating-back-to-top {
+  position: fixed !important;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  /* Responsive: adjust for mobile if needed */
+}
