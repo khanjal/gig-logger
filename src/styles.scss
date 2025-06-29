@@ -1,8 +1,3 @@
-/* Tailwind CSS imports */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Global Variables and Mixins */
 @import "color-vars";
 @import "app/shared/styles/modal-mixins";
@@ -11,6 +6,11 @@
 @import "app/shared/styles/components";
 @import "app/shared/styles/tables";
 @import "app/pages/setup/sheet-link/custom-modalbox";
+
+/* Tailwind CSS imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Reset and Base Styles */
 *,
