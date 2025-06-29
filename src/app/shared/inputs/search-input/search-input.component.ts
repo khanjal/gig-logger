@@ -95,11 +95,11 @@ export class SearchInputComponent implements OnDestroy {
   set value(val: string) {
     const currentValue = this.searchForm.controls.searchInput.value || '';
     if (currentValue !== val) {
-      this.searchForm.controls.searchInput.setValue(val, { emitEvent: true });
+      this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     }
   }
   writeValue(value: string): void {
-    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: true });
+    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: false });
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -139,19 +139,19 @@ export class SearchInputComponent implements OnDestroy {
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     const value = target.value;
-    this.searchForm.controls.searchInput.setValue(value, { emitEvent: true });
+    this.setInputValue(value);
     this.valueChanged.emit(value);
   }
   onBlur(): void {
     const trimmedValue = this.value.trim();
     if (this.value !== trimmedValue) {
-      this.searchForm.controls.searchInput.setValue(trimmedValue, { emitEvent: true });
+      this.setInputValue(trimmedValue);
     }
     this.onTouched();
     this.valueChanged.emit(trimmedValue);
   }
   public onClear(): void {
-    this.searchForm.controls.searchInput.setValue('', { emitEvent: true });
+    this.setInputValue('');
     this.googlePredictionsCache.clear();
   }
   async onInputSelect(inputValue: string): Promise<void> {
@@ -173,8 +173,8 @@ export class SearchInputComponent implements OnDestroy {
         // Error getting full address with zip; fall back to original value
       }
     }
-    
-    this.searchForm.controls.searchInput.setValue(finalAddress, { emitEvent: true });
+    // Use emitEvent: false to avoid triggering valueChanges and duplicate API calls
+    this.setInputValue(finalAddress);
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
@@ -389,5 +389,10 @@ export class SearchInputComponent implements OnDestroy {
   private isGoogleAllowed(): boolean {
     const hostname = window.location.hostname;
     return hostname.includes('gig-test') || hostname === 'localhost';
+  }
+
+  private setInputValue(val: string) {
+    this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
+    this.onChange(val);
   }
 }
