@@ -20,20 +20,17 @@ export class DurationFormatPipe implements PipeTransform {
           const minutes = parseInt(match[2], 10);
           // Only use hours and minutes for display (ignore seconds)
           return `${hours}:${minutes.toString().padStart(2, '0')}`;
-        } else if (value.includes(':')) {
-          // Already formatted as m:ss or h:mm
-          // If it's m:ss or h:mm, trim off seconds if present
+        } else {
+          // Already formatted as m:ss or h:mm:ss
           const parts = value.split(':');
           if (parts.length === 2) {
-            // m:ss, show as m:00
-            return `${parseInt(parts[0], 10)}:00`;
+            // m:ss, show as m:ss
+            return `${parseInt(parts[0], 10)}:${parts[1].padStart(2, '0')}`;
           } else if (parts.length === 3) {
             // h:mm:ss, show as h:mm
             return `${parseInt(parts[0], 10)}:${parts[1].padStart(2, '0')}`;
           }
           return value;
-        } else {
-          totalSeconds = parseInt(value, 10);
         }
       } else {
         totalSeconds = parseInt(value, 10);

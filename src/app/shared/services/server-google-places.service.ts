@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { environment } from 'src/environments/environment';
 import { LoggerService } from './logger.service';
 import { getCurrentUserId } from '@utils/user-id.util';
+import { firstValueFrom } from 'rxjs';
 
 export interface AutocompleteResult {
   place: string;
@@ -97,11 +98,11 @@ export class ServerGooglePlacesService {
         userLatitude: userLat,
         userLongitude: userLng
       };
-      const response = await this.http.post<AutocompleteResult[]>(
+      const response = await firstValueFrom(this.http.post<AutocompleteResult[]>(
         `${this.baseUrl}/places/autocomplete`, 
         request,
         this.setOptions()
-      ).toPromise();
+      ));
       const results = response || [];
       this.autocompleteCache.set(cacheKey, { results, timestamp: now });
       return results;
@@ -130,11 +131,11 @@ export class ServerGooglePlacesService {
         placeId,
         userId: getCurrentUserId()
       };
-      const details = await this.http.post<PlaceDetails>(
+      const details = await firstValueFrom(this.http.post<PlaceDetails>(
         `${this.baseUrl}/places/details`, 
         request,
         this.setOptions()
-      ).toPromise() || null;
+      )) || null;
       if (details) {
         this.placeDetailsCache.set(placeId, { details, timestamp: now });
       }
@@ -151,10 +152,10 @@ export class ServerGooglePlacesService {
   async getUserUsage(): Promise<UserApiUsage | null> {
     try {
       const userId = getCurrentUserId();
-      return await this.http.get<UserApiUsage>(
+      return await firstValueFrom(this.http.get<UserApiUsage>(
         `${this.baseUrl}/places/usage/${userId}`,
         this.setOptions()
-      ).toPromise() || null;
+      )) || null;
     } catch (error) {
       this.handleError(error);
       return null;

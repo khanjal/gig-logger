@@ -78,9 +78,7 @@ export class AuthGoogleService {
       this.profile$.next(profile);
       
       // Store user ID for rate limiting and API usage
-      if (profile.sub) {
-        localStorage.setItem('authenticatedUserId', profile.sub);
-      }
+      this.storeUserId(profile);
       
       // Set authentication state in localStorage
       this.setAuthenticationState(true);
@@ -116,9 +114,7 @@ export class AuthGoogleService {
       this.profile$.next(profile);
       
       // Store user ID for rate limiting and API usage
-      if (profile.sub) {
-        localStorage.setItem('authenticatedUserId', profile.sub);
-      }
+      this.storeUserId(profile);
       
       // Update authentication state
       this.setAuthenticationState(true);
@@ -235,5 +231,11 @@ export class AuthGoogleService {
 
   getAccessToken(): string | null {
     return this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+  }
+
+  private storeUserId(profile: UserProfile | null): void {
+    if (profile?.sub) {
+      localStorage.setItem('authenticatedUserId', profile.sub);
+    }
   }
 }
