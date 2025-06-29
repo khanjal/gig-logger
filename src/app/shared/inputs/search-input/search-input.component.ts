@@ -271,7 +271,22 @@ export class SearchInputComponent implements OnDestroy {
 
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     if (!value || value.length === 0) {
-      return await this.getAllItemsForType();
+      // If no value, get all items for type, and if empty, try JSON fallback
+      let items = await this.getAllItemsForType();
+      if (items.length === 0) {
+        switch (this.searchType) {
+          case 'Place':
+            items = await searchJson('places', value);
+            break;
+          case 'Service':
+            items = await searchJson('services', value);
+            break;
+          case 'Type':
+            items = await searchJson('types', value);
+            break;
+        }
+      }
+      return items;
     }
     switch (this.searchType) {
       case 'Address':
