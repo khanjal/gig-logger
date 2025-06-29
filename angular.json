@@ -27,7 +27,10 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.json",
-              "src/offline.html"
+              "src/offline.html",
+              "src/error.html",
+              "src/.htaccess",
+              "src/_redirects"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
@@ -38,7 +41,9 @@
                 "src/app/shared/styles"
               ]
             },
-            "scripts": [],
+            "scripts": [
+              "src/assets/js/sw-enhancement.js"
+            ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"
           },
@@ -69,7 +74,8 @@
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "crossOrigin": "anonymous"
             },
             "staging": {
               "budgets": [

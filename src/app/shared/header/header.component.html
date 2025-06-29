@@ -1,5 +1,6 @@
 <!-- Mobile-First PWA Header Component -->
-<header class="app-header">  <!-- Main Toolbar -->
+<header class="app-header">
+  <!-- Main Toolbar -->
   <mat-toolbar class="main-toolbar" [color]="getToolbarColor()">
     <!-- Menu Button -->
     <div class="toolbar-section toolbar-section--menu">
@@ -26,13 +27,14 @@
       </a>
       
       <!-- Authenticated user navigation -->
-      <ng-container *ngIf="isAuthenticated">
+      <ng-container *ngIf="isAuthenticated && defaultSheet">
         <a routerLink="/trips" 
            class="action-button" 
            aria-label="View trips"
            matTooltip="Trips"
            matTooltipPosition="below">
           <mat-icon>navigation</mat-icon>
+          <span *ngIf="unsavedTripsCount > 0" class="notification-badge">{{ unsavedTripsCount }}</span>
         </a>
         <a routerLink="/shifts" 
            class="action-button" 
@@ -40,6 +42,7 @@
            matTooltip="Shifts"
            matTooltipPosition="below">
           <mat-icon>today</mat-icon>
+          <span *ngIf="unsavedShiftsCount > 0" class="notification-badge">{{ unsavedShiftsCount }}</span>
         </a>
         <a routerLink="/stats" 
            class="action-button" 
@@ -74,7 +77,7 @@
          aria-label="Main menu">
       
       <div class="menu-header">
-        <h2 id="menu-title" class="menu-title">Menu</h2>
+        <h2 id="menu-title" class="menu-title">Raptor Gig</h2>
         <button (click)="closeMenu()" 
                 class="menu-close" 
                 aria-label="Close menu">
@@ -94,7 +97,7 @@
           </a>
           
           <!-- Authenticated user navigation items -->
-          <ng-container *ngIf="isAuthenticated">
+          <ng-container *ngIf="isAuthenticated && defaultSheet">
             <a routerLink="/trips" 
                (click)="closeMenu()"
                class="menu-item"
@@ -113,7 +116,7 @@
         </div>
         
         <!-- Tools section - only for authenticated users -->
-        <div class="menu-section" *ngIf="isAuthenticated">
+        <div class="menu-section" *ngIf="isAuthenticated && defaultSheet">
           <h3 class="menu-section-title">Tools</h3>
           <a routerLink="/stats" 
              (click)="closeMenu()"

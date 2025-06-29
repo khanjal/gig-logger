@@ -33,7 +33,7 @@ export class GigWorkflowService {
     }
 
     // File Methods - Delegate to API Service
-    public async createFile(properties: ISheetProperties): Promise<ISheet | null> {
+    public async createFile(properties: ISheetProperties): Promise<ISheetProperties | null> {
         return this._apiService.createFile(properties);
     }
 

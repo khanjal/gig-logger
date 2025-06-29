@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller, NgClass, NgIf, CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -46,20 +47,32 @@ export class TripComponent implements OnInit, OnDestroy {
 
   demoSheetId = environment.demoSheet;
 
+  // Google Places API is now handled server-side through Lambda for:
+  // - Better security (API keys protected)
+  // - Cost control and user quotas
+  // - Compliance with Google ToS
+  // - Rate limiting and usage tracking
+  
   clearing: boolean = false;
-  reloading: boolean = false;  saving: boolean = false;
+  reloading: boolean = false;
+  saving: boolean = false;
   pollingEnabled: boolean = false;
   showBackToTop: boolean = false; // Controls the visibility of the "Back to Top" button
   showYesterdayTrips: boolean = false; // Controls the visibility of yesterday's trips section
+  // Edit mode properties
+  isEditMode: boolean = false;
+  editingTripId: string | null = null;
+  isLoading: boolean = false; // General loading overlay state
 
   savedTrips: ITrip[] = [];
   todaysTrips: ITrip[] = [];
-  yesrterdaysTrips: ITrip[] = [];
+  yesterdaysTrips: ITrip[] = [];
   unsavedData: boolean = false;
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
   parentReloadSubscription!: Subscription;
+  
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
@@ -70,7 +83,9 @@ export class TripComponent implements OnInit, OnDestroy {
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
       private viewportScroller: ViewportScroller,
-      private logger: LoggerService
+      private logger: LoggerService,
+      private _route: ActivatedRoute,
+      private _router: Router
     ) { }
   ngOnDestroy(): void {
     this._pollingService.stopPolling();
@@ -82,21 +97,58 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    // Check if we're in edit mode based on route
+    this._route.paramMap.subscribe(params => {
+      const tripId = params.get('id');
+      if (tripId) {
+        this.isEditMode = true;
+        this.editingTripId = tripId;
+      } else {
+        this.isEditMode = false;
+        this.editingTripId = null;
+      }
+    });
+
+    // Load polling preference from localStorage
+    const savedPollingState = localStorage.getItem('pollingEnabled');
+    this.pollingEnabled = savedPollingState ? JSON.parse(savedPollingState) : false;
+
     await this.load();
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
-    this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
-      await this.reload();
+    
+    // Load trip data for editing if in edit mode
+    if (this.isEditMode && this.editingTripId) {
+      await this.loadTripForEditing();
+    }
+    
+    // Start polling if it was previously enabled
+    if (this.pollingEnabled) {
+      await this.startPolling();
+    }
+      this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
+      await this.reload(undefined, true); // Pass true to indicate this is a parent reload
     });
   }
 
-  public async load() {
+  public async load(showSpinner: boolean = true) {
+    if (showSpinner) {
+      this.isLoading = true;
+    }
+    
     this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
     this.todaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
-    this.yesrterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1))));
+    this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1))));
 
     await this.average?.load();
     await this.tripsTable?.load();
     this.tripForm?.load();
+    
+    // Small delay to ensure smooth loading experience
+    if (showSpinner) {
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 400);
+    }
   }
 
   // Listen for scroll events
@@ -107,8 +159,9 @@ export class TripComponent implements OnInit, OnDestroy {
     const formHeight = formElement ? formElement.offsetHeight / 2 : 0;
 
     // Show the button if scrolled past the form
-    this.showBackToTop = scrollPosition > formHeight;
+    this.showBackToTop = (scrollPosition > formHeight) && !this.editingTripId;
   }  // Scroll to the top of the page
+
   scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 0]);
   }
@@ -143,11 +196,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Legacy method for backward compatibility
-  scrollToTodaysTrips(): void {
-    this.scrollToTrip();
-  }
-
   async loadSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',
@@ -157,7 +205,6 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-
         if (result) {
             await this.reload("todaysTrips");
         }
@@ -231,8 +278,7 @@ export class TripComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  async reload(anchor?: string) {
+  async reload(anchor?: string, isParentReload: boolean = false) {
     let sheetId = this.defaultSheet?.id;
     if (!sheetId) {
       return;
@@ -240,7 +286,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
     this.reloading = true;
 
-    await this.load();
+    await this.load(!isParentReload); // Don't show spinner if it's a parent reload
     await this._gigLoggerService.calculateShiftTotals();
 
     this.reloading = false;
@@ -249,9 +295,11 @@ export class TripComponent implements OnInit, OnDestroy {
       this._viewportScroller.scrollToAnchor(anchor);
     }
   }
-
   async changePolling() {
     this.pollingEnabled = !this.pollingEnabled;
+
+    // Save polling preference to localStorage
+    localStorage.setItem('pollingEnabled', JSON.stringify(this.pollingEnabled));
 
     if (this.pollingEnabled) {
       await this.startPolling();
@@ -272,5 +320,46 @@ export class TripComponent implements OnInit, OnDestroy {
   stopPolling() {
     this.logger.debug('Stopping polling');
     this._pollingService.stopPolling();
+  }
+
+  async loadTripForEditing() {
+    if (!this.editingTripId) return;
+    
+    this.isLoading = true;
+    
+    try {
+      const tripId = parseInt(this.editingTripId);
+      const trip = await this._tripService.getByRowId(tripId);
+      if (trip && this.tripForm) {
+        this.tripForm.data = trip;
+        await this.tripForm.load();
+        this.scrollToTop();
+      }
+    } catch (error) {
+      console.error('Error loading trip for editing:', error);
+      this._router.navigate(['/trips']);
+    }
+    
+    // Small delay for smooth transition
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 200);
+  }
+  async exitEditMode(scrollToTripId?: string) {
+    this.isEditMode = false;
+    this.editingTripId = null;
+    this._router.navigate(['/trips']);
+    
+    if (this.tripForm) {
+      await this.tripForm.formReset();
+    }
+
+    await this.load(); // This handles the overlay timing
+    
+    if (scrollToTripId) {
+      this.scrollToTrip(scrollToTripId);
+    } else {
+      this.scrollToTrip();
+    }
   }
 }

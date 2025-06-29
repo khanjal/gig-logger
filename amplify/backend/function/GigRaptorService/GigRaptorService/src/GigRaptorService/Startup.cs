@@ -1,5 +1,6 @@
 ﻿using GigRaptorService.Middlewares;
 using GigRaptorService.Services;
+using GigRaptorService.Business;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using Amazon.S3;
@@ -77,6 +78,15 @@ public class Startup
 
         // Register HTTP client factory
         services.AddHttpClient();
+        
+        // Register Google Places service with DynamoDB rate limiter
+        services.AddSingleton<DynamoDbRateLimiter>(sp =>
+        {
+            var dynamoDbClient = sp.GetRequiredService<Lazy<IAmazonDynamoDB>>();
+            return new DynamoDbRateLimiter(dynamoDbClient, "UserApiLimits", 1000, TimeSpan.FromDays(30)); // 1000 requests per month
+        });
+        
+        services.AddScoped<IGooglePlacesService, GooglePlacesService>();
 
         // Register AWS services with default options
         // This helps with credentials and region configuration for all AWS services

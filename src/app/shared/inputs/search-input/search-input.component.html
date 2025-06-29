@@ -1,16 +1,15 @@
 <form [formGroup]="searchForm">
-    <div class="search-input-wrapper" 
-         [class.show-compact-menu]="hasAvailableActions((filteredItems | async)?.length)">
-        <mat-form-field class="field-full-width" appearance="outline">
+    <mat-form-field class="field-full-width" appearance="outline">
             <mat-label>{{fieldName}}</mat-label>
+            <!-- Single input with conditional autocomplete behavior -->
             <input 
                 matInput
                 type="text"
                 [matAutocomplete]="autoInput"
                 formControlName="searchInput"
                 (input)="onInputChange($event)"
+                (focus)="onFocus()"
                 (blur)="onBlur()"
-                (focus)="onInputFocus($event)"
                 [required]="isRequired"
                 focus-scroll
                 #searchInput
@@ -18,37 +17,46 @@
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
                 <cdk-virtual-scroll-viewport 
                     [itemSize]="48" 
-                    [style.height.px]="getViewportHeight(filteredItems | async)" 
+                    [style.height.px]="getViewportHeight(filteredItemsArray)" 
                     class="virtual-scroll-viewport"
                 >
                 <mat-option 
-                    *cdkVirtualFor="let item of filteredItems | async" 
+                    *cdkVirtualFor="let item of filteredItemsArray" 
                     [value]="item.name" 
                     (click)="onInputSelect(item.value)"
+                    class="search-result-option"
                     #matOption>
-                    {{ item.name }} {{ item.saved ? '(' + (item.trips ?? 0) + ')' : '' }}
+                    <div class="option-content">
+                        <span class="google-indicator" *ngIf="isGoogleResult(item)">
+                            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="google-logo">
+                                <path d="M17.64 9.20455C17.64 8.56827 17.5827 7.95455 17.48 7H9V10.7814H13.8436C13.635 11.97 13.0009 12.9386 12.0477 13.5614V15.8195H13.9564C16.6581 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4"/>
+                                <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5614C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8377 3.96409 10.71H1.95727V13.0418C4.43591 13.9836 6.64773 18 9 18Z" fill="#34A853"/>
+                                <path d="M3.96409 10.71C4.08727 10.328 4 9.52273 4 9C4 8.47273 4.08727 7.67273 3.96409 7.29V4.95818H0.957273C0.347727 6.17364 0 7.54545 0 9C0 10.4545 0.347727 11.8264 0.957273 13.0418L3.96409 10.71Z" fill="#FBBC05"/>
+                                <path d="M9 4.57955C10.3218 4.57955 11.5079 5.03364 12.4409 5.92545L15 3.36364C13.4564 1.95 11.2309 1 9 1C6.64773 1 4.43591 3.01636 1.95727 4.95818L3.96409 7.29C4.67182 5.16227 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
+                            </svg>
+                        </span>
+                        <span class="trips-indicator" *ngIf="item.saved && item.trips > 0">
+                            ({{ item.trips }})
+                        </span>
+                        <span class="option-text">{{ item.name }}</span>
+                    </div>
                 </mat-option>
                 </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
-              <!-- Standard buttons (inside form field) - shown on all screens except very small -->
+
+            <!-- Google Maps icon - shown when rate limited -->
             <button class="mat-icon-button standard-button" 
-                    *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" 
+                    *ngIf="showGoogleMapsIcon" 
                     color="primary" 
                     matSuffix 
                     mat-icon-button 
-                    aria-label="Search Google" 
-                    (click)="onSearch(); $event.stopPropagation(); $event.preventDefault()">
-                <mat-icon>search</mat-icon>
-            </button>
-            <button class="mat-icon-button standard-button" 
-                    *ngIf="!showSearch && value && googleSearch" 
-                    color="primary" 
-                    matSuffix 
-                    mat-icon-button 
-                    aria-label="Google Maps" 
-                    (click)="openMap(); $event.stopPropagation(); $event.preventDefault()">
+                    aria-label="Search in Google Maps" 
+                    title="API quota exceeded - search in Google Maps"
+                    (click)="openGoogleMaps(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>map</mat-icon>
             </button>
+
+            <!-- Standard buttons (inside form field) - shown on all screens except very small -->
             <button class="mat-icon-button standard-button" 
                     *ngIf="value" 
                     color="accent" 
@@ -58,32 +66,5 @@
                     (click)="onClear(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>clear</mat-icon>
             </button>
-            
-            <!-- Compact menu button (inside form field as suffix) - shown only on very small screens with 2+ actions -->
-            <button class="mat-icon-button compact-menu-button" 
-                    *ngIf="hasAvailableActions((filteredItems | async)?.length)"
-                    matSuffix 
-                    mat-icon-button 
-                    [matMenuTriggerFor]="actionsMenu"
-                    aria-label="Search Actions"
-                    (click)="$event.stopPropagation(); $event.preventDefault()">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            
-            <mat-menu #actionsMenu="matMenu" class="search-actions-menu">
-                <button mat-menu-item *ngIf="showSearch && value && googleSearch && (filteredItems | async)?.length === 0" (click)="onSearch()">
-                    <mat-icon>search</mat-icon>
-                    <span>Search Google</span>
-                </button>
-                <button mat-menu-item *ngIf="!showSearch && value && googleSearch" (click)="openMap()">
-                    <mat-icon>map</mat-icon>
-                    <span>Open Map</span>
-                </button>
-                <button mat-menu-item *ngIf="value" (click)="onClear()">
-                    <mat-icon>clear</mat-icon>
-                    <span>Clear Field</span>
-                </button>
-            </mat-menu>
         </mat-form-field>
-    </div>
 </form>

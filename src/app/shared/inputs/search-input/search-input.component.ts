@@ -1,6 +1,6 @@
 // Angular core imports
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
@@ -10,17 +10,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-
-// Application-specific imports - Components
-import { AddressDialogComponent } from '@components/forms/address-dialog/address-dialog.component';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
-
-// Application-specific imports - Helpers
-import { AddressHelper } from '@helpers/address.helper';
-import { StringHelper } from '@helpers/string.helper';
 
 // Application-specific imports - Interfaces
 import { IAddressDialog } from '@interfaces/address-dialog.interface';
@@ -32,9 +24,6 @@ import { ISearchItem } from '@interfaces/search-item.interface';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
 
-// Application-specific imports - Pipes
-
-
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
 import { LoggerService } from '@services/logger.service';
@@ -43,16 +32,19 @@ import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
-import { GoogleAddressService } from '@services/google-address.service';
+import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 
 // RxJS imports
-import { Observable, startWith, switchMap } from 'rxjs';
+import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+
+// Utility imports
+import { createSearchItem, searchJson, isRateLimitError, isGoogleResult } from './search-input.utils';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [AsyncPipe, CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, MatMenuModule, ReactiveFormsModule, ScrollingModule],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -64,388 +56,343 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   ]
 })
 
-export class SearchInputComponent {
+export class SearchInputComponent implements OnDestroy {
+  // #region ViewChild, Inputs, Outputs, Form
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
   @Input() fieldName: string = '';
   @Input() searchType: string = '';
-  @Input() googleSearch: string | undefined; // Google search type (e.g., 'address', 'place', etc.)
-  @Input() isRequired: boolean = false; // Default is not required
-
+  @Input() googleSearch: string | undefined;
+  @Input() isRequired: boolean = false;
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
- 
-  // Callbacks for ControlValueAccessor
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
 
   searchForm = new FormGroup({
     searchInput: new FormControl('')
   });
+  // #endregion
 
+  // #region State & Constants
   filteredItems: Observable<ISearchItem[]> | undefined;
-  showSearch: boolean = false;
-  placeSearch: boolean = false;
+  filteredItemsArray: ISearchItem[] = [];
+  showGoogleMapsIcon = false;
+  private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
+  private readonly MAX_VISIBLE_ITEMS = 5;
+  private readonly ITEM_HEIGHT = 48;
+  private readonly BLUR_DELAY = 100;
+  private readonly DEBOUNCE_TIME = 300;
+  private googlePredictionsCache = new Map<string, ISearchItem[]>();
+  private searchSubscription?: Subscription;
+  // #endregion
+
+  // #region ControlValueAccessor
+  private onChange: (value: string) => void = () => {};
+  private onTouched: () => void = () => {};
+
+  get value(): string {
+    return this.searchForm.controls.searchInput.value || '';
+  }
+  set value(val: string) {
+    const currentValue = this.searchForm.controls.searchInput.value || '';
+    if (currentValue !== val) {
+      this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
+    }
+  }
+  writeValue(value: string): void {
+    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: false });
+  }
+  registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
+  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  setDisabledState?(isDisabled: boolean): void {}
+  // #endregion
+
+  // #region Lifecycle
   constructor(
     public dialog: MatDialog,
     private _addressService: AddressService,
-    private _logger: LoggerService,
     private _nameService: NameService,
     private _placeService: PlaceService,
     private _regionService: RegionService,
     private _serviceService: ServiceService,
     private _typeService: TypeService,
-    private _googleAddressService: GoogleAddressService
+    private _serverGooglePlacesService: ServerGooglePlacesService
   ) { }
 
   async ngOnInit(): Promise<void> {
-    if (this.isRequired) {
-      this.searchForm.controls.searchInput.setValidators([Validators.required]);
-    }
-
-    this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
-      startWith(''),
-      switchMap(async value => {
-        const trimmedValue = value || '';
-        return await this._filterItems(trimmedValue);
-      })
-    );
-
-    if (this.placeSearch) {
-      this.showSearch = true;
-    }
+    this.updateValidators();
+    this.setGoogleSearchType();
+    this.setupFilteredItems();
   }
-  
   async ngOnChanges(): Promise<void> {
-    if (this.isRequired) {
-      this.searchForm.controls.searchInput.setValidators([Validators.required]);
-    } else {
-      this.searchForm.controls.searchInput.clearValidators();
+    this.updateValidators();
+    this.setGoogleSearchType();
+    this.searchForm.controls.searchInput.updateValueAndValidity();
+  }
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
-
-    this.searchForm.controls.searchInput.updateValueAndValidity(); // Ensure the form control is updated
   }
+  // #endregion
 
-  // Getter and setter for the value
-  get value(): string {
-    return this.searchForm.controls.searchInput.value || '';
+  // #region Event Handlers
+  onInputChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    this.setInputValue(value);
+    this.valueChanged.emit(value);
   }
-
-  set value(val: string) {
-    this.searchForm.controls.searchInput.setValue(val); // Update the FormControl value
-    this.onChange(val); // Notify Angular forms of the change
-  }
-
-  // ControlValueAccessor methods
-  writeValue(value: string): void {
-    this.searchForm.controls.searchInput.setValue(value || ''); // Set the FormControl value
-  }
-
-  registerOnChange(fn: (value: string) => void): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState?(isDisabled: boolean): void {
-    // Handle the disabled state if needed
-  }
-
-  // Event handlers
   onBlur(): void {
-    this.value = this.value.trim(); // Trim the value
-    this.onTouched(); // Notify Angular forms that the input was touched
-    this.valueChanged.emit(this.value); // Emit the event to the parent
-  }
-
-  public onClear() {
-    this.value = '';
-  }
-
-  async onInputChange(event: Event): Promise<void> {
-    const inputValue = (event.target as HTMLInputElement).value;
-    this.value = inputValue; // Update the value
-    this._googleAddressService.clearAddressListeners(this.inputElement); // Clear any existing google listeners
-    
-    if (this.placeSearch) {
-      this.showSearch = true;
+    const trimmedValue = this.value.trim();
+    if (this.value !== trimmedValue) {
+      this.setInputValue(trimmedValue);
     }
+    this.onTouched();
+    this.valueChanged.emit(trimmedValue);
   }
-
+  public onClear(): void {
+    this.setInputValue('');
+    this.googlePredictionsCache.clear();
+  }
   async onInputSelect(inputValue: string): Promise<void> {
-    this.value = inputValue; // Update the value and trigger onChange
-
-    // Delay the blur to avoid race conditions
+    // Find the selected item to get place ID for Google results
+    const selectedItem = this.filteredItemsArray.find(item => 
+      item.name === inputValue || item.value === inputValue
+    );
+    
+    let finalAddress = inputValue;
+    
+    // If this is a Google address result with a place ID, get full address with zip
+    if (selectedItem?.placeId && this.searchType === 'Address') {
+      try {
+        const fullAddress = await this._serverGooglePlacesService.getFullAddressWithZip(selectedItem.placeId);
+        if (fullAddress) {
+          finalAddress = fullAddress;
+        }
+      } catch (error) {
+        // Error getting full address with zip; fall back to original value
+      }
+    }
+    // Use emitEvent: false to avoid triggering valueChanges and duplicate API calls
+    this.setInputValue(finalAddress);
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
-      }, 100); // Delay by 100ms
+      }, this.BLUR_DELAY);
     }
   }
-
-  /**
-   * Scrolls the closest scrollable parent to the top when the input is focused.
-   * Works for modals and main window. Handles virtual keyboard pop-up as well.
-   */
-  onInputFocus(event: FocusEvent) {
-    let el = (event.target as HTMLElement).parentElement;
-    // Traverse up to find the closest scrollable parent
-    while (el) {
-      const style = window.getComputedStyle(el);
-      const overflowY = style.overflowY;
-      if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
-        el.scrollTo({ top: 0, behavior: 'smooth' });
-        break;
-      }
-      el = el.parentElement;
-    }
-  }
-
-  onSearch() {
-    if (!this.googleSearch) {
-      return;
-    }
-
-    this.showSearch = false;
-    this._googleAddressService.getPlaceAutocomplete(
-      this.inputElement, this.googleSearch, (result: { place: string, address: string }) => {
-        if (this.googleSearch === 'address') {
-          this.value = result.address;
-        }
-        else {
-          this.value = result.place;
-          this.auxiliaryData.emit(result.address);
-        }
+  onFocus(): void {
+    const value = this.value;
+    this._filterItems(value).then(items => {
+      this.filteredItemsArray = items;
     });
-
-    setTimeout(() => {
-        this._googleAddressService.attachToModal();
-        this.inputElement.nativeElement.blur();
-        this.inputElement.nativeElement.focus();
-    }, 100);
   }
+  // #endregion
 
-  openMap() {
-    if (this.value) {
-      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.value)}`;
-      window.open(googleMapsUrl, '_blank');
+  // #region Public Methods
+  getViewportHeight(items?: ISearchItem[]): number {
+    const itemsToUse = items || this.filteredItemsArray;
+    if (!itemsToUse || itemsToUse.length === 0) {
+      return 0;
+    }
+    return Math.min(itemsToUse.length, this.MAX_VISIBLE_ITEMS) * this.ITEM_HEIGHT;
+  }
+  public openGoogleMaps(): void {
+    const searchQuery = encodeURIComponent(this.value || this.fieldName);
+    const baseUrl = 'https://www.google.com/maps/search/';
+    window.open(`${baseUrl}${searchQuery}`, '_blank');
+  }
+  public triggerRateLimitFallback(): void {
+    if (this.searchType === 'Address' || this.searchType === 'Place') {
+      console.log('Manually triggering rate limit fallback - showing Google Maps icon');
+      this.showGoogleMapsIcon = true;
+    }
+  }
+  // #endregion
+
+  // #region Private Helpers
+  private updateValidators(): void {
+    const control = this.searchForm.controls.searchInput;
+    if (this.isRequired) {
+      control.setValidators([Validators.required]);
     } else {
-      this._logger.warn('No value provided for Google Maps navigation');
+      control.clearValidators();
     }
   }
 
-  getViewportHeight(items: ISearchItem[] | null): number {
-    if (!items || items.length === 0) {
-      return 0; // No items, collapse the viewport
+  private setGoogleSearchType(): void {
+    if (this.searchType === 'Address') {
+      this.googleSearch = 'address';
+    } else if (this.searchType === 'Place') {
+      this.googleSearch = 'place';
     }
-  
-    const maxVisibleItems = 5; // Maximum number of items to show without scrolling
-    const itemHeight = 48; // Height of each item in pixels
-  
-    return Math.min(items.length, maxVisibleItems) * itemHeight;
   }
 
-  // Filter items based on the search type
-  private async _filterItems(value: string): Promise<ISearchItem[]> {
+  private setupFilteredItems(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+    this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
+      debounceTime(this.DEBOUNCE_TIME),
+      distinctUntilChanged(),
+      switchMap(async value => {
+        const trimmedValue = value?.trim() || '';
+        if (trimmedValue && this.showGoogleMapsIcon) {
+          this.showGoogleMapsIcon = false;
+        }
+        // No need to clear address listeners - server-side only now
+        return await this._filterItems(trimmedValue);
+      })
+    );
+    this.searchSubscription = this.filteredItems.subscribe(items => {
+      this.filteredItemsArray = items;
+    });
+    this.filteredItemsArray = [];
+  }
+
+  private async getAllItemsForType(): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
-        return (await this._filterAddress(value)).map(item => ({
-          id: item.id,
-          name: StringHelper.truncate(AddressHelper.getShortAddress(item.address, "", 1), 35),
-          saved: item.saved,
-          value: item.address,
-          trips: item.trips
-        }));
+        return (await this._filterAddress('')).map(item => createSearchItem(item, 'address'));
       case 'Name':
-        return (await this._filterName(value)).map(item => ({
-          id: item.id,
-          name: item.name,
-          saved: item.saved,
-          value: item.name,
-          trips: item.trips
-        }));
+        return (await this._filterName('')).map(item => createSearchItem(item, 'name'));
       case 'Place':
-        let places = (await this._filterPlace(value)).map(item => ({
-          id: item.id,
-          name: item.place,
-          saved: item.saved,
-          value: item.place,
-          trips: item.trips
-        }));
-
-        if (places.length === 0) {
-          places = await this.searchJson('places', value);
-        }
-
-        return places;
+        return (await this._filterPlace('')).map(item => createSearchItem(item, 'place'));
       case 'Region':
-        return (await this._filterRegion(value)).map(item => ({
-          id: item.id,
-          name: item.region,
-          saved: item.saved,
-          value: item.region,
-          trips: item.trips
-        }));
+        return (await this._filterRegion('')).map(item => createSearchItem(item, 'region'));
       case 'Service':
-        let services = (await this._filterService(value)).map(item => ({
-          id: item.id,
-          name: item.service,
-          saved: item.saved,
-          value: item.service,
-          trips: item.trips
-        }));
-
-        if (services.length === 0) {
-          services = await this.searchJson('services', value);
-        }
-
-        return services;
+        return (await this._filterService('')).map(item => createSearchItem(item, 'service'));
       case 'Type':
-        let types = (await this._filterType(value)).map(item => ({
-          id: item.id,
-          name: item.type,
-          saved: item.saved,
-          value: item.type,
-          trips: item.trips
-        }));
-
-        if (types.length === 0) {
-          types = await this.searchJson('types', value);
-        }
-
-        return types;
+        return (await this._filterType('')).map(item => createSearchItem(item, 'type'));
       default:
         return [];
     }
   }
 
-  private async searchJson(searchType: string, value: string ) {
-    let items = [];
-    const itemsJson = await fetch('/assets/json/'+searchType+'.json').then(res => res.json());
-    items = itemsJson
-      .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
-      .map((item: string) => ({
-        id: item,
-        name: item,
-        saved: false,
-        value: item,
-        trips: 0
-      }));
-
-      return items;
-  }
-
-  // Open the address dialog
-  public searchAddress() {
-    let dialogData: IAddressDialog = {} as IAddressDialog;
-    dialogData.title = `Search ${this.fieldName}`;
-    dialogData.address = this.value ?? "";
-    dialogData.trueText = "OK";
-    dialogData.falseText = "Cancel";
-
-    const dialogRef = this.dialog.open(AddressDialogComponent, {
-      width: "350px",
-      data: dialogData
-    });
-
-    dialogRef.afterClosed().subscribe(async dialogResult => {
-      let result = dialogResult;
-
-      if(result) {
-        this.value = result;
-      }
-    });
-  }
-  /**
-   * Sets the proper casing for the value based on the search type
-   * This ensures consistent data formatting across different search types
-   */
-  private async setProperValue(value: string): Promise<string> {
-    let properValue = "";
-
+  private async _filterItems(value: string): Promise<ISearchItem[]> {
+    if (!value || value.length === 0) {
+      return await this.getAllItemsForType();
+    }
     switch (this.searchType) {
-      case "Address":
-        properValue = (await this._filterAddress(value))[0]?.address ?? "";
-        break;
-      case "Name":
-        properValue =  (await this._filterName(value))[0]?.name ?? "";
-        break;
-      case "Place":
-        properValue = (await this._filterPlace(value))[0]?.place ?? "";
-        break;
-      case "Region":
-        properValue = (await this._filterRegion(value))[0]?.region ?? "";
-        break;
-      case "Service":
-        properValue = (await this._filterService(value))[0]?.service ?? "";
-        break;
-      case "Type":
-        properValue = (await this._filterType(value))[0]?.type ?? "";
-        break;
+      case 'Address':
+        const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
+        return await this.addGooglePredictionsIfNeeded(value, addressResults);
+      case 'Name':
+        return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+      case 'Place':
+        let places = (await this._filterPlace(value)).map(item => createSearchItem(item, 'place'));
+        places = await this.handleJsonFallback(places, 'places', value);
+        return await this.addGooglePredictionsIfNeeded(value, places);
+      case 'Region':
+        return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
+      case 'Service':
+        let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
+        return await this.handleJsonFallback(services, 'services', value);
+      case 'Type':
+        let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
+        return await this.handleJsonFallback(types, 'types', value);
       default:
-        return value;
+        return [];
     }
-
-    if (properValue.toLocaleLowerCase() === value.toLocaleLowerCase()) {
-      return properValue;
-    }
-    return value;
   }
 
-  // Check if there are 2 or more available actions to show in the menu
-  hasAvailableActions(filteredItemsLength?: number): boolean {
-    let buttonCount = 0;
-    
-    // Count Google Search button (only shows when no filtered items)
-    if (this.showSearch && this.value && this.googleSearch && (filteredItemsLength === 0 || filteredItemsLength === undefined)) {
-      buttonCount++;
-    }
-    
-    // Count Google Maps button (mutually exclusive with search button)
-    if (!this.showSearch && this.value && this.googleSearch) {
-      buttonCount++;
-    }
-    
-    // Count Clear button
-    if (this.value) {
-      buttonCount++;
-    }
-    
-    // Only show menu if there are 2 or more buttons
-    return buttonCount >= 2;
-  }
-
-  // Filter items based on the search type
+  // #region Private Filter Methods
   private async _filterAddress(value: string): Promise<IAddress[]> {
     return await this._addressService.includes('address', value);
   }
-
   private async _filterName(value: string): Promise<IName[]> {
     return await this._nameService.includes('name', value);
   }
-
   private async _filterPlace(value: string): Promise<IPlace[]> {
     return await this._placeService.includes('place', value);
   }
-
   private async _filterRegion(value: string): Promise<IRegion[]> {
-    const filterValue = value;
-
-    return await this._regionService.filter('region', filterValue);
+    return await this._regionService.filter('region', value);
   }
-
   private async _filterService(value: string): Promise<IService[]> {
-    const filterValue = value;
-
-    return await this._serviceService.filter('service', filterValue);
+    return await this._serviceService.filter('service', value);
   }
-
   private async _filterType(value: string): Promise<IType[]> {
-    const filterValue = value;
+    return await this._typeService.filter('type', value);
+  }
+  // #endregion
 
-    return await this._typeService.filter('type', filterValue);
+  private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
+    if (results.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+      const googlePredictions = await this.getGooglePredictions(value);
+      return googlePredictions;
+    }
+    return results;
   }
 
+  private async handleJsonFallback(results: ISearchItem[], searchType: string, value: string): Promise<ISearchItem[]> {
+    if (results.length === 0) {
+      return await searchJson(searchType, value);
+    }
+    return results;
+  }
+
+  private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
+    if (!this.isGoogleAllowed() || !this.googleSearch) {
+      return [];
+    }
+    const cacheKey = `${this.googleSearch}:${value.toLowerCase()}`;
+    if (this.googlePredictionsCache.has(cacheKey)) {
+      return this.googlePredictionsCache.get(cacheKey)!;
+    }
+    try {
+      // Use smart autocomplete that only calls API with location, otherwise uses fallbacks
+      const predictions = await this._serverGooglePlacesService.getSmartAutocomplete(
+        value,
+        this.googleSearch,
+        'US'
+      );
+      this.showGoogleMapsIcon = false;
+      const results = predictions.map((prediction: AutocompleteResult) => ({
+        id: undefined,
+        name: this.googleSearch === 'address' 
+          ? prediction.address 
+          : prediction.place,
+        saved: false,
+        value: this.googleSearch === 'address' ? prediction.address : prediction.place,
+        trips: 0,
+        placeId: prediction.placeDetails?.placeId // Store place ID for later lookup
+      }));
+      if (this.googlePredictionsCache.size >= 50) {
+        const firstKey = this.googlePredictionsCache.keys().next().value;
+        if (firstKey) {
+          this.googlePredictionsCache.delete(firstKey);
+        }
+      }
+      this.googlePredictionsCache.set(cacheKey, results);
+      return results;
+    } catch (error: any) {
+      // Error getting Google predictions; no fallback, just return empty array
+      if (this.isRateLimitError(error) && (this.searchType === 'Address' || this.searchType === 'Place')) {
+        this.showGoogleMapsIcon = true;
+      }
+      return [];
+    }
+  }
+
+  private isRateLimitError(error: any): boolean {
+    return isRateLimitError(error);
+  }
+  // #endregion
+
+  // #region Utility
+  isGoogleResult(item: ISearchItem): boolean {
+    return isGoogleResult(item);
+  }
+  // #endregion
+
+  private isGoogleAllowed(): boolean {
+    const hostname = window.location.hostname;
+    return hostname.includes('gig-test') || hostname === 'localhost';
+  }
+
+  private setInputValue(val: string) {
+    this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
+    this.onChange(val);
+  }
 }

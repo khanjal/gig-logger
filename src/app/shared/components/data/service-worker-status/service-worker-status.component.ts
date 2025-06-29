@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoggerService } from '@services/logger.service';
 import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
+import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-service-worker-status',
@@ -22,7 +23,7 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   private deferredPrompt: any;
 
   constructor(
-    private appUpdateService: AppUpdateService,
+    @Inject(AppUpdateService) private appUpdateService: AppUpdateService,
     private logger: LoggerService
   ) {}
   

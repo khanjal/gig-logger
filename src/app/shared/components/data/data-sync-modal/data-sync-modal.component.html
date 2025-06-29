@@ -1,7 +1,7 @@
 <div class="modal-container">
     <div class="terminal" #terminal>
         <div>
-            <p class="info">00:00&nbsp;&nbsp;&nbsp;Please wait while your data is loaded.</p>
+            <p class="info">00:00&nbsp;&nbsp;&nbsp;Please wait while your data is {{ type === 'save' ? 'saved' : 'loaded' }}.</p>
             <p class="info">00:00&nbsp;&nbsp;&nbsp;Modal will close when complete.</p>
         </div>
         <div>

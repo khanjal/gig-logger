@@ -9,25 +9,27 @@ import { MatDialog } from '@angular/material/dialog';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
-import { ShiftTripsTableComponent as ShiftTripsTableComponent_1 } from '../shift-trips-table/shift-trips-table.component';
+import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
 import { MatFabButton } from '@angular/material/button';
-import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
+import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DateHelper } from '@helpers/date.helper';
+import { UnitHelper } from '@helpers/unit.helper';
 
 @Component({
     selector: 'app-shifts-quick-view',
     templateUrl: './shifts-quick-view.component.html',
     styleUrl: './shifts-quick-view.component.scss',
-    standalone: true,    imports: [
+    standalone: true,
+    imports: [
         MatIcon,
         NgClass,
         NgIf,
-        ShiftTripsTableComponent_1,
+        ShiftTripsTableComponent,
         MatFabButton,
         DecimalPipe,
         CurrencyPipe,
         DatePipe,
-        NoSecondsPipe_1,
+        NoSecondsPipe,
     ],
 })
 export class ShiftsQuickViewComponent {
@@ -92,5 +94,12 @@ export class ShiftsQuickViewComponent {
           this.parentReload.emit(); // Emit the event to notify the parent to reload
       }
     });
+  }
+
+  /**
+   * Format distance for display with appropriate unit
+   */
+  formatDistance(distance: number): string {
+    return UnitHelper.formatDistance(distance);
   }
 }

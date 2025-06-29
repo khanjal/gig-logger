@@ -9,16 +9,16 @@
     </mat-card-title>
   </mat-card-header>
     <mat-card-content>
-    <!-- Overall Status -->
+    <!-- User ID Status -->
     <div class="status-row">
-      <span class="status-label">Overall Status:</span>
+      <span class="status-label">User ID:</span>
       <mat-chip 
         [ngClass]="{
-          'chip-success': isAuthenticated,
-          'chip-error': !isAuthenticated
+          'chip-success': userId,
+          'chip-error': !userId
         }"
         selected>
-        {{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}
+        {{ userId || 'Missing' }}
       </mat-chip>
     </div>
 
@@ -52,6 +52,19 @@
     <div class="status-row" *ngIf="hasAccessToken">
       <span class="status-label">Token Preview:</span>
       <code class="token-preview">{{ accessTokenPreview }}</code>
+    </div>
+
+    <!-- Overall Status -->
+    <div class="status-row">
+      <span class="status-label">Overall Status:</span>
+      <mat-chip 
+        [ngClass]="{
+          'chip-success': isAuthenticated,
+          'chip-error': !isAuthenticated
+        }"
+        selected>
+        {{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}
+      </mat-chip>
     </div>
 
     <!-- Last Updated -->
