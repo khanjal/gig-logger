@@ -1,5 +1,92 @@
 import { StringHelper } from "./string.helper";
 
+// Abbreviation map for address words, formatted for readability
+const ABBREV_MAP: Record<string, string> = {
+    // Directions
+    north: "N",
+    east: "E",
+    south: "S",
+    west: "W",
+    northeast: "NE",
+    northwest: "NW",
+    southeast: "SE",
+    southwest: "SW",
+    // Street types
+    avenue: "Ave",
+    boulevard: "Blvd",
+    circle: "Cir",
+    court: "Ct",
+    drive: "Dr",
+    lane: "Ln",
+    place: "Pl",
+    road: "Rd",
+    street: "St",
+    terrace: "Ter",
+    parkway: "Pkwy",
+    square: "Sq",
+    trail: "Trl",
+    highway: "Hwy",
+    expressway: "Expy",
+    center: "Ctr",
+    plaza: "Plz",
+    ridge: "Rdg",
+    view: "Vw",
+    heights: "Hts",
+    manor: "Mnr",
+    meadow: "Mdw",
+    creek: "Crk",
+    extension: "Ext",
+    garden: "Gdn",
+    gardens: "Gdns",
+    gateway: "Gtwy",
+    glen: "Gln",
+    green: "Grn",
+    grove: "Grv",
+    harbor: "Hbr",
+    hollow: "Holw",
+    island: "Is",
+    junction: "Jct",
+    lake: "Lk",
+    landing: "Lndg",
+    light: "Lgt",
+    lodge: "Ldg",
+    meadows: "Mdws",
+    mill: "Ml",
+    mission: "Msn",
+    mount: "Mt",
+    mountain: "Mtn",
+    orchard: "Orch",
+    oval: "Oval",
+    park: "Park",
+    path: "Path",
+    pike: "Pike",
+    pine: "Pne",
+    port: "Prt",
+    prairie: "Pr",
+    ramp: "Ramp",
+    ranch: "Rnch",
+    rapid: "Rpd",
+    rapids: "Rpds",
+    river: "Riv",
+    shoal: "Shl",
+    shoals: "Shls",
+    shore: "Shr",
+    shores: "Shrs",
+    spring: "Spg",
+    springs: "Spgs",
+    station: "Sta",
+    summit: "Smt",
+    tunnel: "Tunl",
+    turnpike: "Tpke",
+    union: "Un",
+    valley: "Vly",
+    viaduct: "Via",
+    village: "Vlg",
+    villages: "Vlgs",
+    ville: "Vl",
+    vista: "Vis"
+};
+
 /**
  * Utility for address abbreviation and short address formatting.
  */
@@ -46,14 +133,6 @@ export class AddressHelper {
      */
     static abbrvAddress(address: string): string {
         if (!address) return "";
-        // Unique abbreviation map
-        const ABBREV_MAP: Record<string, string> = {
-            // Directions
-            north: "N", east: "E", south: "S", west: "W",
-            northeast: "NE", northwest: "NW", southeast: "SE", southwest: "SW",
-            // Standard, widely recognized street type abbreviations only
-            avenue: "Ave", boulevard: "Blvd", circle: "Cir", court: "Ct", drive: "Dr", lane: "Ln", place: "Pl", road: "Rd", street: "St", terrace: "Ter", parkway: "Pkwy", square: "Sq", trail: "Trl", highway: "Hwy", expressway: "Expy", center: "Ctr", plaza: "Plz", ridge: "Rdg", view: "Vw", heights: "Hts", manor: "Mnr", meadow: "Mdw", creek: "Crk", extension: "Ext", garden: "Gdn", gardens: "Gdns", gateway: "Gtwy", glen: "Gln", green: "Grn", grove: "Grv", harbor: "Hbr", hollow: "Holw", island: "Is", junction: "Jct", lake: "Lk", landing: "Lndg", light: "Lgt", lodge: "Ldg", meadows: "Mdws", mill: "Ml", mission: "Msn", mount: "Mt", mountain: "Mtn", orchard: "Orch", oval: "Oval", park: "Park", path: "Path", pike: "Pike", pine: "Pne", port: "Prt", prairie: "Pr", ramp: "Ramp", ranch: "Rnch", rapid: "Rpd", rapids: "Rpds", river: "Riv", shoal: "Shl", shoals: "Shls", shore: "Shr", shores: "Shrs", spring: "Spg", springs: "Spgs", station: "Sta", summit: "Smt", tunnel: "Tunl", turnpike: "Tpke", union: "Un", valley: "Vly", viaduct: "Via", village: "Vlg", villages: "Vlgs", ville: "Vl", vista: "Vis"
-        };
         return address.split(/\s+/).map(part => {
             let clean = part.replace(/[,\.]/g, "").toLowerCase();
             let abbr = ABBREV_MAP[clean] || part;

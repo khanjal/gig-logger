@@ -107,7 +107,11 @@ export class ServerGooglePlacesService {
       this.autocompleteCache.set(cacheKey, { results, timestamp: now });
       return results;
     } catch (error) {
-      this.handleError(error);
+      try {
+        this.handleError(error);
+      } catch (handleErrorException) {
+        this.logger.error('Error while handling another error:', handleErrorException);
+      }
       return [];
     }
   }
@@ -141,7 +145,11 @@ export class ServerGooglePlacesService {
       }
       return details;
     } catch (error) {
-      this.handleError(error);
+      try {
+        this.handleError(error);
+      } catch (handleErrorException) {
+        this.logger.error('Error while handling another error:', handleErrorException);
+      }
       return null;
     }
   }
@@ -157,7 +165,11 @@ export class ServerGooglePlacesService {
         this.setOptions()
       )) || null;
     } catch (error) {
-      this.handleError(error);
+      try {
+        this.handleError(error);
+      } catch (handleErrorException) {
+        this.logger.error('Error while handling another error:', handleErrorException);
+      }
       return null;
     }
   }

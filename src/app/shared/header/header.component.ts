@@ -44,6 +44,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public static readonly DEFAULT_UNSAVED_POLL_INTERVAL = 5000;
   @Input() unsavedPollInterval: number = HeaderComponent.DEFAULT_UNSAVED_POLL_INTERVAL;
 
+  // Timeout for header initialization (ms)
+  public static readonly HEADER_INIT_TIMEOUT_MS = 10000;
+
   private headerSubscription: Subscription;
   private routerSubscription: Subscription;
   private unsavedCountInterval: Subscription;
@@ -80,7 +83,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       await Promise.race([
         this.initializeHeader(),
         new Promise<void>((_, reject) => 
-          setTimeout(() => reject(new Error('Header initialization timeout')), 10000)
+          setTimeout(() => reject(new Error('Header initialization timeout')), HeaderComponent.HEADER_INIT_TIMEOUT_MS)
         )
       ]);
       // Initial fetch of unsaved counts (after authentication check)
