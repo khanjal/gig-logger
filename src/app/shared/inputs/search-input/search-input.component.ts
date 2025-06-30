@@ -15,7 +15,6 @@ import { MatInputModule } from '@angular/material/input';
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
 // Application-specific imports - Interfaces
-import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
@@ -26,7 +25,6 @@ import { IType } from '@interfaces/type.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
-import { LoggerService } from '@services/logger.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
