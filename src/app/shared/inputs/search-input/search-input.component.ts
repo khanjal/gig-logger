@@ -151,6 +151,7 @@ export class SearchInputComponent implements OnDestroy {
   public onClear(): void {
     this.setInputValue('');
     this.googlePredictionsCache.clear();
+    this.showGoogleMapsIcon = false;
   }
   async onInputSelect(inputValue: string): Promise<void> {
     // Find the selected item to get place ID for Google results
@@ -333,8 +334,12 @@ export class SearchInputComponent implements OnDestroy {
   private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
     if (results.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
       const googlePredictions = await this.getGooglePredictions(value);
+      // Show Google Maps icon if using Google search (Address or Place)
+      this.showGoogleMapsIcon = (this.searchType === 'Address' || this.searchType === 'Place');
       return googlePredictions;
     }
+    // Hide Google Maps icon if we have local results
+    this.showGoogleMapsIcon = false;
     return results;
   }
 
