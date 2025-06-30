@@ -1,41 +1,41 @@
-<div class="container">
-    <div class="section">
-        <h1>Setup</h1>
+<div class="container mx-auto px-4">
+    <div class="section mb-6">
+        <h1 class="text-3xl font-bold">Setup</h1>
     </div>
 
-    <div class="section">
+    <div class="section mb-6">
         <app-login></app-login>
     </div>    
     
     @if (isAuthenticated) 
     {
-        <!-- <div class="section">
-            <h2>Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
+        <!-- <div class="section mb-6">
+            <h2 class="text-2xl font-semibold flex items-center gap-2">Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
             <sheet-add-form (parentReload)="reload()"></sheet-add-form>
         </div> -->
 
-        <div class="section" *ngIf="!spreadsheets?.length">
-            <h2>Link Spreadsheet</h2>
+        <div class="section mb-6" *ngIf="!spreadsheets?.length">
+            <h2 class="text-2xl font-semibold">Link Spreadsheet</h2>
             <app-sheet-link (parentReload)="reload()"></app-sheet-link>
         </div>
 
-        <div class="section" *ngIf="spreadsheets?.length">
-            <h2>Current Spreadsheets</h2>
-            <div *ngFor="let spreadsheet of spreadsheets" class="section">
+        <div class="section mb-6" *ngIf="spreadsheets?.length">
+            <h2 class="text-2xl font-semibold">Current Spreadsheets</h2>
+            <div *ngFor="let spreadsheet of spreadsheets" class="section mb-4">
                 <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
-                <div class="row-flex justify-between items-center">
+                <div class="flex flex-row justify-between items-center gap-2 mt-2">
                     <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
                     <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
-                    <button mat-fab [extended]="true" color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()"><mat-icon>refresh</mat-icon> Reload Data</button>
-                    <button mat-fab [extended]="true" color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading || unsavedData" (click)="setDefault(spreadsheet)"><mat-icon>schedule</mat-icon> Set Default</button>
-                    <button mat-fab [extended]="true" color="primary" class="button-right" color="warn" *ngIf="spreadsheet.default === 'false'"  [class.spinner]="deleting" [disabled]="deleting || reloading" (click)="deleteSpreadsheet(spreadsheet)"><mat-icon>delete</mat-icon> Delete</button>
+                    <button mat-fab [extended]="true" color="primary" *ngIf="spreadsheet.default === 'true'"  [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()" class="flex items-center gap-2"><mat-icon>refresh</mat-icon> Reload Data</button>
+                    <button mat-fab [extended]="true" color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading || unsavedData" (click)="setDefault(spreadsheet)" class="flex items-center gap-2"><mat-icon>schedule</mat-icon> Set Default</button>
+                    <button mat-fab [extended]="true" color="primary" class="button-right flex items-center gap-2" color="warn" *ngIf="spreadsheet.default === 'false'"  [class.spinner]="deleting" [disabled]="deleting || reloading" (click)="deleteSpreadsheet(spreadsheet)"><mat-icon>delete</mat-icon> Delete</button>
                 </div>
             </div>
         </div>
     }
 
-    <mat-card class="section">
-        <mat-card-header><h2>Application Insights</h2></mat-card-header>
+    <mat-card class="section mb-6">
+        <mat-card-header><h2 class="text-2xl font-semibold">Application Insights</h2></mat-card-header>
         <mat-card-content>
             <app-sheet-quota></app-sheet-quota>
             <app-service-worker-status></app-service-worker-status>
@@ -44,16 +44,16 @@
     
     <app-auth-status></app-auth-status>
 
-    <mat-card class="section">
-        <mat-card-header><h2>Diagnostics</h2></mat-card-header>
+    <mat-card class="section mb-6">
+        <mat-card-header><h2 class="text-2xl font-semibold">Diagnostics</h2></mat-card-header>
         <mat-card-content>
             <app-diagnostics></app-diagnostics>
         </mat-card-content>
     </mat-card>
-    <div class="section">
-        <div class="row-flex justify-between items-center">
-            <button mat-fab [extended]="true" color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length"><mat-icon>refresh</mat-icon> Refresh Data</button>
-            <button mat-fab [extended]="true" color="warn" class="button-right" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAllDialog()"><mat-icon>delete</mat-icon> Delete Data</button>
+    <div class="section mb-6">
+        <div class="flex flex-row justify-between items-center gap-2">
+            <button mat-fab [extended]="true" color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length" class="flex items-center gap-2"><mat-icon>refresh</mat-icon> Refresh Data</button>
+            <button mat-fab [extended]="true" color="warn" class="button-right flex items-center gap-2" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAllDialog()"><mat-icon>delete</mat-icon> Delete Data</button>
         </div>
     </div>
 </div>
