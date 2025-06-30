@@ -65,7 +65,7 @@
 
     <!-- Payment Information -->
     <div>
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 justify-between w-full">
         <button 
           mat-mini-fab
           type="button"
@@ -76,14 +76,16 @@
           (click)="toggleAdvancedPay()">
           <mat-icon>account_balance</mat-icon>
         </button>
-        <mat-form-field class="w-1/3 min-w-[120px]" appearance="outline">
-          <mat-label>Pay</mat-label>
-          <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" (wheel)="$event.preventDefault()">
-        </mat-form-field>
-        <mat-form-field class="w-1/3 min-w-[120px]" appearance="outline">
-          <mat-label>Distance</mat-label>
-          <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" (wheel)="$event.preventDefault()">
-        </mat-form-field>
+        <div class="flex flex-1 justify-center gap-1 min-w-0 max-w-full">
+          <mat-form-field class="min-w-0 max-w-[110px] flex-1" appearance="outline">
+            <mat-label>Pay</mat-label>
+            <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" (wheel)="$event.preventDefault()">
+          </mat-form-field>
+          <mat-form-field class="min-w-0 max-w-[110px] flex-1" appearance="outline">
+            <mat-label>Distance</mat-label>
+            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" (wheel)="$event.preventDefault()">
+          </mat-form-field>
+        </div>
         <button 
           mat-mini-fab
           type="button"
