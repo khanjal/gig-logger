@@ -182,7 +182,7 @@
     <div *ngIf="selectedNameDeliveries?.length" class="mb-5">
       <mat-accordion>
         <mat-expansion-panel class="seamless-panel" [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
-          <mat-expansion-panel-header [expandedHeight]="'auto'">
+          <mat-expansion-panel-header>
             <mat-panel-title>
               {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Destination {{ selectedNameDeliveries?.length === 1 ? "Address":  "Addresses"}}
             </mat-panel-title>
@@ -226,7 +226,7 @@
     <div *ngIf="selectedAddressDeliveries?.length" class="mb-5">
       <mat-accordion>
         <mat-expansion-panel class="seamless-panel" [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
-          <mat-expansion-panel-header [expandedHeight]="'auto'">
+          <mat-expansion-panel-header>
             <mat-panel-title>
               {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous {{ selectedAddressDeliveries?.length === 1 ? "Name":  "Names"}}
             </mat-panel-title>
