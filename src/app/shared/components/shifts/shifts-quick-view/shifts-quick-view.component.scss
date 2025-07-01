@@ -780,3 +780,31 @@
     }
   }
 }
+
+/* Shift border classes - match trips quick view */
+.shift-border-saved {
+  border: 2px solid $border-dark; // gray-300
+}
+.shift-border-add {
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $success-color; // green
+}
+.shift-border-update {
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $primary-color; // blue
+}
+.shift-border-delete {
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $error-color; // red
+}
+.shift-border-other {
+  border: 2px solid $border-dark; // gray-300
+  border-left: 8px solid $warning-color; // orange/yellow
+}
+
+/* Shift icon color classes */
+.shift-icon-saved { color: $text-secondary; }
+.shift-icon-add { color: $success-color; }
+.shift-icon-update { color: $primary-color; }
+.shift-icon-delete { color: $error-color; }
+.shift-icon-other { color: $warning-color; }

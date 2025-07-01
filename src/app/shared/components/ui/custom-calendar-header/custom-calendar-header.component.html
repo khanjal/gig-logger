@@ -1,14 +1,16 @@
-<div class="calendar-header">
+<app-custom-range-panel></app-custom-range-panel>
+
+<div class="flex items-center justify-between px-2 py-1 bg-white rounded-t-lg shadow-sm">
     <!-- "previous" navigation -->
-    <div class="nav-icon-group">
+    <div class="flex items-center gap-1">
         <mat-icon 
-            class="nav-icon double-arrow" 
+            class="cursor-pointer text-gray-500 hover:text-blue-600 transition-colors text-xl md:text-2xl" 
             (click)="previousClicked('year')"
         >
             keyboard_double_arrow_left
         </mat-icon>
         <mat-icon 
-            class="nav-icon" 
+            class="cursor-pointer text-gray-500 hover:text-blue-600 transition-colors text-xl md:text-2xl" 
             (click)="previousClicked('month')"
         >
             keyboard_arrow_left
@@ -16,22 +18,21 @@
     </div>
 
     <!-- center label -->
-    <span class="calendar-header-label">{{ periodLabel }}</span>
+    <span class="font-semibold text-base md:text-lg text-gray-800 select-none">{{ periodLabel }}</span>
 
     <!-- "next" navigation -->
-    <div class="nav-icon-group">
+    <div class="flex items-center gap-1">
         <mat-icon 
-            class="nav-icon" 
+            class="cursor-pointer text-gray-500 hover:text-blue-600 transition-colors text-xl md:text-2xl" 
             (click)="nextClicked('month')"
         >
             keyboard_arrow_right
         </mat-icon>
         <mat-icon 
-            class="nav-icon double-arrow" 
+            class="cursor-pointer text-gray-500 hover:text-blue-600 transition-colors text-xl md:text-2xl" 
             (click)="nextClicked('year')"
         >
             keyboard_double_arrow_right
-        </mat-icon>    </div>
+        </mat-icon>
+    </div>
 </div>
-
-<app-custom-range-panel></app-custom-range-panel>

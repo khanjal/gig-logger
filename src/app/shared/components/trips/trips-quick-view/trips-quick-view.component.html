@@ -240,7 +240,7 @@
               (click)="setPickupTime()"
               *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Pickup Time">
-        <mat-icon class="text-green-500 text-base">schedule</mat-icon>
+        <mat-icon class="text-green-500 text-base">file_upload</mat-icon>
         <span class="hidden sm:inline">Pickup</span>
       </button>
       <button mat-button 
@@ -248,7 +248,7 @@
               (click)="setDropoffTime()"
               *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Dropoff Time">
-        <mat-icon class="text-orange-500 text-base">schedule</mat-icon>
+        <mat-icon class="text-orange-500 text-base">file_download</mat-icon>
         <span class="hidden sm:inline">Dropoff</span>
       </button>
     </div>
@@ -262,23 +262,22 @@
     <!-- Menu -->
     <mat-menu #menu="matMenu" class="trip-menu">
       <button mat-menu-item (click)="nextStopTrip()">
-        <mat-icon>pin_drop</mat-icon>
+        <mat-icon class="menu-blue">pin_drop</mat-icon>
         <span>Next Stop</span>
       </button>
       <button mat-menu-item (click)="cloneUnsavedTrip()">
-        <mat-icon>content_copy</mat-icon>
+        <mat-icon class="menu-green">content_copy</mat-icon>
         <span>Clone</span>
       </button>
       @if (trip.action != actionEnum.Delete) {
-        <button mat-menu-item (click)="confirmDeleteTripDialog()" class="text-red-600 hover:bg-red-50"
-                title="Delete Trip">
-          <mat-icon class="text-red-600">delete</mat-icon>
+        <button mat-menu-item (click)="confirmDeleteTripDialog()" title="Delete Trip">
+          <mat-icon class="menu-red">delete</mat-icon>
           <span>Delete</span>
         </button>
       }
       @else {
         <button mat-menu-item (click)="restoreTrip()">
-          <mat-icon>restore</mat-icon>
+          <mat-icon class="menu-purple">restore</mat-icon>
           <span>Restore</span>
         </button>
       }
