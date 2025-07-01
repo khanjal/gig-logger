@@ -134,7 +134,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   
   private async updateUnsavedCounts() {
-    // Only update if authenticated
+    // Check authentication state before updating
+    this.isAuthenticated = await this.authService.isAuthenticated();
     if (!this.isAuthenticated) {
       this.unsavedTripsCount = 0;
       this.unsavedShiftsCount = 0;

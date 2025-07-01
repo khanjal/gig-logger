@@ -1,8 +1,12 @@
-<div class="range-panel">
+<div class="grid grid-cols-2 gap-2 px-2 py-2">
     <div
         *ngFor="let item of customPresets; let i = index"
-        class="range-item"
-        [class.alternate]="i % 2 === 1"
+        class="rounded border shadow-sm cursor-pointer px-3 py-2 text-sm font-semibold flex items-center justify-center select-none transition active:scale-95
+        border-blue-300 bg-blue-50 text-blue-800
+        hover:bg-blue-200 hover:border-blue-400 focus:bg-blue-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        [class.bg-blue-500]="selectedPreset === item"
+        [class.text-white]="selectedPreset === item"
+        [class.border-blue-600]="selectedPreset === item"
         (click)="selectRange(item)"
         (keydown.enter)="selectRange(item)"
         (keydown.space)="selectRange(item)"
