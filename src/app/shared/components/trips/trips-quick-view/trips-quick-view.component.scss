@@ -62,3 +62,31 @@
 .trip-icon-other {
   color: $warning-color;
 }
+
+// Menu color utility classes for trip menu
+.menu-blue {
+  color: $primary-color !important;
+}
+.menu-green {
+  color: $success-dark !important;
+}
+.menu-red {
+  color: $error-dark !important;
+}
+.menu-purple {
+  color: $secondary-dark !important;
+}
+
+// Optionally, add hover backgrounds if needed
+.menu-blue:hover, .mat-menu-item.menu-blue:hover {
+  background: $primary-50 !important;
+}
+.menu-green:hover, .mat-menu-item.menu-green:hover {
+  background: $success-50 !important;
+}
+.menu-red:hover, .mat-menu-item.menu-red:hover {
+  background: $error-50 !important;
+}
+.menu-purple:hover, .mat-menu-item.menu-purple:hover {
+  background: $secondary-50 !important;
+}
