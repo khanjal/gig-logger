@@ -57,8 +57,8 @@
                 <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips">
                     {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
-                Yesterday's Trips ({{yesterdaysTrips.length}})
-                <span class="ml-3 text-base text-gray-600 font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
+                <span>Yesterday's Trips ({{yesterdaysTrips.length}})</span>
+                <span class="ml-auto text-base text-gray-600 font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
             </h2>
             
             @if (showYesterdayTrips) {
