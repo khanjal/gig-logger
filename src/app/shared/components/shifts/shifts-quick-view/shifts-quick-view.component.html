@@ -42,8 +42,9 @@
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon [ngClass]="{
-          'text-blue-400': index % 2 === 0,
-          'text-green-400': index % 2 === 1
+          'text-blue-400': index % 2 === 0 && shift.action !== 'DELETE',
+          'text-green-400': index % 2 === 1 && shift.action !== 'DELETE',
+          'text-gray-400': shift.action === 'DELETE'
         }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
