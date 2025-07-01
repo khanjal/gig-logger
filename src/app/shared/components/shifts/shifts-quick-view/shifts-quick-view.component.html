@@ -61,11 +61,11 @@
     <div class="flex items-center mt-1 text-sm text-gray-700 w-full">
       <span *ngIf="shift.start" class="flex items-center gap-1 flex-1 justify-start">
         <mat-icon class="text-gray-400 text-base">schedule</mat-icon>
-        <span class="font-mono font-medium">{{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
+        <span class="font-mono font-medium whitespace-nowrap truncate">{{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
       </span>
       <span *ngIf="shift.totalTime" class="flex items-center gap-1 flex-1 justify-end">
         <mat-icon class="text-gray-400 text-base">hourglass_bottom</mat-icon>
-        <span class="font-mono">{{shift.totalTime | durationFormat}} total</span>
+        <span class="font-mono whitespace-nowrap truncate">{{shift.totalTime | durationFormat}} total</span>
       </span>
     </div>
     <!-- Info Row: trips (left), distance (center), active (right) -->
