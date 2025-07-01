@@ -38,12 +38,6 @@
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
         <span class="truncate block max-w-full">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
       </span>
-      <!-- Time (start - finish) -->
-      <span class="flex items-center gap-1 flex-shrink-0 justify-center text-center ml-2 min-w-[3.5rem]">
-        <span class="font-mono text-sm font-medium text-gray-700">
-          {{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span>
-        </span>
-      </span>
       <span class="flex-1"></span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
@@ -63,9 +57,23 @@
         </span>
       </span>
     </div>
-    <!-- Info Row: region, trips, distance, duration, active -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="shift.region || shift.totalTrips || shift.totalDistance || shift.totalTime || shift.totalActive">
-      <span *ngIf="shift.region" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{shift.region}}</span>
+    <!-- Time Row: start - finish, duration, active -->
+    <div class="flex items-center gap-4 text-center mt-1 text-sm text-gray-700" *ngIf="shift.start || shift.totalTime || shift.totalActive">
+      <span *ngIf="shift.start" class="flex items-center gap-1">
+        <mat-icon class="text-gray-400 text-base">schedule</mat-icon>
+        <span class="font-mono font-medium">{{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
+      </span>
+      <span *ngIf="shift.totalTime" class="flex items-center gap-1">
+        <mat-icon class="text-gray-400 text-base">hourglass_bottom</mat-icon>
+        <span class="font-mono">{{shift.totalTime | noseconds}}</span>
+      </span>
+      <span *ngIf="shift.totalActive" class="flex items-center gap-1">
+        <mat-icon class="text-gray-400 text-base">directions_car</mat-icon>
+        <span class="font-mono">{{shift.totalActive | noseconds}}</span>
+      </span>
+    </div>
+    <!-- Info Row: trips, distance -->
+    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="shift.totalTrips || shift.totalDistance">
       <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-shrink-0">
         <mat-icon class="text-blue-400 text-base">route</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
@@ -74,15 +82,8 @@
         <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
       </span>
-      <span *ngIf="shift.totalTime" class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-gray-400 text-base">schedule</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{shift.totalTime | noseconds}}</span>
-      </span>
-      <span *ngIf="shift.totalActive" class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-gray-400 text-base">directions_car</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{shift.totalActive | noseconds}} active</span>
-      </span>
     </div>
+    <span class="flex-1"></span>
     <!-- Toggle Button Bar -->
     <div class="focus-within:ring-0 focus-within:outline-none mt-2">
       <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
@@ -102,16 +103,15 @@
   </div>
   <!-- Details Section -->
   <div class="p-3 bg-gray-50 border-t" *ngIf="isExpanded">
-    <!-- Quick Stats Row -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="shift.finish || shift.totalTime || shift.amountPerTime || (shift.grandTotal && shift.totalDistance)">
-      <div *ngIf="shift.finish" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Finish Time</div>
-        <div class="font-mono text-sm font-bold">{{shift.finish | noseconds:prefers24Hour}}</div>
-      </div>
-      <div *ngIf="shift.totalTime" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Duration</div>
-        <div class="font-mono text-sm font-bold">{{shift.totalTime | noseconds}}</div>
-      </div>
+    <!-- Region Row (moved from summary) -->
+    <div *ngIf="shift.region" class="mb-4">
+      <span class="inline-block px-3 py-1 rounded bg-gray-100 text-sm text-gray-700 border border-gray-200 font-medium max-w-full truncate" title="{{shift.region}}">
+        <mat-icon class="text-gray-400 text-base mr-1 align-middle">public</mat-icon>
+        {{shift.region}}
+      </span>
+    </div>
+    <!-- Quick Stats Row (remove finish time and duration badges) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="shift.amountPerTime || (shift.grandTotal && shift.totalDistance)">
       <div *ngIf="shift.amountPerTime" class="text-center p-2 bg-white rounded-lg border">
         <div class="text-xs text-gray-500 mb-1">Rate/Hr</div>
         <div class="text-sm font-bold text-green-600">${{shift.amountPerTime | number:'1.2-2'}}</div>
