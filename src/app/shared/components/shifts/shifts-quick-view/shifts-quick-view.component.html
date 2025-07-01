@@ -69,6 +69,8 @@
         <span class="font-mono whitespace-nowrap truncate">{{shift.totalTime | durationFormat}} total</span>
       </span>
     </div>
+    <!-- Divider for visual separation -->
+    <div class="my-2 border-t border-gray-200"></div>
     <!-- Info Row: trips (left), distance (center), active (right) -->
     <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center w-full relative">
       <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-1 justify-start">
