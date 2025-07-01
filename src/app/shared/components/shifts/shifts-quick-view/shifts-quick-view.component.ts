@@ -1,4 +1,4 @@
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { IShift } from '@interfaces/shift.interface';
@@ -10,7 +10,6 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
-import { MatFabButton } from '@angular/material/button';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { UnitHelper } from '@helpers/unit.helper';
@@ -25,15 +24,14 @@ import { UnitHelper } from '@helpers/unit.helper';
         NgClass,
         NgIf,
         ShiftTripsTableComponent,
-        MatFabButton,
         DecimalPipe,
         CurrencyPipe,
-        DatePipe,
         NoSecondsPipe,
     ],
 })
 export class ShiftsQuickViewComponent {
   @Input() shift: IShift = {} as IShift;
+  @Input() index!: number;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   duplicateShift: boolean = false;

@@ -33,6 +33,7 @@ export class CustomRangePanelComponent<D> {
   readonly customPresets = customPresets;
   @HostBinding('class.touch-ui')
   readonly isTouchUi = this.picker.touchUi;
+  selectedPreset: string | null = null;
 
   constructor(
     private dateAdapter: DateAdapter<D>,
@@ -41,6 +42,7 @@ export class CustomRangePanelComponent<D> {
 
   // called when user selects a range preset:
   selectRange(rangeName: CustomPreset): void {
+    this.selectedPreset = rangeName;
     const [start, end] = this.calculateDateRange(rangeName);
     this.picker.select(start);
     this.picker.select(end);

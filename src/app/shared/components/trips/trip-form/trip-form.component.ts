@@ -592,4 +592,16 @@ export class TripFormComponent implements OnInit {
       this.dialogRef.close();
     }
   }
+
+  keyboardPadding: boolean = false;
+
+  onDestinationFocus() {
+    // Only apply on mobile devices
+    if (window.innerWidth <= 768) {
+      this.keyboardPadding = true;
+    }
+  }
+  onDestinationBlur() {
+    this.keyboardPadding = false;
+  }
 }

@@ -1,8 +1,8 @@
-<div class="container">
-    <div class="header-container">
-        <h1>Shifts</h1>
-        <button mat-mini-fab color="primary" class="add-button" (click)="addShift()" disabled>
-            <mat-icon>add</mat-icon>
+<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12">
+    <div class="flex items-center justify-between mb-2 gap-2">
+        <h1 class="text-lg md:text-xl font-semibold text-left m-0 leading-tight">Shifts</h1>
+        <button mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="addShift()" disabled>
+            <mat-icon class="text-base">add</mat-icon>
         </button>
     </div>
 
@@ -12,14 +12,15 @@
         </div>
     } -->
 
-    <div class="shifts-scrollable" (scroll)="onScroll($event)">
-      @for (shift of shifts; track $index) {
+    <div class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2">
+      @for (shift of shifts; track $index; let isFirst = $first) {
           <div
             [id]="shift.rowId"
             [ngClass]="{
               'mat-card': true,
               'mat-card-disabled': shift.action == actionEnum.Delete
             }"
+            [class.mt-4]="isFirst"
           >
             <app-shifts-quick-view
               [shift]="shift"

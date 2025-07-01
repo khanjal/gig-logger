@@ -15,7 +15,6 @@ import { MatInputModule } from '@angular/material/input';
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
 // Application-specific imports - Interfaces
-import { IAddressDialog } from '@interfaces/address-dialog.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
@@ -26,7 +25,6 @@ import { IType } from '@interfaces/type.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
-import { LoggerService } from '@services/logger.service';
 import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
@@ -153,6 +151,7 @@ export class SearchInputComponent implements OnDestroy {
   public onClear(): void {
     this.setInputValue('');
     this.googlePredictionsCache.clear();
+    this.showGoogleMapsIcon = false;
   }
   async onInputSelect(inputValue: string): Promise<void> {
     // Find the selected item to get place ID for Google results
@@ -335,8 +334,12 @@ export class SearchInputComponent implements OnDestroy {
   private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
     if (results.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
       const googlePredictions = await this.getGooglePredictions(value);
+      // Show Google Maps icon if using Google search (Address or Place)
+      this.showGoogleMapsIcon = (this.searchType === 'Address' || this.searchType === 'Place');
       return googlePredictions;
     }
+    // Hide Google Maps icon if we have local results
+    this.showGoogleMapsIcon = false;
     return results;
   }
 

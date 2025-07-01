@@ -17,3 +17,24 @@
   background-color: colors.$primary-50;
   border-color: colors.$primary-200;
 }
+
+// Add extra bottom padding when keyboard is open (mobile only)
+.keyboard-padding {
+  @media (max-width: 768px) {
+    padding-bottom: 220px !important; // Enough for most mobile keyboards
+    transition: padding-bottom 0.3s;
+  }
+}
+
+/* Remove mat-accordion and mat-expansion-panel borders for seamless look */
+::ng-deep .mat-accordion .mat-expansion-panel,
+::ng-deep .mat-expansion-panel {
+  box-shadow: none !important;
+  border: none !important;
+}
+::ng-deep .mat-expansion-panel:not(:last-child) {
+  border-bottom: none !important;
+}
+::ng-deep .mat-expansion-panel-header {
+  border-bottom: none !important;
+}
