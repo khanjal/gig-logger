@@ -10,7 +10,7 @@
     }
     
     <div class="relative transition-all duration-300 w-full">
-        <app-current-average class="absolute -top-1 right-5 m-4" [class.hidden]="isEditMode"></app-current-average>
+        <app-current-average class="absolute top-0 right-0 z-10 m-4" [class.hidden]="isEditMode"></app-current-average>
         <trip-form 
             (parentReload)="load()" 
             (editModeExit)="exitEditMode($event)" 
