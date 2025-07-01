@@ -57,30 +57,30 @@
         </span>
       </span>
     </div>
-    <!-- Time Row: start - finish, duration, active -->
-    <div class="flex items-center gap-4 text-center mt-1 text-sm text-gray-700" *ngIf="shift.start || shift.totalTime || shift.totalActive">
-      <span *ngIf="shift.start" class="flex items-center gap-1">
+    <!-- Time Row: start - finish (left), duration (right) -->
+    <div class="flex items-center mt-1 text-sm text-gray-700 w-full">
+      <span *ngIf="shift.start" class="flex items-center gap-1 flex-1 justify-start">
         <mat-icon class="text-gray-400 text-base">schedule</mat-icon>
         <span class="font-mono font-medium">{{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
       </span>
-      <span *ngIf="shift.totalTime" class="flex items-center gap-1">
+      <span *ngIf="shift.totalTime" class="flex items-center gap-1 flex-1 justify-end">
         <mat-icon class="text-gray-400 text-base">hourglass_bottom</mat-icon>
-        <span class="font-mono">{{shift.totalTime | noseconds}}</span>
-      </span>
-      <span *ngIf="shift.totalActive" class="flex items-center gap-1">
-        <mat-icon class="text-gray-400 text-base">directions_car</mat-icon>
-        <span class="font-mono">{{shift.totalActive | noseconds}}</span>
+        <span class="font-mono">{{shift.totalTime | durationFormat}} total</span>
       </span>
     </div>
-    <!-- Info Row: trips, distance -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="shift.totalTrips || shift.totalDistance">
-      <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-shrink-0">
+    <!-- Info Row: trips (left), distance (center), active (right) -->
+    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center w-full relative">
+      <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-1 justify-start">
         <mat-icon class="text-blue-400 text-base">route</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
       </span>
-      <span *ngIf="shift.totalDistance" class="flex items-center gap-1 flex-shrink-0">
+      <span *ngIf="shift.totalDistance" class="flex items-center gap-1 flex-1 justify-center">
         <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
+      </span>
+      <span *ngIf="shift.totalActive" class="flex items-center gap-1 flex-1 justify-end">
+        <mat-icon class="text-gray-400 text-base">directions_car</mat-icon>
+        <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
       </span>
     </div>
     <span class="flex-1"></span>

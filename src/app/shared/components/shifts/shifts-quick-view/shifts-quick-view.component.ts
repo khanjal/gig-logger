@@ -1,16 +1,17 @@
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { UnitHelper } from '@helpers/unit.helper';
 
@@ -27,6 +28,7 @@ import { UnitHelper } from '@helpers/unit.helper';
         DecimalPipe,
         CurrencyPipe,
         NoSecondsPipe,
+        DurationFormatPipe,
     ],
 })
 export class ShiftsQuickViewComponent {
