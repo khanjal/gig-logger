@@ -19,6 +19,7 @@ import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/s
     imports: [MatMiniFabButton, MatIcon, NgClass, ShiftsQuickViewComponent]
 })
 export class ShiftsComponent implements OnInit {
+  private static readonly SCROLL_THRESHOLD_PX = 200;
   shifts: IShift[] = [];
   actionEnum = ActionEnum;
   saving: boolean = false;
@@ -26,6 +27,7 @@ export class ShiftsComponent implements OnInit {
   pageSize: number = 20; // Number of shifts to load per request
   currentPage: number = 0; // Current page index
   isLoading: boolean = false; // Prevent multiple simultaneous requests
+  noMoreData: boolean = false; // Stop loading if all data is loaded
 
   constructor(public dialog: MatDialog, private _shiftService: ShiftService) { }
 
@@ -34,10 +36,16 @@ export class ShiftsComponent implements OnInit {
   }
 
   async loadShifts(): Promise<void> {
-    if (this.isLoading) return;
+    if (this.isLoading || this.noMoreData) return;
 
     this.isLoading = true;
-    const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize);
+    
+    // Use 'rowId' as the sort field and 'desc' for reverse order
+    const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize, 'rowId', 'desc');
+    
+    if (newShifts.length < this.pageSize) {
+      this.noMoreData = true;
+    }
     this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
     this.currentPage++;
     this.isLoading = false;
@@ -45,9 +53,15 @@ export class ShiftsComponent implements OnInit {
 
   onScroll(event: Event): void {
     const target = event.target as HTMLElement;
-
-    // Check if the user has scrolled to the bottom
-    if (target.scrollTop + target.clientHeight >= target.scrollHeight-200) {
+    const scrollTop = target.scrollTop;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+    
+    // Check if the user has scrolled to near the bottom (within threshold or 80% of the way)
+    const threshold = ShiftsComponent.SCROLL_THRESHOLD_PX;
+    const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
+    
+    if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading && !this.noMoreData) {
       this.loadShifts();
     }
   }
@@ -55,6 +69,7 @@ export class ShiftsComponent implements OnInit {
   handleParentReload() {
     this.shifts = []; // Clear the shifts array
     this.currentPage = 0; // Reset pagination
+    this.noMoreData = false; // Reset noMoreData flag
     this.loadShifts();
   }
 

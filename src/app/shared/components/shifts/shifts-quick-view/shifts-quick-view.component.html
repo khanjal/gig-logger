@@ -1,14 +1,14 @@
 <!-- Enhanced Mobile-First Shift Quick View (Trips Style, with border and alternating color) -->
 <div class="bg-white rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
   [ngClass]="{
-    'opacity-60 bg-gray-50': shift.action === 'DELETE',
+    'opacity-60 bg-gray-50': shift.action === ActionEnum.Delete,
     'shift-border-saved': shift.saved,
-    'shift-border-add': !shift.saved && shift.action === 'ADD',
-    'shift-border-update': !shift.saved && shift.action === 'UPDATE',
-    'shift-border-delete': !shift.saved && shift.action === 'DELETE',
-    'shift-border-other': !shift.saved && (!shift.action || (shift.action !== 'ADD' && shift.action !== 'UPDATE' && shift.action !== 'DELETE')),
-    'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && shift.action !== 'DELETE',
-    'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && shift.action !== 'DELETE'
+    'shift-border-add': !shift.saved && shift.action === ActionEnum.Add,
+    'shift-border-update': !shift.saved && shift.action === ActionEnum.Update,
+    'shift-border-delete': !shift.saved && shift.action === ActionEnum.Delete,
+    'shift-border-other': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete)),
+    'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && shift.action !== ActionEnum.Delete,
+    'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && shift.action !== ActionEnum.Delete
   }">
   <!-- Header Row -->
   <div class="p-3 border-b"
@@ -16,19 +16,19 @@
       'bg-blue-50 border-blue-200': index % 2 === 0,
       'bg-green-50 border-green-200': index % 2 === 1
     }">
-    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
+    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto justify-between">
       <!-- Status Icon -->
       <mat-icon class="text-xl flex-shrink-0"
         [ngClass]="{
           'shift-icon-saved': shift.saved,
-          'shift-icon-add': !shift.saved && shift.action === 'ADD',
-          'shift-icon-update': !shift.saved && shift.action === 'UPDATE',
-          'shift-icon-delete': !shift.saved && shift.action === 'DELETE',
-          'shift-icon-other': !shift.saved && (!shift.action || (shift.action !== 'ADD' && shift.action !== 'UPDATE' && shift.action !== 'DELETE'))
+          'shift-icon-add': !shift.saved && shift.action === ActionEnum.Add,
+          'shift-icon-update': !shift.saved && shift.action === ActionEnum.Update,
+          'shift-icon-delete': !shift.saved && shift.action === ActionEnum.Delete,
+          'shift-icon-other': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete))
         }">
-        @if (!shift.saved && shift.action === 'ADD') { add }
-        @else if (!shift.saved && shift.action === 'UPDATE') { edit }
-        @else if (!shift.saved && shift.action === 'DELETE') { delete }
+        @if (!shift.saved && shift.action === ActionEnum.Add) { add }
+        @else if (!shift.saved && shift.action === ActionEnum.Update) { edit }
+        @else if (!shift.saved && shift.action === ActionEnum.Delete) { delete }
         @else if (duplicateShift) { content_copy }
         @else { check_circle }
       </mat-icon>
@@ -38,18 +38,12 @@
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
         <span class="truncate block max-w-full">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
       </span>
-      <!-- Time (start - finish) -->
-      <span class="flex items-center gap-1 flex-shrink-0 justify-center text-center ml-2 min-w-[3.5rem]">
-        <span class="font-mono text-sm font-medium text-gray-700">
-          {{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span>
-        </span>
-      </span>
-      <span class="flex-1"></span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon [ngClass]="{
-          'text-blue-400': index % 2 === 0,
-          'text-green-400': index % 2 === 1
+          'text-blue-400': index % 2 === 0 && shift.action !== ActionEnum.Delete,
+          'text-green-400': index % 2 === 1 && shift.action !== ActionEnum.Delete,
+          'text-gray-400': shift.action === ActionEnum.Delete
         }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
@@ -63,24 +57,32 @@
         </span>
       </span>
     </div>
-    <!-- Info Row: region, trips, distance, duration, active -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="shift.region || shift.totalTrips || shift.totalDistance || shift.totalTime || shift.totalActive">
-      <span *ngIf="shift.region" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{shift.region}}</span>
-      <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-shrink-0">
+    <!-- Time Row: start - finish (left), duration (right) -->
+    <div class="flex items-center mt-1 text-sm text-gray-700 w-full">
+      <span *ngIf="shift.start" class="flex items-center gap-1 flex-1 justify-start">
+        <mat-icon class="text-gray-400 text-base">schedule</mat-icon>
+        <span class="font-mono font-medium whitespace-nowrap truncate">{{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
+      </span>
+      <span *ngIf="shift.totalTime" class="flex items-center gap-1 flex-1 justify-end">
+        <mat-icon class="text-gray-400 text-base">hourglass_bottom</mat-icon>
+        <span class="font-mono whitespace-nowrap truncate">{{shift.totalTime | durationFormat}} total</span>
+      </span>
+    </div>
+    <!-- Divider for visual separation -->
+    <div class="my-2 border-t border-gray-200"></div>
+    <!-- Info Row: trips (left), distance (center), active (right) -->
+    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center w-full relative">
+      <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-1 justify-start">
         <mat-icon class="text-blue-400 text-base">route</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
       </span>
-      <span *ngIf="shift.totalDistance" class="flex items-center gap-1 flex-shrink-0">
+      <span *ngIf="shift.totalDistance" class="flex items-center gap-1 flex-1 justify-center">
         <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
       </span>
-      <span *ngIf="shift.totalTime" class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-gray-400 text-base">schedule</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{shift.totalTime | noseconds}}</span>
-      </span>
-      <span *ngIf="shift.totalActive" class="flex items-center gap-1 flex-shrink-0">
+      <span *ngIf="shift.totalActive" class="flex items-center gap-1 flex-1 justify-end">
         <mat-icon class="text-gray-400 text-base">directions_car</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{shift.totalActive | noseconds}} active</span>
+        <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
       </span>
     </div>
     <!-- Toggle Button Bar -->
@@ -102,16 +104,15 @@
   </div>
   <!-- Details Section -->
   <div class="p-3 bg-gray-50 border-t" *ngIf="isExpanded">
-    <!-- Quick Stats Row -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="shift.finish || shift.totalTime || shift.amountPerTime || (shift.grandTotal && shift.totalDistance)">
-      <div *ngIf="shift.finish" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Finish Time</div>
-        <div class="font-mono text-sm font-bold">{{shift.finish | noseconds:prefers24Hour}}</div>
-      </div>
-      <div *ngIf="shift.totalTime" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Duration</div>
-        <div class="font-mono text-sm font-bold">{{shift.totalTime | noseconds}}</div>
-      </div>
+    <!-- Region Row (moved from summary) -->
+    <div *ngIf="shift.region" class="mb-4">
+      <span class="inline-block px-3 py-1 rounded bg-gray-100 text-sm text-gray-700 border border-gray-200 font-medium max-w-full truncate" title="{{shift.region}}">
+        <mat-icon class="text-gray-400 text-base mr-1 align-middle">public</mat-icon>
+        {{shift.region}}
+      </span>
+    </div>
+    <!-- Quick Stats Row (remove finish time and duration badges) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="shift.amountPerTime || (shift.grandTotal && shift.totalDistance)">
       <div *ngIf="shift.amountPerTime" class="text-center p-2 bg-white rounded-lg border">
         <div class="text-xs text-gray-500 mb-1">Rate/Hr</div>
         <div class="text-sm font-bold text-green-600">${{shift.amountPerTime | number:'1.2-2'}}</div>
@@ -168,14 +169,14 @@
   <!-- Action Bar -->
   <div class="flex items-center justify-between p-3 bg-gray-100 border-t">
     <!-- Edit Button (disabled for now) -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition cursor-not-allowed" disabled>
+    <button class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium transition cursor-not-allowed opacity-50 grayscale" disabled>
       <mat-icon class="text-blue-500 text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>
     </button>
     <!-- Center Action Buttons (none for now) -->
     <div class="flex gap-2"></div>
     <!-- Delete Button -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+    <button class="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium transition cursor-not-allowed opacity-50 grayscale"
       [disabled]="!duplicateShift && !((shift.grandTotal === 0 || !shift.grandTotal) && (shift.totalTrips === 0 || !shift.totalTrips))"
       (click)="confirmDeleteShiftDialog(shift)">
       <mat-icon class="text-red-500 text-base">delete</mat-icon>

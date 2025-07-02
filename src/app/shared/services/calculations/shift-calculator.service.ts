@@ -111,6 +111,7 @@ export class ShiftCalculatorService {
         if (shift.start && shift.finish) {
             const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
             shift.time = DateHelper.getDurationString(duration);
+            shift.totalTime = DateHelper.getDurationString(duration); // Ensure totalTime is set
         }
 
         const tripsActiveTime = trips
