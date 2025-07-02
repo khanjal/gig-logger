@@ -20,15 +20,15 @@
       <!-- Status Icon -->
       <mat-icon class="text-xl flex-shrink-0"
         [ngClass]="{
-          'shift-icon-saved': shift.saved,
-          'shift-icon-add': !shift.saved && shift.action === ActionEnum.Add,
-          'shift-icon-update': !shift.saved && shift.action === ActionEnum.Update,
-          'shift-icon-delete': !shift.saved && shift.action === ActionEnum.Delete,
-          'shift-icon-other': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete))
+          'text-gray-400': shift.saved && !duplicateShift,
+          'text-green-500': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
+          'text-blue-500': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
+          'text-red-500': (!shift.saved && shift.action === ActionEnum.Delete) || duplicateShift,
+          'text-yellow-500': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift)
         }">
-        @if (!shift.saved && shift.action === ActionEnum.Add) { add }
-        @else if (!shift.saved && shift.action === ActionEnum.Update) { edit }
-        @else if (!shift.saved && shift.action === ActionEnum.Delete) { delete }
+        @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
+        @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }
+        @else if (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift) { delete }
         @else if (duplicateShift) { content_copy }
         @else { check_circle }
       </mat-icon>
@@ -177,8 +177,11 @@
     <!-- Center Action Buttons (none for now) -->
     <div class="flex gap-2"></div>
     <!-- Delete Button -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium transition cursor-not-allowed opacity-50 grayscale"
-      [disabled]="!duplicateShift && !((shift.grandTotal === 0 || !shift.grandTotal) && (shift.totalTrips === 0 || !shift.totalTrips))"
+    <button class="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium transition"
+      [class.cursor-not-allowed]="!canDeleteShift()"
+      [class.opacity-50]="!canDeleteShift()"
+      [class.grayscale]="!canDeleteShift()"
+      [disabled]="!canDeleteShift()"
       (click)="confirmDeleteShiftDialog(shift)">
       <mat-icon class="text-red-500 text-base">delete</mat-icon>
       <span class="hidden sm:inline">Delete</span>
