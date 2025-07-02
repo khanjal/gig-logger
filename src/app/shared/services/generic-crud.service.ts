@@ -50,9 +50,28 @@ export class GenericCrudService<T> implements ICrudService<T> {
         await this.table.bulkAdd(items);
     }
 
-    public async paginate(page: number, amount: number): Promise<T[]> {
-        const offset = page * amount; // Calculate the starting index
-        return await this.table.reverse().offset(offset).limit(amount).toArray();
+    /**
+     * Paginate items in the table.
+     * @param page The page number (0-based)
+     * @param amount The number of items per page
+     * @param sortField Optional field to sort by (default: none)
+     * @param direction Optional direction: 'asc' | 'desc' (default: 'asc')
+     */
+    public async paginate(page: number, amount: number, sortField?: keyof T, direction: 'asc' | 'desc' = 'asc'): Promise<T[]> {
+        const offset = page * amount;
+        
+        if (sortField) {
+            // Use Dexie's orderBy with offset and limit
+            let collection = this.table.orderBy(sortField as string);
+            if (direction === 'desc') {
+                collection = collection.reverse();
+            }
+            return await collection.offset(offset).limit(amount).toArray();
+        } else {
+            // If no sort field, get all items and slice manually
+            const allItems = await this.table.toArray();
+            return allItems.slice(offset, offset + amount);
+        }
     }
 
     // Query items by a specific field and value
