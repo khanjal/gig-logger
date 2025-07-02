@@ -13,8 +13,8 @@
   <!-- Header Row -->
   <div class="p-3 border-b"
     [ngClass]="{
-      'bg-blue-50 border-blue-200': index % 2 === 0,
-      'bg-green-50 border-green-200': index % 2 === 1
+      'bg-blue-100 border-blue-300': index % 2 === 0,
+      'bg-green-100 border-green-300': index % 2 === 1
     }">
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto justify-between">
       <!-- Status Icon -->
@@ -86,12 +86,7 @@
       </span>
     </div>
     <!-- Toggle Button Bar -->
-    <div
-      [ngClass]="{
-        'bg-blue-50 rounded-b-md': index % 2 === 0,
-        'bg-green-50 rounded-b-md': index % 2 === 1
-      }"
-      class="focus-within:ring-0 focus-within:outline-none mt-2">
+    <div class="focus-within:ring-0 focus-within:outline-none mt-2">
       <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
               (click)="toggleExpansion()" 
               tabindex="0" 
@@ -100,10 +95,10 @@
               (keydown.enter)="toggleExpansion()" 
               (keydown.space)="toggleExpansion()"
               [attr.aria-expanded]="isExpanded">
-        <span class="flex-1 h-px bg-gray-200"></span>
+        <span class="flex-1 h-px bg-gray-400"></span>
         <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
-        <span class="flex-1 h-px bg-gray-200"></span>
+        <span class="flex-1 h-px bg-gray-400"></span>
       </button>
     </div>
   </div>
