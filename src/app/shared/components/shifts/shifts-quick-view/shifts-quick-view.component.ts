@@ -32,6 +32,7 @@ import { UnitHelper } from '@helpers/unit.helper';
     ],
 })
 export class ShiftsQuickViewComponent {
+  ActionEnum = ActionEnum;
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();

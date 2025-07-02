@@ -19,6 +19,7 @@ import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/s
     imports: [MatMiniFabButton, MatIcon, NgClass, ShiftsQuickViewComponent]
 })
 export class ShiftsComponent implements OnInit {
+  private static readonly SCROLL_THRESHOLD_PX = 200;
   shifts: IShift[] = [];
   actionEnum = ActionEnum;
   saving: boolean = false;
@@ -56,8 +57,8 @@ export class ShiftsComponent implements OnInit {
     const scrollHeight = target.scrollHeight;
     const clientHeight = target.clientHeight;
     
-    // Check if the user has scrolled to near the bottom (within 200px or 80% of the way)
-    const threshold = 200;
+    // Check if the user has scrolled to near the bottom (within threshold or 80% of the way)
+    const threshold = ShiftsComponent.SCROLL_THRESHOLD_PX;
     const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
     
     if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading && !this.noMoreData) {
