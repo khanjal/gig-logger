@@ -86,7 +86,12 @@
       </span>
     </div>
     <!-- Toggle Button Bar -->
-    <div class="focus-within:ring-0 focus-within:outline-none mt-2">
+    <div
+      [ngClass]="{
+        'bg-blue-50 rounded-b-md': index % 2 === 0,
+        'bg-green-50 rounded-b-md': index % 2 === 1
+      }"
+      class="focus-within:ring-0 focus-within:outline-none mt-2">
       <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
               (click)="toggleExpansion()" 
               tabindex="0" 
