@@ -1,4 +1,4 @@
-<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12">
+<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12 max-w-3xl mx-auto">
     <div class="flex items-center justify-between mb-2 gap-2">
         <h1 class="text-lg md:text-xl font-semibold text-left m-0 leading-tight">Shifts</h1>
         <button mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="addShift()" disabled>
@@ -12,7 +12,7 @@
         </div>
     } -->
 
-    <div class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2">
+    <div class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
       @for (shift of shifts; track $index; let isFirst = $first) {
           <div
             [id]="shift.rowId"
