@@ -23,8 +23,9 @@
           'text-gray-400': shift.saved && !duplicateShift,
           'text-green-500': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
           'text-blue-500': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
-          'text-red-500': (!shift.saved && shift.action === ActionEnum.Delete) || duplicateShift,
-          'text-yellow-500': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift)
+          'text-red-500': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
+          'text-yellow-500': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
+          'text-orange-500': duplicateShift
         }">
         @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
         @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }
