@@ -121,14 +121,15 @@ export class TripComponent implements OnInit, OnDestroy {
     
     // Load trip data for editing if in edit mode
     if (this.isEditMode && this.editingTripId) {
+      this.stopPolling(); // Pause polling in edit mode
       await this.loadTripForEditing();
     }
     
-    // Start polling if it was previously enabled
-    if (this.pollingEnabled) {
+    // Start polling if it was previously enabled and not in edit mode
+    if (this.pollingEnabled && !this.isEditMode) {
       await this.startPolling();
     }
-      this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
+    this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
       await this.reload(undefined, true); // Pass true to indicate this is a parent reload
     });
   }
