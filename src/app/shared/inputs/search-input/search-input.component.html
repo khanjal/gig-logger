@@ -48,25 +48,33 @@
                 </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
 
-            <!-- Condensed menu icon for all actions -->
-            <button mat-icon-button matSuffix class="standard-button" [matMenuTriggerFor]="actionMenu" #menuTrigger="matMenuTrigger" *ngIf="(searchType === 'Place' || searchType === 'Address') && value"
-                (mousedown)="$event.preventDefault(); $event.stopPropagation();"
-                (click)="$event.preventDefault(); $event.stopPropagation();">
-                <mat-icon>more_vert</mat-icon>
+            <!-- Google search icon - shows when text is entered but no selection made -->
+            <button mat-icon-button matSuffix class="standard-button" 
+                    *ngIf="(searchType === 'Place' || searchType === 'Address') && value && !hasSelection"
+                    color="primary"
+                    aria-label="Trigger Google Autocomplete Search"
+                    title="Search with Google Autocomplete"
+                    (click)="triggerRateLimitFallback(); autocompleteTrigger.openPanel(); $event.stopPropagation(); $event.preventDefault();">
+                <mat-icon>search</mat-icon>
             </button>
-            <mat-menu #actionMenu="matMenu">
-                <button mat-menu-item (click)="triggerRateLimitFallback(); autocompleteTrigger.openPanel(); $event.stopPropagation();">
-                    <mat-icon>search</mat-icon>
-                    <span>Google Autocomplete</span>
-                </button>
-                <button mat-menu-item (click)="openGoogleMaps()">
-                    <mat-icon>map</mat-icon>
-                    <span>Open Google Maps</span>
-                </button>
-                <button mat-menu-item (click)="onClear(); autocompleteTrigger.openPanel(); $event.stopPropagation();">
-                    <mat-icon>clear</mat-icon>
-                    <span>Clear Field</span>
-                </button>
-            </mat-menu>
+
+            <!-- Google Maps icon - shows when text is entered and a selection has been made -->
+            <button mat-icon-button matSuffix class="standard-button"
+                    *ngIf="(searchType === 'Place' || searchType === 'Address') && value && hasSelection"
+                    color="primary"
+                    aria-label="Open Google Maps"
+                    title="Open Google Maps with this search"
+                    (click)="openGoogleMaps(); $event.stopPropagation(); $event.preventDefault();">
+                <mat-icon>map</mat-icon>
+            </button>
+
+            <!-- Clear button - shows when any text is entered -->
+            <button mat-icon-button matSuffix class="standard-button" 
+                    *ngIf="value" 
+                    color="accent" 
+                    aria-label="Clear Field" 
+                    (click)="onClear(); $event.stopPropagation(); $event.preventDefault();">
+                <mat-icon>clear</mat-icon>
+            </button>
         </mat-form-field>
 </form>

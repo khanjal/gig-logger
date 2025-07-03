@@ -75,7 +75,7 @@ export class SearchInputComponent implements OnDestroy {
   filteredItems: Observable<ISearchItem[]> | undefined;
   filteredItemsArray: ISearchItem[] = [];
   showGoogleMapsIcon = false;
-  showManualGoogleSearchIcon = false; // NEW: show manual search icon
+  hasSelection = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly MAX_VISIBLE_ITEMS = 5;
   private readonly ITEM_HEIGHT = 48;
@@ -142,6 +142,8 @@ export class SearchInputComponent implements OnDestroy {
     const value = target.value;
     this.setInputValue(value);
     this.valueChanged.emit(value);
+    // Reset selection state when input changes
+    this.hasSelection = false;
     // Hide icon if input is cleared
     if (!value) {
       this.showGoogleMapsIcon = false;
@@ -159,6 +161,7 @@ export class SearchInputComponent implements OnDestroy {
     this.setInputValue('');
     this.googlePredictionsCache.clear();
     this.showGoogleMapsIcon = false;
+    this.hasSelection = false;
   }
   async onInputSelect(inputValue: string): Promise<void> {
     // Find the selected item to get place ID for Google results
@@ -185,6 +188,8 @@ export class SearchInputComponent implements OnDestroy {
     }
     // Use emitEvent: false to avoid triggering valueChanges and duplicate API calls
     this.setInputValue(finalAddress);
+    // Set selection state to true when user makes a selection
+    this.hasSelection = true;
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
@@ -464,7 +469,7 @@ export class SearchInputComponent implements OnDestroy {
     if (!(this.searchType === 'Place' || this.searchType === 'Address')) return;
     const googleResults = await this.getGooglePredictions(this.value);
     this.filteredItemsArray = googleResults;
-    this.showManualGoogleSearchIcon = false;
+    this.showGoogleMapsIcon = false;
     // Optionally, open the dropdown if closed
     if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
       this.autocompleteTrigger.openPanel();
