@@ -540,7 +540,13 @@ export class SearchInputComponent implements OnDestroy {
     const items: ISearchItem[] = [];
     for (const place of places) {
       if (Array.isArray(place.addresses) && place.addresses.length > 0) {
-        for (const address of place.addresses) {
+        // Sort addresses by lastTrip descending
+        const sortedAddresses = [...place.addresses].sort((a, b) => {
+          const dateA = a.lastTrip ? new Date(a.lastTrip).getTime() : 0;
+          const dateB = b.lastTrip ? new Date(b.lastTrip).getTime() : 0;
+          return dateB - dateA;
+        });
+        for (const address of sortedAddresses) {
           let addressStr = this.addressToString(address);
           let trips = typeof address.trips === 'number' ? address.trips : place.trips;
           items.push({
