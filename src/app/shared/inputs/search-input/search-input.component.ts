@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -32,17 +33,20 @@ import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 
+// Application-specific imports - Pipes
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+
 // RxJS imports
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // Utility imports
-import { createSearchItem, searchJson, isRateLimitError, isGoogleResult } from './search-input.utils';
+import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, ShortAddressPipe],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -74,11 +78,12 @@ export class SearchInputComponent implements OnDestroy {
   filteredItems: Observable<ISearchItem[]> | undefined;
   filteredItemsArray: ISearchItem[] = [];
   showGoogleMapsIcon = false;
+  hasSelection = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
-  private readonly MAX_VISIBLE_ITEMS = 5;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
   private readonly DEBOUNCE_TIME = 300;
+  private readonly CACHE_SIZE_LIMIT = 50;
   private googlePredictionsCache = new Map<string, ISearchItem[]>();
   private searchSubscription?: Subscription;
   // #endregion
@@ -117,9 +122,16 @@ export class SearchInputComponent implements OnDestroy {
   ) { }
 
   async ngOnInit(): Promise<void> {
+    this.validateSearchType();
     this.updateValidators();
     this.setGoogleSearchType();
     this.setupFilteredItems();
+  }
+
+  private validateSearchType(): void {
+    if (!isValidSearchType(this.searchType)) {
+      console.warn(`Invalid search type: ${this.searchType}`);
+    }
   }
   async ngOnChanges(): Promise<void> {
     this.updateValidators();
@@ -127,18 +139,40 @@ export class SearchInputComponent implements OnDestroy {
     this.searchForm.controls.searchInput.updateValueAndValidity();
   }
   ngOnDestroy(): void {
+    this.cleanupSubscriptions();
+    this.cleanupCache();
+  }
+
+  private cleanupSubscriptions(): void {
     if (this.searchSubscription) {
       this.searchSubscription.unsubscribe();
     }
+  }
+
+  private cleanupCache(): void {
+    this.googlePredictionsCache.clear();
   }
   // #endregion
 
   // #region Event Handlers
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
+    if (!target) {
+      console.warn('Invalid input target in onInputChange');
+      return;
+    }
+    
     const value = target.value;
     this.setInputValue(value);
     this.valueChanged.emit(value);
+    
+    // Reset selection state when input changes
+    this.hasSelection = false;
+    
+    // Hide icon if input is cleared
+    if (!value) {
+      this.showGoogleMapsIcon = false;
+    }
   }
   onBlur(): void {
     const trimmedValue = this.value.trim();
@@ -150,18 +184,20 @@ export class SearchInputComponent implements OnDestroy {
   }
   public onClear(): void {
     this.setInputValue('');
+    this.resetComponentState();
+  }
+
+  private resetComponentState(): void {
     this.googlePredictionsCache.clear();
     this.showGoogleMapsIcon = false;
+    this.hasSelection = false;
+    this.filteredItemsArray = [];
   }
-  async onInputSelect(inputValue: string): Promise<void> {
-    // Find the selected item to get place ID for Google results
-    const selectedItem = this.filteredItemsArray.find(item => 
-      item.name === inputValue || item.value === inputValue
-    );
-    
-    let finalAddress = inputValue;
-    
-    // If this is a Google address result with a place ID, get full address with zip
+  
+  async onInputSelect(selectedItem: ISearchItem): Promise<void> {
+    let finalAddress = selectedItem.name;
+
+    // Get full address for Google results with place ID
     if (selectedItem?.placeId && this.searchType === 'Address') {
       try {
         const fullAddress = await this._serverGooglePlacesService.getFullAddressWithZip(selectedItem.placeId);
@@ -169,11 +205,24 @@ export class SearchInputComponent implements OnDestroy {
           finalAddress = fullAddress;
         }
       } catch (error) {
-        // Error getting full address with zip; fall back to original value
+        console.warn('Error getting full address with zip:', error);
+        // Continue with original value
       }
     }
-    // Use emitEvent: false to avoid triggering valueChanges and duplicate API calls
+
+    // Emit auxiliary data for place searches
+    if (this.searchType === 'Place' && selectedItem?.address) {
+      this.auxiliaryData.emit(selectedItem.address);
+    }
+
     this.setInputValue(finalAddress);
+    this.hasSelection = true;
+
+    // Blur input after selection
+    this.blurInputAfterDelay();
+  }
+
+  private blurInputAfterDelay(): void {
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
@@ -194,16 +243,35 @@ export class SearchInputComponent implements OnDestroy {
     if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
     }
-    return Math.min(itemsToUse.length, this.MAX_VISIBLE_ITEMS) * this.ITEM_HEIGHT;
+    // Show up to 10 items to reduce white space and lag
+    return Math.min(itemsToUse.length, 10) * this.getItemSize();
   }
+  
+  getItemSize(): number {
+    // Always use static item height
+    return this.ITEM_HEIGHT;
+  }
+
   public openGoogleMaps(): void {
     const searchQuery = encodeURIComponent(this.value || this.fieldName);
     const baseUrl = 'https://www.google.com/maps/search/';
     window.open(`${baseUrl}${searchQuery}`, '_blank');
   }
-  public triggerRateLimitFallback(): void {
-    if (this.searchType === 'Address' || this.searchType === 'Place') {
-      console.log('Manually triggering rate limit fallback - showing Google Maps icon');
+  public async triggerGoogleSearch(): Promise<void> {
+    if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
+    if (!this.isGoogleSearchType()) return;
+    
+    try {
+      const googleResults = await this.getGooglePredictions(this.value);
+      this.filteredItemsArray = googleResults;
+      this.showGoogleMapsIcon = googleResults.length === 0;
+      
+      // Open the dropdown if closed
+      if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
+        this.autocompleteTrigger.openPanel();
+      }
+    } catch (error) {
+      console.warn('Error triggering Google search:', error);
       this.showGoogleMapsIcon = true;
     }
   }
@@ -270,23 +338,26 @@ export class SearchInputComponent implements OnDestroy {
 
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     if (!value || value.length === 0) {
-      // If no value, get all items for type, and if empty, try JSON fallback
-      let items = await this.getAllItemsForType();
-      if (items.length === 0) {
-        switch (this.searchType) {
-          case 'Place':
-            items = await searchJson('places', value);
-            break;
-          case 'Service':
-            items = await searchJson('services', value);
-            break;
-          case 'Type':
-            items = await searchJson('types', value);
-            break;
-        }
-      }
-      return items;
+      return await this.handleEmptySearch();
     }
+
+    const results = await this.getFilteredResults(value);
+    this.updateGoogleMapsIconVisibility(results, value);
+    return results;
+  }
+
+  private async handleEmptySearch(): Promise<ISearchItem[]> {
+    let items = await this.getAllItemsForType();
+    
+    if (items.length === 0) {
+      items = await this.getJsonFallback('');
+    }
+    
+    this.showGoogleMapsIcon = false;
+    return items;
+  }
+
+  private async getFilteredResults(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
@@ -294,9 +365,10 @@ export class SearchInputComponent implements OnDestroy {
       case 'Name':
         return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
       case 'Place':
-        let places = (await this._filterPlace(value)).map(item => createSearchItem(item, 'place'));
-        places = await this.handleJsonFallback(places, 'places', value);
-        return await this.addGooglePredictionsIfNeeded(value, places);
+        let places = await this._filterPlace(value);
+        let placeItems = this.mapPlacesToSearchItems(places);
+        placeItems = await this.handleJsonFallback(placeItems, 'places', value);
+        return await this.addGooglePredictionsIfNeeded(value, placeItems);
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
       case 'Service':
@@ -308,6 +380,26 @@ export class SearchInputComponent implements OnDestroy {
       default:
         return [];
     }
+  }
+
+  private async getJsonFallback(value: string): Promise<ISearchItem[]> {
+    switch (this.searchType) {
+      case 'Place':
+        return await searchJson('places', value);
+      case 'Service':
+        return await searchJson('services', value);
+      case 'Type':
+        return await searchJson('types', value);
+      default:
+        return [];
+    }
+  }
+
+  private updateGoogleMapsIconVisibility(results: ISearchItem[], value: string): void {
+    const shouldShowIcon = this.isGoogleSearchType() && 
+                          results.length === 0 && 
+                          value.length >= this.MIN_GOOGLE_SEARCH_LENGTH;
+    this.showGoogleMapsIcon = shouldShowIcon;
   }
 
   // #region Private Filter Methods
@@ -354,43 +446,58 @@ export class SearchInputComponent implements OnDestroy {
     if (!this.isGoogleAllowed() || !this.googleSearch) {
       return [];
     }
+
     const cacheKey = `${this.googleSearch}:${value.toLowerCase()}`;
-    if (this.googlePredictionsCache.has(cacheKey)) {
-      return this.googlePredictionsCache.get(cacheKey)!;
+    const cachedResults = this.googlePredictionsCache.get(cacheKey);
+    
+    if (cachedResults) {
+      return cachedResults;
     }
+
     try {
-      // Use smart autocomplete that only calls API with location, otherwise uses fallbacks
       const predictions = await this._serverGooglePlacesService.getSmartAutocomplete(
         value,
         this.googleSearch,
         'US'
       );
-      this.showGoogleMapsIcon = false;
-      const results = predictions.map((prediction: AutocompleteResult) => ({
-        id: undefined,
-        name: this.googleSearch === 'address' 
-          ? prediction.address 
-          : prediction.place,
-        saved: false,
-        value: this.googleSearch === 'address' ? prediction.address : prediction.place,
-        trips: 0,
-        placeId: prediction.placeDetails?.placeId // Store place ID for later lookup
-      }));
-      if (this.googlePredictionsCache.size >= 50) {
-        const firstKey = this.googlePredictionsCache.keys().next().value;
-        if (firstKey) {
-          this.googlePredictionsCache.delete(firstKey);
-        }
-      }
+
+      const results = this.transformGooglePredictions(predictions);
+      this.manageCacheSize();
       this.googlePredictionsCache.set(cacheKey, results);
+      
       return results;
     } catch (error: any) {
-      // Error getting Google predictions; no fallback, just return empty array
-      if (this.isRateLimitError(error) && (this.searchType === 'Address' || this.searchType === 'Place')) {
-        this.showGoogleMapsIcon = true;
-      }
+      this.handleGoogleSearchError(error);
       return [];
     }
+  }
+
+  private transformGooglePredictions(predictions: AutocompleteResult[]): ISearchItem[] {
+    return predictions.map((prediction: AutocompleteResult) => ({
+      id: undefined,
+      name: this.googleSearch === 'address' ? prediction.address : prediction.place,
+      saved: false,
+      value: this.googleSearch === 'address' ? prediction.address : prediction.place,
+      trips: 0,
+      placeId: prediction.placeDetails?.placeId,
+      address: prediction.address
+    }));
+  }
+
+  private manageCacheSize(): void {
+    if (this.googlePredictionsCache.size >= this.CACHE_SIZE_LIMIT) {
+      const firstKey = this.googlePredictionsCache.keys().next().value;
+      if (firstKey) {
+        this.googlePredictionsCache.delete(firstKey);
+      }
+    }
+  }
+
+  private handleGoogleSearchError(error: any): void {
+    if (this.isRateLimitError(error) && this.isGoogleSearchType()) {
+      this.showGoogleMapsIcon = true;
+    }
+    console.warn('Error getting Google predictions:', error);
   }
 
   private isRateLimitError(error: any): boolean {
@@ -409,8 +516,46 @@ export class SearchInputComponent implements OnDestroy {
     return hostname.includes('gig-test') || hostname === 'localhost';
   }
 
-  private setInputValue(val: string) {
+  public isGoogleSearchType(): boolean {
+    return this.searchType === 'Address' || this.searchType === 'Place';
+  }
+
+  private setInputValue(val: string): void {
     this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     this.onChange(val);
+  }
+
+  private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
+    const items: ISearchItem[] = [];
+    for (const place of places) {
+      if (Array.isArray(place.addresses) && place.addresses.length > 0) {
+        // Sort addresses by lastTrip descending
+        const sortedAddresses = [...place.addresses].sort((a, b) => {
+          const dateA = a.lastTrip ? new Date(a.lastTrip).getTime() : 0;
+          const dateB = b.lastTrip ? new Date(b.lastTrip).getTime() : 0;
+          return dateB - dateA;
+        });
+        for (const address of sortedAddresses) {
+          let trips = typeof address.trips === 'number' ? address.trips : place.trips;
+          items.push({
+            id: place.id,
+            name: place.place,
+            saved: place.saved,
+            value: place.place,
+            trips: trips,
+            address: address.address
+          });
+        }
+      } else {
+        items.push({
+          id: place.id,
+          name: place.place,
+          saved: place.saved,
+          value: place.place,
+          trips: place.trips
+        });
+      }
+    }
+    return items;
   }
 }

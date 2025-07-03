@@ -913,3 +913,17 @@ mat-form-field {
     margin-top: 0 !important;
   }
 }
+
+// Default font size for option text
+.option-text-normal {
+  font-size: 1.12rem;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+
+.option-text-large {
+  font-size: 0.98rem;
+  font-weight: 500;
+}

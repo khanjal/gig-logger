@@ -1,27 +1,50 @@
 import { ISearchItem } from '@interfaces/search-item.interface';
 
 export function createSearchItem(item: any, nameProperty: string): ISearchItem {
+  if (!item || typeof item !== 'object') {
+    throw new Error('Invalid item provided to createSearchItem');
+  }
+  
+  const name = item[nameProperty];
+  if (typeof name !== 'string') {
+    console.warn(`Invalid name property '${nameProperty}' in item:`, item);
+    return {
+      id: item.id,
+      name: String(name || ''),
+      saved: Boolean(item.saved),
+      value: String(name || ''),
+      trips: Number(item.trips) || 0
+    };
+  }
+  
   return {
     id: item.id,
-    name: item[nameProperty],
-    saved: item.saved,
-    value: item[nameProperty],
-    trips: item.trips
+    name: name,
+    saved: Boolean(item.saved),
+    value: name,
+    trips: Number(item.trips) || 0
   };
 }
 
 // In-memory cache for JSON data per searchType (module-level, shared across all component instances)
-const jsonCache: Record<string, any[] | undefined> = {};
+const jsonCache: Record<string, string[]> = {};
 
 export async function searchJson(searchType: string, value: string): Promise<ISearchItem[]> {
   try {
     // Check cache first
     if (!jsonCache[searchType]) {
-      jsonCache[searchType] = await fetch(`/assets/json/${searchType}.json`).then(res => res.json());
+      const response = await fetch(`/assets/json/${searchType}.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to load ${searchType}.json: ${response.status}`);
+      }
+      jsonCache[searchType] = await response.json();
     }
+    
     const itemsJson = jsonCache[searchType] || [];
+    const searchValue = value.toLowerCase();
+    
     return itemsJson
-      .filter((item: string) => item.toLowerCase().includes(value.toLowerCase()))
+      .filter((item: string) => item.toLowerCase().includes(searchValue))
       .map((item: string, idx: number) => ({
         id: idx + 1, // Use a positive number as a made-up id to avoid triggering the Google icon
         name: item,
@@ -37,8 +60,11 @@ export async function searchJson(searchType: string, value: string): Promise<ISe
 
 export function isRateLimitError(error: any): boolean {
   if (!error) return false;
+  
   const errorMessage = error.message?.toLowerCase() || '';
   const errorCode = error.code?.toLowerCase() || '';
+  const status = error.status;
+  
   return (
     errorCode === 'over_query_limit' ||
     errorCode === 'request_denied' ||
@@ -46,10 +72,29 @@ export function isRateLimitError(error: any): boolean {
     errorMessage.includes('quota exceeded') ||
     errorMessage.includes('rate limit') ||
     errorMessage.includes('too many requests') ||
-    error?.status === 429
+    status === 429
   );
 }
 
 export function isGoogleResult(item: ISearchItem): boolean {
   return item.id === undefined && item.trips === 0 && !item.saved;
+}
+
+/**
+ * Validates if a search type is supported
+ */
+export function isValidSearchType(searchType: string): boolean {
+  const validTypes = ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
+  return validTypes.includes(searchType);
+}
+
+/**
+ * Clears the JSON cache for a specific search type or all types
+ */
+export function clearJsonCache(searchType?: string): void {
+  if (searchType) {
+    delete jsonCache[searchType];
+  } else {
+    Object.keys(jsonCache).forEach(key => delete jsonCache[key]);
+  }
 }
