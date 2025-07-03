@@ -360,6 +360,11 @@ export class TripComponent implements OnInit, OnDestroy {
 
     await this.load(); // This handles the overlay timing
     
+    // Resume polling if enabled
+    if (this.pollingEnabled) {
+      await this.startPolling();
+    }
+    
     if (scrollToTripId) {
       this.scrollToTrip(scrollToTripId);
     } else {
