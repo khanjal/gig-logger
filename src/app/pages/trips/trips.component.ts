@@ -113,7 +113,10 @@ export class TripComponent implements OnInit, OnDestroy {
     const savedPollingState = localStorage.getItem('pollingEnabled');
     this.pollingEnabled = savedPollingState ? JSON.parse(savedPollingState) : false;
 
-    await this.load();
+    // Only load if not in edit mode
+    if (!this.isEditMode) {
+      await this.load();
+    }
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
     
     // Load trip data for editing if in edit mode
