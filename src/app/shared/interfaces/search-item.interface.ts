@@ -5,4 +5,5 @@ export interface ISearchItem {
   value: string;
   trips?: number;
   placeId?: string; // For Google Places integration
+  address?: string; // Address for display in autocomplete
 }

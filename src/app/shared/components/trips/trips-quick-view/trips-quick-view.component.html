@@ -14,8 +14,8 @@
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b"
     [ngClass]="{
-      'bg-blue-50 border-blue-200': index % 2 === 0,
-      'bg-green-50 border-green-200': index % 2 === 1
+      'bg-blue-100 border-blue-300': index % 2 === 0,
+      'bg-green-100 border-green-300': index % 2 === 1
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -86,12 +86,7 @@
       </span>
     </div>
     <!-- Toggle Button -->
-    <div
-         [ngClass]="{
-           'bg-blue-50 rounded-b-md': index % 2 === 0,
-           'bg-green-50 rounded-b-md': index % 2 === 1
-         }"
-         class="focus-within:ring-0 focus-within:outline-none"
+    <div class="focus-within:ring-0 focus-within:outline-none"
          *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note">
       <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
               (click)="toggleExpansion()" 
@@ -101,10 +96,10 @@
               (keydown.enter)="toggleExpansion()" 
               (keydown.space)="toggleExpansion()"
               [attr.aria-expanded]="isExpanded">
-        <span class="flex-1 h-px bg-gray-200"></span>
+        <span class="flex-1 h-px bg-gray-400"></span>
         <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
         <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
-        <span class="flex-1 h-px bg-gray-200"></span>
+        <span class="flex-1 h-px bg-gray-400"></span>
       </button>
     </div>
   </div>
@@ -224,7 +219,11 @@
     </div>
   </div>
   <!-- Simplified Action Bar -->
-  <div class="flex items-center justify-between p-3 bg-gray-100 border-t">
+  <div class="flex items-center justify-between p-3 border-t"
+    [ngClass]="{
+      'bg-blue-100 border-blue-300': index % 2 === 0,
+      'bg-green-100 border-green-300': index % 2 === 1
+    }">
     <!-- Edit Button -->
     <button mat-button 
             class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition" 
