@@ -245,7 +245,8 @@ export class SearchInputComponent implements OnDestroy {
     if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
     }
-    return Math.min(itemsToUse.length, this.MAX_VISIBLE_ITEMS) * this.getItemSize();
+    // Show up to 10 items to reduce white space and lag
+    return Math.min(itemsToUse.length, 10) * this.getItemSize();
   }
   
   getItemSize(): number {

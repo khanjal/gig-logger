@@ -20,7 +20,7 @@
                     [itemSize]="getItemSize()" 
                     [style.height.px]="getViewportHeight(filteredItemsArray)" 
                     class="virtual-scroll-viewport"
-                >
+                    minBufferPx="288" maxBufferPx="576">
                 <mat-option 
                     *cdkVirtualFor="let item of filteredItemsArray" 
                     [value]="item.name" 
