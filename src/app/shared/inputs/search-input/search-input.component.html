@@ -17,6 +17,7 @@
             />
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
                 <cdk-virtual-scroll-viewport 
+                    *ngIf="filteredItemsArray.length > 0"
                     [itemSize]="getItemSize()" 
                     [style.height.px]="getViewportHeight(filteredItemsArray)" 
                     class="virtual-scroll-viewport"
@@ -24,7 +25,7 @@
                 <mat-option 
                     *cdkVirtualFor="let item of filteredItemsArray" 
                     [value]="item.name" 
-                    (click)="onInputSelect(item.value)"
+                    (click)="onInputSelect(item)"
                     class="search-result-option"
                     #matOption>
                     <div class="option-content" style="display: flex; flex-direction: column; align-items: flex-start; padding: 8px 0; min-height: 48px;">
@@ -42,7 +43,7 @@
                             </span>
                             <span class="option-text" style="font-weight: 500; flex: 1;">{{ item.name }}</span>
                         </div>
-                        <div *ngIf="item.address" class="option-address" style="font-size: 0.8em; color: #888; margin-top: 4px; padding-left: 22px; line-height: 1.1; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: calc(100% - 22px);">{{ item.address }}</div>
+                        <div *ngIf="item.address" class="option-address" style="font-size: 0.8em; color: #888; margin-top: 4px; padding-left: 22px; line-height: 1.1; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: calc(100% - 22px);">{{ item.address | shortaddress:item.name:0 }}</div>
                     </div>
                 </mat-option>
                 </cdk-virtual-scroll-viewport>

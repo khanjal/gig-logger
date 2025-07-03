@@ -522,13 +522,14 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    // Auto assign to most recent start address.
-    if (recentTrip.startAddress) {
-      this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
-    }
-    else {
-      let recentAddress = recentTrips.filter(x => x.startAddress)[0];
-      this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? "");
+    // Only assign a startAddress if one isn't already set
+    if (!this.tripForm.controls.startAddress.value) {
+      if (recentTrip.startAddress) {
+        this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
+      } else {
+        let recentAddress = recentTrips.filter(x => x.startAddress)[0];
+        this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? "");
+      }
     }
 
     // Auto assign to most recent type.

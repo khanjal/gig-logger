@@ -33,18 +33,20 @@ import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 
+// Application-specific imports - Pipes
+import { ShortAddressPipe } from '@pipes/short-address.pipe';
+
 // RxJS imports
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // Utility imports
 import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
-import { AddressHelper } from '@helpers/address.helper';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, ShortAddressPipe],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -192,13 +194,10 @@ export class SearchInputComponent implements OnDestroy {
     this.hasSelection = false;
     this.filteredItemsArray = [];
   }
-  async onInputSelect(inputValue: string): Promise<void> {
-    const selectedItem = this.filteredItemsArray.find(item => 
-      item.name === inputValue || item.value === inputValue
-    );
-    
-    let finalAddress = inputValue;
-    
+  
+  async onInputSelect(selectedItem: ISearchItem): Promise<void> {
+    let finalAddress = selectedItem.name;
+
     // Get full address for Google results with place ID
     if (selectedItem?.placeId && this.searchType === 'Address') {
       try {
@@ -211,15 +210,15 @@ export class SearchInputComponent implements OnDestroy {
         // Continue with original value
       }
     }
-    
+
     // Emit auxiliary data for place searches
     if (this.searchType === 'Place' && selectedItem?.address) {
       this.auxiliaryData.emit(selectedItem.address);
     }
-    
+
     this.setInputValue(finalAddress);
     this.hasSelection = true;
-    
+
     // Blur input after selection
     this.blurInputAfterDelay();
   }
@@ -546,7 +545,7 @@ export class SearchInputComponent implements OnDestroy {
             saved: place.saved,
             value: place.place,
             trips: trips,
-            address: AddressHelper.removePlaceFromAddress(address.address, place.place)
+            address: address.address
           });
         }
       } else {

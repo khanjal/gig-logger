@@ -101,6 +101,9 @@ export class AddressHelper {
         if (!address) return "";
         // Remove the place from the address first
         address = this.removePlaceFromAddress(address, place);
+        if (place && length === 0) {
+            return address;
+        }
         address = this.abbrvAddress(address);
         let addressArray = address.split(/,\s*/).filter(part => part && part.trim().length > 0);
         if (addressArray.length === 0) return "";
