@@ -39,6 +39,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // Utility imports
 import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
+import { AddressHelper } from '@helpers/address.helper';
 
 @Component({
   selector: 'app-search-input',
@@ -526,16 +527,6 @@ export class SearchInputComponent implements OnDestroy {
     this.onChange(val);
   }
 
-  private addressToString(address: any): string {
-    if (!address) return '';
-    if (typeof address === 'string') return address;
-    if (typeof address.address === 'string') return address.address;
-    // Try to join common fields
-    const parts = [address.street, address.city, address.state, address.zip].filter(Boolean);
-    if (parts.length) return parts.join(', ');
-    return '';
-  }
-
   private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
     const items: ISearchItem[] = [];
     for (const place of places) {
@@ -547,7 +538,6 @@ export class SearchInputComponent implements OnDestroy {
           return dateB - dateA;
         });
         for (const address of sortedAddresses) {
-          let addressStr = this.addressToString(address);
           let trips = typeof address.trips === 'number' ? address.trips : place.trips;
           items.push({
             id: place.id,
@@ -555,7 +545,7 @@ export class SearchInputComponent implements OnDestroy {
             saved: place.saved,
             value: place.place,
             trips: trips,
-            address: addressStr
+            address: AddressHelper.removePlaceFromAddress(address.address, place.place)
           });
         }
       } else {
