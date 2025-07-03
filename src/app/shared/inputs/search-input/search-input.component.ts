@@ -363,26 +363,21 @@ export class SearchInputComponent implements OnDestroy {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
         return await this.addGooglePredictionsIfNeeded(value, addressResults);
-      
       case 'Name':
         return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
-      
       case 'Place':
-        let places = (await this._filterPlace(value)).map(item => createSearchItem(item, 'place'));
-        places = await this.handleJsonFallback(places, 'places', value);
-        return await this.addGooglePredictionsIfNeeded(value, places);
-      
+        let places = await this._filterPlace(value);
+        let placeItems = this.mapPlacesToSearchItems(places);
+        placeItems = await this.handleJsonFallback(placeItems, 'places', value);
+        return await this.addGooglePredictionsIfNeeded(value, placeItems);
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
-      
       case 'Service':
         let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
         return await this.handleJsonFallback(services, 'services', value);
-      
       case 'Type':
         let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
         return await this.handleJsonFallback(types, 'types', value);
-      
       default:
         return [];
     }
@@ -529,5 +524,44 @@ export class SearchInputComponent implements OnDestroy {
   private setInputValue(val: string): void {
     this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     this.onChange(val);
+  }
+
+  private addressToString(address: any): string {
+    if (!address) return '';
+    if (typeof address === 'string') return address;
+    if (typeof address.address === 'string') return address.address;
+    // Try to join common fields
+    const parts = [address.street, address.city, address.state, address.zip].filter(Boolean);
+    if (parts.length) return parts.join(', ');
+    return '';
+  }
+
+  private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
+    const items: ISearchItem[] = [];
+    for (const place of places) {
+      if (Array.isArray(place.addresses) && place.addresses.length > 0) {
+        for (const address of place.addresses) {
+          let addressStr = this.addressToString(address);
+          let trips = typeof address.trips === 'number' ? address.trips : place.trips;
+          items.push({
+            id: place.id,
+            name: place.place,
+            saved: place.saved,
+            value: place.place,
+            trips: trips,
+            address: addressStr
+          });
+        }
+      } else {
+        items.push({
+          id: place.id,
+          name: place.place,
+          saved: place.saved,
+          value: place.place,
+          trips: place.trips
+        });
+      }
+    }
+    return items;
   }
 }
