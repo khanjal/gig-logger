@@ -172,6 +172,10 @@ export class SearchInputComponent implements OnDestroy {
         // Error getting full address with zip; fall back to original value
       }
     }
+    // Emit address if available and this is a place search
+    if (this.searchType === 'Place' && selectedItem?.address) {
+      this.auxiliaryData.emit(selectedItem.address);
+    }
     // Use emitEvent: false to avoid triggering valueChanges and duplicate API calls
     this.setInputValue(finalAddress);
     if (this.inputElement) {
