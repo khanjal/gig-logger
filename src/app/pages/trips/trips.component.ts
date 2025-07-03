@@ -253,6 +253,8 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async confirmLoadTripsDialog() {
+    // Stop polling while dialog is open
+    this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -269,6 +271,10 @@ export class TripComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.loadSheetDialog('load');
+      }
+      // Resume polling if appropriate
+      if (this.pollingEnabled && !this.isEditMode) {
+        await this.startPolling();
       }
     });
   }
