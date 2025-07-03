@@ -194,8 +194,15 @@ export class SearchInputComponent implements OnDestroy {
     if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
     }
-    return Math.min(itemsToUse.length, this.MAX_VISIBLE_ITEMS) * this.ITEM_HEIGHT;
+    return Math.min(itemsToUse.length, this.MAX_VISIBLE_ITEMS) * this.getItemSize();
   }
+  
+  getItemSize(): number {
+    // Check if any item has an address (indicating two-line display)
+    const hasAddress = this.filteredItemsArray.some(item => item.address);
+    return hasAddress ? 72 : this.ITEM_HEIGHT; // 72px for two-line items, 48px for single-line
+  }
+
   public openGoogleMaps(): void {
     const searchQuery = encodeURIComponent(this.value || this.fieldName);
     const baseUrl = 'https://www.google.com/maps/search/';
@@ -374,7 +381,8 @@ export class SearchInputComponent implements OnDestroy {
         saved: false,
         value: this.googleSearch === 'address' ? prediction.address : prediction.place,
         trips: 0,
-        placeId: prediction.placeDetails?.placeId // Store place ID for later lookup
+        placeId: prediction.placeDetails?.placeId, // Store place ID for later lookup
+        address: prediction.address // Always include address for display
       }));
       if (this.googlePredictionsCache.size >= 50) {
         const firstKey = this.googlePredictionsCache.keys().next().value;
