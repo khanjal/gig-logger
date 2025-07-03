@@ -50,17 +50,17 @@
 
             <!-- Google search icon - shows when text is entered but no selection made -->
             <button mat-icon-button matSuffix class="standard-button" 
-                    *ngIf="(searchType === 'Place' || searchType === 'Address') && value && !hasSelection"
+                    *ngIf="isGoogleSearchType() && value && !hasSelection"
                     color="primary"
                     aria-label="Trigger Google Autocomplete Search"
                     title="Search with Google Autocomplete"
-                    (click)="triggerRateLimitFallback(); autocompleteTrigger.openPanel(); $event.stopPropagation(); $event.preventDefault();">
+                    (click)="triggerGoogleSearch(); $event.stopPropagation(); $event.preventDefault();">
                 <mat-icon>search</mat-icon>
             </button>
 
             <!-- Google Maps icon - shows when text is entered and a selection has been made -->
             <button mat-icon-button matSuffix class="standard-button"
-                    *ngIf="(searchType === 'Place' || searchType === 'Address') && value && hasSelection"
+                    *ngIf="isGoogleSearchType() && value && hasSelection"
                     color="primary"
                     aria-label="Open Google Maps"
                     title="Open Google Maps with this search"

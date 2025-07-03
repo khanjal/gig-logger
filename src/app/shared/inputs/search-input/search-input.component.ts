@@ -38,7 +38,7 @@ import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // Utility imports
-import { createSearchItem, searchJson, isRateLimitError, isGoogleResult } from './search-input.utils';
+import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
 
 @Component({
   selector: 'app-search-input',
@@ -81,9 +81,9 @@ export class SearchInputComponent implements OnDestroy {
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
   private readonly DEBOUNCE_TIME = 300;
+  private readonly CACHE_SIZE_LIMIT = 50;
   private googlePredictionsCache = new Map<string, ISearchItem[]>();
   private searchSubscription?: Subscription;
-  pendingMenuAction: 'search' | 'clear' | null = null;
   // #endregion
 
   // #region ControlValueAccessor
@@ -120,9 +120,16 @@ export class SearchInputComponent implements OnDestroy {
   ) { }
 
   async ngOnInit(): Promise<void> {
+    this.validateSearchType();
     this.updateValidators();
     this.setGoogleSearchType();
     this.setupFilteredItems();
+  }
+
+  private validateSearchType(): void {
+    if (!isValidSearchType(this.searchType)) {
+      console.warn(`Invalid search type: ${this.searchType}`);
+    }
   }
   async ngOnChanges(): Promise<void> {
     this.updateValidators();
@@ -130,20 +137,36 @@ export class SearchInputComponent implements OnDestroy {
     this.searchForm.controls.searchInput.updateValueAndValidity();
   }
   ngOnDestroy(): void {
+    this.cleanupSubscriptions();
+    this.cleanupCache();
+  }
+
+  private cleanupSubscriptions(): void {
     if (this.searchSubscription) {
       this.searchSubscription.unsubscribe();
     }
+  }
+
+  private cleanupCache(): void {
+    this.googlePredictionsCache.clear();
   }
   // #endregion
 
   // #region Event Handlers
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
+    if (!target) {
+      console.warn('Invalid input target in onInputChange');
+      return;
+    }
+    
     const value = target.value;
     this.setInputValue(value);
     this.valueChanged.emit(value);
+    
     // Reset selection state when input changes
     this.hasSelection = false;
+    
     // Hide icon if input is cleared
     if (!value) {
       this.showGoogleMapsIcon = false;
@@ -159,19 +182,23 @@ export class SearchInputComponent implements OnDestroy {
   }
   public onClear(): void {
     this.setInputValue('');
+    this.resetComponentState();
+  }
+
+  private resetComponentState(): void {
     this.googlePredictionsCache.clear();
     this.showGoogleMapsIcon = false;
     this.hasSelection = false;
+    this.filteredItemsArray = [];
   }
   async onInputSelect(inputValue: string): Promise<void> {
-    // Find the selected item to get place ID for Google results
     const selectedItem = this.filteredItemsArray.find(item => 
       item.name === inputValue || item.value === inputValue
     );
     
     let finalAddress = inputValue;
     
-    // If this is a Google address result with a place ID, get full address with zip
+    // Get full address for Google results with place ID
     if (selectedItem?.placeId && this.searchType === 'Address') {
       try {
         const fullAddress = await this._serverGooglePlacesService.getFullAddressWithZip(selectedItem.placeId);
@@ -179,17 +206,24 @@ export class SearchInputComponent implements OnDestroy {
           finalAddress = fullAddress;
         }
       } catch (error) {
-        // Error getting full address with zip; fall back to original value
+        console.warn('Error getting full address with zip:', error);
+        // Continue with original value
       }
     }
-    // Emit address if available and this is a place search
+    
+    // Emit auxiliary data for place searches
     if (this.searchType === 'Place' && selectedItem?.address) {
       this.auxiliaryData.emit(selectedItem.address);
     }
-    // Use emitEvent: false to avoid triggering valueChanges and duplicate API calls
+    
     this.setInputValue(finalAddress);
-    // Set selection state to true when user makes a selection
     this.hasSelection = true;
+    
+    // Blur input after selection
+    this.blurInputAfterDelay();
+  }
+
+  private blurInputAfterDelay(): void {
     if (this.inputElement) {
       setTimeout(() => {
         this.inputElement.nativeElement.blur();
@@ -224,19 +258,22 @@ export class SearchInputComponent implements OnDestroy {
     const baseUrl = 'https://www.google.com/maps/search/';
     window.open(`${baseUrl}${searchQuery}`, '_blank');
   }
-  public async triggerRateLimitFallback(): Promise<void> {
-    if (this.searchType === 'Address' || this.searchType === 'Place') {
-      const value = this.value;
-      if (!value) return;
-      // Call Google autocomplete directly
-      const googleResults = await this.getGooglePredictions(value);
+  public async triggerGoogleSearch(): Promise<void> {
+    if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
+    if (!this.isGoogleSearchType()) return;
+    
+    try {
+      const googleResults = await this.getGooglePredictions(this.value);
       this.filteredItemsArray = googleResults;
-      // If no results, show only the map icon
-      if (!googleResults || googleResults.length === 0) {
-        this.showGoogleMapsIcon = false;
-      } else {
-        this.showGoogleMapsIcon = true;
+      this.showGoogleMapsIcon = googleResults.length === 0;
+      
+      // Open the dropdown if closed
+      if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
+        this.autocompleteTrigger.openPanel();
       }
+    } catch (error) {
+      console.warn('Error triggering Google search:', error);
+      this.showGoogleMapsIcon = true;
     }
   }
   // #endregion
@@ -302,60 +339,73 @@ export class SearchInputComponent implements OnDestroy {
 
   private async _filterItems(value: string): Promise<ISearchItem[]> {
     if (!value || value.length === 0) {
-      // If no value, get all items for type, and if empty, try JSON fallback
-      let items = await this.getAllItemsForType();
-      if (items.length === 0) {
-        switch (this.searchType) {
-          case 'Place':
-            items = await searchJson('places', value);
-            break;
-          case 'Service':
-            items = await searchJson('services', value);
-            break;
-          case 'Type':
-            items = await searchJson('types', value);
-            break;
-        }
-      }
-      // Hide icon if input is empty
-      this.showGoogleMapsIcon = false;
-      return items;
+      return await this.handleEmptySearch();
     }
-    let results: ISearchItem[] = [];
+
+    const results = await this.getFilteredResults(value);
+    this.updateGoogleMapsIconVisibility(results, value);
+    return results;
+  }
+
+  private async handleEmptySearch(): Promise<ISearchItem[]> {
+    let items = await this.getAllItemsForType();
+    
+    if (items.length === 0) {
+      items = await this.getJsonFallback('');
+    }
+    
+    this.showGoogleMapsIcon = false;
+    return items;
+  }
+
+  private async getFilteredResults(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
-        results = await this.addGooglePredictionsIfNeeded(value, addressResults);
-        break;
+        return await this.addGooglePredictionsIfNeeded(value, addressResults);
+      
       case 'Name':
-        results = (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
-        break;
+        return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+      
       case 'Place':
         let places = (await this._filterPlace(value)).map(item => createSearchItem(item, 'place'));
         places = await this.handleJsonFallback(places, 'places', value);
-        results = await this.addGooglePredictionsIfNeeded(value, places);
-        break;
+        return await this.addGooglePredictionsIfNeeded(value, places);
+      
       case 'Region':
-        results = (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
-        break;
+        return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
+      
       case 'Service':
         let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
-        results = await this.handleJsonFallback(services, 'services', value);
-        break;
+        return await this.handleJsonFallback(services, 'services', value);
+      
       case 'Type':
         let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
-        results = await this.handleJsonFallback(types, 'types', value);
-        break;
+        return await this.handleJsonFallback(types, 'types', value);
+      
       default:
-        results = [];
+        return [];
     }
-    // If no results and Place/Address, show Google Maps icon for manual search
-    if ((this.searchType === 'Address' || this.searchType === 'Place') && results.length === 0 && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
-      this.showGoogleMapsIcon = true;
-    } else {
-      this.showGoogleMapsIcon = false;
+  }
+
+  private async getJsonFallback(value: string): Promise<ISearchItem[]> {
+    switch (this.searchType) {
+      case 'Place':
+        return await searchJson('places', value);
+      case 'Service':
+        return await searchJson('services', value);
+      case 'Type':
+        return await searchJson('types', value);
+      default:
+        return [];
     }
-    return results;
+  }
+
+  private updateGoogleMapsIconVisibility(results: ISearchItem[], value: string): void {
+    const shouldShowIcon = this.isGoogleSearchType() && 
+                          results.length === 0 && 
+                          value.length >= this.MIN_GOOGLE_SEARCH_LENGTH;
+    this.showGoogleMapsIcon = shouldShowIcon;
   }
 
   // #region Private Filter Methods
@@ -402,44 +452,58 @@ export class SearchInputComponent implements OnDestroy {
     if (!this.isGoogleAllowed() || !this.googleSearch) {
       return [];
     }
+
     const cacheKey = `${this.googleSearch}:${value.toLowerCase()}`;
-    if (this.googlePredictionsCache.has(cacheKey)) {
-      return this.googlePredictionsCache.get(cacheKey)!;
+    const cachedResults = this.googlePredictionsCache.get(cacheKey);
+    
+    if (cachedResults) {
+      return cachedResults;
     }
+
     try {
-      // Use smart autocomplete that only calls API with location, otherwise uses fallbacks
       const predictions = await this._serverGooglePlacesService.getSmartAutocomplete(
         value,
         this.googleSearch,
         'US'
       );
-      this.showGoogleMapsIcon = false;
-      const results = predictions.map((prediction: AutocompleteResult) => ({
-        id: undefined,
-        name: this.googleSearch === 'address' 
-          ? prediction.address 
-          : prediction.place,
-        saved: false,
-        value: this.googleSearch === 'address' ? prediction.address : prediction.place,
-        trips: 0,
-        placeId: prediction.placeDetails?.placeId, // Store place ID for later lookup
-        address: prediction.address // Always include address for display
-      }));
-      if (this.googlePredictionsCache.size >= 50) {
-        const firstKey = this.googlePredictionsCache.keys().next().value;
-        if (firstKey) {
-          this.googlePredictionsCache.delete(firstKey);
-        }
-      }
+
+      const results = this.transformGooglePredictions(predictions);
+      this.manageCacheSize();
       this.googlePredictionsCache.set(cacheKey, results);
+      
       return results;
     } catch (error: any) {
-      // Error getting Google predictions; no fallback, just return empty array
-      if (this.isRateLimitError(error) && (this.searchType === 'Address' || this.searchType === 'Place')) {
-        this.showGoogleMapsIcon = true;
-      }
+      this.handleGoogleSearchError(error);
       return [];
     }
+  }
+
+  private transformGooglePredictions(predictions: AutocompleteResult[]): ISearchItem[] {
+    return predictions.map((prediction: AutocompleteResult) => ({
+      id: undefined,
+      name: this.googleSearch === 'address' ? prediction.address : prediction.place,
+      saved: false,
+      value: this.googleSearch === 'address' ? prediction.address : prediction.place,
+      trips: 0,
+      placeId: prediction.placeDetails?.placeId,
+      address: prediction.address
+    }));
+  }
+
+  private manageCacheSize(): void {
+    if (this.googlePredictionsCache.size >= this.CACHE_SIZE_LIMIT) {
+      const firstKey = this.googlePredictionsCache.keys().next().value;
+      if (firstKey) {
+        this.googlePredictionsCache.delete(firstKey);
+      }
+    }
+  }
+
+  private handleGoogleSearchError(error: any): void {
+    if (this.isRateLimitError(error) && this.isGoogleSearchType()) {
+      this.showGoogleMapsIcon = true;
+    }
+    console.warn('Error getting Google predictions:', error);
   }
 
   private isRateLimitError(error: any): boolean {
@@ -458,38 +522,12 @@ export class SearchInputComponent implements OnDestroy {
     return hostname.includes('gig-test') || hostname === 'localhost';
   }
 
-  private setInputValue(val: string) {
+  public isGoogleSearchType(): boolean {
+    return this.searchType === 'Address' || this.searchType === 'Place';
+  }
+
+  private setInputValue(val: string): void {
     this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     this.onChange(val);
-  }
-
-  // NEW: Manually trigger Google search and update dropdown
-  async manualGoogleSearch(): Promise<void> {
-    if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
-    if (!(this.searchType === 'Place' || this.searchType === 'Address')) return;
-    const googleResults = await this.getGooglePredictions(this.value);
-    this.filteredItemsArray = googleResults;
-    this.showGoogleMapsIcon = false;
-    // Optionally, open the dropdown if closed
-    if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
-      this.autocompleteTrigger.openPanel();
-    }
-  }
-
-  // Handler for menu actions that need to close the menu and open the autocomplete dropdown
-  handleMenuAction(action: 'search' | 'clear') {
-    this.pendingMenuAction = action;
-  }
-
-  // Call this after menu closes
-  onMenuClosed(autocompleteTrigger: any) {
-    if (this.pendingMenuAction === 'search') {
-      this.triggerRateLimitFallback();
-      autocompleteTrigger.openPanel();
-    } else if (this.pendingMenuAction === 'clear') {
-      this.onClear();
-      autocompleteTrigger.openPanel();
-    }
-    this.pendingMenuAction = null;
   }
 }
