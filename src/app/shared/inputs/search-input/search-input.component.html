@@ -41,7 +41,7 @@
                             <span class="trips-indicator" *ngIf="item.saved && item.trips > 0" style="margin-right: 6px; font-size: 0.9em; color: #666;">
                                 ({{ item.trips }})
                             </span>
-                            <span class="option-text" style="font-weight: 500; flex: 1;">{{ item.name }}</span>
+                            <span class="option-text" [ngClass]="{'option-text-large': item.address, 'option-text-normal': !item.address}">{{ item.name }}</span>
                         </div>
                         <div *ngIf="item.address" class="option-address" style="font-size: 0.8em; color: #888; margin-top: 4px; padding-left: 22px; line-height: 1.1; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: calc(100% - 22px);">{{ item.address | shortaddress:item.name:0 }}</div>
                     </div>

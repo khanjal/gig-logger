@@ -80,7 +80,6 @@ export class SearchInputComponent implements OnDestroy {
   showGoogleMapsIcon = false;
   hasSelection = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
-  private readonly MAX_VISIBLE_ITEMS = 5;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
   private readonly DEBOUNCE_TIME = 300;
@@ -249,9 +248,8 @@ export class SearchInputComponent implements OnDestroy {
   }
   
   getItemSize(): number {
-    // Check if any item has an address (indicating two-line display)
-    const hasAddress = this.filteredItemsArray.some(item => item.address);
-    return hasAddress ? 72 : this.ITEM_HEIGHT; // 72px for two-line items, 48px for single-line
+    // Always use static item height
+    return this.ITEM_HEIGHT;
   }
 
   public openGoogleMaps(): void {
