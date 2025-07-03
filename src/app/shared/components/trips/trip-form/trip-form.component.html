@@ -125,7 +125,7 @@
 
     <!-- Customer Information -->
     <div>
-      <div class="flex items-center gap-1 mb-3">
+      <div class="flex items-center gap-1" [ngClass]="(selectedPlaceAddresses?.length || 0) > 0 ? 'mb-1' : 'mb-3'">
         <app-search-input 
           class="w-full mr-2"
           fieldName="Name" 
@@ -167,7 +167,7 @@
           </mat-expansion-panel>
         </mat-accordion>
       </div>
-      <div class="flex flex-col gap-1 mb-3" *ngIf="showPickupAddress">
+      <div class="flex flex-col gap-1" [ngClass]="(selectedNameDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
         <app-search-input 
           class="w-full"
           fieldName="Pickup Address" 
@@ -208,7 +208,7 @@
 
     <!-- Destination Address -->
     <div>
-      <div class="flex flex-col gap-1 mb-3">
+      <div class="flex flex-col gap-1" [ngClass]="(selectedAddressDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'">
         <app-search-input 
           class="w-full"
           fieldName="Destination Address" 
