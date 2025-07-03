@@ -113,7 +113,10 @@ export class TripComponent implements OnInit, OnDestroy {
     const savedPollingState = localStorage.getItem('pollingEnabled');
     this.pollingEnabled = savedPollingState ? JSON.parse(savedPollingState) : false;
 
-    await this.load();
+    // Only load if not in edit mode
+    if (!this.isEditMode) {
+      await this.load();
+    }
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
     
     // Load trip data for editing if in edit mode
@@ -121,11 +124,7 @@ export class TripComponent implements OnInit, OnDestroy {
       await this.loadTripForEditing();
     }
     
-    // Start polling if it was previously enabled
-    if (this.pollingEnabled) {
-      await this.startPolling();
-    }
-      this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
+    this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
       await this.reload(undefined, true); // Pass true to indicate this is a parent reload
     });
   }
@@ -254,6 +253,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async confirmLoadTripsDialog() {
+    // Stop polling while dialog is open
     this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
 
@@ -272,12 +272,13 @@ export class TripComponent implements OnInit, OnDestroy {
       if(result) {
         await this.loadSheetDialog('load');
       }
-
-      if (this.pollingEnabled) {
+      // Resume polling if appropriate
+      if (this.pollingEnabled && !this.isEditMode) {
         await this.startPolling();
       }
     });
   }
+
   async reload(anchor?: string, isParentReload: boolean = false) {
     let sheetId = this.defaultSheet?.id;
     if (!sheetId) {
@@ -295,13 +296,15 @@ export class TripComponent implements OnInit, OnDestroy {
       this._viewportScroller.scrollToAnchor(anchor);
     }
   }
+  
   async changePolling() {
     this.pollingEnabled = !this.pollingEnabled;
 
     // Save polling preference to localStorage
     localStorage.setItem('pollingEnabled', JSON.stringify(this.pollingEnabled));
 
-    if (this.pollingEnabled) {
+    // Start or stop polling based on new state
+    if (this.pollingEnabled && !this.isEditMode) {
       await this.startPolling();
     } else {
       this.stopPolling();
@@ -309,10 +312,10 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async startPolling() {
-    if (!this.pollingEnabled) {
+    // Only poll if pollingEnabled and not in edit mode
+    if (!this.pollingEnabled || this.isEditMode) {
       return;
     }
-    
     this.logger.debug('Starting polling');
     this._pollingService.stopPolling();
     await this._pollingService.startPolling();
@@ -345,6 +348,7 @@ export class TripComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     }, 200);
   }
+  
   async exitEditMode(scrollToTripId?: string) {
     this.isEditMode = false;
     this.editingTripId = null;

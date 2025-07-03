@@ -103,4 +103,9 @@ export class ShiftsQuickViewComponent {
   formatDistance(distance: number): string {
     return UnitHelper.formatDistance(distance);
   }
+
+  canDeleteShift(): boolean {
+    // Enable delete if duplicateShift is true, or if both grandTotal and totalTrips are 0 or falsy
+    return !!this.duplicateShift || (((this.shift.grandTotal === 0 || !this.shift.grandTotal) && (this.shift.totalTrips === 0 || !this.shift.totalTrips)));
+  }
 }
