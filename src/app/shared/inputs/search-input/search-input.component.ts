@@ -74,6 +74,7 @@ export class SearchInputComponent implements OnDestroy {
   filteredItems: Observable<ISearchItem[]> | undefined;
   filteredItemsArray: ISearchItem[] = [];
   showGoogleMapsIcon = false;
+  showManualGoogleSearchIcon = false; // NEW: show manual search icon
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly MAX_VISIBLE_ITEMS = 5;
   private readonly ITEM_HEIGHT = 48;
@@ -139,6 +140,10 @@ export class SearchInputComponent implements OnDestroy {
     const value = target.value;
     this.setInputValue(value);
     this.valueChanged.emit(value);
+    // Hide icon if input is cleared
+    if (!value) {
+      this.showGoogleMapsIcon = false;
+    }
   }
   onBlur(): void {
     const trimmedValue = this.value.trim();
@@ -212,10 +217,19 @@ export class SearchInputComponent implements OnDestroy {
     const baseUrl = 'https://www.google.com/maps/search/';
     window.open(`${baseUrl}${searchQuery}`, '_blank');
   }
-  public triggerRateLimitFallback(): void {
+  public async triggerRateLimitFallback(): Promise<void> {
     if (this.searchType === 'Address' || this.searchType === 'Place') {
-      console.log('Manually triggering rate limit fallback - showing Google Maps icon');
-      this.showGoogleMapsIcon = true;
+      const value = this.value;
+      if (!value) return;
+      // Call Google autocomplete directly
+      const googleResults = await this.getGooglePredictions(value);
+      this.filteredItemsArray = googleResults;
+      // If no results, show only the map icon
+      if (!googleResults || googleResults.length === 0) {
+        this.showGoogleMapsIcon = false;
+      } else {
+        this.showGoogleMapsIcon = true;
+      }
     }
   }
   // #endregion
@@ -296,29 +310,45 @@ export class SearchInputComponent implements OnDestroy {
             break;
         }
       }
+      // Hide icon if input is empty
+      this.showGoogleMapsIcon = false;
       return items;
     }
+    let results: ISearchItem[] = [];
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
-        return await this.addGooglePredictionsIfNeeded(value, addressResults);
+        results = await this.addGooglePredictionsIfNeeded(value, addressResults);
+        break;
       case 'Name':
-        return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+        results = (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+        break;
       case 'Place':
         let places = (await this._filterPlace(value)).map(item => createSearchItem(item, 'place'));
         places = await this.handleJsonFallback(places, 'places', value);
-        return await this.addGooglePredictionsIfNeeded(value, places);
+        results = await this.addGooglePredictionsIfNeeded(value, places);
+        break;
       case 'Region':
-        return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
+        results = (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
+        break;
       case 'Service':
         let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
-        return await this.handleJsonFallback(services, 'services', value);
+        results = await this.handleJsonFallback(services, 'services', value);
+        break;
       case 'Type':
         let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
-        return await this.handleJsonFallback(types, 'types', value);
+        results = await this.handleJsonFallback(types, 'types', value);
+        break;
       default:
-        return [];
+        results = [];
     }
+    // If no results and Place/Address, show Google Maps icon for manual search
+    if ((this.searchType === 'Address' || this.searchType === 'Place') && results.length === 0 && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+      this.showGoogleMapsIcon = true;
+    } else {
+      this.showGoogleMapsIcon = false;
+    }
+    return results;
   }
 
   // #region Private Filter Methods
@@ -424,5 +454,18 @@ export class SearchInputComponent implements OnDestroy {
   private setInputValue(val: string) {
     this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     this.onChange(val);
+  }
+
+  // NEW: Manually trigger Google search and update dropdown
+  async manualGoogleSearch(): Promise<void> {
+    if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
+    if (!(this.searchType === 'Place' || this.searchType === 'Address')) return;
+    const googleResults = await this.getGooglePredictions(this.value);
+    this.filteredItemsArray = googleResults;
+    this.showManualGoogleSearchIcon = false;
+    // Optionally, open the dropdown if closed
+    if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
+      this.autocompleteTrigger.openPanel();
+    }
   }
 }

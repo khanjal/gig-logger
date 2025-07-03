@@ -47,16 +47,28 @@
                 </cdk-virtual-scroll-viewport>
             </mat-autocomplete>
 
-            <!-- Google Maps icon - shown when rate limited -->
-            <button class="mat-icon-button standard-button" 
-                    *ngIf="showGoogleMapsIcon" 
-                    color="primary" 
-                    matSuffix 
-                    mat-icon-button 
-                    aria-label="Search in Google Maps" 
-                    title="API quota exceeded - search in Google Maps"
+            <!-- Google Maps icon - only visible after search button is used and no Google results, or if there are no Google results -->
+            <button class="mat-icon-button standard-button"
+                    *ngIf="value && (searchType === 'Place' || searchType === 'Address')"
+                    color="primary"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Open Google Maps"
+                    title="Open Google Maps with this search"
                     (click)="openGoogleMaps(); $event.stopPropagation(); $event.preventDefault()">
                 <mat-icon>map</mat-icon>
+            </button>
+
+            <!-- Google search icon for manual autocomplete propagation (always visible for Place/Address when input is non-empty) -->
+            <button class="mat-icon-button standard-button"
+                    *ngIf="(searchType === 'Place' || searchType === 'Address') && value"
+                    color="primary"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Trigger Google Autocomplete Search"
+                    title="Manually trigger Google Autocomplete search"
+                    (click)="triggerRateLimitFallback(); $event.stopPropagation(); $event.preventDefault()">
+                <mat-icon>search</mat-icon>
             </button>
 
             <!-- Standard buttons (inside form field) - shown on all screens except very small -->
