@@ -302,6 +302,13 @@ export class TripComponent implements OnInit, OnDestroy {
 
     // Save polling preference to localStorage
     localStorage.setItem('pollingEnabled', JSON.stringify(this.pollingEnabled));
+
+    // Start or stop polling based on new state
+    if (this.pollingEnabled && !this.isEditMode) {
+      await this.startPolling();
+    } else {
+      this.stopPolling();
+    }
   }
 
   async startPolling() {
