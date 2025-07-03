@@ -121,14 +121,9 @@ export class TripComponent implements OnInit, OnDestroy {
     
     // Load trip data for editing if in edit mode
     if (this.isEditMode && this.editingTripId) {
-      this.stopPolling(); // Pause polling in edit mode
       await this.loadTripForEditing();
     }
     
-    // Start polling if it was previously enabled and not in edit mode
-    if (this.pollingEnabled && !this.isEditMode) {
-      await this.startPolling();
-    }
     this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
       await this.reload(undefined, true); // Pass true to indicate this is a parent reload
     });
@@ -258,7 +253,6 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async confirmLoadTripsDialog() {
-    this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -276,12 +270,9 @@ export class TripComponent implements OnInit, OnDestroy {
       if(result) {
         await this.loadSheetDialog('load');
       }
-
-      if (this.pollingEnabled) {
-        await this.startPolling();
-      }
     });
   }
+
   async reload(anchor?: string, isParentReload: boolean = false) {
     let sheetId = this.defaultSheet?.id;
     if (!sheetId) {
@@ -299,24 +290,19 @@ export class TripComponent implements OnInit, OnDestroy {
       this._viewportScroller.scrollToAnchor(anchor);
     }
   }
+  
   async changePolling() {
     this.pollingEnabled = !this.pollingEnabled;
 
     // Save polling preference to localStorage
     localStorage.setItem('pollingEnabled', JSON.stringify(this.pollingEnabled));
-
-    if (this.pollingEnabled) {
-      await this.startPolling();
-    } else {
-      this.stopPolling();
-    }
   }
 
   async startPolling() {
-    if (!this.pollingEnabled) {
+    // Only poll if pollingEnabled and not in edit mode
+    if (!this.pollingEnabled || this.isEditMode) {
       return;
     }
-    
     this.logger.debug('Starting polling');
     this._pollingService.stopPolling();
     await this._pollingService.startPolling();
@@ -349,6 +335,7 @@ export class TripComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     }, 200);
   }
+  
   async exitEditMode(scrollToTripId?: string) {
     this.isEditMode = false;
     this.editingTripId = null;
@@ -359,11 +346,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
 
     await this.load(); // This handles the overlay timing
-    
-    // Resume polling if enabled
-    if (this.pollingEnabled) {
-      await this.startPolling();
-    }
     
     if (scrollToTripId) {
       this.scrollToTrip(scrollToTripId);
