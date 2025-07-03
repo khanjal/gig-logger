@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -42,7 +43,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult } from '
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -82,6 +83,7 @@ export class SearchInputComponent implements OnDestroy {
   private readonly DEBOUNCE_TIME = 300;
   private googlePredictionsCache = new Map<string, ISearchItem[]>();
   private searchSubscription?: Subscription;
+  pendingMenuAction: 'search' | 'clear' | null = null;
   // #endregion
 
   // #region ControlValueAccessor
@@ -467,5 +469,22 @@ export class SearchInputComponent implements OnDestroy {
     if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
       this.autocompleteTrigger.openPanel();
     }
+  }
+
+  // Handler for menu actions that need to close the menu and open the autocomplete dropdown
+  handleMenuAction(action: 'search' | 'clear') {
+    this.pendingMenuAction = action;
+  }
+
+  // Call this after menu closes
+  onMenuClosed(autocompleteTrigger: any) {
+    if (this.pendingMenuAction === 'search') {
+      this.triggerRateLimitFallback();
+      autocompleteTrigger.openPanel();
+    } else if (this.pendingMenuAction === 'clear') {
+      this.onClear();
+      autocompleteTrigger.openPanel();
+    }
+    this.pendingMenuAction = null;
   }
 }
