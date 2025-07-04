@@ -449,6 +449,10 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.startAddress.setValue(address);
   }
 
+  setDropoffAddress(address: string) {
+    this.tripForm.get('endAddress')?.setValue(address);
+  }
+
   async setDestinationAddress(address: string) {
     this.tripForm.controls.endAddress.setValue(address);
     await this.showAddressNames();
