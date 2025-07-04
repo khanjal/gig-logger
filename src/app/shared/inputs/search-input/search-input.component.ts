@@ -361,22 +361,34 @@ export class SearchInputComponent implements OnDestroy {
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
-        return await this.addGooglePredictionsIfNeeded(value, addressResults);
+        // For Address, do not auto-trigger Google predictions
+        if (addressResults.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+          this.showGoogleMapsIcon = true;
+        } else {
+          this.showGoogleMapsIcon = false;
+        }
+        return addressResults;
       case 'Name':
         return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
       case 'Place':
         let places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
-        placeItems = await this.handleJsonFallback(placeItems, 'places', value);
-        return await this.addGooglePredictionsIfNeeded(value, placeItems);
+        placeItems = await this.getJsonFallback(value);
+        // For Place, do not auto-trigger Google predictions
+        if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+          this.showGoogleMapsIcon = true;
+        } else {
+          this.showGoogleMapsIcon = false;
+        }
+        return placeItems;
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
       case 'Service':
         let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
-        return await this.handleJsonFallback(services, 'services', value);
+        return await this.getJsonFallback(value);
       case 'Type':
         let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
-        return await this.handleJsonFallback(types, 'types', value);
+        return await this.getJsonFallback(value);
       default:
         return [];
     }
@@ -422,38 +434,6 @@ export class SearchInputComponent implements OnDestroy {
     return await this._typeService.filter('type', value);
   }
   // #endregion
-
-  private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
-    // Only auto-trigger Google predictions for types other than Address/Place
-    if (
-      results.length === 0 &&
-      value &&
-      value.length >= this.MIN_GOOGLE_SEARCH_LENGTH &&
-      this.isGoogleSearchType() === false
-    ) {
-      const googlePredictions = await this.getGooglePredictions(value);
-      return googlePredictions;
-    }
-    // For Address/Place, just show the Google Maps icon if no results, but do not fetch predictions
-    if (
-      results.length === 0 &&
-      value &&
-      value.length >= this.MIN_GOOGLE_SEARCH_LENGTH &&
-      this.isGoogleSearchType()
-    ) {
-      this.showGoogleMapsIcon = true;
-    } else {
-      this.showGoogleMapsIcon = false;
-    }
-    return results;
-  }
-
-  private async handleJsonFallback(results: ISearchItem[], searchType: string, value: string): Promise<ISearchItem[]> {
-    if (results.length === 0) {
-      return await searchJson(searchType, value);
-    }
-    return results;
-  }
 
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
     if (!this.isGoogleAllowed() || !this.googleSearch) {
