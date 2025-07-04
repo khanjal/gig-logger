@@ -424,14 +424,27 @@ export class SearchInputComponent implements OnDestroy {
   // #endregion
 
   private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
-    if (results.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+    // Only auto-trigger Google predictions for types other than Address/Place
+    if (
+      results.length === 0 &&
+      value &&
+      value.length >= this.MIN_GOOGLE_SEARCH_LENGTH &&
+      this.isGoogleSearchType() === false
+    ) {
       const googlePredictions = await this.getGooglePredictions(value);
-      // Show Google Maps icon if using Google search (Address or Place)
-      this.showGoogleMapsIcon = (this.searchType === 'Address' || this.searchType === 'Place');
       return googlePredictions;
     }
-    // Hide Google Maps icon if we have local results
-    this.showGoogleMapsIcon = false;
+    // For Address/Place, just show the Google Maps icon if no results, but do not fetch predictions
+    if (
+      results.length === 0 &&
+      value &&
+      value.length >= this.MIN_GOOGLE_SEARCH_LENGTH &&
+      this.isGoogleSearchType()
+    ) {
+      this.showGoogleMapsIcon = true;
+    } else {
+      this.showGoogleMapsIcon = false;
+    }
     return results;
   }
 
