@@ -210,8 +210,8 @@ export class SearchInputComponent implements OnDestroy {
       }
     }
 
-    // Emit auxiliary data for place searches
-    if (this.searchType === 'Place' && selectedItem?.address) {
+    // Emit auxiliary data for place and name searches
+    if ((this.searchType === 'Place' || this.searchType === 'Name') && selectedItem?.address) {
       this.auxiliaryData.emit(selectedItem.address);
     }
 
@@ -369,7 +369,9 @@ export class SearchInputComponent implements OnDestroy {
         }
         return addressResults;
       case 'Name':
-        return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+        let names = await this._filterName(value);
+        let nameItems = this.mapNamesToSearchItems(names);
+        return nameItems;
       case 'Place':
         let places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
@@ -546,6 +548,33 @@ export class SearchInputComponent implements OnDestroy {
           saved: place.saved,
           value: place.place,
           trips: place.trips
+        });
+      }
+    }
+    return items;
+  }
+
+  private mapNamesToSearchItems(names: IName[]): ISearchItem[] {
+    const items: ISearchItem[] = [];
+    for (const name of names) {
+      if (Array.isArray(name.addresses) && name.addresses.length > 0) {
+        for (const address of name.addresses) {
+          items.push({
+            id: name.id,
+            name: name.name,
+            saved: name.saved,
+            value: name.name,
+            trips: name.trips,
+            address: address // address is a string
+          });
+        }
+      } else {
+        items.push({
+          id: name.id,
+          name: name.name,
+          saved: name.saved,
+          value: name.name,
+          trips: name.trips
         });
       }
     }
