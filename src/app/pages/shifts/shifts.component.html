@@ -12,6 +12,12 @@
         </div>
     } -->
 
+    <!-- Floating Current Date -->
+    <div class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-gray-200 py-1 mb-2 flex items-center justify-center min-h-[2.2rem]">
+      <span *ngIf="currentVisibleDate" class="font-mono text-xs sm:text-sm text-gray-700 font-semibold tracking-wide">
+        {{ currentVisibleDate | date:'EEE, MMM d' }}
+      </span>
+    </div>
     <div class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
       @for (shift of shifts; track $index; let isFirst = $first) {
           <div
