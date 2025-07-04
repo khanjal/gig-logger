@@ -19,6 +19,9 @@ export class PollingService implements OnDestroy {
   private fallbackTimer: any = null;
   private enabled = false;
   private processing = false;
+  private currentInterval = DEFAULT_INTERVAL;
+  private lastPollTime = 0;
+  private visibilityChangeListener: (() => void) | null = null;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -29,6 +32,7 @@ export class PollingService implements OnDestroy {
     private _logger: LoggerService
   ) {
     this.initializeWorker();
+    this.setupVisibilityChangeListener();
   }
 
   private initializeWorker() {
@@ -61,9 +65,84 @@ export class PollingService implements OnDestroy {
     }
   }
 
-  async startPolling(interval: number = DEFAULT_INTERVAL) {
+  private setupVisibilityChangeListener() {
+    this.visibilityChangeListener = () => {
+      if (document.visibilityState === 'visible') {
+        this.handleVisibilityChange();
+      } else {
+        // App is being backgrounded, record the current time
+        this.lastPollTime = Date.now();
+      }
+    };
+
+    document.addEventListener('visibilitychange', this.visibilityChangeListener);
+  }
+
+  private handleVisibilityChange() {
+    if (!this.enabled || !this.lastPollTime) {
+      return;
+    }
+
+    const now = Date.now();
+    const timeSinceLastPoll = now - this.lastPollTime;
+    const remainingInterval = Math.max(0, this.currentInterval - timeSinceLastPoll);
+
+    this._logger.info(`App resumed. Time since last poll: ${timeSinceLastPoll}ms, remaining interval: ${remainingInterval}ms`);
+
+    if (remainingInterval === 0) {
+      // Interval has already passed, save immediately and restart polling
+      this.saveData();
+      this.restartPolling();
+    } else {
+      // Resume with the remaining interval
+      this.resumePolling(remainingInterval);
+    }
+  }
+
+  private resumePolling(initialDelay: number) {
+    this.stopPolling();
     this.enabled = true;
-    this._logger.info('Starting polling');
+
+    if (this.worker) {
+      // For web worker, we need to restart with the remaining delay
+      this.worker.postMessage({
+        type: 'START_POLLING',
+        data: { interval: this.currentInterval, initialDelay }
+      });
+    } else {
+      // For fallback timer, start with the remaining delay, then use normal interval
+      setTimeout(() => {
+        if (this.enabled && !this.processing) {
+          this.saveData();
+        }
+        
+        if (this.enabled) {
+          this.fallbackTimer = setInterval(() => {
+            if (this.enabled && !this.processing) {
+              this.saveData();
+            }
+          }, this.currentInterval);
+        }
+      }, initialDelay);
+    }
+  }
+
+  private restartPolling() {
+    this.stopPolling();
+    this.startPolling(this.currentInterval);
+  }
+
+  async startPolling(interval: number = DEFAULT_INTERVAL) {
+    // Guard against multiple starts
+    if (this.enabled) {
+      this._logger.warn('Polling already enabled, skipping start');
+      return;
+    }
+
+    this.enabled = true;
+    this.currentInterval = interval;
+    this.lastPollTime = Date.now();
+    this._logger.info(`Starting polling with interval: ${interval}ms`);
 
     if (this.worker) {
       this.worker.postMessage({
@@ -81,6 +160,12 @@ export class PollingService implements OnDestroy {
   }
 
   stopPolling() {
+    // Guard against multiple stops
+    if (!this.enabled) {
+      this._logger.warn('Polling already disabled, skipping stop');
+      return;
+    }
+
     this.enabled = false;
     this._logger.info('Stopping polling');
 
@@ -163,6 +248,11 @@ export class PollingService implements OnDestroy {
 
   ngOnDestroy() {
     this.stopPolling();
+    
+    if (this.visibilityChangeListener) {
+      document.removeEventListener('visibilitychange', this.visibilityChangeListener);
+      this.visibilityChangeListener = null;
+    }
     
     if (this.worker) {
       this.worker.terminate();

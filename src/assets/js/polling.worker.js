@@ -8,7 +8,7 @@ self.onmessage = function(event) {
   
   switch (type) {
     case 'START_POLLING':
-      startPolling(data?.interval || intervalMs);
+      startPolling(data?.interval || intervalMs, data?.initialDelay || 0);
       break;
     case 'STOP_POLLING':
       stopPolling();
@@ -21,8 +21,8 @@ self.onmessage = function(event) {
   }
 };
 
-function startPolling(interval) {
-  console.log('[Polling Worker] Starting polling with interval:', interval);
+function startPolling(interval, initialDelay = 0) {
+  console.log('[Polling Worker] Starting polling with interval:', interval, 'initial delay:', initialDelay);
   intervalMs = interval;
   
   // Clear any existing interval
@@ -30,19 +30,38 @@ function startPolling(interval) {
     clearInterval(pollingInterval);
   }
   
-  // Start new interval
-  pollingInterval = setInterval(() => {
-    // Send poll trigger message to main thread
-    self.postMessage({
-      type: 'POLL_TRIGGER',
-      timestamp: Date.now()
-    });
-  }, intervalMs);
+  const startRegularPolling = () => {
+    pollingInterval = setInterval(() => {
+      // Send poll trigger message to main thread
+      self.postMessage({
+        type: 'POLL_TRIGGER',
+        timestamp: Date.now()
+      });
+    }, intervalMs);
+  };
+  
+  if (initialDelay > 0) {
+    // Start with initial delay, then begin regular polling
+    setTimeout(() => {
+      // Send the first poll trigger after initial delay
+      self.postMessage({
+        type: 'POLL_TRIGGER',
+        timestamp: Date.now()
+      });
+      
+      // Start regular polling
+      startRegularPolling();
+    }, initialDelay);
+  } else {
+    // Start regular polling immediately
+    startRegularPolling();
+  }
   
   // Send confirmation
   self.postMessage({
     type: 'POLLING_STARTED',
-    interval: intervalMs
+    interval: intervalMs,
+    initialDelay: initialDelay
   });
 }
 
