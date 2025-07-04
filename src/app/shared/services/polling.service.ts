@@ -31,9 +31,22 @@ export class PollingService implements OnDestroy {
     this.initializeWorker();
   }
 
-        // If already processing, don't do anything
-        if (this.processing) {
-          return;
+  private initializeWorker() {
+    if (typeof Worker === 'undefined') {
+      this._logger.warn('Web Workers not supported, using fallback timer');
+      return;
+    }
+
+    try {
+      this.worker = new Worker('/assets/js/polling.worker.js');
+      
+      this.worker.onmessage = (event) => {
+        const { type } = event.data;
+        
+        if (type === 'POLL_TRIGGER') {
+          this.saveData();
+        } else if (type === 'WORKER_READY') {
+          this._logger.info('Polling worker ready');
         }
       };
 
