@@ -375,7 +375,9 @@ export class SearchInputComponent implements OnDestroy {
       case 'Place':
         let places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
-        placeItems = await this.getJsonFallback(value);
+        if (placeItems.length === 0) {
+          placeItems = await this.getJsonFallback(value);
+        }
         // For Place, do not auto-trigger Google predictions
         if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon = true;
@@ -523,8 +525,16 @@ export class SearchInputComponent implements OnDestroy {
   private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
     const items: ISearchItem[] = [];
     for (const place of places) {
+      // Always add a base item without address
+      items.push({
+        id: place.id,
+        name: place.place,
+        saved: place.saved,
+        value: place.place,
+        trips: place.trips
+      });
       if (Array.isArray(place.addresses) && place.addresses.length > 0) {
-        // Sort addresses by lastTrip descending
+        // Sort addresses by lastTrip descending (most recent first)
         const sortedAddresses = [...place.addresses].sort((a, b) => {
           const dateA = a.lastTrip ? new Date(a.lastTrip).getTime() : 0;
           const dateB = b.lastTrip ? new Date(b.lastTrip).getTime() : 0;
@@ -541,14 +551,6 @@ export class SearchInputComponent implements OnDestroy {
             address: address.address
           });
         }
-      } else {
-        items.push({
-          id: place.id,
-          name: place.place,
-          saved: place.saved,
-          value: place.place,
-          trips: place.trips
-        });
       }
     }
     return items;
@@ -557,6 +559,14 @@ export class SearchInputComponent implements OnDestroy {
   private mapNamesToSearchItems(names: IName[]): ISearchItem[] {
     const items: ISearchItem[] = [];
     for (const name of names) {
+      // Always add a base item without address
+      items.push({
+        id: name.id,
+        name: name.name,
+        saved: name.saved,
+        trips: name.trips,
+        value: name.name
+      });
       if (Array.isArray(name.addresses) && name.addresses.length > 0) {
         for (const address of name.addresses) {
           items.push({
@@ -568,14 +578,6 @@ export class SearchInputComponent implements OnDestroy {
             address: address // address is a string
           });
         }
-      } else {
-        items.push({
-          id: name.id,
-          name: name.name,
-          saved: name.saved,
-          value: name.name,
-          trips: name.trips
-        });
       }
     }
     return items;
