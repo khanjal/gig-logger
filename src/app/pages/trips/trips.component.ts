@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ViewportScroller, NgClass, NgIf, CommonModule } from '@angular/common';
+import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -38,7 +38,7 @@ import { TruncatePipe } from "@pipes/truncate.pipe";
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, NgClass, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe]
+    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe]
 })
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
@@ -47,12 +47,6 @@ export class TripComponent implements OnInit, OnDestroy {
 
   demoSheetId = environment.demoSheet;
 
-  // Google Places API is now handled server-side through Lambda for:
-  // - Better security (API keys protected)
-  // - Cost control and user quotas
-  // - Compliance with Google ToS
-  // - Rate limiting and usage tracking
-  
   clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
@@ -116,6 +110,10 @@ export class TripComponent implements OnInit, OnDestroy {
     // Only load if not in edit mode
     if (!this.isEditMode) {
       await this.load();
+      // Start polling if enabled and not in edit mode
+      if (this.pollingEnabled) {
+        await this.startPolling();
+      }
     }
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
     
@@ -316,8 +314,14 @@ export class TripComponent implements OnInit, OnDestroy {
     if (!this.pollingEnabled || this.isEditMode) {
       return;
     }
+    
+    // Check if polling is already running to avoid unnecessary stop/start
+    if (this._pollingService.isPollingEnabled()) {
+      this.logger.debug('Polling already running, skipping start');
+      return;
+    }
+    
     this.logger.debug('Starting polling');
-    this._pollingService.stopPolling();
     await this._pollingService.startPolling();
   }
   stopPolling() {
@@ -353,13 +357,14 @@ export class TripComponent implements OnInit, OnDestroy {
     this.isEditMode = false;
     this.editingTripId = null;
     this._router.navigate(['/trips']);
-    
     if (this.tripForm) {
       await this.tripForm.formReset();
     }
-
     await this.load(); // This handles the overlay timing
-    
+    // Resume polling if enabled
+    if (this.pollingEnabled) {
+      await this.startPolling();
+    }
     if (scrollToTripId) {
       this.scrollToTrip(scrollToTripId);
     } else {
