@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -46,7 +47,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, ShortAddressPipe],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -79,6 +80,8 @@ export class SearchInputComponent implements OnDestroy {
   filteredItemsArray: ISearchItem[] = [];
   showGoogleMapsIcon = false;
   hasSelection = false;
+  isGoogleSearching = false;
+  showNoGoogleResults = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
@@ -168,10 +171,12 @@ export class SearchInputComponent implements OnDestroy {
     
     // Reset selection state when input changes
     this.hasSelection = false;
+    this.showNoGoogleResults = false;
     
     // Hide icon if input is cleared
     if (!value) {
       this.showGoogleMapsIcon = false;
+      this.isGoogleSearching = false;
     }
   }
   onBlur(): void {
@@ -192,6 +197,8 @@ export class SearchInputComponent implements OnDestroy {
     this.showGoogleMapsIcon = false;
     this.hasSelection = false;
     this.filteredItemsArray = [];
+    this.isGoogleSearching = false;
+    this.showNoGoogleResults = false;
   }
   
   async onInputSelect(selectedItem: ISearchItem): Promise<void> {
@@ -239,6 +246,11 @@ export class SearchInputComponent implements OnDestroy {
 
   // #region Public Methods
   getViewportHeight(items?: ISearchItem[]): number {
+    // If showing spinner or no results message, return fixed height
+    if (this.isGoogleSearching || this.showNoGoogleResults) {
+      return this.ITEM_HEIGHT;
+    }
+    
     const itemsToUse = items || this.filteredItemsArray;
     if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
@@ -261,10 +273,14 @@ export class SearchInputComponent implements OnDestroy {
     if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
     if (!this.isGoogleSearchType()) return;
     
+    this.isGoogleSearching = true;
+    this.showNoGoogleResults = false;
+    
     try {
       const googleResults = await this.getGooglePredictions(this.value);
       this.filteredItemsArray = googleResults;
       this.showGoogleMapsIcon = googleResults.length === 0;
+      this.showNoGoogleResults = googleResults.length === 0;
       
       // Open the dropdown if closed
       if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
@@ -273,6 +289,9 @@ export class SearchInputComponent implements OnDestroy {
     } catch (error) {
       console.warn('Error triggering Google search:', error);
       this.showGoogleMapsIcon = true;
+      this.showNoGoogleResults = true;
+    } finally {
+      this.isGoogleSearching = false;
     }
   }
   // #endregion
