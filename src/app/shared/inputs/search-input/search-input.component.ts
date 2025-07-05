@@ -459,7 +459,7 @@ export class SearchInputComponent implements OnDestroy {
   // #endregion
 
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
-    if (!this.isGoogleAllowed() || !this.googleSearch) {
+    if (!this.googleSearch) {
       return [];
     }
 
