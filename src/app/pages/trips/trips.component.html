@@ -26,7 +26,10 @@
     }
 
     @if ((!unsavedData || pollingEnabled) && !isEditMode) {
-        <div class="flex justify-center my-4 w-full">
+        <div class="flex flex-col items-center my-4 w-full">
+            <div *ngIf="shouldShowUpdateMessage()" class="mb-2 mt-0 text-xs text-yellow-700 bg-yellow-100 border border-yellow-300 rounded px-3 py-1 text-center max-w-xs">
+                <span class="font-bold">Reminder:</span> Update before doing any trips today to get the latest stats from your spreadsheet.
+            </div>
             <button mat-fab extended color="primary" class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
@@ -47,7 +50,15 @@
     @if (!isEditMode) {
         @for (trip of todaysTrips; track $index) {
             <div [id]="trip.rowId">
-                <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+                <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)">
+                </trips-quick-view>
+                <!-- Info icon for first trip (rowId === 2) -->
+                <ng-container *ngIf="trip.rowId === 2">
+                    <div class="flex items-center mt-1 mb-2">
+                        <mat-icon matTooltip="ID 1 is reserved for the spreadsheet header. Your first trip starts at row 2." class="text-blue-400 text-base ml-2 cursor-pointer align-middle">info</mat-icon>
+                        <span class="text-xs text-gray-500 ml-1">ID 1 is the header in your spreadsheet.</span>
+                    </div>
+                </ng-container>
             </div>
         }
     }    <br/>

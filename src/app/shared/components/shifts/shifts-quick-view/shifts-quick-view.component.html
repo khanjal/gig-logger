@@ -7,14 +7,14 @@
     'shift-border-update': !shift.saved && shift.action === ActionEnum.Update,
     'shift-border-delete': !shift.saved && shift.action === ActionEnum.Delete,
     'shift-border-other': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete)),
-    'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && shift.action !== ActionEnum.Delete,
-    'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && shift.action !== ActionEnum.Delete
+    'bg-gradient-to-r from-blue-50 to-white': shift.rowId % 2 === 0 && shift.action !== ActionEnum.Delete,
+    'bg-gradient-to-r from-green-50 to-white': shift.rowId % 2 === 1 && shift.action !== ActionEnum.Delete
   }">
   <!-- Header Row -->
   <div class="p-3 border-b"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': index % 2 === 0,
-      'bg-green-100 border-green-300': index % 2 === 1
+      'bg-blue-100 border-blue-300': shift.rowId % 2 === 0,
+      'bg-green-100 border-green-300': shift.rowId % 2 === 1
     }">
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto relative">
       <!-- Status Icon -->
@@ -171,8 +171,8 @@
   <!-- Action Bar -->
   <div class="flex items-center justify-between p-3 border-t"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': index % 2 === 0,
-      'bg-green-100 border-green-300': index % 2 === 1
+      'bg-blue-100 border-blue-300': shift.rowId % 2 === 0,
+      'bg-green-100 border-green-300': shift.rowId % 2 === 1
     }">
     <!-- Edit Button (disabled for now) -->
     <button class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium transition cursor-not-allowed opacity-50 grayscale" disabled>

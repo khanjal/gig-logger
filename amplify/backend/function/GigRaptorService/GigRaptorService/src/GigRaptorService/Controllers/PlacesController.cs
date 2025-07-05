@@ -23,9 +23,6 @@ public class PlacesController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Received autocomplete request: Query='{Query}', SearchType='{SearchType}', Country='{Country}', UserId='{UserId}'", 
-                request?.Query, request?.SearchType, request?.Country, request?.UserId);
-
             if (string.IsNullOrWhiteSpace(request?.Query))
             {
                 _logger.LogWarning("Autocomplete request rejected: Query parameter is required");
@@ -41,9 +38,6 @@ public class PlacesController : ControllerBase
                 return BadRequest("User identification is required");
             }
 
-            _logger.LogInformation("Processing autocomplete request for user {UserId} with query '{Query}', searchType '{SearchType}', country '{Country}'", 
-                userId, request.Query, request.SearchType ?? "default", request.Country ?? "US");
-
             var results = await _placesService.GetAutocompleteAsync(
                 request.Query, 
                 userId,
@@ -51,9 +45,6 @@ public class PlacesController : ControllerBase
                 request.Country,
                 request.UserLatitude,
                 request.UserLongitude);
-
-            _logger.LogInformation("Autocomplete request completed for user {UserId}. Returned {ResultCount} results", 
-                userId, results?.Count ?? 0);
 
             return Ok(results);
         }
@@ -89,9 +80,6 @@ public class PlacesController : ControllerBase
             {
                 return BadRequest("User identification is required");
             }
-
-            _logger.LogInformation("Processing place details request for user {UserId} with placeId '{PlaceId}'", 
-                userId, request.PlaceId);
 
             var result = await _placesService.GetPlaceDetailsAsync(request.PlaceId, userId);
 

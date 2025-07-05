@@ -16,8 +16,24 @@
                 #autocompleteTrigger="matAutocompleteTrigger"
             />
             <mat-autocomplete autoActiveFirstOption #autoInput="matAutocomplete">
+                <!-- Loading spinner for Google search -->
+                <mat-option *ngIf="isGoogleSearching" disabled>
+                    <div class="option-content" style="display: flex; align-items: center; justify-content: center; padding: 16px;">
+                        <mat-spinner diameter="20" strokeWidth="3" style="margin-right: 8px;"></mat-spinner>
+                        <span>Searching Google...</span>
+                    </div>
+                </mat-option>
+                
+                <!-- No Google results message -->
+                <mat-option *ngIf="showNoGoogleResults && !isGoogleSearching" disabled>
+                    <div class="option-content" style="display: flex; align-items: center; justify-content: center; padding: 16px; color: #666;">
+                        <mat-icon style="margin-right: 8px;">search_off</mat-icon>
+                        <span>No Google results found</span>
+                    </div>
+                </mat-option>
+                
                 <cdk-virtual-scroll-viewport 
-                    *ngIf="filteredItemsArray.length > 0"
+                    *ngIf="filteredItemsArray.length > 0 && !isGoogleSearching"
                     [itemSize]="getItemSize()" 
                     [style.height.px]="getViewportHeight(filteredItemsArray)" 
                     class="virtual-scroll-viewport"
@@ -51,7 +67,7 @@
 
             <!-- Google search icon - shows when text is entered but no selection made -->
             <button mat-icon-button matSuffix class="standard-button" 
-                    *ngIf="isGoogleSearchType() && value && !hasSelection"
+                    *ngIf="isGoogleSearchType() && value && !hasSelection && !isGoogleSearching"
                     color="primary"
                     aria-label="Trigger Google Autocomplete Search"
                     title="Search with Google Autocomplete"
