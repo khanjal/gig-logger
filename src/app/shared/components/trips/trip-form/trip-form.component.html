@@ -131,7 +131,8 @@
           fieldName="Name" 
           searchType="Name" 
           formControlName="name"
-          (valueChanged)="showNameAddresses()">
+          (valueChanged)="showNameAddresses()"
+          (auxiliaryData)="setDropoffAddress($event)">
         </app-search-input>
         <button
           mat-mini-fab
@@ -315,7 +316,7 @@
         </button>
       </div>
       <div>
-        <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid">
+        <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid" [class.button-disabled]="!tripForm.valid">
           <mat-icon>add</mat-icon> Store
         </button>
         <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">

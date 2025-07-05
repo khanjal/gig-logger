@@ -38,3 +38,10 @@
 ::ng-deep .mat-expansion-panel-header {
   border-bottom: none !important;
 }
+
+.button-disabled {
+  opacity: 0.5 !important;
+  pointer-events: none;
+  filter: grayscale(60%);
+  cursor: not-allowed !important;
+}

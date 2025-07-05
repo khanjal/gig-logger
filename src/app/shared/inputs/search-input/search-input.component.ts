@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -46,7 +47,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, ShortAddressPipe],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -79,6 +80,8 @@ export class SearchInputComponent implements OnDestroy {
   filteredItemsArray: ISearchItem[] = [];
   showGoogleMapsIcon = false;
   hasSelection = false;
+  isGoogleSearching = false;
+  showNoGoogleResults = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
@@ -168,10 +171,12 @@ export class SearchInputComponent implements OnDestroy {
     
     // Reset selection state when input changes
     this.hasSelection = false;
+    this.showNoGoogleResults = false;
     
     // Hide icon if input is cleared
     if (!value) {
       this.showGoogleMapsIcon = false;
+      this.isGoogleSearching = false;
     }
   }
   onBlur(): void {
@@ -192,6 +197,8 @@ export class SearchInputComponent implements OnDestroy {
     this.showGoogleMapsIcon = false;
     this.hasSelection = false;
     this.filteredItemsArray = [];
+    this.isGoogleSearching = false;
+    this.showNoGoogleResults = false;
   }
   
   async onInputSelect(selectedItem: ISearchItem): Promise<void> {
@@ -210,8 +217,8 @@ export class SearchInputComponent implements OnDestroy {
       }
     }
 
-    // Emit auxiliary data for place searches
-    if (this.searchType === 'Place' && selectedItem?.address) {
+    // Emit auxiliary data for place and name searches
+    if ((this.searchType === 'Place' || this.searchType === 'Name') && selectedItem?.address) {
       this.auxiliaryData.emit(selectedItem.address);
     }
 
@@ -239,6 +246,11 @@ export class SearchInputComponent implements OnDestroy {
 
   // #region Public Methods
   getViewportHeight(items?: ISearchItem[]): number {
+    // If showing spinner or no results message, return fixed height
+    if (this.isGoogleSearching || this.showNoGoogleResults) {
+      return this.ITEM_HEIGHT;
+    }
+    
     const itemsToUse = items || this.filteredItemsArray;
     if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
@@ -261,10 +273,14 @@ export class SearchInputComponent implements OnDestroy {
     if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
     if (!this.isGoogleSearchType()) return;
     
+    this.isGoogleSearching = true;
+    this.showNoGoogleResults = false;
+    
     try {
       const googleResults = await this.getGooglePredictions(this.value);
       this.filteredItemsArray = googleResults;
       this.showGoogleMapsIcon = googleResults.length === 0;
+      this.showNoGoogleResults = googleResults.length === 0;
       
       // Open the dropdown if closed
       if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
@@ -273,6 +289,9 @@ export class SearchInputComponent implements OnDestroy {
     } catch (error) {
       console.warn('Error triggering Google search:', error);
       this.showGoogleMapsIcon = true;
+      this.showNoGoogleResults = true;
+    } finally {
+      this.isGoogleSearching = false;
     }
   }
   // #endregion
@@ -361,22 +380,38 @@ export class SearchInputComponent implements OnDestroy {
     switch (this.searchType) {
       case 'Address':
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
-        return await this.addGooglePredictionsIfNeeded(value, addressResults);
+        // For Address, do not auto-trigger Google predictions
+        if (addressResults.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+          this.showGoogleMapsIcon = true;
+        } else {
+          this.showGoogleMapsIcon = false;
+        }
+        return addressResults;
       case 'Name':
-        return (await this._filterName(value)).map(item => createSearchItem(item, 'name'));
+        let names = await this._filterName(value);
+        let nameItems = this.mapNamesToSearchItems(names);
+        return nameItems;
       case 'Place':
         let places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
-        placeItems = await this.handleJsonFallback(placeItems, 'places', value);
-        return await this.addGooglePredictionsIfNeeded(value, placeItems);
+        if (placeItems.length === 0) {
+          placeItems = await this.getJsonFallback(value);
+        }
+        // For Place, do not auto-trigger Google predictions
+        if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
+          this.showGoogleMapsIcon = true;
+        } else {
+          this.showGoogleMapsIcon = false;
+        }
+        return placeItems;
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
       case 'Service':
         let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
-        return await this.handleJsonFallback(services, 'services', value);
+        return await this.getJsonFallback(value);
       case 'Type':
         let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
-        return await this.handleJsonFallback(types, 'types', value);
+        return await this.getJsonFallback(value);
       default:
         return [];
     }
@@ -422,25 +457,6 @@ export class SearchInputComponent implements OnDestroy {
     return await this._typeService.filter('type', value);
   }
   // #endregion
-
-  private async addGooglePredictionsIfNeeded(value: string, results: ISearchItem[]): Promise<ISearchItem[]> {
-    if (results.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
-      const googlePredictions = await this.getGooglePredictions(value);
-      // Show Google Maps icon if using Google search (Address or Place)
-      this.showGoogleMapsIcon = (this.searchType === 'Address' || this.searchType === 'Place');
-      return googlePredictions;
-    }
-    // Hide Google Maps icon if we have local results
-    this.showGoogleMapsIcon = false;
-    return results;
-  }
-
-  private async handleJsonFallback(results: ISearchItem[], searchType: string, value: string): Promise<ISearchItem[]> {
-    if (results.length === 0) {
-      return await searchJson(searchType, value);
-    }
-    return results;
-  }
 
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
     if (!this.isGoogleAllowed() || !this.googleSearch) {
@@ -528,8 +544,16 @@ export class SearchInputComponent implements OnDestroy {
   private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
     const items: ISearchItem[] = [];
     for (const place of places) {
+      // Always add a base item without address
+      items.push({
+        id: place.id,
+        name: place.place,
+        saved: place.saved,
+        value: place.place,
+        trips: place.trips
+      });
       if (Array.isArray(place.addresses) && place.addresses.length > 0) {
-        // Sort addresses by lastTrip descending
+        // Sort addresses by lastTrip descending (most recent first)
         const sortedAddresses = [...place.addresses].sort((a, b) => {
           const dateA = a.lastTrip ? new Date(a.lastTrip).getTime() : 0;
           const dateB = b.lastTrip ? new Date(b.lastTrip).getTime() : 0;
@@ -546,14 +570,33 @@ export class SearchInputComponent implements OnDestroy {
             address: address.address
           });
         }
-      } else {
-        items.push({
-          id: place.id,
-          name: place.place,
-          saved: place.saved,
-          value: place.place,
-          trips: place.trips
-        });
+      }
+    }
+    return items;
+  }
+
+  private mapNamesToSearchItems(names: IName[]): ISearchItem[] {
+    const items: ISearchItem[] = [];
+    for (const name of names) {
+      // Always add a base item without address
+      items.push({
+        id: name.id,
+        name: name.name,
+        saved: name.saved,
+        trips: name.trips,
+        value: name.name
+      });
+      if (Array.isArray(name.addresses) && name.addresses.length > 0) {
+        for (const address of name.addresses) {
+          items.push({
+            id: name.id,
+            name: name.name,
+            saved: name.saved,
+            value: name.name,
+            trips: name.trips,
+            address: address // address is a string
+          });
+        }
       }
     }
     return items;
