@@ -7,15 +7,15 @@
     'trip-border-update': !trip.saved && trip.action === 'UPDATE',
     'trip-border-delete': !trip.saved && trip.action === 'DELETE',
     'trip-border-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
-    'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && !trip.exclude,
-    'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && !trip.exclude
+    'bg-gradient-to-r from-blue-50 to-white': trip.rowId % 2 === 0 && !trip.exclude,
+    'bg-gradient-to-r from-green-50 to-white': trip.rowId % 2 === 1 && !trip.exclude
   }"
 >
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': index % 2 === 0,
-      'bg-green-100 border-green-300': index % 2 === 1
+      'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
+      'bg-green-100 border-green-300': trip.rowId % 2 === 1
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -54,8 +54,8 @@
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon [ngClass]="{
-          'text-blue-400': index % 2 === 0,
-          'text-green-400': index % 2 === 1
+          'text-blue-400': trip.rowId % 2 === 0,
+          'text-green-400': trip.rowId % 2 === 1
         }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
@@ -226,8 +226,8 @@
   <!-- Simplified Action Bar -->
   <div class="flex items-center justify-between p-3 border-t"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': index % 2 === 0,
-      'bg-green-100 border-green-300': index % 2 === 1
+      'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
+      'bg-green-100 border-green-300': trip.rowId % 2 === 1
     }">
     <!-- Edit Button -->
     <button mat-button 
