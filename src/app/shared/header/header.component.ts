@@ -144,17 +144,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.unsavedTripsCount = (await this.tripService.getUnsaved()).length;
     this.unsavedShiftsCount = (await this.shiftService.getUnsavedShifts()).length;
   }
-
-  public getToolbarColor(): string {
-    const subdomain = window.location.hostname.split('.')[0];
-    switch (subdomain) {      case 'gig':
-        return 'primary';
-      case 'gig-test':
-        return 'accent';
-      default:
-        return 'warn';
-    }
-  }
   
   /**
    * Sets the loading state for the header loading indicator
