@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
@@ -28,8 +29,10 @@ namespace GigRaptorService.Attributes
         private readonly int _durationInSeconds;
         private readonly ApiType _apiType;
         private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+        private static readonly IMemoryCache _loggingCache = new MemoryCache(new MemoryCacheOptions());
         private const string RefreshTokenCookieName = "RG_REFRESH";
         private const string AccessTokenCookieName = "access_token";
+        private const int LogCooldownSeconds = 60; // Only log rate limit hits once per minute per identifier
 
         public RateLimitFilterAttribute(int limit, int durationInSeconds, ApiType apiType = ApiType.Default)
         {
@@ -61,6 +64,10 @@ namespace GigRaptorService.Attributes
             // Check each identifier independently for rate limits
             bool isLimited = false;
             string limitedBy = string.Empty;
+            string limitingIdentifier = string.Empty;
+
+            // Get the logger from the service provider
+            var logger = context.HttpContext.RequestServices.GetService<ILogger<RateLimitFilterAttribute>>();
 
             // 1. Check user ID based rate limit
             if (!isLimited && !string.IsNullOrEmpty(userId))
@@ -71,6 +78,7 @@ namespace GigRaptorService.Attributes
                 {
                     isLimited = true;
                     limitedBy = "user ID";
+                    limitingIdentifier = userId;
                 }
                 else
                 {
@@ -90,6 +98,7 @@ namespace GigRaptorService.Attributes
                 {
                     isLimited = true;
                     limitedBy = "access token";
+                    limitingIdentifier = accessTokenHash;
                 }
                 else
                 {
@@ -109,6 +118,7 @@ namespace GigRaptorService.Attributes
                 {
                     isLimited = true;
                     limitedBy = "refresh token";
+                    limitingIdentifier = refreshTokenHash;
                 }
                 else
                 {
@@ -119,6 +129,47 @@ namespace GigRaptorService.Attributes
             // If any of the identifiers have reached their limit, return 429
             if (isLimited)
             {
+                // Log the rate limit hit, but only if we haven't logged this identifier recently
+                if (logger != null && !string.IsNullOrEmpty(limitingIdentifier))
+                {
+                    var loggingKey = $"ratelimit_log:{limitedBy}:{limitingIdentifier}:{_apiType}";
+                    var lastLogged = _loggingCache.Get<DateTime?>(loggingKey);
+                    var now = DateTime.UtcNow;
+
+                    // Only log if we haven't logged this identifier recently (prevent log spam)
+                    if (!lastLogged.HasValue || (now - lastLogged.Value).TotalSeconds > LogCooldownSeconds)
+                    {
+                        // Generate a masked identifier (for privacy/security)
+                        string maskedIdentifier = limitingIdentifier;
+                        if (limitedBy == "user ID" && limitingIdentifier.Length > 8)
+                        {
+                            // Show only first few chars of user ID
+                            maskedIdentifier = $"{limitingIdentifier.Substring(0, 4)}...{limitingIdentifier.Substring(limitingIdentifier.Length - 4)}";
+                        }
+                        else if (limitedBy != "user ID")
+                        {
+                            // For tokens, just show that it's a hash
+                            maskedIdentifier = $"{limitingIdentifier.Substring(0, Math.Min(8, limitingIdentifier.Length))}...";
+                        }
+
+                        // Log with details about which action and identifier triggered the rate limit
+                        logger.LogWarning(
+                            "Rate limit exceeded for {ApiType} API on {Action}. User {UserId} limited by {LimitType}: {Identifier}. Limit: {Limit}/{Duration}s", 
+                            _apiType, 
+                            actionName,
+                            userId.Substring(0, Math.Min(8, userId.Length)) + "...",
+                            limitedBy,
+                            maskedIdentifier,
+                            _limit,
+                            _durationInSeconds
+                        );
+
+                        // Cache the logging timestamp to prevent excessive logging
+                        _loggingCache.Set(loggingKey, now, TimeSpan.FromSeconds(LogCooldownSeconds));
+                    }
+                }
+
+                // Return 429 Too Many Requests
                 context.HttpContext.Response.StatusCode = 429;
                 await context.HttpContext.Response.WriteAsync($"Rate limit exceeded for {_apiType} API.");
                 return;
