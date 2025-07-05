@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
+import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
@@ -26,7 +26,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {

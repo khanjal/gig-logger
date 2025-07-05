@@ -7,15 +7,15 @@
     'trip-border-update': !trip.saved && trip.action === 'UPDATE',
     'trip-border-delete': !trip.saved && trip.action === 'DELETE',
     'trip-border-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
-    'bg-gradient-to-r from-blue-50 to-white': index % 2 === 0 && !trip.exclude,
-    'bg-gradient-to-r from-green-50 to-white': index % 2 === 1 && !trip.exclude
+    'bg-gradient-to-r from-blue-50 to-white': trip.rowId % 2 === 0 && !trip.exclude,
+    'bg-gradient-to-r from-green-50 to-white': trip.rowId % 2 === 1 && !trip.exclude
   }"
 >
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': index % 2 === 0,
-      'bg-green-100 border-green-300': index % 2 === 1
+      'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
+      'bg-green-100 border-green-300': trip.rowId % 2 === 1
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -39,7 +39,7 @@
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
         <span class="truncate block max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
       </span>
-      <!-- Time (centered by default, but shifts right if service text is long) -->
+      <!-- Time (back in first line, after service/number) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-center text-center ml-2 min-w-[3.5rem]">
         <span class="font-mono text-sm font-medium"
               [ngClass]="{
@@ -54,8 +54,8 @@
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon [ngClass]="{
-          'text-blue-400': index % 2 === 0,
-          'text-green-400': index % 2 === 1
+          'text-blue-400': trip.rowId % 2 === 0,
+          'text-green-400': trip.rowId % 2 === 1
         }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
@@ -69,10 +69,10 @@
         </span>
       </span>
     </div>
-    <!-- Place/Type/Distance Row (always visible if present) -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || (trip.type && trip.type !== '') || trip.distance">
-      <!-- Type (left) -->
-      <span *ngIf="trip.type && trip.type !== ''" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{trip.type}}</span>
+    <!-- Place/Date/Distance Row (always visible if present) -->
+    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
+      <!-- Date (left, where type was) -->
+      <span *ngIf="trip.date" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
       <!-- Place -> Name (center, inline until overflow) -->
       <div class="flex-1 flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden">
         <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
@@ -185,7 +185,7 @@
       </div>
     </div>
     <!-- Additional Info: Only show if more than just region -->
-    <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer">
+    <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
         <mat-icon class="text-purple-400 text-base">info</mat-icon>
         Trip Info
@@ -207,6 +207,11 @@
           <span class="text-xs text-gray-600">End ODO</span>
           <span class="text-sm font-medium">{{trip.endOdometer | number:'1.0'}}</span>
         </div>
+        <!-- Trip Type (now same width as order # and unit) -->
+        <div *ngIf="trip.type && trip.type !== ''" class="flex justify-between p-2 bg-white rounded border">
+          <span class="text-xs text-gray-600">Type</span>
+          <span class="text-sm font-medium">{{trip.type}}</span>
+        </div>
       </div>
     </div>
     <!-- Note -->
@@ -221,8 +226,8 @@
   <!-- Simplified Action Bar -->
   <div class="flex items-center justify-between p-3 border-t"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': index % 2 === 0,
-      'bg-green-100 border-green-300': index % 2 === 1
+      'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
+      'bg-green-100 border-green-300': trip.rowId % 2 === 1
     }">
     <!-- Edit Button -->
     <button mat-button 
