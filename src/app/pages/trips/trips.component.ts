@@ -372,10 +372,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Returns true if there are no trips today. Used to show the update-from-spreadsheet message in the UI.
-   * If there are any trips today, do not show the message. If none, show the message.
-   */
   shouldShowUpdateMessage(): boolean {
     return !(this.todaysTrips && this.todaysTrips.length > 0);
   }
