@@ -1,0 +1,23 @@
+<div *ngIf="permissionState !== 'granted'">
+  <mat-card class="mb-4">
+    <mat-card-header>
+      <mat-card-title>Location Permission Needed</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ng-container [ngSwitch]="permissionState">
+        <ng-container *ngSwitchCase="'prompt'">
+          <p>This app needs your location to provide certain features. Please allow location access.</p>
+          <button mat-raised-button color="primary" (click)="requestLocation()">
+            Allow Location Access
+          </button>
+        </ng-container>
+        <ng-container *ngSwitchCase="'denied'">
+          <p>Location access denied. To enable, please go to your browser's settings and allow location access for this site.</p>
+        </ng-container>
+        <ng-container *ngSwitchCase="'unsupported'">
+          <p>Your browser does not support the Permissions API.</p>
+        </ng-container>
+      </ng-container>
+    </mat-card-content>
+  </mat-card>
+</div>
