@@ -3,6 +3,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using GigRaptorService.Helpers;
 
@@ -26,6 +28,8 @@ namespace GigRaptorService.Attributes
         private readonly int _durationInSeconds;
         private readonly ApiType _apiType;
         private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+        private const string RefreshTokenCookieName = "RG_REFRESH";
+        private const string AccessTokenCookieName = "access_token";
 
         public RateLimitFilterAttribute(int limit, int durationInSeconds, ApiType apiType = ApiType.Default)
         {
@@ -36,10 +40,13 @@ namespace GigRaptorService.Attributes
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // Always apply in-memory rate limiting
-            var rateLimitUserId = await GetUserIdAsync(context.HttpContext);
+            // Get the three key identifiers
+            var userId = await GetUserIdAsync(context.HttpContext);
+            var accessToken = GetAccessToken(context.HttpContext);
+            var refreshToken = GetRefreshToken(context.HttpContext);
 
-            if (string.IsNullOrWhiteSpace(rateLimitUserId))
+            // User authentication is still required for basic operation
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 context.HttpContext.Response.StatusCode = 401;
                 await context.HttpContext.Response.WriteAsync("User authentication is required for rate limiting.");
@@ -47,19 +54,75 @@ namespace GigRaptorService.Attributes
             }
 
             // Store the userId in HttpContext.Items so it can be accessed by the controller
-            context.HttpContext.Items["AuthenticatedUserId"] = rateLimitUserId;
+            context.HttpContext.Items["AuthenticatedUserId"] = userId;
 
-            var cacheKey = $"{rateLimitUserId}:{_apiType}:{context.ActionDescriptor.DisplayName}";
-            var requestCount = _cache.Get<int>(cacheKey);
+            string actionName = context.ActionDescriptor.DisplayName ?? "Unknown";
+            
+            // Check each identifier independently for rate limits
+            bool isLimited = false;
+            string limitedBy = string.Empty;
 
-            if (requestCount >= _limit)
+            // 1. Check user ID based rate limit
+            if (!isLimited && !string.IsNullOrEmpty(userId))
             {
-                context.HttpContext.Response.StatusCode = 429;
-                await context.HttpContext.Response.WriteAsync($"Rate limit exceeded for {_apiType} API. User: {rateLimitUserId.Substring(0, Math.Min(8, rateLimitUserId.Length))}***");
-                return;
+                var userIdKey = $"userId:{userId}:{_apiType}:{actionName}";
+                var userIdCount = _cache.Get<int>(userIdKey);
+                if (userIdCount >= _limit)
+                {
+                    isLimited = true;
+                    limitedBy = "user ID";
+                }
+                else
+                {
+                    _cache.Set(userIdKey, userIdCount + 1, TimeSpan.FromSeconds(_durationInSeconds));
+                }
             }
 
-            _cache.Set(cacheKey, requestCount + 1, TimeSpan.FromSeconds(_durationInSeconds));
+            // 2. Check access token based rate limit
+            if (!isLimited && !string.IsNullOrEmpty(accessToken))
+            {
+                // Use a hash of part of the token to avoid storing full tokens
+                var accessTokenHash = CreateHash(accessToken.Substring(0, Math.Min(50, accessToken.Length)));
+                var accessTokenKey = $"token:{accessTokenHash}:{_apiType}:{actionName}";
+                var accessTokenCount = _cache.Get<int>(accessTokenKey);
+                
+                if (accessTokenCount >= _limit)
+                {
+                    isLimited = true;
+                    limitedBy = "access token";
+                }
+                else
+                {
+                    _cache.Set(accessTokenKey, accessTokenCount + 1, TimeSpan.FromSeconds(_durationInSeconds));
+                }
+            }
+
+            // 3. Check refresh token based rate limit
+            if (!isLimited && !string.IsNullOrEmpty(refreshToken))
+            {
+                // Use a hash of part of the token to avoid storing full tokens
+                var refreshTokenHash = CreateHash(refreshToken.Substring(0, Math.Min(50, refreshToken.Length)));
+                var refreshTokenKey = $"refresh:{refreshTokenHash}:{_apiType}:{actionName}";
+                var refreshTokenCount = _cache.Get<int>(refreshTokenKey);
+                
+                if (refreshTokenCount >= _limit)
+                {
+                    isLimited = true;
+                    limitedBy = "refresh token";
+                }
+                else
+                {
+                    _cache.Set(refreshTokenKey, refreshTokenCount + 1, TimeSpan.FromSeconds(_durationInSeconds));
+                }
+            }
+
+            // If any of the identifiers have reached their limit, return 429
+            if (isLimited)
+            {
+                context.HttpContext.Response.StatusCode = 429;
+                await context.HttpContext.Response.WriteAsync($"Rate limit exceeded for {_apiType} API.");
+                return;
+            }
 
             // Optionally apply DynamoDB/distributed rate limiting if feature flag is enabled
             var configuration = context.HttpContext.RequestServices.GetService<IConfiguration>();
@@ -152,6 +215,52 @@ namespace GigRaptorService.Attributes
                 // If there's any error parsing the token, just return empty
                 return string.Empty;
             }
+        }
+
+        private string GetAccessToken(HttpContext context)
+        {
+            try
+            {
+                // First check Authorization header
+                var authHeader = context.Request.Headers["Authorization"].ToString();
+                if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+                {
+                    return authHeader.Substring("Bearer ".Length).Trim();
+                }
+                
+                // Then check for access_token cookie
+                var accessTokenCookie = context.Request.Cookies[AccessTokenCookieName];
+                if (!string.IsNullOrEmpty(accessTokenCookie))
+                {
+                    return accessTokenCookie;
+                }
+                
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private string GetRefreshToken(HttpContext context)
+        {
+            try
+            {
+                var refreshToken = context.Request.Cookies[RefreshTokenCookieName];
+                return refreshToken ?? string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private string CreateHash(string input)
+        {
+            using var sha = SHA256.Create();
+            var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return Convert.ToBase64String(hashBytes);
         }
     }
 }
