@@ -74,12 +74,6 @@
                     (click)="triggerGoogleSearch(); $event.stopPropagation(); $event.preventDefault();">
                 <mat-icon>search</mat-icon>
             </button>
-            
-            <!-- Loading spinner for Google search -->
-            <mat-spinner matSuffix diameter="20" strokeWidth="3" 
-                         *ngIf="isGoogleSearching"
-                         style="margin-right: 8px;">
-            </mat-spinner>
 
             <!-- Google Maps icon - shows when text is entered and a selection has been made -->
             <button mat-icon-button matSuffix class="standard-button"

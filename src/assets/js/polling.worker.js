@@ -1,6 +1,7 @@
 // Simple Web Worker for polling
 let pollingInterval = null;
-let intervalMs = 30000; // Default 30 seconds
+let intervalMs = 60000; // Default 60 seconds
+let initialDelayTimeout = null; // Store the timeout ID for initial delay
 
 // Listen for messages from main thread
 self.onmessage = function(event) {
@@ -25,9 +26,14 @@ function startPolling(interval, initialDelay = 0) {
   console.log('[Polling Worker] Starting polling with interval:', interval, 'initial delay:', initialDelay);
   intervalMs = interval;
   
-  // Clear any existing interval
+  // Clear any existing interval or timeout
   if (pollingInterval) {
     clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+  if (initialDelayTimeout) {
+    clearTimeout(initialDelayTimeout);
+    initialDelayTimeout = null;
   }
   
   const startRegularPolling = () => {
@@ -42,15 +48,15 @@ function startPolling(interval, initialDelay = 0) {
   
   if (initialDelay > 0) {
     // Start with initial delay, then begin regular polling
-    setTimeout(() => {
+    initialDelayTimeout = setTimeout(() => {
       // Send the first poll trigger after initial delay
       self.postMessage({
         type: 'POLL_TRIGGER',
         timestamp: Date.now()
       });
-      
       // Start regular polling
       startRegularPolling();
+      initialDelayTimeout = null;
     }, initialDelay);
   } else {
     // Start regular polling immediately
@@ -71,6 +77,10 @@ function stopPolling() {
   if (pollingInterval) {
     clearInterval(pollingInterval);
     pollingInterval = null;
+  }
+  if (initialDelayTimeout) {
+    clearTimeout(initialDelayTimeout);
+    initialDelayTimeout = null;
   }
   
   // Send confirmation
