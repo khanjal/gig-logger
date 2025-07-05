@@ -16,7 +16,7 @@ export class PollingService implements OnDestroy {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   private worker: Worker | null = null;
-  private fallbackTimer: any = null;
+  private fallbackTimer: number | null = null;
   private enabled = false;
   private processing = false;
   private currentInterval = DEFAULT_INTERVAL;
@@ -115,9 +115,8 @@ export class PollingService implements OnDestroy {
         if (this.enabled && !this.processing) {
           this.saveData();
         }
-        
         if (this.enabled) {
-          this.fallbackTimer = setInterval(() => {
+          this.fallbackTimer = window.setInterval(() => {
             if (this.enabled && !this.processing) {
               this.saveData();
             }
@@ -151,7 +150,7 @@ export class PollingService implements OnDestroy {
       });
     } else {
       // Fallback to setInterval
-      this.fallbackTimer = setInterval(() => {
+      this.fallbackTimer = window.setInterval(() => {
         if (this.enabled && !this.processing) {
           this.saveData();
         }
@@ -173,7 +172,7 @@ export class PollingService implements OnDestroy {
       this.worker.postMessage({ type: 'STOP_POLLING' });
     }
 
-    if (this.fallbackTimer) {
+    if (this.fallbackTimer !== null) {
       clearInterval(this.fallbackTimer);
       this.fallbackTimer = null;
     }
@@ -259,7 +258,7 @@ export class PollingService implements OnDestroy {
       this.worker = null;
     }
 
-    if (this.fallbackTimer) {
+    if (this.fallbackTimer !== null) {
       clearInterval(this.fallbackTimer);
       this.fallbackTimer = null;
     }
