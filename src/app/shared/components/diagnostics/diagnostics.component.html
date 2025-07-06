@@ -6,127 +6,121 @@
     </button>
   </div>
   <div class="diagnostics-list space-y-6">
-    <div *ngFor="let item of dataDiagnostics" class="diagnostic-item-container bg-white rounded-lg shadow p-4">
-      <div class="diagnostic-header flex items-center gap-4 border-b pb-2 mb-2">
-        <mat-icon [color]="getSeverityColor(item.severity)" class="severity-icon text-2xl">
+    <div *ngFor="let item of dataDiagnostics" class="mb-6">
+      <div class="flex items-center gap-4 border-b pb-2 mb-2">
+        <mat-icon [color]="getSeverityColor(item.severity)" class="text-2xl">
           {{ getSeverityIcon(item.severity) }}
         </mat-icon>
-        <div class="diagnostic-info flex-1">
-          <div class="diagnostic-title font-semibold text-lg">{{ item.name }}</div>
-          <div class="diagnostic-description text-gray-500 text-sm">{{ item.description }}</div>
+        <div class="flex-1">
+          <div class="font-semibold text-lg">{{ item.name }}</div>
+          <div class="text-gray-500 text-sm">{{ item.description }}</div>
         </div>
-        <div class="diagnostic-count text-xs bg-gray-200 rounded px-2 py-1">{{ item.count }}</div>
+        <div class="text-xs bg-gray-200 rounded px-2 py-1">{{ item.count }}</div>
       </div>
-      <!-- Detailed items list -->
-      <div *ngIf="item.items && item.items.length > 0" class="diagnostic-details mt-2">
-        <div class="details-header mb-2">
-          <strong>Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):</strong>
+      <div *ngIf="item.items && item.items.length > 0" class="mt-2">
+        <div class="font-medium mb-2">
+          Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):
         </div>
-        <!-- Show grouped duplicates if available -->
-        <div *ngIf="item.groups && item.groups.length > 0; else showIndividualItems" class="groups-list space-y-4">
-          <div *ngFor="let group of item.groups; let groupIndex = index" class="duplicate-group border rounded bg-gray-100 p-2">
-            <div class="group-header font-medium mb-1">
-              <strong>Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):</strong>
+        <ng-container *ngIf="item.groups && item.groups.length > 0; else showIndividualItems">
+          <div *ngFor="let group of item.groups; let groupIndex = index" class="mb-4">
+            <div class="font-bold text-blue-700 mb-1">
+              Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):
             </div>
-            <div class="group-items space-y-1">
-              <div *ngFor="let problemItem of group" class="diagnostic-item grouped-item p-2 bg-white rounded">
-                <!-- For shifts -->
-                <div *ngIf="item.itemType === 'shift'" class="shift-item">
-                  <strong>Shift:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
+            <ul class="pl-4 border-l-2 border-blue-200">
+              <li *ngFor="let problemItem of group" class="py-1">
+                <ng-container [ngSwitch]="item.itemType">
+                  <ng-container *ngSwitchCase="'shift'">
+                    <strong>Shift:</strong>
+                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                    <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
+                    <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
+                    <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
+                    <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
+                    <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'address'">
+                    <strong>Address:</strong>
+                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                    <span class="address-info">{{ problemItem.address }}</span>
+                    <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
+                    <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'place'">
+                    <strong>Place:</strong>
+                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                    <span class="place-info">{{ problemItem.place }}</span>
+                    <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
+                    <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'name'">
+                    <strong>Name:</strong>
+                    <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                    <span class="name-info">{{ problemItem.name }}</span>
+                    <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
+                    <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
+                  </ng-container>
+                </ng-container>
+              </li>
+            </ul>
+          </div>
+        </ng-container>
+        <ng-template #showIndividualItems>
+          <ul class="pl-4">
+            <li *ngFor="let problemItem of item.items" class="py-1">
+              <ng-container [ngSwitch]="item.itemType">
+                <ng-container *ngSwitchCase="'shift'">
+                  <strong>Shift:</strong>
+                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
                   <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
                   <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
                   <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
                   <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
                   <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-                </div>
-                <!-- For addresses -->
-                <div *ngIf="item.itemType === 'address'" class="address-item">
-                  <strong>Address:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'trip'">
+                  <strong>Trip:</strong>
+                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
+                  <span *ngIf="problemItem.place" class="place-info">{{ problemItem.place }}</span>
+                  <span *ngIf="problemItem.name" class="name-info">{{ problemItem.name }}</span>
+                  <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
+                  <span *ngIf="problemItem.pickup">{{ problemItem.pickup }}</span>
+                  <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
+                  <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
+                  <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
+                  <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
+                  <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
+                  <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'address'">
+                  <strong>Address:</strong>
+                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
                   <span class="address-info">{{ problemItem.address }}</span>
                   <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
                   <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
-                </div>
-                <!-- For places -->
-                <div *ngIf="item.itemType === 'place'" class="place-item">
-                  <strong>Place:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'place'">
+                  <strong>Place:</strong>
+                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
                   <span class="place-info">{{ problemItem.place }}</span>
                   <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
                   <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
-                </div>
-                <!-- For names -->
-                <div *ngIf="item.itemType === 'name'" class="name-item">
-                  <strong>Name:</strong>&nbsp;
-                  <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'name'">
+                  <strong>Name:</strong>
+                  <span *ngIf="problemItem.rowId" class="font-mono text-xs">[{{ problemItem.rowId }}]</span>
                   <span class="name-info">{{ problemItem.name }}</span>
                   <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
                   <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Fallback to individual items display -->
-        <ng-template #showIndividualItems>
-          <div class="items-list space-y-2">
-            <div *ngFor="let problemItem of item.items" class="diagnostic-item p-2 bg-gray-100 rounded">
-              <!-- For shifts -->
-              <div *ngIf="item.itemType === 'shift'" class="shift-item">
-                <strong>Shift:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
-                <span *ngIf="problemItem.date">{{ problemItem.date }}</span>
-                <span *ngIf="problemItem.key"> ({{ problemItem.key }})</span>
-                <span *ngIf="problemItem.totalTrips !== undefined"> - Trips: {{ problemItem.totalTrips }}</span>
-                <span *ngIf="problemItem.start"> - Start: {{ problemItem.start }}</span>
-                <span *ngIf="problemItem.finish"> - End: {{ problemItem.finish }}</span>
-              </div>
-              <!-- For trips -->
-              <div *ngIf="item.itemType === 'trip'" class="trip-item">
-                <strong>Trip:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
-                <span *ngIf="problemItem.place" class="place-info">{{ problemItem.place }}</span>
-                <span *ngIf="problemItem.name" class="name-info">{{ problemItem.name }}</span>
-                <span *ngIf="problemItem.startLocation">{{ problemItem.startLocation }}</span>
-                <span *ngIf="problemItem.pickup">{{ problemItem.pickup }}</span>
-                <span *ngIf="(problemItem.startLocation || problemItem.pickup) && (problemItem.endLocation || problemItem.dropoff)"> → </span>
-                <span *ngIf="problemItem.endLocation">{{ problemItem.endLocation }}</span>
-                <span *ngIf="problemItem.dropoff">{{ problemItem.dropoff }}</span>
-                <span *ngIf="problemItem.key"> (Shift: {{ problemItem.key }})</span>
-                <span *ngIf="problemItem.date"> - {{ problemItem.date }}</span>
-                <span *ngIf="problemItem.exclude"> - EXCLUDED</span>
-              </div>
-              <!-- For addresses -->
-              <div *ngIf="item.itemType === 'address'" class="address-item">
-                <strong>Address:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
-                <span class="address-info">{{ problemItem.address }}</span>
-                <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                <span *ngIf="problemItem.names && problemItem.names.length > 0"> - Names: {{ problemItem.names.join(', ') }}</span>
-              </div>
-              <!-- For places -->
-              <div *ngIf="item.itemType === 'place'" class="place-item">
-                <strong>Place:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
-                <span class="place-info">{{ problemItem.place }}</span>
-                <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.length }}</span>
-              </div>
-              <!-- For names -->
-              <div *ngIf="item.itemType === 'name'" class="name-item">
-                <strong>Name:</strong>&nbsp;
-                <span *ngIf="problemItem.rowId" class="row-id font-mono">[{{ problemItem.rowId }}]</span>
-                <span class="name-info">{{ problemItem.name }}</span>
-                <span *ngIf="problemItem.trips !== undefined"> - Trips: {{ problemItem.trips }}</span>
-                <span *ngIf="problemItem.addresses && problemItem.addresses.length > 0"> - Addresses: {{ problemItem.addresses.join(', ') }}</span>
-              </div>
-              <!-- Fallback for any other items -->
-              <div *ngIf="item.itemType !== 'shift' && item.itemType !== 'trip' && item.itemType !== 'address' && item.itemType !== 'place' && item.itemType !== 'name'" class="unknown-item">
-                <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
-              </div>
-            </div>
-          </div>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <strong>Unknown Item Type:</strong> {{ item.itemType || 'undefined' }} - Check console for details
+                </ng-container>
+              </ng-container>
+            </li>
+          </ul>
         </ng-template>
       </div>
     </div>
