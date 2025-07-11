@@ -21,7 +21,8 @@
     "build:stage": "ng build --configuration staging",
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "update-lambda": "node scripts/update-lambda.js"
   },
   "private": true,
   "dependencies": {
