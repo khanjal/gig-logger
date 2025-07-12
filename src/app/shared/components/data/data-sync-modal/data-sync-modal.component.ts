@@ -47,7 +47,7 @@ interface SyncState {
     imports: [NgFor, NgClass, MatFabButton]
 })
 export class DataSyncModalComponent implements OnInit, OnDestroy {
-    @ViewChild('terminal') terminalElement!: ElementRef;
+    @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;
     
     // Timer related properties
     private timerSubscription: Subscription | null = null;
@@ -301,9 +301,8 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
     private scrollToBottom() {
         setTimeout(() => {
-            if (this.terminalElement) {
-                this.terminalElement.nativeElement.scrollTop = 
-                    this.terminalElement.nativeElement.scrollHeight;
+            if (this.terminalElement && this.terminalElement.nativeElement) {
+                this.terminalElement.nativeElement.scrollTop = this.terminalElement.nativeElement.scrollHeight;
             }
         }, 0);
     }
