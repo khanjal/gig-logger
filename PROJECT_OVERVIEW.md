@@ -2,6 +2,8 @@
 
 > **Note for AI Assistants:** This file contains essential project context. Please read and reference this file when working on any part of the Raptor Gig project to ensure accurate, project-specific assistance.
 
+> **Note for Developers & AI Assistants:** This overview should be kept up-to-date with any clarifying instructions, additional project information, or changes to development patterns. When encountering project-specific requirements, solutions, or patterns during development work, please add them to this file to maintain a comprehensive reference for future development work.
+
 This project called Raptor Gig is to help gig workers log their trips and keep track of work they've done. It uses Angular with Tailwind CSS for the front end, a C# Lambda service, and a custom library called raptorsheets. The Lambda also manages authentication, Google Sheets integration, file storage, and Google's new Places API. The site is primarily optimized for mobile view but is also responsive for tablets, laptops, and desktops. The project is structured according to AWS Amplify conventions.
 
 ## Technologies Used
@@ -11,13 +13,21 @@ This project called Raptor Gig is to help gig workers log their trips and keep t
 
 ## Folder Structure
 - `src/` — Angular frontend source code
-  - `app/pages/` — Feature pages (calculator, home, shifts, trips, stats, etc.)
-  - `app/shared/` — Shared components, services, models, and utilities
+  - `app/core/` — Singleton services, global guards, interceptors, app-wide configuration
+  - `app/shared/` — Shared components, utilities, models, interfaces
+  - `app/pages/` — Feature modules (each page/feature with its own module, components, services, models)
+    - `trips/` — Trips feature module (components, services, models)
+    - `shifts/` — Shifts feature module
+    - `stats/` — Stats feature module
+    - ...
   - `assets/` — Static assets (icons, images, JSON data files)
+  - `environments/` — Environment-specific configuration
 - `amplify/` — AWS Amplify backend resources
   - `backend/function/` — C# Lambda service
   - `api/` — API definitions and permissions
-- `public/` and `assets/` — Static files and images
+- `public/` — Static files and images
+- `scripts/` — Automation scripts (subfolders for frontend/backend if needed)
+- `docs/` — Project documentation, architecture diagrams, onboarding guides
 
 ## Development Patterns
 - **Mobile-first design:** All components should be optimized for mobile with responsive breakpoints
