@@ -1,10 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ITrip } from '@interfaces/trip.interface';
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
-import { NgClass, NgIf, NgFor, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, NgIf, CurrencyPipe, DatePipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
-import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DateHelper } from '@helpers/date.helper';
 
 @Component({
@@ -12,7 +10,7 @@ import { DateHelper } from '@helpers/date.helper';
     templateUrl: './trips-table-basic.component.html',
     styleUrls: ['./trips-table-basic.component.scss'],
     standalone: true,
-    imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatIcon, NgClass, NgIf, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, TruncatePipe]
+    imports: [MatIcon, NgClass, NgIf, CurrencyPipe, DatePipe, TruncatePipe]
 })
 export class TripsTableBasicComponent implements OnInit {
   @Input() trips: ITrip[] = [];
@@ -26,7 +24,7 @@ export class TripsTableBasicComponent implements OnInit {
     this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
-  hasSecondaryData = (index: number, trip: ITrip): boolean => {
+  hasSecondaryData = (trip: ITrip): boolean => {
     return !!(trip.endUnit || trip.note);
   };
 }
