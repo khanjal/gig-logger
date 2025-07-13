@@ -49,7 +49,14 @@
            aria-label="View statistics"
            matTooltip="Statistics"
            matTooltipPosition="below">
-          <mat-icon>poll</mat-icon>
+          <mat-icon>data-table</mat-icon>
+        </a>
+        <a routerLink="/metrics" 
+           class="action-button" 
+           aria-label="View metrics"
+           matTooltip="Metrics"
+           matTooltipPosition="below">
+          <mat-icon>assessment</mat-icon>
         </a>
       </ng-container>
       
@@ -114,6 +121,13 @@
                aria-label="View shifts">
               <mat-icon class="menu-icon">today</mat-icon>
               <span class="menu-text">Shifts</span>
+            </a>
+            <a routerLink="/metrics" 
+               (click)="closeMenu()"
+               class="menu-item"
+               aria-label="View metrics">
+              <mat-icon class="menu-icon">assessment</mat-icon>
+              <span class="menu-text">Metrics</span>
             </a>
           </ng-container>
         </div>
