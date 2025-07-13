@@ -32,51 +32,53 @@
       <div class="flex gap-2">
         <mat-form-field class="min-w-[70px] flex-1" appearance="outline">
           <mat-label>Distance</mat-label>
-          <input matInput type="number" formControlName="distance">
+          <input matInput type="number" formControlName="distance" placeholder="Distance (mi)">
         </mat-form-field>
       </div>
-    <div class="flex gap-1 mb-3">
+      <div class="flex gap-1 mb-3">
         <app-time-input 
           label="Start Time"
           formControlName="start"
           class="flex-1 min-w-[90px]"
-        >
-        </app-time-input>
+        ></app-time-input>
         <app-time-input 
           label="Finish Time"
           formControlName="finish"
           class="flex-1 min-w-[90px]"
-        >
-        </app-time-input>
+        ></app-time-input>
       </div>
       <div class="flex gap-2">
-        <!-- <app-time-input label="Active Time" formControlName="active" class="min-w-[90px] flex-1"></app-time-input> -->
-        <!-- <app-time-input label="Finish Time" formControlName="finish" class="min-w-[90px] flex-1"></app-time-input>
-        <app-time-input label="Start Time" formControlName="start" class="min-w-[90px] flex-1"></app-time-input> -->
-        <!-- <app-time-input label="Total Time" [formControl]="timeControl" class="min-w-[90px] flex-1"></app-time-input> -->
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Active Duration</mat-label>
+          <input matInput type="text" formControlName="active" placeholder="HH:MM">
+        </mat-form-field>
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Total Time</mat-label>
+          <input matInput type="text" formControlName="time" placeholder="HH:MM">
+        </mat-form-field>
       </div>
       <div class="flex gap-2">
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Note</mat-label>
-          <input matInput type="text" formControlName="note">
+          <input matInput type="text" formControlName="note" placeholder="Notes">
         </mat-form-field>
       </div>
       <div class="flex gap-2">
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Pay</mat-label>
-          <input matInput type="number" formControlName="pay">
+          <input matInput type="number" formControlName="pay" placeholder="Pay">
         </mat-form-field>
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Cash</mat-label>
-          <input matInput type="number" formControlName="cash">
+          <input matInput type="number" formControlName="cash" placeholder="Cash">
         </mat-form-field>
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Bonus</mat-label>
-          <input matInput type="number" formControlName="bonus">
+          <input matInput type="number" formControlName="bonus" placeholder="Bonus">
         </mat-form-field>
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Tips</mat-label>
-          <input matInput type="number" formControlName="tip">
+          <input matInput type="number" formControlName="tip" placeholder="Tips">
         </mat-form-field>
       </div>
     </div>
@@ -106,16 +108,16 @@
       </div>
     </div>
     <div class="flex gap-4 mt-6">
-      <button mat-fab extended color="warn" (click)="formReset()">
+      <button mat-button color="warn" (click)="formReset()">
         <mat-icon>refresh</mat-icon> Reset
       </button>
-      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addShift()" [disabled]="!shiftForm.valid">
+      <button *ngIf="!data?.id" mat-raised-button color="primary" (click)="addShift()" [disabled]="!shiftForm.valid">
         <mat-icon>add</mat-icon> Store
       </button>
-      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editShift()" [disabled]="!shiftForm.valid">
+      <button *ngIf="data?.id" mat-raised-button color="primary" (click)="editShift()" [disabled]="!shiftForm.valid">
         <mat-icon>save</mat-icon> Update
       </button>
-      <button mat-fab extended color="warn" (click)="close()">
+      <button mat-button color="warn" (click)="close()">
         <mat-icon>cancel</mat-icon> Cancel
       </button>
     </div>
