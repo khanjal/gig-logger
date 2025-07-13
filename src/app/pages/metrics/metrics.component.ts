@@ -30,7 +30,15 @@ function getCurrentWeekRange(): { start: Date, end: Date } {
   return { start: monday, end: sunday };
 }
 
-function formatDate(date: Date, type: 'day' | 'week' | 'month') {
+function formatDate(date: Date, type: 'day' | 'week' | 'month' | 'quarter' | 'year') {
+  if (type === 'year') {
+    return date.getFullYear().toString();
+  }
+  if (type === 'quarter') {
+    const year = date.getFullYear();
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
+    return `Q${quarter} ${year}`;
+  }
   if (type === 'month') {
     return date.toLocaleString('default', { month: 'short', year: 'numeric' });
   }
@@ -45,9 +53,11 @@ function formatDate(date: Date, type: 'day' | 'week' | 'month') {
   return date.toLocaleDateString();
 }
 
-function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' {
+function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 'quarter' | 'year' {
   const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-  if (diff > 365) return 'month';
+  if (diff > 730) return 'year'; // >2 years
+  if (diff > 365) return 'quarter'; // >1 year
+  if (diff > 180) return 'month';
   if (diff > 31) return 'week';
   return 'day';
 }
@@ -207,14 +217,17 @@ export class MetricsComponent implements OnInit {
       const d = new Date(s.date);
       return (!startDate || d >= startDate) && (!endDate || d <= endDate);
     });
-    let aggType: 'day' | 'week' | 'month' = 'day';
-    if (startDate && endDate) {
-      aggType = getAggregationType(startDate, endDate);
-      // Force 'month' aggregation for ranges >= 1 year
-      const diffDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-      if (diffDays >= 365) {
-        aggType = 'month';
-      }
+    let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
+    let actualStart = startDate;
+    let actualEnd = endDate;
+    if ((!startDate || !endDate) && filtered.length > 0) {
+      // If no date range, use min/max dates from filtered data
+      const dates = filtered.map(s => new Date(s.date));
+      actualStart = new Date(Math.min(...dates.map(d => d.getTime())));
+      actualEnd = new Date(Math.max(...dates.map(d => d.getTime())));
+    }
+    if (actualStart && actualEnd) {
+      aggType = getAggregationType(actualStart, actualEnd);
     }
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
@@ -222,13 +235,17 @@ export class MetricsComponent implements OnInit {
     this.updateYearlyComparison(filtered);
   }
 
-  updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
+  updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     // Group by aggregation type
     const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       let label = '';
-      if (aggType === 'month') {
+      if (aggType === 'year') {
+        label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
+      } else if (aggType === 'quarter') {
+        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
+      } else if (aggType === 'month') {
         label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
       } else if (aggType === 'week') {
         const monday = new Date(d);
@@ -298,14 +315,18 @@ export class MetricsComponent implements OnInit {
     };
   }
 
-  updateDailyEarnings(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
+  updateDailyEarnings(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     // Group by aggregation type and service
     const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       let label = '';
-      if (aggType === 'month') {
+      if (aggType === 'year') {
+        label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
+      } else if (aggType === 'quarter') {
+        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
+      } else if (aggType === 'month') {
         label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
       } else if (aggType === 'week') {
         const monday = new Date(d);
@@ -332,7 +353,7 @@ export class MetricsComponent implements OnInit {
     };
   }
 
-  updateServicePie(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
+  updateServicePie(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     // Group by aggregation type
     const serviceCounts: { [service: string]: number } = {};
     filteredShifts.forEach(s => {
