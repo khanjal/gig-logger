@@ -1,0 +1,123 @@
+<div class="bg-white rounded-xl shadow-lg p-4 md:p-8 w-full max-w-2xl mx-auto">
+  <div class="mb-1 border-b pb-2">
+    <h1 class="text-2xl font-bold text-blue-700">{{data?.id ? 'Edit Shift' : 'Add Shift'}}</h1>
+  </div>
+
+  <form [formGroup]="shiftForm">
+    <div class="flex gap-2">
+        <mat-form-field class="w-1/2 min-w-[120px]" appearance="outline">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="shiftDatePicker" formControlName="date">
+            <mat-datepicker-toggle matSuffix [for]="shiftDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #shiftDatePicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="w-1/2 min-w-[70px]" appearance="outline">
+            <mat-label>Shift #</mat-label>
+            <input matInput type="number" formControlName="number">
+        </mat-form-field>
+    </div>
+    <div class="flex flex-col gap-3 mb-3">
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Service</mat-label>
+        <mat-select formControlName="service">
+          <mat-option *ngFor="let s of serviceOptions" [value]="s">{{s}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Region/Zone</mat-label>
+        <mat-select formControlName="region">
+          <mat-option *ngFor="let r of regionOptions" [value]="r">{{r}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="flex gap-2">
+        <mat-form-field class="min-w-[70px] flex-1" appearance="outline">
+          <mat-label>Distance</mat-label>
+          <input matInput type="number" formControlName="distance">
+        </mat-form-field>
+      </div>
+    <div class="flex gap-1 mb-3">
+        <app-time-input 
+          label="Start Time"
+          formControlName="start"
+          class="flex-1 min-w-[90px]"
+        >
+        </app-time-input>
+        <app-time-input 
+          label="Finish Time"
+          formControlName="finish"
+          class="flex-1 min-w-[90px]"
+        >
+        </app-time-input>
+      </div>
+      <div class="flex gap-2">
+        <!-- <app-time-input label="Active Time" formControlName="active" class="min-w-[90px] flex-1"></app-time-input> -->
+        <!-- <app-time-input label="Finish Time" formControlName="finish" class="min-w-[90px] flex-1"></app-time-input>
+        <app-time-input label="Start Time" formControlName="start" class="min-w-[90px] flex-1"></app-time-input> -->
+        <!-- <app-time-input label="Total Time" [formControl]="timeControl" class="min-w-[90px] flex-1"></app-time-input> -->
+      </div>
+      <div class="flex gap-2">
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Note</mat-label>
+          <input matInput type="text" formControlName="note">
+        </mat-form-field>
+      </div>
+      <div class="flex gap-2">
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Pay</mat-label>
+          <input matInput type="number" formControlName="pay">
+        </mat-form-field>
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Cash</mat-label>
+          <input matInput type="number" formControlName="cash">
+        </mat-form-field>
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Bonus</mat-label>
+          <input matInput type="number" formControlName="bonus">
+        </mat-form-field>
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Tips</mat-label>
+          <input matInput type="number" formControlName="tip">
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- Totals only in edit mode -->
+    <div *ngIf="data?.id" class="mb-3">
+      <div class="grid grid-cols-2 gap-2 bg-blue-50 rounded p-3 mb-2">
+        <div>
+          <span class="font-semibold text-blue-700">Total Trips:</span>
+          <span class="ml-2">{{ computedTotals.totalTrips }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-blue-700">Total Pay:</span>
+          <span class="ml-2">{{ computedTotals.totalPay | currency }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-blue-700">Total Cash:</span>
+          <span class="ml-2">{{ computedTotals.totalCash | currency }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-blue-700">Total Bonus:</span>
+          <span class="ml-2">{{ computedTotals.totalBonus | currency }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-blue-700">Total Tips:</span>
+          <span class="ml-2">{{ computedTotals.totalTips | currency }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-4 mt-6">
+      <button mat-fab extended color="warn" (click)="formReset()">
+        <mat-icon>refresh</mat-icon> Reset
+      </button>
+      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addShift()" [disabled]="!shiftForm.valid">
+        <mat-icon>add</mat-icon> Store
+      </button>
+      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editShift()" [disabled]="!shiftForm.valid">
+        <mat-icon>save</mat-icon> Update
+      </button>
+      <button mat-fab extended color="warn" (click)="close()">
+        <mat-icon>cancel</mat-icon> Cancel
+      </button>
+    </div>
+  </form>
+</div>

@@ -10,13 +10,14 @@ import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, DatePipe, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
+import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 
 @Component({
     selector: 'app-shifts',
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [MatMiniFabButton, MatIcon, NgClass, DatePipe, NgIf, ShiftsQuickViewComponent]
+    imports: [MatMiniFabButton, MatIcon, NgClass, DatePipe, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
@@ -137,5 +138,10 @@ export class ShiftsComponent implements OnInit {
             // Future: Implement save to spreadsheet functionality
         }
     });
+  }
+
+  exitEditMode(event?: any) {
+    // No edit mode for shifts yet, but this resolves the template error.
+    // You can implement edit logic here if needed.
   }
 }
