@@ -72,11 +72,11 @@ export class MetricsComponent implements OnInit {
       {
         label: 'Total Trips',
         data: [],
-        backgroundColor: '#14b8a6', // Teal shade for distinction
-        borderColor: '#0e7490',
+        backgroundColor: '#f472b6', // Changed to pink shade
+        borderColor: '#be185d', // Darker pink for border
         borderWidth: 2,
         datalabels: {
-          color: '#0e7490',
+          color: '#be185d',
           font: { weight: 'bold', size: 14 },
         }
       }
@@ -88,15 +88,19 @@ export class MetricsComponent implements OnInit {
   endDate: Date | null = null;
   dailyEarningsData: ChartData<'bar'> = { labels: [], datasets: [] };
   servicePieData: ChartData<'pie'> = { labels: [], datasets: [] };
+  yoyData: ChartData<'bar'> = { labels: [], datasets: [] };
 
   barOptions: ChartOptions<'bar'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: true },
       datalabels: {
         display: (ctx) => {
-          // Only show datalabels for non-zero values
-          return ctx.dataset.data[ctx.dataIndex] !== 0;
+          // Only show datalabels for non-zero values and if chart isn't crowded
+          const chart = ctx.chart;
+          const labelCount = chart.data.labels ? chart.data.labels.length : 0;
+          return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
         },
         color: '#222',
         font: {
@@ -133,12 +137,15 @@ export class MetricsComponent implements OnInit {
 
   lineOptions: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: true },
       datalabels: {
         display: (ctx) => {
-          // Only show datalabels for non-zero values
-          return ctx.dataset.data[ctx.dataIndex] !== 0;
+          // Only show datalabels for non-zero values and if chart isn't crowded
+          const chart = ctx.chart;
+          const labelCount = chart.data.labels ? chart.data.labels.length : 0;
+          return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
         },
         color: '#222',
         font: {
@@ -200,10 +207,19 @@ export class MetricsComponent implements OnInit {
       const d = new Date(s.date);
       return (!startDate || d >= startDate) && (!endDate || d <= endDate);
     });
-    const aggType = (startDate && endDate) ? getAggregationType(startDate, endDate) : 'day';
+    let aggType: 'day' | 'week' | 'month' = 'day';
+    if (startDate && endDate) {
+      aggType = getAggregationType(startDate, endDate);
+      // Force 'month' aggregation for ranges >= 1 year
+      const diffDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (diffDays >= 365) {
+        aggType = 'month';
+      }
+    }
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered, aggType);
+    this.updateYearlyComparison(filtered);
   }
 
   updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
@@ -237,7 +253,13 @@ export class MetricsComponent implements OnInit {
       datasets: [{
         label: 'Total Trips',
         data: labels.map(l => grouped[l].trips),
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#f472b6', // Pink shade
+        borderColor: '#be185d', // Darker pink for border
+        borderWidth: 2,
+        datalabels: {
+          color: '#be185d',
+          font: { weight: 'bold', size: 14 },
+        }
       }]
     };
     this.distanceData = {
@@ -327,9 +349,51 @@ export class MetricsComponent implements OnInit {
     };
   }
 
+  updateYearlyComparison(filteredShifts = this.shifts) {
+    // Group by year
+    const grouped: { [year: string]: { pay: number; tips: number; bonus: number; cash: number } } = {};
+    filteredShifts.forEach(s => {
+      const d = new Date(s.date);
+      const year = d.getFullYear().toString();
+      if (!grouped[year]) {
+        grouped[year] = { pay: 0, tips: 0, bonus: 0, cash: 0 };
+      }
+      grouped[year].pay += s.totalPay || 0;
+      grouped[year].tips += s.totalTips || 0;
+      grouped[year].bonus += s.totalBonus || 0;
+      grouped[year].cash += s.totalCash || 0;
+    });
+    const labels = Object.keys(grouped);
+    this.yoyData = {
+      labels,
+      datasets: [
+        {
+          label: 'Pay',
+          data: labels.map(y => grouped[y].pay),
+          backgroundColor: '#f59e42',
+        },
+        {
+          label: 'Tips',
+          data: labels.map(y => grouped[y].tips),
+          backgroundColor: '#10b981',
+        },
+        {
+          label: 'Bonus',
+          data: labels.map(y => grouped[y].bonus),
+          backgroundColor: '#6366f1',
+        },
+        {
+          label: 'Cash',
+          data: labels.map(y => grouped[y].cash),
+          backgroundColor: '#ef4444',
+        }
+      ]
+    };
+  }
+
   async ngOnInit() {
-    const week = getCurrentWeekRange();
-    this.range.setValue({ start: week.start, end: week.end });
+    // Do not set default date range to current week
+    // this.range.setValue({ start: week.start, end: week.end });
     this.dexieSubscriptions.push(
       this.shiftService.shifts$.subscribe(shifts => {
         this.shifts = shifts;
