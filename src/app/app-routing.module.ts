@@ -10,6 +10,7 @@ import { ShiftsComponent } from './pages/shifts/shifts.component';
 import { TermsComponent } from './pages/terms/terms.component';
 import { PolicyComponent } from './pages/policy/policy.component';
 import { canActivateAuth } from '@guards/auth-guard.service';
+import { ExpensesComponent } from './pages/expenses/expenses.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: 'shifts', component: ShiftsComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'stats', component: StatsComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'terms', component: TermsComponent},
+  { path: 'expenses', component: ExpensesComponent, canActivate: [canActivateSheet, canActivateAuth] },
 ];
 
 @NgModule({

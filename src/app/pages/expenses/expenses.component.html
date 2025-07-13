@@ -1,0 +1,50 @@
+<div class="expenses-form-container w-full max-w-2xl mx-auto mb-8">
+  <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="flex flex-wrap gap-4 items-end bg-white p-6 rounded-lg shadow">
+    <div class="flex flex-col flex-1 min-w-[160px]">
+      <label class="font-semibold mb-1">Date</label>
+      <input type="date" formControlName="date" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
+    </div>
+    <div class="flex flex-col flex-1 min-w-[120px]">
+      <label class="font-semibold mb-1">Amount</label>
+      <input type="number" formControlName="amount" step="0.01" min="0" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
+    </div>
+    <div class="flex flex-col flex-1 min-w-[160px]">
+      <label class="font-semibold mb-1">Category</label>
+      <input list="categories" formControlName="category" placeholder="Search or add category" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
+      <datalist id="categories">
+        <option *ngFor="let cat of categories" [value]="cat"></option>
+      </datalist>
+    </div>
+    <div class="flex flex-col flex-1 min-w-[180px]">
+      <label class="font-semibold mb-1">Note</label>
+      <input type="text" formControlName="note" maxlength="100" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
+    </div>
+    <button type="submit" [disabled]="expenseForm.invalid" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed">Add Expense</button>
+  </form>
+</div>
+
+<div class="expenses-list-container w-full max-w-3xl mx-auto">
+  <div *ngFor="let month of (groupedExpenses | keyvalue:sortByMonth)">
+    <h3 class="mt-8 mb-2 text-lg font-bold text-blue-700">{{ month.key | date:'MMMM yyyy' }}</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-lg shadow mb-8">
+        <thead>
+          <tr class="bg-blue-100">
+            <th class="py-2 px-4 text-left font-semibold">Date</th>
+            <th class="py-2 px-4 text-left font-semibold">Amount</th>
+            <th class="py-2 px-4 text-left font-semibold">Category</th>
+            <th class="py-2 px-4 text-left font-semibold">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let expense of month.value" class="even:bg-gray-50">
+            <td class="py-2 px-4">{{ expense.date }}</td>
+            <td class="py-2 px-4">{{ expense.amount | currency }}</td>
+            <td class="py-2 px-4">{{ expense.category }}</td>
+            <td class="py-2 px-4">{{ expense.note }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
