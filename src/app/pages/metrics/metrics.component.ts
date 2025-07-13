@@ -66,7 +66,22 @@ export class MetricsComponent implements OnInit {
   trips: any[] = [];
   private dexieSubscriptions: DexieSubscription[] = [];
 
-  tripsData: ChartData<'bar'> = { labels: [], datasets: [] };
+  tripsData: ChartData<'bar'> = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Total Trips',
+        data: [],
+        backgroundColor: '#14b8a6', // Teal shade for distinction
+        borderColor: '#0e7490',
+        borderWidth: 2,
+        datalabels: {
+          color: '#0e7490',
+          font: { weight: 'bold', size: 14 },
+        }
+      }
+    ]
+  };
   distanceData: ChartData<'line'> = { labels: [], datasets: [] };
   payData: ChartData<'bar'> = { labels: [], datasets: [] };
   startDate: Date | null = null;
@@ -74,15 +89,86 @@ export class MetricsComponent implements OnInit {
   dailyEarningsData: ChartData<'bar'> = { labels: [], datasets: [] };
   servicePieData: ChartData<'pie'> = { labels: [], datasets: [] };
 
-  barOptions: ChartOptions = {
+  barOptions: ChartOptions<'bar'> = {
     responsive: true,
-    plugins: { legend: { display: true } },
-    scales: { x: { stacked: true }, y: { stacked: true } }
+    plugins: {
+      legend: { display: true },
+      datalabels: {
+        display: (ctx) => {
+          // Only show datalabels for non-zero values
+          return ctx.dataset.data[ctx.dataIndex] !== 0;
+        },
+        color: '#222',
+        font: {
+          weight: 'bold',
+          size: 14,
+        },
+        formatter: (value, ctx) => {
+          // Round to nearest integer for display
+          return Math.round(value);
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            // Show decimals in tooltip if needed
+            return `${context.dataset.label || ''}: ${context.parsed.y}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { display: false },
+        ticks: { color: '#222' }
+      },
+      y: {
+        stacked: true,
+        grid: { color: '#eee' },
+        ticks: { color: '#222' }
+      }
+    }
   };
 
-  lineOptions: ChartOptions = {
+  lineOptions: ChartOptions<'line'> = {
     responsive: true,
-    plugins: { legend: { display: true } }
+    plugins: {
+      legend: { display: true },
+      datalabels: {
+        display: (ctx) => {
+          // Only show datalabels for non-zero values
+          return ctx.dataset.data[ctx.dataIndex] !== 0;
+        },
+        color: '#222',
+        font: {
+          weight: 'bold',
+          size: 14,
+        },
+        formatter: (value, ctx) => {
+          // Round to nearest integer for display
+          return Math.round(value);
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            // Show decimals in tooltip if needed
+            return `${context.dataset.label || ''}: ${context.parsed.y}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#222' }
+      },
+      y: {
+        grid: { color: '#eee' },
+        ticks: { color: '#222' }
+      }
+    }
   };
 
   pieOptions: ChartOptions = {
