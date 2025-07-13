@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '../../shared/services/sheets/shift.service';
-import { TripService } from '../../shared/services/sheets/trip.service';
 import { Subscription as DexieSubscription } from 'dexie';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule } from '@angular/forms';
@@ -66,14 +65,13 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
   selector: 'app-metrics',
   standalone: true,
   imports: [CommonModule, BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
-  providers: [ShiftService, TripService],
+  providers: [ShiftService],
   templateUrl: './metrics.component.html',
   styleUrls: ['./metrics.component.scss']
 })
 export class MetricsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   shifts: any[] = [];
-  trips: any[] = [];
   private dexieSubscriptions: DexieSubscription[] = [];
 
   tripsData: ChartData<'bar'> = {
@@ -208,7 +206,7 @@ export class MetricsComponent implements OnInit {
     end: new FormControl(),
   });
 
-  constructor(private shiftService: ShiftService, private tripService: TripService) {}
+  constructor(private shiftService: ShiftService) {}
 
   filterByDate() {
     const startDate: Date | null = this.range.value.start;
@@ -419,12 +417,6 @@ export class MetricsComponent implements OnInit {
       this.shiftService.shifts$.subscribe(shifts => {
         this.shifts = shifts;
         this.filterByDate();
-      })
-    );
-    this.dexieSubscriptions.push(
-      this.tripService.trips$.subscribe(trips => {
-        this.trips = trips;
-        // You can use trips for additional metrics
       })
     );
   }
