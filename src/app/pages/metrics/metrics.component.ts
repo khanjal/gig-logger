@@ -108,7 +108,24 @@ export class MetricsComponent implements OnInit {
           // Only show datalabels for non-zero values and if chart isn't crowded
           const chart = ctx.chart;
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
-          return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
+          if (labelCount > 20 || ctx.dataset.data[ctx.dataIndex] === 0) return false;
+          // Relative value logic for stacked bars
+          const config: any = chart.config;
+          const scales: any = chart.options.scales;
+          if (config && config.type === 'bar' && scales && scales['x'] && scales['x'].stacked) {
+            const dataIndex = ctx.dataIndex;
+            const datasets = chart.data.datasets;
+            let total = 0;
+            datasets.forEach(ds => {
+              if (Array.isArray(ds.data)) {
+                total += Number(ds.data[dataIndex]) || 0;
+              }
+            });
+            const value = Number(ctx.dataset.data[dataIndex]) || 0;
+            // Show label only if value is at least 10% of stack
+            if (total === 0 || value / total < 0.1) return false;
+          }
+          return true;
         },
         color: '#222',
         font: {
