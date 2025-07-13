@@ -4,7 +4,7 @@ import { IShift } from '@interfaces/shift.interface';
 import { CommonModule } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ActionEnum } from '@enums/action.enum';
@@ -14,6 +14,7 @@ import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { ITrip } from '@interfaces/trip.interface';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'shift-form',
@@ -21,7 +22,8 @@ import { TimeInputComponent } from '@inputs/time-input/time-input.component';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatButton, MatIcon,
-    MatSelect, MatOption, MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent
+    MatSelect, MatOption, MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
+    MatInputModule, MatNativeDateModule
   ]
 })
 export class ShiftFormComponent implements OnInit {
