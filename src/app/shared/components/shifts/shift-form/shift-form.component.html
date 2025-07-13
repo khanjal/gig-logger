@@ -17,18 +17,18 @@
         </mat-form-field>
     </div>
     <div class="flex flex-col gap-3 mb-3">
-      <mat-form-field class="w-full" appearance="outline">
-        <mat-label>Service</mat-label>
-        <mat-select formControlName="service">
-          <mat-option *ngFor="let s of serviceOptions" [value]="s">{{s}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field class="w-full" appearance="outline">
-        <mat-label>Region/Zone</mat-label>
-        <mat-select formControlName="region">
-          <mat-option *ngFor="let r of regionOptions" [value]="r">{{r}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <app-search-input 
+            class="w-full"
+            fieldName="Service" 
+            searchType="Service" 
+            formControlName="service">
+        </app-search-input>
+        <app-search-input 
+            class="w-full"
+            fieldName="Region/Zone" 
+            searchType="Region" 
+            formControlName="region">
+        </app-search-input>
       <div class="flex gap-2">
         <mat-form-field class="min-w-[70px] flex-1" appearance="outline">
           <mat-label>Distance</mat-label>
