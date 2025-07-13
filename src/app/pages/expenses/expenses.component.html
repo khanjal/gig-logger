@@ -1,29 +1,34 @@
 <div class="expenses-form-container w-full max-w-2xl mx-auto mb-8">
-  <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="flex flex-wrap gap-4 items-end bg-white p-6 rounded-lg shadow">
-    <div class="flex flex-col flex-1 min-w-[160px]">
-      <label class="font-semibold mb-1">Date</label>
-      <input type="date" formControlName="date" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
+  <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-lg shadow">
+    <mat-form-field class="w-full col-span-1 md:col-span-2" appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" formControlName="amount" step="0.01" min="0" />
+      </mat-form-field>
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" placeholder="Search or add category">
+          <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
-    <div class="flex flex-col flex-1 min-w-[120px]">
-      <label class="font-semibold mb-1">Amount</label>
-      <input type="number" formControlName="amount" step="0.01" min="0" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
+    <mat-form-field class="w-full col-span-1 md:col-span-4" appearance="outline">
+      <mat-label>Note</mat-label>
+      <input matInput type="text" formControlName="note" maxlength="100" />
+    </mat-form-field>
+    <div class="col-span-1 md:col-span-4 flex justify-end">
+      <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">Add Expense</button>
     </div>
-    <div class="flex flex-col flex-1 min-w-[160px]">
-      <label class="font-semibold mb-1">Category</label>
-      <input list="categories" formControlName="category" placeholder="Search or add category" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
-      <datalist id="categories">
-        <option *ngFor="let cat of categories" [value]="cat"></option>
-      </datalist>
-    </div>
-    <div class="flex flex-col flex-1 min-w-[180px]">
-      <label class="font-semibold mb-1">Note</label>
-      <input type="text" formControlName="note" maxlength="100" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400" />
-    </div>
-    <button type="submit" [disabled]="expenseForm.invalid" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded shadow hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed">Add Expense</button>
   </form>
 </div>
 
-<div class="expenses-list-container w-full max-w-3xl mx-auto">
+<div class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6">
   <div *ngFor="let month of (groupedExpenses | keyvalue:sortByMonth)">
     <h3 class="mt-8 mb-2 text-lg font-bold text-blue-700">{{ month.key | date:'MMMM yyyy' }}</h3>
     <div class="overflow-x-auto">

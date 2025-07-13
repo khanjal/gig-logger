@@ -3,11 +3,28 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IExpense } from '@interfaces/expense.interface';
 import { CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerToggle } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-expenses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatDatepickerToggle
+  ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
   providers: [CurrencyPipe, DatePipe]
