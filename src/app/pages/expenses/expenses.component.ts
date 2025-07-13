@@ -10,6 +10,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
+import { ExpensesService } from '@services/sheets/expenses.service';
 
 @Component({
   selector: 'app-expenses',
@@ -23,7 +25,8 @@ import { MatDatepickerToggle } from '@angular/material/datepicker';
     MatOptionModule,
     MatButtonModule,
     MatDatepickerModule,
-    MatDatepickerToggle
+    MatDatepickerToggle,
+    MatIconModule
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
@@ -37,8 +40,12 @@ export class ExpensesComponent implements OnInit {
     'Fuel', 'Food', 'Parking', 'Maintenance', 'Tolls', 'Supplies', 'Other'
   ];
   customCategories: string[] = [];
+  editingExpenseId?: number;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private expensesService: ExpensesService
+  ) {}
 
   async ngOnInit() {
     this.expenseForm = this.fb.group({
@@ -68,9 +75,42 @@ export class ExpensesComponent implements OnInit {
   async addExpense() {
     if (this.expenseForm.invalid) return;
     const expense: IExpense = this.expenseForm.value;
-    await spreadsheetDB.expenses.add(expense);
+    if (this.editingExpenseId) {
+      // Update existing expense
+      expense.id = this.editingExpenseId;
+      await this.expensesService.add(expense); // Use add for upsert in GenericCrudService
+      this.editingExpenseId = undefined;
+    } else {
+      // Add new expense
+      await this.expensesService.add(expense);
+    }
     this.expenseForm.reset({ date: this.getToday() });
     await this.loadExpenses();
+  }
+
+  editExpense(expense: IExpense) {
+    // Populate the form with the selected expense for editing
+    this.expenseForm.patchValue(expense);
+    this.editingExpenseId = expense.id;
+  }
+
+  cancelEdit() {
+    this.editingExpenseId = undefined;
+    this.expenseForm.reset({ date: this.getToday() });
+  }
+
+  deleteExpense(expense: IExpense) {
+    if (typeof expense.id === 'number') {
+      this.expensesService.delete(expense.id).then(() => {
+        this.syncData();
+      });
+    }
+  }
+
+  syncData() {
+    // Call the data sync component/service to save changes
+    console.log('Syncing data...');
+    // Implement actual sync logic here
   }
 
   get categories(): string[] {
@@ -78,4 +118,10 @@ export class ExpensesComponent implements OnInit {
   }
 
   sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;
+
+  get editingExpense(): IExpense | null {
+    if (!this.editingExpenseId) return null;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    return expense ? { ...expense } : null;
+  }
 }

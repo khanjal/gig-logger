@@ -4,4 +4,6 @@ export interface IExpense {
   amount: number;
   category: string;
   note?: string;
+  action?: string;
+  actionTime?: number;
 }

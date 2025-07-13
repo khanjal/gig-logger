@@ -22,8 +22,12 @@
       <mat-label>Note</mat-label>
       <input matInput type="text" formControlName="note" maxlength="100" />
     </mat-form-field>
-    <div class="col-span-1 md:col-span-4 flex justify-end">
-      <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">Add Expense</button>
+    <div class="col-span-1 md:col-span-4 flex justify-end gap-2">
+      <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">
+        {{ editingExpenseId ? 'Update Expense' : 'Add Expense' }}
+      </button>
+      <button *ngIf="editingExpenseId" mat-stroked-button color="warn" type="button" (click)="cancelEdit()">Cancel</button>
+      <button *ngIf="editingExpenseId && editingExpense" mat-raised-button color="warn" type="button" (click)="deleteExpense(editingExpense)">Delete</button>
     </div>
   </form>
 </div>
@@ -46,7 +50,15 @@
             <td class="py-2 px-4">{{ expense.date }}</td>
             <td class="py-2 px-4">{{ expense.amount | currency }}</td>
             <td class="py-2 px-4">{{ expense.category }}</td>
-            <td class="py-2 px-4">{{ expense.note }}</td>
+            <td class="py-2 px-4 flex items-center gap-2">
+              <span>{{ expense.note }}</span>
+              <button mat-icon-button color="primary" aria-label="Edit" (click)="editExpense(expense)">
+                <mat-icon fontIcon="edit"></mat-icon>
+              </button>
+              <button mat-icon-button color="warn" aria-label="Delete" (click)="deleteExpense(expense)">
+                <mat-icon fontIcon="delete"></mat-icon>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
