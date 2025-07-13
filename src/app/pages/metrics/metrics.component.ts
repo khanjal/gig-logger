@@ -11,8 +11,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
+import { CommonModule } from '@angular/common';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(...registerables);
+Chart.register(ChartDataLabels);
 
 function getCurrentWeekRange(): { start: Date, end: Date } {
   const now = new Date();
@@ -27,10 +30,32 @@ function getCurrentWeekRange(): { start: Date, end: Date } {
   return { start: monday, end: sunday };
 }
 
+function formatDate(date: Date, type: 'day' | 'week' | 'month') {
+  if (type === 'month') {
+    return date.toLocaleString('default', { month: 'short', year: 'numeric' });
+  }
+  if (type === 'week') {
+    const first = new Date(date);
+    first.setDate(date.getDate() - date.getDay() + 1); // Monday
+    const last = new Date(first);
+    last.setDate(first.getDate() + 6); // Sunday
+    return `${first.toLocaleDateString()} - ${last.toLocaleDateString()}`;
+  }
+  // day
+  return date.toLocaleDateString();
+}
+
+function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' {
+  const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+  if (diff > 365) return 'month';
+  if (diff > 31) return 'week';
+  return 'day';
+}
+
 @Component({
   selector: 'app-metrics',
   standalone: true,
-  imports: [BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
+  imports: [CommonModule, BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
   providers: [ShiftService, TripService],
   templateUrl: './metrics.component.html',
   styleUrls: ['./metrics.component.scss']
@@ -51,7 +76,8 @@ export class MetricsComponent implements OnInit {
 
   barOptions: ChartOptions = {
     responsive: true,
-    plugins: { legend: { display: true } }
+    plugins: { legend: { display: true } },
+    scales: { x: { stacked: true }, y: { stacked: true } }
   };
 
   lineOptions: ChartOptions = {
@@ -59,7 +85,20 @@ export class MetricsComponent implements OnInit {
     plugins: { legend: { display: true } }
   };
 
-  pieOptions: ChartOptions = { responsive: true, plugins: { legend: { display: true } } };
+  pieOptions: ChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: true },
+      datalabels: {
+        color: '#fff',
+        font: { weight: 'bold', size: 16 },
+        textShadowColor: '#222',
+        textShadowBlur: 6,
+        formatter: (value: number, ctx: any) => value > 0 ? value : '',
+        display: (ctx: any) => ctx.dataset.data[ctx.dataIndex] > 0,
+      }
+    }
+  };
 
   range = new FormGroup({
     start: new FormControl(),
@@ -75,58 +114,118 @@ export class MetricsComponent implements OnInit {
       const d = new Date(s.date);
       return (!startDate || d >= startDate) && (!endDate || d <= endDate);
     });
-    this.updateCharts(filtered);
-    this.updateDailyEarnings(filtered);
-    this.updateServicePie(filtered);
+    const aggType = (startDate && endDate) ? getAggregationType(startDate, endDate) : 'day';
+    this.updateCharts(filtered, aggType);
+    this.updateDailyEarnings(filtered, aggType);
+    this.updateServicePie(filtered, aggType);
   }
 
-  updateCharts(filteredShifts = this.shifts) {
-    const dates = filteredShifts.map(s => s.date);
+  updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
+    // Group by aggregation type
+    const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
+    filteredShifts.forEach(s => {
+      const d = new Date(s.date);
+      let label = '';
+      if (aggType === 'month') {
+        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
+      } else if (aggType === 'week') {
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - d.getDay() + 1);
+        label = formatDate(monday, 'week');
+      } else {
+        label = formatDate(d, 'day');
+      }
+      if (!grouped[label]) {
+        grouped[label] = { trips: 0, distance: 0, pay: 0, tips: 0, bonus: 0, cash: 0 };
+      }
+      grouped[label].trips += s.totalTrips || 0;
+      grouped[label].distance += s.totalDistance || 0;
+      grouped[label].pay += s.totalPay || 0;
+      grouped[label].tips += s.totalTips || 0;
+      grouped[label].bonus += s.totalBonus || 0;
+      grouped[label].cash += s.totalCash || 0;
+    });
+    const labels = Object.keys(grouped);
     this.tripsData = {
-      labels: dates,
+      labels,
       datasets: [{
         label: 'Total Trips',
-        data: filteredShifts.map(s => s.totalTrips),
+        data: labels.map(l => grouped[l].trips),
         backgroundColor: '#3b82f6',
       }]
     };
     this.distanceData = {
-      labels: dates,
+      labels,
       datasets: [{
         label: 'Total Distance',
-        data: filteredShifts.map(s => s.totalDistance),
+        data: labels.map(l => grouped[l].distance),
         borderColor: '#10b981',
         fill: false,
       }]
     };
     this.payData = {
-      labels: dates,
-      datasets: [{
-        label: 'Total Pay',
-        data: filteredShifts.map(s => s.totalPay),
-        backgroundColor: '#f59e42',
-      }]
+      labels,
+      datasets: [
+        {
+          label: 'Pay',
+          data: labels.map(l => grouped[l].pay),
+          backgroundColor: '#f59e42',
+        },
+        {
+          label: 'Tips',
+          data: labels.map(l => grouped[l].tips),
+          backgroundColor: '#10b981',
+        },
+        {
+          label: 'Bonus',
+          data: labels.map(l => grouped[l].bonus),
+          backgroundColor: '#6366f1',
+        },
+        {
+          label: 'Cash',
+          data: labels.map(l => grouped[l].cash),
+          backgroundColor: '#ef4444',
+        }
+      ]
     };
   }
 
-  updateDailyEarnings(filteredShifts = this.shifts) {
-    // Group by date and sum grandTotal
-    const earningsByDate: { [date: string]: number } = {};
+  updateDailyEarnings(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
+    // Group by aggregation type and service
+    const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
+    const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
-      earningsByDate[s.date] = (earningsByDate[s.date] || 0) + (s.grandTotal || 0);
+      const d = new Date(s.date);
+      let label = '';
+      if (aggType === 'month') {
+        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
+      } else if (aggType === 'week') {
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - d.getDay() + 1);
+        label = formatDate(monday, 'week');
+      } else {
+        label = formatDate(d, 'day');
+      }
+      serviceSet.add(s.service);
+      if (!earningsByLabel[label]) earningsByLabel[label] = {};
+      earningsByLabel[label][s.service] = (earningsByLabel[label][s.service] || 0) + (s.grandTotal || 0);
     });
-    const dates = Object.keys(earningsByDate).sort();
+    const labels = Object.keys(earningsByLabel);
+    const services = Array.from(serviceSet);
     this.dailyEarningsData = {
-      labels: dates,
-      datasets: [{
-        label: 'Daily Earnings',
-        data: dates.map(d => earningsByDate[d]),
-        backgroundColor: '#6366f1',
-      }]
+      labels,
+      datasets: services.map((service, i) => ({
+        label: service,
+        data: labels.map(l => earningsByLabel[l][service] || 0),
+        backgroundColor: [
+          '#3b82f6', '#10b981', '#f59e42', '#6366f1', '#ef4444', '#14b8a6', '#f472b6', '#fbbf24', '#a3e635', '#38bdf8'
+        ][i % 10],
+      }))
     };
   }
 
-  updateServicePie(filteredShifts = this.shifts) {
+  updateServicePie(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' = 'day') {
+    // Group by aggregation type
     const serviceCounts: { [service: string]: number } = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + 1;

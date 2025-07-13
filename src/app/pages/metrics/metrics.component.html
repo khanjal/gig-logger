@@ -1,4 +1,4 @@
-<div class="container mx-auto p-4">
+<div class="container mx-auto p-4 max-w-4xl">
   <h1 class="text-2xl font-bold mb-6 text-blue-700">Shift & Trip Metrics</h1>
 
   <div class="flex flex-wrap gap-4 mb-6 items-center">
@@ -15,46 +15,46 @@
     </mat-form-field>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <div class="bg-white rounded-lg shadow p-4">
-      <h2 class="text-lg font-semibold mb-2">Total Trips</h2>
-      <canvas baseChart
-        [data]="tripsData"
-        [options]="barOptions"
-        [type]="'bar'"
-        class="w-full h-64"></canvas>
-    </div>
-    <div class="bg-white rounded-lg shadow p-4">
-      <h2 class="text-lg font-semibold mb-2">Total Distance</h2>
-      <canvas baseChart
-        [data]="distanceData"
-        [options]="lineOptions"
-        [type]="'line'"
-        class="w-full h-64"></canvas>
-    </div>
     <div class="bg-white rounded-lg shadow p-4 md:col-span-2">
-      <h2 class="text-lg font-semibold mb-2">Total Pay</h2>
-      <canvas baseChart
+        <h2 class="text-lg font-semibold mb-2">Total Pay</h2>
+        <canvas baseChart
         [data]="payData"
         [options]="barOptions"
         [type]="'bar'"
         class="w-full h-64"></canvas>
     </div>
-    <div class="bg-white rounded-lg shadow p-4 md:col-span-2">
-      <h2 class="text-lg font-semibold mb-2">Daily Earnings (Selected Week)</h2>
+    <div *ngIf="dailyEarningsData.datasets.length > 1" class="bg-white rounded-lg shadow p-4 md:col-span-2">
+      <h2 class="text-lg font-semibold mb-2">Daily Earnings by Service</h2>
       <canvas baseChart
         [data]="dailyEarningsData"
         [options]="barOptions"
         [type]="'bar'"
         class="w-full h-64"></canvas>
     </div>
-    <div class="bg-white rounded-lg shadow p-4 md:col-span-2">
-      <h2 class="text-lg font-semibold mb-2">Service Distribution (Pie)</h2>
-      <canvas baseChart
-        [data]="servicePieData"
-        [options]="pieOptions"
-        [type]="'pie'"
-        class="w-full h-64"></canvas>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-lg font-semibold mb-2">Total Trips</h2>
+        <canvas baseChart
+            [data]="tripsData"
+            [options]="barOptions"
+            [type]="'bar'"
+            class="w-full h-64"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-lg font-semibold mb-2">Total Distance</h2>
+        <canvas baseChart
+            [data]="distanceData"
+            [options]="lineOptions"
+            [type]="'line'"
+            class="w-full h-64"></canvas>
+        </div>
+        <div *ngIf="servicePieData && servicePieData.labels && servicePieData.labels.length > 1" class="bg-white rounded-lg shadow p-4 md:col-span-2 max-w-md mx-auto">
+        <h2 class="text-lg font-semibold mb-2">Service Count Distribution</h2>
+        <canvas baseChart
+            [data]="servicePieData"
+            [options]="pieOptions"
+            [type]="'pie'"
+            class="w-full h-64"></canvas>
+        </div>
     </div>
-  </div>
 </div>
