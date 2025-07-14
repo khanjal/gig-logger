@@ -21,6 +21,7 @@ const routes: Routes = [
   { path: 'trips/edit/:id', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'setup', component: SetupComponent },
   { path: 'shifts', component: ShiftsComponent, canActivate: [canActivateSheet, canActivateAuth] },
+  { path: 'shifts/edit/:id', component: ShiftsComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'stats', component: StatsComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'terms', component: TermsComponent},
   { path: 'expenses', component: ExpensesComponent, canActivate: [canActivateSheet, canActivateAuth] },

@@ -215,7 +215,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
     this.parentReload.emit();
   }
-  async openTripDialog() {
+
+  async editTrip() {
     // Navigate to trips page with edit mode and trip rowId
     this._router.navigate(['/trips/edit', this.trip.rowId]);
   }

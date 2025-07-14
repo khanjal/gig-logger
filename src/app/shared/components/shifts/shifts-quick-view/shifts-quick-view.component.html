@@ -174,8 +174,15 @@
       'bg-blue-100 border-blue-300': shift.rowId % 2 === 0,
       'bg-green-100 border-green-300': shift.rowId % 2 === 1
     }">
-    <!-- Edit Button (disabled for now) -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium transition cursor-not-allowed opacity-50 grayscale" disabled>
+    <!-- Edit Button -->
+    <button class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium transition"
+      (click)="editShift()" 
+      [disabled]="!canEditShift()"
+      [class.cursor-not-allowed]="!canEditShift()"
+      [class.opacity-50]="!canEditShift()"
+      [class.grayscale]="!canEditShift()"
+      [attr.aria-label]="'Edit shift'"
+      [attr.title]="'Edit shift'">
       <mat-icon class="text-blue-500 text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>
     </button>

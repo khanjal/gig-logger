@@ -9,8 +9,18 @@
         </button>
     </div>
 
-    <div class="mb-6" *ngIf="showAddForm">
-        <shift-form (parentReload)="handleParentReload()" (editModeExit)="hideAddForm()"></shift-form>
+    <div class="mb-6" *ngIf="showAddForm || editId">
+        <shift-form 
+          *ngIf="showAddForm"
+          (parentReload)="handleParentReload()" 
+          (editModeExit)="hideAddForm()">
+        </shift-form>
+        <shift-form 
+          *ngIf="editId"
+          [id]="editId"
+          (parentReload)="handleParentReload()" 
+          (editModeExit)="editId = null">
+        </shift-form>
     </div>
     
     <!-- @if (unsavedShifts.length > 0) {

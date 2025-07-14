@@ -8,8 +8,6 @@ import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ActionEnum } from '@enums/action.enum';
-import { MatSelect } from '@angular/material/select';
-import { MatOption } from '@angular/material/core';
 import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { ITrip } from '@interfaces/trip.interface';
@@ -17,6 +15,7 @@ import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'shift-form',
@@ -63,13 +62,38 @@ export class ShiftFormComponent implements OnInit {
     totalTips: 0
   };
 
-  serviceOptions: string[] = ['Uber', 'Lyft', 'DoorDash'];
-  regionOptions: string[] = ['Downtown', 'Uptown', 'Suburbs'];
-
-  constructor(private shiftService: ShiftService) {}
+  constructor(private shiftService: ShiftService, private route: ActivatedRoute) {}
 
   async ngOnInit(): Promise<void> {
-    if (this.data) {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id && id !== 'new') {
+      const shift = await this.shiftService.queryShiftById(Number(id));
+      if (shift) {
+        this.data = shift;
+        this.shiftForm.patchValue({
+          date: shift.date ? new Date(shift.date) : new Date(),
+          service: shift.service ?? '',
+          region: shift.region ?? '',
+          number: shift.number ?? 0,
+          distance: shift.distance ?? 0,
+          active: shift.active ?? '',
+          finish: shift.finish ?? '',
+          start: shift.start ?? '',
+          time: shift.time ?? '',
+          note: shift.note ?? '',
+          action: shift.action ?? '',
+          actionTime: shift.actionTime ?? 0,
+          pay: shift.pay ?? 0,
+          tip: shift.tip ?? 0,
+          bonus: shift.bonus ?? 0,
+          cash: shift.cash ?? 0,
+          total: shift.total ?? 0,
+          trips: shift.trips ?? 0,
+          omit: shift.omit ?? false,
+        });
+        await this.calculateTotals();
+      }
+    } else if (this.data) {
       // Patch only form fields, and ensure date is a Date object
       this.shiftForm.patchValue({
         date: this.data.date ? new Date(this.data.date) : new Date(),

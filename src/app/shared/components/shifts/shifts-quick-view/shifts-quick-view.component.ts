@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -36,12 +37,17 @@ export class ShiftsQuickViewComponent {
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Output() edit = new EventEmitter<IShift>();
 
   duplicateShift: boolean = false;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
 
-  constructor(public dialog: MatDialog, private shiftService: ShiftService) {}
+  constructor(
+    public dialog: MatDialog,
+    private shiftService: ShiftService,
+    private _router: Router
+  ) {}
 
   async ngOnInit() {
     await this.checkForDuplicates();
@@ -107,5 +113,15 @@ export class ShiftsQuickViewComponent {
   canDeleteShift(): boolean {
     // Enable delete if duplicateShift is true, or if both grandTotal and totalTrips are 0 or falsy
     return !!this.duplicateShift || (((this.shift.grandTotal === 0 || !this.shift.grandTotal) && (this.shift.totalTrips === 0 || !this.shift.totalTrips)));
+  }
+
+  canEditShift(): boolean {
+    // Only allow edit if not deleted
+    return this.shift && this.shift.action !== ActionEnum.Delete;
+  }
+
+  async editShift() {
+    // Navigate to shift page with edit mode and shift rowId
+    this._router.navigate(['/shifts/edit', this.shift.rowId]);
   }
 }

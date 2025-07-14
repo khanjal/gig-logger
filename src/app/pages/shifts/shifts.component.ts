@@ -11,6 +11,7 @@ import { MatIcon } from '@angular/material/icon';
 import { NgClass, DatePipe, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-shifts',
@@ -33,10 +34,14 @@ export class ShiftsComponent implements OnInit {
 
   // Floating date for the shift currently at the top of the list
   currentVisibleDate: string | null = null;
+  editId: string | null = null; // ID of the shift being edited, if any
 
-  constructor(public dialog: MatDialog, private _shiftService: ShiftService) { }
+  constructor(public dialog: MatDialog, private _shiftService: ShiftService, private router: Router, private route: ActivatedRoute) { }
 
   async ngOnInit(): Promise<void> {
+    this.route.paramMap.subscribe(params => {
+      this.editId = params.get('id');
+    });
     await this.loadShifts();
     this.setCurrentVisibleDate();
   }
@@ -124,8 +129,13 @@ export class ShiftsComponent implements OnInit {
   }
   
   addShift() {
-    throw new Error('Method not implemented.');
+    this.router.navigate(['/shifts/edit', 'new']); // 'new' for creating a new shift
   }
+
+  editShift(shiftId: string) {
+    this.router.navigate(['/shifts/edit', shiftId]); // Navigate to edit route with shift ID
+  }
+
   async saveSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',
