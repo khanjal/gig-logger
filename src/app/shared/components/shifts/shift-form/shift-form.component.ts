@@ -23,7 +23,7 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatButton, MatIcon,
-    MatSelect, MatOption, MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
+    MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
     MatInputModule, MatNativeDateModule, SearchInputComponent
   ]
 })

@@ -1,7 +1,4 @@
 <div class="container mx-auto p-4 max-w-4xl">
-    <div class="mb-6">
-        <shift-form (parentReload)="handleParentReload()" (editModeExit)="exitEditMode($event)"></shift-form>
-    </div>
     <div class="flex flex-wrap gap-4 mb-6 items-center justify-between">
         <h1 class="text-2xl font-bold text-blue-700 flex-1">Shifts</h1>
         <button mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="addShift()" disabled>
@@ -9,6 +6,10 @@
         </button>
     </div>
 
+    <div class="mb-6">
+        <shift-form (parentReload)="handleParentReload()" (editModeExit)="exitEditMode($event)"></shift-form>
+    </div>
+    
     <!-- @if (unsavedShifts.length > 0) {
         <div class="row-grid">
             <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>

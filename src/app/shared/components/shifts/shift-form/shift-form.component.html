@@ -4,7 +4,7 @@
   </div>
 
   <form [formGroup]="shiftForm">
-    <div class="flex gap-2">
+    <div class="flex gap-2 mb-3">
         <mat-form-field class="w-1/2 min-w-[120px]" appearance="outline">
             <mat-label>Date</mat-label>
             <input matInput [matDatepicker]="shiftDatePicker" formControlName="date">
@@ -21,7 +21,8 @@
             class="w-full"
             fieldName="Service" 
             searchType="Service" 
-            formControlName="service">
+            formControlName="service"
+            [isRequired]="true">
         </app-search-input>
         <app-search-input 
             class="w-full"
@@ -35,7 +36,7 @@
           <input matInput type="number" formControlName="distance" placeholder="Distance (mi)">
         </mat-form-field>
       </div>
-      <div class="flex gap-1 mb-3">
+      <div class="flex gap-1">
         <app-time-input 
           label="Start Time"
           formControlName="start"
@@ -59,26 +60,20 @@
       </div>
       <div class="flex gap-2">
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Note</mat-label>
-          <input matInput type="text" formControlName="note" placeholder="Notes">
-        </mat-form-field>
-      </div>
-      <div class="flex gap-2">
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Pay</mat-label>
           <input matInput type="number" formControlName="pay" placeholder="Pay">
         </mat-form-field>
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Cash</mat-label>
-          <input matInput type="number" formControlName="cash" placeholder="Cash">
+          <mat-label>Tips</mat-label>
+          <input matInput type="number" formControlName="tip" placeholder="Tips">
         </mat-form-field>
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
           <mat-label>Bonus</mat-label>
           <input matInput type="number" formControlName="bonus" placeholder="Bonus">
         </mat-form-field>
         <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Tips</mat-label>
-          <input matInput type="number" formControlName="tip" placeholder="Tips">
+          <mat-label>Cash</mat-label>
+          <input matInput type="number" formControlName="cash" placeholder="Cash">
         </mat-form-field>
       </div>
     </div>
@@ -107,19 +102,27 @@
         </div>
       </div>
     </div>
-    <div class="flex gap-4 mt-6">
-      <button mat-button color="warn" (click)="formReset()">
+    <div class="flex gap-2">
+        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
+          <mat-label>Note</mat-label>
+          <input matInput type="text" formControlName="note" placeholder="Notes">
+        </mat-form-field>
+    </div>
+    <div class="flex flex-row items-center justify-between mt-6">
+      <button mat-raised-button color="warn" type="button" (click)="formReset()">
         <mat-icon>refresh</mat-icon> Reset
       </button>
-      <button *ngIf="!data?.id" mat-raised-button color="primary" (click)="addShift()" [disabled]="!shiftForm.valid">
-        <mat-icon>add</mat-icon> Store
-      </button>
-      <button *ngIf="data?.id" mat-raised-button color="primary" (click)="editShift()" [disabled]="!shiftForm.valid">
-        <mat-icon>save</mat-icon> Update
-      </button>
-      <button mat-button color="warn" (click)="close()">
-        <mat-icon>cancel</mat-icon> Cancel
-      </button>
+      <div class="flex gap-2">
+        <button *ngIf="!data?.id" mat-raised-button color="primary" type="button" (click)="addShift()" [disabled]="!shiftForm.valid">
+          <mat-icon>add</mat-icon> Store
+        </button>
+        <button *ngIf="data?.id" mat-raised-button color="primary" type="button" (click)="editShift()" [disabled]="!shiftForm.valid">
+          <mat-icon>save</mat-icon> Update
+        </button>
+        <button *ngIf="data?.id" mat-raised-button color="warn" type="button" (click)="close()">
+          <mat-icon>cancel</mat-icon> Cancel
+        </button>
+      </div>
     </div>
   </form>
 </div>
