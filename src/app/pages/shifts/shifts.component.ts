@@ -29,6 +29,7 @@ export class ShiftsComponent implements OnInit {
   currentPage: number = 0; // Current page index
   isLoading: boolean = false; // Prevent multiple simultaneous requests
   noMoreData: boolean = false; // Stop loading if all data is loaded
+  showAddForm = false; // Control the visibility of the add form
 
   // Floating date for the shift currently at the top of the list
   currentVisibleDate: string | null = null;
@@ -143,5 +144,9 @@ export class ShiftsComponent implements OnInit {
   exitEditMode(event?: any) {
     // No edit mode for shifts yet, but this resolves the template error.
     // You can implement edit logic here if needed.
+  }
+
+  hideAddForm() {
+    this.showAddForm = false;
   }
 }

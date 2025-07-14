@@ -16,6 +16,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'shift-form',
@@ -24,7 +25,7 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
   imports: [
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatButton, MatIcon,
     MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
-    MatInputModule, MatNativeDateModule, SearchInputComponent
+    MatInputModule, MatNativeDateModule, SearchInputComponent, MatSlideToggleModule
   ]
 })
 export class ShiftFormComponent implements OnInit {
@@ -51,6 +52,7 @@ export class ShiftFormComponent implements OnInit {
     cash: new FormControl(),
     total: new FormControl(),
     trips: new FormControl(),
+    omit: new FormControl(false),
   });
 
   computedTotals = {
@@ -88,6 +90,7 @@ export class ShiftFormComponent implements OnInit {
         cash: this.data.cash ?? 0,
         total: this.data.total ?? 0,
         trips: this.data.trips ?? 0,
+        omit: this.data.omit ?? false,
       });
       await this.calculateTotals();
     }
@@ -156,6 +159,7 @@ export class ShiftFormComponent implements OnInit {
         bonus: formValue.bonus ?? 0,
         cash: formValue.cash ?? 0,
         total: formValue.total ?? 0,
+        omit: formValue.omit ?? false,
       };
       await this.shiftService.add(newShift);
       this.parentReload.emit();
@@ -201,6 +205,7 @@ export class ShiftFormComponent implements OnInit {
         bonus: formValue.bonus ?? this.data.bonus ?? 0,
         cash: formValue.cash ?? this.data.cash ?? 0,
         total: formValue.total ?? this.data.total ?? 0,
+        omit: formValue.omit ?? this.data.omit ?? false,
       };
       await this.shiftService.update([updatedShift]);
       this.editModeExit.emit();
