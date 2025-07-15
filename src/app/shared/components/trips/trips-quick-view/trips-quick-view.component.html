@@ -59,13 +59,13 @@
         }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
-                'text-gray-400': !(trip.pay || trip.tip || trip.bonus || trip.cash),
+                'text-gray-400': !(trip.pay || trip.tip || trip.bonus),
                 'text-green-600': trip.amountPerTime > 30,
                 'text-blue-600': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
                 'text-yellow-600': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
                 'text-red-500': trip.amountPerTime < 20
               }">
-          {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
+          {{trip.total | currency}}
         </span>
       </span>
     </div>
