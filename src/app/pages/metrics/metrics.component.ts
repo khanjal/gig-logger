@@ -360,7 +360,8 @@ export class MetricsComponent implements OnInit {
     // Group by aggregation type
     const serviceCounts: { [service: string]: number } = {};
     filteredShifts.forEach(s => {
-      serviceCounts[s.service] = (serviceCounts[s.service] || 0) + 1;
+      // Use totalTrips for each shift, defaulting to 0 if missing
+      serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
     });
     const labels = Object.keys(serviceCounts);
     const data = labels.map(l => serviceCounts[l]);
