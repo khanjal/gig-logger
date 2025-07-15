@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '../../shared/services/sheets/shift.service';
 import { Subscription as DexieSubscription } from 'dexie';
@@ -15,19 +15,6 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(...registerables);
 Chart.register(ChartDataLabels);
-
-function getCurrentWeekRange(): { start: Date, end: Date } {
-  const now = new Date();
-  const day = now.getDay();
-  // getDay: 0=Sun, 1=Mon, ..., 6=Sat
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - ((day + 6) % 7));
-  monday.setHours(0,0,0,0);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23,59,59,999);
-  return { start: monday, end: sunday };
-}
 
 function formatDate(date: Date, type: 'day' | 'week' | 'month' | 'quarter' | 'year') {
   if (type === 'year') {
@@ -226,18 +213,19 @@ export class MetricsComponent implements OnInit {
   constructor(private shiftService: ShiftService) {}
 
   filterByDate() {
-    const startDate: Date | null = this.range.value.start;
-    const endDate: Date | null = this.range.value.end;
+    // Convert picked dates to YYYY-MM-DD strings (date only)
+    const startYMD: string | null = this.range.value.start ? new Date(this.range.value.start).toISOString().slice(0, 10) : null;
+    const endYMD: string | null = this.range.value.end ? new Date(this.range.value.end).toISOString().slice(0, 10) : null;
     const filtered = this.shifts.filter(s => {
-      const d = new Date(s.date);
-      return (!startDate || d >= startDate) && (!endDate || d <= endDate);
+      const dYMD = new Date(s.date).toISOString().slice(0, 10);
+      return (!startYMD || dYMD >= startYMD) && (!endYMD || dYMD <= endYMD);
     });
     let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
-    let actualStart = startDate;
-    let actualEnd = endDate;
-    if ((!startDate || !endDate) && filtered.length > 0) {
+    let actualStart = startYMD ? new Date(startYMD) : null;
+    let actualEnd = endYMD ? new Date(endYMD) : null;
+    if ((!startYMD || !endYMD) && filtered.length > 0) {
       // If no date range, use min/max dates from filtered data
-      const dates = filtered.map(s => new Date(s.date));
+      const dates = filtered.map(s => new Date(new Date(s.date).toISOString().slice(0, 10)));
       actualStart = new Date(Math.min(...dates.map(d => d.getTime())));
       actualEnd = new Date(Math.max(...dates.map(d => d.getTime())));
     }
