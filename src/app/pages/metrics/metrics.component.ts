@@ -1,33 +1,31 @@
+// Imports
 import { Component, OnInit } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '../../shared/services/sheets/shift.service';
 import { Subscription as DexieSubscription } from 'dexie';
 import { BaseChartDirective } from 'ng2-charts';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+// Chart.js registration
 Chart.register(...registerables);
 Chart.register(ChartDataLabels);
 
+// Utility Functions
 function formatDate(date: Date, type: 'day' | 'week' | 'month' | 'quarter' | 'year') {
-  if (type === 'year') {
-    return date.getFullYear().toString();
-  }
+  if (type === 'year') return date.getFullYear().toString();
   if (type === 'quarter') {
     const year = date.getFullYear();
     const quarter = Math.floor(date.getMonth() / 3) + 1;
     return `Q${quarter} ${year}`;
   }
-  if (type === 'month') {
-    return date.toLocaleString('default', { month: 'short', year: 'numeric' });
-  }
+  if (type === 'month') return date.toLocaleString('default', { month: 'short', year: 'numeric' });
   if (type === 'week') {
     const first = new Date(date);
     first.setDate(date.getDate() - date.getDay() + 1); // Monday
@@ -35,14 +33,13 @@ function formatDate(date: Date, type: 'day' | 'week' | 'month' | 'quarter' | 'ye
     last.setDate(first.getDate() + 6); // Sunday
     return `${first.toLocaleDateString()} - ${last.toLocaleDateString()}`;
   }
-  // day
   return date.toLocaleDateString();
 }
 
 function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 'quarter' | 'year' {
   const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-  if (diff > 730) return 'year'; // >2 years
-  if (diff > 365) return 'quarter'; // >1 year
+  if (diff > 730) return 'year';
+  if (diff > 365) return 'quarter';
   if (diff > 180) return 'month';
   if (diff > 31) return 'week';
   return 'day';
@@ -61,30 +58,15 @@ export class MetricsComponent implements OnInit {
   shifts: any[] = [];
   private dexieSubscriptions: DexieSubscription[] = [];
 
-  tripsData: ChartData<'bar'> = {
-    labels: [],
-    datasets: [
-      {
-        label: 'Total Trips',
-        data: [],
-        backgroundColor: '#f472b6', // Changed to pink shade
-        borderColor: '#be185d', // Darker pink for border
-        borderWidth: 2,
-        datalabels: {
-          color: '#be185d',
-          font: { weight: 'bold', size: 14 },
-        }
-      }
-    ]
-  };
+  // Chart Data
+  tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: '#f472b6', borderColor: '#be185d', borderWidth: 2, datalabels: { color: '#be185d', font: { weight: 'bold', size: 14 } } }] };
   distanceData: ChartData<'line'> = { labels: [], datasets: [] };
   payData: ChartData<'bar'> = { labels: [], datasets: [] };
-  startDate: Date | null = null;
-  endDate: Date | null = null;
   dailyEarningsData: ChartData<'bar'> = { labels: [], datasets: [] };
   servicePieData: ChartData<'pie'> = { labels: [], datasets: [] };
   yoyData: ChartData<'bar'> = { labels: [], datasets: [] };
 
+  // Chart Options
   barOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -92,58 +74,34 @@ export class MetricsComponent implements OnInit {
       legend: { display: true },
       datalabels: {
         display: (ctx) => {
-          // Only show datalabels for non-zero values and if chart isn't crowded
           const chart = ctx.chart;
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           if (labelCount > 20 || ctx.dataset.data[ctx.dataIndex] === 0) return false;
-          // Relative value logic for stacked bars
           const config: any = chart.config;
           const scales: any = chart.options.scales;
           if (config && config.type === 'bar' && scales && scales['x'] && scales['x'].stacked) {
             const dataIndex = ctx.dataIndex;
             const datasets = chart.data.datasets;
             let total = 0;
-            datasets.forEach(ds => {
-              if (Array.isArray(ds.data)) {
-                total += Number(ds.data[dataIndex]) || 0;
-              }
-            });
+            datasets.forEach(ds => { if (Array.isArray(ds.data)) { total += Number(ds.data[dataIndex]) || 0; } });
             const value = Number(ctx.dataset.data[dataIndex]) || 0;
-            // Show label only if value is at least 10% of stack
             if (total === 0 || value / total < 0.1) return false;
           }
           return true;
         },
         color: '#222',
-        font: {
-          weight: 'bold',
-          size: 14,
-        },
-        formatter: (value, ctx) => {
-          // Round to nearest integer for display
-          return Math.round(value);
-        },
+        font: { weight: 'bold', size: 14 },
+        formatter: (value, ctx) => Math.round(value),
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
-            // Show decimals in tooltip if needed
-            return `${context.dataset.label || ''}: ${context.parsed.y}`;
-          }
+          label: (context) => `${context.dataset.label || ''}: ${context.parsed.y}`
         }
       }
     },
     scales: {
-      x: {
-        stacked: true,
-        grid: { display: false },
-        ticks: { color: '#222' }
-      },
-      y: {
-        stacked: true,
-        grid: { color: '#eee' },
-        ticks: { color: '#222' }
-      }
+      x: { stacked: true, grid: { display: false }, ticks: { color: '#222' } },
+      y: { stacked: true, grid: { color: '#eee' }, ticks: { color: '#222' } }
     }
   };
 
@@ -154,39 +112,23 @@ export class MetricsComponent implements OnInit {
       legend: { display: true },
       datalabels: {
         display: (ctx) => {
-          // Only show datalabels for non-zero values and if chart isn't crowded
           const chart = ctx.chart;
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
         },
         color: '#222',
-        font: {
-          weight: 'bold',
-          size: 14,
-        },
-        formatter: (value, ctx) => {
-          // Round to nearest integer for display
-          return Math.round(value);
-        },
+        font: { weight: 'bold', size: 14 },
+        formatter: (value, ctx) => Math.round(value),
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
-            // Show decimals in tooltip if needed
-            return `${context.dataset.label || ''}: ${context.parsed.y}`;
-          }
+          label: (context) => `${context.dataset.label || ''}: ${context.parsed.y}`
         }
       }
     },
     scales: {
-      x: {
-        grid: { display: false },
-        ticks: { color: '#222' }
-      },
-      y: {
-        grid: { color: '#eee' },
-        ticks: { color: '#222' }
-      }
+      x: { grid: { display: false }, ticks: { color: '#222' } },
+      y: { grid: { color: '#eee' }, ticks: { color: '#222' } }
     }
   };
 
@@ -205,10 +147,8 @@ export class MetricsComponent implements OnInit {
     }
   };
 
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl(),
-  });
+  // Date Range
+  range = new FormGroup({ start: new FormControl(), end: new FormControl() });
 
   constructor(private shiftService: ShiftService) {}
 
@@ -231,7 +171,6 @@ export class MetricsComponent implements OnInit {
     let actualStart = startYMD ? new Date(startYMD) : null;
     let actualEnd = endYMD ? new Date(endYMD) : null;
     if ((!startYMD || !endYMD) && filtered.length > 0) {
-      // If no date range, use min/max dates from filtered data
       const dates = filtered.map(s => {
         const dYMD = (typeof s.date === 'string' && s.date.length === 10) ? s.date : this.toLocalYMD(new Date(s.date));
         return new Date(dYMD);
@@ -249,27 +188,19 @@ export class MetricsComponent implements OnInit {
   }
 
   updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    // Group by aggregation type
     const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       let label = '';
-      if (aggType === 'year') {
-        label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
-      } else if (aggType === 'quarter') {
-        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
-      } else if (aggType === 'month') {
-        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
-      } else if (aggType === 'week') {
+      if (aggType === 'year') label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
+      else if (aggType === 'quarter') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
+      else if (aggType === 'month') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
+      else if (aggType === 'week') {
         const monday = new Date(d);
         monday.setDate(d.getDate() - d.getDay() + 1);
         label = formatDate(monday, 'week');
-      } else {
-        label = formatDate(d, 'day');
-      }
-      if (!grouped[label]) {
-        grouped[label] = { trips: 0, distance: 0, pay: 0, tips: 0, bonus: 0, cash: 0 };
-      }
+      } else label = formatDate(d, 'day');
+      if (!grouped[label]) grouped[label] = { trips: 0, distance: 0, pay: 0, tips: 0, bonus: 0, cash: 0 };
       grouped[label].trips += s.totalTrips || 0;
       grouped[label].distance += s.totalDistance || 0;
       grouped[label].pay += s.totalPay || 0;
@@ -283,13 +214,10 @@ export class MetricsComponent implements OnInit {
       datasets: [{
         label: 'Total Trips',
         data: labels.map(l => grouped[l].trips),
-        backgroundColor: '#f472b6', // Pink shade
-        borderColor: '#be185d', // Darker pink for border
+        backgroundColor: '#f472b6',
+        borderColor: '#be185d',
         borderWidth: 2,
-        datalabels: {
-          color: '#be185d',
-          font: { weight: 'bold', size: 14 },
-        }
+        datalabels: { color: '#be185d', font: { weight: 'bold', size: 14 } }
       }]
     };
     this.distanceData = {
@@ -304,50 +232,28 @@ export class MetricsComponent implements OnInit {
     this.payData = {
       labels,
       datasets: [
-        {
-          label: 'Pay',
-          data: labels.map(l => grouped[l].pay),
-          backgroundColor: '#f59e42',
-        },
-        {
-          label: 'Tips',
-          data: labels.map(l => grouped[l].tips),
-          backgroundColor: '#10b981',
-        },
-        {
-          label: 'Bonus',
-          data: labels.map(l => grouped[l].bonus),
-          backgroundColor: '#6366f1',
-        },
-        {
-          label: 'Cash',
-          data: labels.map(l => grouped[l].cash),
-          backgroundColor: '#ef4444',
-        }
+        { label: 'Pay', data: labels.map(l => grouped[l].pay), backgroundColor: '#f59e42' },
+        { label: 'Tips', data: labels.map(l => grouped[l].tips), backgroundColor: '#10b981' },
+        { label: 'Bonus', data: labels.map(l => grouped[l].bonus), backgroundColor: '#6366f1' },
+        { label: 'Cash', data: labels.map(l => grouped[l].cash), backgroundColor: '#ef4444' }
       ]
     };
   }
 
   updateDailyEarnings(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    // Group by aggregation type and service
     const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       let label = '';
-      if (aggType === 'year') {
-        label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
-      } else if (aggType === 'quarter') {
-        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
-      } else if (aggType === 'month') {
-        label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
-      } else if (aggType === 'week') {
+      if (aggType === 'year') label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
+      else if (aggType === 'quarter') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
+      else if (aggType === 'month') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
+      else if (aggType === 'week') {
         const monday = new Date(d);
         monday.setDate(d.getDate() - d.getDay() + 1);
         label = formatDate(monday, 'week');
-      } else {
-        label = formatDate(d, 'day');
-      }
+      } else label = formatDate(d, 'day');
       serviceSet.add(s.service);
       if (!earningsByLabel[label]) earningsByLabel[label] = {};
       earningsByLabel[label][s.service] = (earningsByLabel[label][s.service] || 0) + (s.grandTotal || 0);
@@ -367,10 +273,8 @@ export class MetricsComponent implements OnInit {
   }
 
   updateServicePie(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    // Group by aggregation type
     const serviceCounts: { [service: string]: number } = {};
     filteredShifts.forEach(s => {
-      // Use totalTrips for each shift, defaulting to 0 if missing
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
     });
     const labels = Object.keys(serviceCounts);
@@ -385,14 +289,11 @@ export class MetricsComponent implements OnInit {
   }
 
   updateYearlyComparison(filteredShifts = this.shifts) {
-    // Group by year
     const grouped: { [year: string]: { pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       const year = d.getFullYear().toString();
-      if (!grouped[year]) {
-        grouped[year] = { pay: 0, tips: 0, bonus: 0, cash: 0 };
-      }
+      if (!grouped[year]) grouped[year] = { pay: 0, tips: 0, bonus: 0, cash: 0 };
       grouped[year].pay += s.totalPay || 0;
       grouped[year].tips += s.totalTips || 0;
       grouped[year].bonus += s.totalBonus || 0;
@@ -402,33 +303,15 @@ export class MetricsComponent implements OnInit {
     this.yoyData = {
       labels,
       datasets: [
-        {
-          label: 'Pay',
-          data: labels.map(y => grouped[y].pay),
-          backgroundColor: '#f59e42',
-        },
-        {
-          label: 'Tips',
-          data: labels.map(y => grouped[y].tips),
-          backgroundColor: '#10b981',
-        },
-        {
-          label: 'Bonus',
-          data: labels.map(y => grouped[y].bonus),
-          backgroundColor: '#6366f1',
-        },
-        {
-          label: 'Cash',
-          data: labels.map(y => grouped[y].cash),
-          backgroundColor: '#ef4444',
-        }
+        { label: 'Pay', data: labels.map(y => grouped[y].pay), backgroundColor: '#f59e42' },
+        { label: 'Tips', data: labels.map(y => grouped[y].tips), backgroundColor: '#10b981' },
+        { label: 'Bonus', data: labels.map(y => grouped[y].bonus), backgroundColor: '#6366f1' },
+        { label: 'Cash', data: labels.map(y => grouped[y].cash), backgroundColor: '#ef4444' }
       ]
     };
   }
 
   async ngOnInit() {
-    // Do not set default date range to current week
-    // this.range.setValue({ start: week.start, end: week.end });
     this.dexieSubscriptions.push(
       this.shiftService.shifts$.subscribe(shifts => {
         this.shifts = shifts;
