@@ -12,6 +12,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { DateHelper } from '../../shared/helpers/date.helper';
 
 // Chart.js registration
 Chart.register(...registerables);
@@ -152,29 +153,26 @@ export class MetricsComponent implements OnInit {
 
   constructor(private shiftService: ShiftService) {}
 
-  toLocalYMD(date: Date): string {
-    const y = date.getFullYear();
-    const m = (date.getMonth() + 1).toString().padStart(2, '0');
-    const d = date.getDate().toString().padStart(2, '0');
-    return `${y}-${m}-${d}`;
+  // Helper to get YMD string from a shift
+  private getShiftYMD(s: any): string {
+    return (typeof s.date === 'string' && s.date.length === 10)
+      ? s.date
+      : DateHelper.getDateISO(new Date(s.date));
   }
 
   filterByDate() {
     // Convert picked dates to YYYY-MM-DD strings (date only, LOCAL time)
-    const startYMD: string | null = this.range.value.start ? this.toLocalYMD(new Date(this.range.value.start)) : null;
-    const endYMD: string | null = this.range.value.end ? this.toLocalYMD(new Date(this.range.value.end)) : null;
+    const startYMD = this.range.value.start ? DateHelper.getDateISO(new Date(this.range.value.start)) : null;
+    const endYMD = this.range.value.end ? DateHelper.getDateISO(new Date(this.range.value.end)) : null;
     const filtered = this.shifts.filter(s => {
-      const dYMD = (typeof s.date === 'string' && s.date.length === 10) ? s.date : this.toLocalYMD(new Date(s.date));
+      const dYMD = this.getShiftYMD(s);
       return (!startYMD || dYMD >= startYMD) && (!endYMD || dYMD <= endYMD);
     });
     let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
-    let actualStart = startYMD ? new Date(startYMD) : null;
-    let actualEnd = endYMD ? new Date(endYMD) : null;
+    let actualStart = startYMD ? DateHelper.getDateFromISO(startYMD) : null;
+    let actualEnd = endYMD ? DateHelper.getDateFromISO(endYMD) : null;
     if ((!startYMD || !endYMD) && filtered.length > 0) {
-      const dates = filtered.map(s => {
-        const dYMD = (typeof s.date === 'string' && s.date.length === 10) ? s.date : this.toLocalYMD(new Date(s.date));
-        return new Date(dYMD);
-      });
+      const dates = filtered.map(s => DateHelper.getDateFromISO(this.getShiftYMD(s)));
       actualStart = new Date(Math.min(...dates.map(d => d.getTime())));
       actualEnd = new Date(Math.max(...dates.map(d => d.getTime())));
     }
