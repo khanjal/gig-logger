@@ -160,14 +160,15 @@ export class MetricsComponent implements OnInit {
       : DateHelper.getDateISO(new Date(s.date));
   }
 
-  filterByDate() {
+  async filterByDate() {
     // Convert picked dates to YYYY-MM-DD strings (date only, LOCAL time)
-    const startYMD = this.range.value.start ? DateHelper.getDateISO(new Date(this.range.value.start)) : null;
-    const endYMD = this.range.value.end ? DateHelper.getDateISO(new Date(this.range.value.end)) : null;
-    const filtered = this.shifts.filter(s => {
-      const dYMD = this.getShiftYMD(s);
-      return (!startYMD || dYMD >= startYMD) && (!endYMD || dYMD <= endYMD);
-    });
+    const startYMD = this.range.value.start ? DateHelper.getDateISO(new Date(this.range.value.start)) : '';
+    const endYMD = this.range.value.end ? DateHelper.getDateISO(new Date(this.range.value.end)) : '';
+    // Use the same DB query as stats: inclusive between
+    let filtered = this.shifts;
+    if (startYMD || endYMD) {
+      filtered = await this.shiftService.getShiftsBetweenDates(startYMD, endYMD);
+    }
     let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
     let actualStart = startYMD ? DateHelper.getDateFromISO(startYMD) : null;
     let actualEnd = endYMD ? DateHelper.getDateFromISO(endYMD) : null;
@@ -188,16 +189,26 @@ export class MetricsComponent implements OnInit {
   updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
-      const d = new Date(s.date);
+      // Always use local date for label
+      const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
       let label = '';
-      if (aggType === 'year') label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
-      else if (aggType === 'quarter') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
-      else if (aggType === 'month') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
-      else if (aggType === 'week') {
+      if (aggType === 'year') label = d.getFullYear().toString();
+      else if (aggType === 'quarter') {
+        const year = d.getFullYear();
+        const quarter = Math.floor(d.getMonth() / 3) + 1;
+        label = `Q${quarter} ${year}`;
+      } else if (aggType === 'month') {
+        label = d.toLocaleString('default', { month: 'short', year: 'numeric' });
+      } else if (aggType === 'week') {
+        // Week label: Monday-Sunday, local
         const monday = new Date(d);
         monday.setDate(d.getDate() - d.getDay() + 1);
-        label = formatDate(monday, 'week');
-      } else label = formatDate(d, 'day');
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        label = `${monday.toLocaleDateString()} - ${sunday.toLocaleDateString()}`;
+      } else {
+        label = d.toLocaleDateString();
+      }
       if (!grouped[label]) grouped[label] = { trips: 0, distance: 0, pay: 0, tips: 0, bonus: 0, cash: 0 };
       grouped[label].trips += s.totalTrips || 0;
       grouped[label].distance += s.totalDistance || 0;
@@ -242,16 +253,25 @@ export class MetricsComponent implements OnInit {
     const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
-      const d = new Date(s.date);
+      // Always use local date for label
+      const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
       let label = '';
-      if (aggType === 'year') label = formatDate(new Date(d.getFullYear(), 0, 1), 'year');
-      else if (aggType === 'quarter') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'quarter');
-      else if (aggType === 'month') label = formatDate(new Date(d.getFullYear(), d.getMonth(), 1), 'month');
-      else if (aggType === 'week') {
+      if (aggType === 'year') label = d.getFullYear().toString();
+      else if (aggType === 'quarter') {
+        const year = d.getFullYear();
+        const quarter = Math.floor(d.getMonth() / 3) + 1;
+        label = `Q${quarter} ${year}`;
+      } else if (aggType === 'month') {
+        label = d.toLocaleString('default', { month: 'short', year: 'numeric' });
+      } else if (aggType === 'week') {
         const monday = new Date(d);
         monday.setDate(d.getDate() - d.getDay() + 1);
-        label = formatDate(monday, 'week');
-      } else label = formatDate(d, 'day');
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        label = `${monday.toLocaleDateString()} - ${sunday.toLocaleDateString()}`;
+      } else {
+        label = d.toLocaleDateString();
+      }
       serviceSet.add(s.service);
       if (!earningsByLabel[label]) earningsByLabel[label] = {};
       earningsByLabel[label][s.service] = (earningsByLabel[label][s.service] || 0) + (s.grandTotal || 0);

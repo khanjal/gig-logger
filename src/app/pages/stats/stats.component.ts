@@ -55,8 +55,8 @@ export class StatsComponent implements OnInit {
       endDate = DateHelper.getISOFormat(this.range.value.end);
     }
 
-    await this.getShiftsRange(startDate, endDate); 
-    await this.getTripsRange(startDate, endDate); 
+    await this.getShiftsRange(startDate, endDate);
+    await this.getTripsRange(startDate, endDate);
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
