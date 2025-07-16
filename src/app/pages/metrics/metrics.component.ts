@@ -212,12 +212,19 @@ export class MetricsComponent implements OnInit {
 
   constructor(private shiftService: ShiftService) {}
 
+  toLocalYMD(date: Date): string {
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const d = date.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
   filterByDate() {
-    // Convert picked dates to YYYY-MM-DD strings (date only)
-    const startYMD: string | null = this.range.value.start ? new Date(this.range.value.start).toISOString().slice(0, 10) : null;
-    const endYMD: string | null = this.range.value.end ? new Date(this.range.value.end).toISOString().slice(0, 10) : null;
+    // Convert picked dates to YYYY-MM-DD strings (date only, LOCAL time)
+    const startYMD: string | null = this.range.value.start ? this.toLocalYMD(new Date(this.range.value.start)) : null;
+    const endYMD: string | null = this.range.value.end ? this.toLocalYMD(new Date(this.range.value.end)) : null;
     const filtered = this.shifts.filter(s => {
-      const dYMD = new Date(s.date).toISOString().slice(0, 10);
+      const dYMD = (typeof s.date === 'string' && s.date.length === 10) ? s.date : this.toLocalYMD(new Date(s.date));
       return (!startYMD || dYMD >= startYMD) && (!endYMD || dYMD <= endYMD);
     });
     let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
@@ -225,7 +232,10 @@ export class MetricsComponent implements OnInit {
     let actualEnd = endYMD ? new Date(endYMD) : null;
     if ((!startYMD || !endYMD) && filtered.length > 0) {
       // If no date range, use min/max dates from filtered data
-      const dates = filtered.map(s => new Date(new Date(s.date).toISOString().slice(0, 10)));
+      const dates = filtered.map(s => {
+        const dYMD = (typeof s.date === 'string' && s.date.length === 10) ? s.date : this.toLocalYMD(new Date(s.date));
+        return new Date(dYMD);
+      });
       actualStart = new Date(Math.min(...dates.map(d => d.getTime())));
       actualEnd = new Date(Math.max(...dates.map(d => d.getTime())));
     }
