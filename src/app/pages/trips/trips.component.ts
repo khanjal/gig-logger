@@ -66,7 +66,7 @@ export class TripComponent implements OnInit, OnDestroy {
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
   parentReloadSubscription!: Subscription;
-  
+
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
@@ -128,19 +128,17 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   public async load(showSpinner: boolean = true) {
+    // Prevent reload if editing form
+    if (this.editingTripId) return;
     if (showSpinner) {
       this.isLoading = true;
     }
-    
     this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
     this.todaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
     this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1))));
-
     await this.average?.load();
     await this.tripsTable?.load();
     this.tripForm?.load();
-    
-    // Small delay to ensure smooth loading experience
     if (showSpinner) {
       setTimeout(() => {
         this.isLoading = false;
@@ -361,7 +359,6 @@ export class TripComponent implements OnInit, OnDestroy {
       await this.tripForm.formReset();
     }
     await this.load(); // This handles the overlay timing
-    // Resume polling if enabled
     if (this.pollingEnabled) {
       await this.startPolling();
     }
