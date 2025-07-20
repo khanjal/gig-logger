@@ -15,7 +15,7 @@
   <div class="p-3 border-b"
     [ngClass]="{
       'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
-      'bg-green-100 border-green-300': trip.rowId % 2 === 1
+      'bg-gray-100 border-gray-300': trip.rowId % 2 === 1
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -39,8 +39,8 @@
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
         <span class="truncate block max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
       </span>
-      <!-- Time (back in first line, after service/number) -->
-      <span class="flex items-center gap-1 flex-shrink-0 justify-center text-center ml-2 min-w-[3.5rem]">
+      <!-- Time (center) -->
+      <span class="flex-1 flex items-center justify-center gap-1">
         <span class="font-mono text-sm font-medium"
               [ngClass]="{
                 'text-gray-400': !trip.pickupTime,
@@ -49,14 +49,9 @@
           {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
         </span>
       </span>
-      <!-- Spacer -->
-      <span class="flex-1"></span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon [ngClass]="{
-          'text-blue-400': trip.rowId % 2 === 0,
-          'text-green-400': trip.rowId % 2 === 1
-        }" class="text-base">payments</mat-icon>
+        <mat-icon class="text-base text-blue-400">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
                 'text-gray-400': !(trip.pay || trip.tip || trip.bonus),
@@ -69,10 +64,10 @@
         </span>
       </span>
     </div>
-    <!-- Place/Date/Distance Row (always visible if present) -->
+    <!-- Date/Place/Distance Row (always visible if present) -->
     <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
-      <!-- Date (left, where type was) -->
-      <span *ngIf="trip.date" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
+      <!-- Date (left) -->
+      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
       <!-- Place -> Name (center, inline until overflow) -->
       <div class="flex-1 flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden">
         <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
@@ -227,7 +222,7 @@
   <div class="flex items-center justify-between p-3 border-t"
     [ngClass]="{
       'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
-      'bg-green-100 border-green-300': trip.rowId % 2 === 1
+      'bg-gray-100 border-gray-300': trip.rowId % 2 === 1
     }">
     <!-- Edit Button -->
     <button mat-button 
