@@ -51,7 +51,6 @@
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-base text-blue-400">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
                 'text-gray-400': !(trip.pay || trip.tip || trip.bonus),
@@ -76,7 +75,6 @@
       </div>
       <!-- Distance (right) -->
       <span *ngIf="trip.distance" class="flex items-center gap-1 flex-shrink-0 ml-2">
-        <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{trip.distance | number:'1.1'}} mi</span>
       </span>
     </div>
