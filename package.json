@@ -43,6 +43,7 @@
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "angular-oauth2-oidc": "^18.0.0",
     "assert": "^2.0.0",
+    "audit": "^0.0.6",
     "aws-amplify": "^5.2.2",
     "beasties": "^0.2.0",
     "chart.js": "^4.5.0",
