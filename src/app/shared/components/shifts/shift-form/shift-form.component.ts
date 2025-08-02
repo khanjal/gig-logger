@@ -17,6 +17,7 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DateHelper } from '@helpers/date.helper';
+import { TripService } from '@services/sheets/trip.service';
 
 @Component({
   selector: 'shift-form',
@@ -64,14 +65,16 @@ export class ShiftFormComponent implements OnInit {
   };
 
   computedShiftNumber: number = 1;
+  shiftKey: string = '';
 
-  constructor(private shiftService: ShiftService) {}
+  constructor(private shiftService: ShiftService, private tripService: TripService) {}
 
   async ngOnInit(): Promise<void> {
     const rowId = this.rowId;
     if (rowId && rowId !== 'new') {
       const shift = await this.shiftService.getByRowId(Number(rowId));
       if (shift) {
+        this.shiftKey = shift.key ?? '';
         this.shiftForm.patchValue({
           date: shift.date ? new Date(shift.date) : new Date(),
           service: shift.service ?? '',
@@ -121,10 +124,10 @@ export class ShiftFormComponent implements OnInit {
   }
 
   async calculateTotals() {
-    // Fetch trips linked to this shift (by key or rowId)
     let trips: ITrip[] = [];
-    // Fallback: trips = [];
-    // Sum up totals from trips and shift fields
+    if (this.shiftKey) {
+      trips = await this.tripService.query("key", this.shiftKey);
+    }
     const tripsTotal = {
       totalTrips: trips.length,
       totalPay: trips.reduce((sum, t) => sum + (t.pay ?? 0), 0),
