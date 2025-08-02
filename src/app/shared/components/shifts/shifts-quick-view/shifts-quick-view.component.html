@@ -16,7 +16,7 @@
       'bg-blue-100 border-blue-300': shift.rowId % 2 === 0,
       'bg-green-100 border-green-300': shift.rowId % 2 === 1
     }">
-    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto relative">
+    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
       <!-- Status Icon -->
       <mat-icon class="text-xl flex-shrink-0"
         [ngClass]="{
@@ -35,16 +35,16 @@
       </mat-icon>
       <!-- Row ID -->
       <span class="text-xs font-bold text-gray-700 font-mono flex-shrink-0">#{{shift.rowId}}</span>
-      <!-- Service Name and Number (centered absolutely) -->
-      <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center absolute left-1/2 -translate-x-1/2">
-        <span class="truncate block max-w-full">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
+      <!-- Service Name, Number (flexible, grows) -->
+      <span class="font-bold text-gray-900 text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
+        <span class="truncate block">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
       </span>
-      <span class="flex-1"></span>
+      <!-- Date (right, before total) -->
+      <span class="ml-2 text-xs text-gray-500 font-mono flex-shrink-0" *ngIf="shift.date">{{ shift.date | date:'EEE, MMM d' }}</span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
         <mat-icon [ngClass]="{
-          'text-blue-400': index % 2 === 0 && shift.action !== ActionEnum.Delete,
-          'text-green-400': index % 2 === 1 && shift.action !== ActionEnum.Delete,
+          'text-blue-400': shift.action !== ActionEnum.Delete,
           'text-gray-400': shift.action === ActionEnum.Delete
         }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
