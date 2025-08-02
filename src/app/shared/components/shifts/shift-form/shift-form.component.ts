@@ -29,7 +29,7 @@ import { ShiftHelper } from '@helpers/shift.helper';
   ]
 })
 export class ShiftFormComponent implements OnInit {
-  @Input() data?: IShift;
+  @Input() id?: string | null;
   @Output() parentReload = new EventEmitter<any>();
   @Output() editModeExit = new EventEmitter<string | undefined>();
 
@@ -65,14 +65,13 @@ export class ShiftFormComponent implements OnInit {
 
   computedShiftNumber: number = 1;
 
-  constructor(private shiftService: ShiftService, private route: ActivatedRoute) {}
+  constructor(private shiftService: ShiftService) {}
 
   async ngOnInit(): Promise<void> {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.id;
     if (id && id !== 'new') {
       const shift = await this.shiftService.queryShiftById(Number(id));
       if (shift) {
-        this.data = shift;
         this.shiftForm.patchValue({
           date: shift.date ? new Date(shift.date) : new Date(),
           service: shift.service ?? '',
@@ -96,30 +95,6 @@ export class ShiftFormComponent implements OnInit {
         });
         await this.calculateTotals();
       }
-    } else if (this.data) {
-      // Patch only form fields, and ensure date is a Date object
-      this.shiftForm.patchValue({
-        date: this.data.date ? new Date(this.data.date) : new Date(),
-        service: this.data.service ?? '',
-        region: this.data.region ?? '',
-        number: this.data.number ?? 0,
-        distance: this.data.distance ?? 0,
-        active: this.data.active ?? '',
-        finish: this.data.finish ?? '',
-        start: this.data.start ?? '',
-        time: this.data.time ?? '',
-        note: this.data.note ?? '',
-        action: this.data.action ?? '',
-        actionTime: this.data.actionTime ?? 0,
-        pay: this.data.pay ?? 0,
-        tip: this.data.tip ?? 0,
-        bonus: this.data.bonus ?? 0,
-        cash: this.data.cash ?? 0,
-        total: this.data.total ?? 0,
-        trips: this.data.trips ?? 0,
-        omit: this.data.omit ?? false,
-      });
-      await this.calculateTotals();
     }
 
     this.shiftForm.get('date')?.valueChanges.subscribe(() => {
@@ -148,10 +123,6 @@ export class ShiftFormComponent implements OnInit {
   async calculateTotals() {
     // Fetch trips linked to this shift (by key or rowId)
     let trips: ITrip[] = [];
-    if (this.data?.key) {
-      // You may need to inject TripService if not already
-      // Example: trips = await this.tripService.query('key', this.data.key);
-    }
     // Fallback: trips = [];
     // Sum up totals from trips and shift fields
     const tripsTotal = {
@@ -161,13 +132,7 @@ export class ShiftFormComponent implements OnInit {
       totalBonus: trips.reduce((sum, t) => sum + (t.bonus ?? 0), 0),
       totalTips: trips.reduce((sum, t) => sum + (t.tip ?? 0), 0)
     };
-    this.computedTotals = {
-      totalTrips: (this.data?.totalTrips ?? 0) + tripsTotal.totalTrips,
-      totalPay: (this.data?.totalPay ?? 0) + tripsTotal.totalPay,
-      totalCash: (this.data?.totalCash ?? 0) + tripsTotal.totalCash,
-      totalBonus: (this.data?.totalBonus ?? 0) + tripsTotal.totalBonus,
-      totalTips: (this.data?.totalTips ?? 0) + tripsTotal.totalTips
-    };
+    this.computedTotals = tripsTotal;
   }
 
   async addShift() {
@@ -217,47 +182,47 @@ export class ShiftFormComponent implements OnInit {
   }
 
   async editShift() {
-    if (this.shiftForm.valid && this.data?.id) {
+    if (this.shiftForm.valid && this.id) {
       const formValue = this.shiftForm.value;
       const updatedShift: IShift = {
-        ...this.data,
-        ...formValue,
-        date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : this.data.date,
-        distance: formValue.distance ?? this.data.distance,
-        active: formValue.active || this.data.active,
-        finish: formValue.finish || this.data.finish,
-        key: this.data.key || '',
-        region: formValue.region || this.data.region,
-        saved: this.data.saved,
-        service: formValue.service || this.data.service,
-        number: formValue.number ?? this.data.number,
-        start: formValue.start || this.data.start,
-        time: formValue.time || this.data.time,
-        trips: this.data.trips ?? 0,
-        totalActive: this.data.totalActive || '',
-        totalTime: this.data.totalTime || '',
-        totalTrips: formValue.trips ?? this.data.totalTrips,
-        totalDistance: formValue.distance ?? this.data.totalDistance,
-        totalPay: formValue.pay ?? this.data.totalPay,
-        totalTips: formValue.tip ?? this.data.totalTips,
-        totalBonus: formValue.bonus ?? this.data.totalBonus,
-        grandTotal: formValue.total ?? this.data.grandTotal,
-        totalCash: formValue.cash ?? this.data.totalCash,
-        note: formValue.note || this.data.note,
+        id: Number(this.id),
+        rowId: Number(this.id),
+        key: '',
+        saved: false,
+        date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
+        service: formValue.service || '',
+        region: formValue.region || '',
+        number: formValue.number ?? 0,
+        distance: formValue.distance ?? 0,
+        active: formValue.active || '',
+        finish: formValue.finish || '',
+        start: formValue.start || '',
+        time: formValue.time || '',
+        trips: formValue.trips ?? 0,
+        totalActive: '',
+        totalTime: '',
+        totalTrips: formValue.trips ?? 0,
+        totalDistance: formValue.distance ?? 0,
+        totalPay: formValue.pay ?? 0,
+        totalTips: formValue.tip ?? 0,
+        totalBonus: formValue.bonus ?? 0,
+        grandTotal: formValue.total ?? 0,
+        totalCash: formValue.cash ?? 0,
+        note: formValue.note || '',
         action: ActionEnum.Update,
         actionTime: Date.now(),
-        amountPerTrip: this.data.amountPerTrip ?? 0,
-        amountPerDistance: this.data.amountPerDistance ?? 0,
-        amountPerTime: this.data.amountPerTime ?? 0,
-        pay: formValue.pay ?? this.data.pay ?? 0,
-        tip: formValue.tip ?? this.data.tip ?? 0,
-        bonus: formValue.bonus ?? this.data.bonus ?? 0,
-        cash: formValue.cash ?? this.data.cash ?? 0,
-        total: formValue.total ?? this.data.total ?? 0,
-        omit: formValue.omit ?? this.data.omit ?? false,
+        amountPerTrip: 0,
+        amountPerDistance: 0,
+        amountPerTime: 0,
+        pay: formValue.pay ?? 0,
+        tip: formValue.tip ?? 0,
+        bonus: formValue.bonus ?? 0,
+        cash: formValue.cash ?? 0,
+        total: formValue.total ?? 0,
+        omit: formValue.omit ?? false,
       };
       await this.shiftService.update([updatedShift]);
-      this.editModeExit.emit();
+      this.editModeExit.emit(undefined);
     }
   }
 
