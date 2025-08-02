@@ -39,8 +39,8 @@
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
         <span class="truncate block">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
       </span>
-      <!-- Date (right, before total) -->
-      <span class="ml-2 text-xs text-gray-500 font-mono flex-shrink-0" *ngIf="shift.date">{{ shift.date | date:'EEE, MMM d' }}</span>
+      <!-- Date (centered, before total) -->
+      <span class="mx-auto text-xs text-gray-500 font-mono flex-shrink-0 text-center" *ngIf="shift.date">{{ shift.date | date:'EEE, MMM d' }}</span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
         <mat-icon [ngClass]="{
