@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ActivatedRoute } from '@angular/router';
+import { ShiftHelper } from '@helpers/shift.helper';
 
 @Component({
   selector: 'shift-form',
@@ -61,6 +62,8 @@ export class ShiftFormComponent implements OnInit {
     totalBonus: 0,
     totalTips: 0
   };
+
+  computedShiftNumber: number = 1;
 
   constructor(private shiftService: ShiftService, private route: ActivatedRoute) {}
 
@@ -118,6 +121,28 @@ export class ShiftFormComponent implements OnInit {
       });
       await this.calculateTotals();
     }
+
+    this.shiftForm.get('date')?.valueChanges.subscribe(() => {
+      this.updateComputedShiftNumber();
+    });
+    this.shiftForm.get('service')?.valueChanges.subscribe(() => {
+      this.updateComputedShiftNumber();
+    });
+    // Initial calculation
+    this.updateComputedShiftNumber();
+  }
+
+  async updateComputedShiftNumber() {
+    const date = this.shiftForm.get('date')?.value;
+    const service = this.shiftForm.get('service')?.value;
+    if (!date || !service) {
+      this.computedShiftNumber = 1;
+      return;
+    }
+    // Convert date to ISO string if needed
+    const dateISO = date instanceof Date ? date.toISOString().slice(0, 10) : date;
+    const shifts = await this.shiftService.getShiftsByDate(dateISO);
+    this.computedShiftNumber = ShiftHelper.getNextShiftNumber(service, shifts);
   }
 
   async calculateTotals() {
