@@ -15,7 +15,6 @@ import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { ActivatedRoute } from '@angular/router';
 import { ShiftHelper } from '@helpers/shift.helper';
 
 @Component({
@@ -29,7 +28,7 @@ import { ShiftHelper } from '@helpers/shift.helper';
   ]
 })
 export class ShiftFormComponent implements OnInit {
-  @Input() id?: string | null;
+  @Input() rowId?: string | null;
   @Output() parentReload = new EventEmitter<any>();
   @Output() editModeExit = new EventEmitter<string | undefined>();
 
@@ -68,9 +67,9 @@ export class ShiftFormComponent implements OnInit {
   constructor(private shiftService: ShiftService) {}
 
   async ngOnInit(): Promise<void> {
-    const id = this.id;
-    if (id && id !== 'new') {
-      const shift = await this.shiftService.queryShiftById(Number(id));
+    const rowId = this.rowId;
+    if (rowId && rowId !== 'new') {
+      const shift = await this.shiftService.getByRowId(Number(rowId));
       if (shift) {
         this.shiftForm.patchValue({
           date: shift.date ? new Date(shift.date) : new Date(),
@@ -182,11 +181,11 @@ export class ShiftFormComponent implements OnInit {
   }
 
   async editShift() {
-    if (this.shiftForm.valid && this.id) {
+    if (this.shiftForm.valid && this.rowId) {
       const formValue = this.shiftForm.value;
       const updatedShift: IShift = {
-        id: Number(this.id),
-        rowId: Number(this.id),
+        id: Number(this.rowId),
+        rowId: Number(this.rowId),
         key: '',
         saved: false,
         date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',

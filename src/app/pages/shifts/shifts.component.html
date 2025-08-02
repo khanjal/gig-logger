@@ -11,7 +11,7 @@
 
     <div *ngIf="showAddForm || editId">
         <shift-form 
-          [id]="editId"
+          [rowId]="editId"
           (parentReload)="handleParentReload()" 
           (editModeExit)="editId ? editId = null : hideAddForm()">
         </shift-form>
