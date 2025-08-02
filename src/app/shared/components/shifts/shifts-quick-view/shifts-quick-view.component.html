@@ -34,32 +34,23 @@
         @else { check_circle }
       </mat-icon>
       <!-- Row ID -->
-      <span class="text-xs font-bold text-gray-700 font-mono flex-shrink-0">#{{shift.rowId}}</span>
+      <span class="text-base font-bold text-blue-500 font-mono flex-shrink-0">#{{shift.rowId}}</span>
       <!-- Service Name, Number (flexible, grows) -->
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
         <span class="truncate block">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
-        <mat-icon [ngClass]="{
-          'text-blue-400': shift.action !== ActionEnum.Delete,
-          'text-gray-400': shift.action === ActionEnum.Delete
-        }" class="text-base">payments</mat-icon>
+        <mat-icon class="text-blue-400 text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
-              [ngClass]="{
-                'text-gray-400': !shift.grandTotal,
-                'text-green-600': shift.amountPerTime > 30,
-                'text-blue-600': shift.amountPerTime >= 25 && shift.amountPerTime <= 30,
-                'text-yellow-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25,
-                'text-red-500': shift.amountPerTime < 20
-              }">
+              [ngClass]="{ 'text-gray-400': !shift.grandTotal, 'text-green-600': shift.amountPerTime > 30, 'text-blue-600': shift.amountPerTime >= 25 && shift.amountPerTime <= 30, 'text-yellow-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-500': shift.amountPerTime < 20 }">
           {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
         </span>
       </span>
     </div>
     <!-- Second line: Date + Time Range + Duration -->
     <div class="flex items-center mt-1 text-xs text-gray-700 w-full">
-      <mat-icon class="text-gray-400 text-base mr-1">schedule</mat-icon>
+      <mat-icon class="text-blue-400 text-base mr-1">schedule</mat-icon>
       <span class="font-mono font-medium whitespace-nowrap truncate">
         <span *ngIf="shift.date">{{ shift.date | date:'EEE, MMM d' }}</span>
         <span *ngIf="shift.start"> • {{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
@@ -79,7 +70,7 @@
         <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
       </span>
       <span *ngIf="shift.totalActive" class="flex items-center gap-1 flex-1 justify-end">
-        <mat-icon class="text-gray-400 text-base">directions_car</mat-icon>
+        <mat-icon class="text-blue-400 text-base">directions_car</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
       </span>
     </div>
