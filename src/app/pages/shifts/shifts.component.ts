@@ -8,7 +8,7 @@ import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { NgClass, DatePipe, NgIf } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -18,7 +18,7 @@ import { Router, ActivatedRoute } from '@angular/router';
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [MatMiniFabButton, MatIcon, NgClass, DatePipe, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
+    imports: [MatMiniFabButton, MatIcon, NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
@@ -32,8 +32,6 @@ export class ShiftsComponent implements OnInit {
   noMoreData: boolean = false; // Stop loading if all data is loaded
   showAddForm = false; // Control the visibility of the add form
 
-  // Floating date for the shift currently at the top of the list
-  currentVisibleDate: string | null = null;
   editId: string | null = null; // ID of the shift being edited, if any
 
   constructor(public dialog: MatDialog, private _shiftService: ShiftService, private router: Router, private route: ActivatedRoute) { }
@@ -43,7 +41,6 @@ export class ShiftsComponent implements OnInit {
       this.editId = params.get('id');
     });
     await this.loadShifts();
-    this.setCurrentVisibleDate();
   }
 
   async loadShifts(): Promise<void> {
@@ -58,7 +55,6 @@ export class ShiftsComponent implements OnInit {
     this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
     this.currentPage++;
     this.isLoading = false;
-    this.setCurrentVisibleDate();
   }
 
   onScroll(event: Event): void {
@@ -72,32 +68,6 @@ export class ShiftsComponent implements OnInit {
     if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading && !this.noMoreData) {
       this.loadShifts();
     }
-    this.setCurrentVisibleDate();
-  }
-
-  setCurrentVisibleDate(): void {
-    // Find the first shift whose card is visible in the scrollable container
-    setTimeout(() => {
-      const container = document.querySelector('.shifts-scrollable');
-      if (!container) return;
-      const cards = Array.from(container.querySelectorAll('[id]')) as HTMLElement[];
-      const containerRect = container.getBoundingClientRect();
-      let found = null;
-      for (const card of cards) {
-        const rect = card.getBoundingClientRect();
-        if (rect.bottom > containerRect.top + 40) { // 40px offset for sticky bar
-          found = card;
-          break;
-        }
-      }
-      if (found) {
-        const idx = cards.indexOf(found);
-        const shift = this.shifts[idx];
-        this.currentVisibleDate = shift?.date ? shift.date : null;
-      } else {
-        this.currentVisibleDate = null;
-      }
-    }, 10);
   }
 
   handleParentReload() {
