@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShiftHelper } from '@helpers/shift.helper';
+import { DateHelper } from '@helpers/date.helper';
 
 @Component({
   selector: 'shift-form',
@@ -76,20 +77,20 @@ export class ShiftFormComponent implements OnInit {
           service: shift.service ?? '',
           region: shift.region ?? '',
           number: shift.number ?? 0,
-          distance: shift.distance ?? 0,
-          active: shift.active ?? '',
+          distance: shift.distance ?? '',
+          active: DateHelper.removeSeconds(shift.active) ?? '',
           finish: shift.finish ?? '',
           start: shift.start ?? '',
-          time: shift.time ?? '',
+          time: DateHelper.removeSeconds(shift.time) ?? '',
           note: shift.note ?? '',
           action: shift.action ?? '',
           actionTime: shift.actionTime ?? 0,
-          pay: shift.pay ?? 0,
-          tip: shift.tip ?? 0,
-          bonus: shift.bonus ?? 0,
-          cash: shift.cash ?? 0,
-          total: shift.total ?? 0,
-          trips: shift.trips ?? 0,
+          pay: shift.pay ?? '',
+          tip: shift.tip ?? '',
+          bonus: shift.bonus ?? '',
+          cash: shift.cash ?? '',
+          total: shift.total ?? '',
+          trips: shift.trips ?? '',
           omit: shift.omit ?? false,
         });
         await this.calculateTotals();
