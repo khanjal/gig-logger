@@ -41,9 +41,12 @@
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
-        <mat-icon class="text-blue-400 text-base">payments</mat-icon>
+        <mat-icon *ngIf="!shift.grandTotal" class="text-gray-400 text-base">hourglass_empty</mat-icon>
+        <mat-icon *ngIf="shift.amountPerTime >= 25" class="text-green-600 text-base">trending_up</mat-icon>
+        <mat-icon *ngIf="shift.amountPerTime >= 20 && shift.amountPerTime < 25" class="text-blue-600 text-base">trending_neutral</mat-icon>
+        <mat-icon *ngIf="shift.amountPerTime < 20" class="text-red-500 text-base">trending_down</mat-icon>
         <span class="font-bold text-sm sm:text-base"
-              [ngClass]="{ 'text-gray-400': !shift.grandTotal, 'text-green-600': shift.amountPerTime > 30, 'text-blue-600': shift.amountPerTime >= 25 && shift.amountPerTime <= 30, 'text-yellow-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-500': shift.amountPerTime < 20 }">
+              [ngClass]="{ 'text-gray-400': !shift.grandTotal, 'text-green-600': shift.amountPerTime >= 25, 'text-blue-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-500': shift.amountPerTime < 20 }">
           {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
         </span>
       </span>
