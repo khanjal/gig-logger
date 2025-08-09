@@ -17,7 +17,7 @@ import { MatIcon } from '@angular/material/icon';
 })
 
 export class CurrentAverageComponent implements OnInit {
-  @Input() date: string = DateHelper.getISOFormat();
+  @Input() date: string = DateHelper.toISO();
 
   currentDayAmount: number = 0;
   currentMonthAmount: number = 0;
@@ -56,11 +56,11 @@ export class CurrentAverageComponent implements OnInit {
     this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
-    let mondayISO = DateHelper.getISOFormat(DateHelper.getMonday(new Date()));
+    let mondayISO = DateHelper.toISO(DateHelper.getMonday(new Date()));
     let currentWeekShifts = await this._shiftService.getShiftsByStartDate(mondayISO);
     this.currentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
 
-    let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(7));
+    let date = DateHelper.toISO(DateHelper.getDateFromDays(7));
     let weekly = await this._weeklyService.getLastWeekFromDay(date);
     this.weeklyAverage = weekly?.average ?? 0;
 

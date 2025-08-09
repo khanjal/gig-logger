@@ -40,7 +40,7 @@ export class ShiftHelper {
         let todaysShifts: IShift[] = [];
 
         shifts.forEach(shift => {
-            if (DateHelper.getISOFormat(new Date(shift.date)) == DateHelper.getISOFormat()) {
+            if (DateHelper.toISO(new Date(shift.date)) == DateHelper.toISO()) {
                 todaysShifts.push(shift);
             }
         });
@@ -57,7 +57,7 @@ export class ShiftHelper {
         let shiftNumber = this.getNextShiftNumber(service, shifts);
 
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
-        shift.date = DateHelper.getISOFormat(DateHelper.getDateFromDays());
+        shift.date = DateHelper.toISO(DateHelper.getDateFromDays());
         shift.number = shiftNumber ?? 0;
         shift.start = new Date().toLocaleTimeString();
         shift.total = 0;

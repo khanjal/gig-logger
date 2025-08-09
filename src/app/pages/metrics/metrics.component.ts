@@ -157,13 +157,13 @@ export class MetricsComponent implements OnInit {
   private getShiftYMD(s: any): string {
     return (typeof s.date === 'string' && s.date.length === 10)
       ? s.date
-      : DateHelper.getDateISO(new Date(s.date));
+      : DateHelper.toISO(new Date(s.date));
   }
 
   async filterByDate() {
     // Convert picked dates to YYYY-MM-DD strings (date only, LOCAL time)
-    const startYMD = this.range.value.start ? DateHelper.getDateISO(new Date(this.range.value.start)) : '';
-    const endYMD = this.range.value.end ? DateHelper.getDateISO(new Date(this.range.value.end)) : '';
+    const startYMD = this.range.value.start ? DateHelper.toISO(new Date(this.range.value.start)) : '';
+    const endYMD = this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '';
     // Use the same DB query as stats: inclusive between
     let filtered = this.shifts;
     if (startYMD || endYMD) {

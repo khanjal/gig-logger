@@ -153,7 +153,7 @@ export class TripFormComponent implements OnInit {
     let shift: IShift = {} as IShift;
     if (!this.tripForm.value.shift || this.tripForm.value.shift == "new") {
       let shifts: IShift[] = [];
-      let today: string = DateHelper.getISOFormat();
+      let today: string = DateHelper.toISO();
 
       shifts.push(...await this._shiftService.queryShifts("date", today));
       
@@ -294,7 +294,7 @@ export class TripFormComponent implements OnInit {
 
     //Set default shift to last trip or latest shift.
     if (!this.data?.id) {
-      let today = DateHelper.getISOFormat();
+      let today = DateHelper.toISO();
 
       let trips = await this._tripService.query("date", today);
 

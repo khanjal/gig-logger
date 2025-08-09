@@ -134,8 +134,8 @@ export class TripComponent implements OnInit, OnDestroy {
       this.isLoading = true;
     }
     this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
-    this.todaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays()))).reverse();
-    this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.getISOFormat(DateHelper.getDateFromDays(1))));
+    this.todaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse();
+    this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
     await this.average?.load();
     await this.tripsTable?.load();
     this.tripForm?.load();
