@@ -212,6 +212,7 @@ export class ShiftFormComponent implements OnInit {
         this.shift.note = formValue.note || '';
         this.shift.action = ActionEnum.Update;
         this.shift.actionTime = Date.now();
+        this.shift.saved = false;
         this.shift.amountPerTrip = 0;
         this.shift.amountPerDistance = 0;
         this.shift.amountPerTime = 0;
@@ -231,7 +232,7 @@ export class ShiftFormComponent implements OnInit {
         this.shift.totalBonus = this.computedTotals.totalBonus;
         this.shift.grandTotal = (this.computedTotals.totalPay + this.computedTotals.totalTips + this.computedTotals.totalBonus + this.computedTotals.totalCash);
         this.shift.totalCash = this.computedTotals.totalCash;
-        
+
         await this.shiftService.update([this.shift]);
         this.editModeExit.emit(undefined);
         this.router.navigate(['/shifts']); // Navigate to shifts after update
