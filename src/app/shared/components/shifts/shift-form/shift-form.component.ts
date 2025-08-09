@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IShift } from '@interfaces/shift.interface';
 import { CommonModule } from '@angular/common';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
@@ -26,7 +26,8 @@ import { TripService } from '@services/sheets/trip.service';
   imports: [
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatButton, MatIcon,
     MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
-    MatInputModule, MatNativeDateModule, SearchInputComponent, MatSlideToggleModule
+    MatInputModule, MatNativeDateModule, SearchInputComponent, MatSlideToggleModule,
+    MatButtonModule
   ]
 })
 export class ShiftFormComponent implements OnInit {

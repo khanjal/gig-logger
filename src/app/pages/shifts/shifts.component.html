@@ -23,7 +23,7 @@
         </div>
     } -->
 
-    <div class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
+    <div *ngIf="!editId" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
       @for (shift of shifts; track $index; let isFirst = $first) {
           <div
             [id]="shift.rowId"

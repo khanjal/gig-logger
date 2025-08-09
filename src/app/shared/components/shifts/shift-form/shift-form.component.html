@@ -111,18 +111,18 @@
     </div>
     <div class="flex flex-row items-center justify-between gap-2 mt-6">
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-stroked-button color="warn" type="button" (click)="formReset()">
+        <button *ngIf="!rowId" mat-fab extended color="warn" type="button" (click)="formReset()">
           <mat-icon>refresh</mat-icon> Reset
         </button>
-        <button *ngIf="rowId" mat-stroked-button color="warn" type="button" (click)="close()">
+        <button *ngIf="rowId" mat-fab extended color="warn" type="button" (click)="close()">
           <mat-icon>cancel</mat-icon> Cancel
         </button>
       </div>
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-stroked-button color="primary" type="button" (click)="addShift()" [disabled]="!shiftForm.valid">
+        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="!shiftForm.valid">
           <mat-icon>add</mat-icon> Store
         </button>
-        <button *ngIf="rowId" mat-stroked-button color="primary" type="button" (click)="editShift()" [disabled]="!shiftForm.valid">
+        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="!shiftForm.valid">
           <mat-icon>save</mat-icon> Update
         </button>
       </div>
