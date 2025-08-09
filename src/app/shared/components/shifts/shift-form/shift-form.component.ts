@@ -78,7 +78,7 @@ export class ShiftFormComponent implements OnInit {
       this.shift = await this.shiftService.getByRowId(Number(rowId));
       if (this.shift) {
         this.shiftForm.patchValue({
-          date: this.shift.date ? new Date(this.shift.date) : new Date(),
+          date: this.shift.date ? DateHelper.parseLocalDate(this.shift.date) : new Date(),
           service: this.shift.service ?? '',
           region: this.shift.region ?? '',
           number: this.shift.number ?? 0,

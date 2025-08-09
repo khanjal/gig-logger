@@ -198,4 +198,10 @@ export class DateHelper {
         const formatted = testDate.toLocaleTimeString(undefined, { hour: 'numeric' });
         return !formatted.match(/AM|PM/i);
     }
+
+    static parseLocalDate(dateString: string): Date {
+        if (!dateString) return new Date();
+        const [year, month, day] = dateString.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
 }
