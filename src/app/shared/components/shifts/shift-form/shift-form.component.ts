@@ -18,13 +18,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DateHelper } from '@helpers/date.helper';
 import { TripService } from '@services/sheets/trip.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'shift-form',
   templateUrl: './shift-form.component.html',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatButton, MatIcon,
+    CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatIcon,
     MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
     MatInputModule, MatNativeDateModule, SearchInputComponent, MatSlideToggleModule,
     MatButtonModule
@@ -66,52 +67,56 @@ export class ShiftFormComponent implements OnInit {
   };
 
   computedShiftNumber: number = 1;
-  shiftKey: string = '';
+  shift: IShift | undefined;
 
-  constructor(private shiftService: ShiftService, private tripService: TripService) {}
+  constructor(private shiftService: ShiftService, private tripService: TripService, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
     const rowId = this.rowId;
     if (rowId && rowId !== 'new') {
-      const shift = await this.shiftService.getByRowId(Number(rowId));
-      if (shift) {
-        this.shiftKey = shift.key ?? '';
+      this.shift = await this.shiftService.getByRowId(Number(rowId));
+      if (this.shift) {
         this.shiftForm.patchValue({
-          date: shift.date ? new Date(shift.date) : new Date(),
-          service: shift.service ?? '',
-          region: shift.region ?? '',
-          number: shift.number ?? 0,
-          distance: shift.distance ?? '',
-          active: DateHelper.removeSeconds(shift.active) ?? '',
-          finish: shift.finish ?? '',
-          start: shift.start ?? '',
-          time: DateHelper.removeSeconds(shift.time) ?? '',
-          note: shift.note ?? '',
-          action: shift.action ?? '',
-          actionTime: shift.actionTime ?? 0,
-          pay: shift.pay ?? '',
-          tip: shift.tip ?? '',
-          bonus: shift.bonus ?? '',
-          cash: shift.cash ?? '',
-          total: shift.total ?? '',
-          trips: shift.trips ?? '',
-          omit: shift.omit ?? false,
+          date: this.shift.date ? new Date(this.shift.date) : new Date(),
+          service: this.shift.service ?? '',
+          region: this.shift.region ?? '',
+          number: this.shift.number ?? 0,
+          distance: this.shift.distance ?? '',
+          active: DateHelper.removeSeconds(this.shift.active) ?? '',
+          finish: this.shift.finish ?? '',
+          start: this.shift.start ?? '',
+          time: DateHelper.removeSeconds(this.shift.time) ?? '',
+          note: this.shift.note ?? '',
+          action: this.shift.action ?? '',
+          actionTime: this.shift.actionTime ?? 0,
+          pay: this.shift.pay ?? '',
+          tip: this.shift.tip ?? '',
+          bonus: this.shift.bonus ?? '',
+          cash: this.shift.cash ?? '',
+          total: this.shift.total ?? '',
+          trips: this.shift.trips ?? '',
+          omit: this.shift.omit ?? false,
         });
+        this.computedShiftNumber = this.shift.number ?? 1; // Set to existing number
         await this.calculateTotals();
       }
+    } else {
+      this.shiftForm.get('date')?.valueChanges.subscribe(() => {
+        this.updateComputedShiftNumber();
+      });
+      this.shiftForm.get('service')?.valueChanges.subscribe(() => {
+        this.updateComputedShiftNumber();
+      });
+      // Initial calculation for new shift only
+      this.updateComputedShiftNumber();
     }
-
-    this.shiftForm.get('date')?.valueChanges.subscribe(() => {
-      this.updateComputedShiftNumber();
-    });
-    this.shiftForm.get('service')?.valueChanges.subscribe(() => {
-      this.updateComputedShiftNumber();
-    });
-    // Initial calculation
-    this.updateComputedShiftNumber();
   }
 
   async updateComputedShiftNumber() {
+    // Only update shift number if not editing
+    if (this.rowId && this.rowId !== 'new') {
+      return;
+    }
     const date = this.shiftForm.get('date')?.value;
     const service = this.shiftForm.get('service')?.value;
     if (!date || !service) {
@@ -126,17 +131,20 @@ export class ShiftFormComponent implements OnInit {
 
   async calculateTotals() {
     let trips: ITrip[] = [];
-    if (this.shiftKey) {
-      trips = await this.tripService.query("key", this.shiftKey);
+    if (this.shift?.key) {
+      trips = await this.tripService.query("key", this.shift.key);
     }
-    const tripsTotal = {
-      totalTrips: trips.length,
-      totalPay: trips.reduce((sum, t) => sum + (t.pay ?? 0), 0),
-      totalCash: trips.reduce((sum, t) => sum + (t.cash ?? 0), 0),
-      totalBonus: trips.reduce((sum, t) => sum + (t.bonus ?? 0), 0),
-      totalTips: trips.reduce((sum, t) => sum + (t.tip ?? 0), 0)
+    const totalPayFromTrips = trips.reduce((sum, t) => sum + (t.pay ?? 0), 0);
+    const totalCashFromTrips = trips.reduce((sum, t) => sum + (t.cash ?? 0), 0);
+    const totalBonusFromTrips = trips.reduce((sum, t) => sum + (t.bonus ?? 0), 0);
+    const totalTipsFromTrips = trips.reduce((sum, t) => sum + (t.tip ?? 0), 0);
+    this.computedTotals = {
+      totalTrips: trips.length + (this.shift?.trips ?? 0),
+      totalPay: totalPayFromTrips + (this.shift?.pay ?? 0),
+      totalCash: totalCashFromTrips + (this.shift?.cash ?? 0),
+      totalBonus: totalBonusFromTrips + (this.shift?.bonus ?? 0),
+      totalTips: totalTipsFromTrips + (this.shift?.tip ?? 0)
     };
-    this.computedTotals = tripsTotal;
   }
 
   async addShift() {
@@ -188,45 +196,46 @@ export class ShiftFormComponent implements OnInit {
   async editShift() {
     if (this.shiftForm.valid && this.rowId) {
       const formValue = this.shiftForm.value;
-      const updatedShift: IShift = {
-        id: Number(this.rowId),
-        rowId: Number(this.rowId),
-        key: '',
-        saved: false,
-        date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
-        service: formValue.service || '',
-        region: formValue.region || '',
-        number: formValue.number ?? 0,
-        distance: formValue.distance ?? 0,
-        active: formValue.active || '',
-        finish: formValue.finish || '',
-        start: formValue.start || '',
-        time: formValue.time || '',
-        trips: formValue.trips ?? 0,
-        totalActive: '',
-        totalTime: '',
-        totalTrips: formValue.trips ?? 0,
-        totalDistance: formValue.distance ?? 0,
-        totalPay: formValue.pay ?? 0,
-        totalTips: formValue.tip ?? 0,
-        totalBonus: formValue.bonus ?? 0,
-        grandTotal: formValue.total ?? 0,
-        totalCash: formValue.cash ?? 0,
-        note: formValue.note || '',
-        action: ActionEnum.Update,
-        actionTime: Date.now(),
-        amountPerTrip: 0,
-        amountPerDistance: 0,
-        amountPerTime: 0,
-        pay: formValue.pay ?? 0,
-        tip: formValue.tip ?? 0,
-        bonus: formValue.bonus ?? 0,
-        cash: formValue.cash ?? 0,
-        total: formValue.total ?? 0,
-        omit: formValue.omit ?? false,
-      };
-      await this.shiftService.update([updatedShift]);
-      this.editModeExit.emit(undefined);
+      if (this.shift) {
+        this.shift.date = formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '';
+        this.shift.service = formValue.service || '';
+        this.shift.region = formValue.region || '';
+        this.shift.number = formValue.number ?? 0;
+        this.shift.distance = formValue.distance ?? 0;
+        this.shift.active = formValue.active || '';
+        this.shift.finish = formValue.finish || '';
+        this.shift.start = formValue.start || '';
+        this.shift.time = formValue.time || '';
+        this.shift.trips = formValue.trips ?? 0;
+        this.shift.totalActive = '';
+        this.shift.totalTime = '';
+        this.shift.note = formValue.note || '';
+        this.shift.action = ActionEnum.Update;
+        this.shift.actionTime = Date.now();
+        this.shift.amountPerTrip = 0;
+        this.shift.amountPerDistance = 0;
+        this.shift.amountPerTime = 0;
+        this.shift.pay = formValue.pay ?? 0;
+        this.shift.tip = formValue.tip ?? 0;
+        this.shift.bonus = formValue.bonus ?? 0;
+        this.shift.cash = formValue.cash ?? 0;
+        this.shift.total = formValue.total ?? 0;
+        this.shift.omit = formValue.omit ?? false;
+
+        // Calculate totals from trips
+        await this.calculateTotals();
+        this.shift.totalTrips = this.computedTotals.totalTrips;
+        this.shift.totalDistance = formValue.distance ?? 0; // If you want to sum trip distances, update here
+        this.shift.totalPay = this.computedTotals.totalPay;
+        this.shift.totalTips = this.computedTotals.totalTips;
+        this.shift.totalBonus = this.computedTotals.totalBonus;
+        this.shift.grandTotal = (this.computedTotals.totalPay + this.computedTotals.totalTips + this.computedTotals.totalBonus + this.computedTotals.totalCash);
+        this.shift.totalCash = this.computedTotals.totalCash;
+        
+        await this.shiftService.update([this.shift]);
+        this.editModeExit.emit(undefined);
+        this.router.navigate(['/shifts']); // Navigate to shifts after update
+      }
     }
   }
 
@@ -236,6 +245,7 @@ export class ShiftFormComponent implements OnInit {
 
   close() {
     this.editModeExit.emit();
+    this.router.navigate(['/shifts']); // Navigate to shifts on cancel
   }
 
 }
