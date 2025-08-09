@@ -38,13 +38,12 @@ export class DateHelper {
         return date.toLocaleDateString("sv-SE");
     }
 
-    static getDays(): number {
-        var date = new Date("01/01/1900");
-        let time = new Date().getTime() - date.getTime();
-        // To calculate the no. of days between two dates
-        let days = time / (1000 * 3600 * 24);
-
-        return Math.trunc(days) + 2;
+    static getDays(date?: Date): number {
+        const d = date ? new Date(date) : new Date();
+        const base = new Date('1900-01-01');
+        const time = d.getTime() - base.getTime();
+        const days = time / (1000 * 60 * 60 * 24);
+        return Math.floor(days) + 2; // Excel's day 1 is 1900-01-01
     }
 
     static getMonthYearString(date: Date) {

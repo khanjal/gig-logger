@@ -148,6 +148,9 @@ export class ShiftFormComponent implements OnInit {
   async addShift() {
     if (this.shiftForm.valid) {
       const formValue = this.shiftForm.value;
+      // Generate key for new shift using DateHelper.getDays()
+      const days = DateHelper.getDays(formValue.distance ?? new Date());
+      const key = `${days}-${this.computedShiftNumber}-${formValue.service}`;
       const newShift: IShift = {
         id: undefined,
         rowId: await this.shiftService.getMaxShiftId() + 1,
@@ -155,11 +158,11 @@ export class ShiftFormComponent implements OnInit {
         distance: formValue.distance ?? 0,
         active: formValue.active || '',
         finish: formValue.finish || '',
-        key: '',
+        key: key,
         region: formValue.region || '',
         saved: false,
         service: formValue.service || '',
-        number: formValue.number ?? 0,
+        number: this.computedShiftNumber,
         start: formValue.start || '',
         time: formValue.time || '',
         trips: formValue.trips ?? 0,
@@ -195,7 +198,15 @@ export class ShiftFormComponent implements OnInit {
     if (this.shiftForm.valid && this.rowId) {
       const formValue = this.shiftForm.value;
       if (this.shift) {
-        this.shift.date = formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '';
+        // Store old key for comparison
+        const oldKey = this.shift.key;
+        // Update shift fields
+        console.log('Form Value:', formValue.date);
+        const days = DateHelper.getDays(formValue.date ?? new Date());
+        console.log('Days:', days);
+        const newKey = `${days}-${formValue.number ?? 0}-${formValue.service}`;
+        console.log('Key:', newKey);
+        this.shift.date = formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
         this.shift.service = formValue.service || '';
         this.shift.region = formValue.region || '';
         this.shift.number = formValue.number ?? 0;
@@ -211,14 +222,15 @@ export class ShiftFormComponent implements OnInit {
         this.shift.action = ActionEnum.Update;
         this.shift.actionTime = Date.now();
         this.shift.saved = false;
-        this.shift.amountPerTrip = 0;
-        this.shift.amountPerDistance = 0;
-        this.shift.amountPerTime = 0;
+        // this.shift.amountPerTrip = 0;
+        // this.shift.amountPerDistance = 0;
+        // this.shift.amountPerTime = 0;
         this.shift.pay = formValue.pay ?? 0;
         this.shift.tip = formValue.tip ?? 0;
         this.shift.bonus = formValue.bonus ?? 0;
         this.shift.cash = formValue.cash ?? 0;
         this.shift.omit = formValue.omit ?? false;
+        this.shift.key = newKey;
 
         // Calculate totals from trips
         await this.calculateTotals();
@@ -235,9 +247,22 @@ export class ShiftFormComponent implements OnInit {
           this.shift.totalCash
         );
 
+        // If key changed, update all associated trips
+        if (oldKey && oldKey !== newKey) {
+          let trips: ITrip[] = [];
+          trips = await this.tripService.query("key", oldKey);
+          
+          for (const trip of trips) {
+            trip.date = this.shift.date;
+            trip.number = this.shift.number;
+            trip.key = newKey;
+            await this.tripService.update([trip]);
+          }
+        }
+
         await this.shiftService.update([this.shift]);
         this.editModeExit.emit(undefined);
-        this.router.navigate(['/shifts']); // Navigate to shifts after update
+        this.router.navigate(['/shifts']);
       }
     }
   }
