@@ -63,7 +63,8 @@ export class ShiftFormComponent implements OnInit {
     totalPay: 0,
     totalCash: 0,
     totalBonus: 0,
-    totalTips: 0
+    totalTips: 0,
+    totalDistance: 0
   };
 
   computedShiftNumber: number = 1;
@@ -134,16 +135,13 @@ export class ShiftFormComponent implements OnInit {
     if (this.shift?.key) {
       trips = await this.tripService.query("key", this.shift.key);
     }
-    const totalPayFromTrips = trips.reduce((sum, t) => sum + (t.pay ?? 0), 0);
-    const totalCashFromTrips = trips.reduce((sum, t) => sum + (t.cash ?? 0), 0);
-    const totalBonusFromTrips = trips.reduce((sum, t) => sum + (t.bonus ?? 0), 0);
-    const totalTipsFromTrips = trips.reduce((sum, t) => sum + (t.tip ?? 0), 0);
     this.computedTotals = {
-      totalTrips: trips.length + (this.shift?.trips ?? 0),
-      totalPay: totalPayFromTrips + (this.shift?.pay ?? 0),
-      totalCash: totalCashFromTrips + (this.shift?.cash ?? 0),
-      totalBonus: totalBonusFromTrips + (this.shift?.bonus ?? 0),
-      totalTips: totalTipsFromTrips + (this.shift?.tip ?? 0)
+      totalTrips: trips.length,
+      totalPay: trips.reduce((sum, t) => sum + Number(t.pay ?? 0), 0),
+      totalCash: trips.reduce((sum, t) => sum + Number(t.cash ?? 0), 0),
+      totalBonus: trips.reduce((sum, t) => sum + Number(t.bonus ?? 0), 0),
+      totalTips: trips.reduce((sum, t) => sum + Number(t.tip ?? 0), 0),
+      totalDistance: trips.reduce((sum, t) => sum + Number(t.distance ?? 0), 0)
     };
   }
 
@@ -220,18 +218,22 @@ export class ShiftFormComponent implements OnInit {
         this.shift.tip = formValue.tip ?? 0;
         this.shift.bonus = formValue.bonus ?? 0;
         this.shift.cash = formValue.cash ?? 0;
-        this.shift.total = formValue.total ?? 0;
         this.shift.omit = formValue.omit ?? false;
 
         // Calculate totals from trips
         await this.calculateTotals();
-        this.shift.totalTrips = this.computedTotals.totalTrips;
-        this.shift.totalDistance = formValue.distance ?? 0; // If you want to sum trip distances, update here
-        this.shift.totalPay = this.computedTotals.totalPay;
-        this.shift.totalTips = this.computedTotals.totalTips;
-        this.shift.totalBonus = this.computedTotals.totalBonus;
-        this.shift.grandTotal = (this.computedTotals.totalPay + this.computedTotals.totalTips + this.computedTotals.totalBonus + this.computedTotals.totalCash);
-        this.shift.totalCash = this.computedTotals.totalCash;
+        this.shift.totalTrips = this.computedTotals.totalTrips + Number(formValue.trips ?? 0);
+        this.shift.totalDistance = this.computedTotals.totalDistance + Number(formValue.distance ?? 0);
+        this.shift.totalPay = this.computedTotals.totalPay + Number(formValue.pay ?? 0);
+        this.shift.totalTips = this.computedTotals.totalTips + Number(formValue.tip ?? 0);
+        this.shift.totalBonus = this.computedTotals.totalBonus + Number(formValue.bonus ?? 0);
+        this.shift.totalCash = this.computedTotals.totalCash + Number(formValue.cash ?? 0);
+        this.shift.grandTotal = (
+          this.shift.totalPay +
+          this.shift.totalTips +
+          this.shift.totalBonus +
+          this.shift.totalCash
+        );
 
         await this.shiftService.update([this.shift]);
         this.editModeExit.emit(undefined);

@@ -75,28 +75,33 @@
         </mat-form-field>
       </div>
     </div>
-    <!-- Totals only in edit mode -->
+    <!-- Trip Totals only in edit mode -->
     <div *ngIf="rowId" class="mb-3">
+      <div class="font-semibold text-blue-700 mb-1">Trip Totals</div>
       <div class="grid grid-cols-2 gap-2 bg-blue-50 rounded p-3 mb-2">
         <div>
-          <span class="font-semibold text-blue-700">Total Trips:</span>
+          <span class="font-semibold text-blue-700">Count:</span>
           <span class="ml-2">{{ computedTotals.totalTrips }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Total Pay:</span>
+          <span class="font-semibold text-blue-700">Pay:</span>
           <span class="ml-2">{{ computedTotals.totalPay | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Total Tips:</span>
+          <span class="font-semibold text-blue-700">Tips:</span>
           <span class="ml-2">{{ computedTotals.totalTips | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Total Bonus:</span>
+          <span class="font-semibold text-blue-700">Bonus:</span>
           <span class="ml-2">{{ computedTotals.totalBonus | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Total Cash:</span>
+          <span class="font-semibold text-blue-700">Cash:</span>
           <span class="ml-2">{{ computedTotals.totalCash | currency }}</span>
+        </div>
+        <div>
+          <span class="font-semibold text-blue-700">Distance:</span>
+          <span class="ml-2">{{ computedTotals.totalDistance | number:'1.2-2' }} mi</span>
         </div>
       </div>
     </div>
