@@ -177,9 +177,9 @@ export class TripFormComponent implements OnInit {
     
     trip.date = shift.date;
     trip.service = shift.service;
-    trip.region = shift.region;
     trip.number = shift.number ?? 0;
 
+    trip.region = this.tripForm.value.region ?? "";
     trip.startAddress = this.tripForm.value.startAddress ?? "";
     trip.endAddress = this.tripForm.value.endAddress ?? "";
     trip.endUnit = this.tripForm.value.endUnit ?? "";
@@ -235,6 +235,7 @@ export class TripFormComponent implements OnInit {
     // Set basic form values
     this.setFormValues({
       service: this.data.service,
+      region: this.data.region,
       type: this.data.type,
       pay: this.data.pay === 0 ? '' : this.data.pay,
       tip: this.data.tip,
@@ -292,26 +293,19 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    //Set default shift to last trip or latest shift.
+    // Default to the last used shift (from the most recent trip)
     if (!this.data?.id) {
-      let today = DateHelper.toISO();
-
-      let trips = await this._tripService.query("date", today);
-
-      sort(trips, '-id');
-
-      let latestTrip = trips[0];
-      let shift = this.shifts.find(x => x.key === latestTrip?.key);
-
-      // If a shift is found assign it.
-      if (shift) {
-        this.selectedShift = shift;
+      // Get all trips, sort by most recent, and use its shift if available
+      let allTrips = await this._tripService.getAll();
+      sort(allTrips, '-id');
+      let lastTrip = allTrips[0];
+      let lastUsedShift = this.shifts.find(x => x.key === lastTrip?.key);
+      if (lastUsedShift) {
+        this.selectedShift = lastUsedShift;
+      } else if (this.shifts.length > 0) {
+        // Fallback: use the latest shift by key
+        this.selectedShift = this.shifts[0];
       }
-      else {
-        // If there is a shift today that has no trips select it.
-        this.selectedShift = this.shifts.find(x => x.date === today);
-      }
-
       // Set place if only one in the list.
       let places = await this._placeService.list();
       if (places.length === 1) {

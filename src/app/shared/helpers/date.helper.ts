@@ -29,11 +29,13 @@ export class DateHelper {
      * Get the number of days since 1900-01-01 (Excel style).
      */
     static getDays(date?: Date): number {
-        const d = date ? new Date(date) : new Date();
-        const base = new Date('1900-01-01');
-        const time = d.getTime() - base.getTime();
-        const days = time / (1000 * 60 * 60 * 24);
-        return Math.floor(days) + 1;
+    const d = date ? new Date(date) : new Date();
+    const base = new Date('1900-01-01');
+    const time = d.getTime() - base.getTime();
+    const days = time / (1000 * 60 * 60 * 24);
+    const dayNumber = Math.floor(days) + 2;
+    console.log('[DateHelper.getDays] input:', date, 'parsed:', d, 'base:', base, 'days:', days, 'dayNumber:', dayNumber); // TODO Check in evening to see if this still works.
+    return dayNumber;
     }
 
     static getDateFromDays(days: number = 0): Date {
