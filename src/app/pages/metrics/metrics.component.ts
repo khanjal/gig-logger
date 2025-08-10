@@ -1,5 +1,5 @@
 // Imports
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '../../shared/services/sheets/shift.service';
 import { Subscription as DexieSubscription } from 'dexie';
@@ -54,7 +54,7 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
   templateUrl: './metrics.component.html',
   styleUrls: ['./metrics.component.scss']
 })
-export class MetricsComponent implements OnInit {
+export class MetricsComponent implements OnInit, OnDestroy {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   shifts: any[] = [];
   private dexieSubscriptions: DexieSubscription[] = [];
@@ -166,20 +166,25 @@ export class MetricsComponent implements OnInit {
     const endYMD = this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '';
     // Use the same DB query as stats: inclusive between
     let filtered = this.shifts;
+    
     if (startYMD || endYMD) {
       filtered = await this.shiftService.getShiftsBetweenDates(startYMD, endYMD);
     }
+
     let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
     let actualStart = startYMD ? DateHelper.getDateFromISO(startYMD) : null;
     let actualEnd = endYMD ? DateHelper.getDateFromISO(endYMD) : null;
+
     if ((!startYMD || !endYMD) && filtered.length > 0) {
       const dates = filtered.map(s => DateHelper.getDateFromISO(this.getShiftYMD(s)));
       actualStart = new Date(Math.min(...dates.map(d => d.getTime())));
       actualEnd = new Date(Math.max(...dates.map(d => d.getTime())));
     }
+
     if (actualStart && actualEnd) {
       aggType = getAggregationType(actualStart, actualEnd);
     }
+
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered, aggType);

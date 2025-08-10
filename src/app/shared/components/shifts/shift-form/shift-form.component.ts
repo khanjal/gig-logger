@@ -201,11 +201,8 @@ export class ShiftFormComponent implements OnInit {
         // Store old key for comparison
         const oldKey = this.shift.key;
         // Update shift fields
-        console.log('Form Value:', formValue.date);
         const days = DateHelper.getDays(formValue.date ?? new Date());
-        console.log('Days:', days);
         const newKey = `${days}-${formValue.number ?? 0}-${formValue.service}`;
-        console.log('Key:', newKey);
         this.shift.date = formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
         this.shift.service = formValue.service || '';
         this.shift.region = formValue.region || '';
