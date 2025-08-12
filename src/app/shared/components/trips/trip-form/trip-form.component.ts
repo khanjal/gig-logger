@@ -405,7 +405,7 @@ export class TripFormComponent implements OnInit {
       this.isNewShift = false;
       this.tripForm.controls.service.clearValidators();
       this.tripForm.controls.service.updateValueAndValidity();
-      this.tripForm.controls.region.setValue(value.region);
+      this.tripForm.controls.region.setValue(this.data.region ?? value.region);
       
       return;
     }
