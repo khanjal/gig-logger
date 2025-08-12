@@ -93,21 +93,7 @@
     <!-- Toggle Button and Chips Row -->
     <div class="flex items-center justify-between gap-2 mt-1"
          *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note || trip.tip || trip.bonus || trip.cash || (trip.startOdometer || trip.endOdometer) || trip.startAddress || trip.endAddress">
-      <!-- Toggle Button (left side) -->
-      <div class="focus-within:ring-0 focus-within:outline-none flex-1">
-        <button class="flex items-center justify-start gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
-                (click)="toggleExpansion()" 
-                tabindex="0" 
-                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-                [title]="isExpanded ? 'Hide details' : 'Show details'"
-                (keydown.enter)="toggleExpansion()" 
-                (keydown.space)="toggleExpansion()">
-          <span>{{ isExpanded ? 'Hide' : 'More' }} Details</span>
-          <mat-icon class="text-sm">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </button>
-      </div>
-      
-      <!-- Chips (right side) -->
+      <!-- Chips (left side) -->
       <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-hidden" *ngIf="!!trip">
         <mat-chip-set aria-label="Trip badges" class="flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
           <mat-chip color="accent" *ngIf="!!trip && trip.tip && trip.tip > 0" [attr.aria-label]="'Tip: $' + trip.tip" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
@@ -129,6 +115,19 @@
             <mat-icon class="!text-sm !w-4 !h-4 !leading-none">flag</mat-icon>
           </mat-chip>
         </mat-chip-set>
+      </div>
+      <!-- Toggle Button (right side) -->
+      <div class="focus-within:ring-0 focus-within:outline-none flex-1 flex justify-end">
+        <button class="flex items-center justify-end gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+                (click)="toggleExpansion()" 
+                tabindex="0" 
+                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+                [title]="isExpanded ? 'Hide details' : 'Show details'"
+                (keydown.enter)="toggleExpansion()" 
+                (keydown.space)="toggleExpansion()">
+          <span>{{ isExpanded ? 'Hide' : 'More' }} Details</span>
+          <mat-icon class="text-sm">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
       </div>
     </div>
   </div>
