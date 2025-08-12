@@ -67,7 +67,7 @@ export class TripFormComponent implements OnInit {
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
   tripForm = new FormGroup({
-    shift: new FormControl(''),
+    shift: new FormControl({}),
     service: new FormControl(''),
     region: new FormControl(''),
     place: new FormControl(''),
@@ -293,19 +293,21 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    // Default to the last used shift (from the most recent trip)
+    // Default to the last used shift (from the most recent trip today)
     if (!this.data?.id) {
-      // Get all trips, sort by most recent, and use its shift if available
-      let allTrips = await this._tripService.getAll();
-      sort(allTrips, '-id');
-      let lastTrip = allTrips[0];
-      let lastUsedShift = this.shifts.find(x => x.key === lastTrip?.key);
+      let today = DateHelper.toISO();
+      // Only get trips from today
+      let todaysTrips = await this._tripService.query('date', today);
+      sort(todaysTrips, '-id');
+      let lastTrip = todaysTrips[0];
+      let lastUsedShift: IShift | undefined = undefined;
+      if (lastTrip) {
+        lastUsedShift = this.shifts.find(x => x.key === lastTrip.key);
+      }
       if (lastUsedShift) {
         this.selectedShift = lastUsedShift;
-      } else if (this.shifts.length > 0) {
-        // Fallback: use the latest shift by key
-        this.selectedShift = this.shifts[0];
       }
+
       // Set place if only one in the list.
       let places = await this._placeService.list();
       if (places.length === 1) {
@@ -315,7 +317,7 @@ export class TripFormComponent implements OnInit {
     }
 
     // Check to see if service should be displayed
-    await this.onShiftSelected(this.tripForm.value.shift ?? "");
+    await this.onShiftSelected(this.tripForm.value.shift as IShift);
   }
 
   public async addTrip() {
@@ -398,12 +400,13 @@ export class TripFormComponent implements OnInit {
     this._viewportScroller.scrollToAnchor("addTrip");
   }
 
-  public async onShiftSelected(value:string) {
+  public async onShiftSelected(value: IShift) {
     if (value) {
       this.isNewShift = false;
       this.tripForm.controls.service.clearValidators();
       this.tripForm.controls.service.updateValueAndValidity();
-
+      this.tripForm.controls.region.setValue(value.region);
+      
       return;
     }
 
@@ -416,7 +419,7 @@ export class TripFormComponent implements OnInit {
 
     if (!shift) {
       return;
-    } 
+    }
 
     //Set the most recent service as default.
     if (shift.service) {
