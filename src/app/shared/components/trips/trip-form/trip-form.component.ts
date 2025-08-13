@@ -316,8 +316,7 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    // Check to see if service should be displayed
-    await this.onShiftSelected(this.tripForm.value.shift as IShift);
+    await this.onShiftSelected((this.tripForm.value.shift as IShift)?.rowId ? this.tripForm.value.shift as IShift : null);
   }
 
   public async addTrip() {
@@ -400,7 +399,7 @@ export class TripFormComponent implements OnInit {
     this._viewportScroller.scrollToAnchor("addTrip");
   }
 
-  public async onShiftSelected(value: IShift) {
+  public async onShiftSelected(value: IShift | null) {
     if (value) {
       this.isNewShift = false;
       this.tripForm.controls.service.clearValidators();
