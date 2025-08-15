@@ -2,7 +2,6 @@
 import { ViewportScroller, NgFor, NgIf, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 
 // Angular material imports
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
@@ -67,7 +66,7 @@ export class TripFormComponent implements OnInit {
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
   tripForm = new FormGroup({
-    shift: new FormControl({}),
+    shift: new FormControl(null),
     service: new FormControl(''),
     region: new FormControl(''),
     place: new FormControl(''),
@@ -127,8 +126,7 @@ export class TripFormComponent implements OnInit {
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
-      private _viewportScroller: ViewportScroller,
-      private _router: Router
+      private _viewportScroller: ViewportScroller
     ) {}
 
   async ngOnInit(): Promise<void> {
@@ -149,6 +147,7 @@ export class TripFormComponent implements OnInit {
 
     await this.setDefaultShift();
   }
+
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
     if (!this.tripForm.value.shift || this.tripForm.value.shift == "new") {
@@ -316,7 +315,7 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    await this.onShiftSelected((this.tripForm.value.shift as IShift)?.rowId ? this.tripForm.value.shift as IShift : null);
+    await this.onShiftSelected(this.tripForm.value.shift);
   }
 
   public async addTrip() {
@@ -339,6 +338,7 @@ export class TripFormComponent implements OnInit {
     await this._timerService.delay(1000);
     this._viewportScroller.scrollToAnchor("todaysTrips");
   }
+
   public async editTrip() {
     let shifts: IShift[] = [];
 
@@ -399,7 +399,7 @@ export class TripFormComponent implements OnInit {
     this._viewportScroller.scrollToAnchor("addTrip");
   }
 
-  public async onShiftSelected(value: IShift | null) {
+  public async onShiftSelected(value: IShift | null | undefined) {
     if (value) {
       this.isNewShift = false;
       this.tripForm.controls.service.clearValidators();
