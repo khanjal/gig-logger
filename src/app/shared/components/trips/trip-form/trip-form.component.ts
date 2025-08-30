@@ -592,15 +592,6 @@ export class TripFormComponent implements OnInit {
     }
   }
 
+  // Remove keyboard handling - now handled by focus-scroll directive
   keyboardPadding: boolean = false;
-
-  onDestinationFocus() {
-    // Only apply on mobile devices
-    if (window.innerWidth <= 768) {
-      this.keyboardPadding = true;
-    }
-  }
-  onDestinationBlur() {
-    this.keyboardPadding = false;
-  }
 }

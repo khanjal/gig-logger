@@ -18,6 +18,21 @@ export class FocusScrollDirective {
   @HostListener('focus')
   onFocus() {
     const element = this.el.nativeElement as HTMLElement;
+    
+    // Add body class for old Android viewport handling
+    if (this.isMobile()) {
+      document.body.classList.add('keyboard-open');
+      
+      // Force resize events for old Android devices (the "old Android way")
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        // Trigger a second resize event after a short delay
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 100);
+      }, 50);
+    }
+    
     if (this.focusScrollToTop) {
       // Use scrollIntoView for search input
       setTimeout(() => {
@@ -27,15 +42,17 @@ export class FocusScrollDirective {
           window.scrollBy({ top: -this.focusScrollOffset, behavior: 'smooth' });
         }
         this.scrollComplete.emit();
-      }, 10);
+      }, 300); // Increased delay for keyboard animation
     } else {
-      const rect = element.getBoundingClientRect();
-      const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset; // Configurable offset
-      window.scrollTo({
-        top: Math.max(0, scrollY),
-        behavior: 'smooth'
-      });
-      this.scrollComplete.emit();
+      setTimeout(() => {
+        const rect = element.getBoundingClientRect();
+        const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset;
+        window.scrollTo({
+          top: Math.max(0, scrollY),
+          behavior: 'smooth'
+        });
+        this.scrollComplete.emit();
+      }, 300);
     }
 
     // Mobile keyboard handling
@@ -93,6 +110,16 @@ export class FocusScrollDirective {
   onBlur() {
     this.removeResizeListener();
     clearTimeout(this.focusTimeout);
+    
+    // Remove body class for old Android viewport handling
+    if (this.isMobile()) {
+      document.body.classList.remove('keyboard-open');
+      
+      // Force resize event when keyboard closes (old Android way)
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 50);
+    }
   }
 
   private removeResizeListener() {
