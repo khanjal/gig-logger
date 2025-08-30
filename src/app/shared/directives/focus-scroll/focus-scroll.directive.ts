@@ -12,12 +12,14 @@ export class FocusScrollDirective {
   private resizeListener: (() => void) | null = null;
   private initialInnerHeight: number = 0;
   private focusTimeout: any;
+  private hasScrolled: boolean = false;
 
   constructor(private el: ElementRef, private ngZone: NgZone) { }
 
   @HostListener('focus')
   onFocus() {
     const element = this.el.nativeElement as HTMLElement;
+    this.hasScrolled = false; // Reset scroll flag
     
     // Add body class for old Android viewport handling
     if (this.isMobile()) {
@@ -36,22 +38,15 @@ export class FocusScrollDirective {
     if (this.focusScrollToTop) {
       // Use scrollIntoView for search input
       setTimeout(() => {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Optional: add offset for fixed header
-        if (this.focusScrollOffset) {
-          window.scrollBy({ top: -this.focusScrollOffset, behavior: 'smooth' });
+        if (!this.hasScrolled) {
+          this.performScroll(element);
         }
-        this.scrollComplete.emit();
       }, 300); // Increased delay for keyboard animation
     } else {
       setTimeout(() => {
-        const rect = element.getBoundingClientRect();
-        const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset;
-        window.scrollTo({
-          top: Math.max(0, scrollY),
-          behavior: 'smooth'
-        });
-        this.scrollComplete.emit();
+        if (!this.hasScrolled) {
+          this.performScroll(element);
+        }
       }, 300);
     }
 
@@ -61,22 +56,10 @@ export class FocusScrollDirective {
       this.removeResizeListener();
       this.ngZone.runOutsideAngular(() => {
         this.resizeListener = () => {
-          if (window.innerHeight < this.initialInnerHeight) {
+          if (window.innerHeight < this.initialInnerHeight && !this.hasScrolled) {
             setTimeout(() => {
-              if (this.focusScrollToTop) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                if (this.focusScrollOffset) {
-                  window.scrollBy({ top: -this.focusScrollOffset, behavior: 'smooth' });
-                }
-                this.scrollComplete.emit();
-              } else {
-                const rect2 = element.getBoundingClientRect();
-                const scrollY2 = window.pageYOffset + rect2.top - this.focusScrollOffset;
-                window.scrollTo({
-                  top: Math.max(0, scrollY2),
-                  behavior: 'smooth'
-                });
-                this.scrollComplete.emit();
+              if (!this.hasScrolled) {
+                this.performScroll(element);
               }
               this.removeResizeListener();
             }, 150);
@@ -86,20 +69,8 @@ export class FocusScrollDirective {
       });
       clearTimeout(this.focusTimeout);
       this.focusTimeout = setTimeout(() => {
-        if (this.focusScrollToTop) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          if (this.focusScrollOffset) {
-            window.scrollBy({ top: -this.focusScrollOffset, behavior: 'smooth' });
-          }
-          this.scrollComplete.emit();
-        } else {
-          const rect3 = element.getBoundingClientRect();
-          const scrollY3 = window.pageYOffset + rect3.top - this.focusScrollOffset;
-          window.scrollTo({
-            top: Math.max(0, scrollY3),
-            behavior: 'smooth'
-          });
-          this.scrollComplete.emit();
+        if (!this.hasScrolled) {
+          this.performScroll(element);
         }
         this.removeResizeListener();
       }, 700);
@@ -110,6 +81,7 @@ export class FocusScrollDirective {
   onBlur() {
     this.removeResizeListener();
     clearTimeout(this.focusTimeout);
+    this.hasScrolled = false; // Reset flag on blur
     
     // Remove body class for old Android viewport handling
     if (this.isMobile()) {
@@ -120,6 +92,29 @@ export class FocusScrollDirective {
         window.dispatchEvent(new Event('resize'));
       }, 50);
     }
+  }
+
+  private performScroll(element: HTMLElement) {
+    if (this.hasScrolled) return; // Prevent multiple scrolls
+    
+    this.hasScrolled = true;
+    
+    if (this.focusScrollToTop) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Optional: add offset for fixed header
+      if (this.focusScrollOffset) {
+        window.scrollBy({ top: -this.focusScrollOffset, behavior: 'smooth' });
+      }
+    } else {
+      const rect = element.getBoundingClientRect();
+      const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset;
+      window.scrollTo({
+        top: Math.max(0, scrollY),
+        behavior: 'smooth'
+      });
+    }
+    
+    this.scrollComplete.emit();
   }
 
   private removeResizeListener() {
