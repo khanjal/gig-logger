@@ -86,7 +86,7 @@
       <div class="menu-header">
         <div class="menu-header-content">
           <h2 id="menu-title" class="menu-title">Raptor Gig</h2>
-          <div class="menu-tagline">Log while waiting</div>
+          <div class="menu-tagline">Quick logs, big insights</div>
         </div>
         <button (click)="closeMenu()" 
                 class="menu-close" 
@@ -142,13 +142,10 @@
             <mat-icon class="menu-icon">table_chart</mat-icon>
             <span class="menu-text">Statistics</span>
           </a>
-          <a routerLink="/expenses" 
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="View expenses">
+          <div class="menu-item menu-item--disabled">
             <mat-icon class="menu-icon">receipt</mat-icon>
             <span class="menu-text">Expenses</span>
-          </a>
+          </div>
           <!-- Future menu items will go here -->
           <div class="menu-item menu-item--disabled">
             <mat-icon class="menu-icon">search</mat-icon>

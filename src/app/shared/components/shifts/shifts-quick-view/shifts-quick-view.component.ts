@@ -7,7 +7,6 @@ import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
-import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
@@ -81,27 +80,23 @@ export class ShiftsQuickViewComponent {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        updateAction(shift, ActionEnum.Delete);
-        await this.shiftService.update([shift]);
-        await this.saveSheetDialog('save');
+        await this.deleteShift(shift);
       }
     });
   }
 
-  async saveSheetDialog(inputValue: string) {
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
-        panelClass: 'custom-modalbox',
-        data: inputValue
-    });
+  async deleteShift(shift: IShift) {
+    if (shift.action === ActionEnum.Add) {
+      await this.shiftService.delete(shift.id!);
+      await this.shiftService.updateShiftRowIds(shift.rowId);
+    }
+    else {
+      updateAction(shift, ActionEnum.Delete);
+      shift.saved = false;
+      await this.shiftService.update([shift]);
+    }
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
-          await this.shiftService.saveUnsavedShifts();
-          this.parentReload.emit(); // Emit the event to notify the parent to reload
-      }
-    });
+    this.parentReload.emit();
   }
 
   /**
