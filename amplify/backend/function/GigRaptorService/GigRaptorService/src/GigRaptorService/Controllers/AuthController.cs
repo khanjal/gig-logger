@@ -68,13 +68,27 @@ public class AuthController : ControllerBase
             _logger.LogWarning("Failed to obtain refresh token from Google for code: {Code}", code);
             
             // Track failed authentication
-            _ = Task.Run(async () => await _metricsService.TrackAuthenticationAsync(false));
+            try
+            {
+                await _metricsService.TrackAuthenticationAsync(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to track authentication metrics");
+            }
             
             return BadRequest(new { message = "Failed to obtain refresh token from Google." });
         }
 
         // Track successful authentication
-        _ = Task.Run(async () => await _metricsService.TrackAuthenticationAsync(true));
+        try
+        {
+            await _metricsService.TrackAuthenticationAsync(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to track authentication metrics");
+        }
 
         var encryptedToken = EncryptToken(tokenResponse.RefreshToken);
 
@@ -113,34 +127,28 @@ public class AuthController : ControllerBase
         if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
         {
             // Track failed token refresh
-            _ = Task.Run(async () =>
+            try
             {
-                try
-                {
-                    await _metricsService.TrackAuthenticationAsync(false);
-                    _logger.LogInformation("📊 Failed auth metrics sent");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to track failed auth metrics");
-                }
-            });
+                await _metricsService.TrackAuthenticationAsync(false);
+                _logger.LogInformation("📊 Failed auth metrics sent");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to track failed auth metrics");
+            }
             return Unauthorized(new { message = "Failed to retrieve access token from Google." });
         }
 
         // Track successful token refresh
-        _ = Task.Run(async () =>
+        try
         {
-            try
-            {
-                await _metricsService.TrackUserActivityAsync("system", "TokenRefresh");
-                _logger.LogInformation("📊 Token refresh metrics sent successfully");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to track token refresh metrics");
-            }
-        });
+            await _metricsService.TrackUserActivityAsync("system", "TokenRefresh");
+            _logger.LogInformation("📊 Token refresh metrics sent successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to track token refresh metrics");
+        }
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
     }
