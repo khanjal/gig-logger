@@ -15,12 +15,14 @@ public class SheetsController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly IMetricsService _metricsService;
+    private readonly ILogger<SheetsController> _logger;
     private SheetManager? _sheetmanager;
 
-    public SheetsController(IConfiguration configuration, IMetricsService metricsService)
+    public SheetsController(IConfiguration configuration, IMetricsService metricsService, ILogger<SheetsController> logger)
     {
         _configuration = configuration;
         _metricsService = metricsService;
+        _logger = logger;
     }
 
     private void InitializeSheetmanager(string? sheetId = null)
@@ -34,8 +36,20 @@ public class SheetsController : ControllerBase
 
         if (!RateLimiter.IsRequestAllowed(sheetId))
         {
-            // Track rate limit hit
-            _ = Task.Run(async () => await _metricsService.TrackRateLimitHitAsync(sheetId));
+            // Track rate limit hit (fire and forget to not block)
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _metricsService.TrackRateLimitHitAsync(sheetId);
+                    _logger.LogWarning("📊 Rate limit metrics sent for sheet {SheetId}", sheetId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to track rate limit metrics");
+                }
+            });
+            
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
         }
 
@@ -113,7 +127,7 @@ public class SheetsController : ControllerBase
             // Determine success based on whether we got a result and no critical errors
             success = result != null && (result.SheetEntity?.Messages?.Any(m => m.Level.ToLower() == "error") != true);
 
-            // Track sync metrics (fire and forget)
+            // Track sync metrics 
             _ = Task.Run(async () =>
             {
                 try
@@ -144,11 +158,12 @@ public class SheetsController : ControllerBase
                     }
                     
                     await _metricsService.TrackCustomMetricAsync("Sheets.SaveData.ItemCount", totalItems);
+                    _logger.LogInformation("📊 Sheets metrics sent successfully");
                 }
                 catch (Exception ex)
                 {
                     // Log but don't throw - metrics failures shouldn't impact the main operation
-                    Console.WriteLine($"Failed to track save metrics: {ex.Message}");
+                    _logger.LogError(ex, "Failed to track save metrics");
                 }
             });
 

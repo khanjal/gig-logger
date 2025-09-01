@@ -55,16 +55,23 @@ public class PlacesController : ControllerBase
             success = true;
 
             // Track successful places API usage
+            _logger.LogInformation("📍 Places search completed, query: '{Query}', results: {ResultCount}", request.Query, results.Count);
+            
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    await _metricsService.TrackUserActivityAsync(userId, "PlacesAutocomplete");
+                    _logger.LogInformation("🚀 Starting Places metrics tracking...");
+                    var userIdForMetrics = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
+                    _logger.LogInformation("📊 Places metrics - UserId: {UserId}, QueryLength: {Length}", userIdForMetrics, request.Query.Length);
+                    
+                    await _metricsService.TrackUserActivityAsync(userIdForMetrics, "PlacesAutocomplete");
                     await _metricsService.TrackCustomMetricAsync("Places.Autocomplete.QueryLength", request.Query.Length);
+                    _logger.LogInformation("✅ Places metrics sent successfully");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to track places metrics");
+                    _logger.LogError(ex, "❌ Failed to track places metrics");
                 }
             });
 

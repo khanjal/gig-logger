@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * One-time setup script for GigRaptor Lambda metrics
+ * One-time setup script for RaptorGig Lambda metrics
  * Run this once after your Lambda is deployed to set up CloudWatch dashboard and alarms
  */
 
@@ -135,7 +135,7 @@ async function setupCloudWatchAlarms() {
     
     const alarms = [
       {
-        name: 'GigRaptor-HighErrorRate',
+        name: 'RaptorGig-HighErrorRate',
         description: 'Alarm when error rate exceeds 5 errors per 5 minutes',
         metricName: 'Error.Total',
         threshold: 5,
@@ -143,7 +143,7 @@ async function setupCloudWatchAlarms() {
         statistic: 'Sum'
       },
       {
-        name: 'GigRaptor-SlowResponse',
+        name: 'RaptorGig-SlowResponse',
         description: 'Alarm when sync operations average longer than 5 seconds',
         metricName: 'Sheets.SaveData.Duration',
         threshold: 5000,
@@ -151,7 +151,7 @@ async function setupCloudWatchAlarms() {
         statistic: 'Average'
       },
       {
-        name: 'GigRaptor-HighRateLimitHits',
+        name: 'RaptorGig-HighRateLimitHits',
         description: 'Alarm when rate limit hits exceed 10 per 5 minutes',
         metricName: 'RateLimit.Hit',
         threshold: 10,
@@ -179,7 +179,7 @@ async function setupCloudWatchAlarms() {
           AlarmName: alarm.name,
           AlarmDescription: alarm.description,
           MetricName: alarm.metricName,
-          Namespace: 'GigRaptor/Lambda',
+          Namespace: 'RaptorGig/Lambda',
           Statistic: alarm.statistic,
           Period: 300,
           EvaluationPeriods: 2,
@@ -215,7 +215,7 @@ async function setupCloudWatchAlarms() {
 
 async function setupMetrics() {
   try {
-    console.log('🎯 Setting up GigRaptor Lambda Metrics...');
+    console.log('🎯 Setting up RaptorGig Lambda Metrics...');
     
     await createCloudWatchDashboard();
     await setupCloudWatchAlarms();
@@ -224,7 +224,7 @@ async function setupMetrics() {
     console.log('\n📋 What was configured:');
     console.log('   ✓ CloudWatch Dashboard for monitoring');
     console.log('   ✓ CloudWatch Alarms for critical issues');
-    console.log('   ✓ Custom metrics namespace: GigRaptor/Lambda');
+    console.log('   ✓ Custom metrics namespace: RaptorGig/Lambda');
     
     console.log('\n📈 Next steps:');
     console.log('   1. Deploy your Lambda function with: npm run update-lambda');

@@ -50,7 +50,7 @@
         ]
       }
     },
-    "HighErrorRateAlarm": {
+    "RaptorGigHighErrorRateAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "AlarmName": "RaptorGig-HighErrorRate",
@@ -65,7 +65,7 @@
         "TreatMissingData": "notBreaching"
       }
     },
-    "SlowResponseAlarm": {
+    "RaptorGigSlowResponseAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "AlarmName": "RaptorGig-SlowResponse",
@@ -80,7 +80,7 @@
         "TreatMissingData": "notBreaching"
       }
     },
-    "RateLimitAlarm": {
+    "RaptorGigRateLimitAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "AlarmName": "RaptorGig-HighRateLimitHits",
