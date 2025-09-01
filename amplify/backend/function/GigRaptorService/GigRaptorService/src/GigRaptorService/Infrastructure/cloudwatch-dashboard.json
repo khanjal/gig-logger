@@ -1,0 +1,159 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "API.TotalCalls" ],
+          [ ".", "API.sheets-health.Success" ],
+          [ ".", "API.sheets-all.Success" ],
+          [ ".", "API.test-metrics.Success" ],
+          [ ".", "API.sheets-health.Error" ],
+          [ ".", "API.sheets-all.Error" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "API Call Statistics",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "API.sheets-all.Duration" ],
+          [ ".", "API.sheets-health.Duration" ],
+          [ ".", "API.test-metrics.Duration" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "API Response Times",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "User.DataSync" ],
+          [ ".", "User.PlacesAutocomplete" ],
+          [ ".", "User.TokenRefresh" ],
+          [ ".", "User.TotalActivity" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "User Activity",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 6,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "Error.Total" ],
+          [ ".", "Error.QuotaExceeded" ],
+          [ ".", "Error.GeneralError" ],
+          [ ".", "RateLimit.Hit" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Errors and Rate Limits",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 6,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "Sheets.SaveData.ItemCount" ],
+          [ ".", "Places.Autocomplete.QueryLength" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Usage Patterns",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Lambda", "Duration", "FunctionName", "raptor-gig-service" ],
+          [ ".", "Invocations", ".", "." ],
+          [ ".", "Errors", ".", "." ],
+          [ ".", "Throttles", ".", "." ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Function Metrics",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Lambda", "ConcurrentExecutions", "FunctionName", "raptor-gig-service" ],
+          [ ".", "ProvisionedConcurrencyUtilization", ".", "." ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Concurrency",
+        "period": 300
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 18,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 50",
+        "region": "us-east-1",
+        "title": "Recent Errors",
+        "view": "table"
+      }
+    }
+  ]
+}

@@ -6,6 +6,7 @@ using System.IO.Compression;
 using Amazon.S3;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.DynamoDBv2;
+using Amazon.CloudWatch;
 using System.Threading;
 
 namespace GigRaptorService;
@@ -120,6 +121,17 @@ public class Startup
             )
         );
         
+        // Add CloudWatch client for metrics
+        services.AddSingleton<IAmazonCloudWatch>(sp => 
+            new AmazonCloudWatchClient(new AmazonCloudWatchConfig 
+            { 
+                RegionEndpoint = Amazon.RegionEndpoint.USEast1 
+            })
+        );
+        
+        // Add metrics service
+        services.AddSingleton<IMetricsService, MetricsService>();
+        
         // Add logging
         services.AddLogging(builder =>
         {
@@ -142,6 +154,9 @@ public class Startup
 
         // Use response compression middleware
         app.UseResponseCompression();
+
+        // Add metrics middleware to track all API calls
+        app.UseMiddleware<MetricsMiddleware>();
 
         // Only apply the token refresh middleware on specific paths
         app.UseWhen(

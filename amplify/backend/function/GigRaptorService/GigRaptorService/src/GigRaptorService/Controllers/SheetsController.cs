@@ -1,10 +1,12 @@
 ﻿using GigRaptorService.Attributes;
 using GigRaptorService.Business;
 using GigRaptorService.Models;
+using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
+using System.Diagnostics;
 
 namespace GigRaptorService.Controllers;
 
@@ -12,11 +14,13 @@ namespace GigRaptorService.Controllers;
 public class SheetsController : ControllerBase
 {
     private readonly IConfiguration _configuration;
+    private readonly IMetricsService _metricsService;
     private SheetManager? _sheetmanager;
 
-    public SheetsController(IConfiguration configuration)
+    public SheetsController(IConfiguration configuration, IMetricsService metricsService)
     {
         _configuration = configuration;
+        _metricsService = metricsService;
     }
 
     private void InitializeSheetmanager(string? sheetId = null)
@@ -29,7 +33,11 @@ public class SheetsController : ControllerBase
             throw new Exception("SheetId must be provided.");
 
         if (!RateLimiter.IsRequestAllowed(sheetId))
+        {
+            // Track rate limit hit
+            _ = Task.Run(async () => await _metricsService.TrackRateLimitHitAsync(sheetId));
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
+        }
 
         var accessToken = GetAccessTokenFromHeader();
         // Middleware guarantees accessToken is valid  
@@ -94,7 +102,66 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
     {
-        InitializeSheetmanager(sheetEntity.Properties.Id);
-        return await _sheetmanager!.SaveData(sheetEntity);
+        var stopwatch = Stopwatch.StartNew();
+        var success = false;
+
+        try
+        {
+            InitializeSheetmanager(sheetEntity.Properties.Id);
+            var result = await _sheetmanager!.SaveData(sheetEntity);
+            
+            // Determine success based on whether we got a result and no critical errors
+            success = result != null && (result.SheetEntity?.Messages?.Any(m => m.Level.ToLower() == "error") != true);
+
+            // Track sync metrics (fire and forget)
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var sheetId = sheetEntity.Properties.Id ?? "";
+                    await _metricsService.TrackSheetsOperationAsync("SaveData", stopwatch.Elapsed, success);
+                    await _metricsService.TrackUserActivityAsync(sheetId, "DataSync");
+                    
+                    // Track data volume - be defensive about property access
+                    var totalItems = (sheetEntity.Trips?.Count ?? 0) + 
+                                   (sheetEntity.Shifts?.Count ?? 0);
+                    
+                    // Add other collections if they exist
+                    try
+                    {
+                        // Use reflection to safely check for other collections
+                        var entityType = sheetEntity.GetType();
+                        var expensesProperty = entityType.GetProperty("Expenses");
+                        if (expensesProperty != null)
+                        {
+                            var expenses = expensesProperty.GetValue(sheetEntity) as System.Collections.ICollection;
+                            totalItems += expenses?.Count ?? 0;
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore reflection errors
+                    }
+                    
+                    await _metricsService.TrackCustomMetricAsync("Sheets.SaveData.ItemCount", totalItems);
+                }
+                catch (Exception ex)
+                {
+                    // Log but don't throw - metrics failures shouldn't impact the main operation
+                    Console.WriteLine($"Failed to track save metrics: {ex.Message}");
+                }
+            });
+
+            return result;
+        }
+        catch (Exception)
+        {
+            success = false;
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+        }
     }
 }

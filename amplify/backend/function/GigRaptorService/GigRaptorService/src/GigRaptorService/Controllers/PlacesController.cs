@@ -2,6 +2,7 @@ using GigRaptorService.Attributes;
 using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace GigRaptorService.Controllers;
 
@@ -10,17 +11,22 @@ public class PlacesController : ControllerBase
 {
     private readonly IGooglePlacesService _placesService;
     private readonly ILogger<PlacesController> _logger;
+    private readonly IMetricsService _metricsService;
 
-    public PlacesController(IGooglePlacesService placesService, ILogger<PlacesController> logger)
+    public PlacesController(IGooglePlacesService placesService, ILogger<PlacesController> logger, IMetricsService metricsService)
     {
         _placesService = placesService;
         _logger = logger;
+        _metricsService = metricsService;
     }
 
     [HttpPost("autocomplete")]
     [RateLimitFilter(10, 60, ApiType.GooglePlaces)] // 10 requests per minute per user for Google Places API
     public async Task<IActionResult> GetAutocomplete([FromBody] PlacesAutocompleteRequest request)
     {
+        var stopwatch = Stopwatch.StartNew();
+        var success = false;
+
         try
         {
             if (string.IsNullOrWhiteSpace(request?.Query))
@@ -46,19 +52,62 @@ public class PlacesController : ControllerBase
                 request.UserLatitude,
                 request.UserLongitude);
 
+            success = true;
+
+            // Track successful places API usage
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _metricsService.TrackUserActivityAsync(userId, "PlacesAutocomplete");
+                    await _metricsService.TrackCustomMetricAsync("Places.Autocomplete.QueryLength", request.Query.Length);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to track places metrics");
+                }
+            });
+
             return Ok(results);
         }
         catch (QuotaExceededException ex)
         {
+            success = false;
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
             _logger.LogWarning("Quota exceeded for user {UserId}: {Message}", userId, ex.Message);
+            
+            // Track quota exceeded
+            _ = Task.Run(async () => await _metricsService.TrackErrorAsync("QuotaExceeded", "places-autocomplete"));
+            
             return StatusCode(429, new { error = "API quota exceeded", message = ex.Message });
         }
         catch (Exception ex)
         {
+            success = false;
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
             _logger.LogError(ex, "Error processing autocomplete request for user {UserId}", userId);
+            
+            // Track general error
+            _ = Task.Run(async () => await _metricsService.TrackErrorAsync("GeneralError", "places-autocomplete"));
+            
             return StatusCode(500, new { error = "Internal server error", message = ex.Message });
+        }
+        finally
+        {
+            stopwatch.Stop();
+            
+            // Track the operation duration
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _metricsService.TrackSheetsOperationAsync("PlacesAutocomplete", stopwatch.Elapsed, success);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to track places operation metrics");
+                }
+            });
         }
     }
 

@@ -1,0 +1,107 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudWatch permissions and alarms for GigRaptor Lambda metrics",
+  "Parameters": {
+    "LambdaFunctionName": {
+      "Type": "String",
+      "Default": "raptor-gig-service",
+      "Description": "Name of the Lambda function"
+    },
+    "LambdaRoleName": {
+      "Type": "String",
+      "Default": "RaptorSheetsServiceRole",
+      "Description": "Name of the Lambda execution role"
+    }
+  },
+  "Resources": {
+    "CloudWatchMetricsPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "RaptorGigCloudWatchMetrics",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cloudwatch:PutMetricData",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:ListMetrics"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+              }
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "LambdaRoleName"
+          }
+        ]
+      }
+    },
+    "HighErrorRateAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-HighErrorRate",
+        "AlarmDescription": "Alarm when error rate exceeds 5%",
+        "MetricName": "Error.Total",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "Threshold": 5,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "SlowResponseAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-SlowResponse",
+        "AlarmDescription": "Alarm when sync operations take longer than 5 seconds",
+        "MetricName": "Sheets.SaveData.Duration",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Average",
+        "Period": 300,
+        "EvaluationPeriods": 3,
+        "Threshold": 5000,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "RateLimitAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-HighRateLimitHits",
+        "AlarmDescription": "Alarm when rate limit hits increase",
+        "MetricName": "RateLimit.Hit",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "Threshold": 10,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    }
+  },
+  "Outputs": {
+    "DashboardURL": {
+      "Description": "URL to the CloudWatch Dashboard",
+      "Value": {
+        "Fn::Sub": "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=RaptorGig-Metrics"
+      }
+    }
+  }
+}

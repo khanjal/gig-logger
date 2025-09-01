@@ -2,6 +2,7 @@
 using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace GigRaptorService.Controllers;
 
@@ -13,17 +14,20 @@ public class AuthController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly GoogleOAuthService _googleOAuthService;
+    private readonly IMetricsService _metricsService;
 
     public AuthController(
         ILogger<AuthController> logger,
         IConfiguration configuration,
         IHttpClientFactory httpClientFactory,
-        GoogleOAuthService googleOAuthService)
+        GoogleOAuthService googleOAuthService,
+        IMetricsService metricsService)
     {
         _logger = logger;
         _configuration = configuration;
         _httpClientFactory = httpClientFactory;
         _googleOAuthService = googleOAuthService;
+        _metricsService = metricsService;
     }
 
     [HttpPost]
@@ -62,8 +66,15 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
         {
             _logger.LogWarning("Failed to obtain refresh token from Google for code: {Code}", code);
+            
+            // Track failed authentication
+            _ = Task.Run(async () => await _metricsService.TrackAuthenticationAsync(false));
+            
             return BadRequest(new { message = "Failed to obtain refresh token from Google." });
         }
+
+        // Track successful authentication
+        _ = Task.Run(async () => await _metricsService.TrackAuthenticationAsync(true));
 
         var encryptedToken = EncryptToken(tokenResponse.RefreshToken);
 
@@ -100,7 +111,14 @@ public class AuthController : ControllerBase
 
         var tokenResponse = await _googleOAuthService.RefreshAccessTokenAsync(refreshToken);
         if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+        {
+            // Track failed token refresh
+            _ = Task.Run(async () => await _metricsService.TrackAuthenticationAsync(false));
             return Unauthorized(new { message = "Failed to retrieve access token from Google." });
+        }
+
+        // Track successful token refresh
+        _ = Task.Run(async () => await _metricsService.TrackUserActivityAsync("system", "TokenRefresh"));
 
         return Ok(new { accessToken = tokenResponse.AccessToken });
     }

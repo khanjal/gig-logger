@@ -44,6 +44,12 @@ testem.log
 Thumbs.db
 src/app/shared/data/keys/jwt.keys.json
 
+# AWS/CloudWatch temporary files
+temp-*.json
+temp-alarm-*.json
+temp-dashboard.json
+temp-cloudwatch-policy.json
+
 amplify/team-provider-info.json
 amplify/backend/function/GigLoggerService/src/src/aws-exports.js
 

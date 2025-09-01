@@ -22,7 +22,8 @@
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "update-lambda": "node scripts/update-lambda.js"
+    "update-lambda": "node scripts/update-lambda.js",
+    "setup-metrics": "node scripts/setup-metrics.js"
   },
   "private": true,
   "dependencies": {
