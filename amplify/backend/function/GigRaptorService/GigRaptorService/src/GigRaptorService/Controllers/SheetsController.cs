@@ -36,19 +36,8 @@ public class SheetsController : ControllerBase
 
         if (!RateLimiter.IsRequestAllowed(sheetId))
         {
-            // Track rate limit hit (fire and forget to not block)
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await _metricsService.TrackRateLimitHitAsync(sheetId);
-                    _logger.LogWarning("📊 Rate limit metrics sent for sheet {SheetId}", sheetId);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to track rate limit metrics");
-                }
-            });
+            // Track rate limit hit (must use Task.Run since this method is not async)
+            TrackRateLimitMetricsAsync(sheetId);
             
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
         }
@@ -127,42 +116,8 @@ public class SheetsController : ControllerBase
             // Determine success based on whether we got a result and no critical errors
             success = result != null && (result.SheetEntity?.Messages?.Any(m => m.Level.ToLower() == "error") != true);
 
-            // Track sync metrics 
-            try
-            {
-                var sheetId = sheetEntity.Properties.Id ?? "";
-                await _metricsService.TrackSheetsOperationAsync("SaveData", stopwatch.Elapsed, success);
-                await _metricsService.TrackUserActivityAsync(sheetId, "DataSync");
-                
-                // Track data volume - be defensive about property access
-                var totalItems = (sheetEntity.Trips?.Count ?? 0) + 
-                               (sheetEntity.Shifts?.Count ?? 0);
-                
-                // Add other collections if they exist
-                try
-                {
-                    // Use reflection to safely check for other collections
-                    var entityType = sheetEntity.GetType();
-                    var expensesProperty = entityType.GetProperty("Expenses");
-                    if (expensesProperty != null)
-                    {
-                        var expenses = expensesProperty.GetValue(sheetEntity) as System.Collections.ICollection;
-                        totalItems += expenses?.Count ?? 0;
-                    }
-                }
-                catch
-                {
-                    // Ignore reflection errors
-                }
-                
-                await _metricsService.TrackCustomMetricAsync("Sheets.SaveData.ItemCount", totalItems);
-                _logger.LogInformation("📊 Sheets metrics sent successfully");
-            }
-            catch (Exception ex)
-            {
-                // Log but don't throw - metrics failures shouldn't impact the main operation
-                _logger.LogError(ex, "Failed to track save metrics");
-            }
+            // Track sync metrics using private method
+            await TrackSaveDataMetricsAsync(sheetEntity.Properties.Id ?? "", stopwatch.Elapsed, success, sheetEntity);
 
             return result;
         }
@@ -175,5 +130,59 @@ public class SheetsController : ControllerBase
         {
             stopwatch.Stop();
         }
+    }
+
+    private async Task TrackSaveDataMetricsAsync(string sheetId, TimeSpan duration, bool success, SheetEntity sheetEntity)
+    {
+        try
+        {
+            await _metricsService.TrackSheetsOperationAsync("SaveData", duration, success);
+            await _metricsService.TrackUserActivityAsync(sheetId, "DataSync");
+            
+            // Track data volume - be defensive about property access
+            var totalItems = (sheetEntity.Trips?.Count ?? 0) + 
+                           (sheetEntity.Shifts?.Count ?? 0);
+            
+            // Add other collections if they exist
+            try
+            {
+                // Use reflection to safely check for other collections
+                var entityType = sheetEntity.GetType();
+                var expensesProperty = entityType.GetProperty("Expenses");
+                if (expensesProperty != null)
+                {
+                    var expenses = expensesProperty.GetValue(sheetEntity) as System.Collections.ICollection;
+                    totalItems += expenses?.Count ?? 0;
+                }
+            }
+            catch
+            {
+                // Ignore reflection errors
+            }
+            
+            await _metricsService.TrackCustomMetricAsync("Sheets.SaveData.ItemCount", totalItems);
+            _logger.LogInformation("📊 Save data metrics sent successfully");
+        }
+        catch (Exception ex)
+        {
+            // Log but don't throw - metrics failures shouldn't impact the main operation
+            _logger.LogError(ex, "Failed to track save data metrics");
+        }
+    }
+
+    private void TrackRateLimitMetricsAsync(string sheetId)
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _metricsService.TrackRateLimitHitAsync(sheetId);
+                _logger.LogWarning("📊 Rate limit metrics sent for sheet {SheetId}", sheetId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to track rate limit metrics");
+            }
+        });
     }
 }

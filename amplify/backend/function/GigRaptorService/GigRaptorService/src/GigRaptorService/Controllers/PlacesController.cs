@@ -57,20 +57,8 @@ public class PlacesController : ControllerBase
             // Track successful places API usage
             _logger.LogInformation("📍 Places search completed, query: '{Query}', results: {ResultCount}", request.Query, results.Count);
             
-            try
-            {
-                _logger.LogInformation("🚀 Starting Places metrics tracking...");
-                var userIdForMetrics = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
-                _logger.LogInformation("📊 Places metrics - UserId: {UserId}, QueryLength: {Length}", userIdForMetrics, request.Query.Length);
-                
-                await _metricsService.TrackUserActivityAsync(userIdForMetrics, "PlacesAutocomplete");
-                await _metricsService.TrackCustomMetricAsync("Places.Autocomplete.QueryLength", request.Query.Length);
-                _logger.LogInformation("✅ Places metrics sent successfully");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "❌ Failed to track places metrics");
-            }
+            var userIdForMetrics = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
+            await TrackPlacesSuccessMetricsAsync(userIdForMetrics, request.Query);
 
             return Ok(results);
         }
@@ -80,15 +68,8 @@ public class PlacesController : ControllerBase
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
             _logger.LogWarning("Quota exceeded for user {UserId}: {Message}", userId, ex.Message);
             
-            // Track quota exceeded
-            try
-            {
-                await _metricsService.TrackErrorAsync("QuotaExceeded", "places-autocomplete");
-            }
-            catch (Exception metricsEx)
-            {
-                _logger.LogError(metricsEx, "Failed to track quota exceeded metrics");
-            }
+            // Track quota exceeded using private method
+            await TrackPlacesErrorMetricsAsync("QuotaExceeded", "places-autocomplete");
             
             return StatusCode(429, new { error = "API quota exceeded", message = ex.Message });
         }
@@ -98,15 +79,8 @@ public class PlacesController : ControllerBase
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
             _logger.LogError(ex, "Error processing autocomplete request for user {UserId}", userId);
             
-            // Track general error
-            try
-            {
-                await _metricsService.TrackErrorAsync("GeneralError", "places-autocomplete");
-            }
-            catch (Exception metricsEx)
-            {
-                _logger.LogError(metricsEx, "Failed to track general error metrics");
-            }
+            // Track general error using private method
+            await TrackPlacesErrorMetricsAsync("GeneralError", "places-autocomplete");
             
             return StatusCode(500, new { error = "Internal server error", message = ex.Message });
         }
@@ -114,15 +88,8 @@ public class PlacesController : ControllerBase
         {
             stopwatch.Stop();
             
-            // Track the operation duration
-            try
-            {
-                await _metricsService.TrackSheetsOperationAsync("PlacesAutocomplete", stopwatch.Elapsed, success);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to track places operation metrics");
-            }
+            // Track the operation duration using private method
+            await TrackPlacesOperationMetricsAsync(stopwatch.Elapsed, success);
         }
     }
 
@@ -203,6 +170,49 @@ public class PlacesController : ControllerBase
             var effectiveUserId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? userId;
             _logger.LogError(ex, "Error getting usage for user {UserId}", effectiveUserId);
             return StatusCode(500, new { error = "Internal server error", message = ex.Message });
+        }
+    }
+
+    private async Task TrackPlacesSuccessMetricsAsync(string userId, string query)
+    {
+        try
+        {
+            _logger.LogInformation("🚀 Starting Places metrics tracking...");
+            _logger.LogInformation("📊 Places metrics - UserId: {UserId}, QueryLength: {Length}", userId, query.Length);
+            
+            await _metricsService.TrackUserActivityAsync(userId, "PlacesAutocomplete");
+            await _metricsService.TrackCustomMetricAsync("Places.Autocomplete.QueryLength", query.Length);
+            _logger.LogInformation("✅ Places metrics sent successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Failed to track places metrics");
+        }
+    }
+
+    private async Task TrackPlacesErrorMetricsAsync(string errorType, string operation)
+    {
+        try
+        {
+            await _metricsService.TrackErrorAsync(errorType, operation);
+            _logger.LogInformation("📊 Places error metrics sent: {ErrorType}", errorType);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to track places error metrics");
+        }
+    }
+
+    private async Task TrackPlacesOperationMetricsAsync(TimeSpan duration, bool success)
+    {
+        try
+        {
+            await _metricsService.TrackSheetsOperationAsync("PlacesAutocomplete", duration, success);
+            _logger.LogInformation("📊 Places operation metrics sent: {Success}, {Duration}ms", success, duration.TotalMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to track places operation metrics");
         }
     }
 }
