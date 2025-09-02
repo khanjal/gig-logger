@@ -67,6 +67,14 @@ export class SearchInputComponent implements OnDestroy {
   @Input() searchType: string = '';
   @Input() googleSearch: string | undefined;
   @Input() isRequired: boolean = false;
+  @Input() scrollOffset: number = 100; // Default offset, can be overridden
+
+  // Computed property for the scroll offset to pass to directive
+  get computedScrollOffset(): number {
+    // For mobile devices, use a larger offset to account for virtual keyboard
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return isMobile ? Math.max(this.scrollOffset, 200) : this.scrollOffset;
+  }
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
 

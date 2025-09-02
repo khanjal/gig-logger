@@ -91,6 +91,7 @@ export class FocusScrollDirective {
     // Use the simple, working scroll method that doesn't break dropdowns
     const rect = element.getBoundingClientRect();
     const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset;
+    
     window.scrollTo({
       top: Math.max(0, scrollY),
       behavior: 'smooth'
