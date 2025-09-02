@@ -5,8 +5,7 @@ import { Directive, ElementRef, EventEmitter, HostListener, Output, Input, NgZon
   standalone: true
 })
 export class FocusScrollDirective {
-  @Input() focusScrollOffset: number = 40;
-  @Input() focusScrollToTop: boolean = true; // For search inputs, always scroll to top
+  @Input() focusScrollOffset: number = 100;
   @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
 
   private resizeListener: (() => void) | null = null;
@@ -21,13 +20,10 @@ export class FocusScrollDirective {
     const element = this.el.nativeElement as HTMLElement;
     this.hasScrolled = false; // Reset scroll flag
 
-    // For desktop, use simple scroll
-    if (!this.isMobile()) {
-      this.performScroll(element);
-      return;
-    }
+    // Always use the simple, working scroll method that doesn't break dropdowns
+    this.performScroll(element);
 
-    // Mobile keyboard handling for search inputs
+    // Add mobile keyboard handling WITHOUT changing the scroll behavior
     if (this.isMobile()) {
       // Add body class for old Android viewport handling
       document.body.classList.add('keyboard-open');
@@ -35,7 +31,6 @@ export class FocusScrollDirective {
       // Force resize events for old Android devices
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
-        // Trigger a second resize event after a short delay
         setTimeout(() => {
           window.dispatchEvent(new Event('resize'));
         }, 100);
@@ -44,12 +39,13 @@ export class FocusScrollDirective {
       this.initialInnerHeight = window.innerHeight;
       this.removeResizeListener();
       
-      // Set up resize listener for keyboard detection
+      // Set up resize listener for additional scroll when keyboard appears
       this.ngZone.runOutsideAngular(() => {
         this.resizeListener = () => {
           if (window.innerHeight < this.initialInnerHeight && !this.hasScrolled) {
             setTimeout(() => {
               if (!this.hasScrolled) {
+                // Use the same scroll method that works for dropdowns
                 this.performScroll(element);
               }
               this.removeResizeListener();
@@ -67,13 +63,6 @@ export class FocusScrollDirective {
         }
         this.removeResizeListener();
       }, 700);
-
-      // Initial scroll with delay for keyboard animation
-      setTimeout(() => {
-        if (!this.hasScrolled) {
-          this.performScroll(element);
-        }
-      }, 300);
     }
   }
 
@@ -99,22 +88,13 @@ export class FocusScrollDirective {
 
     this.hasScrolled = true;
 
-    if (this.focusScrollToTop) {
-      // Use scrollIntoView for search inputs that need to go to top
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Add offset for fixed header
-      if (this.focusScrollOffset) {
-        window.scrollBy({ top: -this.focusScrollOffset, behavior: 'smooth' });
-      }
-    } else {
-      // Standard scroll behavior (fallback, though search inputs should use focusScrollToTop)
-      const rect = element.getBoundingClientRect();
-      const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset;
-      window.scrollTo({
-        top: Math.max(0, scrollY),
-        behavior: 'smooth'
-      });
-    }
+    // Use the simple, working scroll method that doesn't break dropdowns
+    const rect = element.getBoundingClientRect();
+    const scrollY = window.pageYOffset + rect.top - this.focusScrollOffset;
+    window.scrollTo({
+      top: Math.max(0, scrollY),
+      behavior: 'smooth'
+    });
 
     this.scrollComplete.emit();
   }
