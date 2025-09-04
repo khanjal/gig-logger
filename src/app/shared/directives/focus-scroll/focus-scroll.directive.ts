@@ -23,7 +23,7 @@ export class FocusScrollDirective {
       clearTimeout(this.scrollTimeout);
     }
     const isMobile = this.isMobileDevice();
-    const offset = isMobile ? 60 : 100;
+    const offset = isMobile ? 75 : 100;
     const delay = isMobile ? 600 : 200;
     const initialDelay = isMobile ? 300 : 50;
     
