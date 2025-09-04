@@ -94,27 +94,15 @@
     <div class="flex items-center justify-between gap-2 mt-1"
          *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note || trip.tip || trip.bonus || trip.cash || (trip.startOdometer || trip.endOdometer) || trip.startAddress || trip.endAddress">
       <!-- Chips (left side) -->
-      <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-hidden" *ngIf="!!trip">
-        <mat-chip-set aria-label="Trip badges" class="flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
-          <mat-chip color="accent" *ngIf="!!trip && trip.tip && trip.tip > 0" [attr.aria-label]="'Tip: $' + trip.tip" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
-            <mat-icon class="!text-sm !w-4 !h-4 !leading-none">monetization_on</mat-icon>
-          </mat-chip>
-          <mat-chip color="primary" *ngIf="!!trip && trip.bonus && trip.bonus > 0" [attr.aria-label]="'Bonus: $' + trip.bonus" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
-            <mat-icon class="!text-sm !w-4 !h-4 !leading-none">star</mat-icon>
-          </mat-chip>
-          <mat-chip color="primary" *ngIf="!!trip && trip.cash && trip.cash > 0" [attr.aria-label]="'Cash: $' + trip.cash" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
-            <mat-icon class="!text-sm !w-4 !h-4 !leading-none">payments</mat-icon>
-          </mat-chip>
-          <mat-chip color="primary" *ngIf="!!trip && (trip.startOdometer || trip.endOdometer)" aria-label="Odometer readings available" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
-            <mat-icon class="!text-sm !w-4 !h-4 !leading-none">speed</mat-icon>
-          </mat-chip>
-          <mat-chip color="primary" *ngIf="!!trip && trip.startAddress" [attr.aria-label]="'Pickup address: ' + trip.startAddress" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
-            <mat-icon class="!text-sm !w-4 !h-4 !leading-none">place</mat-icon>
-          </mat-chip>
-          <mat-chip color="primary" *ngIf="!!trip && trip.endAddress" [attr.aria-label]="'Destination address: ' + trip.endAddress" class="!text-xs !px-1 !py-0 !min-h-6 !h-6 !flex !items-center !justify-center !flex-shrink-0">
-            <mat-icon class="!text-sm !w-4 !h-4 !leading-none">flag</mat-icon>
-          </mat-chip>
-        </mat-chip-set>
+      <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-x-auto h-6" *ngIf="!!trip">
+        <div class="flex items-center gap-1 px-1 overflow-x-auto scrollbar-hide">
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-green-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.tip && trip.tip > 0" [attr.aria-label]="'Tip: $' + trip.tip">monetization_on</mat-icon>
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-yellow-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.bonus && trip.bonus > 0" [attr.aria-label]="'Bonus: $' + trip.bonus">star</mat-icon>
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-purple-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.cash && trip.cash > 0" [attr.aria-label]="'Cash: $' + trip.cash">payments</mat-icon>
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-red-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && (trip.startOdometer || trip.endOdometer)" aria-label="Odometer readings available">speed</mat-icon>
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-blue-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.startAddress" [attr.aria-label]="'Pickup address: ' + trip.startAddress">place</mat-icon>
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-indigo-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.endAddress" [attr.aria-label]="'Destination address: ' + trip.endAddress">flag</mat-icon>
+        </div>
       </div>
       <!-- Toggle Button (right side) -->
       <div class="focus-within:ring-0 focus-within:outline-none flex-1 flex justify-end">
