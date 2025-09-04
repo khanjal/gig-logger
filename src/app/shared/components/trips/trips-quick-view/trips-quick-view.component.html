@@ -96,12 +96,34 @@
       <!-- Chips (left side) -->
       <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-x-auto h-6" *ngIf="!!trip">
         <div class="flex items-center gap-1 px-1 overflow-x-auto scrollbar-hide">
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-green-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.tip && trip.tip > 0" [attr.aria-label]="'Tip: $' + trip.tip">monetization_on</mat-icon>
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-yellow-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.bonus && trip.bonus > 0" [attr.aria-label]="'Bonus: $' + trip.bonus">star</mat-icon>
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-purple-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.cash && trip.cash > 0" [attr.aria-label]="'Cash: $' + trip.cash">payments</mat-icon>
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-red-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && (trip.startOdometer || trip.endOdometer)" aria-label="Odometer readings available">speed</mat-icon>
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-blue-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.startAddress" [attr.aria-label]="'Pickup address: ' + trip.startAddress">place</mat-icon>
-          <mat-icon class="inline-flex items-center justify-center w-5 h-5 text-indigo-600 leading-none align-middle flex-shrink-0" *ngIf="!!trip && trip.endAddress" [attr.aria-label]="'Destination address: ' + trip.endAddress">flag</mat-icon>
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.tip && trip.tip > 0) ? 'text-green-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.tip && trip.tip > 0) ? ('Tip: $' + trip.tip) : 'No tip'">monetization_on</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.bonus && trip.bonus > 0) ? 'text-yellow-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.bonus && trip.bonus > 0) ? ('Bonus: $' + trip.bonus) : 'No bonus'">star</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.cash && trip.cash > 0) ? 'text-purple-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.cash && trip.cash > 0) ? ('Cash: $' + trip.cash) : 'No cash'">payments</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.startOdometer || trip.endOdometer) ? 'text-red-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.startOdometer || trip.endOdometer) ? 'Odometer readings available' : 'No odometer'">speed</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="trip.startAddress ? 'text-blue-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="trip.startAddress ? ('Pickup address: ' + trip.startAddress) : 'No pickup address'">place</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="trip.endAddress ? 'text-indigo-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="trip.endAddress ? ('Destination address: ' + trip.endAddress) : 'No destination address'">flag</mat-icon>
+
+          <!-- Note icon: always shown, colored when note exists -->
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="trip.note ? 'text-yellow-700' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="trip.note ? ('Note: ' + trip.note) : 'No note'">format_quote</mat-icon>
         </div>
       </div>
       <!-- Toggle Button (right side) -->
