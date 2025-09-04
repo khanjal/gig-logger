@@ -69,12 +69,6 @@ export class SearchInputComponent implements OnDestroy {
   @Input() isRequired: boolean = false;
   @Input() scrollOffset: number = 100; // Default offset, can be overridden
 
-  // Computed property for the scroll offset to pass to directive
-  get computedScrollOffset(): number {
-    // For mobile devices, use a smaller offset to account for virtual keyboard
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    return isMobile ? Math.max(this.scrollOffset, 20) : this.scrollOffset;
-  }
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
 
@@ -187,6 +181,7 @@ export class SearchInputComponent implements OnDestroy {
       this.isGoogleSearching = false;
     }
   }
+  
   onBlur(): void {
     const trimmedValue = this.value.trim();
     if (this.value !== trimmedValue) {
@@ -195,6 +190,7 @@ export class SearchInputComponent implements OnDestroy {
     this.onTouched();
     this.valueChanged.emit(trimmedValue);
   }
+
   public onClear(): void {
     this.setInputValue('');
     this.resetComponentState();
