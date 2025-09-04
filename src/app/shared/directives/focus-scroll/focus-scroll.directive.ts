@@ -23,35 +23,48 @@ export class FocusScrollDirective {
       clearTimeout(this.scrollTimeout);
     }
     const isMobile = this.isMobileDevice();
-    if (!isMobile) {
-      // On desktop, do not scroll, just emit dropdownReady after a short delay
+    
+    if (isMobile) {
+      // Mobile: Wait for virtual keyboard, then scroll to top of screen
+      this.isScrolling = true;
       setTimeout(() => {
-        this.scrollComplete.emit();
-        this.dropdownReady.emit();
-      }, 50);
-      return;
-    }
-    // On mobile, scroll after virtual keyboard appears
-    const delay = 600;
-    const offset = 20;
-    this.isScrolling = true;
-    setTimeout(() => {
-      const element = this.el.nativeElement as HTMLElement;
-      const rect = element.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const targetY = rect.top + scrollTop - offset;
-      this.ngZone.runOutsideAngular(() => {
-        window.scrollTo({
-          top: targetY,
-          behavior: 'smooth'
+        this.ngZone.runOutsideAngular(() => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
         });
-      });
-      this.scrollTimeout = setTimeout(() => {
-        this.isScrolling = false;
-        this.scrollComplete.emit();
-        this.dropdownReady.emit();
-      }, delay);
-    }, 50);
+        
+        this.scrollTimeout = setTimeout(() => {
+          this.isScrolling = false;
+          this.scrollComplete.emit();
+          this.dropdownReady.emit();
+        }, 600);
+      }, 300); // Wait for keyboard to appear
+    } else {
+      // Desktop: Normal scroll with offset
+      const offset = 100;
+      this.isScrolling = true;
+      setTimeout(() => {
+        const element = this.el.nativeElement as HTMLElement;
+        const rect = element.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetY = rect.top + scrollTop - offset;
+        
+        this.ngZone.runOutsideAngular(() => {
+          window.scrollTo({
+            top: targetY,
+            behavior: 'smooth'
+          });
+        });
+        
+        this.scrollTimeout = setTimeout(() => {
+          this.isScrolling = false;
+          this.scrollComplete.emit();
+          this.dropdownReady.emit();
+        }, 200);
+      }, 50);
+    }
   }
 
   @HostListener('blur')
