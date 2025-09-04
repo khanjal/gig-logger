@@ -244,11 +244,26 @@ export class SearchInputComponent implements OnDestroy {
       }, this.BLUR_DELAY);
     }
   }
+
   onFocus(): void {
+    // Don't immediately open dropdown - wait for focus-scroll directive signal
     const value = this.value;
     this._filterItems(value).then(items => {
       this.filteredItemsArray = items;
+      // Don't auto-open dropdown here - let dropdownReady handler do it
     });
+  }
+
+  onDropdownReady(): void {
+    // Called by focus-scroll directive when it's safe to open dropdown
+    if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen && this.filteredItemsArray.length > 0) {
+      // Small additional delay to ensure page scroll has fully settled
+      setTimeout(() => {
+        if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
+          this.autocompleteTrigger.openPanel();
+        }
+      }, 50);
+    }
   }
   // #endregion
 

@@ -13,6 +13,8 @@
                 [required]="isRequired"
                 focus-scroll
                 [focusScrollOffset]="computedScrollOffset"
+                [delayDropdownOnMobile]="true"
+                (dropdownReady)="onDropdownReady()"
                 #searchInput
                 #autocompleteTrigger="matAutocompleteTrigger"
             />
