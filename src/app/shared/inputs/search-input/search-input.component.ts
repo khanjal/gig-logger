@@ -71,9 +71,9 @@ export class SearchInputComponent implements OnDestroy {
 
   // Computed property for the scroll offset to pass to directive
   get computedScrollOffset(): number {
-    // For mobile devices, use a larger offset to account for virtual keyboard
+    // For mobile devices, use a smaller offset to account for virtual keyboard
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    return isMobile ? Math.max(this.scrollOffset, 200) : this.scrollOffset;
+    return isMobile ? Math.max(this.scrollOffset, 20) : this.scrollOffset;
   }
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
