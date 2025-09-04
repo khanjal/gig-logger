@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-location-permission',
   templateUrl: './location-permission.component.html',
-  styleUrls: ['./location-permission.component.scss']
+  styleUrls: ['./location-permission.component.scss'],
+  standalone: true,
+  imports: [MatCardModule, MatButtonModule]
 })
 export class LocationPermissionComponent implements OnInit {
   permissionState: 'granted' | 'denied' | 'prompt' | 'unsupported' = 'prompt';

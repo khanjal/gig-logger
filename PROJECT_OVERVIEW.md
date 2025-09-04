@@ -1,3 +1,23 @@
+## Local Development: Custom Domain & Hosts File Setup
+
+To enable Google OAuth and API Gateway CORS for local development, use a custom domain that resolves to localhost.
+
+### Hosts File Setup
+Add this line to your hosts file:
+```
+127.0.0.1   gig-local.raptorsheets.com
+```
+- On Windows: `C:\Windows\System32\drivers\etc\hosts`
+- You must open Notepad as Administrator to edit and save this file.
+
+### Angular Serve Command
+Run:
+```
+ng serve --host gig-local.raptorsheets.com --ssl
+```
+
+### Google OAuth & API Gateway
+- Add `https://gig-local.raptorsheets.com:4200` as an allowed origin in Google Cloud Console and API Gateway CORS settings.
 # Project Overview: Raptor Gig
 
 > **Note for AI Assistants:** This file contains essential project context. Please read and reference this file when working on any part of the Raptor Gig project to ensure accurate, project-specific assistance.

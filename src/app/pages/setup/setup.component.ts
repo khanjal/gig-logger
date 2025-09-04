@@ -20,7 +20,6 @@ import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { LocationPermissionComponent } from '../../shared/components/location-permission/location-permission.component';
-import { LocationPermissionModule } from '../../shared/components/location-permission/location-permission.module';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -57,7 +56,7 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     SheetQuickViewComponent,
     SheetQuotaComponent,
     AuthStatusComponent,
-    LocationPermissionModule
+    LocationPermissionComponent
 ]
 })
 export class SetupComponent {

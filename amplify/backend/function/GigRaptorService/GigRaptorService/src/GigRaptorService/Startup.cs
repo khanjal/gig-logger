@@ -25,6 +25,7 @@ public class Startup
         var allowedOrigins = new[]
         {
             "https://localhost:4200",
+            "https://gig-local.raptorsheets.com:4200",
             "https://gig-test.raptorsheets.com",
             "https://gig.raptorsheets.com"
         };

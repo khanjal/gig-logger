@@ -1,4 +1,5 @@
-@import "color-vars";
+@use "color-vars" as *;
+@use "sass:color";
 
 // Mobile-first variables
 $form-border-radius: 16px;
@@ -18,7 +19,7 @@ $touch-target-size: 44px;
 
 // Enhanced form styling
 .uber-form {
-    background: linear-gradient(145deg, $surface-color 0%, lighten($surface-color, 2%) 100%);
+    background: linear-gradient(145deg, $surface-color 0%, color.adjust($surface-color, $lightness: 2%) 100%);
     border-radius: $form-border-radius;
     padding: 1.5rem;
     margin: 0 auto 2rem;
@@ -59,7 +60,7 @@ h3 {
     color: $text-primary;
     margin: 1.5rem 0 1rem 0;
     padding: 0.75rem 1rem;
-    background: linear-gradient(145deg, $primary-50 0%, lighten($primary-50, 2%) 100%);
+    background: linear-gradient(145deg, $primary-50 0%, color.adjust($primary-50, $lightness: 2%) 100%);
     border-radius: $field-border-radius;
     border-left: 4px solid $primary-color;
     
@@ -99,7 +100,7 @@ h3 {
     
     .mat-mdc-text-field-wrapper {
         border-radius: $field-border-radius;
-        background: linear-gradient(145deg, white 0%, lighten($surface-color, 3%) 100%);
+    background: linear-gradient(145deg, white 0%, color.adjust($surface-color, $lightness: 3%) 100%);
     }
     
     .mat-mdc-form-field-infix {
@@ -141,7 +142,7 @@ h3 {
 // Results display
 span {
     display: block;
-    background: linear-gradient(145deg, $info-50 0%, lighten($info-50, 2%) 100%);
+    background: linear-gradient(145deg, $info-50 0%, color.adjust($info-50, $lightness: 2%) 100%);
     border-radius: $field-border-radius;
     padding: 1rem;
     margin: 1rem 0;
@@ -200,26 +201,26 @@ span {
         }
         
         &[color="primary"] {
-            background: linear-gradient(145deg, $primary-color 0%, darken($primary-color, 5%) 100%);
+            background: linear-gradient(145deg, $primary-color 0%, color.adjust($primary-color, $lightness: -5%) 100%);
             border: 2px solid $primary-color;
             color: white;
             
             &:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba($primary-color, 0.4);
-                background: linear-gradient(145deg, lighten($primary-color, 5%) 0%, $primary-color 100%);
+                background: linear-gradient(145deg, color.adjust($primary-color, $lightness: 5%) 0%, $primary-color 100%);
             }
         }
         
         &[color="warn"] {
-            background: linear-gradient(145deg, $warn-color 0%, darken($warn-color, 5%) 100%);
+            background: linear-gradient(145deg, $warn-color 0%, color.adjust($warn-color, $lightness: -5%) 100%);
             border: 2px solid $warn-color;
             color: white;
             
             &:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba($warn-color, 0.4);
-                background: linear-gradient(145deg, lighten($warn-color, 5%) 0%, $warn-color 100%);
+                background: linear-gradient(145deg, color.adjust($warn-color, $lightness: 5%) 0%, $warn-color 100%);
             }
         }
         
