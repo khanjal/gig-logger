@@ -1,88 +1,77 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Output, Input } from '@angular/core';
+import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone } from '@angular/core';
 
 @Directive({
-  selector: '[focus-scroll]',
+  selector: '[focusScroll]',
   standalone: true
 })
 export class FocusScrollDirective {
   @Input() focusScrollOffset: number = 100;
-  @Input() delayDropdownOnMobile: boolean = true; // New option to control dropdown delay
-  @Output() scrollComplete: EventEmitter<void> = new EventEmitter<void>();
-  @Output() scrollStart: EventEmitter<void> = new EventEmitter<void>();
-  @Output() dropdownReady: EventEmitter<void> = new EventEmitter<void>(); // Emitted when safe to open dropdown
+  @Input() delayDropdownOnMobile: boolean = true;
+  
+  @Output() scrollComplete = new EventEmitter<void>();
+  @Output() scrollStart = new EventEmitter<void>();
+  @Output() dropdownReady = new EventEmitter<void>();
 
+  private scrollTimeout: any;
   private isScrolling = false;
-  private scrollTimeout?: any;
 
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef, private ngZone: NgZone) {}
 
-  @HostListener('focus')
-  onFocus() {
-    const isMobile = this.isMobileDevice();
-    const hasVirtualKeyboard = this.hasVirtualKeyboard();
-    
+  @HostListener('focus', ['$event'])
+  onFocus(event: FocusEvent) {
     this.scrollStart.emit();
-    this.isScrolling = true;
-
-    const element = this.el.nativeElement as HTMLElement;
-    const rect = element.getBoundingClientRect();
-    
-    // Smart scroll calculation - only scroll if element is not well positioned
-    const viewportHeight = window.innerHeight;
-    const currentTop = rect.top;
-    const currentBottom = rect.bottom;
-    
-    // Don't scroll if element is already well-positioned in viewport
-    const minAcceptableTop = 50; // Minimum distance from top edge
-    const maxAcceptableBottom = viewportHeight - 100; // Leave space for virtual keyboard
-    
-    let targetScrollY = window.pageYOffset; // Default: don't scroll
-    
-    if (currentTop < minAcceptableTop) {
-      // Element is too close to top or cut off - scroll to bring it down
-      targetScrollY = window.pageYOffset + currentTop - Math.min(this.focusScrollOffset, 100);
-    } else if (currentBottom > maxAcceptableBottom) {
-      // Element is too close to bottom or cut off - scroll to bring it up  
-      targetScrollY = window.pageYOffset + currentTop - Math.min(this.focusScrollOffset, 150);
-    } else if (isMobile && hasVirtualKeyboard && currentBottom > viewportHeight * 0.6) {
-      // On mobile with virtual keyboard, ensure element is in upper portion
-      targetScrollY = window.pageYOffset + currentTop - Math.min(this.focusScrollOffset, 120);
-    }
     
     // Clear any existing timeout
     if (this.scrollTimeout) {
       clearTimeout(this.scrollTimeout);
     }
 
-    // Only scroll if we calculated a different position
-    if (Math.abs(targetScrollY - window.pageYOffset) > 10) {
-      window.scrollTo({
-        top: Math.max(0, targetScrollY),
-        behavior: 'smooth'
-      });
-    }
-
-    // Calculate delay based on device and keyboard
-    let delay = 100; // Base delay for scroll animation
+    // Detect mobile device and virtual keyboard scenario
+    const isMobile = this.isMobileDevice();
+    const hasVirtualKeyboard = this.hasVirtualKeyboard();
     
-    if (isMobile && hasVirtualKeyboard && this.delayDropdownOnMobile) {
-      // On mobile with virtual keyboard, wait longer for keyboard animation
+    // Calculate delay based on device and input type
+    let delay = 200; // Default delay
+    
+    if (isMobile && hasVirtualKeyboard) {
+      // Mobile with virtual keyboard needs longer delay
       delay = 600;
-    } else if (isMobile && this.delayDropdownOnMobile) {
-      // On mobile without virtual keyboard, moderate delay
+    } else if (isMobile) {
+      // Mobile without virtual keyboard
       delay = 300;
     }
 
-    this.scrollTimeout = setTimeout(() => {
-      this.isScrolling = false;
-      this.scrollComplete.emit();
-      this.dropdownReady.emit();
-    }, delay);
+    this.isScrolling = true;
+
+    // Scroll to element after a short delay
+    setTimeout(() => {
+      const element = this.el.nativeElement as HTMLElement;
+      const rect = element.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Calculate target scroll position
+      const targetY = rect.top + scrollTop - this.focusScrollOffset;
+      
+      // Smooth scroll using NgZone for better performance
+      this.ngZone.runOutsideAngular(() => {
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
+        });
+      });
+      
+      // Set completion timeout
+      this.scrollTimeout = setTimeout(() => {
+        this.isScrolling = false;
+        this.scrollComplete.emit();
+        this.dropdownReady.emit();
+      }, delay);
+    }, 50); // Small initial delay to let focus complete
   }
 
   @HostListener('blur')
   onBlur() {
-    // Clean up when focus is lost
+    // Clear scroll state on blur
     this.isScrolling = false;
     if (this.scrollTimeout) {
       clearTimeout(this.scrollTimeout);
@@ -94,14 +83,16 @@ export class FocusScrollDirective {
   }
 
   private hasVirtualKeyboard(): boolean {
-    // Check if this is an input that would trigger virtual keyboard
+    // Check if this is likely to trigger a virtual keyboard
     const element = this.el.nativeElement as HTMLElement;
-    const tagName = element.tagName.toLowerCase();
-    const inputType = element.getAttribute('type')?.toLowerCase();
+    const inputTypes = ['text', 'email', 'password', 'search', 'tel', 'url', 'number'];
     
-    return tagName === 'input' && 
-           (inputType === 'text' || inputType === 'email' || inputType === 'tel' || 
-            inputType === 'url' || inputType === 'search' || !inputType);
+    if (element.tagName === 'INPUT') {
+      const inputType = (element as HTMLInputElement).type;
+      return inputTypes.includes(inputType);
+    }
+    
+    return element.tagName === 'TEXTAREA' || element.hasAttribute('contenteditable');
   }
 
   public isCurrentlyScrolling(): boolean {

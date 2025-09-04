@@ -174,8 +174,7 @@
           fieldName="Pickup Address" 
           searchType="Address" 
           formControlName="startAddress"
-          googleSearch="address"
-          [scrollOffset]="200">
+          googleSearch="address">
         </app-search-input>
       </div>
     </div>
@@ -217,7 +216,6 @@
           searchType="Address" 
           formControlName="endAddress"
           googleSearch="address"
-          [scrollOffset]="250"
           (valueChanged)="showAddressNames()"
         ></app-search-input>
       </div>
