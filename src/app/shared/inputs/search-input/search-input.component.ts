@@ -85,6 +85,8 @@ export class SearchInputComponent implements OnDestroy {
   hasSelection = false;
   isGoogleSearching = false;
   showNoGoogleResults = false;
+  // When true skip the next focus handler after a user selection (prevents refocus on mobile)
+  private skipNextFocus: boolean = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
@@ -92,6 +94,12 @@ export class SearchInputComponent implements OnDestroy {
   private readonly CACHE_SIZE_LIMIT = 50;
   private googlePredictionsCache = new Map<string, ISearchItem[]>();
   private searchSubscription?: Subscription;
+
+  // Mobile detection method
+  private isMobile(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth <= 768;
+  }
   // #endregion
 
   // #region ControlValueAccessor
@@ -237,14 +245,28 @@ export class SearchInputComponent implements OnDestroy {
     }
 
     // Blur input after selection
-    this.blurInputAfterDelay();
+  // Prevent focus handler from immediately re-opening the dropdown on mobile
+  this.skipNextFocus = true;
+  // Clear the skip flag shortly after to restore normal behavior
+  setTimeout(() => { this.skipNextFocus = false; }, 350);
+  this.blurInputAfterDelay();
   }
 
   // Handle option selection change (works better on touch devices)
   onOptionSelection(event: MatOptionSelectionChange, item: ISearchItem): void {
     if (event && event.source && event.isUserInput) {
       // Use microtask to avoid ExpressionChangedAfterItHasBeenCheckedError when closing panel
-      Promise.resolve().then(() => this.onInputSelect(item));
+      Promise.resolve().then(async () => {
+        try {
+          await this.onInputSelect(item);
+        } catch (e) {
+          // ignore selection errors
+        }
+        // Ensure the autocomplete panel is closed after selection (extra guard for mobile)
+        if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
+          try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+        }
+      });
     }
   }
 
@@ -257,6 +279,12 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   onFocus(): void {
+    // If we just selected an item, skip this focus to avoid re-opening the dropdown on mobile
+    if (this.skipNextFocus) { this.skipNextFocus = false; return; }
+    
+    // Don't populate dropdown if user has already made a selection (mobile only issue)
+    if (this.isMobile() && this.hasSelection) return;
+
     // Don't immediately open dropdown - wait for focus-scroll directive signal
     const value = this.value;
     this._filterItems(value).then(items => {
@@ -267,9 +295,14 @@ export class SearchInputComponent implements OnDestroy {
 
   onDropdownReady(): void {
     // Called by focus-scroll directive when it's safe to open dropdown
+    // Don't open dropdown if user has already made a selection (mobile only issue)
+    if (this.isMobile() && this.hasSelection) return;
+    
     if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen && this.filteredItemsArray.length > 0) {
       // Small additional delay to ensure page scroll has fully settled
       setTimeout(() => {
+        // Check again in case hasSelection changed during the delay (mobile only)
+        if (this.isMobile() && this.hasSelection) return;
         if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
           this.autocompleteTrigger.openPanel();
         }
