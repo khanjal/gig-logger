@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ITrip } from '@interfaces/trip.interface';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, CurrencyPipe, DatePipe } from '@angular/common';
-import { TruncatePipe } from '@pipes/truncate.pipe';
 import { DateHelper } from '@helpers/date.helper';
 
 @Component({
@@ -10,7 +9,7 @@ import { DateHelper } from '@helpers/date.helper';
     templateUrl: './trips-table-basic.component.html',
     styleUrls: ['./trips-table-basic.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgClass, NgIf, CurrencyPipe, DatePipe, TruncatePipe]
+  imports: [MatIcon, NgClass, NgIf, CurrencyPipe, DatePipe]
 })
 export class TripsTableBasicComponent implements OnInit {
   @Input() trips: ITrip[] = [];
@@ -18,7 +17,6 @@ export class TripsTableBasicComponent implements OnInit {
   displayedColumns: string[] = [];
 
   prefers24Hour: boolean = false;
-
   ngOnInit() { 
     this.displayedColumns = ['date', 'service', 'place', 'tips'];
     this.prefers24Hour = DateHelper.prefers24Hour();

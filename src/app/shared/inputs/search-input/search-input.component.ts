@@ -229,6 +229,12 @@ export class SearchInputComponent implements OnDestroy {
     this.setInputValue(finalAddress);
     this.hasSelection = true;
 
+    // Clear suggestions and close dropdown so the selected item doesn't reappear
+    this.filteredItemsArray = [];
+    if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
+      try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+    }
+
     // Blur input after selection
     this.blurInputAfterDelay();
   }
