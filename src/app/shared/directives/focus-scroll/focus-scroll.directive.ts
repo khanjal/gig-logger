@@ -6,6 +6,7 @@ import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZon
 })
 export class FocusScrollDirective {
   @Input() delayDropdownOnMobile: boolean = true;
+  @Input() suppressDropdownAfterSelection: boolean = false;
   
   @Output() scrollComplete = new EventEmitter<void>();
   @Output() scrollStart = new EventEmitter<void>();
@@ -44,7 +45,10 @@ export class FocusScrollDirective {
       this.scrollTimeout = setTimeout(() => {
         this.isScrolling = false;
         this.scrollComplete.emit();
-        this.dropdownReady.emit();
+        // Only emit dropdownReady if not suppressed after selection
+        if (!this.suppressDropdownAfterSelection) {
+          this.dropdownReady.emit();
+        }
       }, delay);
     }, initialDelay);
   }  @HostListener('blur')
