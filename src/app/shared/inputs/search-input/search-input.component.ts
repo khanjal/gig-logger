@@ -5,6 +5,7 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 
 // Angular Material imports
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatOptionSelectionChange } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -237,6 +238,14 @@ export class SearchInputComponent implements OnDestroy {
 
     // Blur input after selection
     this.blurInputAfterDelay();
+  }
+
+  // Handle option selection change (works better on touch devices)
+  onOptionSelection(event: MatOptionSelectionChange, item: ISearchItem): void {
+    if (event && event.source && event.isUserInput) {
+      // Use microtask to avoid ExpressionChangedAfterItHasBeenCheckedError when closing panel
+      Promise.resolve().then(() => this.onInputSelect(item));
+    }
   }
 
   private blurInputAfterDelay(): void {
