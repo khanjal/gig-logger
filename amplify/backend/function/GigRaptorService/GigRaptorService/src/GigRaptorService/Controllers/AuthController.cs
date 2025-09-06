@@ -2,7 +2,6 @@
 using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace GigRaptorService.Controllers;
 
@@ -15,6 +14,7 @@ public class AuthController : ControllerBase
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly GoogleOAuthService _googleOAuthService;
     private readonly IMetricsService _metricsService;
+    private readonly MetricsHelper _metricsHelper;
 
     public AuthController(
         ILogger<AuthController> logger,
@@ -28,6 +28,7 @@ public class AuthController : ControllerBase
         _httpClientFactory = httpClientFactory;
         _googleOAuthService = googleOAuthService;
         _metricsService = metricsService;
+        _metricsHelper = new MetricsHelper(metricsService, logger);
     }
 
     [HttpPost]
@@ -51,40 +52,51 @@ public class AuthController : ControllerBase
             return StatusCode(500, new { message = "Server configuration error." });
         }
 
-        var requestBody = new Dictionary<string, string>
+        try
         {
-            { "client_id", clientId! },
-            { "client_secret", clientSecret! },
-            { "code", code },
-            { "grant_type", "authorization_code" },
-            { "redirect_uri", redirectUri },
-            { "code_verifier", codeVerifier }
-        };
+            var requestBody = new Dictionary<string, string>
+            {
+                { "client_id", clientId! },
+                { "client_secret", clientSecret! },
+                { "code", code },
+                { "grant_type", "authorization_code" },
+                { "redirect_uri", redirectUri },
+                { "code_verifier", codeVerifier }
+            };
 
-        var tokenResponse = await _googleOAuthService.RequestGoogleTokenAsync(requestBody);
+            var tokenResponse = await _metricsHelper.ExecuteWithApiMetrics("auth-authenticate", async () =>
+            {
+                return await _googleOAuthService.RequestGoogleTokenAsync(requestBody);
+            });
 
-        if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
-        {
-            _logger.LogWarning("Failed to obtain refresh token from Google for code: {Code}", code);
-            
-            // Track failed authentication using private method
-            await TrackAuthenticationMetricsAsync(false);
-            
-            return BadRequest(new { message = "Failed to obtain refresh token from Google." });
+            if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
+            {
+                _logger.LogWarning("Failed to obtain refresh token from Google for code: {Code}", code);
+                
+                await _metricsHelper.TrackAuthenticationAsync(false);
+                
+                return BadRequest(new { message = "Failed to obtain refresh token from Google." });
+            }
+
+            await _metricsHelper.TrackAuthenticationAsync(true);
+
+            var encryptedToken = EncryptToken(tokenResponse.RefreshToken);
+
+            Response.Cookies.Append(
+                RefreshTokenCookieName,
+                encryptedToken,
+                GetRefreshTokenCookieOptions(DateTimeOffset.UtcNow.AddYears(1))
+            );
+
+            return Ok(new { accessToken = tokenResponse.AccessToken });
         }
-
-        // Track successful authentication using private method
-        await TrackAuthenticationMetricsAsync(true);
-
-        var encryptedToken = EncryptToken(tokenResponse.RefreshToken);
-
-        Response.Cookies.Append(
-            RefreshTokenCookieName,
-            encryptedToken,
-            GetRefreshTokenCookieOptions(DateTimeOffset.UtcNow.AddYears(1))
-        );
-
-        return Ok(new { accessToken = tokenResponse.AccessToken });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Authentication failed");
+            await _metricsHelper.TrackAuthenticationAsync(false);
+            await _metricsHelper.TrackErrorAsync("AuthenticationFailed", "auth-authenticate");
+            return StatusCode(500, new { message = "Authentication failed", error = ex.Message });
+        }
     }
 
     [HttpPost("clear")]
@@ -109,18 +121,32 @@ public class AuthController : ControllerBase
         if (!ValidateRefreshToken(refreshToken))
             return Unauthorized(new { message = "Invalid refresh token." });
 
-        var tokenResponse = await _googleOAuthService.RefreshAccessTokenAsync(refreshToken);
-        if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+        try
         {
-            // Track failed token refresh using private method
-            await TrackAuthenticationMetricsAsync(false);
-            return Unauthorized(new { message = "Failed to retrieve access token from Google." });
+            var tokenResponse = await _metricsHelper.ExecuteWithApiMetrics("auth-refresh", async () =>
+            {
+                return await _googleOAuthService.RefreshAccessTokenAsync(refreshToken);
+            });
+
+            if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+            {
+                await _metricsHelper.TrackAuthenticationAsync(false);
+                return Unauthorized(new { message = "Failed to retrieve access token from Google." });
+            }
+
+            // Track successful token refresh
+            await _metricsService.TrackUserActivityAsync("system", "TokenRefresh");
+            await _metricsHelper.TrackAuthenticationAsync(true);
+
+            return Ok(new { accessToken = tokenResponse.AccessToken });
         }
-
-        // Track successful token refresh using private method
-        await TrackTokenRefreshMetricsAsync("system");
-
-        return Ok(new { accessToken = tokenResponse.AccessToken });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Token refresh failed");
+            await _metricsHelper.TrackAuthenticationAsync(false);
+            await _metricsHelper.TrackErrorAsync("TokenRefreshFailed", "auth-refresh");
+            return StatusCode(500, new { message = "Token refresh failed", error = ex.Message });
+        }
     }
 
     private string DecryptToken(string encryptedToken)
@@ -152,31 +178,5 @@ public class AuthController : ControllerBase
         };
 
         return options;
-    }
-
-    private async Task TrackAuthenticationMetricsAsync(bool success)
-    {
-        try
-        {
-            await _metricsService.TrackAuthenticationAsync(success);
-            _logger.LogInformation("📊 Authentication metrics sent: {Success}", success);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to track authentication metrics");
-        }
-    }
-
-    private async Task TrackTokenRefreshMetricsAsync(string userId)
-    {
-        try
-        {
-            await _metricsService.TrackUserActivityAsync(userId, "TokenRefresh");
-            _logger.LogInformation("📊 Token refresh metrics sent successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to track token refresh metrics");
-        }
     }
 }

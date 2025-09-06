@@ -1,6 +1,8 @@
 ﻿using GigRaptorService.Attributes;
 using GigRaptorService.Business;
+using GigRaptorService.Helpers;
 using GigRaptorService.Models;
+using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
@@ -15,12 +17,16 @@ public class FilesController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<FilesController> _logger;
+    private readonly IMetricsService _metricsService;
+    private readonly MetricsHelper _metricsHelper;
     private FileManager? _fileManager;
 
-    public FilesController(IConfiguration configuration, ILogger<FilesController> logger)
+    public FilesController(IConfiguration configuration, ILogger<FilesController> logger, IMetricsService metricsService)
     {
         _configuration = configuration;
         _logger = logger;
+        _metricsService = metricsService;
+        _metricsHelper = new MetricsHelper(metricsService, logger);
     }
 
     private void InitializeSheetmanager()
@@ -38,6 +44,12 @@ public class FilesController : ControllerBase
         return authHeader.Substring("Bearer ".Length).Trim();
     }
 
+    private string GetUserId()
+    {
+        // Try to get userId from HttpContext.Items (set by rate limiting middleware)
+        return HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? "unknown";
+    }
+
     // GET api/files/list
     [HttpGet("list")]
     [RateLimitFilter(10, 60, ApiType.Files)] // 10 requests per minute per user for Files API
@@ -48,13 +60,20 @@ public class FilesController : ControllerBase
     {
         try
         {
-            InitializeSheetmanager();
-            var sheets = await _fileManager!.ListSheets();
+            var sheets = await _metricsHelper.ExecuteWithApiMetrics("files-list", async () =>
+            {
+                InitializeSheetmanager();
+                return await _fileManager!.ListSheets();
+            }, GetUserId(), result => result?.Count >= 0);
+
+            await _metricsHelper.TrackCustomMetricAsync("Files.List.Count", sheets.Count);
+
             return Ok(sheets);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while listing sheets");
+            await _metricsHelper.TrackErrorAsync("ListSheetsError", "files-list");
             return StatusCode(500, new { message = "Failed to retrieve sheets", error = ex.Message });
         }
     }
@@ -76,20 +95,27 @@ public class FilesController : ControllerBase
                 return BadRequest(new { message = "Property name is required" });
             }
 
-            // Create the sheet
-            InitializeSheetmanager();
-            var sheet = await _fileManager!.CreateSheet(property.Name);
-            
-            if (sheet == null)
+            var sheet = await _metricsHelper.ExecuteWithApiMetrics("files-create", async () =>
             {
-                _logger.LogError("Failed to create sheet: FileManager.CreateSheet returned null");
-                return StatusCode(500, new { message = "Failed to create sheet" });
-            }
+                // Create the sheet
+                InitializeSheetmanager();
+                var createdSheet = await _fileManager!.CreateSheet(property.Name);
+                
+                if (createdSheet == null)
+                {
+                    _logger.LogError("Failed to create sheet: FileManager.CreateSheet returned null");
+                    throw new InvalidOperationException("Failed to create sheet");
+                }
 
-            // Initialize the sheet data
-            var sheetManager = new SheetManager(GetAccessTokenFromHeader()!, sheet.Id, _configuration);
-            await sheetManager.CreateSheet();
-            
+                // Initialize the sheet data
+                var sheetManager = new SheetManager(GetAccessTokenFromHeader()!, createdSheet.Id, _configuration);
+                await sheetManager.CreateSheet();
+                
+                return createdSheet;
+            }, GetUserId(), result => result != null);
+
+            await _metricsHelper.TrackCustomMetricAsync("Files.Create.Success", 1);
+
             // Return the created property entity
             return Created($"/sheets/{sheet.Id}", sheet);
         }
@@ -97,12 +123,14 @@ public class FilesController : ControllerBase
         {
             // Handle validation errors specifically
             _logger.LogWarning(ex, "Invalid argument during sheet creation");
+            await _metricsHelper.TrackErrorAsync("ValidationError", "files-create");
             return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
             // Handle all other errors
             _logger.LogError(ex, "Error occurred while creating sheet");
+            await _metricsHelper.TrackErrorAsync("CreateSheetError", "files-create");
             return StatusCode(500, new { message = "Failed to create sheet", error = ex.Message });
         }
     }

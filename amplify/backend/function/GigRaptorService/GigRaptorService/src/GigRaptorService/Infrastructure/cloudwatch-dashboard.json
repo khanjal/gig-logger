@@ -4,22 +4,18 @@
       "type": "metric",
       "x": 0,
       "y": 0,
-      "width": 12,
+      "width": 8,
       "height": 6,
       "properties": {
         "metrics": [
           [ "RaptorGig/Lambda", "API.TotalCalls" ],
-          [ ".", "API.sheets-health.Success" ],
-          [ ".", "API.sheets-all.Success" ],
-          [ ".", "User.DataSync" ],
-          [ ".", "User.PlacesAutocomplete" ],
-          [ ".", "User.TokenRefresh" ],
+          [ ".", "Sheets.TotalOperations" ],
           [ ".", "User.TotalActivity" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "us-east-1",
-        "title": "Request Counts",
+        "title": "Overall Activity",
         "period": 300,
         "yAxis": {
           "left": {
@@ -31,25 +27,26 @@
     },
     {
       "type": "metric",
-      "x": 12,
+      "x": 8,
       "y": 0,
-      "width": 12,
+      "width": 8,
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "API.sheets-all.Duration" ],
-          [ ".", "API.sheets-health.Duration" ],
-          [ ".", "Sheets.SaveData.Duration" ],
-          [ "AWS/Lambda", "Duration", "FunctionName", "raptor-gig-service" ]
+          [ "RaptorGig/Lambda", "Sheets.GetAll.Success" ],
+          [ ".", "Sheets.GetSingle.Success" ],
+          [ ".", "Sheets.GetMultiple.Success" ],
+          [ ".", "Sheets.Create.Success" ],
+          [ ".", "Sheets.SaveData.Success" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "us-east-1",
-        "title": "Response Times (ms)",
+        "title": "Sheets Operations Success",
         "period": 300,
         "yAxis": {
           "left": {
-            "label": "Milliseconds",
+            "label": "Count",
             "min": 0
           }
         }
@@ -57,23 +54,22 @@
     },
     {
       "type": "metric",
-      "x": 0,
-      "y": 6,
-      "width": 12,
+      "x": 16,
+      "y": 0,
+      "width": 8,
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "Error.Total" ],
-          [ ".", "Error.QuotaExceeded" ],
-          [ ".", "Error.GeneralError" ],
-          [ ".", "API.sheets-health.Error" ],
-          [ ".", "API.sheets-all.Error" ],
-          [ "AWS/Lambda", "Errors", "FunctionName", "raptor-gig-service" ]
+          [ "RaptorGig/Lambda", "Sheets.GetAll.Error" ],
+          [ ".", "Sheets.GetSingle.Error" ],
+          [ ".", "Sheets.GetMultiple.Error" ],
+          [ ".", "Sheets.Create.Error" ],
+          [ ".", "Sheets.SaveData.Error" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "us-east-1",
-        "title": "Error Counts",
+        "title": "Sheets Operations Errors",
         "period": 300,
         "yAxis": {
           "left": {
@@ -85,8 +81,179 @@
     },
     {
       "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "Sheets.GetAll.Duration" ],
+          [ ".", "Sheets.GetSingle.Duration" ],
+          [ ".", "Sheets.GetMultiple.Duration" ],
+          [ ".", "Sheets.Create.Duration" ],
+          [ ".", "Sheets.SaveData.Duration" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Sheets Operation Performance",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Milliseconds",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
       "x": 12,
       "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "places-autocomplete.Success" ],
+          [ ".", "places-autocomplete.Error" ],
+          [ ".", "places-details.Success" ],
+          [ ".", "places-details.Error" ],
+          [ ".", "places-usage.Success" ],
+          [ ".", "places-usage.Error" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Places API Operations",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "auth-authenticate.Success" ],
+          [ ".", "auth-authenticate.Error" ],
+          [ ".", "auth-refresh.Success" ],
+          [ ".", "auth-refresh.Error" ],
+          [ ".", "Auth.Success" ],
+          [ ".", "Auth.Failed" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Authentication Operations",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "files-list.Success" ],
+          [ ".", "files-list.Error" ],
+          [ ".", "files-create.Success" ],
+          [ ".", "files-create.Error" ],
+          [ ".", "Files.List.Count" ],
+          [ ".", "Files.Create.Success" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Files Operations",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 12,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "Error.QuotaExceeded" ],
+          [ ".", "Error.GeneralError" ],
+          [ ".", "Error.AuthenticationFailed" ],
+          [ ".", "Error.TokenRefreshFailed" ],
+          [ ".", "Error.ValidationError" ],
+          [ ".", "Error.ListSheetsError" ],
+          [ ".", "Error.CreateSheetError" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Error Types",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Errors",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 18,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "User.Sheets.GetAll" ],
+          [ ".", "User.Sheets.GetSingle" ],
+          [ ".", "User.Sheets.GetMultiple" ],
+          [ ".", "User.Sheets.Create" ],
+          [ ".", "User.DataSync" ],
+          [ ".", "User.places-autocomplete" ],
+          [ ".", "User.places-details" ],
+          [ ".", "User.files-list" ],
+          [ ".", "User.files-create" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "User Activity by Operation",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Activity Count",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 18,
       "width": 12,
       "height": 6,
       "properties": {
@@ -94,12 +261,14 @@
           [ "RaptorGig/Lambda", "Sheets.SaveData.ItemCount" ],
           [ ".", "Places.Autocomplete.QueryLength" ],
           [ ".", "RateLimit.Hit" ],
-          [ "AWS/Lambda", "Invocations", "FunctionName", "raptor-gig-service" ]
+          [ ".", "Sheets.GetAll.AdditionalInfo" ],
+          [ ".", "Sheets.GetSingle.AdditionalInfo" ],
+          [ ".", "Sheets.GetMultiple.AdditionalInfo" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "us-east-1",
-        "title": "Usage Metrics",
+        "title": "Custom Business Metrics",
         "period": 300,
         "yAxis": {
           "left": {
@@ -110,13 +279,80 @@
       }
     },
     {
+      "type": "metric",
+      "x": 0,
+      "y": 24,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Lambda", "Duration", "FunctionName", "raptor-gig-service" ],
+          [ ".", "Invocations", ".", "." ],
+          [ ".", "Errors", ".", "." ],
+          [ ".", "Throttles", ".", "." ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Function Health",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Count/ms",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 24,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "RaptorGig/Lambda", "places-autocomplete.Duration" ],
+          [ ".", "places-details.Duration" ],
+          [ ".", "auth-authenticate.Duration" ],
+          [ ".", "auth-refresh.Duration" ],
+          [ ".", "files-list.Duration" ],
+          [ ".", "files-create.Duration" ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "API Endpoint Performance",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "label": "Milliseconds",
+            "min": 0
+          }
+        }
+      }
+    },
+    {
       "type": "log",
       "x": 0,
-      "y": 12,
+      "y": 30,
       "width": 24,
       "height": 6,
       "properties": {
-        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /📊/\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "title": "Recent Metrics Activity",
+        "view": "table"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 36,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /ERROR/ or @message like /Failed/\n| sort @timestamp desc\n| limit 20",
         "region": "us-east-1",
         "title": "Recent Errors",
         "view": "table"

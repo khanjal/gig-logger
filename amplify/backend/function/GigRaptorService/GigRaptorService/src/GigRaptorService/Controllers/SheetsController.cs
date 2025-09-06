@@ -1,12 +1,11 @@
 ﻿using GigRaptorService.Attributes;
 using GigRaptorService.Business;
+using GigRaptorService.Helpers;
 using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
-using System.Diagnostics;
 
 namespace GigRaptorService.Controllers;
 
@@ -16,6 +15,7 @@ public class SheetsController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IMetricsService _metricsService;
     private readonly ILogger<SheetsController> _logger;
+    private readonly MetricsHelper _metricsHelper;
     private SheetManager? _sheetmanager;
 
     public SheetsController(IConfiguration configuration, IMetricsService metricsService, ILogger<SheetsController> logger)
@@ -23,6 +23,7 @@ public class SheetsController : ControllerBase
         _configuration = configuration;
         _metricsService = metricsService;
         _logger = logger;
+        _metricsHelper = new MetricsHelper(metricsService, logger);
     }
 
     private void InitializeSheetmanager(string? sheetId = null)
@@ -55,13 +56,18 @@ public class SheetsController : ControllerBase
         return authHeader.Substring("Bearer ".Length).Trim();
     }
 
+    private string GetSheetId() => HttpContext.Request.Headers["Sheet-Id"].ToString();
+
     // GET api/sheets/all  
     [HttpGet("all")]
     [RequireSheetId]
     public async Task<SheetResponse> GetAll()
     {
-        InitializeSheetmanager();
-        return await _sheetmanager!.GetSheets();
+        return await _metricsHelper.ExecuteWithMetrics("Sheets.GetAll", async () =>
+        {
+            InitializeSheetmanager();
+            return await _sheetmanager!.GetSheets();
+        }, GetSheetId());
     }
 
     // GET api/sheets/get/single  
@@ -69,16 +75,22 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetResponse> GetSingle(string sheetName)
     {
-        InitializeSheetmanager();
-        return await _sheetmanager!.GetSheet(sheetName);
+        return await _metricsHelper.ExecuteWithMetrics("Sheets.GetSingle", async () =>
+        {
+            InitializeSheetmanager();
+            return await _sheetmanager!.GetSheet(sheetName);
+        }, GetSheetId(), sheetName);
     }
 
     [HttpGet("multiple")]
     [RequireSheetId]
     public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName)
     {
-        InitializeSheetmanager();
-        return await _sheetmanager!.GetSheets(sheetName);
+        return await _metricsHelper.ExecuteWithMetrics("Sheets.GetMultiple", async () =>
+        {
+            InitializeSheetmanager();
+            return await _sheetmanager!.GetSheets(sheetName);
+        }, GetSheetId(), string.Join(",", sheetName));
     }
 
     // GET api/sheets/health  
@@ -96,8 +108,11 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetResponse> Create([FromBody] PropertyEntity properties)
     {
-        InitializeSheetmanager();
-        return await _sheetmanager!.CreateSheet();
+        return await _metricsHelper.ExecuteWithMetrics("Sheets.Create", async () =>
+        {
+            InitializeSheetmanager();
+            return await _sheetmanager!.CreateSheet();
+        }, GetSheetId());
     }
 
     // POST api/sheets/save  
@@ -105,69 +120,11 @@ public class SheetsController : ControllerBase
     [RequireSheetId]
     public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
     {
-        var stopwatch = Stopwatch.StartNew();
-        var success = false;
-
-        try
+        return await _metricsHelper.ExecuteWithSaveMetrics(async () =>
         {
             InitializeSheetmanager(sheetEntity.Properties.Id);
-            var result = await _sheetmanager!.SaveData(sheetEntity);
-            
-            // Determine success based on whether we got a result and no critical errors
-            success = result != null && (result.SheetEntity?.Messages?.Any(m => m.Level.ToLower() == "error") != true);
-
-            // Track sync metrics using private method
-            await TrackSaveDataMetricsAsync(sheetEntity.Properties.Id ?? "", stopwatch.Elapsed, success, sheetEntity);
-
-            return result;
-        }
-        catch (Exception)
-        {
-            success = false;
-            throw;
-        }
-        finally
-        {
-            stopwatch.Stop();
-        }
-    }
-
-    private async Task TrackSaveDataMetricsAsync(string sheetId, TimeSpan duration, bool success, SheetEntity sheetEntity)
-    {
-        try
-        {
-            await _metricsService.TrackSheetsOperationAsync("SaveData", duration, success);
-            await _metricsService.TrackUserActivityAsync(sheetId, "DataSync");
-            
-            // Track data volume - be defensive about property access
-            var totalItems = (sheetEntity.Trips?.Count ?? 0) + 
-                           (sheetEntity.Shifts?.Count ?? 0);
-            
-            // Add other collections if they exist
-            try
-            {
-                // Use reflection to safely check for other collections
-                var entityType = sheetEntity.GetType();
-                var expensesProperty = entityType.GetProperty("Expenses");
-                if (expensesProperty != null)
-                {
-                    var expenses = expensesProperty.GetValue(sheetEntity) as System.Collections.ICollection;
-                    totalItems += expenses?.Count ?? 0;
-                }
-            }
-            catch
-            {
-                // Ignore reflection errors
-            }
-            
-            await _metricsService.TrackCustomMetricAsync("Sheets.SaveData.ItemCount", totalItems);
-            _logger.LogInformation("📊 Save data metrics sent successfully");
-        }
-        catch (Exception ex)
-        {
-            // Log but don't throw - metrics failures shouldn't impact the main operation
-            _logger.LogError(ex, "Failed to track save data metrics");
-        }
+            return await _sheetmanager!.SaveData(sheetEntity);
+        }, sheetEntity);
     }
 
     private void TrackRateLimitMetricsAsync(string sheetId)

@@ -11,6 +11,11 @@
       "Type": "String",
       "Default": "RaptorSheetsServiceRole",
       "Description": "Name of the Lambda execution role"
+    },
+    "NotificationEmail": {
+      "Type": "String",
+      "Default": "khanjal@gmail.com",
+      "Description": "Email address for alarm notifications"
     }
   },
   "Resources": {
@@ -50,11 +55,26 @@
         ]
       }
     },
+    "AlarmNotificationTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "RaptorGigAlarms",
+        "DisplayName": "RaptorGig Monitoring Alerts",
+        "Subscription": [
+          {
+            "Protocol": "email",
+            "Endpoint": {
+              "Ref": "NotificationEmail"
+            }
+          }
+        ]
+      }
+    },
     "RaptorGigHighErrorRateAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "AlarmName": "RaptorGig-HighErrorRate",
-        "AlarmDescription": "Alarm when error rate exceeds 5%",
+        "AlarmDescription": "Alarm when overall error rate exceeds 5% of total API calls",
         "MetricName": "Error.Total",
         "Namespace": "RaptorGig/Lambda",
         "Statistic": "Sum",
@@ -62,29 +82,39 @@
         "EvaluationPeriods": 2,
         "Threshold": 5,
         "ComparisonOperator": "GreaterThanThreshold",
-        "TreatMissingData": "notBreaching"
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
       }
     },
-    "RaptorGigSlowResponseAlarm": {
+    "RaptorGigSheetsSlowResponseAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "AlarmName": "RaptorGig-SlowResponse",
-        "AlarmDescription": "Alarm when sync operations take longer than 5 seconds",
+        "AlarmName": "RaptorGig-SheetsSlowResponse",
+        "AlarmDescription": "Alarm when Sheets operations take longer than 90 seconds (large sheets can take up to 60s normally)",
         "MetricName": "Sheets.SaveData.Duration",
         "Namespace": "RaptorGig/Lambda",
         "Statistic": "Average",
         "Period": 300,
         "EvaluationPeriods": 3,
-        "Threshold": 5000,
+        "Threshold": 90000,
         "ComparisonOperator": "GreaterThanThreshold",
-        "TreatMissingData": "notBreaching"
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
       }
     },
     "RaptorGigRateLimitAlarm": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "AlarmName": "RaptorGig-HighRateLimitHits",
-        "AlarmDescription": "Alarm when rate limit hits increase",
+        "AlarmDescription": "Alarm when rate limit hits exceed normal thresholds",
         "MetricName": "RateLimit.Hit",
         "Namespace": "RaptorGig/Lambda",
         "Statistic": "Sum",
@@ -92,7 +122,175 @@
         "EvaluationPeriods": 2,
         "Threshold": 10,
         "ComparisonOperator": "GreaterThanThreshold",
-        "TreatMissingData": "notBreaching"
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
+      }
+    },
+    "RaptorGigAuthenticationFailureAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-AuthFailures",
+        "AlarmDescription": "Alarm when authentication failures spike (potential security issue)",
+        "MetricName": "Auth.Failed",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "Threshold": 5,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
+      }
+    },
+    "RaptorGigPlacesQuotaAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-PlacesQuotaExceeded",
+        "AlarmDescription": "Alarm when Google Places API quota is exceeded (immediate alert needed)",
+        "MetricName": "Error.QuotaExceeded",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
+      }
+    },
+    "RaptorGigSheetsErrorsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-SheetsErrors",
+        "AlarmDescription": "Alarm when Sheets operations have high error rates (affects gig worker productivity)",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "EvaluationPeriods": 2,
+        "Metrics": [
+          {
+            "Id": "m1",
+            "MetricStat": {
+              "Metric": {
+                "Namespace": "RaptorGig/Lambda",
+                "MetricName": "Sheets.SaveData.Error"
+              },
+              "Period": 300,
+              "Stat": "Sum"
+            }
+          },
+          {
+            "Id": "m2",
+            "MetricStat": {
+              "Metric": {
+                "Namespace": "RaptorGig/Lambda",
+                "MetricName": "Sheets.GetAll.Error"
+              },
+              "Period": 300,
+              "Stat": "Sum"
+            }
+          },
+          {
+            "Id": "m3",
+            "MetricStat": {
+              "Metric": {
+                "Namespace": "RaptorGig/Lambda",
+                "MetricName": "Sheets.Create.Error"
+              },
+              "Period": 300,
+              "Stat": "Sum"
+            }
+          },
+          {
+            "Id": "e1",
+            "Expression": "m1 + m2 + m3"
+          }
+        ],
+        "Threshold": 3,
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
+      }
+    },
+    "RaptorGigLowUserActivityAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-LowUserActivity",
+        "AlarmDescription": "Alarm when user activity drops significantly during business hours (potential service issue)",
+        "MetricName": "User.TotalActivity",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Sum",
+        "Period": 1800,
+        "EvaluationPeriods": 2,
+        "Threshold": 5,
+        "ComparisonOperator": "LessThanThreshold",
+        "TreatMissingData": "breaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
+      }
+    },
+    "RaptorGigLambdaErrorAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-LambdaErrors",
+        "AlarmDescription": "Alarm when Lambda function has errors (critical system failure)",
+        "MetricName": "Errors",
+        "Namespace": "AWS/Lambda",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "LambdaFunctionName"
+            }
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
+      }
+    },
+    "RaptorGigDataVolumeAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "RaptorGig-HighDataVolume",
+        "AlarmDescription": "Alarm when sync operations handle unusually large datasets (>1000 items)",
+        "MetricName": "Sheets.SaveData.ItemCount",
+        "Namespace": "RaptorGig/Lambda",
+        "Statistic": "Maximum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1000,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "AlarmNotificationTopic"
+          }
+        ]
       }
     }
   },
@@ -101,6 +299,18 @@
       "Description": "URL to the CloudWatch Dashboard",
       "Value": {
         "Fn::Sub": "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=RaptorGig-Metrics"
+      }
+    },
+    "AlarmTopicArn": {
+      "Description": "ARN of the SNS topic for alarm notifications",
+      "Value": {
+        "Ref": "AlarmNotificationTopic"
+      }
+    },
+    "MetricsPolicyArn": {
+      "Description": "ARN of the CloudWatch metrics policy",
+      "Value": {
+        "Ref": "CloudWatchMetricsPolicy"
       }
     }
   }
