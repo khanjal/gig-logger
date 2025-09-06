@@ -71,10 +71,12 @@ export class ShiftsComponent implements OnInit {
   }
 
   handleParentReload() {
-    this.shifts = []; // Clear the shifts array
-    this.currentPage = 0; // Reset pagination
-    this.noMoreData = false; // Reset noMoreData flag
-    this.loadShifts();
+  this.shifts = []; // Clear the shifts array
+  this.currentPage = 0; // Reset pagination
+  this.noMoreData = false; // Reset noMoreData flag
+  this.showAddForm = false;
+  this.editId = null;
+  this.loadShifts();
   }
 
   async confirmSaveDialog() {

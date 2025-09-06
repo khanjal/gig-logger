@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IShift } from '@interfaces/shift.interface';
 import { CommonModule } from '@angular/common';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
@@ -34,7 +34,6 @@ import { Router } from '@angular/router';
 export class ShiftFormComponent implements OnInit {
   @Input() rowId?: string | null;
   @Output() parentReload = new EventEmitter<any>();
-  @Output() editModeExit = new EventEmitter<string | undefined>();
 
   shiftForm = new FormGroup({
     date: new FormControl(new Date(), Validators.required),
@@ -110,6 +109,15 @@ export class ShiftFormComponent implements OnInit {
       });
       // Initial calculation for new shift only
       this.updateComputedShiftNumber();
+      
+      // Load last shift's service and region as defaults
+      const lastShift = await this.shiftService.getLastShift();
+      if (lastShift && lastShift.service) {
+        this.shiftForm.patchValue({
+          service: lastShift.service,
+          region: lastShift.region || ''
+        });
+      }
     }
   }
 
@@ -258,19 +266,27 @@ export class ShiftFormComponent implements OnInit {
         }
 
         await this.shiftService.update([this.shift]);
-        this.editModeExit.emit(undefined);
-        this.router.navigate(['/shifts']);
+        this.parentReload.emit();
+        this.formReset();
       }
     }
   }
 
   formReset() {
-    this.shiftForm.reset();
+    this.shiftForm.reset({ date: new Date() });
+    this.shiftService.getLastShift().then(lastShift => {
+      if (lastShift && lastShift.service) {
+        this.shiftForm.patchValue({
+          service: lastShift.service,
+          region: lastShift.region || ''
+        });
+      }
+    });
   }
 
   close() {
-    this.editModeExit.emit();
-    this.router.navigate(['/shifts']); // Navigate to shifts on cancel
+    this.parentReload.emit();
+    this.formReset();
   }
 
 }
