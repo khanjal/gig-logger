@@ -154,52 +154,53 @@ export class ShiftFormComponent implements OnInit {
   }
 
   async addShift() {
-    if (this.shiftForm.valid) {
-      const formValue = this.shiftForm.value;
-      // Generate key for new shift using DateHelper.getDays()
-      const days = DateHelper.getDays(formValue.distance ?? new Date());
-      const key = `${days}-${this.computedShiftNumber}-${formValue.service}`;
-      const newShift: IShift = {
-        id: undefined,
-        rowId: await this.shiftService.getMaxShiftId() + 1,
-        date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
-        distance: formValue.distance ?? 0,
-        active: formValue.active || '',
-        finish: formValue.finish || '',
-        key: key,
-        region: formValue.region || '',
-        saved: false,
-        service: formValue.service || '',
-        number: this.computedShiftNumber,
-        start: formValue.start || '',
-        time: formValue.time || '',
-        trips: formValue.trips ?? 0,
-        totalActive: '',
-        totalTime: '',
-        totalTrips: formValue.trips ?? 0,
-        totalDistance: formValue.distance ?? 0,
-        totalPay: formValue.pay ?? 0,
-        totalTips: formValue.tip ?? 0,
-        totalBonus: formValue.bonus ?? 0,
-        grandTotal: formValue.total ?? 0,
-        totalCash: formValue.cash ?? 0,
-        note: formValue.note || '',
-        action: ActionEnum.Add,
-        actionTime: Date.now(),
-        amountPerTrip: 0,
-        amountPerDistance: 0,
-        amountPerTime: 0,
-        pay: formValue.pay ?? 0,
-        tip: formValue.tip ?? 0,
-        bonus: formValue.bonus ?? 0,
-        cash: formValue.cash ?? 0,
-        total: formValue.total ?? 0,
-        omit: formValue.omit ?? false,
-      };
-      await this.shiftService.add(newShift);
-      this.parentReload.emit();
-      this.formReset();
-    }
+    if (!this.shiftForm.valid) return;
+
+    const formValue = this.shiftForm.value;
+    // Generate key for new shift using DateHelper.getDays()
+    const days = DateHelper.getDays(formValue.distance ?? new Date());
+    const key = `${days}-${this.computedShiftNumber}-${formValue.service}`;
+    const newShift: IShift = {
+      id: undefined,
+      rowId: await this.shiftService.getMaxShiftId() + 1,
+      date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
+      distance: formValue.distance ?? 0,
+      active: formValue.active || '',
+      finish: formValue.finish || '',
+      key: key,
+      region: formValue.region || '',
+      saved: false,
+      service: formValue.service || '',
+      number: this.computedShiftNumber,
+      start: formValue.start || '',
+      time: formValue.time || '',
+      trips: formValue.trips ?? 0,
+      totalActive: '',
+      totalTime: '',
+      totalTrips: formValue.trips ?? 0,
+      totalDistance: formValue.distance ?? 0,
+      totalPay: formValue.pay ?? 0,
+      totalTips: formValue.tip ?? 0,
+      totalBonus: formValue.bonus ?? 0,
+      grandTotal: formValue.total ?? 0,
+      totalCash: formValue.cash ?? 0,
+      note: formValue.note || '',
+      action: ActionEnum.Add,
+      actionTime: Date.now(),
+      amountPerTrip: 0,
+      amountPerDistance: 0,
+      amountPerTime: 0,
+      pay: formValue.pay ?? 0,
+      tip: formValue.tip ?? 0,
+      bonus: formValue.bonus ?? 0,
+      cash: formValue.cash ?? 0,
+      total: formValue.total ?? 0,
+      omit: formValue.omit ?? false,
+    };
+
+    await this.shiftService.add(newShift);
+    this.parentReload.emit();
+    this.formReset();
   }
 
   async editShift() {
