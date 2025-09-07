@@ -215,12 +215,8 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-
       if (result) {
-          await this._tripService.saveUnsaved();
-          await this._shiftService.saveUnsavedShifts();
           this._snackBar.open("Trip(s) Saved to Spreadsheet");
-
           await this.reload("todaysTrips");
           this._viewportScroller.scrollToAnchor("todaysTrips");
       }

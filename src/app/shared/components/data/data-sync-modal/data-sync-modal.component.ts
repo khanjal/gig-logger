@@ -133,6 +133,10 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // Mark all items as saved in local database after successful save
+        await this._tripService.saveUnsaved();
+        await this._shiftService.saveUnsavedShifts();
+
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
     }
 

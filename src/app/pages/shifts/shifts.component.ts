@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
-import { MatMiniFabButton } from '@angular/material/button';
+import { MatMiniFabButton, MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
@@ -18,7 +19,7 @@ import { Router, ActivatedRoute } from '@angular/router';
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [MatMiniFabButton, MatIcon, NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
+    imports: [MatMiniFabButton, MatFabButton, MatIcon, NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
@@ -26,6 +27,7 @@ export class ShiftsComponent implements OnInit {
   actionEnum = ActionEnum;
   saving: boolean = false;
   unsavedShifts: IShift[] = [];
+  unsavedData: boolean = false;
   pageSize: number = 20; // Number of shifts to load per request
   currentPage: number = 0; // Current page index
   isLoading: boolean = false; // Prevent multiple simultaneous requests
@@ -34,7 +36,13 @@ export class ShiftsComponent implements OnInit {
 
   editId: string | null = null; // ID of the shift being edited, if any
 
-  constructor(public dialog: MatDialog, private _shiftService: ShiftService, private router: Router, private route: ActivatedRoute) { }
+  constructor(
+    public dialog: MatDialog, 
+    private _shiftService: ShiftService, 
+    private _snackBar: MatSnackBar,
+    private router: Router, 
+    private route: ActivatedRoute
+  ) { }
 
   async ngOnInit(): Promise<void> {
     this.route.paramMap.subscribe(params => {
@@ -55,6 +63,12 @@ export class ShiftsComponent implements OnInit {
     this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
     this.currentPage++;
     this.isLoading = false;
+    this.checkForUnsavedData();
+  }
+
+  checkForUnsavedData(): void {
+    this.unsavedShifts = this.shifts.filter(shift => !shift.saved);
+    this.unsavedData = this.unsavedShifts.length > 0;
   }
 
   onScroll(event: Event): void {
@@ -117,7 +131,11 @@ export class ShiftsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async (result: any) => {
         if (result) {
-            // Future: Implement save to spreadsheet functionality
+            // Show success message
+            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            
+            // Refresh the page to show updated state
+            this.handleParentReload();
         }
     });
   }
