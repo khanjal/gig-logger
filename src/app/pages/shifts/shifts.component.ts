@@ -71,12 +71,11 @@ export class ShiftsComponent implements OnInit {
   }
 
   handleParentReload() {
-  this.shifts = []; // Clear the shifts array
-  this.currentPage = 0; // Reset pagination
-  this.noMoreData = false; // Reset noMoreData flag
-  this.showAddForm = false;
-  this.editId = null;
-  this.loadShifts();
+    this.shifts = []; // Clear the shifts array
+    this.currentPage = 0; // Reset pagination
+    this.noMoreData = false; // Reset noMoreData flag
+    this.showAddForm = false;
+    this.loadShifts();
   }
 
   async confirmSaveDialog() {
@@ -123,9 +122,10 @@ export class ShiftsComponent implements OnInit {
     });
   }
 
-  exitEditMode(event?: any) {
-    // No edit mode for shifts yet, but this resolves the template error.
-    // You can implement edit logic here if needed.
+  exitEditMode(shiftId?: string) {
+    this.editId = null;
+    this.router.navigate(['/shifts']);
+    this.handleParentReload();
   }
 
   hideAddForm() {

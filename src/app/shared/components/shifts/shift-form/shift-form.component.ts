@@ -34,6 +34,7 @@ import { Router } from '@angular/router';
 export class ShiftFormComponent implements OnInit {
   @Input() rowId?: string | null;
   @Output() parentReload = new EventEmitter<any>();
+  @Output() editModeExit = new EventEmitter<string>();
 
   shiftForm = new FormGroup({
     date: new FormControl(new Date(), Validators.required),
@@ -216,12 +217,12 @@ export class ShiftFormComponent implements OnInit {
         this.shift.service = formValue.service || '';
         this.shift.region = formValue.region || '';
         this.shift.number = formValue.number ?? 0;
-        this.shift.distance = formValue.distance ?? 0;
+        this.shift.distance = formValue.distance;
         this.shift.active = formValue.active || '';
         this.shift.finish = formValue.finish || '';
         this.shift.start = formValue.start || '';
         this.shift.time = formValue.time || '';
-        this.shift.trips = formValue.trips ?? 0;
+        this.shift.trips = formValue.trips;
         this.shift.totalActive = '';
         this.shift.totalTime = '';
         this.shift.note = formValue.note || '';
@@ -231,10 +232,10 @@ export class ShiftFormComponent implements OnInit {
         // this.shift.amountPerTrip = 0;
         // this.shift.amountPerDistance = 0;
         // this.shift.amountPerTime = 0;
-        this.shift.pay = formValue.pay ?? 0;
-        this.shift.tip = formValue.tip ?? 0;
-        this.shift.bonus = formValue.bonus ?? 0;
-        this.shift.cash = formValue.cash ?? 0;
+        this.shift.pay = formValue.pay;
+        this.shift.tip = formValue.tip;
+        this.shift.bonus = formValue.bonus;
+        this.shift.cash = formValue.cash;
         this.shift.omit = formValue.omit ?? false;
         this.shift.key = newKey;
 
@@ -267,7 +268,7 @@ export class ShiftFormComponent implements OnInit {
         }
 
         await this.shiftService.update([this.shift]);
-        this.parentReload.emit();
+        this.editModeExit.emit(this.shift.rowId?.toString() || '');
         this.formReset();
       }
     }
@@ -286,7 +287,13 @@ export class ShiftFormComponent implements OnInit {
   }
 
   close() {
-    this.parentReload.emit();
+    if (this.rowId && this.rowId !== 'new') {
+      // If we're editing an existing shift, emit editModeExit to navigate properly
+      this.editModeExit.emit(this.rowId);
+    } else {
+      // If we're adding a new shift, just reload the parent
+      this.parentReload.emit();
+    }
     this.formReset();
   }
 
