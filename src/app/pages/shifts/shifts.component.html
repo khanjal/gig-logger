@@ -1,7 +1,10 @@
 <div class="container mx-auto p-4 max-w-4xl">
     <div class="flex flex-wrap gap-4 items-center justify-between">
         <h1 class="text-2xl font-bold text-blue-700 flex-1">Shifts</h1>
-        <button *ngIf="!showAddForm && !editId" mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="showAddForm = true" [disabled]="showAddForm">
+        <button *ngIf="unsavedData && !(showAddForm || editId)" mat-mini-fab color="accent" class="save-button !w-9 !h-9" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()" title="Save Changes">
+            <mat-icon class="text-base">save</mat-icon>
+        </button>
+        <button *ngIf="!showAddForm && !editId" mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="showAddForm = true" [disabled]="showAddForm" title="Add Shift">
             <mat-icon class="text-base">add</mat-icon>
         </button>
         <button *ngIf="showAddForm && !editId" mat-mini-fab color="warn" class="hide-button !w-9 !h-9" (click)="hideAddForm()">
@@ -15,12 +18,6 @@
           (parentReload)="handleParentReload()"
           (editModeExit)="exitEditMode($event)">
         </shift-form>
-    </div>
-    
-    <div *ngIf="unsavedData && !(showAddForm || editId)" class="flex justify-center my-4 w-full">
-        <button mat-fab extended class="flex items-center gap-2 px-6 py-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" color="accent" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()">
-            <mat-icon>save</mat-icon> Save Changes to Spreadsheet
-        </button>
     </div>
 
     <div *ngIf="!(showAddForm || editId)" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
