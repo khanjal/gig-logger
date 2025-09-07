@@ -34,7 +34,7 @@ public class MetricsService : IMetricsService
                         MetricName = sanitizedName,
                         Value = value,
                         Unit = GetStandardUnit(unit),
-                        TimestampUtc = DateTime.UtcNow
+                        Timestamp = DateTime.UtcNow
                     }
                 }
             };
