@@ -7,7 +7,7 @@ import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
-import { MatMiniFabButton, MatFabButton } from '@angular/material/button';
+import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
@@ -19,7 +19,7 @@ import { Router, ActivatedRoute } from '@angular/router';
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [MatMiniFabButton, MatFabButton, MatIcon, NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
+    imports: [MatMiniFabButton, MatIcon, NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
