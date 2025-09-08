@@ -9,7 +9,6 @@
       "properties": {
         "metrics": [
           [ "RaptorGig/Lambda", "API.TotalCalls" ],
-          [ ".", "Sheets.TotalOperations" ],
           [ ".", "User.TotalActivity" ]
         ],
         "view": "timeSeries",
@@ -33,11 +32,12 @@
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "Sheets.GetAll.Success" ],
-          [ ".", "Sheets.GetSingle.Success" ],
-          [ ".", "Sheets.GetMultiple.Success" ],
-          [ ".", "Sheets.Create.Success" ],
-          [ ".", "Sheets.SaveData.Success" ]
+          [ "RaptorGig/Lambda", "sheets-all.Success" ],
+          [ ".", "sheets-single.Success" ],
+          [ ".", "sheets-multiple.Success" ],
+          [ ".", "sheets-create.Success" ],
+          [ ".", "sheets-save.Success" ],
+          [ ".", "sheets-health.Success" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -60,11 +60,12 @@
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "Sheets.GetAll.Error" ],
-          [ ".", "Sheets.GetSingle.Error" ],
-          [ ".", "Sheets.GetMultiple.Error" ],
-          [ ".", "Sheets.Create.Error" ],
-          [ ".", "Sheets.SaveData.Error" ]
+          [ "RaptorGig/Lambda", "sheets-all.Error" ],
+          [ ".", "sheets-single.Error" ],
+          [ ".", "sheets-multiple.Error" ],
+          [ ".", "sheets-create.Error" ],
+          [ ".", "sheets-save.Error" ],
+          [ ".", "sheets-health.Error" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -87,11 +88,12 @@
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "Sheets.GetAll.Duration" ],
-          [ ".", "Sheets.GetSingle.Duration" ],
-          [ ".", "Sheets.GetMultiple.Duration" ],
-          [ ".", "Sheets.Create.Duration" ],
-          [ ".", "Sheets.SaveData.Duration" ]
+          [ "RaptorGig/Lambda", "sheets-all.Duration" ],
+          [ ".", "sheets-single.Duration" ],
+          [ ".", "sheets-multiple.Duration" ],
+          [ ".", "sheets-create.Duration" ],
+          [ ".", "sheets-save.Duration" ],
+          [ ".", "sheets-health.Duration" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -116,10 +118,13 @@
         "metrics": [
           [ "RaptorGig/Lambda", "places-autocomplete.Success" ],
           [ ".", "places-autocomplete.Error" ],
+          [ ".", "places-autocomplete.Duration" ],
           [ ".", "places-details.Success" ],
           [ ".", "places-details.Error" ],
+          [ ".", "places-details.Duration" ],
           [ ".", "places-usage.Success" ],
-          [ ".", "places-usage.Error" ]
+          [ ".", "places-usage.Error" ],
+          [ ".", "places-usage.Duration" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -128,7 +133,7 @@
         "period": 300,
         "yAxis": {
           "left": {
-            "label": "Count",
+            "label": "Count/ms",
             "min": 0
           }
         }
@@ -144,10 +149,13 @@
         "metrics": [
           [ "RaptorGig/Lambda", "auth-authenticate.Success" ],
           [ ".", "auth-authenticate.Error" ],
+          [ ".", "auth-authenticate.Duration" ],
           [ ".", "auth-refresh.Success" ],
           [ ".", "auth-refresh.Error" ],
-          [ ".", "Auth.Success" ],
-          [ ".", "Auth.Failed" ]
+          [ ".", "auth-refresh.Duration" ],
+          [ ".", "auth-clear.Success" ],
+          [ ".", "auth-clear.Error" ],
+          [ ".", "auth-clear.Duration" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -156,7 +164,7 @@
         "period": 300,
         "yAxis": {
           "left": {
-            "label": "Count",
+            "label": "Count/ms",
             "min": 0
           }
         }
@@ -172,10 +180,10 @@
         "metrics": [
           [ "RaptorGig/Lambda", "files-list.Success" ],
           [ ".", "files-list.Error" ],
+          [ ".", "files-list.Duration" ],
           [ ".", "files-create.Success" ],
           [ ".", "files-create.Error" ],
-          [ ".", "Files.List.Count" ],
-          [ ".", "Files.Create.Success" ]
+          [ ".", "files-create.Duration" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -184,7 +192,7 @@
         "period": 300,
         "yAxis": {
           "left": {
-            "label": "Count",
+            "label": "Count/ms",
             "min": 0
           }
         }
@@ -202,14 +210,14 @@
           [ ".", "Error.GeneralError" ],
           [ ".", "Error.AuthenticationFailed" ],
           [ ".", "Error.TokenRefreshFailed" ],
-          [ ".", "Error.ValidationError" ],
           [ ".", "Error.ListSheetsError" ],
-          [ ".", "Error.CreateSheetError" ]
+          [ ".", "Error.CreateSheetError" ],
+          [ ".", "RateLimit.Hit" ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "us-east-1",
-        "title": "Error Types",
+        "title": "Error Types & Rate Limits",
         "period": 300,
         "yAxis": {
           "left": {
@@ -227,15 +235,20 @@
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "User.Sheets.GetAll" ],
-          [ ".", "User.Sheets.GetSingle" ],
-          [ ".", "User.Sheets.GetMultiple" ],
-          [ ".", "User.Sheets.Create" ],
-          [ ".", "User.DataSync" ],
+          [ "RaptorGig/Lambda", "User.sheets-all" ],
+          [ ".", "User.sheets-single" ],
+          [ ".", "User.sheets-multiple" ],
+          [ ".", "User.sheets-create" ],
+          [ ".", "User.sheets-save" ],
+          [ ".", "User.sheets-health" ],
           [ ".", "User.places-autocomplete" ],
           [ ".", "User.places-details" ],
+          [ ".", "User.places-usage" ],
           [ ".", "User.files-list" ],
-          [ ".", "User.files-create" ]
+          [ ".", "User.files-create" ],
+          [ ".", "User.auth-authenticate" ],
+          [ ".", "User.auth-refresh" ],
+          [ ".", "User.auth-clear" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -258,12 +271,11 @@
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "Sheets.SaveData.ItemCount" ],
-          [ ".", "Places.Autocomplete.QueryLength" ],
-          [ ".", "RateLimit.Hit" ],
-          [ ".", "Sheets.GetAll.AdditionalInfo" ],
-          [ ".", "Sheets.GetSingle.AdditionalInfo" ],
-          [ ".", "Sheets.GetMultiple.AdditionalInfo" ]
+          [ "RaptorGig/Lambda", "Places.Autocomplete.QueryLength" ],
+          [ ".", "Files.List.Count" ],
+          [ ".", "Files.Create.Success" ],
+          [ ".", "Auth.Success" ],
+          [ ".", "Auth.Failed" ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -312,17 +324,16 @@
       "height": 6,
       "properties": {
         "metrics": [
-          [ "RaptorGig/Lambda", "places-autocomplete.Duration" ],
-          [ ".", "places-details.Duration" ],
-          [ ".", "auth-authenticate.Duration" ],
-          [ ".", "auth-refresh.Duration" ],
-          [ ".", "files-list.Duration" ],
-          [ ".", "files-create.Duration" ]
+          [ "RaptorGig/Lambda", "sheets-all.Duration", { "stat": "Average" } ],
+          [ ".", "places-autocomplete.Duration", { "stat": "Average" } ],
+          [ ".", "auth-authenticate.Duration", { "stat": "Average" } ],
+          [ ".", "files-list.Duration", { "stat": "Average" } ],
+          [ ".", "files-create.Duration", { "stat": "Average" } ]
         ],
         "view": "timeSeries",
         "stacked": false,
         "region": "us-east-1",
-        "title": "API Endpoint Performance",
+        "title": "Average Response Times by Endpoint",
         "period": 300,
         "yAxis": {
           "left": {
@@ -352,7 +363,7 @@
       "width": 24,
       "height": 6,
       "properties": {
-        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /ERROR/ or @message like /Failed/\n| sort @timestamp desc\n| limit 20",
+        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /ERROR/ or @message like /Failed/ or @message like /Error/\n| sort @timestamp desc\n| limit 20",
         "region": "us-east-1",
         "title": "Recent Errors",
         "view": "table"

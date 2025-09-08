@@ -52,8 +52,9 @@ public class MetricsService : IMetricsService
     {
         var tasks = new List<Task>
         {
-            TrackCustomMetricAsync($"API.{endpoint}.Duration", duration.TotalMilliseconds, "Milliseconds"),
-            TrackCustomMetricAsync($"API.{endpoint}.{(success ? "Success" : "Error")}", 1),
+            // Send metrics in the format expected by the dashboard
+            TrackCustomMetricAsync($"{endpoint}.Duration", duration.TotalMilliseconds, "Milliseconds"),
+            TrackCustomMetricAsync($"{endpoint}.{(success ? "Success" : "Error")}", 1),
             TrackCustomMetricAsync("API.TotalCalls", 1)
         };
 
@@ -67,6 +68,18 @@ public class MetricsService : IMetricsService
             TrackCustomMetricAsync($"Sheets.{operation}.Duration", duration.TotalMilliseconds, "Milliseconds"),
             TrackCustomMetricAsync($"Sheets.{operation}.{(success ? "Success" : "Error")}", 1),
             TrackCustomMetricAsync("Sheets.TotalOperations", 1)
+        };
+
+        await Task.WhenAll(tasks);
+    }
+
+    public async Task TrackHealthCheckAsync(string endpoint, TimeSpan duration, bool success)
+    {
+        var tasks = new List<Task>
+        {
+            TrackCustomMetricAsync($"Health.{endpoint}.Duration", duration.TotalMilliseconds, "Milliseconds"),
+            TrackCustomMetricAsync($"Health.{endpoint}.{(success ? "Success" : "Error")}", 1),
+            TrackCustomMetricAsync("Health.TotalChecks", 1)
         };
 
         await Task.WhenAll(tasks);

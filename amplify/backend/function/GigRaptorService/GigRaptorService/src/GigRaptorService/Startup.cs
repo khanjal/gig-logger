@@ -156,9 +156,6 @@ public class Startup
         // Use response compression middleware
         app.UseResponseCompression();
 
-        // Add metrics middleware to track all API calls
-        app.UseMiddleware<MetricsMiddleware>();
-
         // Only apply the token refresh middleware on specific paths
         app.UseWhen(
             context => context.Request.Path.StartsWithSegments("/sheets", StringComparison.OrdinalIgnoreCase),

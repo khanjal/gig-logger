@@ -9,9 +9,9 @@ This implementation adds comprehensive metrics tracking to the GigRaptor Lambda 
 - **Purpose**: Centralized service for tracking custom metrics
 - **Privacy**: User IDs are hashed using SHA256 for privacy protection
 
-### 2. MetricsHelper
-- **Location**: `Helpers/MetricsHelper.cs`
-- **Purpose**: Standardized metrics wrapper for all controllers
+### 2. TrackMetricsAttribute
+- **Location**: `Attributes/TrackMetricsAttribute.cs`
+- **Purpose**: Automatic metrics tracking for controller actions
 - **Non-blocking**: Metrics are sent asynchronously to avoid impacting API performance
 
 ### 3. Controller Integration
@@ -65,14 +65,34 @@ This implementation adds comprehensive metrics tracking to the GigRaptor Lambda 
 - `Error.GeneralError` - General application errors
 - `Error.AuthenticationFailed` - Authentication failures
 - `Error.TokenRefreshFailed` - Token refresh failures
-- `Error.ValidationError` - Input validation errors
-- `Error.ListSheetsError` - Sheet listing errors
-- `Error.CreateSheetError` - Sheet creation errors
-- `RateLimit.Hit` - Rate limit violations
 
-### Custom Business Metrics
-- `{Operation}.AdditionalInfo` - Operation-specific information tracking
-- Various custom metrics for business intelligence
+## Implementation Pattern
+
+### Automatic Tracking via Attribute
+```csharp
+[HttpPost("autocomplete")]
+[TrackMetrics("places-autocomplete")]
+public async Task<IActionResult> GetAutocomplete([FromBody] PlacesAutocompleteRequest request)
+{
+    // This automatically tracks:
+    // - places-autocomplete.Duration
+    // - places-autocomplete.Success/Error  
+    // - User.places-autocomplete
+    // - API.TotalCalls
+}
+```
+
+### Custom Metrics via Direct Service Calls
+```csharp
+// Track specific business metrics
+await _metricsService.TrackCustomMetricAsync("Places.Autocomplete.QueryLength", request.Query.Length);
+
+// Track authentication events
+await _metricsService.TrackAuthenticationAsync(true);
+
+// Track errors with context
+await _metricsService.TrackErrorAsync("QuotaExceeded", "places-autocomplete");
+```
 
 ## CloudWatch Dashboard
 

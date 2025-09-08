@@ -15,7 +15,6 @@ public class SheetsController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IMetricsService _metricsService;
     private readonly ILogger<SheetsController> _logger;
-    private readonly MetricsHelper _metricsHelper;
     private SheetManager? _sheetmanager;
 
     public SheetsController(IConfiguration configuration, IMetricsService metricsService, ILogger<SheetsController> logger)
@@ -23,7 +22,6 @@ public class SheetsController : ControllerBase
         _configuration = configuration;
         _metricsService = metricsService;
         _logger = logger;
-        _metricsHelper = new MetricsHelper(metricsService, logger);
     }
 
     private void InitializeSheetmanager(string? sheetId = null)
@@ -61,41 +59,36 @@ public class SheetsController : ControllerBase
     // GET api/sheets/all  
     [HttpGet("all")]
     [RequireSheetId]
+    [TrackMetrics("sheets-all")]
     public async Task<SheetResponse> GetAll()
     {
-        return await _metricsHelper.ExecuteWithMetrics("Sheets.GetAll", async () =>
-        {
-            InitializeSheetmanager();
-            return await _sheetmanager!.GetSheets();
-        }, GetSheetId());
+        InitializeSheetmanager();
+        return await _sheetmanager!.GetSheets();
     }
 
     // GET api/sheets/get/single  
     [HttpGet("single/{sheetName}")]
     [RequireSheetId]
+    [TrackMetrics("sheets-single")]
     public async Task<SheetResponse> GetSingle(string sheetName)
     {
-        return await _metricsHelper.ExecuteWithMetrics("Sheets.GetSingle", async () =>
-        {
-            InitializeSheetmanager();
-            return await _sheetmanager!.GetSheet(sheetName);
-        }, GetSheetId(), sheetName);
+        InitializeSheetmanager();
+        return await _sheetmanager!.GetSheet(sheetName);
     }
 
     [HttpGet("multiple")]
     [RequireSheetId]
+    [TrackMetrics("sheets-multiple")]
     public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName)
     {
-        return await _metricsHelper.ExecuteWithMetrics("Sheets.GetMultiple", async () =>
-        {
-            InitializeSheetmanager();
-            return await _sheetmanager!.GetSheets(sheetName);
-        }, GetSheetId(), string.Join(",", sheetName));
+        InitializeSheetmanager();
+        return await _sheetmanager!.GetSheets(sheetName);
     }
 
     // GET api/sheets/health  
     [HttpGet("health")]
     [RequireSheetId]
+    [TrackMetrics("sheets-health")]
     public async Task<bool> Health()
     {
         InitializeSheetmanager();
@@ -106,25 +99,21 @@ public class SheetsController : ControllerBase
     // POST api/sheets/create  
     [HttpPost("create")]
     [RequireSheetId]
+    [TrackMetrics("sheets-create")]
     public async Task<SheetResponse> Create([FromBody] PropertyEntity properties)
     {
-        return await _metricsHelper.ExecuteWithMetrics("Sheets.Create", async () =>
-        {
-            InitializeSheetmanager();
-            return await _sheetmanager!.CreateSheet();
-        }, GetSheetId());
+        InitializeSheetmanager();
+        return await _sheetmanager!.CreateSheet();
     }
 
     // POST api/sheets/save  
     [HttpPost("save")]
     [RequireSheetId]
+    [TrackMetrics("sheets-save")]
     public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
     {
-        return await _metricsHelper.ExecuteWithSaveMetrics(async () =>
-        {
-            InitializeSheetmanager(sheetEntity.Properties.Id);
-            return await _sheetmanager!.SaveData(sheetEntity);
-        }, sheetEntity);
+        InitializeSheetmanager(sheetEntity.Properties.Id);
+        return await _sheetmanager!.SaveData(sheetEntity);
     }
 
     private void TrackRateLimitMetricsAsync(string sheetId)

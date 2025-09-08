@@ -94,14 +94,38 @@
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
         "AlarmName": "RaptorGig-SheetsSlowResponse",
-        "AlarmDescription": "Alarm when Sheets operations take longer than 90 seconds (large sheets can take up to 60s normally)",
-        "MetricName": "Sheets.SaveData.Duration",
-        "Namespace": "RaptorGig/Lambda",
-        "Statistic": "Average",
-        "Period": 300,
-        "EvaluationPeriods": 3,
-        "Threshold": 90000,
+        "AlarmDescription": "Alarm when Sheets operations take longer than 8 seconds (normal operations should be under 5s)",
         "ComparisonOperator": "GreaterThanThreshold",
+        "EvaluationPeriods": 3,
+        "Metrics": [
+          {
+            "Id": "m1",
+            "MetricStat": {
+              "Metric": {
+                "Namespace": "RaptorGig/Lambda",
+                "MetricName": "sheets-save.Duration"
+              },
+              "Period": 300,
+              "Stat": "Average"
+            }
+          },
+          {
+            "Id": "m2",
+            "MetricStat": {
+              "Metric": {
+                "Namespace": "RaptorGig/Lambda",
+                "MetricName": "sheets-all.Duration"
+              },
+              "Period": 300,
+              "Stat": "Average"
+            }
+          },
+          {
+            "Id": "e1",
+            "Expression": "MAX([m1, m2])"
+          }
+        ],
+        "Threshold": 8000,
         "TreatMissingData": "notBreaching",
         "AlarmActions": [
           {
@@ -183,7 +207,7 @@
             "MetricStat": {
               "Metric": {
                 "Namespace": "RaptorGig/Lambda",
-                "MetricName": "Sheets.SaveData.Error"
+                "MetricName": "sheets-save.Error"
               },
               "Period": 300,
               "Stat": "Sum"
@@ -194,7 +218,7 @@
             "MetricStat": {
               "Metric": {
                 "Namespace": "RaptorGig/Lambda",
-                "MetricName": "Sheets.GetAll.Error"
+                "MetricName": "sheets-all.Error"
               },
               "Period": 300,
               "Stat": "Sum"
@@ -205,7 +229,7 @@
             "MetricStat": {
               "Metric": {
                 "Namespace": "RaptorGig/Lambda",
-                "MetricName": "Sheets.Create.Error"
+                "MetricName": "sheets-create.Error"
               },
               "Period": 300,
               "Stat": "Sum"
@@ -265,26 +289,6 @@
         "EvaluationPeriods": 2,
         "Threshold": 1,
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "TreatMissingData": "notBreaching",
-        "AlarmActions": [
-          {
-            "Ref": "AlarmNotificationTopic"
-          }
-        ]
-      }
-    },
-    "RaptorGigDataVolumeAlarm": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "Properties": {
-        "AlarmName": "RaptorGig-HighDataVolume",
-        "AlarmDescription": "Alarm when sync operations handle unusually large datasets (>1000 items)",
-        "MetricName": "Sheets.SaveData.ItemCount",
-        "Namespace": "RaptorGig/Lambda",
-        "Statistic": "Maximum",
-        "Period": 300,
-        "EvaluationPeriods": 1,
-        "Threshold": 1000,
-        "ComparisonOperator": "GreaterThanThreshold",
         "TreatMissingData": "notBreaching",
         "AlarmActions": [
           {
