@@ -1,6 +1,5 @@
 ﻿using GigRaptorService.Attributes;
 using GigRaptorService.Business;
-using GigRaptorService.Helpers;
 using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
