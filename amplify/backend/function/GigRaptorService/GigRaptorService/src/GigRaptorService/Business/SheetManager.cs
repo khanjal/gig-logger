@@ -108,7 +108,7 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetResponse> CreateSheet()
     {
-        var sheetEntity = await _googleSheetManager.CreateSheets();
+        var sheetEntity = await _googleSheetManager.CreateAllSheets();
         return SheetResponse.FromSheetEntity(sheetEntity);
     }
 
@@ -148,7 +148,7 @@ public class SheetManager : ISheetManager
 
     public async Task<SheetResponse> GetSheets()
     {
-        var sheetData = await _googleSheetManager.GetSheets();
+        var sheetData = await _googleSheetManager.GetAllSheets();
         var sheetEntity = sheetData ?? new SheetEntity();
         
         return await ProcessResponseSize(
