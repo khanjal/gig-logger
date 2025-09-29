@@ -34,6 +34,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { sort } from '@helpers/sort.helper';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
+import { NumberHelper } from '@helpers/number.helper';
 
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
@@ -173,7 +174,6 @@ export class TripFormComponent implements OnInit {
     let trip: ITrip = this.data ?? {} as ITrip;
 
     trip.key = shift.key;
-    
     trip.date = shift.date;
     trip.service = shift.service;
     trip.number = shift.number ?? 0;
@@ -182,13 +182,18 @@ export class TripFormComponent implements OnInit {
     trip.startAddress = this.tripForm.value.startAddress ?? "";
     trip.endAddress = this.tripForm.value.endAddress ?? "";
     trip.endUnit = this.tripForm.value.endUnit ?? "";
-    trip.distance = this.tripForm.value.distance;
+    trip.distance = NumberHelper.toNullableNumber(this.tripForm.value.distance);
 
-    trip.pay = +(this.tripForm.value.pay ?? 0);
-    trip.tip = this.tripForm.value.tip;
-    trip.bonus = this.tripForm.value.bonus;
-    trip.cash = this.tripForm.value.cash;
-    trip.total = +(trip.pay ?? 0) + +(trip.tip ?? 0) + +(trip.bonus ?? 0);
+    trip.pay = NumberHelper.toNullableNumber(this.tripForm.value.pay);
+    trip.tip = NumberHelper.toNullableNumber(this.tripForm.value.tip);
+    trip.bonus = NumberHelper.toNullableNumber(this.tripForm.value.bonus);
+    trip.cash = NumberHelper.toNullableNumber(this.tripForm.value.cash);
+    // total is a calculated field, but ensure nulls are handled
+    trip.total = NumberHelper.toNullableNumber(
+      (NumberHelper.toNullableNumber(this.tripForm.value.pay) ?? 0) +
+      (NumberHelper.toNullableNumber(this.tripForm.value.tip) ?? 0) +
+      (NumberHelper.toNullableNumber(this.tripForm.value.bonus) ?? 0)
+    );
 
     trip.startOdometer = this.tripForm.value.startOdometer;
     trip.endOdometer = this.tripForm.value.endOdometer;
