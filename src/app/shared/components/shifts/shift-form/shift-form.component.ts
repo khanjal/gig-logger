@@ -17,6 +17,7 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DateHelper } from '@helpers/date.helper';
+import { NumberHelper } from '@helpers/number.helper';
 import { TripService } from '@services/sheets/trip.service';
 import { Router } from '@angular/router';
 
@@ -208,6 +209,7 @@ export class ShiftFormComponent implements OnInit {
     if (this.shiftForm.valid && this.rowId) {
       const formValue = this.shiftForm.value;
       if (this.shift) {
+        console.log('Editing shift with form value:', formValue);
         // Store old key for comparison
         const oldKey = this.shift.key;
         // Update shift fields
@@ -217,12 +219,12 @@ export class ShiftFormComponent implements OnInit {
         this.shift.service = formValue.service || '';
         this.shift.region = formValue.region || '';
         this.shift.number = formValue.number ?? 0;
-        this.shift.distance = formValue.distance;
+        this.shift.distance = NumberHelper.toNullableNumber(formValue.distance);
         this.shift.active = formValue.active || '';
         this.shift.finish = formValue.finish || '';
         this.shift.start = formValue.start || '';
         this.shift.time = formValue.time || '';
-        this.shift.trips = formValue.trips;
+        this.shift.trips = NumberHelper.toNullableNumber(formValue.trips);
         this.shift.totalActive = '';
         this.shift.totalTime = '';
         this.shift.note = formValue.note || '';
@@ -232,10 +234,10 @@ export class ShiftFormComponent implements OnInit {
         // this.shift.amountPerTrip = 0;
         // this.shift.amountPerDistance = 0;
         // this.shift.amountPerTime = 0;
-        this.shift.pay = formValue.pay;
-        this.shift.tip = formValue.tip;
-        this.shift.bonus = formValue.bonus;
-        this.shift.cash = formValue.cash;
+        this.shift.pay = NumberHelper.toNullableNumber(formValue.pay);
+        this.shift.tip = NumberHelper.toNullableNumber(formValue.tip);
+        this.shift.bonus = NumberHelper.toNullableNumber(formValue.bonus);
+        this.shift.cash = NumberHelper.toNullableNumber(formValue.cash);
         this.shift.omit = formValue.omit ?? false;
         this.shift.key = newKey;
 
@@ -266,6 +268,8 @@ export class ShiftFormComponent implements OnInit {
             await this.tripService.update([trip]);
           }
         }
+
+        console.log('Updated shift:', this.shift);
 
         await this.shiftService.update([this.shift]);
         this.editModeExit.emit(this.shift.rowId?.toString() || '');
