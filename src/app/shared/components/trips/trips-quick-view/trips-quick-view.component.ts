@@ -38,6 +38,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
+  @Output("editClicked") editClicked: EventEmitter<ITrip> = new EventEmitter();
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
@@ -219,6 +220,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
 
   async editTrip() {
+    // Emit edit event for parent components to handle (e.g., closing dialogs)
+    this.editClicked.emit(this.trip);
+    
     // Navigate to trips page with edit mode and trip rowId
     this._router.navigate(['/trips/edit', this.trip.rowId]);
   }
