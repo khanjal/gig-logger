@@ -72,7 +72,6 @@ export class SetupComponent {
   unsavedData: boolean = false;
 
   version: string = '';
-  build: string = '';
 
   constructor(
     public dialog: MatDialog,
@@ -91,10 +90,8 @@ export class SetupComponent {
   async ngOnInit(): Promise<void> {
     this.isAuthenticated = await this.authService.isAuthenticated();
     this.load();
-    // Load version/build info
-    const v = await this.versionService.getVersion();
-    this.version = v.version;
-    this.build = v.build;
+    // Load formatted version string (YYYYMMDD.build)
+    this.version = await this.versionService.getFormattedVersion();
   }
 
   public async load() {
