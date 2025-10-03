@@ -14,12 +14,12 @@ export class VersionService {
     }
   }
 
-  // Returns a formatted version string like YYYYMMDD.build
+  // Returns a formatted version string like YYYY.MM.DD.build
   async getFormattedVersion(): Promise<string> {
     const v = await this.getVersion();
     if (v.version === 'unknown' || v.build === 'unknown') return 'unknown';
-    // Remove dashes from date if present
-    const date = v.version.replace(/-/g, '');
+    // Replace dashes with dots in date (YYYY-MM-DD -> YYYY.MM.DD)
+    const date = v.version.replace(/-/g, '.');
     return `${date}.${v.build}`;
   }
 }
