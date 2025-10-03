@@ -37,14 +37,14 @@
       <span class="text-base font-bold text-blue-500 font-mono flex-shrink-0">#{{shift.rowId}}</span>
       <!-- Service Name, Number (flexible, grows) -->
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
-        <span class="truncate block">{{shift.service}}</span><span *ngIf="shift.number > 0">&nbsp;#{{shift.number}}</span>
+  <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
-        <mat-icon *ngIf="!shift.grandTotal" class="text-gray-400 text-base">hourglass_empty</mat-icon>
-        <mat-icon *ngIf="shift.amountPerTime >= 25" class="text-green-600 text-base">trending_up</mat-icon>
-        <mat-icon *ngIf="shift.amountPerTime >= 20 && shift.amountPerTime < 25" class="text-blue-600 text-base">trending_neutral</mat-icon>
-        <mat-icon *ngIf="shift.amountPerTime < 20" class="text-red-500 text-base">trending_down</mat-icon>
+        @if (!shift.grandTotal) {<mat-icon class="text-gray-400 text-base">hourglass_empty</mat-icon>}
+        @if (shift.amountPerTime >= 25) {<mat-icon class="text-green-600 text-base">trending_up</mat-icon>}
+        @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-blue-600 text-base">trending_neutral</mat-icon>}
+        @if (shift.amountPerTime < 20) {<mat-icon class="text-red-500 text-base">trending_down</mat-icon>}
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{ 'text-gray-400': !shift.grandTotal, 'text-green-600': shift.amountPerTime >= 25, 'text-blue-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-500': shift.amountPerTime < 20 }">
           {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
@@ -55,27 +55,33 @@
     <div class="flex items-center mt-1 text-xs text-gray-700 w-full">
       <mat-icon class="text-blue-400 text-base mr-1">schedule</mat-icon>
       <span class="font-mono font-medium whitespace-nowrap truncate">
-        <span *ngIf="shift.date">{{ shift.date | date:'EEE, MMM d' }}</span>
-        <span *ngIf="shift.start"> • {{ shift.start | noseconds:prefers24Hour }}<span *ngIf="shift.finish">-{{ shift.finish | noseconds:prefers24Hour }}</span></span>
-        <span *ngIf="shift.totalTime"> • {{shift.totalTime | durationFormat}}</span>
+        @if (shift.date) { {{ shift.date | date:'EEE, MMM d' }} }
+        @if (shift.start) { • {{ shift.start | noseconds:prefers24Hour }}@if (shift.finish) { -{{ shift.finish | noseconds:prefers24Hour }} } }
+        @if (shift.totalTime) { • {{shift.totalTime | durationFormat}} }
       </span>
     </div>
     <!-- Divider for visual separation -->
     <div class="my-2 border-t border-gray-200"></div>
     <!-- Info Row: trips (left), distance (center), active (right) -->
     <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center w-full relative">
-      <span *ngIf="shift.totalTrips" class="flex items-center gap-1 flex-1 justify-start">
-        <mat-icon class="text-blue-400 text-base">route</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
-      </span>
-      <span *ngIf="shift.totalDistance" class="flex items-center gap-1 flex-1 justify-center">
-        <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
-      </span>
-      <span *ngIf="shift.totalActive" class="flex items-center gap-1 flex-1 justify-end">
-        <mat-icon class="text-blue-400 text-base">directions_car</mat-icon>
-        <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
-      </span>
+      @if (shift.totalTrips) {
+        <span class="flex items-center gap-1 flex-1 justify-start">
+          <mat-icon class="text-blue-400 text-base">route</mat-icon>
+          <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
+        </span>
+      }
+      @if (shift.totalDistance) {
+        <span class="flex items-center gap-1 flex-1 justify-center">
+          <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
+          <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
+        </span>
+      }
+      @if (shift.totalActive) {
+        <span class="flex items-center gap-1 flex-1 justify-end">
+          <mat-icon class="text-blue-400 text-base">directions_car</mat-icon>
+          <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
+        </span>
+      }
     </div>
     <!-- Toggle Button Bar -->
     <div class="focus-within:ring-0 focus-within:outline-none mt-2">
@@ -95,69 +101,93 @@
     </div>
   </div>
   <!-- Details Section -->
-  <div class="p-3 bg-gray-50 border-t" *ngIf="isExpanded">
+  @if (isExpanded) {
+    <div class="p-3 bg-gray-50 border-t">
     <!-- Region Row (moved from summary) -->
-    <div *ngIf="shift.region" class="mb-4">
-      <span class="inline-block px-3 py-1 rounded bg-gray-100 text-sm text-gray-700 border border-gray-200 font-medium max-w-full truncate" title="{{shift.region}}">
-        <mat-icon class="text-gray-400 text-base mr-1 align-middle">public</mat-icon>
-        {{shift.region}}
-      </span>
-    </div>
+    @if (shift.region) {
+      <div class="mb-4">
+        <span class="inline-block px-3 py-1 rounded bg-gray-100 text-sm text-gray-700 border border-gray-200 font-medium max-w-full truncate" title="{{shift.region}}">
+          <mat-icon class="text-gray-400 text-base mr-1 align-middle">public</mat-icon>
+          {{shift.region}}
+        </span>
+      </div>
+    }
     <!-- Quick Stats Row (remove finish time and duration badges) -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" *ngIf="shift.amountPerTime || (shift.grandTotal && shift.totalDistance)">
-      <div *ngIf="shift.amountPerTime" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Rate/Hr</div>
-        <div class="text-sm font-bold text-green-600">${{shift.amountPerTime | number:'1.2-2'}}</div>
+    @if (shift.amountPerTime || (shift.grandTotal && shift.totalDistance)) {
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        @if (shift.amountPerTime) {
+          <div class="text-center p-2 bg-white rounded-lg border">
+            <div class="text-xs text-gray-500 mb-1">Rate/Hr</div>
+            <div class="text-sm font-bold text-green-600">${{shift.amountPerTime | number:'1.2-2'}}</div>
+          </div>
+        }
+        @if (shift.grandTotal && shift.totalDistance) {
+          <div class="text-center p-2 bg-white rounded-lg border">
+            <div class="text-xs text-gray-500 mb-1">Rate/Mile</div>
+            <div class="text-sm font-bold text-blue-600">${{(shift.grandTotal / shift.totalDistance) | number:'1.2-2'}}</div>
+          </div>
+        }
       </div>
-      <div *ngIf="shift.grandTotal && shift.totalDistance" class="text-center p-2 bg-white rounded-lg border">
-        <div class="text-xs text-gray-500 mb-1">Rate/Mile</div>
-        <div class="text-sm font-bold text-blue-600">${{(shift.grandTotal / shift.totalDistance) | number:'1.2-2'}}</div>
-      </div>
-    </div>
+    }
     <!-- Payment Breakdown -->
-    <div class="mb-4" *ngIf="shift.totalPay || shift.totalTips || shift.totalBonus || shift.totalCash">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-        <mat-icon class="text-blue-400 text-base">payments</mat-icon>
-        Payment Details
-      </h3>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div *ngIf="shift.totalPay" class="flex justify-between p-2 bg-white rounded border">
-          <span class="text-xs text-gray-600">Pay</span>
-          <span class="text-sm font-bold">{{shift.totalPay | currency}}</span>
+    @if (shift.totalPay || shift.totalTips || shift.totalBonus || shift.totalCash) {
+      <div class="mb-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+          <mat-icon class="text-blue-400 text-base">payments</mat-icon>
+          Payment Details
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          @if (shift.totalPay) {
+            <div class="flex justify-between p-2 bg-white rounded border">
+              <span class="text-xs text-gray-600">Pay</span>
+              <span class="text-sm font-bold">{{shift.totalPay | currency}}</span>
+            </div>
+          }
+          @if (shift.totalTips) {
+            <div class="flex justify-between p-2 bg-white rounded border">
+              <span class="text-xs text-gray-600">Tip</span>
+              <span class="text-sm font-bold">{{shift.totalTips | currency}}</span>
+            </div>
+          }
+          @if (shift.totalBonus) {
+            <div class="flex justify-between p-2 bg-white rounded border">
+              <span class="text-xs text-gray-600">Bonus</span>
+              <span class="text-sm font-bold">{{shift.totalBonus | currency}}</span>
+            </div>
+          }
+          @if (shift.totalCash) {
+            <div class="flex justify-between p-2 bg-white rounded border">
+              <span class="text-xs text-gray-600">Cash</span>
+              <span class="text-sm font-bold">{{shift.totalCash | currency}}</span>
+            </div>
+          }
         </div>
-        <div *ngIf="shift.totalTips" class="flex justify-between p-2 bg-white rounded border">
-          <span class="text-xs text-gray-600">Tip</span>
-          <span class="text-sm font-bold">{{shift.totalTips | currency}}</span>
-        </div>
-        <div *ngIf="shift.totalBonus" class="flex justify-between p-2 bg-white rounded border">
-          <span class="text-xs text-gray-600">Bonus</span>
-          <span class="text-sm font-bold">{{shift.totalBonus | currency}}</span>
-        </div>
-        <div *ngIf="shift.totalCash" class="flex justify-between p-2 bg-white rounded border">
-          <span class="text-xs text-gray-600">Cash</span>
-          <span class="text-sm font-bold">{{shift.totalCash | currency}}</span>
-        </div>
+        @if (shift.grandTotal) {
+          <div class="mt-2 p-2 bg-green-50 rounded border border-green-200">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-semibold text-green-700">Total</span>
+              <span class="text-lg font-bold text-green-700">{{shift.grandTotal | currency}}</span>
+            </div>
+          </div>
+        }
       </div>
-      <div *ngIf="shift.grandTotal" class="mt-2 p-2 bg-green-50 rounded border border-green-200">
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-semibold text-green-700">Total</span>
-          <span class="text-lg font-bold text-green-700">{{shift.grandTotal | currency}}</span>
-        </div>
-      </div>
-    </div>
+    }
     <!-- Note -->
-    <div *ngIf="shift.note" class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-      <h3 class="text-sm font-semibold text-yellow-800 mb-2 flex items-center gap-2">
-        <mat-icon class="text-yellow-600 text-base">format_quote</mat-icon>
-        Note
-      </h3>
-      <p class="text-sm text-yellow-700 italic">{{shift.note}}</p>
-    </div>
+    @if (shift.note) {
+      <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+        <h3 class="text-sm font-semibold text-yellow-800 mb-2 flex items-center gap-2">
+          <mat-icon class="text-yellow-600 text-base">format_quote</mat-icon>
+          Note
+        </h3>
+        <p class="text-sm text-yellow-700 italic">{{shift.note}}</p>
+      </div>
+    }
     <!-- Trips Table -->
     <div>
       <app-shift-trips-table [tripKey]="shift.key"></app-shift-trips-table>
     </div>
-  </div>
+    </div>
+  }
   <!-- Action Bar -->
   <div class="flex items-center justify-between p-3 border-t"
     [ngClass]="{

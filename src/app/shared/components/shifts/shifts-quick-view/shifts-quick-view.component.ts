@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { UnitHelper } from '@helpers/unit.helper';
     imports: [
         MatIcon,
         NgClass,
-        NgIf,
+        CommonModule,
         ShiftTripsTableComponent,
         DecimalPipe,
         CurrencyPipe,
