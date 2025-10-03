@@ -27,6 +27,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';
+import { VersionService } from '@services/version.service';
 import { CommonService } from '@services/common.service';
 import { LoggerService } from '@services/logger.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -69,6 +70,10 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
+
+  version: string = '';
+  build: string = '';
+
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -78,13 +83,18 @@ export class SetupComponent {
     private _shiftService: ShiftService,
     private _tripService: TripService,
     private _timerService: TimerService,
-    protected authService: AuthGoogleService
+    protected authService: AuthGoogleService,
+    private versionService: VersionService
   ) { }
+
 
   async ngOnInit(): Promise<void> {
     this.isAuthenticated = await this.authService.isAuthenticated();
-
     this.load();
+    // Load version/build info
+    const v = await this.versionService.getVersion();
+    this.version = v.version;
+    this.build = v.build;
   }
 
   public async load() {
