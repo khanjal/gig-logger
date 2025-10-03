@@ -72,10 +72,52 @@ export class ApiMessageHelper {
      * @returns Processed result focused on SAVE_DATA messages
      */
     static processSheetSaveResponse(messages: ApiMessage[]): MessageProcessingResult {
-        return this.processApiMessages(messages, {
-            messageType: 'SAVE_DATA',
-            errorLevels: ['ERROR']
-        });
+        if (!messages || !Array.isArray(messages)) {
+            return {
+                success: false,
+                errorMessage: 'No response messages received',
+                filteredMessages: [],
+                allMessages: []
+            };
+        }
+
+        // Filter to SAVE_DATA messages
+        const saveDataMessages = messages.filter((msg: ApiMessage) => msg.type === 'SAVE_DATA');
+        
+        // For save operations, we should have at least some SAVE_DATA messages
+        if (saveDataMessages.length === 0) {
+            return {
+                success: false,
+                errorMessage: 'No save status messages received from server',
+                filteredMessages: [],
+                allMessages: messages
+            };
+        }
+
+        // Check for errors
+        const errorMessage = saveDataMessages.find((msg: ApiMessage) => msg.level === 'ERROR');
+        
+        // Check for successful messages
+        const successfulMessages = saveDataMessages.filter((msg: ApiMessage) => 
+            msg.level === 'INFO' || msg.level === 'SUCCESS'
+        );
+
+        // If no errors but also no successful messages, something is suspicious
+        if (!errorMessage && successfulMessages.length === 0) {
+            return {
+                success: false,
+                errorMessage: 'Save operation status unclear - no success or error messages',
+                filteredMessages: saveDataMessages,
+                allMessages: messages
+            };
+        }
+
+        return {
+            success: !errorMessage,
+            errorMessage: errorMessage?.message,
+            filteredMessages: saveDataMessages,
+            allMessages: messages
+        };
     }
 
     /**
