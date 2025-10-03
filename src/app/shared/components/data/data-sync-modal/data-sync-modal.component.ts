@@ -7,6 +7,7 @@ import { map, Subscription, timer } from 'rxjs';
 
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';
+import { ApiMessageHelper } from '@helpers/api-message.helper';
 
 // Application-specific imports - Interfaces
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
@@ -126,9 +127,20 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         sheetData.trips = await this._tripService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");
-        let postResponse = await this._gigLoggerService.postSheetData(sheetData);
+        let messages = await this._gigLoggerService.postSheetData(sheetData);
         
-        if (!postResponse) {
+        // Process the response using the helper
+        const result = ApiMessageHelper.processSheetSaveResponse(messages);
+        
+        // Display only SAVE_DATA messages
+        result.filteredMessages.forEach((msg: any) => {
+            const messageLevel = msg.level === 'ERROR' ? 'error' : 
+                               msg.level === 'WARNING' ? 'warning' : 'info';
+            this.appendToTerminal(msg.message, messageLevel);
+        });
+        
+        // Check if save failed
+        if (!result.success) {
             this.processFailure("ERROR");
             return;
         }

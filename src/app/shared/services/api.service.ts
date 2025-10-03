@@ -266,11 +266,14 @@ export class ApiService {
                     this.setOptions(sheetData.properties.id)
                 )
             );
-            this.logger.info(`Sheet data saved: ${sheetData.properties.name}`);
-            return response;
+            
+            const messages = response?.sheetEntity?.messages || [];
+            this.logger.info(`Sheet data save completed: ${sheetData.properties.name}`);
+            return messages;
         } catch (error) {
             this.handleError('postSheetData', error);
-            return null;
+            const errorMessage = (error as any)?.message || 'Unknown error occurred';
+            return [{ message: errorMessage, level: 'ERROR', type: 'NETWORK' }];
         }
     }
 

@@ -6,6 +6,7 @@ import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
 import { LoggerService } from './logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
+import { ApiMessageHelper } from '@helpers/api-message.helper';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
@@ -207,9 +208,13 @@ export class PollingService implements OnDestroy {
       }
 
       // Save to spreadsheet
-      const postResult = await this._gigLoggerService.postSheetData(sheetData);
-      if (!postResult) {
-        this._snackBar.open("Error saving data to spreadsheet", undefined, { duration: 5000 });
+      const messages = await this._gigLoggerService.postSheetData(sheetData);
+      
+      // Process the response using the helper
+      const result = ApiMessageHelper.processSheetSaveResponse(messages);
+      
+      if (!result.success) {
+        this._snackBar.open(`Error saving data: ${result.errorMessage}`, undefined, { duration: 5000 });
         return;
       }
 
