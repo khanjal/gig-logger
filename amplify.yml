@@ -11,7 +11,7 @@ frontend:
         - npm ci
     build:
       commands:
-        - echo "Amplify Build Number: $CODEBUILD_BUILD_NUMBER"
+        - 'echo "Amplify Build Number: $CODEBUILD_BUILD_NUMBER"'
         - node scripts/version.js
         - echo "${AWS_BRANCH}"
         - if [ "${AWS_BRANCH}" = "test" ]; then npm run build:stage; fi
