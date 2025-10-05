@@ -277,14 +277,20 @@ export class ApiService {
         }
     }
 
-    public async createSheet(properties: ISheetProperties) {
+    /**
+     * Creates a new sheet. Sheet-Id header must be provided.
+     * @param sheetId The ID of the sheet to create (used for Sheet-Id header)
+     */
+    public async createSheet(sheetId: string) {
         try {
-            const response = this._http.post<any>(
-                `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_CREATE}`, 
-                JSON.stringify(properties), 
-                this.setOptions(properties.id)
+            const response = await firstValueFrom(
+                this._http.post<any>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_CREATE}`,
+                    null,
+                    this.setOptions(sheetId)
+                )
             );
-            this.logger.info(`Sheet creation requested: ${properties.name}`);
+            this.logger.info(`Sheet creation requested for id: ${sheetId}`);
             return response;
         } catch (error) {
             this.handleError('createSheet', error);

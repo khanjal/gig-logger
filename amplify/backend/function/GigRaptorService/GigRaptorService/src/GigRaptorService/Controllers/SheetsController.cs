@@ -99,7 +99,7 @@ public class SheetsController : ControllerBase
     [HttpPost("create")]
     [RequireSheetId]
     [TrackMetrics("sheets-create")]
-    public async Task<SheetResponse> Create([FromBody] PropertyEntity properties)
+    public async Task<SheetResponse> Create()
     {
         InitializeSheetmanager();
         return await _sheetmanager!.CreateSheet();
