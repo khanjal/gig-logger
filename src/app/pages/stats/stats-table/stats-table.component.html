@@ -1,77 +1,65 @@
-<div class='table-container'>
-    <div class='table-responsive'>
-        <!-- Empty state for when no data is available -->
-        <div *ngIf="items.length === 0" class="empty-state">
-            <div class="empty-state-content">
-                <mat-icon class="empty-state-icon">table_view</mat-icon>
-                <h3>No {{ name }} Data</h3>
-                <p>No {{ name?.toLowerCase() }} data found for the selected date range.</p>
-            </div>
-        </div>
-          <!-- Table content when data is available -->
-        <mat-table *ngIf="items.length > 0" [dataSource]="items" class="table-theme-premium table-responsive-sizing">
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef> {{ name }} </mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="name"> {{item.name | truncate:10}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Total'"> Total </mat-footer-cell>
-        </ng-container>        <ng-container matColumnDef="trips">
-            <mat-header-cell *matHeaderCellDef>Trips</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Trips'"> {{item.trips}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Trips'"> {{getTotal("trips")}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="distance">
-            <mat-header-cell *matHeaderCellDef>Distance</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Distance'"> {{item.distance | number}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Distance'"> {{getTotal("distance") | number}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="pay">
-            <mat-header-cell *matHeaderCellDef>Pay</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Pay'"> {{item.pay | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Pay'"> {{getTotal("pay") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="tips">
-            <mat-header-cell *matHeaderCellDef>Tips</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Tips'"> {{item.tip | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Tips'"> {{getTotal("tip") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="bonus">
-            <mat-header-cell *matHeaderCellDef>Bonus</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Bonus'"> {{item.bonus | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Bonus'"> {{getTotal("bonus") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="total">
-            <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Total'"> {{item.total | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Total'"> {{getTotal("total") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="cash">
-            <mat-header-cell *matHeaderCellDef>Cash</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Cash'"> {{item.cash | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Cash'"> {{getTotal("cash") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="time">
-            <mat-header-cell *matHeaderCellDef>Amt/Time</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Amt/Time'"> {{item.amountPerTime | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Amt/Time'"> {{getAverage("amountPerTime") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="amountPerTrip">
-            <mat-header-cell *matHeaderCellDef>Amt/Trip</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Amt/Trip'"> {{item.amountPerTrip | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Amt/Trip'"> {{getAverage("amountPerTrip") | currency}} </mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="amountPerDistance">
-            <mat-header-cell *matHeaderCellDef>Amt/Dist</mat-header-cell>
-            <mat-cell *matCellDef="let item" [attr.data-label]="'Amt/Dist'"> {{item.amountPerDistance | currency}} </mat-cell>
-            <mat-footer-cell *matFooterCellDef [attr.data-label]="'Amt/Dist'"> {{getAverage("amountPerDistance") | currency}} </mat-footer-cell>
-        </ng-container>
-        
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
-    </mat-table>
-    
-    <!-- Scroll indicator -->
-    <div class="table-scroll-indicator" *ngIf="items.length > 0">
-        <mat-icon>chevron_left</mat-icon>
+<div class="table-container w-full p-2">
+  <h2 class="text-xl font-bold mb-2">{{ name }} Stats</h2>
+  <div class="table-responsive overflow-x-auto">
+    <!-- Empty state for when no data is available -->
+    <div *ngIf="items.length === 0" class="flex flex-col items-center justify-center py-8 text-gray-500">
+      <mat-icon class="text-4xl mb-2">info_outline</mat-icon>
+      <h3 class="text-lg font-semibold mb-1">No {{ name }} Data</h3>
+      <p>There are currently no {{ name?.toLowerCase() }} data available for the selected period.</p>
     </div>
+    <!-- Table content when data is available -->
+    <div class="overflow-x-auto relative rounded-lg border border-gray-200 bg-white">
+      <table *ngIf="items.length > 0" class="min-w-full text-sm">
+        <thead class="bg-blue-100">
+          <tr>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">{{ name }}</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Trips</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Distance</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Pay</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Tips</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Bonus</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Total</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Cash</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Amt/Time</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Amt/Trip</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Amt/Dist</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items; let i = index" [ngClass]="i % 2 === 0 ? 'bg-blue-50' : 'bg-white'" class="hover:bg-gray-50">
+            <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-700">{{item.name | truncate:10}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.trips}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.distance | number}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.pay | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.tip | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.bonus | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-800 font-semibold">{{item.total | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.cash | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-blue-700">{{item.amountPerTime | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-blue-700">{{item.amountPerTrip | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-blue-700">{{item.amountPerDistance | currency}}</td>
+          </tr>
+        </tbody>
+        <tfoot class="bg-blue-100">
+          <tr>
+            <td class="px-3 py-2 font-bold text-blue-900">Total</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("trips")}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("distance") | number}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("pay") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("tip") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("bonus") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("total") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("cash") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getAverage("amountPerTime") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getAverage("amountPerTrip") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-blue-900">{{getAverage("amountPerDistance") | currency}}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <!-- Scroll indicator -->
+    <div class="table-scroll-indicator absolute right-2 top-1/2 transform -translate-y-1/2" *ngIf="items.length > 0">
+      <mat-icon class="text-gray-400">chevron_left</mat-icon>
+    </div>
+  </div>
 </div>

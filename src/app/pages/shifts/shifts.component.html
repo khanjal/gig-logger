@@ -1,24 +1,26 @@
-<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12 max-w-3xl mx-auto">
-    <div class="flex items-center justify-between mb-2 gap-2">
-        <h1 class="text-lg md:text-xl font-semibold text-left m-0 leading-tight">Shifts</h1>
-        <button mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="addShift()" disabled>
+<div class="container mx-auto p-4 max-w-4xl">
+    <div class="flex flex-wrap gap-4 items-center justify-between">
+        <h1 class="text-2xl font-bold text-blue-700 flex-1">Shifts</h1>
+        <button *ngIf="unsavedData && !(showAddForm || editId)" mat-mini-fab color="accent" class="save-button !w-9 !h-9" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()" title="Save Changes">
+            <mat-icon class="text-base">save</mat-icon>
+        </button>
+        <button *ngIf="!showAddForm && !editId" mat-mini-fab color="primary" class="add-button !w-9 !h-9" (click)="showAddForm = true" [disabled]="showAddForm" title="Add Shift">
             <mat-icon class="text-base">add</mat-icon>
+        </button>
+        <button *ngIf="showAddForm && !editId" mat-mini-fab color="warn" class="hide-button !w-9 !h-9" (click)="hideAddForm()">
+            <mat-icon class="text-base">close</mat-icon>
         </button>
     </div>
 
-    <!-- @if (unsavedShifts.length > 0) {
-        <div class="row-grid">
-            <button mat-fab extended class="button" color="accent" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
-        </div>
-    } -->
-
-    <!-- Floating Current Date -->
-    <div class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-gray-200 py-1 mb-2 flex items-center justify-center min-h-[2.2rem]">
-      <span *ngIf="currentVisibleDate" class="font-mono text-xs sm:text-sm text-gray-700 font-semibold tracking-wide">
-        {{ currentVisibleDate | date:'EEE, MMM d' }}
-      </span>
+    <div *ngIf="showAddForm || editId">
+        <shift-form 
+          [rowId]="editId"
+          (parentReload)="handleParentReload()"
+          (editModeExit)="exitEditMode($event)">
+        </shift-form>
     </div>
-    <div class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
+
+    <div *ngIf="!(showAddForm || editId)" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
       @for (shift of shifts; track $index; let isFirst = $first) {
           <div
             [id]="shift.rowId"

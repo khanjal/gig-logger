@@ -5,6 +5,7 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 
 // Angular Material imports
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatOptionSelectionChange } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -67,6 +68,8 @@ export class SearchInputComponent implements OnDestroy {
   @Input() searchType: string = '';
   @Input() googleSearch: string | undefined;
   @Input() isRequired: boolean = false;
+  @Input() scrollOffset: number = 100; // Default offset, can be overridden
+
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
 
@@ -82,6 +85,8 @@ export class SearchInputComponent implements OnDestroy {
   hasSelection = false;
   isGoogleSearching = false;
   showNoGoogleResults = false;
+  // When true skip the next focus handler after a user selection (prevents refocus on mobile)
+  private skipNextFocus: boolean = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
@@ -179,6 +184,7 @@ export class SearchInputComponent implements OnDestroy {
       this.isGoogleSearching = false;
     }
   }
+  
   onBlur(): void {
     const trimmedValue = this.value.trim();
     if (this.value !== trimmedValue) {
@@ -187,6 +193,7 @@ export class SearchInputComponent implements OnDestroy {
     this.onTouched();
     this.valueChanged.emit(trimmedValue);
   }
+
   public onClear(): void {
     this.setInputValue('');
     this.resetComponentState();
@@ -225,8 +232,36 @@ export class SearchInputComponent implements OnDestroy {
     this.setInputValue(finalAddress);
     this.hasSelection = true;
 
+    // Clear suggestions and close dropdown so the selected item doesn't reappear
+    this.filteredItemsArray = [];
+    if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
+      try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+    }
+
     // Blur input after selection
-    this.blurInputAfterDelay();
+  // Prevent focus handler from immediately re-opening the dropdown on mobile
+  this.skipNextFocus = true;
+  // Clear the skip flag shortly after to restore normal behavior
+  setTimeout(() => { this.skipNextFocus = false; }, 350);
+  this.blurInputAfterDelay();
+  }
+
+  // Handle option selection change (works better on touch devices)
+  onOptionSelection(event: MatOptionSelectionChange, item: ISearchItem): void {
+    if (event && event.source && event.isUserInput) {
+      // Use microtask to avoid ExpressionChangedAfterItHasBeenCheckedError when closing panel
+      Promise.resolve().then(async () => {
+        try {
+          await this.onInputSelect(item);
+        } catch (e) {
+          // ignore selection errors
+        }
+        // Ensure the autocomplete panel is closed after selection (extra guard for mobile)
+        if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
+          try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+        }
+      });
+    }
   }
 
   private blurInputAfterDelay(): void {
@@ -236,11 +271,29 @@ export class SearchInputComponent implements OnDestroy {
       }, this.BLUR_DELAY);
     }
   }
+
   onFocus(): void {
+    // If we just selected an item, skip this focus to avoid re-opening the dropdown on mobile
+    if (this.skipNextFocus) { this.skipNextFocus = false; return; }
+
+    // Don't immediately open dropdown - wait for focus-scroll directive signal
     const value = this.value;
     this._filterItems(value).then(items => {
       this.filteredItemsArray = items;
+      // Don't auto-open dropdown here - let dropdownReady handler do it
     });
+  }
+
+  onDropdownReady(): void {
+    // Called by focus-scroll directive when it's safe to open dropdown
+    if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen && this.filteredItemsArray.length > 0) {
+      // Small additional delay to ensure page scroll has fully settled
+      setTimeout(() => {
+        if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
+          this.autocompleteTrigger.openPanel();
+        }
+      }, 50);
+    }
   }
   // #endregion
 

@@ -5,8 +5,7 @@ import { ITripGroup } from '@interfaces/trip-group.interface';
 import { TripService } from '@services/sheets/trip.service';
 import { WeekdayService } from '@services/sheets/weekday.service';
 import { MatIcon } from '@angular/material/icon';
-import { NgFor, NgClass, NgStyle, CurrencyPipe, DatePipe } from '@angular/common';
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
+import { NgFor, NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 
@@ -15,7 +14,7 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
     templateUrl: './trips-table-group.component.html',
     styleUrls: ['./trips-table-group.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgFor, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgStyle, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
+    imports: [MatIcon, NgFor, NgClass, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
 })
 export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() title: string = "";

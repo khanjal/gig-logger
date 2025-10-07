@@ -58,8 +58,8 @@ export class GigWorkflowService {
         return this._apiService.postSheetData(sheetData);
     }
 
-    public async createSheet(properties: ISheetProperties) {
-        return this._apiService.createSheet(properties);
+    public async createSheet(sheetId: string) {
+        return this._apiService.createSheet(sheetId);
     }
 
     public async warmupLambda(sheetId: string): Promise<any> {

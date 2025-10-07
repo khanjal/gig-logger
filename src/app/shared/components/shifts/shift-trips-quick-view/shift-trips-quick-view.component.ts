@@ -31,4 +31,9 @@ export class ShiftTripsQuickViewComponent {
   closeModal() {
     this.dialogRef.close();
   }
+
+  onEditClicked(trip: ITrip) {
+    // Close the dialog when edit is clicked
+    this.dialogRef.close();
+  }
 }

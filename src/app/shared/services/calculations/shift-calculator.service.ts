@@ -50,7 +50,7 @@ export class ShiftCalculatorService {
                 shift.totalTips = +(shift.tip ?? 0) + this.sumTripField(trips, 'tip');
                 shift.totalBonus = +(shift.bonus ?? 0) + this.sumTripField(trips, 'bonus');
                 shift.totalCash = +(shift.cash ?? 0) + this.sumTripField(trips, 'cash');
-                shift.grandTotal = +(shift.total ?? 0) + this.sumTripField(trips, 'total');
+                shift.grandTotal = +(shift.pay ?? 0) + +(shift.tip ?? 0) + +(shift.bonus ?? 0) + this.sumTripField(trips, 'total');
 
                 if (trips.length > 0) {
                     shift = this.calculateDurations(shift, trips);

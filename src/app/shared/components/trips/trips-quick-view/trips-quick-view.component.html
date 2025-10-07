@@ -10,12 +10,24 @@
     'bg-gradient-to-r from-blue-50 to-white': trip.rowId % 2 === 0 && !trip.exclude,
     'bg-gradient-to-r from-green-50 to-white': trip.rowId % 2 === 1 && !trip.exclude
   }"
+  style="position: relative;"
 >
+  <!-- Pattern overlay for disabled/excluded trips -->
+  <div *ngIf="trip.exclude"
+       class="absolute inset-0 z-30 pointer-events-none rounded-xl pattern-overlay-disabled">
+  </div>
+  <!-- Small badge for excluded trips -->
+  <div *ngIf="trip.exclude"
+       class="absolute z-40 pointer-events-none top-0 right-0 w-28 h-9 flex items-start justify-end">
+    <span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold text-white bg-gradient-to-br from-gray-400 via-gray-600 to-blue-800 shadow border border-blue-900/40 excluded-badge">
+      Excluded
+    </span>
+  </div>
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b"
     [ngClass]="{
       'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
-      'bg-green-100 border-green-300': trip.rowId % 2 === 1
+      'bg-gray-100 border-gray-300': trip.rowId % 2 === 1
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -39,8 +51,8 @@
       <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
         <span class="truncate block max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
       </span>
-      <!-- Time (back in first line, after service/number) -->
-      <span class="flex items-center gap-1 flex-shrink-0 justify-center text-center ml-2 min-w-[3.5rem]">
+      <!-- Time (center) -->
+      <span class="flex-1 flex items-center justify-center gap-1">
         <span class="font-mono text-sm font-medium"
               [ngClass]="{
                 'text-gray-400': !trip.pickupTime,
@@ -49,30 +61,24 @@
           {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
         </span>
       </span>
-      <!-- Spacer -->
-      <span class="flex-1"></span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon [ngClass]="{
-          'text-blue-400': trip.rowId % 2 === 0,
-          'text-green-400': trip.rowId % 2 === 1
-        }" class="text-base">payments</mat-icon>
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
-                'text-gray-400': !(trip.pay || trip.tip || trip.bonus || trip.cash),
+                'text-gray-400': !(trip.pay || trip.tip || trip.bonus),
                 'text-green-600': trip.amountPerTime > 30,
                 'text-blue-600': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
                 'text-yellow-600': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
                 'text-red-500': trip.amountPerTime < 20
               }">
-          {{(trip.pay || trip.tip || trip.bonus || trip.cash) ? ((trip.pay + trip.tip + trip.bonus + trip.cash) | currency) : '$0.00'}}
+          {{trip.total | currency}}
         </span>
       </span>
     </div>
-    <!-- Place/Date/Distance Row (always visible if present) -->
+    <!-- Date/Place/Distance Row (always visible if present) -->
     <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
-      <!-- Date (left, where type was) -->
-      <span *ngIf="trip.date" class="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
+      <!-- Date (left) -->
+      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
       <!-- Place -> Name (center, inline until overflow) -->
       <div class="flex-1 flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden">
         <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
@@ -81,26 +87,58 @@
       </div>
       <!-- Distance (right) -->
       <span *ngIf="trip.distance" class="flex items-center gap-1 flex-shrink-0 ml-2">
-        <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
         <span class="font-mono text-xs text-gray-700">{{trip.distance | number:'1.1'}} mi</span>
       </span>
     </div>
-    <!-- Toggle Button -->
-    <div class="focus-within:ring-0 focus-within:outline-none"
-         *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note">
-      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
-              (click)="toggleExpansion()" 
-              tabindex="0" 
-              [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
-              [title]="isExpanded ? 'Hide details' : 'Show details'"
-              (keydown.enter)="toggleExpansion()" 
-              (keydown.space)="toggleExpansion()"
-              [attr.aria-expanded]="isExpanded">
-        <span class="flex-1 h-px bg-gray-400"></span>
-        <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-        <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
-        <span class="flex-1 h-px bg-gray-400"></span>
-      </button>
+    <!-- Toggle Button and Chips Row -->
+    <div class="flex items-center justify-between gap-2 mt-1"
+         *ngIf="trip.dropoffTime || trip.duration || trip.distance || trip.amountPerTime || trip.pay || trip.tip || trip.bonus || trip.cash || trip.total || trip.startAddress || trip.endAddress || (trip.type && trip.type !== '') || trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.note || trip.tip || trip.bonus || trip.cash || (trip.startOdometer || trip.endOdometer) || trip.startAddress || trip.endAddress">
+      <!-- Chips (left side) -->
+      <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-x-auto h-6" *ngIf="!!trip">
+        <div class="flex items-center gap-1 px-1 overflow-x-auto scrollbar-hide">
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.tip && trip.tip > 0) ? 'text-green-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.tip && trip.tip > 0) ? ('Tip: $' + trip.tip) : 'No tip'">monetization_on</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.bonus && trip.bonus > 0) ? 'text-yellow-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.bonus && trip.bonus > 0) ? ('Bonus: $' + trip.bonus) : 'No bonus'">star</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.cash && trip.cash > 0) ? 'text-purple-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.cash && trip.cash > 0) ? ('Cash: $' + trip.cash) : 'No cash'">payments</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="(trip.startOdometer || trip.endOdometer) ? 'text-red-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="(trip.startOdometer || trip.endOdometer) ? 'Odometer readings available' : 'No odometer'">speed</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="trip.startAddress ? 'text-blue-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="trip.startAddress ? ('Pickup address: ' + trip.startAddress) : 'No pickup address'">place</mat-icon>
+
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="trip.endAddress ? 'text-indigo-600' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="trip.endAddress ? ('Destination address: ' + trip.endAddress) : 'No destination address'">flag</mat-icon>
+
+          <!-- Note icon: always shown, colored when note exists -->
+          <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
+                    [ngClass]="trip.note ? 'text-yellow-700' : 'text-gray-300 opacity-50'"
+                    [attr.aria-label]="trip.note ? ('Note: ' + trip.note) : 'No note'">format_quote</mat-icon>
+        </div>
+      </div>
+      <!-- Toggle Button (right side) -->
+      <div class="focus-within:ring-0 focus-within:outline-none flex-1 flex justify-end">
+        <button class="flex items-center justify-end gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+                (click)="toggleExpansion()" 
+                tabindex="0" 
+                [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
+                [title]="isExpanded ? 'Hide details' : 'Show details'"
+                (keydown.enter)="toggleExpansion()" 
+                (keydown.space)="toggleExpansion()">
+          <span>{{ isExpanded ? 'Hide' : 'More' }} Details</span>
+          <mat-icon class="text-sm">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
   <!-- Simplified Details Section -->
@@ -185,7 +223,7 @@
       </div>
     </div>
     <!-- Additional Info: Only show if more than just region -->
-    <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type">
+    <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
         <mat-icon class="text-purple-400 text-base">info</mat-icon>
         Trip Info
@@ -212,6 +250,10 @@
           <span class="text-xs text-gray-600">Type</span>
           <span class="text-sm font-medium">{{trip.type}}</span>
         </div>
+        <div *ngIf="trip.region" class="flex flex-row items-center gap-2 p-2 bg-white rounded border col-span-2">
+          <span class="text-xs text-gray-600 whitespace-nowrap">Region</span>
+          <span class="text-sm font-medium break-words text-left w-full">{{trip.region}}</span>
+        </div>
       </div>
     </div>
     <!-- Note -->
@@ -227,12 +269,12 @@
   <div class="flex items-center justify-between p-3 border-t"
     [ngClass]="{
       'bg-blue-100 border-blue-300': trip.rowId % 2 === 0,
-      'bg-green-100 border-green-300': trip.rowId % 2 === 1
+      'bg-gray-100 border-gray-300': trip.rowId % 2 === 1
     }">
     <!-- Edit Button -->
     <button mat-button 
             class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition" 
-            (click)="openTripDialog()" 
+            (click)="editTrip()" 
             title="Edit Trip">
       <mat-icon class="text-blue-500 text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>

@@ -1,8 +1,8 @@
 ﻿using GigRaptorService.Attributes;
 using GigRaptorService.Business;
 using GigRaptorService.Models;
+using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
 
@@ -12,11 +12,15 @@ namespace GigRaptorService.Controllers;
 public class SheetsController : ControllerBase
 {
     private readonly IConfiguration _configuration;
+    private readonly IMetricsService _metricsService;
+    private readonly ILogger<SheetsController> _logger;
     private SheetManager? _sheetmanager;
 
-    public SheetsController(IConfiguration configuration)
+    public SheetsController(IConfiguration configuration, IMetricsService metricsService, ILogger<SheetsController> logger)
     {
         _configuration = configuration;
+        _metricsService = metricsService;
+        _logger = logger;
     }
 
     private void InitializeSheetmanager(string? sheetId = null)
@@ -29,7 +33,12 @@ public class SheetsController : ControllerBase
             throw new Exception("SheetId must be provided.");
 
         if (!RateLimiter.IsRequestAllowed(sheetId))
+        {
+            // Track rate limit hit (must use Task.Run since this method is not async)
+            TrackRateLimitMetricsAsync(sheetId);
+            
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
+        }
 
         var accessToken = GetAccessTokenFromHeader();
         // Middleware guarantees accessToken is valid  
@@ -44,9 +53,12 @@ public class SheetsController : ControllerBase
         return authHeader.Substring("Bearer ".Length).Trim();
     }
 
+    private string GetSheetId() => HttpContext.Request.Headers["Sheet-Id"].ToString();
+
     // GET api/sheets/all  
     [HttpGet("all")]
     [RequireSheetId]
+    [TrackMetrics("sheets-all")]
     public async Task<SheetResponse> GetAll()
     {
         InitializeSheetmanager();
@@ -56,6 +68,7 @@ public class SheetsController : ControllerBase
     // GET api/sheets/get/single  
     [HttpGet("single/{sheetName}")]
     [RequireSheetId]
+    [TrackMetrics("sheets-single")]
     public async Task<SheetResponse> GetSingle(string sheetName)
     {
         InitializeSheetmanager();
@@ -64,6 +77,7 @@ public class SheetsController : ControllerBase
 
     [HttpGet("multiple")]
     [RequireSheetId]
+    [TrackMetrics("sheets-multiple")]
     public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName)
     {
         InitializeSheetmanager();
@@ -73,6 +87,7 @@ public class SheetsController : ControllerBase
     // GET api/sheets/health  
     [HttpGet("health")]
     [RequireSheetId]
+    [TrackMetrics("sheets-health")]
     public async Task<bool> Health()
     {
         InitializeSheetmanager();
@@ -83,7 +98,8 @@ public class SheetsController : ControllerBase
     // POST api/sheets/create  
     [HttpPost("create")]
     [RequireSheetId]
-    public async Task<SheetResponse> Create([FromBody] PropertyEntity properties)
+    [TrackMetrics("sheets-create")]
+    public async Task<SheetResponse> Create()
     {
         InitializeSheetmanager();
         return await _sheetmanager!.CreateSheet();
@@ -92,9 +108,26 @@ public class SheetsController : ControllerBase
     // POST api/sheets/save  
     [HttpPost("save")]
     [RequireSheetId]
+    [TrackMetrics("sheets-save")]
     public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
     {
         InitializeSheetmanager(sheetEntity.Properties.Id);
         return await _sheetmanager!.SaveData(sheetEntity);
+    }
+
+    private void TrackRateLimitMetricsAsync(string sheetId)
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _metricsService.TrackRateLimitHitAsync(sheetId);
+                _logger.LogWarning("📊 Rate limit metrics sent for sheet {SheetId}", sheetId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to track rate limit metrics");
+            }
+        });
     }
 }

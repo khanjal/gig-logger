@@ -11,7 +11,10 @@
                 (focus)="onFocus()"
                 (blur)="onBlur()"
                 [required]="isRequired"
-                focus-scroll
+                focusScroll
+                [delayDropdownOnMobile]="true"
+                [suppressDropdownAfterSelection]="hasSelection"
+                (dropdownReady)="onDropdownReady()"
                 #searchInput
                 #autocompleteTrigger="matAutocompleteTrigger"
             />
@@ -41,7 +44,7 @@
                 <mat-option 
                     *cdkVirtualFor="let item of filteredItemsArray" 
                     [value]="item.name" 
-                    (click)="onInputSelect(item)"
+                    (onSelectionChange)="onOptionSelection($event, item)"
                     class="search-result-option"
                     #matOption>
                     <div class="option-content" style="display: flex; flex-direction: column; align-items: flex-start; padding: 8px 0; min-height: 48px;">
@@ -54,7 +57,7 @@
                                     <path d="M9 4.57955C10.3218 4.57955 11.5079 5.03364 12.4409 5.92545L15 3.36364C13.4564 1.95 11.2309 1 9 1C6.64773 1 4.43591 3.01636 1.95727 4.95818L3.96409 7.29C4.67182 5.16227 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
                                 </svg>
                             </span>
-                            <span class="trips-indicator" *ngIf="item.saved && item.trips > 0" style="margin-right: 6px; font-size: 0.9em; color: #666;">
+                            <span class="trips-indicator" *ngIf="item.saved && item.trips != null && item.trips > 0" style="margin-right: 6px; font-size: 0.9em; color: #666;">
                                 ({{ item.trips }})
                             </span>
                             <span class="option-text" [ngClass]="{'option-text-large': item.address, 'option-text-normal': !item.address}">{{ item.name }}</span>

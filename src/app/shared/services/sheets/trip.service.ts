@@ -74,7 +74,7 @@ export class TripService  extends GenericCrudService<ITrip> {
     }
 
     public async getPreviousDays(days: number): Promise<ITrip[]> {
-        let date = DateHelper.getISOFormat(DateHelper.getDateFromDays(days));
+        let date = DateHelper.toISO(DateHelper.getDateFromDays(days));
         let trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
 
         return trips;

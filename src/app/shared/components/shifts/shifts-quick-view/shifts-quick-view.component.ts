@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe } from '@angular/common';
+import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
-import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
@@ -23,10 +23,11 @@ import { UnitHelper } from '@helpers/unit.helper';
     imports: [
         MatIcon,
         NgClass,
-        NgIf,
+        CommonModule,
         ShiftTripsTableComponent,
         DecimalPipe,
         CurrencyPipe,
+        DatePipe,
         NoSecondsPipe,
         DurationFormatPipe,
     ],
@@ -36,12 +37,17 @@ export class ShiftsQuickViewComponent {
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Output() edit = new EventEmitter<IShift>();
 
   duplicateShift: boolean = false;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
 
-  constructor(public dialog: MatDialog, private shiftService: ShiftService) {}
+  constructor(
+    public dialog: MatDialog,
+    private shiftService: ShiftService,
+    private _router: Router
+  ) {}
 
   async ngOnInit() {
     await this.checkForDuplicates();
@@ -74,27 +80,23 @@ export class ShiftsQuickViewComponent {
 
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
-        updateAction(shift, ActionEnum.Delete);
-        await this.shiftService.update([shift]);
-        await this.saveSheetDialog('save');
+        await this.deleteShift(shift);
       }
     });
   }
 
-  async saveSheetDialog(inputValue: string) {
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
-        panelClass: 'custom-modalbox',
-        data: inputValue
-    });
+  async deleteShift(shift: IShift) {
+    if (shift.action === ActionEnum.Add) {
+      await this.shiftService.delete(shift.id!);
+      await this.shiftService.updateShiftRowIds(shift.rowId);
+    }
+    else {
+      updateAction(shift, ActionEnum.Delete);
+      shift.saved = false;
+      await this.shiftService.update([shift]);
+    }
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
-          await this.shiftService.saveUnsavedShifts();
-          this.parentReload.emit(); // Emit the event to notify the parent to reload
-      }
-    });
+    this.parentReload.emit();
   }
 
   /**
@@ -107,5 +109,15 @@ export class ShiftsQuickViewComponent {
   canDeleteShift(): boolean {
     // Enable delete if duplicateShift is true, or if both grandTotal and totalTrips are 0 or falsy
     return !!this.duplicateShift || (((this.shift.grandTotal === 0 || !this.shift.grandTotal) && (this.shift.totalTrips === 0 || !this.shift.totalTrips)));
+  }
+
+  canEditShift(): boolean {
+    // Only allow edit if not deleted
+    return this.shift && this.shift.action !== ActionEnum.Delete;
+  }
+
+  async editShift() {
+    // Navigate to shift page with edit mode and shift rowId
+    this._router.navigate(['/shifts/edit', this.shift.rowId]);
   }
 }

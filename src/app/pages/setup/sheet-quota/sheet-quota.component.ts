@@ -5,7 +5,6 @@ import { LoggerService } from '@services/logger.service';
 @Component({
     selector: 'app-sheet-quota',
     templateUrl: './sheet-quota.component.html',
-    styleUrls: ['./sheet-quota.component.scss'],
     standalone: true
 })
 export class SheetQuotaComponent {

@@ -90,3 +90,24 @@
 .menu-purple:hover, .mat-menu-item.menu-purple:hover {
   background: $secondary-50 !important;
 }
+
+/* Pattern overlay for disabled/excluded trips */
+.pattern-overlay-disabled {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(128,128,128,0.18) 0px,
+    rgba(128,128,128,0.18) 12px,
+    transparent 12px,
+    transparent 24px
+  );
+  border-radius: 0.75rem;
+}
+
+.excluded-badge {
+  border-top-right-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.75rem;
+  min-width: 88px;
+  justify-content: center;
+}
