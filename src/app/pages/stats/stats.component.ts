@@ -42,7 +42,7 @@ export class StatsComponent implements OnInit {
 
   async dateChanged() {
     var startDate = "2000-01-01";
-    var endDate = DateHelper.getISOFormat();
+    var endDate = DateHelper.toISO();
 
     if (!(this.range.valid && 
         ((!this.range.value.start && !this.range.value.end) ||
@@ -51,12 +51,12 @@ export class StatsComponent implements OnInit {
     }    
     
     if (this.range.value.start && this.range.value.end) {
-      startDate = DateHelper.getISOFormat(this.range.value.start);
-      endDate = DateHelper.getISOFormat(this.range.value.end);
+      startDate = DateHelper.toISO(this.range.value.start);
+      endDate = DateHelper.toISO(this.range.value.end);
     }
 
-    await this.getShiftsRange(startDate, endDate); 
-    await this.getTripsRange(startDate, endDate); 
+    await this.getShiftsRange(startDate, endDate);
+    await this.getTripsRange(startDate, endDate);
   }
 
   async getShiftsRange(startDate: string, endDate: string) {

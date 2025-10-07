@@ -1,7 +1,7 @@
 <!-- Mobile-First PWA Header Component -->
 <header class="app-header">
   <!-- Main Toolbar -->
-  <mat-toolbar class="main-toolbar" [color]="getToolbarColor()">
+  <mat-toolbar class="main-toolbar">
     <!-- Menu Button -->
     <div class="toolbar-section toolbar-section--menu">
       <button (click)="toggleMenu()" 
@@ -49,7 +49,14 @@
            aria-label="View statistics"
            matTooltip="Statistics"
            matTooltipPosition="below">
-          <mat-icon>poll</mat-icon>
+          <mat-icon>table_chart</mat-icon>
+        </a>
+        <a routerLink="/metrics" 
+           class="action-button" 
+           aria-label="View metrics"
+           matTooltip="Metrics"
+           matTooltipPosition="below">
+          <mat-icon>bar_chart</mat-icon>
         </a>
       </ng-container>
       
@@ -77,7 +84,10 @@
          aria-label="Main menu">
       
       <div class="menu-header">
-        <h2 id="menu-title" class="menu-title">Raptor Gig</h2>
+        <div class="menu-header-content">
+          <h2 id="menu-title" class="menu-title">Raptor Gig</h2>
+          <div class="menu-tagline">Quick logs, big insights</div>
+        </div>
         <button (click)="closeMenu()" 
                 class="menu-close" 
                 aria-label="Close menu">
@@ -112,6 +122,13 @@
               <mat-icon class="menu-icon">today</mat-icon>
               <span class="menu-text">Shifts</span>
             </a>
+            <a routerLink="/metrics" 
+               (click)="closeMenu()"
+               class="menu-item"
+               aria-label="View metrics">
+              <mat-icon class="menu-icon">bar_chart</mat-icon>
+              <span class="menu-text">Metrics</span>
+            </a>
           </ng-container>
         </div>
         
@@ -122,18 +139,17 @@
              (click)="closeMenu()"
              class="menu-item"
              aria-label="View statistics">
-            <mat-icon class="menu-icon">poll</mat-icon>
+            <mat-icon class="menu-icon">table_chart</mat-icon>
             <span class="menu-text">Statistics</span>
           </a>
+          <div class="menu-item menu-item--disabled">
+            <mat-icon class="menu-icon">receipt</mat-icon>
+            <span class="menu-text">Expenses</span>
+          </div>
           <!-- Future menu items will go here -->
           <div class="menu-item menu-item--disabled">
             <mat-icon class="menu-icon">search</mat-icon>
             <span class="menu-text">Search</span>
-            <span class="menu-badge">Coming Soon</span>
-          </div>
-          <div class="menu-item menu-item--disabled">
-            <mat-icon class="menu-icon">receipt</mat-icon>
-            <span class="menu-text">Expenses</span>
             <span class="menu-badge">Coming Soon</span>
           </div>
         </div>

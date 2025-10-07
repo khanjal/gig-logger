@@ -1,0 +1,23 @@
+@if (permissionState !== 'granted') {
+  <mat-card class="mb-4">
+    <mat-card-header>
+      <mat-card-title>Location Permission Needed</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @switch (permissionState) {
+        @case ('prompt') {
+          <p>This app needs your location to provide certain features. Please allow location access.</p>
+          <button mat-raised-button color="primary" (click)="requestLocation()">
+            Allow Location Access
+          </button>
+        }
+        @case ('denied') {
+          <p>Location access denied. To enable, please go to your browser's settings and allow location access for this site.</p>
+        }
+        @case ('unsupported') {
+          <p>Your browser does not support the Permissions API.</p>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+}

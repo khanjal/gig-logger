@@ -1,5 +1,29 @@
 @use '../../../styles/color-vars.scss' as colors;
 
+// Enhanced mobile keyboard handling - forces proper viewport adjustment 
+:host {
+  @media (max-width: 768px) {
+    // Ensure proper height calculation when virtual keyboard appears
+    min-height: 100vh;
+    min-height: -webkit-fill-available; // iOS Safari fix
+  }
+}
+
+// Global viewport fix for virtual keyboard on older Android devices
+@media (max-width: 768px) {
+  :host {
+    // Force viewport recalculation when keyboard appears/disappears
+    transform: translateZ(0); // Trigger hardware acceleration
+    -webkit-transform: translateZ(0);
+  }
+  
+  // Fix for older Android devices - forces resize event
+  body.keyboard-open {
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+}
+
 // Hide checkmarks in shift dropdown
 ::ng-deep .mat-pseudo-checkbox {
   display: none !important;
@@ -18,11 +42,14 @@
   border-color: colors.$primary-200;
 }
 
-// Add extra bottom padding when keyboard is open (mobile only)
-.keyboard-padding {
+// Global keyboard-open state for viewport adjustments (handled by focus-scroll directive)
+:global(body.keyboard-open) {
   @media (max-width: 768px) {
-    padding-bottom: 220px !important; // Enough for most mobile keyboards
-    transition: padding-bottom 0.3s;
+    // Force hardware acceleration for smoother scrolling
+    transform: translateZ(0);
+    
+    // Ensure the viewport is properly sized
+    min-height: -webkit-fill-available;
   }
 }
 

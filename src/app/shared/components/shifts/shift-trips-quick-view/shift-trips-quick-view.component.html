@@ -8,7 +8,7 @@
   <div class="trips-list">
     @for (trip of trips; track $index) {
       <div [id]="trip.rowId" [ngClass]="{'mat-card': trips.length % 2 != 0, 'mat-card-reverse': trips.length % 2 == 0, 'mat-card-disabled': trip.exclude == true || trip.action == actionEnum.Delete}">
-        <trips-quick-view [trip]="trip" [index]="$index" [showActions]="false"></trips-quick-view>
+        <trips-quick-view [trip]="trip" [index]="$index" [showActions]="false" (editClicked)="onEditClicked($event)"></trips-quick-view>
       </div>
     }
   </div>

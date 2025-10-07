@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -25,8 +26,9 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 @Component({
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
-    styleUrls: ['./trips-quick-view.component.scss'],    standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe]
+    styleUrls: ['./trips-quick-view.component.scss'],
+    standalone: true,
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
@@ -36,6 +38,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
+  @Output("editClicked") editClicked: EventEmitter<ITrip> = new EventEmitter();
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
@@ -215,7 +218,11 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
     this.parentReload.emit();
   }
-  async openTripDialog() {
+
+  async editTrip() {
+    // Emit edit event for parent components to handle (e.g., closing dialogs)
+    this.editClicked.emit(this.trip);
+    
     // Navigate to trips page with edit mode and trip rowId
     this._router.navigate(['/trips/edit', this.trip.rowId]);
   }

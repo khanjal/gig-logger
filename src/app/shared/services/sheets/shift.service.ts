@@ -120,4 +120,8 @@ export class ShiftService extends GenericCrudService<IShift> {
             nextRowId++;
         }
     }
+
+    public async getLastShift(): Promise<IShift | undefined> {
+        return await spreadsheetDB.shifts.orderBy("date").reverse().first();
+    }
 }

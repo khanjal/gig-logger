@@ -1,22 +1,28 @@
-<div class="modal-container">
-    <div class="terminal" #terminal>
-        <div>
-            <p class="info">00:00&nbsp;&nbsp;&nbsp;Please wait while your data is {{ type === 'save' ? 'saved' : 'loaded' }}.</p>
-            <p class="info">00:00&nbsp;&nbsp;&nbsp;Modal will close when complete.</p>
+<div class="fixed inset-0 flex items-center justify-center bg-opacity-50 z-50">
+    <div class="rounded-lg shadow-lg w-full max-w-md p-6 flex flex-col">
+        <div class="bg-gray-900 rounded-md p-4 mb-4 text-white font-mono text-sm overflow-y-auto h-80" #terminal>
+            <div class="flex mb-1 items-start">
+                <span class="text-green-400 whitespace-nowrap w-10">00:00</span>
+                <span class="ml-2 text-green-400 flex-1">Please wait while your data is {{ type === 'save' ? 'saved' : 'loaded' }}.</span>
+            </div>
+            <div class="flex mb-3 items-start">
+                <span class="text-green-400 whitespace-nowrap w-10">00:00</span>
+                <span class="ml-2 text-green-400 flex-1">Modal will close when complete.</span>
+            </div>
+            <ng-container *ngFor="let message of terminalMessages">
+                <div class="flex mb-1 items-start">
+                    <span class="text-green-400 whitespace-nowrap w-10">{{ message.time }}</span>
+                    <span [ngClass]="message.type" class="ml-2 text-green-400 flex-1">{{ message.text }}</span>
+                </div>
+            </ng-container>
         </div>
-        <div>
-            <p *ngFor="let message of terminalMessages">
-                <span class="info">{{ message.time }}</span>
-                &nbsp;
-                <span [ngClass]="message.type">{{ message.text }}</span>
-            </p>
+        <!-- Button pinned at the bottom -->
+        <div class="flex gap-2 mt-auto">
+            @if (syncState.canContinue) {
+                <button mat-fab extended color="accent" class="rounded-full px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 flex-1" (click)="continueLoad()">Continue</button>
+                <button mat-fab extended color="primary" class="rounded-full px-4 py-2 bg-green-500 text-white hover:bg-green-600 flex-1" (click)="retryLoad()">Retry</button>
+            }
+            <button mat-fab extended color="warn" class="rounded-full px-4 py-2 bg-red-500 text-white hover:bg-red-600 flex-1" [disabled]="currentTime < 60 && syncState.isAutoClose" (click)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</button>
         </div>
-    </div>    <!-- Button pinned at the bottom -->
-    <div class="button-container button-bar">
-        @if (syncState.canContinue) {
-            <button mat-fab extended color="accent" class="button-left" (click)="continueLoad()">Continue</button>
-            <button mat-fab extended color="primary" class="button-middle" (click)="retryLoad()">Retry</button>
-        }
-        <button mat-fab extended color="warn" class="button-right" [disabled]="currentTime < 60 && syncState.isAutoClose" (click)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</button>
     </div>
 </div>

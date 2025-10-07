@@ -42,6 +42,9 @@ export class SheetCreateComponent {
     try {
       // Create a new sheet from gig logger
       const result = await this._gigLoggerService.createFile(properties);
+
+      if (result?.id)
+        await this._gigLoggerService.createSheet(result!.id);
       
       // Close modal and pass the result back to parent
       this.dialogRef.close(result);

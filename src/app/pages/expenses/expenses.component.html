@@ -1,0 +1,67 @@
+<div class="expenses-form-container w-full max-w-2xl mx-auto mb-8">
+  <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-lg shadow">
+    <mat-form-field class="w-full col-span-1 md:col-span-2" appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" formControlName="amount" step="0.01" min="0" />
+      </mat-form-field>
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" placeholder="Search or add category">
+          <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-form-field class="w-full col-span-1 md:col-span-4" appearance="outline">
+      <mat-label>Note</mat-label>
+      <input matInput type="text" formControlName="note" maxlength="100" />
+    </mat-form-field>
+    <div class="col-span-1 md:col-span-4 flex justify-end gap-2">
+      <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">
+        {{ editingExpenseId ? 'Update Expense' : 'Add Expense' }}
+      </button>
+      <button *ngIf="editingExpenseId" mat-stroked-button color="warn" type="button" (click)="cancelEdit()">Cancel</button>
+      <button *ngIf="editingExpenseId && editingExpense" mat-raised-button color="warn" type="button" (click)="deleteExpense(editingExpense)">Delete</button>
+    </div>
+  </form>
+</div>
+
+<div class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6">
+  <div *ngFor="let month of (groupedExpenses | keyvalue:sortByMonth)">
+    <h3 class="mt-8 mb-2 text-lg font-bold text-blue-700">{{ month.key | date:'MMMM yyyy' }}</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-lg shadow mb-8">
+        <thead>
+          <tr class="bg-blue-100">
+            <th class="py-2 px-4 text-left font-semibold">Date</th>
+            <th class="py-2 px-4 text-left font-semibold">Amount</th>
+            <th class="py-2 px-4 text-left font-semibold">Category</th>
+            <th class="py-2 px-4 text-left font-semibold">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let expense of month.value" class="even:bg-gray-50">
+            <td class="py-2 px-4">{{ expense.date }}</td>
+            <td class="py-2 px-4">{{ expense.amount | currency }}</td>
+            <td class="py-2 px-4">{{ expense.category }}</td>
+            <td class="py-2 px-4 flex items-center gap-2">
+              <span>{{ expense.note }}</span>
+              <button mat-icon-button color="primary" aria-label="Edit" (click)="editExpense(expense)">
+                <mat-icon fontIcon="edit"></mat-icon>
+              </button>
+              <button mat-icon-button color="warn" aria-label="Delete" (click)="deleteExpense(expense)">
+                <mat-icon fontIcon="delete"></mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

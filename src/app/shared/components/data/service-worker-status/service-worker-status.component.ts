@@ -12,7 +12,6 @@ import { Inject } from '@angular/core';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './service-worker-status.component.html',
-  styleUrl: './service-worker-status.component.scss',
 })
 export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   serviceWorkerStatus: string = 'Checking...';

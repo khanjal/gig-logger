@@ -5,12 +5,15 @@
     </mat-form-field>
 </form>
 
-<div *ngIf="saving" class="creating-sheet-spinner">
-    <mat-spinner diameter="40"></mat-spinner>
-    <div class="creating-sheet-text">Creating sheet...</div>
-</div>
-
-<div class="row-flex" style="justify-content: space-between;" *ngIf="!saving">
-    <button mat-fab extended color="warn" (click)="closeModal()" style="margin-right: auto;"><mat-icon>refresh</mat-icon> Cancel</button>
-    <button mat-fab extended color="primary" (click)="createSheet()" [class.spinner]="saving" [disabled]="!sheetCreate.valid || saving" style="margin-left: auto;"><mat-icon>add</mat-icon> Create</button>
-</div>
+@if (saving) {
+    <div class="creating-sheet-spinner">
+        <mat-spinner diameter="40"></mat-spinner>
+        <div class="creating-sheet-text">Creating sheet...</div>
+    </div>
+}
+@else {
+    <div class="row-flex" style="justify-content: space-between;">
+        <button mat-fab extended color="warn" (click)="closeModal()" style="margin-right: auto;"><mat-icon>refresh</mat-icon> Cancel</button>
+        <button mat-fab extended color="primary" (click)="createSheet()" [class.spinner]="saving" [disabled]="!sheetCreate.valid || saving" style="margin-left: auto;"><mat-icon>add</mat-icon> Create</button>
+    </div>
+}

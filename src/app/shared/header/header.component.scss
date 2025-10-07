@@ -40,7 +40,6 @@
   
   &--actions {
     flex: 0 0 auto;
-    gap: 0.5rem; /* Add spacing between action buttons */
   }
 }
 
@@ -149,6 +148,7 @@
 
 .menu-header {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
@@ -157,11 +157,41 @@
   color: $text-inverse;
 }
 
+.menu-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
 .menu-title {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
   color: $text-inverse;
+  text-align: left;
+}
+
+.menu-tagline {
+  font-size: 0.95rem;
+  color: $text-inverse;
+  opacity: 0.85;
+  margin-top: 0.1rem;
+  margin-bottom: 0;
+  text-align: left;
+  line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+  .menu-title {
+    font-size: 1.05rem;
+  }
+  .menu-tagline {
+    font-size: 0.85rem;
+  }
+  .menu-header {
+    padding: 0.75rem 0.5rem 0.5rem 0.5rem;
+  }
 }
 
 .menu-close {

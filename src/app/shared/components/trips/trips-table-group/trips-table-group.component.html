@@ -1,73 +1,58 @@
-<div class="table-container">
+<div class="table-container w-full p-2">
     @if (link) {
-        <h2>
-            <span class="title-content">
-                {{ title }} 
-                <a [href]="'https://docs.google.com/spreadsheets/d/' + link" target="_blank" class="link-icon">
-                    <mat-icon>open_in_new</mat-icon>
-                </a>
-            </span>
+        <h2 class="flex items-center gap-2 text-xl font-bold mb-2">
+            <span class="title-content">{{ title }}</span>
+            <a [href]="'https://docs.google.com/spreadsheets/d/' + link" target="_blank" class="link-icon text-blue-600 hover:underline">
+                <mat-icon>open_in_new</mat-icon>
+            </a>
         </h2>
     } @else {
-        <h2>{{ title }}</h2>
+        <h2 class="text-xl font-bold mb-2">{{ title }}</h2>
     }
     
     @if (tripGroups && tripGroups.length > 0) {
-        <div *ngFor="let tripGroup of tripGroups; let i = index" class="trip-group">
-            <h3>
+        <div *ngFor="let tripGroup of tripGroups; let i = index" class="trip-group mb-8">
+            <h3 class="flex justify-between items-center text-lg font-semibold mb-2">
                 <span class="trip-info">{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}})</span>
                 <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
             </h3>
-            <div class='table-responsive-auto' #tableContainer>
-                <mat-table [dataSource]="tripGroup.trips" class="table-theme-standard" style="table-layout:auto;">
-                    <ng-container matColumnDef="service">
-                        <mat-header-cell *matHeaderCellDef class="table-col-service"> Service </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-service"> {{trip.service}}-{{ trip.number ? trip.number : 0}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="place">
-                        <mat-header-cell *matHeaderCellDef class="table-col-place"> Place </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-place"> {{trip.place | truncate:15}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="pickup">
-                        <mat-header-cell *matHeaderCellDef class="table-col-pickup">Pickup</mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-pickup">
-                          <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
-                              {{ trip.pickupTime | noseconds:prefers24Hour }}
-                            </span>
-                        </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="dropoff">
-                        <mat-header-cell *matHeaderCellDef class="table-col-dropoff">Dropoff</mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-dropoff">
-                          <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
-                              {{ trip.dropoffTime | noseconds:prefers24Hour }}
-                            </span>
-                        </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="total">
-                        <mat-header-cell *matHeaderCellDef class="table-col-total"> Total </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-total" [ngClass]="{'tip-none': (trip.tip + trip.cash) === 0, 'tip-good': (trip.tip + trip.cash) >= 5}"> {{trip.total | currency}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef class="table-col-name"> Name </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-name"> {{trip.name | truncate:10}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="address">
-                        <mat-header-cell *matHeaderCellDef class="table-col-address"> Address </mat-header-cell>
-                        <mat-cell *matCellDef="let trip" class="table-col-address"> {{trip.endAddress | truncate:75}} </mat-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="row.exclude && {'background-color': 'lightgrey'}" [ngClass]="row.exclude && 'strike'"></mat-row>
-                </mat-table>
-                <div class="table-scroll-indicator" [class.visible]="isScrollable[i]">
-                    ← scroll for more →
-                </div>
+            <div class="overflow-x-auto relative rounded-lg border border-gray-200 bg-white">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-blue-100">
+                        <tr>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Service</th>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Place</th>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Pickup</th>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Dropoff</th>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Total</th>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Name</th>
+                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let trip of tripGroup.trips; let j = index">
+                            <tr [ngClass]="trip.exclude ? 'bg-gray-200 line-through' : (j % 2 === 0 ? 'bg-blue-50' : 'bg-white')">
+                                <td class="px-3 py-2 whitespace-nowrap">{{trip.service}}-{{ trip.number ? trip.number : 0}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{trip.place | truncate:15}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">
+                                    <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">{{ trip.pickupTime | noseconds:prefers24Hour }}</span>
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap">
+                                    <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">{{ trip.dropoffTime | noseconds:prefers24Hour }}</span>
+                                </td>
+                                <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400': (trip.tip + trip.cash) === 0, 'text-green-600 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{trip.name | truncate:10}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{trip.endAddress | truncate:75}}</td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
             </div>
         </div>
     } @else {
-        <div class="no-trips-message">
-            <mat-icon class="no-trips-icon">info_outline</mat-icon>
-            <h3>No trips to display</h3>
+        <div class="no-trips-message flex flex-col items-center justify-center py-8 text-gray-500">
+            <mat-icon class="no-trips-icon text-4xl mb-2">info_outline</mat-icon>
+            <h3 class="text-lg font-semibold mb-1">No trips to display</h3>
             <p>There are currently no trips available for the selected period.</p>
         </div>
     }
