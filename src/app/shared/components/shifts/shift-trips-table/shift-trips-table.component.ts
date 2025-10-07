@@ -1,16 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule, NgIf, NgStyle } from '@angular/common';
+import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
-import { NgClass, CurrencyPipe } from '@angular/common';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftTripsQuickViewComponent } from '@components/shifts/shift-trips-quick-view/shift-trips-quick-view.component';
 import { MatDialog } from '@angular/material/dialog';
-import { MatCard } from '@angular/material/card';
-import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { NoSecondsPipe as NoSecondsPipe_1 } from '@pipes/no-seconds.pipe';
-import { TruncatePipe as TruncatePipe_1 } from '@pipes/truncate.pipe';
+import { NoSecondsPipe as NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import { TruncatePipe as TruncatePipe } from '@pipes/truncate.pipe';
 import { LoggerService } from '@services/logger.service';
 import { DateHelper } from '@helpers/date.helper';
 
@@ -20,24 +16,11 @@ import { DateHelper } from '@helpers/date.helper';
     styleUrl: './shift-trips-table.component.scss',
     standalone: true,    imports: [
         NgIf,
-        MatCard,
-        MatMiniFabButton,
-        MatIcon,
-        MatTable,
-        MatColumnDef,
-        MatHeaderCellDef,
-        MatHeaderCell,
-        MatCellDef,
-        MatCell,
         NgClass,
-        MatHeaderRowDef,
-        MatHeaderRow,
-        MatRowDef,
-        MatRow,
-        NgStyle,
+        MatIcon,
         CurrencyPipe,
-        NoSecondsPipe_1,
-        TruncatePipe_1,
+        NoSecondsPipe,
+        TruncatePipe,
     ],
 })
 

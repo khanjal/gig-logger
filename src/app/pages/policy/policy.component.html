@@ -1,6 +1,6 @@
 <div class="privacy-policy">
   <h1>Privacy Policy</h1>
-  <p>Last updated: 5/29/2025</p>
+  <p>Last updated: September 1, 2025</p>
 
   <section>
     <h2>Introduction</h2>
@@ -8,18 +8,62 @@
   </section>
 
   <section>
-    <h2>Information We Collect</h2>
+    <h2>Information We Collect vs. What the App Handles</h2>
+    
+    <h3>Data We Collect (for analytics and service operation):</h3>
     <ul>
-      <li>Google account information (when you sign in)</li>
-      <li>Usage data and analytics</li>
-      <li>Information you voluntarily provide</li>
+      <li>Google account information (for authentication only)</li>
+      <li>Anonymous usage analytics (performance metrics, cannot identify you)</li>
+      <li>Temporary search queries for location autocomplete (not stored, discarded after response)</li>
     </ul>
+    
+    <h3>Data the App Handles (but we don't collect or store):</h3>
+    <ul>
+      <li>🚗 <strong>Your trip and earnings data</strong> - temporarily processed by our service to sync with your Google Sheets</li>
+      <li>📍 <strong>Location information</strong> - used for autocomplete but not stored by us</li>
+      <li>💰 <strong>Financial information</strong> - passes through our service only to reach your Google Sheets</li>
+    </ul>
+    
+    <p><strong>Important:</strong> When you sync data, your trip and earnings information passes through our secure service to reach your Google Sheets, but we do not store, log, or include this sensitive information in our analytics systems. It's processed in transit only.</p>
+  </section>
+
+  <section>
+    <h2>Analytics and Performance Monitoring</h2>
+    <p>We collect anonymized usage analytics to improve app performance and reliability. <strong>We do NOT store any trip details, earnings amounts, or personal location data.</strong></p>
+    
+    <h3>What We Collect:</h3>
+    <ul>
+      <li><strong>Performance metrics:</strong> API response times and error rates</li>
+      <li><strong>Usage counts:</strong> Number of trips synced, number of searches performed (anonymized user identifiers)</li>
+      <li><strong>Search patterns:</strong> Length of search queries only (e.g., "15 characters"), not the actual text or locations</li>
+      <li><strong>System health:</strong> Data synchronization success/failure rates</li>
+    </ul>
+    
+    <h3>What We Do NOT Collect:</h3>
+    <ul>
+      <li>❌ Trip details (destinations, routes, times)</li>
+      <li>❌ Earnings amounts or payment information</li>
+      <li>❌ Specific locations or addresses you search</li>
+      <li>❌ Content of your Google Sheets</li>
+      <li>❌ Personal trip history or patterns</li>
+    </ul>
+    
+    <p>All user identifiers in analytics are cryptographically hashed and cannot be traced back to your Google account or personal information.</p>
+    
+    <p><strong>Consent:</strong> By using Raptor Gig, you agree to this anonymous analytics collection. Since the data cannot identify you personally, no opt-out mechanism is required or available.</p>
+    
+    <p><strong>Data Retention:</strong> Anonymous analytics are automatically deleted after 15 months. Since this data cannot identify you, individual deletion requests are not applicable to analytics data.</p>
+    
+    <p><strong>Technical Note:</strong> During data sync, your information temporarily passes through our AWS servers to authenticate with Google and format the data for your spreadsheet. This process happens in memory only - we do not log, store, or analyze the content of your trips and earnings during this transit.</p>
   </section>
 
   <section>
     <h2>How We Use Your Information</h2>
     <ul>
-      <li>To provide and maintain our service</li>
+      <li>To provide and maintain our gig tracking service</li>
+      <li>To sync your earnings data with Google Sheets</li>
+      <li>To provide location autocomplete for trip tracking</li>
+      <li>To monitor and improve app performance and reliability</li>
       <li>To notify you about changes to our service</li>
       <li>To provide customer support</li>
       <li>To detect, prevent and address technical issues</li>
@@ -27,8 +71,19 @@
   </section>
 
   <section>
+    <h2>Gig Worker Data Protection</h2>
+    <p><strong>Your earnings and trip data stays private.</strong> Raptor Gig is designed for gig workers who need to protect sensitive financial information:</p>
+    <ul>
+      <li>✅ <strong>Your trip logs stay on your device</strong> and sync only to your personal Google Sheets</li>
+      <li>✅ <strong>We never see your earnings data</strong> - it goes directly from your device to your Google account</li>
+      <li>✅ <strong>Analytics are aggregate only</strong> - we track "5 trips synced" not "trip from Main St to Airport for $23.50"</li>
+      <li>✅ <strong>No location tracking</strong> - we help you search for places but don't store where you go</li>
+    </ul>
+  </section>
+
+  <section>
     <h2>Data Storage and Security</h2>
-    <p>We implement appropriate security measures to protect your personal information. Your data is stored securely and accessed only as necessary to provide our services.</p>
+    <p>We implement appropriate security measures to protect your personal information. Your trip and earnings data is stored securely in your own Google Sheets and accessed only as necessary to provide our services. Performance analytics are anonymized and automatically deleted after 15 months.</p>
   </section>
 
   <section>

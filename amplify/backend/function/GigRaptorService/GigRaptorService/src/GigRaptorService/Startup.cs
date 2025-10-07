@@ -6,6 +6,7 @@ using System.IO.Compression;
 using Amazon.S3;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.DynamoDBv2;
+using Amazon.CloudWatch;
 using System.Threading;
 
 namespace GigRaptorService;
@@ -24,6 +25,7 @@ public class Startup
         var allowedOrigins = new[]
         {
             "https://localhost:4200",
+            "https://gig-local.raptorsheets.com:4200",
             "https://gig-test.raptorsheets.com",
             "https://gig.raptorsheets.com"
         };
@@ -119,6 +121,17 @@ public class Startup
                 LazyThreadSafetyMode.ExecutionAndPublication
             )
         );
+        
+        // Add CloudWatch client for metrics
+        services.AddSingleton<IAmazonCloudWatch>(sp => 
+            new AmazonCloudWatchClient(new AmazonCloudWatchConfig 
+            { 
+                RegionEndpoint = Amazon.RegionEndpoint.USEast1 
+            })
+        );
+        
+        // Add metrics service
+        services.AddSingleton<IMetricsService, MetricsService>();
         
         // Add logging
         services.AddLogging(builder =>

@@ -19,6 +19,7 @@ import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component
 import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
+import { LocationPermissionComponent } from '../../shared/components/location-permission/location-permission.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -26,6 +27,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';
+import { VersionService } from '@services/version.service';
 import { CommonService } from '@services/common.service';
 import { LoggerService } from '@services/logger.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -54,7 +56,8 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     SheetLinkComponent,
     SheetQuickViewComponent,
     SheetQuotaComponent,
-    AuthStatusComponent
+    AuthStatusComponent,
+    LocationPermissionComponent
 ]
 })
 export class SetupComponent {
@@ -67,6 +70,9 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
+
+  version: string = '';
+
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
@@ -76,13 +82,16 @@ export class SetupComponent {
     private _shiftService: ShiftService,
     private _tripService: TripService,
     private _timerService: TimerService,
-    protected authService: AuthGoogleService
+    protected authService: AuthGoogleService,
+    private versionService: VersionService
   ) { }
+
 
   async ngOnInit(): Promise<void> {
     this.isAuthenticated = await this.authService.isAuthenticated();
-
     this.load();
+    // Load formatted version string (YYYYMMDD.build)
+    this.version = await this.versionService.getFormattedVersion();
   }
 
   public async load() {

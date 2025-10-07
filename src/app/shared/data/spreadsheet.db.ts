@@ -14,6 +14,7 @@ import { IType } from '@interfaces/type.interface';
 import { IWeekday } from '@interfaces/weekday.interface';
 import { IWeekly } from '@interfaces/weekly.interface';
 import { IYearly } from '@interfaces/yearly.interface';
+import { IExpense } from '@interfaces/expense.interface';
 import Dexie, { Table } from 'dexie';
 
 // https://dexie.org/docs/Tutorial/Angular
@@ -35,10 +36,11 @@ export class AppDB extends Dexie {
     weekdays!: Table<IWeekday, number>;
     weekly!: Table<IWeekly, number>;
     yearly!: Table<IYearly, number>;
+    expenses!: Table<IExpense, number>;
 
     constructor() {
         super('spreadsheetDB');
-        this.version(1).stores({
+        this.version(2).stores({
             addresses: '++id, address, saved',
             deliveries: '++id, address, name',
             daily: '++id, date',
@@ -54,7 +56,8 @@ export class AppDB extends Dexie {
             types: '++id, type, saved',
             weekdays: '++id, day',
             weekly: '++id, week, begin, end',
-            yearly: '++id, year'
+            yearly: '++id, year',
+            expenses: '++id, date, amount, category, note' // new table
         });
     }
 }

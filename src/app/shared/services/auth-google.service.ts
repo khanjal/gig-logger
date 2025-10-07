@@ -97,57 +97,50 @@ export class AuthGoogleService {
     this.oAuthService.initCodeFlow();
   }
 
+  private extractStatusCode(error: any): number | undefined {
+    return error?.status || error?.response?.status;
+  }
+
+  private clearAuthState(): void {
+    this.secureCookieStorage.removeItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+    this.oAuthService.logOut();
+    this.profile$.next(null);
+    localStorage.removeItem('authenticatedUserId');
+    this.setAuthenticationState(false);
+    this.logger.info('Local state cleared');
+  }
+
   async refreshToken(): Promise<void> {
     try {
       const result = await this.gigWorkflowService.refreshAuthToken();
-      if (!result?.accessToken) {
-        throw new Error('No access token received from refresh');
-      }
-      
+      if (!result?.accessToken) throw new Error('No access token received from refresh');
       this.secureCookieStorage.setItem(AUTH_CONSTANTS.ACCESS_TOKEN, result.accessToken);
-      
-      // Validate refreshed token
       const profile = await this.getProfile();
-      if (!profile) {
-        throw new Error('Invalid token received from refresh');
-      }
+      if (!profile) throw new Error('Invalid token received from refresh');
       this.profile$.next(profile);
-      
-      // Store user ID for rate limiting and API usage
       this.storeUserId(profile);
-      
-      // Update authentication state
       this.setAuthenticationState(true);
-      
       this.logger.info('Access token refreshed and validated successfully');
-    } catch (error) {
-      this.logger.error('Error refreshing token', error);
-      await this.logout();
+    } catch (error: any) {
+      const status = this.extractStatusCode(error);
+      if (status === 401 || status === 403) {
+        this.logger.error('Refresh token invalid or expired, logging out', error);
+        await this.logout();
+      } else {
+        this.logger.warn('Refresh token failed due to network/server error, not logging out', error);
+      }
       throw error;
     }
   }
 
   async logout(): Promise<void> {
     this.logger.info('Starting logout process');
-    
     try {
-      // Clear backend tokens first
-      await this.gigWorkflowService.clearRefreshToken(); 
+      await this.gigWorkflowService.clearRefreshToken();
     } catch (error) {
       this.logger.error('Error clearing refresh token', error);
     } finally {
-      // Always clear local state
-      this.secureCookieStorage.removeItem(AUTH_CONSTANTS.ACCESS_TOKEN);
-      this.oAuthService.logOut();
-      this.profile$.next(null);
-      
-      // Clear stored user ID
-      localStorage.removeItem('authenticatedUserId');
-      
-      // Set authentication state to false
-      this.setAuthenticationState(false);
-      
-      this.logger.info('Local state cleared');
+      this.clearAuthState();
     }
   }
 
@@ -179,29 +172,28 @@ export class AuthGoogleService {
     // No access token - check localStorage
     const localStorageAuth = localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
     
-    if (localStorageAuth) {
-        // localStorage says we should be authenticated, try to refresh
-        try {
-            await this.refreshToken();
-            // Check if refresh was successful
-            const refreshedToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
-            if (refreshedToken) {
-                return true;
-            } else {
-                // Refresh failed, clear localStorage
-                this.setAuthenticationState(false);
-                return false;
-            }
-        } catch (error) {
-            this.logger.info('Token refresh failed, clearing authentication state');
-            this.setAuthenticationState(false);
-            return false;
-        }
+    if (!localStorageAuth) {
+        this.setAuthenticationState(false);
+        return false;
     }
     
-    // No token and localStorage is false/not set
-    this.setAuthenticationState(false);
-    return false;
+    try {
+      await this.refreshToken();
+      // Check if refresh was successful
+      const refreshedToken = !!this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
+      if (refreshedToken) return true;
+      this.setAuthenticationState(false);
+      return false;
+    } catch (error: any) {
+      const status = this.extractStatusCode(error);
+      if (status === 401 || status === 403) {
+        this.logger.info('Token refresh failed due to invalid/expired token, clearing authentication state');
+        this.setAuthenticationState(false);
+      } else {
+        this.logger.warn('Token refresh failed due to network/server error, keeping authentication state', error);
+      }
+      return false;
+    }
   }
 
   // Keep the synchronous version for cases where you can't use async

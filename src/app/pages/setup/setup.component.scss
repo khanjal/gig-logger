@@ -1,22 +1,3 @@
-// Mobile-First Setup Component Styles
-@import "../../shared/styles/color-vars";
-
-// Setup Page Container - Mobile First
-:host {
-  display: block;
-  padding: 1rem;
-  background: $background-color;
-  min-height: 100vh;
-  
-  @media (min-width: 768px) {
-    padding: 1.5rem;
-  }
-  
-  @media (min-width: 1024px) {
-    padding: 2rem;
-  }
-}
-
 // Disabled mat-fab button styles
 button[mat-fab][disabled],
 button.mat-fab[disabled],
