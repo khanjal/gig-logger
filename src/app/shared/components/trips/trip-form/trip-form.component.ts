@@ -184,15 +184,19 @@ export class TripFormComponent implements OnInit {
     trip.endUnit = this.tripForm.value.endUnit ?? "";
     trip.distance = NumberHelper.toNullableNumber(this.tripForm.value.distance);
 
-    trip.pay = NumberHelper.toNullableNumber(this.tripForm.value.pay);
-    trip.tip = NumberHelper.toNullableNumber(this.tripForm.value.tip);
-    trip.bonus = NumberHelper.toNullableNumber(this.tripForm.value.bonus);
+    // Store converted values to avoid redundant calls
+    const pay = NumberHelper.toNullableNumber(this.tripForm.value.pay);
+    const tip = NumberHelper.toNullableNumber(this.tripForm.value.tip);
+    const bonus = NumberHelper.toNullableNumber(this.tripForm.value.bonus);
+    trip.pay = pay;
+    trip.tip = tip;
+    trip.bonus = bonus;
     trip.cash = NumberHelper.toNullableNumber(this.tripForm.value.cash);
     // total is a calculated field, but ensure nulls are handled
     trip.total = NumberHelper.toNullableNumber(
-      (NumberHelper.toNullableNumber(this.tripForm.value.pay) ?? 0) +
-      (NumberHelper.toNullableNumber(this.tripForm.value.tip) ?? 0) +
-      (NumberHelper.toNullableNumber(this.tripForm.value.bonus) ?? 0)
+      (pay ?? 0) +
+      (tip ?? 0) +
+      (bonus ?? 0)
     );
 
     trip.startOdometer = this.tripForm.value.startOdometer;

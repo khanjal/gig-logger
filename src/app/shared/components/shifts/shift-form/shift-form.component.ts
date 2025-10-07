@@ -160,7 +160,7 @@ export class ShiftFormComponent implements OnInit {
 
     const formValue = this.shiftForm.value;
     // Generate key for new shift using DateHelper.getDays()
-    const days = DateHelper.getDays(formValue.distance ?? new Date());
+    const days = DateHelper.getDays(formValue.date ?? new Date());
     const key = `${days}-${this.computedShiftNumber}-${formValue.service}`;
     const newShift: IShift = {
       id: undefined,
