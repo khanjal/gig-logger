@@ -1,6 +1,6 @@
-<div class="table-container w-full p-2">
+<div class="w-full">
     @if (trips && trips.length > 0) {
-    <div class="overflow-x-auto relative rounded-lg border border-gray-200 bg-white max-w-full sm:max-w-none">
+    <div class="overflow-x-auto relative mb-5 bg-white max-w-full sm:max-w-none">
             <table class="min-w-full text-sm">
                 <thead class="bg-blue-100">
                     <tr>
@@ -18,8 +18,8 @@
                                     {{ trip.date | date:'yy MMM d' }}
                                 </span>
                             </td>
-                            <td class="px-3 py-2 max-w-[4rem] sm:max-w-none truncate overflow-hidden whitespace-nowrap" title="{{trip.service}}">{{trip.service}}</td>
-                            <td class="px-3 py-2 max-w-[4rem] sm:max-w-none truncate overflow-hidden whitespace-nowrap" title="{{trip.place}}">{{trip.place}}</td>
+                            <td class="text-center py-2 max-w-[4rem] sm:max-w-none overflow-hidden whitespace-nowrap" title="{{trip.service}}">{{trip.service}}</td>
+                            <td class="text-center py-2 max-w-[4rem] sm:max-w-none overflow-hidden whitespace-nowrap" title="{{trip.place}}">{{trip.place}}</td>
                             <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400': (trip.tip + trip.cash) === 0, 'text-green-600 font-bold': (trip.tip + trip.cash) >= 5}">
                                 {{trip.tip + trip.cash | currency}}
                             </td>
