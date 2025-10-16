@@ -1,8 +1,7 @@
 import { StringHelper } from "./string.helper";
 
-// Abbreviation map for address words, formatted for readability
-const ABBREV_MAP: Record<string, string> = {
-    // Directions
+// Abbreviation map for directions
+const DIRECTION_MAP: Record<string, string> = {
     north: "N",
     east: "E",
     south: "S",
@@ -10,8 +9,11 @@ const ABBREV_MAP: Record<string, string> = {
     northeast: "NE",
     northwest: "NW",
     southeast: "SE",
-    southwest: "SW",
-    // Street types
+    southwest: "SW"
+};
+
+// Abbreviation map for street types
+const STREET_TYPE_MAP: Record<string, string> = {
     avenue: "Ave",
     boulevard: "Blvd",
     circle: "Cir",
@@ -87,6 +89,9 @@ const ABBREV_MAP: Record<string, string> = {
     vista: "Vis"
 };
 
+// Full abbreviation map
+const ABBREV_MAP: Record<string, string> = { ...DIRECTION_MAP, ...STREET_TYPE_MAP };
+
 /**
  * Utility for address abbreviation and short address formatting.
  */
@@ -129,14 +134,14 @@ export class AddressHelper {
             // Abbreviate direction if present as the second word and followed by another word (not just street type)
             let secondWordRaw = streetWords[1];
             let secondWord = secondWordRaw.replace(/[,\.]/g, "").toLowerCase();
-            if (["north","south","east","west","northeast","northwest","southeast","southwest"].includes(secondWord)) {
-                streetWords[1] = ABBREV_MAP[secondWord] + (secondWordRaw.endsWith(",") ? "," : "");
+            if (Object.prototype.hasOwnProperty.call(DIRECTION_MAP, secondWord)) {
+                streetWords[1] = DIRECTION_MAP[secondWord] + (secondWordRaw.endsWith(",") ? "," : "");
             }
             // Abbreviate street type if present at end
             let lastWordRaw = streetWords[streetWords.length - 1];
             let lastWord = lastWordRaw.replace(/[,\.]/g, "").toLowerCase();
-            if (ABBREV_MAP[lastWord]) {
-                streetWords[streetWords.length - 1] = ABBREV_MAP[lastWord] + (lastWordRaw.endsWith(",") ? "," : "");
+            if (Object.prototype.hasOwnProperty.call(STREET_TYPE_MAP, lastWord)) {
+                streetWords[streetWords.length - 1] = STREET_TYPE_MAP[lastWord] + (lastWordRaw.endsWith(",") ? "," : "");
             }
             parts[0] = streetWords.join(" ");
         } else if (streetWords.length === 1) {
@@ -164,13 +169,8 @@ export class AddressHelper {
      * @param addressPart The direction word.
      */
     static abbrvDirection(addressPart: string): string {
-        switch (addressPart.toLowerCase()) {
-            case "north": return 'N';
-            case "east": return 'E';
-            case "south": return 'S';
-            case "west": return 'W';
-            default: return addressPart;
-        }
+        const key = addressPart.toLowerCase();
+        return DIRECTION_MAP[key] || addressPart;
     }
 
     /**
