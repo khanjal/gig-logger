@@ -121,13 +121,42 @@ export class AddressHelper {
      */
     static abbrvAddress(address: string): string {
         if (!address) return "";
-        return address.split(/\s+/).map(part => {
-            let clean = part.replace(/[,\.]/g, "").toLowerCase();
-            let abbr = ABBREV_MAP[clean] || part;
-            // Preserve comma if present
-            if (part.endsWith(",")) abbr += ",";
-            return abbr;
-        }).join(" ").replace(/\s+,/g, ",").replace(/\s+/g, " ").trim();
+        // Split by comma, focus on first part (street address)
+        let parts = address.split(/,\s*/);
+        let street = parts[0];
+        let streetWords = street.split(/\s+/);
+        if (streetWords.length > 2) {
+            // Abbreviate direction if present as the second word and followed by another word (not just street type)
+            let secondWordRaw = streetWords[1];
+            let secondWord = secondWordRaw.replace(/[,\.]/g, "").toLowerCase();
+            if (["north","south","east","west","northeast","northwest","southeast","southwest"].includes(secondWord)) {
+                streetWords[1] = ABBREV_MAP[secondWord] + (secondWordRaw.endsWith(",") ? "," : "");
+            }
+            // Abbreviate street type if present at end
+            let lastWordRaw = streetWords[streetWords.length - 1];
+            let lastWord = lastWordRaw.replace(/[,\.]/g, "").toLowerCase();
+            if (ABBREV_MAP[lastWord]) {
+                streetWords[streetWords.length - 1] = ABBREV_MAP[lastWord] + (lastWordRaw.endsWith(",") ? "," : "");
+            }
+            parts[0] = streetWords.join(" ");
+        } else if (streetWords.length === 1) {
+            // Abbreviate if only one word and it's a street type
+            let wordRaw = streetWords[0];
+            let word = wordRaw.replace(/[,\.]/g, "").toLowerCase();
+            if (ABBREV_MAP[word]) {
+                parts[0] = ABBREV_MAP[word] + (wordRaw.endsWith(",") ? "," : "");
+            }
+        } else if (streetWords.length === 2) {
+            // Only abbreviate street type if present at end
+            let lastWordRaw = streetWords[streetWords.length - 1];
+            let lastWord = lastWordRaw.replace(/[,\.]/g, "").toLowerCase();
+            if (ABBREV_MAP[lastWord]) {
+                streetWords[streetWords.length - 1] = ABBREV_MAP[lastWord] + (lastWordRaw.endsWith(",") ? "," : "");
+            }
+            parts[0] = streetWords.join(" ");
+        }
+        // Rejoin with the rest of the address
+        return parts.join(", ").replace(/\s+,/g, ",").replace(/\s+/g, " ").trim();
     }
 
     /**
