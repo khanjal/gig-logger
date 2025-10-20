@@ -134,6 +134,13 @@
       "label": "Shifts"
     },
     {
+      "src": "assets/screenshots/narrow/edit-shift.png",
+      "sizes": "484x950",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Edit Shift"
+    },
+    {
       "src": "assets/screenshots/narrow/stats.png",
       "sizes": "484x950",
       "type": "image/png",
@@ -167,6 +174,13 @@
       "type": "image/png",
       "form_factor": "wide",
       "label": "Shifts"
+    },
+    {
+      "src": "assets/screenshots/wide/edit-shift.png",
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Edit Shift"
     },
     {
       "src": "assets/screenshots/wide/stats.png",
