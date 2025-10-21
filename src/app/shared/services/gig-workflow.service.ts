@@ -70,6 +70,10 @@ export class GigWorkflowService {
         return this._apiService.healthCheck(sheetId);
     }
 
+    public async insertDemoData(sheetId: string): Promise<any> {
+        return this._apiService.insertDemoData(sheetId);
+    }
+
     // Data Methods - Delegate to Data Loader
     public async loadData(sheetData: ISheet) {
         return this._dataLoader.loadData(sheetData);

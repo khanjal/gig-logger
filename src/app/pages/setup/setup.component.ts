@@ -17,6 +17,7 @@ import { LoginComponent } from "@components/auth/login/login.component";
 import { ServiceWorkerStatusComponent } from '@components/data/service-worker-status/service-worker-status.component';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { SheetLinkComponent } from './sheet-link/sheet-link.component';
+import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { LocationPermissionComponent } from '../../shared/components/location-permission/location-permission.component';
@@ -54,6 +55,7 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     LoginComponent,
     ServiceWorkerStatusComponent,
     SheetLinkComponent,
+    SheetDemoComponent,
     SheetQuickViewComponent,
     SheetQuotaComponent,
     AuthStatusComponent,

@@ -34,7 +34,8 @@ export class ApiService {
         SHEETS_SAVE: '/sheets/save',
         SHEETS_CREATE: '/sheets/create',
         SHEETS_CHECK: '/sheets/check',
-        SHEETS_HEALTH: '/sheets/health'
+        SHEETS_HEALTH: '/sheets/health',
+        SHEETS_DEMO_DATA: '/sheets/demo-data'
     } as const;
 
     constructor(
@@ -327,6 +328,27 @@ export class ApiService {
         } catch (error) {
             this.handleError('healthCheck', error);
             return null;
+        }
+    }
+
+    /**
+     * Inserts demo data into a spreadsheet
+     * @param sheetId The ID of the spreadsheet to populate with demo data
+     */
+    public async insertDemoData(sheetId: string): Promise<any> {
+        try {
+            const response = await firstValueFrom(
+                this._http.post<any>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_DEMO_DATA}`,
+                    null,
+                    this.setOptions(sheetId)
+                )
+            );
+            this.logger.info(`Demo data insertion requested for sheet: ${sheetId}`);
+            return response;
+        } catch (error) {
+            this.handleError('insertDemoData', error);
+            throw error;
         }
     }
 }
