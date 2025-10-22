@@ -3,14 +3,20 @@
   <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
     Create a demo spreadsheet pre-populated with sample data to explore the app's features.
   </p>
-  <button 
-    mat-fab 
-    [extended]="true" 
-    color="accent" 
-    [class.spinner]="creatingDemo" 
-    [disabled]="creatingDemo" 
-    (click)="createDemoSheet()" 
-    class="flex items-center gap-2">
-    <mat-icon>science</mat-icon> Create Demo Spreadsheet
-  </button>
+  
+  @if (creatingDemo) {
+    <div class="creating-demo-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <div class="creating-demo-text">Creating demo spreadsheet...</div>
+    </div>
+  } @else {
+    <button 
+      mat-fab 
+      [extended]="true" 
+      color="accent" 
+      (click)="createDemoSheet()" 
+      class="flex items-center gap-2">
+      <mat-icon>science</mat-icon> Create Demo Spreadsheet
+    </button>
+  }
 </div>
