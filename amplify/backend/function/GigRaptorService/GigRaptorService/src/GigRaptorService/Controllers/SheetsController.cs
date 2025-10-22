@@ -15,6 +15,7 @@ public class SheetsController : ControllerBase
     private readonly IMetricsService _metricsService;
     private readonly ILogger<SheetsController> _logger;
     private SheetManager? _sheetmanager;
+    private SheetHeaders? _headers;
 
     public SheetsController(IConfiguration configuration, IMetricsService metricsService, ILogger<SheetsController> logger)
     {
@@ -23,12 +24,13 @@ public class SheetsController : ControllerBase
         _logger = logger;
     }
 
-    private void InitializeSheetmanager(string? sheetId = null)
+    private void InitializeSheetmanager(SheetHeaders headers, string? sheetId = null)
     {
+        _headers = headers;
         RateLimiter.MaybeCleanupExpiredEntries();
 
         // If sheetId is not provided, get it from the header  
-        sheetId ??= HttpContext.Request.Headers["Sheet-Id"].ToString();
+        sheetId ??= headers.SheetId;
         if (string.IsNullOrEmpty(sheetId))
             throw new Exception("SheetId must be provided.");
 
@@ -36,32 +38,29 @@ public class SheetsController : ControllerBase
         {
             // Track rate limit hit (must use Task.Run since this method is not async)
             TrackRateLimitMetricsAsync(sheetId);
-            
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
         }
 
-        var accessToken = GetAccessTokenFromHeader();
+        var accessToken = GetAccessTokenFromHeader(headers);
         // Middleware guarantees accessToken is valid  
         _sheetmanager = new SheetManager(accessToken!, sheetId, _configuration);
     }
 
-    private string? GetAccessTokenFromHeader()
+    private string? GetAccessTokenFromHeader(SheetHeaders headers)
     {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        var authHeader = headers.Authorization;
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             return null;
         return authHeader.Substring("Bearer ".Length).Trim();
     }
 
-    private string GetSheetId() => HttpContext.Request.Headers["Sheet-Id"].ToString();
-
     // GET api/sheets/all  
     [HttpGet("all")]
     [RequireSheetId]
     [TrackMetrics("sheets-all")]
-    public async Task<SheetResponse> GetAll()
+    public async Task<SheetResponse> GetAll([FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.GetSheets();
     }
 
@@ -69,18 +68,18 @@ public class SheetsController : ControllerBase
     [HttpGet("single/{sheetName}")]
     [RequireSheetId]
     [TrackMetrics("sheets-single")]
-    public async Task<SheetResponse> GetSingle(string sheetName)
+    public async Task<SheetResponse> GetSingle(string sheetName, [FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.GetSheet(sheetName);
     }
 
     [HttpGet("multiple")]
     [RequireSheetId]
     [TrackMetrics("sheets-multiple")]
-    public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName)
+    public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName, [FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.GetSheets(sheetName);
     }
 
@@ -88,9 +87,9 @@ public class SheetsController : ControllerBase
     [HttpGet("health")]
     [RequireSheetId]
     [TrackMetrics("sheets-health")]
-    public async Task<bool> Health()
+    public async Task<bool> Health([FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         await Task.CompletedTask;
         return true;
     }
@@ -99,9 +98,9 @@ public class SheetsController : ControllerBase
     [HttpPost("create")]
     [RequireSheetId]
     [TrackMetrics("sheets-create")]
-    public async Task<SheetResponse> Create()
+    public async Task<SheetResponse> Create([FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.CreateSheet();
     }
 
@@ -109,10 +108,19 @@ public class SheetsController : ControllerBase
     [HttpPost("save")]
     [RequireSheetId]
     [TrackMetrics("sheets-save")]
-    public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
+    public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity, [FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager(sheetEntity.Properties.Id);
+        InitializeSheetmanager(headers, sheetEntity.Properties.Id);
         return await _sheetmanager!.SaveData(sheetEntity);
+    }
+
+    [HttpPost("demo")]
+    [RequireSheetId]
+    [TrackMetrics("sheets-demo")]
+    public async Task<SheetResponse> Demo([FromHeader] SheetHeaders headers)
+    {
+        InitializeSheetmanager(headers);
+        return await _sheetmanager!.Demo();
     }
 
     private void TrackRateLimitMetricsAsync(string sheetId)
@@ -122,7 +130,7 @@ public class SheetsController : ControllerBase
             try
             {
                 await _metricsService.TrackRateLimitHitAsync(sheetId);
-                _logger.LogWarning("📊 Rate limit metrics sent for sheet {SheetId}", sheetId);
+                _logger.LogWarning("?? Rate limit metrics sent for sheet {SheetId}", sheetId);
             }
             catch (Exception ex)
             {

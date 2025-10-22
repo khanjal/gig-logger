@@ -35,7 +35,7 @@ export class ApiService {
         SHEETS_CREATE: '/sheets/create',
         SHEETS_CHECK: '/sheets/check',
         SHEETS_HEALTH: '/sheets/health',
-        SHEETS_DEMO_DATA: '/sheets/demo-data'
+        SHEETS_DEMO_DATA: '/sheets/demo'
     } as const;
 
     constructor(
