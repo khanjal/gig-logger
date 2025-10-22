@@ -38,10 +38,18 @@ export class SheetDemoComponent {
     this._snackBar.open("Creating demo spreadsheet...", "Dismiss", { duration: 3000 });
 
     try {
-      // Step 1: Create the file with a static name
+      // Step 1: Create the file with a unique timestamp-based name
+      const timestamp = new Date().toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
       const sheetProperties: ISheetProperties = {
         id: '',
-        name: 'RaptorGig Demo'
+        name: `RaptorGig Demo - ${timestamp}`
       };
 
       this._logger.info('Creating demo spreadsheet file...');
