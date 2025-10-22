@@ -54,7 +54,7 @@ public class SheetsController : ControllerBase
         return authHeader.Substring("Bearer ".Length).Trim();
     }
 
-    // GET api/sheets/all  
+    // GET api/sheets/all
     [HttpGet("all")]
     [RequireSheetId]
     [TrackMetrics("sheets-all")]
@@ -64,8 +64,8 @@ public class SheetsController : ControllerBase
         return await _sheetmanager!.GetSheets();
     }
 
-    // GET api/sheets/get/single  
-    [HttpGet("single/{sheetName}")]
+    // GET api/sheets/{sheetName}  
+    [HttpGet("{sheetName}")]
     [RequireSheetId]
     [TrackMetrics("sheets-single")]
     public async Task<SheetResponse> GetSingle(string sheetName, [FromHeader] SheetHeaders headers)
@@ -74,13 +74,14 @@ public class SheetsController : ControllerBase
         return await _sheetmanager!.GetSheet(sheetName);
     }
 
-    [HttpGet("multiple")]
+    // GET api/sheets?names=sheet1,sheet2
+    [HttpGet("")]
     [RequireSheetId]
     [TrackMetrics("sheets-multiple")]
-    public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName, [FromHeader] SheetHeaders headers)
+    public async Task<SheetResponse> GetMultiple([FromQuery(Name = "names")] string[] sheetNames, [FromHeader] SheetHeaders headers)
     {
         InitializeSheetmanager(headers);
-        return await _sheetmanager!.GetSheets(sheetName);
+        return await _sheetmanager!.GetSheets(sheetNames);
     }
 
     // GET api/sheets/health  
@@ -94,8 +95,8 @@ public class SheetsController : ControllerBase
         return true;
     }
 
-    // POST api/sheets/create  
-    [HttpPost("create")]
+    // POST api/sheets  
+    [HttpPost("")]
     [RequireSheetId]
     [TrackMetrics("sheets-create")]
     public async Task<SheetResponse> Create([FromHeader] SheetHeaders headers)
@@ -104,8 +105,8 @@ public class SheetsController : ControllerBase
         return await _sheetmanager!.CreateSheet();
     }
 
-    // POST api/sheets/save  
-    [HttpPost("save")]
+    // PUT api/sheets  
+    [HttpPut("")]
     [RequireSheetId]
     [TrackMetrics("sheets-save")]
     public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity, [FromHeader] SheetHeaders headers)

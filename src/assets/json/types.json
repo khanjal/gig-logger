@@ -1,10 +1,11 @@
 [
     "Canceled",
     "Curbside",
+    "Delivery",
     "Order",
     "Pay",
-    "Pickup",
     "Reassigned",
+    "Rideshare",
     "Shop",
     "Unassigned"
 ]
