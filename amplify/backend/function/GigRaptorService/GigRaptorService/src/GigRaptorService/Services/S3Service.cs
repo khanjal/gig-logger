@@ -1,7 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using System.Text;
-using System.Text.Json;
 
 namespace GigRaptorService.Services;
 
