@@ -13,6 +13,7 @@ namespace GigRaptorService.Business;
 public interface ISheetManager
 {
     public Task<SheetResponse> CreateSheet();
+    public Task<SheetResponse> Demo();
     public Task<SheetResponse> GetSheet(string sheet);
     public Task<SheetResponse> GetSheets(string[] sheets);
     public Task<SheetResponse> GetSheets();
@@ -165,5 +166,14 @@ public class SheetManager : ISheetManager
         
         // Save operations typically have small responses, so we don't need to check size
         return SheetResponse.FromSheetEntity(returnEntity);
+    }
+
+    public async Task<SheetResponse> Demo()
+    {
+        var sheetData = _googleSheetManager.GenerateDemoData();
+
+        var returnEntity = await SaveData(sheetData);
+
+        return returnEntity;
     }
 }

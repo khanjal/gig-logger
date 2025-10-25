@@ -17,6 +17,7 @@ import { LoginComponent } from "@components/auth/login/login.component";
 import { ServiceWorkerStatusComponent } from '@components/data/service-worker-status/service-worker-status.component';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
 import { SheetLinkComponent } from './sheet-link/sheet-link.component';
+import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { LocationPermissionComponent } from '../../shared/components/location-permission/location-permission.component';
@@ -54,6 +55,7 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     LoginComponent,
     ServiceWorkerStatusComponent,
     SheetLinkComponent,
+    SheetDemoComponent,
     SheetQuickViewComponent,
     SheetQuotaComponent,
     AuthStatusComponent,
@@ -129,15 +131,29 @@ export class SetupComponent {
     this.setting = false;
   }
 
-  public async deleteSpreadsheet(spreadsheet: ISpreadsheet) {
+  public async unlinkSpreadsheet(spreadsheet: ISpreadsheet) {
     this.deleting = true;
-    if (spreadsheet.default === "false") {
+    
+    // Get all spreadsheets
+    const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
+    const isDefaultSheet = spreadsheet.default === "true";
+    const isOnlySheet = allSpreadsheets.length === 1;
+
+    if (isDefaultSheet && isOnlySheet) {
+      // If it's the default and only sheet, clear all data (like Delete Data button)
+      await this.deleteAllData();
+    } else if (isDefaultSheet && !isOnlySheet) {
+      // Cannot unlink default sheet when there are others - user must set another as default first
+      this._snackBar.open("Please set another spreadsheet as default first", "Dismiss", { duration: 5000 });
+      this.deleting = false;
+      return;
+    } else {
+      // Non-default sheet, just unlink it
       await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
     }
 
     this.deleting = false;
-
-    this.reload();
+    await this.load();
   }
 
   public async deleteAllData() {
@@ -263,6 +279,52 @@ export class SetupComponent {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.deleteAllData();
+      }
+    });
+  }
+
+  async confirmUnlinkSpreadsheetDialog(spreadsheet: ISpreadsheet) {
+    const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
+    const isDefaultSheet = spreadsheet.default === "true";
+    const isOnlySheet = allSpreadsheets.length === 1;
+
+    // Cannot unlink default sheet when there are other sheets
+    if (isDefaultSheet && !isOnlySheet) {
+      this._snackBar.open("Please set another spreadsheet as default first", "Dismiss", { duration: 5000 });
+      return;
+    }
+
+    let message = '';
+    let title = '';
+    let confirmText = '';
+
+    if (isDefaultSheet && isOnlySheet) {
+      // Last remaining sheet - will clear all data
+      title = "Unlink Sheet & Clear Data";
+      message = `Unlinking it will clear all local data. Your data will remain safe in the spreadsheet itself. Are you sure?`;
+      confirmText = "Unlink & Clear Data";
+    } else {
+      // Non-default sheet
+      title = "Unlink Spreadsheet";
+      message = `This will unlink "${spreadsheet.name}" from the app. Your data will remain safe in the spreadsheet itself. Are you sure?`;
+      confirmText = "Unlink";
+    }
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = title;
+    dialogData.message = message;
+    dialogData.trueText = confirmText;
+    dialogData.trueColor = "warning";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.unlinkSpreadsheet(spreadsheet);
       }
     });
   }

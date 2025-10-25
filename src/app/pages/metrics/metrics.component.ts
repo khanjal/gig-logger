@@ -191,6 +191,37 @@ export class MetricsComponent implements OnInit, OnDestroy {
     this.updateYearlyComparison(filtered);
   }
 
+  private sortLabels(labels: string[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): string[] {
+    if (aggType === 'year') {
+      // Sort years numerically
+      return labels.sort((a, b) => parseInt(a) - parseInt(b));
+    } else if (aggType === 'quarter') {
+      // Sort quarters by year then quarter number (e.g., "Q1 2024", "Q4 2025")
+      return labels.sort((a, b) => {
+        const [qA, yearA] = a.split(' ');
+        const [qB, yearB] = b.split(' ');
+        const yearDiff = parseInt(yearA) - parseInt(yearB);
+        if (yearDiff !== 0) return yearDiff;
+        return parseInt(qA.substring(1)) - parseInt(qB.substring(1));
+      });
+    } else if (aggType === 'month') {
+      // Sort months chronologically (e.g., "Jan 2024", "Dec 2025")
+      return labels.sort((a, b) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateA.getTime() - dateB.getTime();
+      });
+    } else if (aggType === 'week' || aggType === 'day') {
+      // Sort by the actual date (first date in the label)
+      return labels.sort((a, b) => {
+        const dateA = new Date(a.split(' - ')[0] || a);
+        const dateB = new Date(b.split(' - ')[0] || b);
+        return dateA.getTime() - dateB.getTime();
+      });
+    }
+    return labels;
+  }
+
   updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
@@ -222,7 +253,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
       grouped[label].bonus += s.totalBonus || 0;
       grouped[label].cash += s.totalCash || 0;
     });
-    const labels = Object.keys(grouped);
+    const labels = this.sortLabels(Object.keys(grouped), aggType);
     this.tripsData = {
       labels,
       datasets: [{
@@ -281,7 +312,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
       if (!earningsByLabel[label]) earningsByLabel[label] = {};
       earningsByLabel[label][s.service] = (earningsByLabel[label][s.service] || 0) + (s.grandTotal || 0);
     });
-    const labels = Object.keys(earningsByLabel);
+    const labels = this.sortLabels(Object.keys(earningsByLabel), aggType);
     const services = Array.from(serviceSet);
     this.dailyEarningsData = {
       labels,

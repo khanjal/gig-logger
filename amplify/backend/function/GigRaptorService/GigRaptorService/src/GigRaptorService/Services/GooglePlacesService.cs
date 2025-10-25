@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using GigRaptorService.Business;
-using GigRaptorService.Helpers;
 using GigRaptorService.Models;
 
 namespace GigRaptorService.Services;

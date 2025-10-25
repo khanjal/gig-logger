@@ -3,7 +3,6 @@ using GigRaptorService.Business;
 using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
-using RaptorSheets.Core.Entities;
 using RaptorSheets.Gig.Entities;
 
 namespace GigRaptorService.Controllers;
@@ -15,6 +14,7 @@ public class SheetsController : ControllerBase
     private readonly IMetricsService _metricsService;
     private readonly ILogger<SheetsController> _logger;
     private SheetManager? _sheetmanager;
+    private SheetHeaders? _headers;
 
     public SheetsController(IConfiguration configuration, IMetricsService metricsService, ILogger<SheetsController> logger)
     {
@@ -23,12 +23,13 @@ public class SheetsController : ControllerBase
         _logger = logger;
     }
 
-    private void InitializeSheetmanager(string? sheetId = null)
+    private void InitializeSheetmanager(SheetHeaders headers, string? sheetId = null)
     {
+        _headers = headers;
         RateLimiter.MaybeCleanupExpiredEntries();
 
         // If sheetId is not provided, get it from the header  
-        sheetId ??= HttpContext.Request.Headers["Sheet-Id"].ToString();
+        sheetId ??= headers.SheetId;
         if (string.IsNullOrEmpty(sheetId))
             throw new Exception("SheetId must be provided.");
 
@@ -36,83 +37,90 @@ public class SheetsController : ControllerBase
         {
             // Track rate limit hit (must use Task.Run since this method is not async)
             TrackRateLimitMetricsAsync(sheetId);
-            
             throw new InvalidOperationException($"Rate limit exceeded for SpreadsheetId: {sheetId}. Please try again later.");
         }
 
-        var accessToken = GetAccessTokenFromHeader();
+        var accessToken = GetAccessTokenFromHeader(headers);
         // Middleware guarantees accessToken is valid  
         _sheetmanager = new SheetManager(accessToken!, sheetId, _configuration);
     }
 
-    private string? GetAccessTokenFromHeader()
+    private string? GetAccessTokenFromHeader(SheetHeaders headers)
     {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        var authHeader = headers.Authorization;
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             return null;
         return authHeader.Substring("Bearer ".Length).Trim();
     }
 
-    private string GetSheetId() => HttpContext.Request.Headers["Sheet-Id"].ToString();
-
-    // GET api/sheets/all  
+    // GET api/sheets/all
     [HttpGet("all")]
     [RequireSheetId]
     [TrackMetrics("sheets-all")]
-    public async Task<SheetResponse> GetAll()
+    public async Task<SheetResponse> GetAll([FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.GetSheets();
     }
 
-    // GET api/sheets/get/single  
-    [HttpGet("single/{sheetName}")]
+    // GET api/sheets/{sheetName}  
+    [HttpGet("{sheetName}")]
     [RequireSheetId]
     [TrackMetrics("sheets-single")]
-    public async Task<SheetResponse> GetSingle(string sheetName)
+    public async Task<SheetResponse> GetSingle(string sheetName, [FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.GetSheet(sheetName);
     }
 
-    [HttpGet("multiple")]
+    // GET api/sheets?names=sheet1,sheet2
+    [HttpGet("")]
     [RequireSheetId]
     [TrackMetrics("sheets-multiple")]
-    public async Task<SheetResponse> GetMultiple([FromQuery] string[] sheetName)
+    public async Task<SheetResponse> GetMultiple([FromQuery(Name = "names")] string[] sheetNames, [FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
-        return await _sheetmanager!.GetSheets(sheetName);
+        InitializeSheetmanager(headers);
+        return await _sheetmanager!.GetSheets(sheetNames);
     }
 
     // GET api/sheets/health  
     [HttpGet("health")]
     [RequireSheetId]
     [TrackMetrics("sheets-health")]
-    public async Task<bool> Health()
+    public async Task<bool> Health([FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         await Task.CompletedTask;
         return true;
     }
 
-    // POST api/sheets/create  
-    [HttpPost("create")]
+    // POST api/sheets  
+    [HttpPost("")]
     [RequireSheetId]
     [TrackMetrics("sheets-create")]
-    public async Task<SheetResponse> Create()
+    public async Task<SheetResponse> Create([FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager();
+        InitializeSheetmanager(headers);
         return await _sheetmanager!.CreateSheet();
     }
 
-    // POST api/sheets/save  
-    [HttpPost("save")]
+    // PUT api/sheets  
+    [HttpPut("")]
     [RequireSheetId]
     [TrackMetrics("sheets-save")]
-    public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity)
+    public async Task<SheetResponse> Save([FromBody] SheetEntity sheetEntity, [FromHeader] SheetHeaders headers)
     {
-        InitializeSheetmanager(sheetEntity.Properties.Id);
+        InitializeSheetmanager(headers, sheetEntity.Properties.Id);
         return await _sheetmanager!.SaveData(sheetEntity);
+    }
+
+    [HttpPost("demo")]
+    [RequireSheetId]
+    [TrackMetrics("sheets-demo")]
+    public async Task<SheetResponse> Demo([FromHeader] SheetHeaders headers)
+    {
+        InitializeSheetmanager(headers);
+        return await _sheetmanager!.Demo();
     }
 
     private void TrackRateLimitMetricsAsync(string sheetId)

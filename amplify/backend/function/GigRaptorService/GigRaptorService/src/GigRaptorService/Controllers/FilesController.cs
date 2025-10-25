@@ -4,7 +4,6 @@ using GigRaptorService.Models;
 using GigRaptorService.Services;
 using Microsoft.AspNetCore.Mvc;
 using RaptorSheets.Core.Entities;
-using RaptorSheets.Gig.Entities;
 using System.Net.Mime;
 
 namespace GigRaptorService.Controllers;

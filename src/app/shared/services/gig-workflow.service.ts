@@ -54,8 +54,8 @@ export class GigWorkflowService {
         return this._apiService.getSecondarySheetData(sheetId);
     }
 
-    public async postSheetData(sheetData: ISheet): Promise<any> {
-        return this._apiService.postSheetData(sheetData);
+    public async saveSheetData(sheetData: ISheet): Promise<any> {
+        return this._apiService.saveSheetData(sheetData);
     }
 
     public async createSheet(sheetId: string) {
@@ -68,6 +68,10 @@ export class GigWorkflowService {
 
     public async healthCheck(sheetId: string) {
         return this._apiService.healthCheck(sheetId);
+    }
+
+    public async insertDemoData(sheetId: string): Promise<any> {
+        return this._apiService.insertDemoData(sheetId);
     }
 
     // Data Methods - Delegate to Data Loader
