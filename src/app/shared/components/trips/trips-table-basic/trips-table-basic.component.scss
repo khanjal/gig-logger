@@ -1,5 +1,11 @@
-// Trips Table Basic Component Styles
 @import "color-vars";
+
+// Table border for container
+.trips-table-container {
+  border: 2px solid #bfdbfe; // Tailwind blue-200
+  border-radius: 0.5rem;     // Tailwind rounded-lg
+  box-sizing: border-box;
+}
 
 // Component-specific styles only - global table styles are in _tables.scss
 

@@ -137,6 +137,11 @@ export class TripFormComponent implements OnInit {
   }
 
   public async load() {
+    // Don't reload if user is actively entering data (form is dirty)
+    if (this.tripForm.dirty) {
+      return;
+    }
+
     if (this.data?.id) {
       this.title = `Edit Trip - #${ this.data.rowId }`;
       // Load form with passed in data.
@@ -144,9 +149,8 @@ export class TripFormComponent implements OnInit {
     }
     else {
       this.data = {} as ITrip; // Reset data if not editing. Need to do this to prevent expanded form fields from showing.
+      await this.setDefaultShift();
     }
-
-    await this.setDefaultShift();
   }
 
   private async createShift(): Promise<IShift> {

@@ -27,14 +27,12 @@ export class ApiService {
         FILES_CREATE: '/files/create',
         FILES_LIST: '/files/list',
         
-        // Sheet endpoints
-        SHEETS_ALL: '/sheets/all',
-        SHEETS_SINGLE: '/sheets/single',
-        SHEETS_MULTIPLE: '/sheets/multiple',
-        SHEETS_SAVE: '/sheets/save',
-        SHEETS_CREATE: '/sheets/create',
+        // Sheet endpoints (RESTful)
+        SHEETS: '/sheets', // GET /{sheetName}, POST create, PUT save, GET with ?names= for multiple
+        SHEETS_ALL: '/sheets/all', // GET all
+        SHEETS_HEALTH: '/sheets/health',
+        SHEETS_DEMO_DATA: '/sheets/demo',
         SHEETS_CHECK: '/sheets/check',
-        SHEETS_HEALTH: '/sheets/health'
     } as const;
 
     constructor(
@@ -214,26 +212,24 @@ export class ApiService {
         try {
             const response = await firstValueFrom(
                 this._http.get<any>(
-                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_ALL}`, 
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_ALL}`,
                     this.setOptions(sheetId)
                 )
             );
-            
             return await this.handleSheetResponse(response, 'sheet');
         } catch (error) {
             this.handleError('getSheetData', error);
             return null;
         }
     }
-      public async getSheetSingle(sheetId: string, sheetName: string) {
+    public async getSheetSingle(sheetId: string, sheetName: string) {
         try {
             const response = await firstValueFrom(
                 this._http.get<any>(
-                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_SINGLE}/${sheetName}`, 
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}/${sheetName}`,
                     this.setOptions(sheetId)
                 )
             );
-            
             return await this.handleSheetResponse(response, `single sheet '${sheetName}'`);
         } catch (error) {
             this.handleError('getSheetSingle', error);
@@ -243,13 +239,15 @@ export class ApiService {
 
     public async getSecondarySheetData(sheetId: string) {
         try {
+            // Use ?names= for multiple sheet names
+            const names = ['names', 'places', 'trips'];
+            const query = names.map(n => `names=${encodeURIComponent(n)}`).join('&');
             const response = await firstValueFrom(
                 this._http.get<any>(
-                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_MULTIPLE}?sheetName=names&sheetName=places&sheetName=trips`, 
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}?${query}`,
                     this.setOptions(sheetId)
                 )
             );
-            
             return await this.handleSheetResponse(response, 'secondary sheet');
         } catch (error) {
             this.handleError('getSecondarySheetData', error);
@@ -257,16 +255,15 @@ export class ApiService {
         }
     }
 
-    public async postSheetData(sheetData: ISheet): Promise<any> {
+    public async saveSheetData(sheetData: ISheet): Promise<any> {
         try {
             const response = await firstValueFrom(
-                this._http.post<any>(
-                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_SAVE}`, 
-                    JSON.stringify(sheetData), 
+                this._http.put<any>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}`,
+                    JSON.stringify(sheetData),
                     this.setOptions(sheetData.properties.id)
                 )
             );
-            
             const messages = response?.sheetEntity?.messages || [];
             this.logger.info(`Sheet data save completed: ${sheetData.properties.name}`);
             return messages;
@@ -285,7 +282,7 @@ export class ApiService {
         try {
             const response = await firstValueFrom(
                 this._http.post<any>(
-                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_CREATE}`,
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}`,
                     null,
                     this.setOptions(sheetId)
                 )
@@ -327,6 +324,27 @@ export class ApiService {
         } catch (error) {
             this.handleError('healthCheck', error);
             return null;
+        }
+    }
+
+    /**
+     * Inserts demo data into a spreadsheet
+     * @param sheetId The ID of the spreadsheet to populate with demo data
+     */
+    public async insertDemoData(sheetId: string): Promise<any> {
+        try {
+            const response = await firstValueFrom(
+                this._http.post<any>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_DEMO_DATA}`,
+                    null,
+                    this.setOptions(sheetId)
+                )
+            );
+            this.logger.info(`Demo data insertion requested for sheet: ${sheetId}`);
+            return response;
+        } catch (error) {
+            this.handleError('insertDemoData', error);
+            throw error;
         }
     }
 }
