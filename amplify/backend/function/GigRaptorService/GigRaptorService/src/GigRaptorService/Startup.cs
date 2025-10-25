@@ -4,10 +4,8 @@ using GigRaptorService.Business;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using Amazon.S3;
-using Amazon.Extensions.NETCore.Setup;
 using Amazon.DynamoDBv2;
 using Amazon.CloudWatch;
-using System.Threading;
 
 namespace GigRaptorService;
 
@@ -72,8 +70,8 @@ public class Startup
         services.AddControllers();
         services.AddScoped<Filters.RequireSheetIdFilter>();
         
-        // Register GoogleOAuthService as a singleton to reuse across requests
-        services.AddSingleton<GoogleOAuthService>();
+        // Register GoogleOAuthService as scoped to prevent cross-request data leakage
+        services.AddScoped<GoogleOAuthService>();
         
         // Register LazyS3Service as a singleton since it uses lazy initialization
         services.AddSingleton<IS3Service, LazyS3Service>();

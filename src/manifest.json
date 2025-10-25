@@ -1,6 +1,7 @@
 {
   "name": "Raptor Gig",
   "short_name": "RaptorGig",
+  "version": "1",
   "description": "An intuitive and powerful web application designed to help you log, track, and manage your gigs and trips effortlessly. Stay organized with detailed insights, shift tracking, and performance statistics tailored for gig workers.",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
@@ -134,6 +135,13 @@
       "label": "Shifts"
     },
     {
+      "src": "assets/screenshots/narrow/edit-shift.png",
+      "sizes": "484x950",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Edit Shift"
+    },
+    {
       "src": "assets/screenshots/narrow/stats.png",
       "sizes": "484x950",
       "type": "image/png",
@@ -167,6 +175,13 @@
       "type": "image/png",
       "form_factor": "wide",
       "label": "Shifts"
+    },
+    {
+      "src": "assets/screenshots/wide/edit-shift.png",
+      "sizes": "1024x890",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Edit Shift"
     },
     {
       "src": "assets/screenshots/wide/stats.png",

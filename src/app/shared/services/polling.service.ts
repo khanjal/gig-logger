@@ -208,7 +208,7 @@ export class PollingService implements OnDestroy {
       }
 
       // Save to spreadsheet
-      const messages = await this._gigLoggerService.postSheetData(sheetData);
+      const messages = await this._gigLoggerService.saveSheetData(sheetData);
       
       // Process the response using the helper
       const result = ApiMessageHelper.processSheetSaveResponse(messages);

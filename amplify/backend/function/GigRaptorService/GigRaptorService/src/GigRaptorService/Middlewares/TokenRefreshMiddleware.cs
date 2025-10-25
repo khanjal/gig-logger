@@ -1,7 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
 using GigRaptorService.Helpers;
-using GigRaptorService.Models;
 using GigRaptorService.Services;
 
 namespace GigRaptorService.Middlewares;
@@ -11,25 +9,19 @@ public class TokenRefreshMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<TokenRefreshMiddleware> _logger;
     private readonly IConfiguration _configuration;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly GoogleOAuthService _googleOAuthService;
 
     public TokenRefreshMiddleware(
         RequestDelegate next,
         ILogger<TokenRefreshMiddleware> logger,
-        IConfiguration configuration,
-        IHttpClientFactory httpClientFactory,
-        GoogleOAuthService googleOAuthService)
+        IConfiguration configuration)
     {
         _next = next;
         _logger = logger;
         _configuration = configuration;
-        _httpClientFactory = httpClientFactory;
-        _googleOAuthService = googleOAuthService;
     }
 
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, GoogleOAuthService googleOAuthService)
     {
         var accessToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
         var encryptedRefreshToken = context.Request.Cookies["RG_REFRESH"];
@@ -68,7 +60,7 @@ public class TokenRefreshMiddleware
         try
         {
             // Try to get a new access token using the refresh token
-            var tokenResponse = await _googleOAuthService.RefreshAccessTokenAsync(refreshToken);
+            var tokenResponse = await googleOAuthService.RefreshAccessTokenAsync(refreshToken);
             var newAccessToken = tokenResponse?.AccessToken;
             if (string.IsNullOrEmpty(newAccessToken))
             {
