@@ -127,7 +127,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         sheetData.trips = await this._tripService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");
-        let messages = await this._gigLoggerService.postSheetData(sheetData);
+        let messages = await this._gigLoggerService.saveSheetData(sheetData);
         
         // Process the response using the helper
         const result = ApiMessageHelper.processSheetSaveResponse(messages);

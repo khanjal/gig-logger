@@ -130,7 +130,7 @@ public class SheetsController : ControllerBase
             try
             {
                 await _metricsService.TrackRateLimitHitAsync(sheetId);
-                _logger.LogWarning("?? Rate limit metrics sent for sheet {SheetId}", sheetId);
+                _logger.LogWarning("📊 Rate limit metrics sent for sheet {SheetId}", sheetId);
             }
             catch (Exception ex)
             {

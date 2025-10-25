@@ -255,7 +255,7 @@ export class ApiService {
         }
     }
 
-    public async postSheetData(sheetData: ISheet): Promise<any> {
+    public async saveSheetData(sheetData: ISheet): Promise<any> {
         try {
             const response = await firstValueFrom(
                 this._http.put<any>(
