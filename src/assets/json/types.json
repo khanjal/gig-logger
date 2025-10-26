@@ -4,6 +4,7 @@
     "Delivery",
     "Order",
     "Pay",
+    "Pickup",
     "Reassigned",
     "Rideshare",
     "Shop",
