@@ -249,7 +249,7 @@
       "width": 24,
       "height": 6,
       "properties": {
-        "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /📊/\n| sort @timestamp desc\n| limit 20",
+      "query": "SOURCE '/aws/lambda/raptor-gig-service'\n| fields @timestamp, @message\n| filter @message like /Successfully sent metric/\n| sort @timestamp desc\n| limit 20",
         "region": "us-east-1",
         "title": "Recent Metrics Activity",
         "view": "table"
