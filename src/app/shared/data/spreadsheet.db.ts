@@ -23,6 +23,7 @@ export class AppDB extends Dexie {
     addresses!: Table<IAddress, number>;
     daily!: Table<IDaily, number>;
     deliveries!: Table<IDelivery, number>;
+    expenses!: Table<IExpense, number>;
     monthly!: Table<IMonthly, number>;
     names!: Table<IName, number>;
     places!: Table<IPlace, number>;
@@ -36,7 +37,6 @@ export class AppDB extends Dexie {
     weekdays!: Table<IWeekday, number>;
     weekly!: Table<IWeekly, number>;
     yearly!: Table<IYearly, number>;
-    expenses!: Table<IExpense, number>;
 
     constructor() {
         super('spreadsheetDB');
@@ -44,6 +44,7 @@ export class AppDB extends Dexie {
             addresses: '++id, address, saved',
             deliveries: '++id, address, name',
             daily: '++id, date',
+            expenses: '++id, date, amount, category, note',
             monthly: '++id, month',
             names: '++id, name, saved',
             places: '++id, place, saved',
@@ -56,8 +57,7 @@ export class AppDB extends Dexie {
             types: '++id, type, saved',
             weekdays: '++id, day',
             weekly: '++id, week, begin, end',
-            yearly: '++id, year',
-            expenses: '++id, date, amount, category, note' // new table
+            yearly: '++id, year'
         });
     }
 }
