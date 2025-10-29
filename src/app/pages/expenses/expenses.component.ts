@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import { ActionEnum } from '@enums/action.enum';
 
 @Component({
   selector: 'app-expenses',
@@ -84,18 +85,39 @@ export class ExpensesComponent implements OnInit {
 
   async addExpense() {
     if (this.expenseForm.invalid) return;
-    const expense: IExpense = this.expenseForm.value;
+    const now = Date.now();
+    const formValue = this.expenseForm.value;
+    let expense: IExpense = {
+      ...formValue,
+      actionTime: now
+    };
+    let scrollId: number | undefined;
     if (this.editingExpenseId) {
-      // Update existing expense
+      // Update existing expense by id
       expense.id = this.editingExpenseId;
-      await this.expensesService.add(expense); // Use add for upsert in GenericCrudService
+      expense.action = ActionEnum.Update;
+      await this.expensesService.update([expense]);
+      scrollId = this.editingExpenseId;
       this.editingExpenseId = undefined;
     } else {
-      // Add new expense
+      // Insert new expense
+      expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
+      scrollId = undefined;
     }
     this.expenseForm.reset({ date: this.getToday() });
+    this.showAddForm = false;
     await this.loadExpenses();
+    // Scroll to the updated/added row if possible
+    setTimeout(() => {
+      if (scrollId) {
+        const row = document.getElementById('expense-row-' + scrollId);
+        if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const top = document.getElementById('expenses-top');
+        if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 0);
   }
 
   editExpense(expense: IExpense) {
@@ -124,7 +146,12 @@ export class ExpensesComponent implements OnInit {
 
   deleteExpense(expense: IExpense) {
     if (typeof expense.id === 'number') {
-      this.expensesService.delete(expense.id).then(() => {
+      const deleted: IExpense = {
+        ...expense,
+        action: ActionEnum.Delete,
+        actionTime: Date.now()
+      };
+      this.expensesService.update([deleted]).then(() => {
         this.syncData();
       });
     }

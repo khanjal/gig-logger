@@ -53,19 +53,22 @@
         <table class="min-w-full bg-white rounded-lg shadow mb-8">
           <thead>
             <tr class="bg-blue-100">
-              <th class="py-2 px-4 text-left font-semibold">Date</th>
-              <th class="py-2 px-4 text-left font-semibold">Amount</th>
-              <th class="py-2 px-4 text-left font-semibold">Category</th>
-               <th class="py-2 px-4 text-left font-semibold"></th>
+              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
+              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
+              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
+              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base"></th>
             </tr>
           </thead>
           <tbody>
             <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
               <tr class="even:bg-gray-50">
-                <td class="py-2 px-4 align-top">{{ expense.date | date:'d' | ordinal }}</td>
-                <td class="py-2 px-4 align-top">{{ expense.amount | currency }}</td>
-                <td class="py-2 px-4 align-top">{{ expense.category }}</td>
-                <td class="py-2 px-4 align-top flex items-center gap-2">
+                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
+                  <span class="block sm:hidden">{{ expense.date | date:'d' | ordinal }}</span>
+                  <span class="hidden sm:inline">{{ expense.date | date:'EEE' }} {{ expense.date | date:'d' | ordinal }}</span>
+                </td>
+                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
+                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
+                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle flex items-center gap-1 sm:gap-2">
                   <button mat-icon-button color="primary" aria-label="Edit" (click)="editExpense(expense)">
                     <mat-icon fontIcon="edit"></mat-icon>
                   </button>
@@ -75,9 +78,9 @@
                 </td>
               </tr>
               <tr *ngIf="expense.note">
-                <td></td>
-                <td colspan="2" class="py-1 px-4 text-gray-500 italic">"{{ expense.note }}"</td>
-                  <td></td>
+                <td class="py-0 px-1 sm:px-3"></td>
+                <td colspan="2" class="py-0 px-1 sm:px-3 text-gray-500 italic text-xs sm:text-base">"{{ expense.note }}"</td>
+                <td class="py-0 px-1 sm:px-3"></td>
               </tr>
             </ng-container>
           </tbody>
