@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { ActionEnum } from '@enums/action.enum';
 
@@ -31,7 +32,8 @@ import { ActionEnum } from '@enums/action.enum';
     MatDatepickerToggle,
     MatIconModule,
     OrderByPipe,
-    OrdinalPipe
+    OrdinalPipe,
+    MatAutocompleteModule
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
@@ -164,7 +166,9 @@ export class ExpensesComponent implements OnInit {
   }
 
   get categories(): string[] {
-    return [...this.defaultCategories, ...this.customCategories];
+    // Merge, dedupe, and sort categories alphabetically
+    const merged = Array.from(new Set([...this.defaultCategories, ...this.customCategories]));
+    return merged.sort((a, b) => a.localeCompare(b));
   }
 
   sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;

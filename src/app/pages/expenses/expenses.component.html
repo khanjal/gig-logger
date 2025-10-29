@@ -24,9 +24,10 @@
       </mat-form-field>
       <mat-form-field class="w-full" appearance="outline">
         <mat-label>Category</mat-label>
-        <mat-select formControlName="category" placeholder="Search or add category">
+        <input matInput formControlName="category" [matAutocomplete]="autoCategory" required />
+        <mat-autocomplete #autoCategory="matAutocomplete">
           <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
     <mat-form-field class="w-full col-span-1 md:col-span-4" appearance="outline">
