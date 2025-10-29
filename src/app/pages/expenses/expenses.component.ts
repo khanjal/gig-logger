@@ -1,3 +1,5 @@
+import { OrdinalPipe } from '@pipes/ordinal.pipe';
+import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { spreadsheetDB } from '@data/spreadsheet.db';
@@ -26,13 +28,21 @@ import { ExpensesService } from '@services/sheets/expenses.service';
     MatButtonModule,
     MatDatepickerModule,
     MatDatepickerToggle,
-    MatIconModule
+    MatIconModule,
+    OrderByPipe,
+    OrdinalPipe
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
   providers: [CurrencyPipe, DatePipe]
 })
 export class ExpensesComponent implements OnInit {
+  showAddForm = false;
+
+  getMonthTotal(expenses: IExpense[]): number {
+    return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  }
+  // ...existing code...
   expenseForm!: FormGroup;
   expenses: IExpense[] = [];
   groupedExpenses: { [month: string]: IExpense[] } = {};
@@ -92,11 +102,24 @@ export class ExpensesComponent implements OnInit {
     // Populate the form with the selected expense for editing
     this.expenseForm.patchValue(expense);
     this.editingExpenseId = expense.id;
+    // Scroll to top anchor when editing
+    setTimeout(() => {
+      const top = document.getElementById('expenses-top');
+      if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+    this.showAddForm = true;
+  }
+
+  resetForm() {
+    this.editingExpenseId = undefined;
+    this.expenseForm.reset({ date: this.getToday() });
+  // Do not close the form here; handled by button
   }
 
   cancelEdit() {
     this.editingExpenseId = undefined;
     this.expenseForm.reset({ date: this.getToday() });
+  this.showAddForm = false;
   }
 
   deleteExpense(expense: IExpense) {
