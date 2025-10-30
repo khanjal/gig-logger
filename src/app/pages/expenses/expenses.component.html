@@ -43,49 +43,57 @@
   </form>
 
   <div class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6">
-    <div *ngFor="let month of (groupedExpenses | keyvalue:sortByMonth)">
-      <div class="flex items-end justify-between mb-0 py-1">
-        <h3 class="text-lg font-bold text-blue-700 pb-0">{{ month.key | date:'MMMM yyyy' }}</h3>
-        <div class="text-right text-base font-semibold text-blue-900 mb-2">
-          Total: {{ getMonthTotal(month.value) | currency }}
+    <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-blue-800">{{ year.key }}</h2>
+        <div class="text-right text-lg font-semibold text-blue-900">
+          Year Total: {{ getYearTotal(year.value) | currency }}
         </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white rounded-lg shadow mb-8">
-          <thead>
-            <tr class="bg-blue-100">
-              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
-              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
-              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
-              <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
-              <tr class="even:bg-gray-50">
-                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
-                  <span class="block sm:hidden">{{ expense.date | date:'d' | ordinal }}</span>
-                  <span class="hidden sm:inline">{{ expense.date | date:'EEE' }} {{ expense.date | date:'d' | ordinal }}</span>
-                </td>
-                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
-                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
-                <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle flex items-center gap-1 sm:gap-2">
-                  <button mat-icon-button color="primary" aria-label="Edit" (click)="editExpense(expense)">
-                    <mat-icon fontIcon="edit"></mat-icon>
-                  </button>
-                  <button mat-icon-button color="warn" aria-label="Delete" (click)="deleteExpense(expense)">
-                    <mat-icon fontIcon="delete"></mat-icon>
-                  </button>
-                </td>
+      <div *ngFor="let month of (year.value | groupByMonth | keyvalue:sortByMonth)">
+        <div class="flex items-end justify-between mb-0 py-1">
+          <h3 class="text-lg font-bold text-blue-700 pb-0">{{ month.key | date:'MMMM yyyy' }}</h3>
+          <div class="text-right text-base font-semibold text-blue-900 mb-2">
+            Total: {{ getMonthTotal(month.value) | currency }}
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white rounded-lg shadow mb-8">
+            <thead>
+              <tr class="bg-blue-100">
+                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
+                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
+                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
+                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base"></th>
               </tr>
-              <tr *ngIf="expense.note">
-                <td class="py-0 px-1 sm:px-3"></td>
-                <td colspan="2" class="py-0 px-1 sm:px-3 text-gray-500 italic text-xs sm:text-base">"{{ expense.note }}"</td>
-                <td class="py-0 px-1 sm:px-3"></td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
+                <tr class="even:bg-gray-50">
+                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
+                    <span class="block sm:hidden">{{ expense.date | date:'d' | ordinal }}</span>
+                    <span class="hidden sm:inline">{{ expense.date | date:'EEE' }} {{ expense.date | date:'d' | ordinal }}</span>
+                  </td>
+                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
+                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
+                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle flex items-center gap-1 sm:gap-2">
+                    <button mat-icon-button color="primary" aria-label="Edit" (click)="editExpense(expense)">
+                      <mat-icon fontIcon="edit"></mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" aria-label="Delete" (click)="deleteExpense(expense)">
+                      <mat-icon fontIcon="delete"></mat-icon>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="expense.note">
+                  <td class="py-0 px-1 sm:px-3"></td>
+                  <td colspan="2" class="py-0 px-1 sm:px-3 text-gray-500 italic text-xs sm:text-base">"{{ expense.note }}"</td>
+                  <td class="py-0 px-1 sm:px-3"></td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

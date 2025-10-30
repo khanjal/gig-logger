@@ -1,3 +1,4 @@
+import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
 import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
 import { Component, OnInit } from '@angular/core';
@@ -33,13 +34,28 @@ import { ActionEnum } from '@enums/action.enum';
     MatIconModule,
     OrderByPipe,
     OrdinalPipe,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    GroupByMonthPipe
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
   providers: [CurrencyPipe, DatePipe]
 })
+
 export class ExpensesComponent implements OnInit {
+  // Group expenses by year for yearly totals
+  get groupedExpensesByYear(): { [year: string]: IExpense[] } {
+    return this.expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+      const year = expense.date.slice(0, 4);
+      if (!groups[year]) groups[year] = [];
+      groups[year].push(expense);
+      return groups;
+    }, {} as { [year: string]: IExpense[] });
+  }
+
+  getYearTotal(expenses: IExpense[]): number {
+    return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  }
   showAddForm = false;
 
   getMonthTotal(expenses: IExpense[]): number {

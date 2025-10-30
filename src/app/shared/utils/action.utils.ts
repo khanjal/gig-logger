@@ -1,18 +1,13 @@
 import { ActionEnum } from "@enums/action.enum";
+import { IActionRecord } from "@interfaces/action-record.interface";
 
-interface Actionable {
-    action: string;
-    actionTime: number;
-    saved: boolean;
-}
-
-export function clearAction<T extends Actionable>(item: T): void {
+export function clearAction<T extends IActionRecord>(item: T): void {
     item.action = '';
     item.actionTime = 0;
     item.saved = true;
 }
 
-export function updateAction<T extends Actionable>(item: T, action: string): void {
+export function updateAction<T extends IActionRecord>(item: T, action: string): void {
     if (item.action !== ActionEnum.Add) {
         item.action = action;
     }

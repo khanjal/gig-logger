@@ -1,9 +1,8 @@
 import { IAmount } from "./amount.interface";
+import { IRowState } from "./row-state.interface";
 
-export interface IRegion extends IAmount {
+export interface IRegion extends IAmount, IRowState {
     id?: number;
-    rowId: number;
-    saved: boolean;
     region: string;
     trips: number;
 }
