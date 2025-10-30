@@ -19,7 +19,6 @@ export interface ITrip extends IAmount, IActionRecord {
     pickupTime: string;
     place: string;
     region: string;
-    saved: boolean;
     service: string;
     startAddress: string;
     startOdometer: number;
