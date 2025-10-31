@@ -13,9 +13,10 @@ public class RateLimiter
     public static bool IsRequestAllowed(string spreadsheetId)
     {
         var now = DateTime.UtcNow;
+        var hashedId = Helpers.HashHelper.HashId(spreadsheetId);
 
-        // Get or initialize the rate limit info for the given SpreadsheetId
-        var rateLimitInfo = RateLimitCache.GetOrAdd(spreadsheetId, _ => new RateLimitInfo
+        // Get or initialize the rate limit info for the given (hashed) SpreadsheetId
+        var rateLimitInfo = RateLimitCache.GetOrAdd(hashedId, _ => new RateLimitInfo
         {
             RequestCount = 0,
             LastRequestTime = now

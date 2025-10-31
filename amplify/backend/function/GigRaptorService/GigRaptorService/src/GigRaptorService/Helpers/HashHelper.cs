@@ -5,11 +5,10 @@ namespace GigRaptorService.Helpers;
 
 public static class HashHelper
 {
-    public static string HashSpreadsheetId(string spreadsheetId)
+    public static string HashId(string id)
     {
         using var sha256 = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(spreadsheetId);
-        var hash = sha256.ComputeHash(bytes);
-        return Convert.ToBase64String(hash); // Store as Base64 for readability
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(id));
+        return Convert.ToHexString(hashedBytes)[..8]; // Take first 8 characters for brevity
     }
 }

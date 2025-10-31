@@ -159,9 +159,7 @@ public class MetricsService : IMetricsService
 
     private string HashUserId(string userId)
     {
-        using var sha256 = SHA256.Create();
-        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(userId));
-        return Convert.ToHexString(hashedBytes)[..8]; // Take first 8 characters for brevity
+        return Helpers.HashHelper.HashId(userId);
     }
 
     private string SanitizeMetricName(string name)
