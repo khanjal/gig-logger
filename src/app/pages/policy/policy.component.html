@@ -53,6 +53,7 @@
       <li><strong>Where stored:</strong> All tokens are stored in your browser only. Access tokens are in secure cookies. Refresh tokens are stored encrypted in browser cookies with HttpOnly, Secure, and SameSite flags. Your user ID is stored in browser localStorage for operational purposes only. No tokens are ever stored on our servers.</li>
       <li><strong>How used:</strong> Tokens are used solely to access your Google Sheets for syncing your gig data. They are never logged, shared, or used for any other purpose.</li>
       <li><strong>How long:</strong> Access tokens expire after 1 hour and are automatically refreshed. The refresh token persists for up to 1 year or until you explicitly log out or revoke access in your Google account settings.</li>
+      <li><strong>How to revoke:</strong> You can revoke access at any time by logging out of the app or visiting your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Account Permissions</a> page and removing Raptor Gig.</li>
     </ul>
   </section>
 
@@ -82,6 +83,18 @@
       <li>We use AWS CloudWatch for operational logs (see above), retained for 30 days</li>
       <li>No third-party analytics or error tracking providers are used</li>
       <li>All logs are non-identifiable and never include your data content</li>
+      <li><strong>Subprocessors:</strong> AWS (Lambda for backend services, CloudWatch for operational logs)</li>
+      <li><strong>We never sell your data</strong> to anyone, for any purpose</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Your Data Rights</h2>
+    <ul>
+      <li><strong>Delete everything:</strong> To delete all your data, simply log out and clear your browser data (cookies, localStorage, IndexedDB). Your trip data in your Google Sheets is yours to keep or delete as you wish.</li>
+      <li><strong>Revoke access:</strong> Visit your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Account Permissions</a> to revoke Raptor Gig's access at any time.</li>
+      <li><strong>Data portability:</strong> Your data is already in your Google Sheets—it's portable by design. You own it and can export it anytime.</li>
+      <li><strong>Request deletion of logs:</strong> Contact us to request deletion of any operational logs that may contain your hashed identifiers.</li>
     </ul>
   </section>
 
