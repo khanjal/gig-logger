@@ -1,15 +1,14 @@
+import { IActionRecord } from "./action-record.interface";
 import { IAmountPer } from "./amount-per.interface";
 
-export interface IShift extends IAmountPer {
+export interface IShift extends IAmountPer, IActionRecord {
     id?: number;
-    rowId: number;
     date: string;
     distance: number;
     active: string;
     finish: string;
     key: string;
     region: string;
-    saved: boolean;
     service: string;
     number: number;
     start: string;
@@ -26,6 +25,4 @@ export interface IShift extends IAmountPer {
     totalCash: number;
     note: string;
     omit: boolean;
-    action: string;
-    actionTime: number;
 }

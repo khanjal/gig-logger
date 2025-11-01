@@ -1,11 +1,10 @@
 import { IAmount } from "./amount.interface";
 import { INote } from "./note.interface";
+import { IRowState } from "./row-state.interface";
 
-export interface IName extends IAmount {
+export interface IName extends IAmount, IRowState {
     id?: number;
-    rowId: number;
     name: string;
-    saved: boolean;
     addresses: string[];
     notes: INote[];
     trips: number;
