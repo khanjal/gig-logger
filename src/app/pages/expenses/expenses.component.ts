@@ -209,10 +209,4 @@ export class ExpensesComponent implements OnInit {
   }
 
   sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;
-
-  get editingExpense(): IExpense | null {
-    if (!this.editingExpenseId) return null;
-    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
-    return expense ? { ...expense } : null;
-  }
 }
