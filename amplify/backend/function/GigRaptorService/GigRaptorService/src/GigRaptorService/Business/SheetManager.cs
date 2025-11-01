@@ -70,7 +70,7 @@ public class SheetManager : ISheetManager
     private static async Task EnforceRateLimitAsync(string spreadsheetId)
     {
         // Use the lazy-initialized rate limiter
-        var hashedSpreadsheetId = HashHelper.HashSpreadsheetId(spreadsheetId);
+        var hashedSpreadsheetId = HashHelper.HashId(spreadsheetId);
         if (!await _lazyRateLimiter.Value.IsRequestAllowedAsync(hashedSpreadsheetId))
         {
             throw new InvalidOperationException($"Rate limit exceeded for spreadsheet ID: {hashedSpreadsheetId}. Please try again later.");

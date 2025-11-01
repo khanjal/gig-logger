@@ -1,9 +1,8 @@
 import { IAmount } from "./amount.interface";
+import { IRowState } from "./row-state.interface";
 
-export interface IService extends IAmount {
+export interface IService extends IAmount, IRowState {
     id?: number;
-    rowId: number;
-    saved: boolean;
     service: string;
     trips: number;
 }

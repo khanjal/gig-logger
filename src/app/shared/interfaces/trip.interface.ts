@@ -1,8 +1,8 @@
+import { IActionRecord } from "./action-record.interface";
 import { IAmount } from "./amount.interface";
 
-export interface ITrip extends IAmount {
+export interface ITrip extends IAmount, IActionRecord {
     id?: number;
-    rowId: number;
     date: string;
     distance: number;
     endAddress: string;
@@ -19,13 +19,10 @@ export interface ITrip extends IAmount {
     pickupTime: string;
     place: string;
     region: string;
-    saved: boolean;
     service: string;
     startAddress: string;
     startOdometer: number;
     type: string;
     amountPerDistance: number;
     amountPerTime: number;
-    action: string;
-    actionTime: number;
 }

@@ -8,7 +8,7 @@ export const authConfig: AuthConfig = {
   redirectUri: window.location.origin + '/setup',
   scope: 'openid https://www.googleapis.com/auth/drive.file',
   responseType: 'code',
-  showDebugInformation: true,
+  showDebugInformation: false,
   oidc: true,
   requestAccessToken: false,
   disableAtHashCheck: true,

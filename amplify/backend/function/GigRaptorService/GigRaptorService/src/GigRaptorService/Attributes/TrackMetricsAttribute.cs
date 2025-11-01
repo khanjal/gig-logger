@@ -48,7 +48,7 @@ public class TrackMetricsAttribute : ActionFilterAttribute
                     await metricsService.TrackApiCallAsync(endpointName, stopwatch.Elapsed, success);
                     
                     // Log the API metrics for visibility
-                    logger?.LogInformation("?? API metrics sent for {EndpointName}: success={Success}, duration={Duration:F4}ms", 
+                    logger?.LogInformation("📊 API metrics sent for {EndpointName}: success={Success}, duration={Duration:F4}ms", 
                         endpointName, success, stopwatch.Elapsed.TotalMilliseconds);
                     
                     if (_trackUserActivity)

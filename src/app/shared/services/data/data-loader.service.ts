@@ -16,6 +16,7 @@ import { YearlyService } from "../sheets/yearly.service";
 import { DeliveryService } from "../delivery.service";
 import { DataLinkingService } from "./data-linking.service";
 import { LoggerService } from "../logger.service";
+import { ExpensesService } from "@services/sheets/expenses.service";
 
 @Injectable({
     providedIn: 'root'
@@ -26,6 +27,7 @@ export class DataLoaderService {
         private _addressService: AddressService,
         private _dailyService: DailyService,
         private _deliveryService: DeliveryService,
+        private _expenseService: ExpensesService,
         private _monthlyService: MonthlyService,
         private _nameService: NameService,
         private _placeService: PlaceService,
@@ -57,6 +59,7 @@ export class DataLoaderService {
             await Promise.all([
                 this._addressService.load(sheetData.addresses),
                 this._dailyService.load(sheetData.daily),
+                this._expenseService.load(sheetData.expenses),
                 this._monthlyService.load(sheetData.monthly),
                 this._nameService.load(sheetData.names),
                 this._placeService.load(sheetData.places),

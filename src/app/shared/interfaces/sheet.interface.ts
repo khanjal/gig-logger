@@ -1,5 +1,6 @@
 import { IAddress } from "./address.interface";
 import { IDaily } from "./daily.interface";
+import { IExpense } from "./expense.interface";
 import { IMessage } from "./message.interface";
 import { IMonthly } from "./monthly.interface";
 import { IName } from "./name.interface";
@@ -19,6 +20,7 @@ export interface ISheet {
     properties: ISheetProperties;
     addresses: IAddress[];
     daily: IDaily[];
+    expenses: IExpense[];
     monthly: IMonthly[];
     names: IName[];
     places: IPlace[];

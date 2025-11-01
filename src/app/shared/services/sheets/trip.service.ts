@@ -100,6 +100,9 @@ export class TripService  extends GenericCrudService<ITrip> {
                 clearAction(trip);
                 await this.update([trip]);
             }
+            else {
+                updateAction(trip, ActionEnum.Update);
+            }
         };
 
         if (rowId) {
