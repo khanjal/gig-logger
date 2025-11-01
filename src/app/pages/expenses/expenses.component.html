@@ -69,7 +69,7 @@
             </thead>
             <tbody>
               <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
-                <tr class="even:bg-gray-50">
+                <tr class="even:bg-gray-50" id="expense-row-{{expense.id}}">
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
                     <span class="block sm:hidden">{{ expense.date | date:'d' | ordinal }}</span>
                     <span class="hidden sm:inline">{{ expense.date | date:'EEE' }} {{ expense.date | date:'d' | ordinal }}</span>

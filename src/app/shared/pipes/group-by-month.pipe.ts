@@ -8,7 +8,12 @@ import { IExpense } from '@interfaces/expense.interface';
 export class GroupByMonthPipe implements PipeTransform {
   transform(expenses: IExpense[]): { [month: string]: IExpense[] } {
     return expenses.reduce((groups, expense) => {
-      const month = expense.date.slice(0, 7); // yyyy-mm
+      let month: string;
+      if (typeof expense.date === 'string' && expense.date.length >= 7) {
+        month = expense.date.slice(0, 7); // yyyy-mm
+      } else {
+        month = 'Invalid';
+      }
       if (!groups[month]) groups[month] = [];
       groups[month].push(expense);
       return groups;

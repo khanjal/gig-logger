@@ -107,6 +107,7 @@ export class ExpensesComponent implements OnInit {
     const formValue = this.expenseForm.value;
     let expense: IExpense = {
       ...formValue,
+      action: ActionEnum.Add, // Initialize action; will be updated if editing
       actionTime: now
     };
     let scrollId: number | undefined;
@@ -150,18 +151,38 @@ export class ExpensesComponent implements OnInit {
     this.showAddForm = true;
   }
 
+  /**
+   * Resets the form and clears editing state, but keeps the form open.
+   * Used when the user wants to clear the form without closing it.
+   */
   resetForm() {
-    this.editingExpenseId = undefined;
-    this.expenseForm.reset({ date: this.getToday() });
-  // Do not close the form here; handled by button
+    this.clearFormState();
+    // Do not close the form here; handled by button
   }
 
+  /**
+   * Cancels editing, resets the form, and closes the form.
+   * Used when the user explicitly cancels editing or adding.
+   */
   cancelEdit() {
-    this.editingExpenseId = undefined;
-    this.expenseForm.reset({ date: this.getToday() });
-  this.showAddForm = false;
+    this.clearFormState();
+    this.showAddForm = false;
   }
 
+  /**
+   * Shared logic to reset the form and clear editing state.
+   */
+  private clearFormState() {
+    this.editingExpenseId = undefined;
+    this.expenseForm.reset({ date: this.getToday() });
+  }
+
+  /**
+   * Deletes an expense using soft-delete pattern.
+   * Instead of permanently removing the record, this marks it as deleted
+   * and syncs it to the backend so it can be properly removed from Google Sheets.
+   * This ensures consistency between local storage and the remote spreadsheet.
+   */
   deleteExpense(expense: IExpense) {
     if (typeof expense.id === 'number') {
       const deleted: IExpense = {
