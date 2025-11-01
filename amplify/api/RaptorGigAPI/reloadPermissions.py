@@ -1,3 +1,20 @@
+"""
+AWS Lambda Permission Reloader
+
+This script reloads API Gateway permissions for Lambda functions across different environments.
+
+Usage:
+    python reloadPermissions.py
+
+The script will prompt for your AWS Account ID, or you can set it as an environment variable:
+    export AWS_ACCOUNT_ID=your-account-id-here
+    export API_GATEWAY_ID=your-api-gateway-id  # Optional, defaults to 1al1hr5ub4
+
+Requirements:
+    - AWS CLI installed and configured
+    - Appropriate IAM permissions to manage Lambda permissions
+"""
+
 import subprocess
 import json
 import uuid
@@ -6,7 +23,7 @@ def generate_random_guid():
     """Generate a random GUID (UUID version 4)."""
     return str(uuid.uuid4())
 
-def get_lambda_policy(function_name):
+def get_lambda_policy(function_name, aws_account_id, api_gateway_id):
     print(f"Lambda Function: {function_name}")
     try:
         # Run the AWS CLI command to get the Lambda function's policy
@@ -33,13 +50,13 @@ def get_lambda_policy(function_name):
             remove_lambda_permission(statement, function_name)
 
         # Add all the lambda permissions back in
-        add_lambda_permissions(function_name)
+        add_lambda_permissions(function_name, aws_account_id, api_gateway_id)
     except subprocess.CalledProcessError as e:
         print(f"Error executing command: {e}")
         # Status code 254 typically means no policy exists yet
         if e.returncode == 254:
             print("No existing policy found. Adding new permissions...")
-            add_lambda_permissions(function_name)
+            add_lambda_permissions(function_name, aws_account_id, api_gateway_id)
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")
 
@@ -73,10 +90,10 @@ def remove_lambda_permission(statement, function_name):
     except:
         print("Statement failed")
 
-def add_lambda_permissions(function_name):
+def add_lambda_permissions(function_name, aws_account_id, api_gateway_id):
     try:
         lambda_commands = [
-            "aws lambda add-permission --function-name {function-name} --source-arn arn:aws:execute-api:us-east-1:***REMOVED***:1al1hr5ub4/*/*/* --principal apigateway.amazonaws.com --statement-id {statement-id} --action lambda:InvokeFunction",
+            f"aws lambda add-permission --function-name {{function-name}} --source-arn arn:aws:execute-api:us-east-1:{aws_account_id}:{api_gateway_id}/*/*/* --principal apigateway.amazonaws.com --statement-id {{statement-id}} --action lambda:InvokeFunction",
         ]
         
         for command in lambda_commands:
@@ -117,6 +134,14 @@ def display_menu():
 
 
 def main():
+    # Get AWS account ID and API Gateway ID from user or environment variables
+    import os
+    
+    aws_account_id = os.getenv('AWS_ACCOUNT_ID') or input("Enter your AWS Account ID: ")
+    api_gateway_id = os.getenv('API_GATEWAY_ID', '1al1hr5ub4')  # Default to existing ID or prompt
+    
+    function_name_template = f'arn:aws:lambda:us-east-1:{aws_account_id}:function:raptor-gig-service:{{env}}'
+    
     while True:
         display_menu()
         
@@ -125,21 +150,17 @@ def main():
         
         # Handle the menu choice
         if choice == '1':
-            get_lambda_policy(function_name.replace("{env}", 'dev'))
+            get_lambda_policy(function_name_template.replace("{env}", 'dev'), aws_account_id, api_gateway_id)
         elif choice == '2':
-            get_lambda_policy(function_name.replace("{env}", 'test'))
+            get_lambda_policy(function_name_template.replace("{env}", 'test'), aws_account_id, api_gateway_id)
         elif choice == '3':
-            get_lambda_policy(function_name.replace("{env}", 'prod'))
+            get_lambda_policy(function_name_template.replace("{env}", 'prod'), aws_account_id, api_gateway_id)
         elif choice == '4':
             print("Exiting the program.")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 3.")
+            print("Invalid choice. Please enter a number between 1 and 4.")
 
-
-# Example usage
-function_name = 'arn:aws:lambda:us-east-1:***REMOVED***:function:raptor-gig-service:{env}'  # Replace with your Lambda function name
-#get_lambda_policy(function_name)
 
 if __name__ == '__main__':
     main()
