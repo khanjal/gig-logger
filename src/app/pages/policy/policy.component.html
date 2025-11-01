@@ -32,7 +32,7 @@
     <ul>
       <li>To prevent abuse and ensure fair use, the app uses an in-memory rate limiter keyed only by a hashed version of your Google Sheet ID (never by user or token).</li>
       <li>This cache is never written to disk, is cleared after a few minutes of inactivity, and is not shared or logged.</li>
-      <li>No personal data, trip content, or user identifiers are stored-only a technical hash of the sheet ID for rate limiting.</li>
+      <li>No personal data, trip content, or user identifiers are stored—only a technical hash of the sheet ID for rate limiting.</li>
       <li>The cache is used solely to enforce request limits and is never used for analytics or tracking.</li>
     </ul>
   </section>
@@ -50,9 +50,9 @@
     <h2>Authentication Tokens</h2>
     <ul>
       <li><strong>What tokens:</strong> We use Google OAuth tokens (access tokens, ID tokens, and a refresh token) to authenticate you and access your Google Drive/Sheets on your behalf.</li>
-      <li><strong>Where stored:</strong> Tokens are stored only in your browser's sessionStorage or localStorage and are never sent to or stored on our servers.</li>
+      <li><strong>Where stored:</strong> All tokens are stored in your browser only. Access tokens are in secure cookies. Refresh tokens are stored encrypted in browser cookies with HttpOnly, Secure, and SameSite flags. Your user ID is stored in browser localStorage for operational purposes only. No tokens are ever stored on our servers.</li>
       <li><strong>How used:</strong> Tokens are used solely to access your Google Sheets for syncing your gig data. They are never logged, shared, or used for any other purpose.</li>
-      <li><strong>How long:</strong> Access and ID tokens are kept for your active session. The refresh token may persist beyond browser close to allow you to stay signed in, but is cleared on logout or when you remove the app’s access in your Google account settings.</li>
+      <li><strong>How long:</strong> Access tokens expire after 1 hour and are automatically refreshed. The refresh token persists for up to 1 year or until you explicitly log out or revoke access in your Google account settings.</li>
     </ul>
   </section>
 
@@ -78,7 +78,7 @@
   <section>
     <h2>Data Storage, Security, and Retention</h2>
     <ul>
-      <li>Your trip and earnings data is stored only in your Google Sheets and on your device</li>
+      <li>Your trip and earnings data is stored only in your Google Sheets and on your device (browser IndexedDB)</li>
       <li>We use AWS CloudWatch for operational logs (see above), retained for 30 days</li>
       <li>No third-party analytics or error tracking providers are used</li>
       <li>All logs are non-identifiable and never include your data content</li>
