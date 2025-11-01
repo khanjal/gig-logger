@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from './gig-workflow.service';
 import { ShiftService } from './sheets/shift.service';
@@ -6,7 +7,8 @@ import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
 import { LoggerService } from './logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
-import { ApiMessageHelper } from '@helpers/api-message.helper';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { firstValueFrom } from 'rxjs';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
@@ -26,6 +28,7 @@ export class PollingService implements OnDestroy {
 
   constructor(
     private _snackBar: MatSnackBar,
+    private _dialog: MatDialog,
     private _sheetService: SpreadsheetService,
     private _gigLoggerService: GigWorkflowService,
     private _shiftService: ShiftService,
@@ -195,41 +198,34 @@ export class PollingService implements OnDestroy {
       sheetData.shifts = await this._shiftService.getUnsavedShifts();
 
       if (sheetData.trips.length === 0 && sheetData.shifts.length === 0) {
+        this._logger.info('No unsaved data to sync');
         return;
       }
 
-      this._logger.info(`Saving ${sheetData.trips.length} trips and ${sheetData.shifts.length} shifts`);
+      this._logger.info(`Auto-saving ${sheetData.trips.length} trips and ${sheetData.shifts.length} shifts`);
 
-      // Warm up lambda
-      const warmupResult = await this._sheetService.warmUpLambda();
-      if (!warmupResult) {
-        this._logger.error('Lambda warmup failed');
-        return;
+      // Open the data sync modal to show save progress
+      const dialogRef = this._dialog.open(DataSyncModalComponent, {
+        height: '400px',
+        width: '500px',
+        panelClass: 'custom-modalbox',
+        data: 'save',
+        disableClose: true // Prevent closing while saving
+      });
+
+      // Wait for the modal to complete
+      const result = await firstValueFrom(dialogRef.afterClosed());
+
+      if (result) {
+        this._logger.info('Auto-save completed successfully');
+        this.parentReload.emit();
+      } else {
+        this._logger.warn('Auto-save was cancelled or failed');
       }
-
-      // Save to spreadsheet
-      const messages = await this._gigLoggerService.saveSheetData(sheetData);
-      
-      // Process the response using the helper
-      const result = ApiMessageHelper.processSheetSaveResponse(messages);
-      
-      if (!result.success) {
-        this._snackBar.open(`Error saving data: ${result.errorMessage}`, undefined, { duration: 5000 });
-        return;
-      }
-
-      // Mark as saved
-      await this._tripService.saveUnsaved(sheetData.trips);
-      await this._shiftService.saveUnsavedShifts(sheetData.shifts);
-
-      this._snackBar.open("Data saved to spreadsheet", undefined, { duration: 3000 });
-      this.parentReload.emit();
-      
-      this._logger.info('Data saved successfully');
 
     } catch (error) {
-      this._logger.error('Save failed:', error);
-      this._snackBar.open("Save failed - data remains unsaved", undefined, { duration: 5000 });
+      this._logger.error('Auto-save failed:', error);
+      this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
     } finally {
       this.processing = false;
     }
