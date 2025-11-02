@@ -19,6 +19,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
 import { NgFor, NgClass } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 
@@ -84,6 +85,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         private _sheetService: SpreadsheetService,
         private _shiftService: ShiftService,
         private _tripService: TripService,
+        private _expensesService: ExpensesService,
         private _timerService: TimerService
     ) { }
 
@@ -125,6 +127,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         sheetData.shifts = await this._shiftService.getUnsavedShifts();
         sheetData.trips = await this._tripService.getUnsaved();
+        sheetData.expenses = await this._expensesService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");
         let messages = await this._gigLoggerService.saveSheetData(sheetData);
@@ -148,6 +151,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         // Mark all items as saved in local database after successful save
         await this._tripService.saveUnsaved();
         await this._shiftService.saveUnsavedShifts();
+        await this._expensesService.saveUnsaved();
 
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
     }

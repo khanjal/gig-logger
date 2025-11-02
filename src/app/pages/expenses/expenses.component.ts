@@ -17,6 +17,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { ActionEnum } from '@enums/action.enum';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { updateAction } from '@utils/action.utils';
 
 @Component({
   selector: 'app-expenses',
@@ -70,10 +76,15 @@ export class ExpensesComponent implements OnInit {
   ];
   customCategories: string[] = [];
   editingExpenseId?: number;
+  unsavedExpenses: IExpense[] = [];
+  unsavedData: boolean = false;
+  saving: boolean = false;
 
   constructor(
     private fb: FormBuilder,
-    private expensesService: ExpensesService
+    private expensesService: ExpensesService,
+    public dialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {}
 
   async ngOnInit() {
@@ -99,6 +110,12 @@ export class ExpensesComponent implements OnInit {
       groups[month].push(expense);
       return groups;
     }, {} as { [month: string]: IExpense[] });
+    this.checkForUnsavedData();
+  }
+
+  checkForUnsavedData(): void {
+    this.unsavedExpenses = this.expenses.filter(expense => !expense.saved);
+    this.unsavedData = this.unsavedExpenses.length > 0;
   }
 
   async addExpense() {
@@ -107,8 +124,9 @@ export class ExpensesComponent implements OnInit {
     const formValue = this.expenseForm.value;
     let expense: IExpense = {
       ...formValue,
-      action: ActionEnum.Add, // Initialize action; will be updated if editing
-      actionTime: now
+      action: ActionEnum.Add,
+      actionTime: now,
+      saved: false
     };
     let scrollId: number | undefined;
     if (this.editingExpenseId) {
@@ -119,7 +137,8 @@ export class ExpensesComponent implements OnInit {
       scrollId = this.editingExpenseId;
       this.editingExpenseId = undefined;
     } else {
-      // Insert new expense
+      // Insert new expense with rowId
+      expense.rowId = await this.expensesService.getMaxRowId() + 1;
       expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
       scrollId = undefined;
@@ -178,28 +197,90 @@ export class ExpensesComponent implements OnInit {
   }
 
   /**
-   * Deletes an expense using soft-delete pattern.
-   * Instead of permanently removing the record, this marks it as deleted
-   * and syncs it to the backend so it can be properly removed from Google Sheets.
-   * This ensures consistency between local storage and the remote spreadsheet.
+   * Confirms deletion with user before deleting expense
    */
-  deleteExpense(expense: IExpense) {
-    if (typeof expense.id === 'number') {
-      const deleted: IExpense = {
-        ...expense,
-        action: ActionEnum.Delete,
-        actionTime: Date.now()
-      };
-      this.expensesService.update([deleted]).then(() => {
-        this.syncData();
-      });
-    }
+  async confirmDeleteExpenseDialog(expense: IExpense) {
+    const message = `This expense will be deleted from your spreadsheet. Are you sure you want to delete this?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Delete";
+    dialogData.message = message;
+    dialogData.trueText = "Delete";
+    dialogData.trueColor = "warn";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.deleteExpense(expense);
+      }
+    });
   }
 
-  syncData() {
-    // Call the data sync component/service to save changes
-    console.log('Syncing data...');
-    // Implement actual sync logic here
+  /**
+   * Deletes an expense using soft-delete pattern.
+   * If the expense was just added (ActionEnum.Add), it's removed from the database.
+   * Otherwise, it's marked as deleted and will be removed from the spreadsheet on next sync.
+   */
+  async deleteExpense(expense: IExpense) {
+    if (expense.action === ActionEnum.Add) {
+      // Permanently delete newly added expenses that haven't been synced yet
+      await this.expensesService.delete(expense.id!);
+    } else {
+      // Mark existing expenses as deleted for sync
+      updateAction(expense, ActionEnum.Delete);
+      expense.saved = false;
+      await this.expensesService.update([expense]);
+    }
+    await this.loadExpenses();
+  }
+
+  async confirmSaveDialog() {
+    const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Save";
+    dialogData.message = message;
+    dialogData.trueText = "Save";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: any) => {
+      if(result) {
+        await this.saveSheetDialog('save');
+      }
+    });
+  }
+
+  async saveSheetDialog(inputValue: string) {
+    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+        height: '400px',
+        width: '500px',
+        panelClass: 'custom-modalbox',
+        data: inputValue
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: any) => {
+        if (result) {
+            // Show success message
+            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            
+            // Refresh the page to show updated state
+            await this.loadExpenses();
+        }
+    });
+  }
+
+  hideAddForm() {
+    this.showAddForm = false;
   }
 
   get categories(): string[] {
