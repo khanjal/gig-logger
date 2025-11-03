@@ -59,117 +59,6 @@ export class VoiceInputComponent implements OnInit {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  /**
-   * Dynamically generates example phrases by analyzing the actual regex patterns used in parsing.
-   * This ensures examples stay in sync with the actual parsing logic.
-   */
-  private getRandomSuggestion(): string {
-    // Define pattern categories with example generators that match the actual regex patterns
-    const categoryGenerators = [
-      // SERVICE patterns - from servicePatterns array
-      () => {
-        const service = this.serviceList.length > 0 ? this.getRandomItem(this.serviceList) : 'DoorDash';
-        const templates = ['I have a {s}', 'Working {s}', 'Service is {s}'];
-        return this.getRandomItem(templates).replace('{s}', service);
-      },
-      
-      // PICKUP/SHOP + PLACE pattern - from pickupShopPattern
-      () => {
-        const place = this.placeList.length > 0 ? this.getRandomItem(this.placeList) : 'McDonald\'s';
-        const type = this.getRandomItem(['pickup', 'shop']);
-        return `I have a ${type} from ${place}`;
-      },
-      
-      // NAME patterns - from namePatterns array
-      () => {
-        const name = this.getRandomItem(['John', 'Sarah', 'Mike', 'Emily', 'Lisa', 'David']);
-        const templates = ['The name is {n}', 'The customer is {n}', 'Delivering to {n}'];
-        return this.getRandomItem(templates).replace('{n}', name);
-      },
-      
-      // PLACE patterns - from placePatterns array
-      () => {
-        const place = this.placeList.length > 0 ? this.getRandomItem(this.placeList) : 'Starbucks';
-        const templates = ['Picking up from {p}', 'Place is {p}'];
-        return this.getRandomItem(templates).replace('{p}', place);
-      },
-      
-      // PAY + TIP combined - from payTipPattern
-      () => {
-        const pay = this.getRandomNumber(8, 25);
-        const tip = this.getRandomNumber(2, 10);
-        return `Pay is $${pay} and tip is $${tip}`;
-      },
-      
-      // PAY + DISTANCE combined - from payDistancePattern
-      () => {
-        const pay = this.getRandomNumber(10, 25);
-        const distance = this.getRandomNumber(2, 15);
-        return `Pay is $${pay} for ${distance} miles`;
-      },
-      
-      // PAY patterns - from payPatterns array
-      () => {
-        const pay = this.getRandomNumber(8, 30);
-        const templates = ['Pay is ${p}', 'Payment was ${p}', '${p} dollars'];
-        return this.getRandomItem(templates).replace('${p}', pay.toString());
-      },
-      
-      // TIP patterns - from tipPatterns array
-      () => {
-        const tip = this.getRandomNumber(2, 10);
-        const templates = ['Tip is ${t}', '${t} dollar tip'];
-        return this.getRandomItem(templates).replace('${t}', tip.toString());
-      },
-      
-      // DISTANCE patterns - from distancePatterns array
-      () => {
-        const distance = this.getRandomNumber(1, 20);
-        const templates = ['Distance is {d} miles', 'Drove {d} miles', '{d} miles away'];
-        return this.getRandomItem(templates).replace('{d}', distance.toString());
-      },
-      
-      // BONUS patterns - from bonusPatterns array
-      () => {
-        const bonus = this.getRandomNumber(2, 10);
-        const templates = ['Bonus is ${b}', '${b} dollar bonus'];
-        return this.getRandomItem(templates).replace('${b}', bonus.toString());
-      },
-      
-      // CASH patterns - from cashPatterns array
-      () => {
-        const cash = this.getRandomNumber(5, 20);
-        const templates = ['Cash is ${c}', '${c} dollars cash'];
-        return this.getRandomItem(templates).replace('${c}', cash.toString());
-      },
-      
-      // START ODOMETER patterns - from startOdometerPatterns array
-      () => {
-        const odo = this.getRandomNumber(50000, 99999).toLocaleString();
-        const templates = ['Starting odometer is {o}', 'Odometer start {o}'];
-        return this.getRandomItem(templates).replace('{o}', odo);
-      },
-      
-      // END ODOMETER patterns - from endOdometerPatterns array
-      () => {
-        const odo = this.getRandomNumber(50000, 99999).toLocaleString();
-        const templates = ['Ending odometer is {o}', 'Odometer end {o}'];
-        return this.getRandomItem(templates).replace('{o}', odo);
-      },
-      
-      // TYPE patterns - from typePatterns array
-      () => {
-        const type = this.typeList.length > 0 ? this.getRandomItem(this.typeList) : 'delivery';
-        const templates = ['Type is {t}', 'It\'s a {t}'];
-        return this.getRandomItem(templates).replace('{t}', type);
-      }
-    ];
-
-    // Randomly select and execute a generator
-    const generator = this.getRandomItem(categoryGenerators);
-    return generator();
-  }
-
   onMicClick() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       alert('Speech recognition not supported in this browser.');
@@ -466,5 +355,116 @@ export class VoiceInputComponent implements OnInit {
     if (best) return best;
     // Always return the raw value if no match
     return raw;
+  }
+
+    /**
+   * Dynamically generates example phrases by analyzing the actual regex patterns used in parsing.
+   * This ensures examples stay in sync with the actual parsing logic.
+   */
+  private getRandomSuggestion(): string {
+    // Define pattern categories with example generators that match the actual regex patterns
+    const categoryGenerators = [
+      // SERVICE patterns - from servicePatterns array
+      () => {
+        const service = this.serviceList.length > 0 ? this.getRandomItem(this.serviceList) : 'DoorDash';
+        const templates = ['I have a {s}', 'Working {s}', 'Service is {s}'];
+        return this.getRandomItem(templates).replace('{s}', service);
+      },
+      
+      // PICKUP/SHOP + PLACE pattern - from pickupShopPattern
+      () => {
+        const place = this.placeList.length > 0 ? this.getRandomItem(this.placeList) : 'McDonald\'s';
+        const type = this.getRandomItem(['pickup', 'shop']);
+        return `I have a ${type} from ${place}`;
+      },
+      
+      // NAME patterns - from namePatterns array
+      () => {
+        const name = this.getRandomItem(['John', 'Sarah', 'Mike', 'Emily', 'Lisa', 'David']);
+        const templates = ['The name is {n}', 'The customer is {n}', 'Delivering to {n}'];
+        return this.getRandomItem(templates).replace('{n}', name);
+      },
+      
+      // PLACE patterns - from placePatterns array
+      () => {
+        const place = this.placeList.length > 0 ? this.getRandomItem(this.placeList) : 'Starbucks';
+        const templates = ['Picking up from {p}', 'Place is {p}'];
+        return this.getRandomItem(templates).replace('{p}', place);
+      },
+      
+      // PAY + TIP combined - from payTipPattern
+      () => {
+        const pay = this.getRandomNumber(8, 25);
+        const tip = this.getRandomNumber(2, 10);
+        return `Pay is $${pay} and tip is $${tip}`;
+      },
+      
+      // PAY + DISTANCE combined - from payDistancePattern
+      () => {
+        const pay = this.getRandomNumber(10, 25);
+        const distance = this.getRandomNumber(2, 15);
+        return `Pay is $${pay} for ${distance} miles`;
+      },
+      
+      // PAY patterns - from payPatterns array
+      () => {
+        const pay = this.getRandomNumber(8, 30);
+        const templates = ['Pay is ${p}', 'Payment was ${p}', '${p} dollars'];
+        return this.getRandomItem(templates).replace('${p}', pay.toString());
+      },
+      
+      // TIP patterns - from tipPatterns array
+      () => {
+        const tip = this.getRandomNumber(2, 10);
+        const templates = ['Tip is ${t}', '${t} dollar tip'];
+        return this.getRandomItem(templates).replace('${t}', tip.toString());
+      },
+      
+      // DISTANCE patterns - from distancePatterns array
+      () => {
+        const distance = this.getRandomNumber(1, 20);
+        const templates = ['Distance is {d} miles', 'Drove {d} miles', '{d} miles away'];
+        return this.getRandomItem(templates).replace('{d}', distance.toString());
+      },
+      
+      // BONUS patterns - from bonusPatterns array
+      () => {
+        const bonus = this.getRandomNumber(2, 10);
+        const templates = ['Bonus is ${b}', '${b} dollar bonus'];
+        return this.getRandomItem(templates).replace('${b}', bonus.toString());
+      },
+      
+      // CASH patterns - from cashPatterns array
+      () => {
+        const cash = this.getRandomNumber(5, 20);
+        const templates = ['Cash is ${c}', '${c} dollars cash'];
+        return this.getRandomItem(templates).replace('${c}', cash.toString());
+      },
+      
+      // START ODOMETER patterns - from startOdometerPatterns array
+      () => {
+        const odo = this.getRandomNumber(50000, 99999).toLocaleString();
+        const templates = ['Starting odometer is {o}', 'Odometer start {o}'];
+        return this.getRandomItem(templates).replace('{o}', odo);
+      },
+      
+      // END ODOMETER patterns - from endOdometerPatterns array
+      () => {
+        const odo = this.getRandomNumber(50000, 99999).toLocaleString();
+        const templates = ['Ending odometer is {o}', 'Odometer end {o}'];
+        return this.getRandomItem(templates).replace('{o}', odo);
+      },
+      
+      // TYPE patterns - from typePatterns array
+      () => {
+        const type = this.typeList.length > 0 ? this.getRandomItem(this.typeList) : 'delivery';
+        const templates = ['Type is {t}', 'It\'s a {t}'];
+        return this.getRandomItem(templates).replace('{t}', type);
+      }
+    ];
+
+    // Randomly select and execute a generator
+    const generator = this.getRandomItem(categoryGenerators);
+    return generator();
   }
 }
