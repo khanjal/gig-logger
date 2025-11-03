@@ -6,10 +6,10 @@
 // Floating mic button
 button {
   position: fixed;
-  // Mobile: stack above back-to-top (which is at bottom: 2rem = 32px)
-  bottom: calc(2rem + 56px + 1rem); // 32px + 56px (back-to-top height) + 16px gap = 104px
-  right: 2rem; // Match back-to-top horizontal position (32px)
-  z-index: 1000;
+  // Mobile: same position as back-to-top, but lower z-index so back-to-top overlays when visible
+  bottom: 2rem; // Same as back-to-top (32px)
+  right: 2rem; // Same as back-to-top (32px)
+  z-index: 1000; // Lower than back-to-top (9999) so it gets covered when back-to-top appears
   width: 56px;
   height: 56px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -29,8 +29,8 @@ button {
 // Transcript overlay
 .transcript-overlay {
   position: fixed;
-  // Mobile: above the voice button (which is stacked above back-to-top)
-  bottom: calc(2rem + 56px + 1rem + 56px + 0.75rem); // back-to-top + gap + voice button + gap = 172px
+  // Mobile: above the voice button (same position as back-to-top)
+  bottom: calc(2rem + 56px + 0.75rem); // 32px + 56px (button height) + 12px gap = 100px
   right: 16px;
   left: 16px;
   max-width: 400px;
@@ -39,7 +39,7 @@ button {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  z-index: 999;
+  z-index: 999; // Below back-to-top (9999) but above voice button (1000)
   animation: slideUp 0.3s ease-out;
   backdrop-filter: blur(10px);
 
@@ -50,8 +50,11 @@ button {
     bottom: calc(2rem + 56px + 0.75rem); // Above voice button: 32px + 56px + 12px = 100px
   }
 
+  // Border for both listening and heard states
+  border: 2px solid #d3d3d3; // Default gray border for "heard" state
+
   &.recognizing {
-    border: 2px solid #1976d2;
+    border: 2px solid #1976d2; // Blue border when actively listening
     background: rgba(25, 118, 210, 0.05);
   }
 }
