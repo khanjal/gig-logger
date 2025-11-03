@@ -274,12 +274,13 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     const name = this.matchFirstPattern(namePatterns, transcript, match => match[1].trim());
     if (name) result.name = name;
 
-    // PLACE patterns (pickup/pick-up location): "picking up from McDonald's", "picking pick-up from Walmart", "the place is Starbucks"
+    // PLACE patterns (pickup/pick-up location): "picking up from McDonald's", "picking pick-up from Walmart", "the place is Starbucks", "from McDonald's"
     // Only match if NAME wasn't already set
     if (!result.name) {
       const placePatterns = [
         /(?:pick(?:ing)?[- ]?up (?:from|at|as)|pick[- ]?up (?:from|at|as))\s+([\w\s''`'.,&-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
-        /(?:place is|place:|the place is)\s+([\w\s''`'.,&-]+?)$/i
+        /(?:place is|place:|the place is)\s+([\w\s''`'.,&-]+?)$/i,
+        /from ([\w\s''`.,&-]+)/i // Added: match 'from [place]'
       ];
       const place = this.matchFirstPattern(placePatterns, transcript, match => {
         const raw = match[1].trim();
@@ -305,7 +306,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
 
     // COMBINED PAY + DISTANCE: "pay is 15 for 5 miles", "20 dollars for 10 miles"
-    const payDistancePattern = /(?:pay(?:ment)? (?:is|was|:)|paid|amount (?:is|was|:))?\s*\$?(\d+(?:\.\d{1,2})?)\s*(?:dollar(?:s)?)?\s*for\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i;
+    const payDistancePattern = /(?:pay(?:ment)? (?:is|was|:)|paid|amount (?:is|was|:))?\s*\$?(\d+(?:\.\d{1,2})?)\s*(?:dollar(?:s)?)?\s*for\s*(\d+(?:\.\d+)?)\s*(mile|miles|mi|me|km|kilometer|kilometers)/i;
     const payDistanceMatch = transcript.match(payDistancePattern);
     if (payDistanceMatch) {
       result.pay = payDistanceMatch[1];
@@ -432,8 +433,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       const distancePatterns = [
         /(?:\bdistance (?:is|was|:)\b)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b/i,
         /(?:\bdrove|traveled|went\b)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b/i,
-        /\b(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b\s*(?:away|trip|drive)?/i,
-        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b/i  // "for 5 miles" or "for 5 km"
+        /\b(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|me|km|kilometer|kilometers)\b\s*(?:away|trip|drive)?/i,
+        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|me|km|kilometer|kilometers)\b/i  // "for 5 miles" or "for 5 km"
       ];
       const distance = this.matchFirstPattern(distancePatterns, transcript, match => match[1]);
       if (distance) result.distance = distance;
