@@ -13,6 +13,19 @@ import { convertWordToNumber } from '@helpers/number-converter.helper';
 })
 
 export class VoiceInputComponent implements OnInit {
+  /**
+   * Helper to match the first pattern and run a callback on match.
+   */
+  private matchFirstPattern<T>(patterns: RegExp[], transcript: string, onMatch: (match: RegExpMatchArray) => T | undefined): T | undefined {
+    for (const pattern of patterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        const result = onMatch(match);
+        if (result !== undefined) return result;
+      }
+    }
+    return undefined;
+  }
   serviceList: string[] = [];
   addressList: string[] = [];
   typeList: string[] = [];
@@ -113,17 +126,12 @@ export class VoiceInputComponent implements OnInit {
       /(?:working|doing|on)\s+([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
       /service (?:is|was|:)\s*([\w\s]+)/i
     ];
-    for (const pattern of servicePatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        const raw = match[1].trim();
-        const matched = this.findBestMatch(raw, this.serviceList);
-        if (matched) {
-          result.service = matched;
-          break;
-        }
-      }
-    }
+    const service = this.matchFirstPattern(servicePatterns, transcript, match => {
+      const raw = match[1].trim();
+      const matched = this.findBestMatch(raw, this.serviceList);
+      return matched;
+    });
+    if (service) result.service = service;
 
     // NAME vs PLACE: Context-aware parsing
     // Parse NAME first to avoid conflicts
@@ -135,15 +143,10 @@ export class VoiceInputComponent implements OnInit {
       /(?:(?:the )?(?:name|person|customer) is|customer's|name:|customer name is)\s*([\w\s]+?)$/i,
       /(?:drop(?:ping)? off at|dropoff at|dropping at)\s+([\w\s]+?)$/i,
       /(?:delivering to|deliver to|delivery to|taking (?:it )?to|going to)\s+([\w\s]+?)$/i,
-      /(?:for)\s+([a-zA-Z][\w\s]+?)$/i  // "for" followed by name starting with letter, not numbers
+      /(?:for)\s+([a-zA-Z][\w\s]+?)$/i
     ];
-    for (const pattern of namePatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        result.name = match[1].trim();
-        break;
-      }
-    }
+    const name = this.matchFirstPattern(namePatterns, transcript, match => match[1].trim());
+    if (name) result.name = name;
 
     // PLACE patterns (pickup location): "picking up from McDonald's", "the place is Starbucks"
     // Only match if NAME wasn't already set
@@ -152,17 +155,12 @@ export class VoiceInputComponent implements OnInit {
         /(?:pick(?:ing)? up (?:from|at|as)|pickup (?:from|at|as))\s+([\w\s''`'.,&-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
         /(?:place is|place:|the place is)\s+([\w\s''`'.,&-]+?)$/i
       ];
-      for (const pattern of placePatterns) {
-        const match = transcript.match(pattern);
-        if (match) {
-          const raw = match[1].trim();
-          const placeCandidate = this.findBestMatch(raw, this.placeList);
-          if (placeCandidate) {
-            result.place = placeCandidate;
-          }
-          break;
-        }
-      }
+      const place = this.matchFirstPattern(placePatterns, transcript, match => {
+        const raw = match[1].trim();
+        const placeCandidate = this.findBestMatch(raw, this.placeList);
+        return placeCandidate || raw;
+      });
+      if (place) result.place = place;
     }
 
     // ADDRESS extraction is disabled for now; focus on name only
@@ -193,16 +191,13 @@ export class VoiceInputComponent implements OnInit {
         /\$(\d+(?:\.\d{1,2})?)(?!\s*tip)/i,  // $ but not followed by "tip"
         /(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?(?!\s*tip)/i  // dollars but not followed by "tip"
       ];
-      for (const pattern of payPatterns) {
-        const match = transcript.match(pattern);
-        if (match) {
-          const converted = convertWordToNumber(match[1].trim());
-          if (/^\d+(?:\.\d{1,2})?$/.test(converted)) {
-            result.pay = converted;
-            break;
-          }
-        }
-      }
+
+      const pay = this.matchFirstPattern(payPatterns, transcript, match => {
+        const converted = convertWordToNumber(match[1].trim());
+        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+        return undefined;
+      });
+      if (pay) result.pay = pay;
     }
 
     // TIP: "$5 tip", "five dollar tip", "tip is five" (only if not already set by combined pattern)
@@ -212,22 +207,13 @@ export class VoiceInputComponent implements OnInit {
         /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*tip/i,
         /([\w-]+)\s*dollar(?:s)?\s*tip/i
       ];
-      for (const pattern of tipPatterns) {
-        const match = transcript.match(pattern);
-        if (match) {
-          const converted = convertWordToNumber(match[1].trim());
-          if (/^\d+(?:\.\d{1,2})?$/.test(converted)) {
-            result.tip = converted;
-            break;
-          }
-        }
-      }
-    }
 
-    // DISTANCE: "5 miles", "5.5 mi" (only if not already set by combined pattern)
-    if (!result.distance) {
-      const distanceMatch = transcript.match(/(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i);
-      if (distanceMatch) result.distance = distanceMatch[1];
+      const tip = this.matchFirstPattern(tipPatterns, transcript, match => {
+        const converted = convertWordToNumber(match[1].trim());
+        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+        return undefined;
+      });
+      if (tip) result.tip = tip;
     }
 
     // BONUS: "bonus is 5", "five dollar bonus", "$5 bonus"
@@ -236,16 +222,13 @@ export class VoiceInputComponent implements OnInit {
       /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*bonus/i,
       /([\w-]+)\s*dollar(?:s)?\s*bonus/i
     ];
-    for (const pattern of bonusPatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        const converted = convertWordToNumber(match[1].trim());
-        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) {
-          result.bonus = converted;
-          break;
-        }
-      }
-    }
+
+    const bonus = this.matchFirstPattern(bonusPatterns, transcript, match => {
+      const converted = convertWordToNumber(match[1].trim());
+      if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+      return undefined;
+    });
+    if (bonus) result.bonus = bonus;
 
     // CASH: "cash is 10", "ten dollars cash", "$10 cash"
     const cashPatterns = [
@@ -253,16 +236,13 @@ export class VoiceInputComponent implements OnInit {
       /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*cash/i,
       /([\w-]+)\s*dollar(?:s)?\s*cash/i
     ];
-    for (const pattern of cashPatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        const converted = convertWordToNumber(match[1].trim());
-        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) {
-          result.cash = converted;
-          break;
-        }
-      }
-    }
+
+    const cash = this.matchFirstPattern(cashPatterns, transcript, match => {
+      const converted = convertWordToNumber(match[1].trim());
+      if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+      return undefined;
+    });
+    if (cash) result.cash = cash;
 
     // PICKUP ADDRESS: "picking up at 123 Main Street", "pickup address is downtown"
     const pickupAddressPatterns = [
@@ -270,13 +250,9 @@ export class VoiceInputComponent implements OnInit {
       /(?:pickup address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
       /(?:from address (?:is|was|:))\s+([\w\s,.-]+?)$/i
     ];
-    for (const pattern of pickupAddressPatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        result.pickupAddress = match[1].trim();
-        break;
-      }
-    }
+
+    const pickupAddress = this.matchFirstPattern(pickupAddressPatterns, transcript, match => match[1].trim());
+    if (pickupAddress) result.pickupAddress = pickupAddress;
 
     // DROPOFF/DESTINATION ADDRESS: "dropping off at 456 Elm St", "destination is Main Street", "going to 789 Oak Ave"
     const dropoffAddressPatterns = [
@@ -286,13 +262,9 @@ export class VoiceInputComponent implements OnInit {
       /(?:going to|heading to)\s+([\w\s,.-]+?)$/i,
       /(?:end address (?:is|was|:))\s+([\w\s,.-]+?)$/i
     ];
-    for (const pattern of dropoffAddressPatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        result.dropoffAddress = match[1].trim();
-        break;
-      }
-    }
+
+    const dropoffAddress = this.matchFirstPattern(dropoffAddressPatterns, transcript, match => match[1].trim());
+    if (dropoffAddress) result.dropoffAddress = dropoffAddress;
 
     // START ODOMETER: "start odometer is 12345", "odometer start 12345", "odo start 12345"
     const startOdometerPatterns = [
@@ -300,30 +272,38 @@ export class VoiceInputComponent implements OnInit {
       /(?:odometer|odo) start (?:is|was|:)?\s*([\w.,-]+)/i,
       /(?:begin(?:ning)? (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i
     ];
-    for (const pattern of startOdometerPatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        let raw = convertWordToNumber(match[1].trim());
-        raw = raw.replace(/,/g, '');
-        result.startOdometer = raw;
-        break;
-      }
-    }
-
-    // END ODOMETER: "end odometer is 12350", "odometer end 12350", "odo end 12350"
     const endOdometerPatterns = [
       /(?:end(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i,
       /(?:odometer|odo) end (?:is|was|:)?\s*([\w.,-]+)/i,
       /(?:final (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i
     ];
-    for (const pattern of endOdometerPatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        let raw = convertWordToNumber(match[1].trim());
-        raw = raw.replace(/,/g, '');
-        result.endOdometer = raw;
-        break;
-      }
+
+    const startOdometerMatch = this.matchFirstPattern(startOdometerPatterns, transcript, match => {
+      let raw = convertWordToNumber(match[1].trim());
+      raw = raw.replace(/,/g, '');
+      return raw;
+    });
+    if (startOdometerMatch) result.startOdometer = startOdometerMatch;
+
+    const endOdometerMatch = this.matchFirstPattern(endOdometerPatterns, transcript, match => {
+      let raw = convertWordToNumber(match[1].trim());
+      raw = raw.replace(/,/g, '');
+      return raw;
+    });
+    if (endOdometerMatch) result.endOdometer = endOdometerMatch;
+
+    // DISTANCE: Only match with explicit distance context to avoid odometer confusion
+    // "distance is 5 miles", "5.5 miles away", "drove 10 miles", "for 5 miles"
+    if (!result.distance) {
+      const distancePatterns = [
+        /(?:distance (?:is|was|:))\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i,
+        /(?:drove|traveled|went)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i,
+        /(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)\s*(?:away|trip|drive)/i,
+        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i  // "for 5 miles" (already handled by combined pay+distance, but included for standalone)
+      ];
+      
+      const distance = this.matchFirstPattern(distancePatterns, transcript, match => match[1]);
+      if (distance) result.distance = distance;
     }
 
     // TYPE: "type is delivery", "it's a pickup", "delivery order"
@@ -332,35 +312,35 @@ export class VoiceInputComponent implements OnInit {
       /(?:it'?s a|this is a)\s*(delivery|pickup|dropoff|drop off|ride)/i,
       /(delivery|pickup|dropoff|drop off|ride)\s*(?:order|trip)/i
     ];
-    for (const pattern of typePatterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        const raw = match[1].trim();
-        result.type = this.findBestMatch(raw, this.typeList);
-        break;
-      }
-    }
+
+    const type = this.matchFirstPattern(typePatterns, transcript, match => {
+      const raw = match[1].trim();
+      return this.findBestMatch(raw, this.typeList);
+    });
+    if (type) result.type = type;
 
   // Debug: log the parsed result
   // eslint-disable-next-line no-console
   console.log('[VoiceInput] Parsed result:', result);
-  return result;
+
+
+    return result;
   }
 
   /**
    * Finds the best match for a value in a list (case-insensitive, partial allowed)
    */
   findBestMatch(raw: string, list: string[]): string | undefined {
-  // Normalize: remove apostrophes, lowercase, trim (keep spaces for natural matching)
-  const normalize = (str: string) => str.toLowerCase().replace(/[''`]/g, '').trim();
-  // Use dropdown service only for normalization (if it provides such a method), not for fallback matching
-  const normRaw = normalize(raw);
-  let best = list.find(item => normalize(item) === normRaw);
-  if (best) return best;
-  // Partial match
-  best = list.find(item => normalize(item).includes(normRaw) || normRaw.includes(normalize(item)));
-  if (best) return best;
-  // Always return the raw value if no match
-  return raw;
+    // Normalize: remove apostrophes, lowercase, trim (keep spaces for natural matching)
+    const normalize = (str: string) => str.toLowerCase().replace(/[''`]/g, '').trim();
+    // Use dropdown service only for normalization (if it provides such a method), not for fallback matching
+    const normRaw = normalize(raw);
+    let best = list.find(item => normalize(item) === normRaw);
+    if (best) return best;
+    // Partial match
+    best = list.find(item => normalize(item).includes(normRaw) || normRaw.includes(normalize(item)));
+    if (best) return best;
+    // Always return the raw value if no match
+    return raw;
   }
 }
