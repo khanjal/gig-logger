@@ -284,15 +284,17 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // ADDRESS extraction is disabled for now; focus on name only
 
-    // COMBINED PAY + TIP: "the pay was 2 and the tip was 3", "pay was four and tip was five"
-    const payTipPattern = /(?:(?:the )?pay(?:ment)? (?:is|was|:)\s*)?\$?([\w\s.-]+?)\s*(?:dollar(?:s)?)?\s*and\s*(?:(?:the )?tip (?:is|was|:)\s*)?\$?([\w\s.-]+?)(?:\s*dollar(?:s)?)?$/i;
-    const payTipMatch = transcript.match(payTipPattern);
-    if (payTipMatch) {
-      const payValue = convertWordToNumber(payTipMatch[1].trim());
-      const tipValue = convertWordToNumber(payTipMatch[2].trim());
-      // Only set if they're valid numbers
-      if (/^\d+(?:\.\d{1,2})?$/.test(payValue)) result.pay = payValue;
-      if (/^\d+(?:\.\d{1,2})?$/.test(tipValue)) result.tip = tipValue;
+    // COMBINED PAY + TIP: Only match if both 'pay' and 'tip' are present as field names
+    const payTipPattern = /(?:pay(?:ment)? (?:is|was|:)?\s*)?\$?([\w\s.-]+?)\s*(?:dollar(?:s)?)?\s*and\s*(?:tip (?:is|was|:)?\s*)?\$?([\w\s.-]+?)(?:\s*dollar(?:s)?)?$/i;
+    if (/pay(?:ment)?[\w\s:$]*and[\w\s:$]*tip/i.test(transcript) || /tip[\w\s:$]*and[\w\s:$]*pay(?:ment)?/i.test(transcript)) {
+      const payTipMatch = transcript.match(payTipPattern);
+      if (payTipMatch) {
+        const payValue = convertWordToNumber(payTipMatch[1].trim());
+        const tipValue = convertWordToNumber(payTipMatch[2].trim());
+        // Only set if they're valid numbers
+        if (/^\d+(?:\.\d{1,2})?$/.test(payValue)) result.pay = payValue;
+        if (/^\d+(?:\.\d{1,2})?$/.test(tipValue)) result.tip = tipValue;
+      }
     }
 
     // COMBINED PAY + DISTANCE: "pay is 15 for 5 miles", "20 dollars for 10 miles"
@@ -307,10 +309,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (!result.pay) {
       const payPatterns = [
         /(?:pay(?:ment)? (?:is|was|:)|paid|amount (?:is|was|:))\s*\$?([\w.-]+)/i,
-        // Only match $amount if not in a phrase containing 'tip' before or after
-        /(?<!tip[^$]{0,20})\$(\d+(?:\.\d{1,2})?)(?![^$]{0,20}tip)/i,
-        // Only match 'dollars' if not in a phrase containing 'tip' before or after
-        /(?<!tip[^\d]{0,20})(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?(?![^\d]{0,20}tip)/i
+        // Only match $amount if not in a phrase containing 'tip', 'bonus', or 'cash' before or after
+        /(?<!(?:tip|bonus|cash)[^$]{0,20})\$(\d+(?:\.\d{1,2})?)(?![^$]{0,20}(?:tip|bonus|cash))/i,
+        // Only match 'dollars' if not in a phrase containing 'tip', 'bonus', or 'cash' before or after
+        /(?<!(?:tip|bonus|cash)[^\d]{0,20})(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?(?![^\d]{0,20}(?:tip|bonus|cash))/i
       ];
 
       const pay = this.matchFirstPattern(payPatterns, transcript, match => {
@@ -416,13 +418,13 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (endOdometerMatch) result.endOdometer = endOdometerMatch;
 
     // DISTANCE: Only match with explicit distance context to avoid odometer confusion
-    // "distance is 5 miles", "5.5 miles away", "drove 10 miles", "for 5 miles"
+    // Supports miles and kilometers (mile, mi, km, kilometer, kilometers)
     if (!result.distance) {
       const distancePatterns = [
-        /(?:distance (?:is|was|:))\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i,
-        /(?:drove|traveled|went)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i,
-        /(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)\s*(?:away|trip|drive)/i,
-        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi)/i  // "for 5 miles" (already handled by combined pay+distance, but included for standalone)
+        /(?:distance (?:is|was|:))\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i,
+        /(?:drove|traveled|went)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i,
+        /(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\s*(?:away|trip|drive)?/i,
+        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i  // "for 5 miles" or "for 5 km"
       ];
       
       const distance = this.matchFirstPattern(distancePatterns, transcript, match => match[1]);
