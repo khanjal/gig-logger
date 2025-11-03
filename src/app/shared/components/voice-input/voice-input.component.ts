@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { convertWordToNumber } from '@helpers/number-converter.helper';
 
@@ -303,11 +303,10 @@ export class VoiceInputComponent implements OnInit {
     for (const pattern of startOdometerPatterns) {
       const match = transcript.match(pattern);
       if (match) {
-        const converted = convertWordToNumber(match[1].trim());
-        if (/^\d+(?:\.\d+)?$/.test(converted)) {
-          result.startOdometer = converted;
-          break;
-        }
+        let raw = convertWordToNumber(match[1].trim());
+        raw = raw.replace(/,/g, '');
+        result.startOdometer = raw;
+        break;
       }
     }
 
@@ -320,11 +319,10 @@ export class VoiceInputComponent implements OnInit {
     for (const pattern of endOdometerPatterns) {
       const match = transcript.match(pattern);
       if (match) {
-        const converted = convertWordToNumber(match[1].trim());
-        if (/^\d+(?:\.\d+)?$/.test(converted)) {
-          result.endOdometer = converted;
-          break;
-        }
+        let raw = convertWordToNumber(match[1].trim());
+        raw = raw.replace(/,/g, '');
+        result.endOdometer = raw;
+        break;
       }
     }
 
