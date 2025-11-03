@@ -66,7 +66,7 @@ const SCHEMA_V2 = {
 // - expenses: Added rowId, date, saved (queries use where('saved'), date for grouping/sorting)
 const SCHEMA_V3 = {
     addresses: '++id, address, saved',
-    deliveries: '++id, address name',
+    deliveries: '++id, address, name',
     daily: '++id, date',
     expenses: '++id, rowId, date, saved',
     monthly: '++id, month',
