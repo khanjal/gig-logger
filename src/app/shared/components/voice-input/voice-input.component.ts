@@ -32,7 +32,7 @@ interface VoiceParseResult {
 })
 
 export class VoiceInputComponent implements OnInit, OnDestroy {
-  // Dropdown data
+  // Dropdown data (from database + canonical JSON fallback)
   serviceList: string[] = [];
   addressList: string[] = [];
   typeList: string[] = [];
@@ -54,6 +54,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    // Load dropdown data (service handles canonical fallback)
     const data = await this._dropdownDataService.getAllDropdownData();
     this.serviceList = data.services;
     this.typeList = data.types;
@@ -230,11 +231,11 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // Special: Handle 'pickup' or 'shop' as type, and extract place after 'from'
     // e.g. 'I have a pickup from McDonald's', 'a shop from Dollar General'
-    const pickupShopPattern = /(?:have a |a )?(pickup|shop) from ([\w\s'’`.,&-]+)/i;
+    const pickupShopPattern = /(?:have a |a )?(pickup|shop) from ([\w\s''`.,&-]+)/i;
     const pickupShopMatch = transcript.match(pickupShopPattern);
     if (pickupShopMatch) {
-      result.type = this.findBestMatch(pickupShopMatch[1], this.typeList) || pickupShopMatch[1];
-      const placeCandidate = this.findBestMatch(pickupShopMatch[2], this.placeList);
+      result.type = this._dropdownDataService.findBestMatch(pickupShopMatch[1], this.typeList, 'Type') || pickupShopMatch[1];
+      const placeCandidate = this._dropdownDataService.findBestMatch(pickupShopMatch[2], this.placeList, 'Place');
       if (placeCandidate) result.place = placeCandidate;
       else result.place = pickupShopMatch[2];
     }
@@ -247,8 +248,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
     const service = this.matchFirstPattern(servicePatterns, transcript, match => {
       const raw = match[1].trim();
-      const matched = this.findBestMatch(raw, this.serviceList);
-      return matched;
+      return this._dropdownDataService.findBestMatch(raw, this.serviceList, 'Service');
     });
     if (service) result.service = service;
 
@@ -276,7 +276,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       ];
       const place = this.matchFirstPattern(placePatterns, transcript, match => {
         const raw = match[1].trim();
-        const placeCandidate = this.findBestMatch(raw, this.placeList);
+        const placeCandidate = this._dropdownDataService.findBestMatch(raw, this.placeList, 'Place');
         return placeCandidate || raw;
       });
       if (place) result.place = place;
@@ -438,7 +438,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     const type = this.matchFirstPattern(typePatterns, transcript, match => {
       const raw = match[1].trim();
-      return this.findBestMatch(raw, this.typeList);
+      return this._dropdownDataService.findBestMatch(raw, this.typeList, 'Type');
     });
     if (type) result.type = type;
 
@@ -449,23 +449,6 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Finds the best match for a value in a list (case-insensitive, partial allowed)
-   */
-  private findBestMatch(raw: string, list: string[]): string | undefined {
-    // Normalize: remove apostrophes, lowercase, trim (keep spaces for natural matching)
-    const normalize = (str: string) => str.toLowerCase().replace(/[''`]/g, '').trim();
-    // Use dropdown service only for normalization (if it provides such a method), not for fallback matching
-    const normRaw = normalize(raw);
-    let best = list.find(item => normalize(item) === normRaw);
-    if (best) return best;
-    // Partial match
-    best = list.find(item => normalize(item).includes(normRaw) || normRaw.includes(normalize(item)));
-    if (best) return best;
-    // Always return the raw value if no match
-    return raw;
-  }
-
-    /**
    * Dynamically generates example phrases by analyzing the actual regex patterns used in parsing.
    * This ensures examples stay in sync with the actual parsing logic.
    */

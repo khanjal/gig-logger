@@ -25,6 +25,12 @@ export interface DropdownData {
 })
 export class DropdownDataService {
   private cachedData: DropdownData | null = null;
+  
+  // Canonical lists from static JSON files (fallback for proper casing)
+  private canonicalServices: string[] = [];
+  private canonicalTypes: string[] = [];
+  private canonicalPlaces: string[] = [];
+  private canonicalLoaded: boolean = false;
 
   constructor(
     private _serviceService: ServiceService,
@@ -32,7 +38,34 @@ export class DropdownDataService {
     private _placeService: PlaceService,
     private _addressService: AddressService,
     private _regionService: RegionService
-  ) {}
+  ) {
+    this.loadCanonicalLists();
+  }
+
+  /**
+   * Loads canonical lists from static JSON files for proper casing fallback
+   */
+  private async loadCanonicalLists(): Promise<void> {
+    if (this.canonicalLoaded) return;
+    
+    try {
+      const [services, types, places] = await Promise.all([
+        fetch('/assets/json/services.json').then(r => r.json()),
+        fetch('/assets/json/types.json').then(r => r.json()),
+        fetch('/assets/json/places.json').then(r => r.json())
+      ]);
+      
+      this.canonicalServices = services || [];
+      this.canonicalTypes = types || [];
+      this.canonicalPlaces = places || [];
+      this.canonicalLoaded = true;
+      
+      console.log('[DropdownDataService] Loaded canonical lists');
+    } catch (error) {
+      console.error('[DropdownDataService] Failed to load canonical lists:', error);
+      // Continue anyway - will use database values only
+    }
+  }
 
   /**
    * Fetches all dropdown data and caches it
@@ -41,6 +74,9 @@ export class DropdownDataService {
     if (this.cachedData) {
       return this.cachedData;
     }
+
+    // Ensure canonical lists are loaded
+    await this.loadCanonicalLists();
 
     const [services, types, places, addresses, regions] = await Promise.all([
       this._serviceService.list(),
@@ -96,10 +132,11 @@ export class DropdownDataService {
   /**
    * Finds the best match for a value in a list (case-insensitive, partial allowed)
    * Handles apostrophes, punctuation, and spacing differences
+   * Checks both database list and canonical JSON list for proper casing
    * Returns properly cased input value if no match found
    */
-  findBestMatch(raw: string, list: string[]): string | undefined {
-    if (!raw || !list || !list.length) return this.toProperCase(raw);
+  findBestMatch(raw: string, list: string[], type?: DropdownType): string | undefined {
+    if (!raw) return this.toProperCase(raw);
     
     // Normalize function: lowercase, remove apostrophes, extra spaces, punctuation
     const normalize = (str: string) => 
@@ -111,19 +148,65 @@ export class DropdownDataService {
     
     const normalizedRaw = normalize(raw);
     
-    // Exact match (normalized)
-    let found = list.find(item => normalize(item) === normalizedRaw);
-    if (found) return found;
+    // Get canonical list based on type
+    let canonicalList: string[] = [];
+    if (type) {
+      switch (type) {
+        case 'Service':
+          canonicalList = this.canonicalServices;
+          break;
+        case 'Type':
+          canonicalList = this.canonicalTypes;
+          break;
+        case 'Place':
+          canonicalList = this.canonicalPlaces;
+          break;
+      }
+    }
     
-    // Partial match (normalized)
-    found = list.find(item => {
+    // 1. Try exact match in database list
+    let found = list?.find(item => normalize(item) === normalizedRaw);
+    if (found) {
+      console.log(`[DropdownDataService] Exact match in database: "${raw}" -> "${found}"`);
+      return found;
+    }
+    
+    // 2. Try exact match in canonical list
+    if (canonicalList.length > 0) {
+      found = canonicalList.find(item => normalize(item) === normalizedRaw);
+      if (found) {
+        console.log(`[DropdownDataService] Exact match in canonical list: "${raw}" -> "${found}"`);
+        return found;
+      }
+    }
+    
+    // 3. Try partial match in database list
+    found = list?.find(item => {
       const normalizedItem = normalize(item);
       return normalizedItem.includes(normalizedRaw) || 
              normalizedRaw.includes(normalizedItem);
     });
+    if (found) {
+      console.log(`[DropdownDataService] Partial match in database: "${raw}" -> "${found}"`);
+      return found;
+    }
     
-    // Return the list item if found, otherwise return properly cased input
-    return found || this.toProperCase(raw);
+    // 4. Try partial match in canonical list
+    if (canonicalList.length > 0) {
+      found = canonicalList.find(item => {
+        const normalizedItem = normalize(item);
+        return normalizedItem.includes(normalizedRaw) || 
+               normalizedRaw.includes(normalizedItem);
+      });
+      if (found) {
+        console.log(`[DropdownDataService] Partial match in canonical list: "${raw}" -> "${found}"`);
+        return found;
+      }
+    }
+    
+    // 5. No match - return properly cased input
+    console.log(`[DropdownDataService] No match found for: "${raw}", returning proper case`);
+    return this.toProperCase(raw);
   }
 
   /**
