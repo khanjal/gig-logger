@@ -620,7 +620,7 @@ export class TripFormComponent implements OnInit {
     if (result.distance) this.tripForm.controls.distance.setValue(result.distance);
     if (result.type) this.tripForm.controls.type.setValue(result.type);
     if (result.place) this.tripForm.controls.place.setValue(result.place);
-    if (result.name) this.tripForm.controls.place.setValue(result.name);
+    if (result.name) this.tripForm.controls.name.setValue(result.name);
     // Add more fields as needed
     this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
   }
