@@ -122,7 +122,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  private isSpeechRecognitionSupported(): boolean {
+  public isSpeechRecognitionSupported(): boolean {
     return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   }
 

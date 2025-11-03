@@ -1,5 +1,6 @@
 <!-- Floating microphone button -->
-<button type="button"
+<button *ngIf="isSpeechRecognitionSupported()"
+        type="button"
         [ngClass]="'rounded-full p-4 text-white shadow-lg border-none focus:outline-none focus:ring-2 flex items-center justify-center transition-all ' + micButtonColor"
         aria-label="Start voice input"
         (click)="onMicClick()">
