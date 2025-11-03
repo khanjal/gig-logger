@@ -232,9 +232,6 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   parseTranscript(transcript: string): VoiceParseResult {
     const result: VoiceParseResult = {};
     
-    // Debug: log the raw transcript
-    console.log('[VoiceInput] Raw transcript:', transcript);
-
     // Special: Handle 'pickup' or 'shop' as type, and extract place after 'from'
     // e.g. 'I have a pickup from McDonald's', 'a shop from Dollar General'
     const pickupShopPattern = /(?:have a |a )?(pickup|shop) from ([\w\s''`.,&-]+)/i;
@@ -451,10 +448,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       const raw = match[1].trim();
       return this._dropdownDataService.findBestMatch(raw, this.typeList, 'Type');
     });
-    if (type) result.type = type;
 
-    // Debug: log the parsed result
-    console.log('[VoiceInput] Parsed result:', result);
+    if (type) result.type = type;
 
     return result;
   }
