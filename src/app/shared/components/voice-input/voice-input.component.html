@@ -17,6 +17,7 @@
       <span *ngIf="!recognizing && transcript">Heard:</span>
     </div>
     <p class="transcript-text">{{ transcript || 'Speak now...' }}</p>
+    <p *ngIf="recognizing && suggestionPhrase" class="suggestion-text">Try: "{{ suggestionPhrase }}"</p>
   </div>
 </div>
 

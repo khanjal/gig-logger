@@ -87,6 +87,18 @@ button {
   min-height: 24px;
 }
 
+.suggestion-text {
+  margin: 8px 0 0 0;
+  color: #666;
+  font-size: 13px;
+  font-style: italic;
+  opacity: 0.8;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+  border-left: 3px solid #1976d2;
+}
+
 // Animations
 @keyframes slideUp {
   from {
