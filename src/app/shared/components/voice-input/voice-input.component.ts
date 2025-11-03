@@ -21,6 +21,7 @@ export class VoiceInputComponent implements OnInit {
   transcript: string = '';
   recognition: any = null;
   recognizing: boolean = false;
+  private transcriptTimeout: any = null;
 
   constructor(
     private _dropdownDataService: DropdownDataService
@@ -53,6 +54,14 @@ export class VoiceInputComponent implements OnInit {
         const parsed = this.parseTranscript(result);
         this.voiceResult.emit(parsed);
         this.recognizing = false;
+        
+        // Auto-hide transcript after 3 seconds
+        if (this.transcriptTimeout) {
+          clearTimeout(this.transcriptTimeout);
+        }
+        this.transcriptTimeout = setTimeout(() => {
+          this.transcript = '';
+        }, 3000);
       };
       this.recognition.onerror = (event: any) => {
         alert('Speech recognition error: ' + event.error);

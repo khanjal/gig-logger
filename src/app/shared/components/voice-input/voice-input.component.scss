@@ -1,0 +1,108 @@
+:host {
+  position: relative;
+  display: block;
+}
+
+// Floating mic button
+button {
+  position: fixed;
+  // Mobile: stack above back-to-top (which is at bottom: 2rem = 32px)
+  bottom: calc(2rem + 56px + 1rem); // 32px + 56px (back-to-top height) + 16px gap = 104px
+  right: 2rem; // Match back-to-top horizontal position (32px)
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (min-width: 768px) {
+    // Desktop: position to the left of back-to-top button
+    // Back-to-top is at right: 2rem (32px), mat-fab is 56x56
+    bottom: 2rem; // Match back-to-top vertical position (32px)
+    right: calc(2rem + 56px + 1rem); // 32px + 56px (button width) + 16px gap = 104px
+  }
+}
+
+// Transcript overlay
+.transcript-overlay {
+  position: fixed;
+  // Mobile: above the voice button (which is stacked above back-to-top)
+  bottom: calc(2rem + 56px + 1rem + 56px + 0.75rem); // back-to-top + gap + voice button + gap = 172px
+  right: 16px;
+  left: 16px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  animation: slideUp 0.3s ease-out;
+  backdrop-filter: blur(10px);
+
+  @media (min-width: 768px) {
+    // Desktop: position above the voice button (which is to the left of back-to-top)
+    right: calc(2rem + 56px + 1rem); // Same as voice button = 104px
+    left: auto;
+    bottom: calc(2rem + 56px + 0.75rem); // Above voice button: 32px + 56px + 12px = 100px
+  }
+
+  &.recognizing {
+    border: 2px solid #1976d2;
+    background: rgba(25, 118, 210, 0.05);
+  }
+}
+
+.transcript-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transcript-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #1976d2;
+  font-size: 14px;
+
+  .pulse-icon {
+    animation: pulse 1.5s ease-in-out infinite;
+    color: #d32f2f;
+  }
+}
+
+.transcript-text {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 24px;
+}
+
+// Animations
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+}

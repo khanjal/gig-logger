@@ -1,7 +1,23 @@
+<!-- Floating microphone button -->
 <button type="button"
-        [ngClass]="'rounded-full p-2 text-white shadow-md border-none focus:outline-none focus:ring-2 flex items-center justify-center ' + micButtonColor"
+        [ngClass]="'rounded-full p-4 text-white shadow-lg border-none focus:outline-none focus:ring-2 flex items-center justify-center transition-all ' + micButtonColor"
         aria-label="Start voice input"
         (click)="onMicClick()">
   <mat-icon>{{ recognizing ? 'mic' : 'mic_none' }}</mat-icon>
 </button>
+
+<!-- Transcript display overlay (shows when recognizing or has recent transcript) -->
+<div *ngIf="recognizing || transcript" 
+     class="transcript-overlay"
+     [class.recognizing]="recognizing">
+  <div class="transcript-content">
+    <div class="transcript-header">
+      <mat-icon class="pulse-icon" *ngIf="recognizing">graphic_eq</mat-icon>
+      <span *ngIf="recognizing">Listening...</span>
+      <span *ngIf="!recognizing && transcript">Heard:</span>
+    </div>
+    <p class="transcript-text">{{ transcript || 'Speak now...' }}</p>
+  </div>
+</div>
+
 <ng-content></ng-content>

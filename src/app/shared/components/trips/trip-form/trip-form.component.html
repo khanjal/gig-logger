@@ -302,19 +302,18 @@
     </div>
   </form>
 
+  <!-- Floating voice input (accessible from anywhere on the form) -->
+  <voice-input (voiceResult)="onVoiceResult($event)" #voice></voice-input>
+
   <!-- Form Actions -->
   <div class="flex flex-col gap-4 mt-6">
-    <div class="flex w-full items-center justify-between">
+    <div class="flex w-full items-center justify-between gap-4">
       <button *ngIf="!data?.id" mat-fab extended color="warn" (click)="formReset()">
         <mat-icon>refresh</mat-icon> Reset
       </button>
       <button *ngIf="data?.id" mat-fab extended color="warn" (click)="close()">
         <mat-icon>cancel</mat-icon> Cancel
       </button>
-      <!-- Centered voice input button -->
-      <div class="flex-1 flex justify-center">
-        <voice-input (voiceResult)="onVoiceResult($event)" #voice></voice-input>
-      </div>
       <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid" [class.button-disabled]="!tripForm.valid">
         <mat-icon>add</mat-icon> Store
       </button>
