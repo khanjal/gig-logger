@@ -621,6 +621,12 @@ export class TripFormComponent implements OnInit {
     if (result.type) this.tripForm.controls.type.setValue(result.type);
     if (result.place) this.tripForm.controls.place.setValue(result.place);
     if (result.name) this.tripForm.controls.name.setValue(result.name);
+    if (result.bonus) this.tripForm.controls.bonus.setValue(result.bonus);
+    if (result.cash) this.tripForm.controls.cash.setValue(result.cash);
+    if (result.pickupAddress) this.setPickupAddress(result.pickupAddress);
+    if (result.dropoffAddress) this.setDropoffAddress(result.dropoffAddress);
+    if (result.startOdometer) this.tripForm.controls.startOdometer.setValue(result.startOdometer);
+    if (result.endOdometer) this.tripForm.controls.endOdometer.setValue(result.endOdometer);
     // Add more fields as needed
     this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
   }

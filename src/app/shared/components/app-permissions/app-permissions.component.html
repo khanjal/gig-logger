@@ -1,0 +1,119 @@
+<mat-card class="permissions-card">
+  <mat-card-header>
+    <mat-card-title class="flex items-center gap-3">
+      <mat-icon>settings</mat-icon>
+      <span>App Permissions</span>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p class="text-gray-600 mb-4">
+      Manage permissions for place search and voice input features.
+    </p>
+
+    <!-- Location Permission -->
+    <div class="permission-item">
+      <div class="permission-header">
+        <mat-icon [class]="'permission-icon ' + getStateColor(locationPermission.state)">
+          {{ locationPermission.icon }}
+        </mat-icon>
+        <div class="permission-info">
+          <h3 class="permission-name">{{ locationPermission.name }}</h3>
+          <p class="permission-description">{{ locationPermission.description }}</p>
+        </div>
+      </div>
+      
+      <div class="permission-status">
+        <div class="status-badge" [class]="getStateColor(locationPermission.state)">
+          <mat-icon class="status-icon">{{ getStateIcon(locationPermission.state) }}</mat-icon>
+          <span>{{ getStateText(locationPermission.state) }}</span>
+        </div>
+        
+        <div class="permission-actions">
+          @if (locationPermission.canRequest) {
+            <button mat-raised-button color="primary" (click)="requestLocation()">
+              <mat-icon>check</mat-icon>
+              Enable
+            </button>
+          }
+          @if (locationPermission.state === 'denied' || locationPermission.state === 'granted') {
+            <button mat-stroked-button (click)="openBrowserSettings()">
+              <mat-icon>settings</mat-icon>
+              Browser Settings
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (locationPermission.state === 'denied') {
+        <div class="permission-help">
+          <mat-icon class="help-icon">info</mat-icon>
+          <p>Location access is blocked. Click "Browser Settings" to change this in your browser.</p>
+        </div>
+      }
+      @if (locationPermission.state === 'unsupported') {
+        <div class="permission-help warning">
+          <mat-icon class="help-icon">warning</mat-icon>
+          <p>Your browser does not support location services.</p>
+        </div>
+      }
+    </div>
+
+    <mat-divider class="my-4"></mat-divider>
+
+    <!-- Microphone Permission -->
+    <div class="permission-item">
+      <div class="permission-header">
+        <mat-icon [class]="'permission-icon ' + getStateColor(microphonePermission.state)">
+          {{ microphonePermission.icon }}
+        </mat-icon>
+        <div class="permission-info">
+          <h3 class="permission-name">{{ microphonePermission.name }}</h3>
+          <p class="permission-description">{{ microphonePermission.description }}</p>
+        </div>
+      </div>
+      
+      <div class="permission-status">
+        <div class="status-badge" [class]="getStateColor(microphonePermission.state)">
+          <mat-icon class="status-icon">{{ getStateIcon(microphonePermission.state) }}</mat-icon>
+          <span>{{ getStateText(microphonePermission.state) }}</span>
+        </div>
+        
+        <div class="permission-actions">
+          @if (microphonePermission.canRequest) {
+            <button mat-raised-button color="primary" (click)="requestMicrophone()">
+              <mat-icon>check</mat-icon>
+              Enable
+            </button>
+          }
+          @if (microphonePermission.state === 'denied' || microphonePermission.state === 'granted') {
+            <button mat-stroked-button (click)="openBrowserSettings()">
+              <mat-icon>settings</mat-icon>
+              Browser Settings
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (microphonePermission.state === 'denied') {
+        <div class="permission-help">
+          <mat-icon class="help-icon">info</mat-icon>
+          <p>Microphone access is blocked. Click "Browser Settings" to change this in your browser.</p>
+        </div>
+      }
+      @if (microphonePermission.state === 'unsupported') {
+        <div class="permission-help warning">
+          <mat-icon class="help-icon">warning</mat-icon>
+          <p>Your browser does not support microphone access.</p>
+        </div>
+      }
+    </div>
+
+    <!-- General Info -->
+    <div class="permissions-footer">
+      <mat-icon class="footer-icon">lock</mat-icon>
+      <p class="text-sm text-gray-500">
+        Your privacy matters. These permissions are only used for the features described and never shared.
+      </p>
+    </div>
+  </mat-card-content>
+</mat-card>

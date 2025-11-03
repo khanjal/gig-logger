@@ -6,4 +6,4 @@ import { MatCardModule } from '@angular/material/card';
 @NgModule({
   imports: [CommonModule, MatButtonModule, MatCardModule]
 })
-export class LocationPermissionModule {}
+export class AppPermissionsModule {}

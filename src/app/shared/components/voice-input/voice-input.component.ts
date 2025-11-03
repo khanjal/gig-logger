@@ -132,7 +132,7 @@ export class VoiceInputComponent implements OnInit {
     
     // NAME patterns (customer/dropoff): "the name is John", "the customer is Jeremy", "taking it to Jane"
     const namePatterns = [
-      /(?:(?:the )?(?:name|person|customer) is|name:|customer name is)\s*([\w\s]+?)$/i,
+      /(?:(?:the )?(?:name|person|customer) is|customer's|name:|customer name is)\s*([\w\s]+?)$/i,
       /(?:drop(?:ping)? off at|dropoff at|dropping at)\s+([\w\s]+?)$/i,
       /(?:delivering to|deliver to|delivery to|taking (?:it )?to|going to)\s+([\w\s]+?)$/i,
       /(?:for)\s+([a-zA-Z][\w\s]+?)$/i  // "for" followed by name starting with letter, not numbers
@@ -228,6 +228,104 @@ export class VoiceInputComponent implements OnInit {
     if (!result.distance) {
       const distanceMatch = transcript.match(/(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i);
       if (distanceMatch) result.distance = distanceMatch[1];
+    }
+
+    // BONUS: "bonus is 5", "five dollar bonus", "$5 bonus"
+    const bonusPatterns = [
+      /(?:bonus (?:is|was|:))\s*\$?([\w.-]+)/i,
+      /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*bonus/i,
+      /([\w-]+)\s*dollar(?:s)?\s*bonus/i
+    ];
+    for (const pattern of bonusPatterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        const converted = convertWordToNumber(match[1].trim());
+        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) {
+          result.bonus = converted;
+          break;
+        }
+      }
+    }
+
+    // CASH: "cash is 10", "ten dollars cash", "$10 cash"
+    const cashPatterns = [
+      /(?:cash (?:is|was|:))\s*\$?([\w.-]+)/i,
+      /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*cash/i,
+      /([\w-]+)\s*dollar(?:s)?\s*cash/i
+    ];
+    for (const pattern of cashPatterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        const converted = convertWordToNumber(match[1].trim());
+        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) {
+          result.cash = converted;
+          break;
+        }
+      }
+    }
+
+    // PICKUP ADDRESS: "picking up at 123 Main Street", "pickup address is downtown"
+    const pickupAddressPatterns = [
+      /(?:pick(?:ing)? up (?:at|on))\s+([\w\s,.-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
+      /(?:pickup address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:from address (?:is|was|:))\s+([\w\s,.-]+?)$/i
+    ];
+    for (const pattern of pickupAddressPatterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        result.pickupAddress = match[1].trim();
+        break;
+      }
+    }
+
+    // DROPOFF/DESTINATION ADDRESS: "dropping off at 456 Elm St", "destination is Main Street", "going to 789 Oak Ave"
+    const dropoffAddressPatterns = [
+      /(?:drop(?:ping)? off (?:at|on)|dropoff (?:at|on))\s+([\w\s,.-]+?)$/i,
+      /(?:destination (?:is|was|:)|destination address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:to address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:going to|heading to)\s+([\w\s,.-]+?)$/i,
+      /(?:end address (?:is|was|:))\s+([\w\s,.-]+?)$/i
+    ];
+    for (const pattern of dropoffAddressPatterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        result.dropoffAddress = match[1].trim();
+        break;
+      }
+    }
+
+    // START ODOMETER: "start odometer is 12345", "odometer start 12345", "odo start 12345"
+    const startOdometerPatterns = [
+      /(?:start(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i,
+      /(?:odometer|odo) start (?:is|was|:)?\s*([\w.-]+)/i,
+      /(?:begin(?:ning)? (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i
+    ];
+    for (const pattern of startOdometerPatterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        const converted = convertWordToNumber(match[1].trim());
+        if (/^\d+(?:\.\d+)?$/.test(converted)) {
+          result.startOdometer = converted;
+          break;
+        }
+      }
+    }
+
+    // END ODOMETER: "end odometer is 12350", "odometer end 12350", "odo end 12350"
+    const endOdometerPatterns = [
+      /(?:end(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i,
+      /(?:odometer|odo) end (?:is|was|:)?\s*([\w.-]+)/i,
+      /(?:final (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i
+    ];
+    for (const pattern of endOdometerPatterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        const converted = convertWordToNumber(match[1].trim());
+        if (/^\d+(?:\.\d+)?$/.test(converted)) {
+          result.endOdometer = converted;
+          break;
+        }
+      }
     }
 
     // TYPE: "type is delivery", "it's a pickup", "delivery order"
