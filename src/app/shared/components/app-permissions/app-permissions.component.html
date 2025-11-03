@@ -35,12 +35,6 @@
               Enable
             </button>
           }
-          @if (locationPermission.state === 'denied' || locationPermission.state === 'granted') {
-            <button mat-stroked-button (click)="openBrowserSettings()">
-              <mat-icon>settings</mat-icon>
-              Browser Settings
-            </button>
-          }
         </div>
       </div>
 
@@ -85,12 +79,6 @@
               Enable
             </button>
           }
-          @if (microphonePermission.state === 'denied' || microphonePermission.state === 'granted') {
-            <button mat-stroked-button (click)="openBrowserSettings()">
-              <mat-icon>settings</mat-icon>
-              Browser Settings
-            </button>
-          }
         </div>
       </div>
 
@@ -109,6 +97,17 @@
     </div>
 
     <!-- General Info -->
+    @if (
+      locationPermission.state === 'denied' || locationPermission.state === 'granted' ||
+      microphonePermission.state === 'denied' || microphonePermission.state === 'granted'
+    ) {
+      <div class="permissions-footer">
+        <button mat-stroked-button class="flex items-center gap-3" (click)="openBrowserSettings()">
+          <mat-icon>settings</mat-icon>
+          Browser Settings
+        </button>
+      </div>
+    }
     <div class="permissions-footer">
       <mat-icon class="footer-icon">lock</mat-icon>
       <p class="text-sm text-gray-500">

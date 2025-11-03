@@ -611,20 +611,25 @@ export class TripFormComponent implements OnInit {
   keyboardPadding: boolean = false;
 
   // --- Voice input result handler ---
-  onVoiceResult(result: any) {
+  async onVoiceResult(result: any) {
     if (!result) return;
     if (result.service) this.tripForm.controls.service.setValue(result.service);
     if (result.endAddress) this.tripForm.controls.endAddress.setValue(result.endAddress);
+
     if (result.pay) this.tripForm.controls.pay.setValue(result.pay);
     if (result.tip) this.tripForm.controls.tip.setValue(result.tip);
     if (result.distance) this.tripForm.controls.distance.setValue(result.distance);
     if (result.type) this.tripForm.controls.type.setValue(result.type);
-    if (result.place) this.tripForm.controls.place.setValue(result.place);
-    if (result.name) this.tripForm.controls.name.setValue(result.name);
+    if (result.place) {
+      this.tripForm.controls.place.setValue(result.place);
+      // Ensure type and address are updated when place is set
+      this.selectPlace();
+    }
+    if (result.name) this.setName(result.name);
     if (result.bonus) this.tripForm.controls.bonus.setValue(result.bonus);
     if (result.cash) this.tripForm.controls.cash.setValue(result.cash);
     if (result.pickupAddress) this.setPickupAddress(result.pickupAddress);
-    if (result.dropoffAddress) this.setDropoffAddress(result.dropoffAddress);
+    if (result.dropoffAddress) this.setDestinationAddress(result.dropoffAddress);
     if (result.startOdometer) this.tripForm.controls.startOdometer.setValue(result.startOdometer);
     if (result.endOdometer) this.tripForm.controls.endOdometer.setValue(result.endOdometer);
     // Add more fields as needed
