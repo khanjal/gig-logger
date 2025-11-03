@@ -113,10 +113,10 @@ export class VoiceInputComponent implements OnInit {
     
     // PLACE patterns (pickup location)
     const placePatterns = [
-      /(?:picking up from|pick up from|pickup from|picking up at|pick up at|pickup at)\s+([\w\s'’]+?)(?:\s+(?:going|and|to|drop|deliver)|$)/i,
-      /picking up\s+([\w\s'’]+?)(?:\s+(?:going|and|to|drop|deliver)|$)/i, // NEW: picking up X
-      /(?:from|at)\s+the\s+([\w\s'’]+?)(?:\s+(?:going|to|and|drop)|$)/i,
-      /(?:place is|place:|the place is)\s+([\w\s'’]+?)(?:\s+(?:going|to|and)|$)/i
+      /(?:picking up from|pick up from|pickup from|picking up at|pick up at|pickup at)\s+([\w\s'’]+?)(?:\s+(?:and|to|drop|deliver)|$)/i,
+      /picking up\s+([\w\s'’]+?)(?:\s+(?:and|to|drop|deliver)|$)/i, // NEW: picking up X
+      /(?:from|at)\s+the\s+([\w\s'’]+?)(?:\s+(?:and|drop)|$)/i,
+      /(?:place is|place:|the place is)\s+([\w\s'’]+?)(?:\s+(?:and)|$)/i
     ];
     
     for (const pattern of placePatterns) {
@@ -131,7 +131,7 @@ export class VoiceInputComponent implements OnInit {
     // NAME patterns (dropoff location/customer)
     const namePatterns = [
       /(?:dropping off at|drop off at|dropoff at|dropping at)\s+([\w\s]+?)(?:\s+(?:for|with|,)|$)/i,
-      /(?:delivering to|deliver to|delivery to|taking to|going to)\s+([\w\s]+?)(?:\s+(?:at|on|,)|$)/i,
+      /(?:delivering to|deliver to|delivery to|taking to|going to)\s+([\w\s]+?)(?:\s+(?:at|on|,)|$)/i, // 'going to' now always sets name
       /(?:customer|client|for)\s+([\w\s]+?)(?:\s+(?:at|on|,)|$)/i
     ];
     
@@ -220,16 +220,14 @@ export class VoiceInputComponent implements OnInit {
   findBestMatch(raw: string, list: string[]): string | undefined {
   // Normalize: remove apostrophes, lowercase, trim (keep spaces for natural matching)
   const normalize = (str: string) => str.toLowerCase().replace(/[’'`]/g, '').trim();
+  // Use dropdown service only for normalization (if it provides such a method), not for fallback matching
   const normRaw = normalize(raw);
   let best = list.find(item => normalize(item) === normRaw);
   if (best) return best;
   // Partial match
   best = list.find(item => normalize(item).includes(normRaw) || normRaw.includes(normalize(item)));
   if (best) return best;
-  // Fallback to dropdown service logic
-  best = this._dropdownDataService.findBestMatch(raw, list);
-  if (best) return best;
-  // If nothing matches, return the raw value (original casing/spacing)
+  // Always return the raw value if no match
   return raw;
   }
 }
