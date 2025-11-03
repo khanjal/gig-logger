@@ -296,9 +296,9 @@ export class VoiceInputComponent implements OnInit {
 
     // START ODOMETER: "start odometer is 12345", "odometer start 12345", "odo start 12345"
     const startOdometerPatterns = [
-      /(?:start(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i,
-      /(?:odometer|odo) start (?:is|was|:)?\s*([\w.-]+)/i,
-      /(?:begin(?:ning)? (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i
+      /(?:start(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i,
+      /(?:odometer|odo) start (?:is|was|:)?\s*([\w.,-]+)/i,
+      /(?:begin(?:ning)? (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i
     ];
     for (const pattern of startOdometerPatterns) {
       const match = transcript.match(pattern);
@@ -312,9 +312,9 @@ export class VoiceInputComponent implements OnInit {
 
     // END ODOMETER: "end odometer is 12350", "odometer end 12350", "odo end 12350"
     const endOdometerPatterns = [
-      /(?:end(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i,
-      /(?:odometer|odo) end (?:is|was|:)?\s*([\w.-]+)/i,
-      /(?:final (?:odometer|odo) (?:is|was|:))\s*([\w.-]+)/i
+      /(?:end(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i,
+      /(?:odometer|odo) end (?:is|was|:)?\s*([\w.,-]+)/i,
+      /(?:final (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i
     ];
     for (const pattern of endOdometerPatterns) {
       const match = transcript.match(pattern);
