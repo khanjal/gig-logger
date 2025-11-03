@@ -210,7 +210,13 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
    */
   get parsedResultEntries(): Array<{ key: string; value: string }> {
     if (!this.parsedResult) return [];
-    return Object.entries(this.parsedResult).map(([key, value]) => ({ key, value: value || '' }));
+    // Convert camelCase keys to Proper Case with spaces
+    const toProperCase = (str: string) =>
+      str
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, s => s.toUpperCase())
+        .trim();
+    return Object.entries(this.parsedResult).map(([key, value]) => ({ key: toProperCase(key), value: value || '' }));
   }
 
   /**
@@ -241,10 +247,11 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
 
     // SERVICE: "I have a doordash", "working uber", "service is lyft"
+    // Avoid matching 'address', 'destination', etc. as service
     const servicePatterns = [
-      /(?:i have (?:a|an)|i got (?:a|an))\s+([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
-      /(?:working|doing|on)\s+([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
-      /service (?:is|was|:)\s*([\w\s]+)/i
+      /(?:i have (?:a|an)|i got (?:a|an))\s+((?!address|destination|place|type)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
+      /(?:working|doing|on)\s+((?!address|destination|place|type)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
+      /service (?:is|was|:)\s*((?!address|destination|place|type)[\w\s]+)/i
     ];
     const service = this.matchFirstPattern(servicePatterns, transcript, match => {
       const raw = match[1].trim();
@@ -267,11 +274,11 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     const name = this.matchFirstPattern(namePatterns, transcript, match => match[1].trim());
     if (name) result.name = name;
 
-    // PLACE patterns (pickup location): "picking up from McDonald's", "the place is Starbucks"
+    // PLACE patterns (pickup/pick-up location): "picking up from McDonald's", "picking pick-up from Walmart", "the place is Starbucks"
     // Only match if NAME wasn't already set
     if (!result.name) {
       const placePatterns = [
-        /(?:pick(?:ing)? up (?:from|at|as)|pickup (?:from|at|as))\s+([\w\s''`'.,&-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
+        /(?:pick(?:ing)?[- ]?up (?:from|at|as)|pick[- ]?up (?:from|at|as))\s+([\w\s''`'.,&-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
         /(?:place is|place:|the place is)\s+([\w\s''`'.,&-]+?)$/i
       ];
       const place = this.matchFirstPattern(placePatterns, transcript, match => {
@@ -369,10 +376,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     });
     if (cash) result.cash = cash;
 
-    // PICKUP ADDRESS: "picking up at 123 Main Street", "pickup address is downtown"
+    // PICKUP ADDRESS: "picking up at 123 Main Street", "pickup address is downtown", "pick-up address is downtown"
     const pickupAddressPatterns = [
-      /(?:pick(?:ing)? up (?:at|on))\s+([\w\s,.-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
-      /(?:pickup address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:pick(?:ing)?[- ]?up (?:at|on))\s+([\w\s,.-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
+      /(?:pick[- ]?up address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
       /(?:from address (?:is|was|:))\s+([\w\s,.-]+?)$/i
     ];
 
@@ -381,7 +388,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // DROPOFF/DESTINATION ADDRESS: "dropping off at 456 Elm St", "destination is Main Street", "going to 789 Oak Ave"
     const dropoffAddressPatterns = [
-      /(?:drop(?:ping)? off (?:at|on)|dropoff (?:at|on))\s+([\w\s,.-]+?)$/i,
+      /(?:drop(?:ping)? off (?:at|on)|drop[- ]?off (?:at|on))\s+([\w\s,.-]+?)$/i,
+      /(?:drop[- ]?off address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
       /(?:destination (?:is|was|:)|destination address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
       /(?:to address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
       /(?:going to|heading to)\s+([\w\s,.-]+?)$/i,
@@ -419,14 +427,14 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // DISTANCE: Only match with explicit distance context to avoid odometer confusion
     // Supports miles and kilometers (mile, mi, km, kilometer, kilometers)
-    if (!result.distance) {
+    // Do NOT match distance if odometer start or end was matched
+    if (!result.distance && !result.startOdometer && !result.endOdometer) {
       const distancePatterns = [
-        /(?:distance (?:is|was|:))\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i,
-        /(?:drove|traveled|went)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i,
-        /(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\s*(?:away|trip|drive)?/i,
-        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i  // "for 5 miles" or "for 5 km"
+        /(?:\bdistance (?:is|was|:)\b)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b/i,
+        /(?:\bdrove|traveled|went\b)\s*(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b/i,
+        /\b(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b\s*(?:away|trip|drive)?/i,
+        /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)\b/i  // "for 5 miles" or "for 5 km"
       ];
-      
       const distance = this.matchFirstPattern(distancePatterns, transcript, match => match[1]);
       if (distance) result.distance = distance;
     }

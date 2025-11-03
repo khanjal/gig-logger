@@ -64,10 +64,9 @@ const SCHEMA_V2 = {
 // Version 3: Optimized indexes based on actual query patterns
 // Changes:
 // - expenses: Added rowId, date, saved (queries use where('saved'), date for grouping/sorting)
-// - deliveries: Removed 'name' index (not queried)
 const SCHEMA_V3 = {
     addresses: '++id, address, saved',
-    deliveries: '++id, address',
+    deliveries: '++id, address name',
     daily: '++id, date',
     expenses: '++id, rowId, date, saved',
     monthly: '++id, month',
