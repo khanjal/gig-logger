@@ -86,20 +86,29 @@ export class VoiceInputComponent implements OnInit {
     // eslint-disable-next-line no-console
     console.log('[VoiceInput] Raw transcript:', transcript);
 
-    // SERVICE: Enhanced pattern recognition
-    // "I have a doordash", "doordash going to", "working uber", etc.
+    // Special: Handle 'pickup' or 'shop' as type, and extract place after 'from'
+    // e.g. 'I have a pickup from McDonald's', 'a shop from Dollar General'
+    const pickupShopPattern = /(?:have a |a )?(pickup|shop) from ([\w\s'’`.,&-]+)/i;
+    const pickupShopMatch = transcript.match(pickupShopPattern);
+    if (pickupShopMatch) {
+      result.type = this.findBestMatch(pickupShopMatch[1], this.typeList) || pickupShopMatch[1];
+      const placeCandidate = this.findBestMatch(pickupShopMatch[2], this.placeList);
+      if (placeCandidate) result.place = placeCandidate;
+      else result.place = pickupShopMatch[2];
+    }
+
+    // SERVICE: "I have a doordash", "working uber", "service is lyft"
     const servicePatterns = [
-      /(?:i have a |i have an |i got a |i got an )([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at))/i,
-      /(?:working |doing |on )([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at))/i,
-      /^([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at))/i  // Service at start
+      /(?:i have (?:a|an)|i got (?:a|an))\s+([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
+      /(?:working|doing|on)\s+([\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
+      /service (?:is|was|:)\s*([\w\s]+)/i
     ];
     for (const pattern of servicePatterns) {
       const match = transcript.match(pattern);
       if (match) {
         const raw = match[1].trim();
         const matched = this.findBestMatch(raw, this.serviceList);
-        // Only set if we found a match in the list (not just returning raw)
-        if (matched && this.serviceList.some(s => s.toLowerCase().replace(/['\s]/g, '') === matched.toLowerCase().replace(/['\s]/g, ''))) {
+        if (matched) {
           result.service = matched;
           break;
         }
@@ -108,33 +117,37 @@ export class VoiceInputComponent implements OnInit {
 
     // PLACE vs NAME: Context-aware parsing
     // "picking up from/at X" = place
-    // "going to X" after service mention = could be place OR name depending on context
     // "dropping off at X" = name
     
-    // PLACE patterns (pickup location)
+    // PLACE patterns (pickup location): "picking up from McDonald's", "the place is Starbucks"
     const placePatterns = [
-      /(?:picking up from|pick up from|pickup from|picking up at|pick up at|pickup at)\s+([\w\s'’]+?)(?:\s+(?:and|to|drop|deliver)|$)/i,
-      /picking up\s+([\w\s'’]+?)(?:\s+(?:and|to|drop|deliver)|$)/i, // NEW: picking up X
-      /(?:from|at)\s+the\s+([\w\s'’]+?)(?:\s+(?:and|drop)|$)/i,
-      /(?:place is|place:|the place is)\s+([\w\s'’]+?)(?:\s+(?:and)|$)/i
+      /(?:pick(?:ing)? up (?:from|at|as)|pickup (?:from|at|as))\s+([\w\s''`'.,&-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
+      /(?:place is|place:|the place is)\s+([\w\s''`'.,&-]+?)$/i
     ];
-    
     for (const pattern of placePatterns) {
       const match = transcript.match(pattern);
       if (match) {
         const raw = match[1].trim();
-        result.place = this.findBestMatch(raw, this.placeList);
+        const placeCandidate = this.findBestMatch(raw, this.placeList);
+        const rawLower = raw.toLowerCase().trim();
+        const nameLower = result.name ? result.name.toLowerCase().trim() : '';
+        if (
+          placeCandidate &&
+          (!result.name || (placeCandidate.toLowerCase().trim() !== nameLower && rawLower !== nameLower))
+        ) {
+          result.place = placeCandidate;
+        }
         break;
       }
     }
 
-    // NAME patterns (dropoff location/customer)
+    // NAME patterns (customer/dropoff): "the name is John", "taking it to Jane", "for Mike"
     const namePatterns = [
-      /(?:dropping off at|drop off at|dropoff at|dropping at)\s+([\w\s]+?)(?:\s+(?:for|with|,)|$)/i,
-      /(?:delivering to|deliver to|delivery to|taking to|going to)\s+([\w\s]+?)(?:\s+(?:at|on|,)|$)/i, // 'going to' now always sets name
-      /(?:customer|client|for)\s+([\w\s]+?)(?:\s+(?:at|on|,)|$)/i
+      /(?:(?:the )?(?:name|person) is|name:|customer name is)\s*([\w\s]+?)$/i,
+      /(?:drop(?:ping)? off at|dropoff at|dropping at)\s+([\w\s]+?)$/i,
+      /(?:delivering to|deliver to|delivery to|taking (?:it )?to|going to)\s+([\w\s]+?)$/i,
+      /(?:customer|client|for)\s+([\w\s]+?)$/i
     ];
-    
     for (const pattern of namePatterns) {
       const match = transcript.match(pattern);
       if (match) {
@@ -143,29 +156,13 @@ export class VoiceInputComponent implements OnInit {
       }
     }
 
-    // ADDRESS: "going to [address]" or "to [address]"
-    // Only if not already captured as name
-    if (!result.name) {
-      const addressPatterns = [
-        /(?:going to|headed to|to)\s+([\d]+[\w\d\s,.#-]+?)(?:\s+(?:for|with|,|$))/i,
-        /(?:address is|address:|the address is)\s+([\w\d\s,.#-]+?)(?:\s+(?:for|with|,)|$)/i
-      ];
-      
-      for (const pattern of addressPatterns) {
-        const match = transcript.match(pattern);
-        if (match) {
-          const raw = match[1].trim();
-          result.endAddress = this.findBestMatch(raw, this.addressList);
-          break;
-        }
-      }
-    }
+    // ADDRESS extraction is disabled for now; focus on name only
 
-    // PAYMENT: $15, 15 dollars, pay is 15
+    // PAYMENT: "$15", "15 dollars", "pay is 15"
     const payPatterns = [
-      /\$(\d+(?:\.\d{1,2})?)/,
-      /(\d+(?:\.\d{1,2})?)\s*dollar/i,
-      /(?:pay is|pay:|payment is|payment:|paid)\s*\$?(\d+(?:\.\d{1,2})?)/i
+      /(?:pay(?:ment)? (?:is|was|:)|paid)\s*\$?(\d+(?:\.\d{1,2})?)/i,
+      /\$(\d+(?:\.\d{1,2})?)(?!\s*tip)/i,  // $ but not followed by "tip"
+      /(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?(?!\s*tip)/i  // dollars but not followed by "tip"
     ];
     for (const pattern of payPatterns) {
       const match = transcript.match(pattern);
@@ -175,11 +172,10 @@ export class VoiceInputComponent implements OnInit {
       }
     }
 
-    // TIP: tip $3, 3 dollar tip, tip is 3
+    // TIP: "$5 tip", "5 dollar tip", "tip is 5"
     const tipPatterns = [
-      /tip\s*\$?(\d+(?:\.\d{1,2})?)/i,
-      /(\d+(?:\.\d{1,2})?)\s*dollar\s*tip/i,
-      /(?:tip is|tip:|tipped)\s*\$?(\d+(?:\.\d{1,2})?)/i
+      /(?:tip (?:is|was|:)|tipped)\s*\$?(\d+(?:\.\d{1,2})?)/i,
+      /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*tip/i
     ];
     for (const pattern of tipPatterns) {
       const match = transcript.match(pattern);
@@ -189,15 +185,15 @@ export class VoiceInputComponent implements OnInit {
       }
     }
 
-    // DISTANCE: 5 miles, 5.5 mi, 10 kilometers
-    const distanceMatch = transcript.match(/(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i);
-    if (distanceMatch) result.distance = distanceMatch[1];
+  // DISTANCE: Handles "5 miles", "5.5 mi", "10 kilometers"
+  const distanceMatch = transcript.match(/(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|km|kilometer|kilometers)/i);
+  if (distanceMatch) result.distance = distanceMatch[1];
 
-    // TYPE: type delivery, pickup type, it's a delivery
+    // TYPE: "type is delivery", "it's a pickup", "delivery order"
     const typePatterns = [
-      /(?:type is|type:|the type is)\s*([\w\s]+?)(?:\s+(?:for|to|at|from)|$)/i,
+      /(?:(?:the )?type (?:is|was|:))\s*([\w\s]+?)(?=\s+(?:for|to|at|from)|$)/i,
       /(?:it'?s a|this is a)\s*(delivery|pickup|dropoff|drop off|ride)/i,
-      /(delivery|pickup|dropoff|drop off|ride)\s*(?:order|trip|type)/i
+      /(delivery|pickup|dropoff|drop off|ride)\s*(?:order|trip)/i
     ];
     for (const pattern of typePatterns) {
       const match = transcript.match(pattern);
