@@ -1,0 +1,7 @@
+<button type="button"
+        [ngClass]="'rounded-full p-2 text-white shadow-md border-none focus:outline-none focus:ring-2 flex items-center justify-center ' + micButtonColor"
+        aria-label="Start voice input"
+        (click)="onMicClick()">
+  <mat-icon>{{ recognizing ? 'mic' : 'mic_none' }}</mat-icon>
+</button>
+<ng-content></ng-content>

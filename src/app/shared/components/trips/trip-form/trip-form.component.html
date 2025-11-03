@@ -304,23 +304,28 @@
 
   <!-- Form Actions -->
   <div class="flex flex-col gap-4 mt-6">
-    <div class="flex w-full justify-between">
-      <div>
-        <button *ngIf="!data?.id" mat-fab extended color="warn" (click)="formReset()">
-          <mat-icon>refresh</mat-icon> Reset
-        </button>
-        <button *ngIf="data?.id" mat-fab extended color="warn" (click)="close()">
-          <mat-icon>cancel</mat-icon> Cancel
-        </button>
+    <div class="flex w-full items-center justify-between">
+      <button *ngIf="!data?.id" mat-fab extended color="warn" (click)="formReset()">
+        <mat-icon>refresh</mat-icon> Reset
+      </button>
+      <button *ngIf="data?.id" mat-fab extended color="warn" (click)="close()">
+        <mat-icon>cancel</mat-icon> Cancel
+      </button>
+      <!-- Centered voice input button -->
+      <div class="flex-1 flex justify-center">
+        <voice-input (voiceResult)="onVoiceResult($event)" #voice></voice-input>
       </div>
-      <div>
-        <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid" [class.button-disabled]="!tripForm.valid">
-          <mat-icon>add</mat-icon> Store
-        </button>
-        <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
-          <mat-icon>save</mat-icon> Update
-        </button>
-      </div>
+      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid" [class.button-disabled]="!tripForm.valid">
+        <mat-icon>add</mat-icon> Store
+      </button>
+      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
+        <mat-icon>save</mat-icon> Update
+      </button>
     </div>
   </div>
+    <!-- Transcript display below buttons -->
+    <div *ngIf="voice.transcript" class="w-full mt-2 text-xs text-gray-600 flex items-center gap-2 px-2">
+      <mat-icon>graphic_eq</mat-icon>
+      <span class="truncate block w-full">{{ voice.transcript }}</span>
+    </div>
 </div>

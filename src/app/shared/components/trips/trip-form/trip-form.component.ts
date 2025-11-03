@@ -1,6 +1,7 @@
 // Angular core imports
 import { ViewportScroller, NgFor, NgIf, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
+import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Angular material imports
@@ -58,7 +59,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatMiniFabButton, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableBasicComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatMiniFabButton, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableBasicComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent]
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -133,6 +134,7 @@ export class TripFormComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
+
     this.load();
   }
 
@@ -607,4 +609,19 @@ export class TripFormComponent implements OnInit {
 
   // Remove keyboard handling - now handled by focus-scroll directive
   keyboardPadding: boolean = false;
+
+  // --- Voice input result handler ---
+  onVoiceResult(result: any) {
+    if (!result) return;
+    if (result.service) this.tripForm.controls.service.setValue(result.service);
+    if (result.endAddress) this.tripForm.controls.endAddress.setValue(result.endAddress);
+    if (result.pay) this.tripForm.controls.pay.setValue(result.pay);
+    if (result.tip) this.tripForm.controls.tip.setValue(result.tip);
+    if (result.distance) this.tripForm.controls.distance.setValue(result.distance);
+    if (result.type) this.tripForm.controls.type.setValue(result.type);
+    if (result.place) this.tripForm.controls.place.setValue(result.place);
+    if (result.name) this.tripForm.controls.place.setValue(result.name);
+    // Add more fields as needed
+    this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
+  }
 }
