@@ -1,8 +1,27 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { convertWordToNumber } from '@helpers/number-converter.helper';
+
+/**
+ * Interface for parsed voice input results
+ */
+interface VoiceParseResult {
+  service?: string;
+  type?: string;
+  place?: string;
+  name?: string;
+  pay?: string;
+  tip?: string;
+  bonus?: string;
+  cash?: string;
+  distance?: string;
+  startOdometer?: string;
+  endOdometer?: string;
+  pickupAddress?: string;
+  dropoffAddress?: string;
+}
 
 @Component({
   selector: 'voice-input',
@@ -12,30 +31,23 @@ import { convertWordToNumber } from '@helpers/number-converter.helper';
   imports: [CommonModule, MatIcon]
 })
 
-export class VoiceInputComponent implements OnInit {
-  /**
-   * Helper to match the first pattern and run a callback on match.
-   */
-  private matchFirstPattern<T>(patterns: RegExp[], transcript: string, onMatch: (match: RegExpMatchArray) => T | undefined): T | undefined {
-    for (const pattern of patterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        const result = onMatch(match);
-        if (result !== undefined) return result;
-      }
-    }
-    return undefined;
-  }
+export class VoiceInputComponent implements OnInit, OnDestroy {
+  // Dropdown data
   serviceList: string[] = [];
   addressList: string[] = [];
   typeList: string[] = [];
   placeList: string[] = [];
 
+  // Component state
   transcript: string = '';
+  parsedResult: VoiceParseResult | null = null;
   recognition: any = null;
   recognizing: boolean = false;
   private transcriptTimeout: any = null;
   suggestionPhrase: string = '';
+
+  // Auto-hide delay (in milliseconds)
+  private readonly TRANSCRIPT_AUTO_HIDE_DELAY = 3000;
 
   constructor(
     private _dropdownDataService: DropdownDataService
@@ -49,7 +61,25 @@ export class VoiceInputComponent implements OnInit {
     this.addressList = data.addresses;
   }
 
-  @Output() voiceResult = new EventEmitter<any>();
+  @Output() voiceResult = new EventEmitter<VoiceParseResult>();
+
+  /**
+   * Helper to match the first pattern and run a callback on match.
+   */
+  private matchFirstPattern<T>(
+    patterns: RegExp[], 
+    transcript: string, 
+    onMatch: (match: RegExpMatchArray) => T | undefined
+  ): T | undefined {
+    for (const pattern of patterns) {
+      const match = transcript.match(pattern);
+      if (match) {
+        const result = onMatch(match);
+        if (result !== undefined) return result;
+      }
+    }
+    return undefined;
+  }
 
   private getRandomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
@@ -59,50 +89,114 @@ export class VoiceInputComponent implements OnInit {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  onMicClick() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Speech recognition not supported in this browser.');
+  ngOnDestroy(): void {
+    this.cleanup();
+  }
+
+  private cleanup(): void {
+    if (this.transcriptTimeout) {
+      clearTimeout(this.transcriptTimeout);
+      this.transcriptTimeout = null;
+    }
+    if (this.recognition) {
+      this.recognition.abort();
+      this.recognition = null;
+    }
+  }
+
+  onMicClick(): void {
+    if (!this.isSpeechRecognitionSupported()) {
+      alert('Speech recognition is not supported in this browser. Please try Chrome, Edge, or Safari.');
       return;
     }
+
     if (!this.recognition) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      this.recognition = new SpeechRecognition();
-      this.recognition.lang = 'en-US';
-      this.recognition.interimResults = false;
-      this.recognition.maxAlternatives = 1;
-      this.recognition.onresult = (event: any) => {
-        const result = event.results[0][0].transcript;
-        this.transcript = result;
-        const parsed = this.parseTranscript(result);
-        this.voiceResult.emit(parsed);
-        this.recognizing = false;
-        
-        // Auto-hide transcript after 3 seconds
-        if (this.transcriptTimeout) {
-          clearTimeout(this.transcriptTimeout);
-        }
-        this.transcriptTimeout = setTimeout(() => {
-          this.transcript = '';
-        }, 3000);
-      };
-      this.recognition.onerror = (event: any) => {
-        alert('Speech recognition error: ' + event.error);
-        this.recognizing = false;
-      };
-      this.recognition.onend = () => {
-        this.recognizing = false;
-      };
+      this.initializeSpeechRecognition();
     }
+
     if (!this.recognizing) {
-      this.transcript = '';
-      this.suggestionPhrase = this.getRandomSuggestion();
+      this.startListening();
+    } else {
+      this.stopListening();
+    }
+  }
+
+  private isSpeechRecognitionSupported(): boolean {
+    return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  }
+
+  private initializeSpeechRecognition(): void {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    this.recognition = new SpeechRecognition();
+    this.recognition.lang = 'en-US';
+    this.recognition.interimResults = false;
+    this.recognition.maxAlternatives = 1;
+    
+    this.recognition.onresult = (event: any) => this.handleRecognitionResult(event);
+    this.recognition.onerror = (event: any) => this.handleRecognitionError(event);
+    this.recognition.onend = () => {
+      this.recognizing = false;
+    };
+  }
+
+  private handleRecognitionResult(event: any): void {
+    const result = event.results[0][0].transcript;
+    this.transcript = result;
+    const parsed = this.parseTranscript(result);
+    this.parsedResult = parsed;
+    this.voiceResult.emit(parsed);
+    this.recognizing = false;
+    
+    // Auto-hide transcript after delay
+    this.scheduleTranscriptHide();
+  }
+
+  private handleRecognitionError(event: any): void {
+    console.error('[VoiceInput] Speech recognition error:', event.error);
+    
+    const errorMessages: { [key: string]: string } = {
+      'no-speech': 'No speech detected. Please try again.',
+      'audio-capture': 'No microphone detected. Please check your device settings.',
+      'not-allowed': 'Microphone access denied. Please enable microphone permissions.',
+      'network': 'Network error. Please check your internet connection.',
+    };
+    
+    const message = errorMessages[event.error] || `Speech recognition error: ${event.error}`;
+    alert(message);
+    this.recognizing = false;
+  }
+
+  private startListening(): void {
+    this.transcript = '';
+    this.parsedResult = null;
+    this.suggestionPhrase = this.getRandomSuggestion();
+    
+    try {
       this.recognition.start();
       this.recognizing = true;
-    } else {
-      this.recognition.stop();
+    } catch (error) {
+      console.error('[VoiceInput] Failed to start recognition:', error);
       this.recognizing = false;
-      this.suggestionPhrase = '';
     }
+  }
+
+  private stopListening(): void {
+    if (this.recognition) {
+      this.recognition.stop();
+    }
+    this.recognizing = false;
+    this.suggestionPhrase = '';
+  }
+
+  private scheduleTranscriptHide(): void {
+    if (this.transcriptTimeout) {
+      clearTimeout(this.transcriptTimeout);
+    }
+    
+    this.transcriptTimeout = setTimeout(() => {
+      this.transcript = '';
+      this.parsedResult = null;
+    }, this.TRANSCRIPT_AUTO_HIDE_DELAY);
   }
 
   get micButtonColor(): string {
@@ -111,13 +205,27 @@ export class VoiceInputComponent implements OnInit {
   }
 
   /**
+   * Gets the parsed result as an array of key-value pairs for template iteration
+   */
+  get parsedResultEntries(): Array<{ key: string; value: string }> {
+    if (!this.parsedResult) return [];
+    return Object.entries(this.parsedResult).map(([key, value]) => ({ key, value: value || '' }));
+  }
+
+  /**
+   * Checks if parsed result has any data
+   */
+  get hasParsedData(): boolean {
+    return this.parsedResultEntries.length > 0;
+  }
+
+  /**
    * Parses the recognized speech and returns an object with fields.
    */
-  parseTranscript(transcript: string) {
-    const result: any = {};
-    const lowerTranscript = transcript.toLowerCase();
+  parseTranscript(transcript: string): VoiceParseResult {
+    const result: VoiceParseResult = {};
+    
     // Debug: log the raw transcript
-    // eslint-disable-next-line no-console
     console.log('[VoiceInput] Raw transcript:', transcript);
 
     // Special: Handle 'pickup' or 'shop' as type, and extract place after 'from'
@@ -199,8 +307,10 @@ export class VoiceInputComponent implements OnInit {
     if (!result.pay) {
       const payPatterns = [
         /(?:pay(?:ment)? (?:is|was|:)|paid|amount (?:is|was|:))\s*\$?([\w.-]+)/i,
-        /\$(\d+(?:\.\d{1,2})?)(?!\s*tip)/i,  // $ but not followed by "tip"
-        /(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?(?!\s*tip)/i  // dollars but not followed by "tip"
+        // Only match $amount if not in a phrase containing 'tip' before or after
+        /(?<!tip[^$]{0,20})\$(\d+(?:\.\d{1,2})?)(?![^$]{0,20}tip)/i,
+        // Only match 'dollars' if not in a phrase containing 'tip' before or after
+        /(?<!tip[^\d]{0,20})(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?(?![^\d]{0,20}tip)/i
       ];
 
       const pay = this.matchFirstPattern(payPatterns, transcript, match => {
@@ -332,10 +442,8 @@ export class VoiceInputComponent implements OnInit {
     });
     if (type) result.type = type;
 
-  // Debug: log the parsed result
-  // eslint-disable-next-line no-console
-  console.log('[VoiceInput] Parsed result:', result);
-
+    // Debug: log the parsed result
+    console.log('[VoiceInput] Parsed result:', result);
 
     return result;
   }
@@ -343,7 +451,7 @@ export class VoiceInputComponent implements OnInit {
   /**
    * Finds the best match for a value in a list (case-insensitive, partial allowed)
    */
-  findBestMatch(raw: string, list: string[]): string | undefined {
+  private findBestMatch(raw: string, list: string[]): string | undefined {
     // Normalize: remove apostrophes, lowercase, trim (keep spaces for natural matching)
     const normalize = (str: string) => str.toLowerCase().replace(/[''`]/g, '').trim();
     // Use dropdown service only for normalization (if it provides such a method), not for fallback matching
