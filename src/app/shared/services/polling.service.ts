@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { GigWorkflowService } from './gig-workflow.service';
 import { ShiftService } from './sheets/shift.service';
 import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
@@ -30,7 +29,6 @@ export class PollingService implements OnDestroy {
     private _snackBar: MatSnackBar,
     private _dialog: MatDialog,
     private _sheetService: SpreadsheetService,
-    private _gigLoggerService: GigWorkflowService,
     private _shiftService: ShiftService,
     private _tripService: TripService,
     private _logger: LoggerService
@@ -187,6 +185,12 @@ export class PollingService implements OnDestroy {
       return;
     }
 
+    // Check if document is visible before triggering sync
+    if (document.visibilityState !== 'visible') {
+      this._logger.info('App is not in focus, deferring sync until visible');
+      return;
+    }
+
     this.processing = true;
 
     try {
@@ -209,7 +213,11 @@ export class PollingService implements OnDestroy {
         height: '400px',
         width: '500px',
         panelClass: 'custom-modalbox',
-        data: 'save',
+        data: {
+          type: 'save',
+          autoCloseOnError: true,
+          autoCloseTimer: 1000
+        },
         disableClose: true // Prevent closing while saving
       });
 
