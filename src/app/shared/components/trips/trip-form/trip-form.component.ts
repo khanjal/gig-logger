@@ -191,15 +191,15 @@ export class TripFormComponent implements OnInit {
     trip.distance = NumberHelper.toNullableNumber(this.tripForm.value.distance);
 
     // Store converted values to avoid redundant calls
-    const pay = NumberHelper.toNullableNumber(this.tripForm.value.pay);
-    const tip = NumberHelper.toNullableNumber(this.tripForm.value.tip);
-    const bonus = NumberHelper.toNullableNumber(this.tripForm.value.bonus);
+    const pay = NumberHelper.toNumber(this.tripForm.value.pay);
+    const tip = NumberHelper.toNumber(this.tripForm.value.tip);
+    const bonus = NumberHelper.toNumber(this.tripForm.value.bonus);
     trip.pay = pay;
     trip.tip = tip;
     trip.bonus = bonus;
-    trip.cash = NumberHelper.toNullableNumber(this.tripForm.value.cash);
+    trip.cash = NumberHelper.toNumber(this.tripForm.value.cash);
     // total is a calculated field, but ensure nulls are handled
-    trip.total = NumberHelper.toNullableNumber(
+    trip.total = NumberHelper.toNumber(
       (pay ?? 0) +
       (tip ?? 0) +
       (bonus ?? 0)

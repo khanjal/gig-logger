@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/cor
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
-import { convertWordToNumber } from '@helpers/number-converter.helper';
+import { NumberHelper } from '@helpers/number.helper';
 
 /**
  * Interface for parsed voice input results
@@ -294,8 +294,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (/pay(?:ment)?[\w\s:$]*and[\w\s:$]*tip/i.test(transcript) || /tip[\w\s:$]*and[\w\s:$]*pay(?:ment)?/i.test(transcript)) {
       const payTipMatch = transcript.match(payTipPattern);
       if (payTipMatch) {
-        const payValue = convertWordToNumber(payTipMatch[1].trim());
-        const tipValue = convertWordToNumber(payTipMatch[2].trim());
+        const payValue = NumberHelper.convertWordToNumber(payTipMatch[1].trim());
+        const tipValue = NumberHelper.convertWordToNumber(payTipMatch[2].trim());
         // Only set if they're valid numbers
         if (/^\d+(?:\.\d{1,2})?$/.test(payValue)) result.pay = payValue;
         if (/^\d+(?:\.\d{1,2})?$/.test(tipValue)) result.tip = tipValue;
@@ -321,7 +321,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       ];
 
       const pay = this.matchFirstPattern(payPatterns, transcript, match => {
-        const converted = convertWordToNumber(match[1].trim());
+        const converted = NumberHelper.convertWordToNumber(match[1].trim());
         if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
         return undefined;
       });
@@ -339,7 +339,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       ];
 
       const tip = this.matchFirstPattern(tipPatterns, transcript, match => {
-        const converted = convertWordToNumber(match[1].trim());
+        const converted = NumberHelper.convertWordToNumber(match[1].trim());
         if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
         return undefined;
       });
@@ -354,7 +354,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
 
     const bonus = this.matchFirstPattern(bonusPatterns, transcript, match => {
-      const converted = convertWordToNumber(match[1].trim());
+      const converted = NumberHelper.convertWordToNumber(match[1].trim());
       if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
       return undefined;
     });
@@ -368,7 +368,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
 
     const cash = this.matchFirstPattern(cashPatterns, transcript, match => {
-      const converted = convertWordToNumber(match[1].trim());
+      const converted = NumberHelper.convertWordToNumber(match[1].trim());
       if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
       return undefined;
     });
@@ -410,14 +410,14 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
 
     const startOdometerMatch = this.matchFirstPattern(startOdometerPatterns, transcript, match => {
-      let raw = convertWordToNumber(match[1].trim());
+      let raw = NumberHelper.convertWordToNumber(match[1].trim());
       raw = raw.replace(/,/g, '');
       return raw;
     });
     if (startOdometerMatch) result.startOdometer = startOdometerMatch;
 
     const endOdometerMatch = this.matchFirstPattern(endOdometerPatterns, transcript, match => {
-      let raw = convertWordToNumber(match[1].trim());
+      let raw = NumberHelper.convertWordToNumber(match[1].trim());
       raw = raw.replace(/,/g, '');
       return raw;
     });
