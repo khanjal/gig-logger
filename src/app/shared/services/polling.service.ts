@@ -223,6 +223,11 @@ export class PollingService implements OnDestroy {
 
       if (result.success) {
         this._logger.info('Auto-save completed successfully');
+        
+        // Mark all items as saved in local database after successful save
+        await this._tripService.saveUnsaved();
+        await this._shiftService.saveUnsavedShifts();
+        
         this._syncStatusService.completeSync(`Saved ${totalItems} item(s) successfully`);
         
         // Emit reload event for parent components
