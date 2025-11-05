@@ -32,7 +32,7 @@
 // Status-specific colors
 .status-idle {
   .sync-button mat-icon {
-    color: $text-tertiary;
+    color: $text-inverse;
   }
 }
 
@@ -259,12 +259,18 @@
 .clear-button {
   width: 32px;
   height: 32px;
-  line-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
 
   mat-icon {
     font-size: 1.125rem;
     width: 1.125rem;
     height: 1.125rem;
+    line-height: 1;
   }
 }
 

@@ -78,13 +78,13 @@
         <div class="messages-header" (click)="toggleDetailedView()">
           <span class="messages-title">
             <mat-icon class="expand-icon" [class.expanded]="showDetailedView">
-              {{ showDetailedView ? 'expand_less' : 'expand_more' }}
+              expand_more
             </mat-icon>
             Activity Log ({{ messages.length }})
           </span>
           <button 
             mat-icon-button 
-            (click)="clearMessages(); $event.stopPropagation()"
+            (click)="clearMessages()"
             class="clear-button"
             matTooltip="Clear log">
             <mat-icon>clear_all</mat-icon>
