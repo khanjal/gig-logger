@@ -9,8 +9,6 @@ import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 
-import { BehaviorSubject, Observable } from 'rxjs';
-
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
 @Injectable({
@@ -26,10 +24,6 @@ export class PollingService implements OnDestroy {
   private currentInterval = DEFAULT_INTERVAL;
   private lastPollTime = 0;
   private visibilityChangeListener: (() => void) | null = null;
-
-  private nextSyncCountdownSubject = new BehaviorSubject<number>(DEFAULT_INTERVAL / 1000);
-  public readonly nextSyncCountdown$: Observable<number> = this.nextSyncCountdownSubject.asObservable();
-  private countdownTimer: any = null;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -191,29 +185,12 @@ export class PollingService implements OnDestroy {
       this.fallbackTimer = null;
     }
 
-    this.stopCountdown();
-  }
-  // Countdown logic for next sync
-  private startCountdown(ms: number) {
-    this.stopCountdown();
-    let seconds = Math.ceil(ms / 1000);
-    this.nextSyncCountdownSubject.next(seconds);
-    this.countdownTimer = setInterval(() => {
-      seconds--;
-      if (seconds <= 0) {
-        this.nextSyncCountdownSubject.next(0);
-        this.stopCountdown();
-      } else {
-        this.nextSyncCountdownSubject.next(seconds);
-      }
-    }, 1000);
+    this._syncStatusService.stopCountdown();
   }
 
-  private stopCountdown() {
-    if (this.countdownTimer) {
-      clearInterval(this.countdownTimer);
-      this.countdownTimer = null;
-    }
+  // Countdown logic for next sync
+  private startCountdown(ms: number) {
+    this._syncStatusService.startCountdown(ms);
   }
 
   private async saveData() {
@@ -263,6 +240,14 @@ export class PollingService implements OnDestroy {
         await this._tripService.saveUnsaved();
         await this._shiftService.saveUnsavedShifts();
         
+        // Add detailed success messages
+        if (sheetData.trips.length > 0) {
+          this._syncStatusService.addMessage(`Saved ${sheetData.trips.length} trip(s)`, 'info');
+        }
+        if (sheetData.shifts.length > 0) {
+          this._syncStatusService.addMessage(`Saved ${sheetData.shifts.length} shift(s)`, 'info');
+        }
+        
         this._syncStatusService.completeSync(`Saved ${totalItems} item(s) successfully`);
         
         // Emit reload event for parent components
@@ -284,6 +269,8 @@ export class PollingService implements OnDestroy {
       this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
     } finally {
       this.processing = false;
+      // Restart countdown for next sync
+      this.startCountdown(this.currentInterval);
     }
   }
 

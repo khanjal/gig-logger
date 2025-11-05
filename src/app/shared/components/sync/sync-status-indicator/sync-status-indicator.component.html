@@ -62,9 +62,9 @@
           <span class="status-value">{{ timeSinceLastSync }}</span>
         </div>
 
-        <div class="status-row">
+        <div class="status-row" *ngIf="(syncState?.nextSyncIn || 0) > 0">
           <span class="status-label">Next sync:</span>
-          <span class="status-value">in {{ nextSyncCountdown }}s</span>
+          <span class="status-value">in {{ syncState?.nextSyncIn }}s</span>
         </div>
 
         <div class="status-row" *ngIf="syncState?.error">

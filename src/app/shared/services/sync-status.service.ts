@@ -13,6 +13,7 @@ export interface SyncState {
   totalItems: number;
   timestamp: Date;
   error?: string;
+  nextSyncIn?: number; // seconds until next sync
 }
 
 export interface SyncMessage {
@@ -38,6 +39,7 @@ export class SyncStatusService {
   private syncStateSubject = new BehaviorSubject<SyncState>(this.DEFAULT_STATE);
   private messagesSubject = new BehaviorSubject<SyncMessage[]>([]);
   private lastSuccessfulSyncSubject = new BehaviorSubject<Date | null>(null);
+  private countdownTimer: any = null;
 
   // Public observables
   public readonly syncState$: Observable<SyncState> = this.syncStateSubject.asObservable();
@@ -85,15 +87,20 @@ export class SyncStatusService {
    */
   completeSync(message?: string): void {
     const currentState = this.syncStateSubject.value;
+    const successMessage = message || this.getOperationMessage(currentState.operation!, 'success');
+    
     this.syncStateSubject.next({
       ...currentState,
       status: 'success',
-      message: message || this.getOperationMessage(currentState.operation!, 'success'),
+      message: successMessage,
       progress: 100,
       timestamp: new Date()
     });
     
     this.lastSuccessfulSyncSubject.next(new Date());
+    
+    // Add success message to activity log
+    this.addMessage(successMessage, 'info');
     
     // Auto-reset to idle after 3 seconds
     setTimeout(() => {
@@ -215,5 +222,47 @@ export class SyncStatusService {
     if (diffHours > 0) return `${diffHours}h ago`;
     if (diffMins > 0) return `${diffMins}m ago`;
     return 'Just now';
+  }
+
+  /**
+   * Start countdown timer for next sync
+   */
+  startCountdown(intervalMs: number): void {
+    this.stopCountdown();
+    let seconds = Math.ceil(intervalMs / 1000);
+    
+    // Update state with countdown
+    this.updateCountdown(seconds);
+    
+    this.countdownTimer = setInterval(() => {
+      seconds--;
+      if (seconds <= 0) {
+        this.updateCountdown(0);
+        this.stopCountdown();
+      } else {
+        this.updateCountdown(seconds);
+      }
+    }, 1000);
+  }
+
+  /**
+   * Stop countdown timer
+   */
+  stopCountdown(): void {
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+  }
+
+  /**
+   * Update countdown in sync state
+   */
+  private updateCountdown(seconds: number): void {
+    const currentState = this.syncStateSubject.value;
+    this.syncStateSubject.next({
+      ...currentState,
+      nextSyncIn: seconds
+    });
   }
 }
