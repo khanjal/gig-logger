@@ -37,7 +37,7 @@
         <div class="status-row">
           <span class="status-label">Status:</span>
           <span class="status-value" [ngClass]="getStatusClass()">
-            {{ syncState?.message || 'Idle' }}
+            {{ getStatusText() }}
           </span>
         </div>
         

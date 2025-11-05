@@ -37,6 +37,13 @@
   }
 }
 
+.status-disabled {
+  .sync-button mat-icon {
+    color: $text-disabled;
+    opacity: 0.5;
+  }
+}
+
 .status-syncing {
   .sync-button mat-icon {
     color: $info-color;
@@ -163,6 +170,11 @@
   color: $text-primary;
   text-align: right;
   flex: 1;
+
+  &.status-disabled {
+    color: $text-disabled;
+    font-style: italic;
+  }
 
   &.status-syncing {
     color: $info-color;

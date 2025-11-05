@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
+import { PollingService } from '@services/polling.service';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -31,7 +32,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   showDetailedView = false;
 
   constructor(
-    private syncStatusService: SyncStatusService
+    private syncStatusService: SyncStatusService,
+    private pollingService: PollingService
   ) {}
 
   ngOnInit(): void {
@@ -68,6 +70,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   getStatusIcon(): string {
     if (!this.syncState) return 'cloud_off';
     
+    // Check if auto-sync is disabled
+    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+      return 'sync_disabled';
+    }
+    
     switch (this.syncState.status) {
       case 'syncing':
         return 'sync';
@@ -83,11 +90,22 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
   getStatusClass(): string {
     if (!this.syncState) return 'status-idle';
+    
+    // Check if auto-sync is disabled
+    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+      return 'status-disabled';
+    }
+    
     return `status-${this.syncState.status}`;
   }
 
   getTooltipText(): string {
     if (!this.syncState) return 'Sync status unknown';
+
+    // Check if auto-sync is disabled
+    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+      return 'Auto-sync disabled';
+    }
 
     switch (this.syncState.status) {
       case 'syncing':
@@ -100,6 +118,17 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       default:
         return `Last sync: ${this.timeSinceLastSync}`;
     }
+  }
+  
+  getStatusText(): string {
+    if (!this.syncState) return 'Unknown';
+    
+    // Check if auto-sync is disabled
+    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+      return 'Disabled';
+    }
+    
+    return this.syncState.message || 'Ready';
   }
 
   getOperationText(): string {
