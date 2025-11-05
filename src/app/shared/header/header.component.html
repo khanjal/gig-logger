@@ -44,13 +44,6 @@
           <mat-icon>today</mat-icon>
           <span *ngIf="unsavedShiftsCount > 0" class="notification-badge">{{ unsavedShiftsCount }}</span>
         </a>
-        <a routerLink="/stats" 
-           class="action-button" 
-           aria-label="View statistics"
-           matTooltip="Statistics"
-           matTooltipPosition="below">
-          <mat-icon>table_chart</mat-icon>
-        </a>
         <a routerLink="/metrics" 
            class="action-button" 
            aria-label="View metrics"
@@ -60,11 +53,34 @@
         </a>
       </ng-container>
       
+      <!-- Tools section for desktop only (before sync and setup) -->
+      <ng-container *ngIf="isAuthenticated && defaultSheet">
+        <div class="desktop-tools desktop-only">
+          <a routerLink="/stats" 
+             class="action-button" 
+             aria-label="View statistics"
+             matTooltip="Statistics"
+             matTooltipPosition="below">
+            <mat-icon>table_chart</mat-icon>
+          </a>
+          <a routerLink="/expenses"
+             class="action-button"
+             aria-label="View expenses"
+             matTooltip="Expenses"
+             matTooltipPosition="below">
+            <mat-icon>receipt</mat-icon>
+          </a>
+          <button class="action-button action-button--disabled" matTooltip="Coming Soon" matTooltipPosition="below" disabled>
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+
       <!-- Sync Status Indicator (only show when authenticated) -->
       <ng-container *ngIf="isAuthenticated && defaultSheet">
         <app-sync-status-indicator></app-sync-status-indicator>
       </ng-container>
-      
+
       <a routerLink="/setup" 
          class="action-button" 
          aria-label="Open settings"
