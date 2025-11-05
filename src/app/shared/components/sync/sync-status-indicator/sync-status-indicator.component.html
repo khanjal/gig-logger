@@ -1,0 +1,104 @@
+<!-- Compact sync status indicator -->
+<div class="sync-indicator" [ngClass]="getStatusClass()">
+  <!-- Main status button with menu trigger -->
+  <button 
+    mat-icon-button 
+    [matMenuTriggerFor]="syncMenu"
+    [matTooltip]="getTooltipText()"
+    matTooltipPosition="below"
+    class="sync-button"
+    [class.spinning]="syncState?.status === 'syncing'">
+    <mat-icon [class.spinning-icon]="syncState?.status === 'syncing'">
+      {{ getStatusIcon() }}
+    </mat-icon>
+    <!-- Progress badge for syncing state -->
+    <span 
+      *ngIf="syncState?.status === 'syncing' && (syncState?.totalItems || 0) > 0"
+      class="progress-badge">
+      {{ syncState?.itemsSynced }}/{{ syncState?.totalItems }}
+    </span>
+  </button>
+
+  <!-- Dropdown menu with detailed sync information -->
+  <mat-menu #syncMenu="matMenu" class="sync-menu">
+    <div class="sync-menu-content" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="menu-header">
+        <h3 class="menu-title">
+          <mat-icon class="title-icon" [ngClass]="getStatusClass()">
+            {{ getStatusIcon() }}
+          </mat-icon>
+          Sync Status
+        </h3>
+      </div>
+
+      <!-- Current status -->
+      <div class="status-section">
+        <div class="status-row">
+          <span class="status-label">Status:</span>
+          <span class="status-value" [ngClass]="getStatusClass()">
+            {{ syncState?.message || 'Idle' }}
+          </span>
+        </div>
+        
+        <div class="status-row" *ngIf="syncState?.status === 'syncing'">
+          <span class="status-label">Progress:</span>
+          <span class="status-value">
+            {{ syncState?.progress }}%
+            <span *ngIf="(syncState?.totalItems || 0) > 0">
+              ({{ syncState?.itemsSynced }}/{{ syncState?.totalItems }})
+            </span>
+          </span>
+        </div>
+
+        <div class="status-row" *ngIf="syncState?.status === 'syncing' && (syncState?.progress || 0) > 0">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="syncState?.progress || 0"></div>
+          </div>
+        </div>
+
+        <div class="status-row">
+          <span class="status-label">Last sync:</span>
+          <span class="status-value">{{ timeSinceLastSync }}</span>
+        </div>
+
+        <div class="status-row" *ngIf="syncState?.error">
+          <span class="status-label error-label">Error:</span>
+          <span class="status-value error-text">{{ syncState?.error }}</span>
+        </div>
+      </div>
+
+      <!-- Messages log (collapsible) -->
+      <div class="messages-section" *ngIf="messages.length > 0">
+        <div class="messages-header" (click)="toggleDetailedView()">
+          <span class="messages-title">
+            <mat-icon class="expand-icon" [class.expanded]="showDetailedView">
+              {{ showDetailedView ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+            Activity Log ({{ messages.length }})
+          </span>
+          <button 
+            mat-icon-button 
+            (click)="clearMessages(); $event.stopPropagation()"
+            class="clear-button"
+            matTooltip="Clear log">
+            <mat-icon>clear_all</mat-icon>
+          </button>
+        </div>
+
+        <div class="messages-list" *ngIf="showDetailedView">
+          <div 
+            *ngFor="let message of messages.slice(-10).reverse()" 
+            class="message-item"
+            [ngClass]="'message-' + message.type">
+            <mat-icon class="message-icon">{{ getMessageIcon(message.type) }}</mat-icon>
+            <div class="message-content">
+              <div class="message-text">{{ message.text }}</div>
+              <div class="message-time">{{ formatTimestamp(message.timestamp) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-menu>
+</div>

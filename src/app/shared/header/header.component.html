@@ -60,6 +60,11 @@
         </a>
       </ng-container>
       
+      <!-- Sync Status Indicator (only show when authenticated) -->
+      <ng-container *ngIf="isAuthenticated && defaultSheet">
+        <app-sync-status-indicator></app-sync-status-indicator>
+      </ng-container>
+      
       <a routerLink="/setup" 
          class="action-button" 
          aria-label="Open settings"

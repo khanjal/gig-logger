@@ -12,6 +12,7 @@ import { interval, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
+import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indicator/sync-status-indicator.component';
 
 @Component({
     selector: 'app-header',
@@ -24,7 +25,8 @@ import { TripService } from '@services/sheets/trip.service';
       MatIcon, 
       MatTooltip,
       RouterOutlet,
-      NgIf
+      NgIf,
+      SyncStatusIndicatorComponent
     ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {

@@ -1,13 +1,13 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShiftService } from './sheets/shift.service';
 import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
 import { LoggerService } from './logger.service';
+import { GigWorkflowService } from './gig-workflow.service';
+import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
-import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
-import { firstValueFrom } from 'rxjs';
+import { ApiMessageHelper } from '@helpers/api-message.helper';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
@@ -27,10 +27,11 @@ export class PollingService implements OnDestroy {
 
   constructor(
     private _snackBar: MatSnackBar,
-    private _dialog: MatDialog,
     private _sheetService: SpreadsheetService,
     private _shiftService: ShiftService,
     private _tripService: TripService,
+    private _gigWorkflowService: GigWorkflowService,
+    private _syncStatusService: SyncStatusService,
     private _logger: LoggerService
   ) {
     this.initializeWorker();
@@ -201,38 +202,45 @@ export class PollingService implements OnDestroy {
       sheetData.trips = await this._tripService.getUnsaved();
       sheetData.shifts = await this._shiftService.getUnsavedShifts();
 
-      if (sheetData.trips.length === 0 && sheetData.shifts.length === 0) {
+      const totalItems = sheetData.trips.length + sheetData.shifts.length;
+
+      if (totalItems === 0) {
         this._logger.info('No unsaved data to sync');
         return;
       }
 
       this._logger.info(`Auto-saving ${sheetData.trips.length} trips and ${sheetData.shifts.length} shifts`);
 
-      // Open the data sync modal to show save progress
-      const dialogRef = this._dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
-        panelClass: 'custom-modalbox',
-        data: {
-          type: 'save',
-          autoCloseOnError: true,
-          autoCloseTimer: 1000
-        },
-        disableClose: true // Prevent closing while saving
-      });
+      // Start background sync with status updates
+      this._syncStatusService.startSync('auto-save', totalItems);
+      this._syncStatusService.addMessage(`Saving ${totalItems} item(s) to Google Sheets...`, 'info');
 
-      // Wait for the modal to complete
-      const result = await firstValueFrom(dialogRef.afterClosed());
+      // Perform the save operation
+      const messages = await this._gigWorkflowService.saveSheetData(sheetData);
+      
+      // Process the response
+      const result = ApiMessageHelper.processSheetSaveResponse(messages);
 
-      if (result) {
+      if (result.success) {
         this._logger.info('Auto-save completed successfully');
+        this._syncStatusService.completeSync(`Saved ${totalItems} item(s) successfully`);
+        
+        // Emit reload event for parent components
         this.parentReload.emit();
       } else {
-        this._logger.warn('Auto-save was cancelled or failed');
+        const errorMsg = result.errorMessage || 'Unknown error during save';
+        
+        this._logger.warn('Auto-save completed with errors:', errorMsg);
+        this._syncStatusService.failSync(errorMsg);
+        
+        // Show snackbar for errors
+        this._snackBar.open("Auto-save completed with errors", "View Details", { duration: 5000 });
       }
 
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this._logger.error('Auto-save failed:', error);
+      this._syncStatusService.failSync(errorMsg);
       this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
     } finally {
       this.processing = false;
