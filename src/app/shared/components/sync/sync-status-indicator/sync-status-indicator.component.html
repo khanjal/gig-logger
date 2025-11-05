@@ -20,7 +20,7 @@
   </button>
 
   <!-- Dropdown menu with detailed sync information -->
-  <mat-menu #syncMenu="matMenu" class="sync-menu">
+  <mat-menu #syncMenu="matMenu">
     <div class="sync-menu-content" (click)="$event.stopPropagation()">
       <!-- Header -->
       <div class="menu-header">
@@ -63,7 +63,7 @@
         </div>
 
         <div class="status-row" *ngIf="(syncState?.nextSyncIn || 0) > 0">
-          <span class="status-label">Next sync:</span>
+          <span class="status-label">Next check:</span>
           <span class="status-value">in {{ syncState?.nextSyncIn }}s</span>
         </div>
 
