@@ -78,10 +78,12 @@
 
 
 // Progress badge
+// Adjust badge to align with shifted icon
+// Adjust badge to be fully visible inside the button
 .progress-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: 2px;
+  right: 0;
   background-color: $info-color;
   color: white;
 
