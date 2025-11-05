@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
+import { SyncCountdownService } from '@services/sync-countdown.service';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -29,8 +30,12 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   messages: SyncMessage[] = [];
   timeSinceLastSync = 'Never';
   showDetailedView = false;
+  nextSyncCountdown: number = 0;
 
-  constructor(private syncStatusService: SyncStatusService) {}
+  constructor(
+    private syncStatusService: SyncStatusService,
+    private syncCountdownService: SyncCountdownService
+  ) {}
 
   ngOnInit(): void {
     // Subscribe to sync state changes
@@ -46,6 +51,13 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(messages => {
         this.messages = messages;
+      });
+
+    // Subscribe to countdown
+    this.syncCountdownService.nextSyncCountdown$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(seconds => {
+        this.nextSyncCountdown = seconds;
       });
 
     // Update time display every 30 seconds

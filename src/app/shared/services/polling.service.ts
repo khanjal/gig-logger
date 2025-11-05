@@ -9,6 +9,8 @@ import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 
+import { BehaviorSubject, Observable } from 'rxjs';
+
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
 @Injectable({
@@ -24,6 +26,10 @@ export class PollingService implements OnDestroy {
   private currentInterval = DEFAULT_INTERVAL;
   private lastPollTime = 0;
   private visibilityChangeListener: (() => void) | null = null;
+
+  private nextSyncCountdownSubject = new BehaviorSubject<number>(DEFAULT_INTERVAL / 1000);
+  public readonly nextSyncCountdown$: Observable<number> = this.nextSyncCountdownSubject.asObservable();
+  private countdownTimer: any = null;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -112,6 +118,7 @@ export class PollingService implements OnDestroy {
         type: 'START_POLLING',
         data: { interval: this.currentInterval, initialDelay }
       });
+      this.startCountdown(initialDelay);
     } else {
       // For fallback timer, start with the remaining delay, then use normal interval
       setTimeout(() => {
@@ -124,8 +131,10 @@ export class PollingService implements OnDestroy {
               this.saveData();
             }
           }, this.currentInterval);
+          this.startCountdown(this.currentInterval);
         }
       }, initialDelay);
+      this.startCountdown(initialDelay);
     }
   }
 
@@ -151,6 +160,7 @@ export class PollingService implements OnDestroy {
         type: 'START_POLLING',
         data: { interval }
       });
+      this.startCountdown(interval);
     } else {
       // Fallback to setInterval
       this.fallbackTimer = window.setInterval(() => {
@@ -158,6 +168,7 @@ export class PollingService implements OnDestroy {
           this.saveData();
         }
       }, interval);
+      this.startCountdown(interval);
     }
   }
 
@@ -178,6 +189,30 @@ export class PollingService implements OnDestroy {
     if (this.fallbackTimer !== null) {
       clearInterval(this.fallbackTimer);
       this.fallbackTimer = null;
+    }
+
+    this.stopCountdown();
+  }
+  // Countdown logic for next sync
+  private startCountdown(ms: number) {
+    this.stopCountdown();
+    let seconds = Math.ceil(ms / 1000);
+    this.nextSyncCountdownSubject.next(seconds);
+    this.countdownTimer = setInterval(() => {
+      seconds--;
+      if (seconds <= 0) {
+        this.nextSyncCountdownSubject.next(0);
+        this.stopCountdown();
+      } else {
+        this.nextSyncCountdownSubject.next(seconds);
+      }
+    }, 1000);
+  }
+
+  private stopCountdown() {
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
     }
   }
 
