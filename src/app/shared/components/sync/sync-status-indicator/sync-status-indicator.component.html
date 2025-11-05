@@ -75,7 +75,7 @@
 
       <!-- Messages log (collapsible) -->
       <div class="messages-section" *ngIf="messages.length > 0">
-        <div class="messages-header" (click)="toggleDetailedView()">
+        <div class="messages-header" (click)="toggleDetailedView(); $event.stopPropagation()">
           <span class="messages-title">
             <mat-icon class="expand-icon" [class.expanded]="showDetailedView">
               expand_more
@@ -84,7 +84,7 @@
           </span>
           <button 
             mat-icon-button 
-            (click)="clearMessages()"
+            (click)="clearMessages(); $event.stopPropagation()"
             class="clear-button"
             matTooltip="Clear log">
             <mat-icon>clear_all</mat-icon>
