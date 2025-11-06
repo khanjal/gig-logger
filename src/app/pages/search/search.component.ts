@@ -50,6 +50,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   hasSearched: boolean = false;
   showFilters: boolean = false;
   showBackToTop: boolean = false;
+  exactMatch: boolean = false;
+  caseSensitive: boolean = false;
   
   searchResults: ISearchResult[] = [];
   groupedResults: ISearchResultGroup[] = [];
@@ -158,9 +160,10 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Called when user types in search input
    */
   onSearchInput(value: string): void {
-    this.searchTerm = value;
-    this.searchSubject.next(value);
-    this.setupAutocompleteFilter();
+  this.searchTerm = value;
+  this.showFilters = false;
+  this.searchSubject.next(value);
+  this.setupAutocompleteFilter();
   }
 
   /**
@@ -256,6 +259,24 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handle exact match toggle
+   */
+  onExactMatchChange(): void {
+    if (this.searchTerm && this.searchTerm.trim().length > 0) {
+      this.performSearch(this.searchTerm);
+    }
+  }
+
+  /**
+   * Handle case sensitive toggle
+   */
+  onCaseSensitiveChange(): void {
+    if (this.searchTerm && this.searchTerm.trim().length > 0) {
+      this.performSearch(this.searchTerm);
+    }
+  }
+
+  /**
    * Called when user selects a category filter
    */
   onCategoryChange(category: SearchCategory): void {
@@ -278,7 +299,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     try {
       const enabledCategories = this.getEnabledCategories();
-      this.searchResults = await this.searchService.searchMultipleCategories(term, enabledCategories);
+      this.searchResults = await this.searchService.searchMultipleCategories(term, enabledCategories, this.exactMatch, this.caseSensitive);
       this.groupedResults = this.searchService.groupByMonth(this.searchResults);
     } catch (error) {
       console.error('Search error:', error);

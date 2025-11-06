@@ -176,6 +176,61 @@
     border-left-color: #4b5563;
   }
 
+  // Common spacing utilities
+  .content-spacing {
+    margin-top: 150px;
+  }
+
+  // Common card styles
+  .card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+
+  .card-hover {
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f9fafb;
+    }
+  }
+
+  // Common flex layouts
+  .flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .flex-start {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .flex-end {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  // Text utilities
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .text-tight {
+    line-height: 1.25;
+  }
+
   // Responsive adjustments
   @media (min-width: 640px) {
     // Tablet and up adjustments

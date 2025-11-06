@@ -64,46 +64,48 @@ export class SearchService {
    * Search across multiple selected categories
    * @param searchTerm The term to search for
    * @param categories Array of categories to search within
+   * @param exactMatch Whether to use exact matching
+   * @param caseSensitive Whether to use case-sensitive matching
    * @returns Promise of search results
    */
-  async searchMultipleCategories(searchTerm: string, categories: SearchCategory[]): Promise<ISearchResult[]> {
+  async searchMultipleCategories(searchTerm: string, categories: SearchCategory[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     if (!searchTerm || searchTerm.trim().length === 0 || categories.length === 0) {
       return [];
     }
 
-    const normalizedTerm = searchTerm.toLowerCase().trim();
+    const normalizedTerm = caseSensitive ? searchTerm.trim() : searchTerm.toLowerCase().trim();
     const results: ISearchResult[] = [];
 
     // Get all trips once for efficiency
     const allTrips = await spreadsheetDB.trips.toArray();
 
     if (categories.includes('Service')) {
-      const serviceResults = await this.searchServices(normalizedTerm, allTrips);
+      const serviceResults = await this.searchServices(normalizedTerm, allTrips, exactMatch, caseSensitive);
       results.push(...serviceResults);
     }
 
     if (categories.includes('Place')) {
-      const placeResults = await this.searchPlaces(normalizedTerm, allTrips);
+      const placeResults = await this.searchPlaces(normalizedTerm, allTrips, exactMatch, caseSensitive);
       results.push(...placeResults);
     }
 
     if (categories.includes('Name')) {
-      const nameResults = await this.searchNames(normalizedTerm, allTrips);
+      const nameResults = await this.searchNames(normalizedTerm, allTrips, exactMatch, caseSensitive);
       results.push(...nameResults);
     }
 
     if (categories.includes('Address')) {
-      const addressResults = await this.searchAddresses(normalizedTerm, allTrips);
+      const addressResults = await this.searchAddresses(normalizedTerm, allTrips, exactMatch, caseSensitive);
       results.push(...addressResults);
     }
 
     if (categories.includes('Region')) {
-      const regionResults = await this.searchRegions(normalizedTerm, allTrips);
+      const regionResults = await this.searchRegions(normalizedTerm, allTrips, exactMatch, caseSensitive);
       results.push(...regionResults);
     }
 
     if (categories.includes('Type')) {
-      const typeResults = await this.searchTypes(normalizedTerm, allTrips);
+      const typeResults = await this.searchTypes(normalizedTerm, allTrips, exactMatch, caseSensitive);
       results.push(...typeResults);
     }
 
@@ -154,10 +156,14 @@ export class SearchService {
   /**
    * Search services and return matching results with associated trips
    */
-  private async searchServices(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
+  private async searchServices(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     const services = await spreadsheetDB.services.toArray();
     const matchingServices = services
-      .filter(s => s.service.toLowerCase().includes(searchTerm))
+      .filter(s => {
+        const serviceValue = caseSensitive ? s.service : s.service.toLowerCase();
+        const term = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+        return exactMatch ? serviceValue === term : serviceValue.includes(term);
+      })
       .sort((a, b) => a.service.localeCompare(b.service));
 
     return matchingServices.map(service => {
@@ -169,10 +175,14 @@ export class SearchService {
   /**
    * Search places and return matching results with associated trips
    */
-  private async searchPlaces(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
+  private async searchPlaces(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     const places = await spreadsheetDB.places.toArray();
     const matchingPlaces = places
-      .filter(p => p.place.toLowerCase().includes(searchTerm))
+      .filter(p => {
+        const placeValue = caseSensitive ? p.place : p.place.toLowerCase();
+        const term = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+        return exactMatch ? placeValue === term : placeValue.includes(term);
+      })
       .sort((a, b) => a.place.localeCompare(b.place));
 
     return matchingPlaces.map(place => {
@@ -184,10 +194,14 @@ export class SearchService {
   /**
    * Search names and return matching results with associated trips
    */
-  private async searchNames(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
+  private async searchNames(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     const names = await spreadsheetDB.names.toArray();
     const matchingNames = names
-      .filter(n => n.name.toLowerCase().includes(searchTerm))
+      .filter(n => {
+        const nameValue = caseSensitive ? n.name : n.name.toLowerCase();
+        const term = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+        return exactMatch ? nameValue === term : nameValue.includes(term);
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
 
     return matchingNames.map(name => {
@@ -199,10 +213,14 @@ export class SearchService {
   /**
    * Search addresses (both start and end) and return matching results
    */
-  private async searchAddresses(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
+  private async searchAddresses(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     const addresses = await spreadsheetDB.addresses.toArray();
     const matchingAddresses = addresses
-      .filter(a => a.address.toLowerCase().includes(searchTerm))
+      .filter(a => {
+        const addressValue = caseSensitive ? a.address : a.address.toLowerCase();
+        const term = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+        return exactMatch ? addressValue === term : addressValue.includes(term);
+      })
       .sort((a, b) => a.address.localeCompare(b.address));
 
     const resultsMap = new Map<string, ISearchResult>();
@@ -223,10 +241,14 @@ export class SearchService {
   /**
    * Search regions and return matching results with associated trips
    */
-  private async searchRegions(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
+  private async searchRegions(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     const regions = await spreadsheetDB.regions.toArray();
     const matchingRegions = regions
-      .filter(r => r.region.toLowerCase().includes(searchTerm))
+      .filter(r => {
+        const regionValue = caseSensitive ? r.region : r.region.toLowerCase();
+        const term = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+        return exactMatch ? regionValue === term : regionValue.includes(term);
+      })
       .sort((a, b) => a.region.localeCompare(b.region));
 
     return matchingRegions.map(region => {
@@ -238,10 +260,14 @@ export class SearchService {
   /**
    * Search types and return matching results with associated trips
    */
-  private async searchTypes(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
+  private async searchTypes(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
     const types = await spreadsheetDB.types.toArray();
     const matchingTypes = types
-      .filter(t => t.type.toLowerCase().includes(searchTerm))
+      .filter(t => {
+        const typeValue = caseSensitive ? t.type : t.type.toLowerCase();
+        const term = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+        return exactMatch ? typeValue === term : typeValue.includes(term);
+      })
       .sort((a, b) => a.type.localeCompare(b.type));
 
     return matchingTypes.map(type => {
