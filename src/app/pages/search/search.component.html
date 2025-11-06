@@ -7,7 +7,7 @@
       <div class="flex gap-2">
         <div class="flex-1">
           <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Search trips</mat-label>
+            <mat-label>Search</mat-label>
             <input 
               matInput 
               [(ngModel)]="searchTerm"
@@ -54,7 +54,7 @@
            *ngIf="hasSearched && !isSearching">
         <div class="flex items-center gap-4">
           <span class="text-gray-600">
-            <span class="font-bold text-gray-900">{{ getTotalResultsCount() }}</span> results
+            <span class="font-bold text-gray-900">{{ getTotalResultsCount() }}</span> matches
           </span>
           <span class="text-gray-600">
             <span class="font-bold text-gray-900">{{ getTotalTripsCount() }}</span> trips
@@ -164,7 +164,7 @@
             <div class="flex-1 min-w-0">
               <div class="text-lg font-bold text-gray-900 truncate leading-tight">{{ group.month }}</div>
               <span class="text-xs text-gray-500 leading-tight">
-                {{ group.results.length }} {{ group.results.length === 1 ? 'result' : 'results' }}
+                {{ group.results.length }} {{ group.results.length === 1 ? 'match' : 'matches' }}
               </span>
             </div>
           </div>
