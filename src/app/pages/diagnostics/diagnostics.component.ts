@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
@@ -29,7 +30,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
@@ -372,5 +373,15 @@ export class DiagnosticsComponent implements OnInit {
       case 'warning': return 'accent';
       default: return 'primary';
     }
+  }
+
+  getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
+    return this.dataDiagnostics
+      .filter(item => item.severity === severity)
+      .reduce((sum, item) => sum + item.count, 0);
+  }
+
+  getTotalIssues(): number {
+    return this.dataDiagnostics.reduce((sum, item) => sum + item.count, 0);
   }
 }
