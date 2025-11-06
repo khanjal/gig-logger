@@ -39,7 +39,6 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     MatAutocompleteModule,
     MatTooltipModule,
     CurrencyPipe,
-    DatePipe,
     TripsQuickViewComponent
   ],
   templateUrl: './search.component.html',

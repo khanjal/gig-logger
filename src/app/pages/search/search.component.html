@@ -1,9 +1,10 @@
 <div class="search-page min-h-screen bg-gray-50 pb-20">
-  <!-- Header Section -->
-  <div class="bg-white shadow-sm sticky top-0 z-10">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-      <!-- Search Input with Autocomplete and Filter Button -->
-      <div class="flex gap-2" *ngIf="!hasSearched || isSearching || searchTerm">
+  <!-- Search Input with Autocomplete and Filter Button (Overlay) -->
+  <div 
+    class="fixed left-0 right-0 z-20 bg-white shadow-md transition-all duration-300"
+    [ngStyle]="{ 'top': '64px' }">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex gap-2">
         <div class="flex-1">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Search trips</mat-label>
@@ -48,6 +49,37 @@
         </div>
       </div>
 
+      <!-- Results Summary Bar -->
+      <div class="flex items-center justify-between text-sm mt-3 border-t border-gray-200" 
+           *ngIf="hasSearched && !isSearching">
+        <div class="flex items-center gap-4">
+          <span class="text-gray-600">
+            <span class="font-bold text-gray-900">{{ getTotalResultsCount() }}</span> results
+          </span>
+          <span class="text-gray-600">
+            <span class="font-bold text-gray-900">{{ getTotalTripsCount() }}</span> trips
+          </span>
+          <span class="text-gray-600">
+            <span class="font-bold text-green-600">{{ getTotalEarnings() | currency }}</span> total
+          </span>
+        </div>
+        <div *ngIf="groupedResults.length > 0">
+          <button 
+            mat-icon-button 
+            (click)="toggleAllGroups()"
+            [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
+            matTooltipPosition="below"
+            class="expand-toggle-btn">
+            <mat-icon>{{ areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-4" [ngStyle]="{ 'padding-top': '136px' }">
       <!-- Filter Section (Collapsible) -->
       <div class="overflow-hidden transition-all duration-300" 
            [class.max-h-0]="!showFilters" 
@@ -61,11 +93,11 @@
             <div class="flex gap-2">
               <button mat-button (click)="selectAllCategories()" class="text-xs">
                 <mat-icon class="text-sm">check_box</mat-icon>
-                All
+                &nbsp;All
               </button>
               <button mat-button (click)="deselectAllCategories()" class="text-xs">
                 <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
-                None
+                &nbsp;None
               </button>
             </div>
           </div>
@@ -95,32 +127,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Results Summary Bar - Always visible -->
-      <div class="flex items-center justify-between text-sm mt-4" 
-           *ngIf="hasSearched && !isSearching">
-        <div class="flex items-center gap-4">
-          <span class="text-gray-600">
-            <span class="font-bold text-gray-900">{{ getTotalResultsCount() }}</span> results
-          </span>
-          <span class="text-gray-600">
-            <span class="font-bold text-gray-900">{{ getTotalTripsCount() }}</span> trips
-          </span>
-          <span class="text-gray-600">
-            <span class="font-bold text-green-600">{{ getTotalEarnings() | currency }}</span> total
-          </span>
-        </div>
-        <div *ngIf="groupedResults.length > 0">
-          <button 
-            mat-icon-button 
-            (click)="toggleAllGroups()"
-            [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
-            matTooltipPosition="below"
-            class="expand-toggle-btn">
-            <mat-icon>{{ areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
-          </button>
         </div>
       </div>
     </div>
