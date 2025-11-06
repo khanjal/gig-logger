@@ -1,6 +1,7 @@
 // Angular Core
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 // Angular Material
 import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
@@ -12,7 +13,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 // App Components
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
-import { DiagnosticsComponent } from '@components/settings/diagnostics/diagnostics.component';
 import { LoginComponent } from "@components/auth/login/login.component";
 import { ServiceWorkerStatusComponent } from '@components/data/service-worker-status/service-worker-status.component';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
@@ -51,7 +51,6 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     MatCardHeader,
     MatFabButton,
     MatIcon,
-    DiagnosticsComponent,
     LoginComponent,
     ServiceWorkerStatusComponent,
     SheetLinkComponent,
