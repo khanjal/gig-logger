@@ -248,9 +248,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     // SERVICE: "I have a doordash", "working uber", "service is lyft"
     // Avoid matching 'address', 'destination', etc. as service
     const servicePatterns = [
-      /(?:i have (?:a|an)|i got (?:a|an))\s+((?!address|destination|place|type)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
-      /(?:working|doing|on)\s+((?!address|destination|place|type)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
-      /service (?:is|was|:)\s*((?!address|destination|place|type)[\w\s]+)/i
+      /(?:i have (?:a|an)|i got (?:a|an)|got (?:a|an))\s+((?!address|destination|place|type|order|unit)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
+      /(?:working|doing|on|driving|running)\s+((?!address|destination|place|type|order|unit)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i,
+      /(?:service|app|platform) (?:is|was|:)\s*((?!address|destination|place|type|order|unit)[\w\s]+)/i,
+      /(?:using|with)\s+((?!address|destination|place|type|order|unit)[\w\s]+?)(?:\s+(?:order|delivery|trip|going|to|for|from|at)|$)/i
     ];
     const service = this.matchFirstPattern(servicePatterns, transcript, match => {
       const raw = match[1].trim();
@@ -265,10 +266,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     
     // NAME patterns (customer/dropoff): "the name is John", "the customer is Jeremy", "taking it to Jane"
     const namePatterns = [
-      /(?:(?:the )?(?:name|person|customer) is|customer's|name:|customer name is)\s*([\w\s]+?)$/i,
-      /(?:drop(?:ping)? off at|dropoff at|dropping at)\s+([\w\s]+?)$/i,
-      /(?:delivering to|deliver to|delivery to|taking (?:it )?to|going to)\s+([\w\s]+?)$/i,
-      /(?:for)\s+([a-zA-Z][\w\s]+?)$/i
+      /(?:(?:the )?(?:name|person|customer|client) (?:is|was|:)|customer's|client's|name:|customer name is)\s*([\w\s]+?)$/i,
+      /(?:drop(?:ping)? off (?:at|to|with)|dropoff (?:at|to|with)|dropping (?:at|to|with))\s+([\w\s]+?)$/i,
+      /(?:delivering to|deliver to|delivery (?:to|for)|taking (?:it )?to|going to|for)\s+([\w\s]+?)$/i,
+      /(?:customer|client|person)\s+([\w\s]+?)$/i
     ];
     const name = this.matchFirstPattern(namePatterns, transcript, match => match[1].trim());
     if (name) result.name = name;
@@ -278,8 +279,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (!result.name) {
       const placePatterns = [
         /(?:pick(?:ing)?[- ]?up (?:from|at|as)|pick[- ]?up (?:from|at|as))\s+([\w\s''`'.,&-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
-        /(?:place is|place:|the place is)\s+([\w\s''`'.,&-]+?)$/i,
-        /from ([\w\s''`.,&-]+)/i // Added: match 'from [place]'
+        /(?:place is|place:|the place is|location is|store is|restaurant is)\s+([\w\s''`'.,&-]+?)$/i,
+        /(?:from|at)\s+([\w\s''`.,&-]+?)(?=\s+(?:and|to|drop|deliver|going)|$)/i
       ];
       const place = this.matchFirstPattern(placePatterns, transcript, match => {
         const raw = match[1].trim();
@@ -333,11 +334,11 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     // TIP: "$5 tip", "five dollar tip", "tip is five" (only if not already set by combined pattern)
     if (!result.tip) {
       const tipPatterns = [
-        /(?:tip (?:is|was|:)|tipped)\s*\$?([\w.-]+)/i,
-        /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*tip/i,
-        /([\w-]+)\s*dollar(?:s)?\s*tip/i,
-        /\$(\d+(?:\.\d{1,2})?)\s*tip/i, // e.g. "$8 tip"
-        /(\d+(?:\.\d{1,2})?)\s*tip/i // e.g. "8.00 tip"
+        /(?:tip (?:is|was|:|of)|tipped|gratuity (?:is|was|:))\s*\$?([\w.-]+)/i,
+        /\$?(\d+(?:\.\d{1,2})?)\s*(?:dollar|buck)(?:s)?\s*(?:tip|gratuity)/i,
+        /([\w-]+)\s*(?:dollar|buck)(?:s)?\s*(?:tip|gratuity)/i,
+        /\$(\d+(?:\.\d{1,2})?)\s*(?:tip|gratuity)/i,
+        /(\d+(?:\.\d{1,2})?)\s*(?:tip|gratuity)/i
       ];
 
       const tip = this.matchFirstPattern(tipPatterns, transcript, match => {
@@ -350,9 +351,9 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // BONUS: "bonus is 5", "five dollar bonus", "$5 bonus"
     const bonusPatterns = [
-      /(?:bonus (?:is|was|:))\s*\$?([\w.-]+)/i,
-      /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*bonus/i,
-      /([\w-]+)\s*dollar(?:s)?\s*bonus/i
+      /(?:bonus (?:is|was|:|of)|promo|promotion|incentive|peak pay|quest|surge)\s*\$?([\w.-]+)/i,
+      /\$?(\d+(?:\.\d{1,2})?)\s*(?:dollar|buck)(?:s)?\s*(?:bonus|promo|promotion|incentive)/i,
+      /([\w-]+)\s*(?:dollar|buck)(?:s)?\s*(?:bonus|promo|promotion|incentive)/i
     ];
 
     const bonus = this.matchFirstPattern(bonusPatterns, transcript, match => {
@@ -364,9 +365,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // CASH: "cash is 10", "ten dollars cash", "$10 cash"
     const cashPatterns = [
-      /(?:cash (?:is|was|:))\s*\$?([\w.-]+)/i,
-      /\$?(\d+(?:\.\d{1,2})?)\s*dollar(?:s)?\s*cash/i,
-      /([\w-]+)\s*dollar(?:s)?\s*cash/i
+      /(?:cash (?:is|was|:|payment|tip))\s*\$?([\w.-]+)/i,
+      /\$?(\d+(?:\.\d{1,2})?)\s*(?:dollar|buck)(?:s)?\s*(?:cash|in cash)/i,
+      /([\w-]+)\s*(?:dollar|buck)(?:s)?\s*(?:cash|in cash)/i,
+      /(?:paid|paying|payed)\s*(?:in\s+)?cash\s*\$?([\w.-]+)/i
     ];
 
     const cash = this.matchFirstPattern(cashPatterns, transcript, match => {
@@ -378,9 +380,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // PICKUP ADDRESS: "picking up at 123 Main Street", "pickup address is downtown", "pick-up address is downtown"
     const pickupAddressPatterns = [
-      /(?:pick(?:ing)?[- ]?up (?:at|on))\s+([\w\s,.-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
-      /(?:pick[- ]?up address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
-      /(?:from address (?:is|was|:))\s+([\w\s,.-]+?)$/i
+      /(?:pick(?:ing)?[- ]?up (?:at|on|from))\s+([\w\s,.-]+?)(?=\s+(?:and|to|drop|deliver)|$)/i,
+      /(?:pick[- ]?up (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:from (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:start(?:ing)? (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i
     ];
 
     const pickupAddress = this.matchFirstPattern(pickupAddressPatterns, transcript, match => match[1].trim());
@@ -388,12 +391,12 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     // DROPOFF/DESTINATION ADDRESS: "dropping off at 456 Elm St", "destination is Main Street", "going to 789 Oak Ave"
     const dropoffAddressPatterns = [
-      /(?:drop(?:ping)? off (?:at|on)|drop[- ]?off (?:at|on))\s+([\w\s,.-]+?)$/i,
-      /(?:drop[- ]?off address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
-      /(?:destination (?:is|was|:)|destination address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
-      /(?:to address (?:is|was|:))\s+([\w\s,.-]+?)$/i,
-      /(?:going to|heading to)\s+([\w\s,.-]+?)$/i,
-      /(?:end address (?:is|was|:))\s+([\w\s,.-]+?)$/i
+      /(?:drop(?:ping)? off (?:at|on|to)|drop[- ]?off (?:at|on|to)|dropping (?:at|on|to))\s+([\w\s,.-]+?)$/i,
+      /(?:drop[- ]?off (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:destination (?:is|was|:)|destination (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:to (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i,
+      /(?:going to|heading to|delivering to)\s+([\w\s,.-]+?)$/i,
+      /(?:end (?:address|location) (?:is|was|:))\s+([\w\s,.-]+?)$/i
     ];
 
     const dropoffAddress = this.matchFirstPattern(dropoffAddressPatterns, transcript, match => match[1].trim());
@@ -442,8 +445,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     // TYPE: "type is delivery", "it's a pickup", "delivery order"
     const typePatterns = [
       /(?:(?:the )?type (?:is|was|:))\s*([\w\s]+?)(?=\s+(?:for|to|at|from)|$)/i,
-      /(?:it'?s a|this is a)\s*(delivery|pickup|dropoff|drop off|ride)/i,
-      /(delivery|pickup|dropoff|drop off|ride)\s*(?:order|trip)/i
+      /(?:it'?s a|this is a|got a|have a)\s*(delivery|pickup|dropoff|drop off|ride|shop)/i,
+      /(delivery|pickup|dropoff|drop off|ride|shop)\s*(?:order|trip|run)/i
     ];
 
     const type = this.matchFirstPattern(typePatterns, transcript, match => {
@@ -454,11 +457,12 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (type) result.type = type;
 
     // UNIT NUMBER: apartment, building, floor, room, unit, suite, etc.
+    // Excludes "order" to prevent cross-matching with order number
     const unitPatterns = [
-      /(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s*(?:number\s*)?(?:is\s*)?([\w-]+)/i,
-      /(?:in|at)\s+(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s*(?:number\s*)?(?:is\s*)?([\w-]+)/i,
-      /(?<!order\s)(?:number|#)\s*(?:is\s*)?([\w-]+)/i,
-      /(?:the\s+)?(?<!order\s)(unit|apartment|apt|building|bldg|floor|room|suite)\s+(?:number\s*)?(?:is\s*)?([\w-]+)/i
+      /(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s*(?:number\s*)?(?:is\s*)?([\w\s-]+)/i,
+      /(?:in|at)\s+(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s*(?:number\s*)?(?:is\s*)?([\w\s-]+)/i,
+      /(?<!order\s)(?:number|#)\s*(?:is\s*)?([\w\s-]+)/i,
+      /(?:the\s+)?(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s+(?:number\s*)?(?:is\s*)?([\w\s-]+)/i
     ];
     const unitNumber = this.matchFirstPattern(unitPatterns, transcript, match => {
       const raw = match[1].replace(/\s+/g, '').trim();
@@ -468,9 +472,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (unitNumber) result.unitNumber = unitNumber;
 
     // ORDER NUMBER: order, delivery, trip, etc.
+    // Excludes "unit" to prevent cross-matching with unit number
     const orderPatterns = [
-      /(?<!unit\s)(?:order number|order|delivery number|delivery|trip number|trip|#)\s*(?:is\s*)?([\dA-Za-z- ]+)/i,
-      /(?<!unit\s)(?:order|delivery|trip)\s*#\s*([\dA-Za-z- ]+)/i
+      /(?<!unit\s)(?:order\s+number|order\s+id|order|delivery\s+number|delivery\s+id|delivery|trip\s+number|trip\s+id|trip|confirmation\s+number|confirmation|tracking\s+number|tracking)\s*(?:is\s*)?([\dA-Za-z\s-]+)/i,
+      /(?<!unit\s)(?:order|delivery|trip)\s*#\s*([\dA-Za-z\s-]+)/i
     ];
     const orderNumber = this.matchFirstPattern(orderPatterns, transcript, match => {
       const raw = match[1].replace(/\s+/g, '').trim();
