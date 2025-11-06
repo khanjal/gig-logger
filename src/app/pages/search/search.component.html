@@ -2,11 +2,6 @@
   <!-- Header Section -->
   <div class="bg-white shadow-sm sticky top-0 z-10">
     <div class="max-w-7xl mx-auto px-4 py-4">
-      <h1 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <mat-icon class="text-blue-600">search</mat-icon>
-        Search Trips
-      </h1>
-
       <!-- Search Input with Autocomplete and Filter Button -->
       <div class="flex gap-2">
         <div class="flex-1">
@@ -17,7 +12,7 @@
               [(ngModel)]="searchTerm"
               (input)="onSearchInput(searchTerm)"
               [matAutocomplete]="auto"
-              placeholder="Start typing..."
+              placeholder="Enter a search term..."
               autocomplete="off">
             <mat-icon matPrefix>search</mat-icon>
             <button 
@@ -111,14 +106,14 @@
             <span class="font-bold text-green-600">{{ getTotalEarnings() | currency }}</span> total
           </span>
         </div>
-        <div class="flex gap-2" *ngIf="groupedResults.length > 0">
-          <button mat-button (click)="expandAll()" class="text-xs">
-            <mat-icon class="text-sm">unfold_more</mat-icon>
-            Expand All
-          </button>
-          <button mat-button (click)="collapseAll()" class="text-xs">
-            <mat-icon class="text-sm">unfold_less</mat-icon>
-            Collapse All
+        <div *ngIf="groupedResults.length > 0">
+          <button 
+            mat-icon-button 
+            (click)="toggleAllGroups()"
+            [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
+            matTooltipPosition="below"
+            class="expand-toggle-btn">
+            <mat-icon>{{ areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
           </button>
         </div>
       </div>
@@ -152,19 +147,21 @@
         class="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:bg-gray-50 transition-colors"
         (click)="toggleGroup(group.month)">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <mat-icon class="text-blue-600">calendar_month</mat-icon>
-            <h2 class="text-lg font-bold text-gray-900">{{ group.month }}</h2>
-            <span class="text-sm text-gray-500">
-              ({{ group.results.length }} {{ group.results.length === 1 ? 'result' : 'results' }})
-            </span>
-          </div>
-          <div class="flex items-center gap-4">
-            <div class="text-right">
-              <div class="text-sm text-gray-600">{{ group.totalTrips }} trips</div>
-              <div class="text-sm font-bold text-green-600">{{ group.totalEarnings | currency }}</div>
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <mat-icon class="text-blue-600 flex-shrink-0">calendar_month</mat-icon>
+            <div class="flex-1 min-w-0">
+              <div class="text-lg font-bold text-gray-900 truncate leading-tight">{{ group.month }}</div>
+              <span class="text-xs text-gray-500 leading-tight">
+                {{ group.results.length }} {{ group.results.length === 1 ? 'result' : 'results' }}
+              </span>
             </div>
-            <mat-icon>{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </div>
+          <div class="flex items-center gap-3 flex-shrink-0">
+            <div class="text-right">
+              <div class="text-sm text-gray-600 whitespace-nowrap">{{ group.totalTrips }} trips</div>
+              <div class="text-sm font-bold text-green-600 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
+            </div>
+            <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
           </div>
         </div>
       </div>

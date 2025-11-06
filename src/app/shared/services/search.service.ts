@@ -156,9 +156,9 @@ export class SearchService {
    */
   private async searchServices(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
     const services = await spreadsheetDB.services.toArray();
-    const matchingServices = services.filter(s => 
-      s.service.toLowerCase().includes(searchTerm)
-    );
+    const matchingServices = services
+      .filter(s => s.service.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.service.localeCompare(b.service));
 
     return matchingServices.map(service => {
       const trips = allTrips.filter(t => t.service === service.service);
@@ -171,9 +171,9 @@ export class SearchService {
    */
   private async searchPlaces(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
     const places = await spreadsheetDB.places.toArray();
-    const matchingPlaces = places.filter(p => 
-      p.place.toLowerCase().includes(searchTerm)
-    );
+    const matchingPlaces = places
+      .filter(p => p.place.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.place.localeCompare(b.place));
 
     return matchingPlaces.map(place => {
       const trips = allTrips.filter(t => t.place === place.place);
@@ -186,9 +186,9 @@ export class SearchService {
    */
   private async searchNames(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
     const names = await spreadsheetDB.names.toArray();
-    const matchingNames = names.filter(n => 
-      n.name.toLowerCase().includes(searchTerm)
-    );
+    const matchingNames = names
+      .filter(n => n.name.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     return matchingNames.map(name => {
       const trips = allTrips.filter(t => t.name === name.name);
@@ -201,9 +201,9 @@ export class SearchService {
    */
   private async searchAddresses(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
     const addresses = await spreadsheetDB.addresses.toArray();
-    const matchingAddresses = addresses.filter(a => 
-      a.address.toLowerCase().includes(searchTerm)
-    );
+    const matchingAddresses = addresses
+      .filter(a => a.address.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.address.localeCompare(b.address));
 
     const resultsMap = new Map<string, ISearchResult>();
 
@@ -225,9 +225,9 @@ export class SearchService {
    */
   private async searchRegions(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
     const regions = await spreadsheetDB.regions.toArray();
-    const matchingRegions = regions.filter(r => 
-      r.region.toLowerCase().includes(searchTerm)
-    );
+    const matchingRegions = regions
+      .filter(r => r.region.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.region.localeCompare(b.region));
 
     return matchingRegions.map(region => {
       const trips = allTrips.filter(t => t.region === region.region);
@@ -240,9 +240,9 @@ export class SearchService {
    */
   private async searchTypes(searchTerm: string, allTrips: ITrip[]): Promise<ISearchResult[]> {
     const types = await spreadsheetDB.types.toArray();
-    const matchingTypes = types.filter(t => 
-      t.type.toLowerCase().includes(searchTerm)
-    );
+    const matchingTypes = types
+      .filter(t => t.type.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.type.localeCompare(b.type));
 
     return matchingTypes.map(type => {
       const trips = allTrips.filter(t => t.type === type.type);

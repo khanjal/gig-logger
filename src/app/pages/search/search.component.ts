@@ -55,11 +55,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   
   // Category filter management
   categoryFilters = new Map<SearchCategory, boolean>([
-    ['Service', true],
-    ['Place', true],
-    ['Name', true],
     ['Address', true],
+    ['Name', true],
+    ['Place', true],
     ['Region', true],
+    ['Service', true],
     ['Type', true]
   ]);
   
@@ -167,7 +167,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         enabled.push(category);
       }
     });
-    return enabled.length > 0 ? enabled : ['Service', 'Place', 'Name', 'Address', 'Region', 'Type'];
+    // Return alphabetically sorted or default alphabetical list
+    return enabled.length > 0 ? enabled.sort() : ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
   }
 
   /**
@@ -379,5 +380,24 @@ export class SearchComponent implements OnInit, OnDestroy {
   collapseAll(): void {
     this.expandedGroups.clear();
     this.expandedResults.clear();
+  }
+
+  /**
+   * Check if all groups are expanded
+   */
+  areAllGroupsExpanded(): boolean {
+    return this.groupedResults.length > 0 && 
+           this.expandedGroups.size === this.groupedResults.length;
+  }
+
+  /**
+   * Toggle all groups between expanded and collapsed
+   */
+  toggleAllGroups(): void {
+    if (this.areAllGroupsExpanded()) {
+      this.collapseAll();
+    } else {
+      this.expandAll();
+    }
   }
 }
