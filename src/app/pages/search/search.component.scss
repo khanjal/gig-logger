@@ -8,6 +8,36 @@
     width: 100%;
   }
 
+  // Filter toggle button styling
+  .filter-toggle-btn {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background-color: #2563eb;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+  }
+
   // Filter section animations
   .max-h-0 {
     max-height: 0;
@@ -19,11 +49,31 @@
     opacity: 1;
   }
 
-  // Category filter checkboxes
-  mat-checkbox {
-    ::ng-deep .mdc-checkbox {
-      padding: 0;
+  // Category filter alignment fixes
+  .filter-checkbox {
+    margin-right: 8px;
+    
+    ::ng-deep {
+      .mdc-checkbox {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+      }
+      
+      .mdc-checkbox__background {
+        top: 0;
+        left: 0;
+      }
     }
+  }
+
+  .filter-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    flex-shrink: 0;
   }
 
   // Category chip styling

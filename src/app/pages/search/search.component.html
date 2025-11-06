@@ -7,46 +7,50 @@
         Search Trips
       </h1>
 
-      <!-- Search Input with Autocomplete -->
-      <div class="relative">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Search trips</mat-label>
-          <input 
-            matInput 
-            [(ngModel)]="searchTerm"
-            (input)="onSearchInput(searchTerm)"
-            [matAutocomplete]="auto"
-            placeholder="Start typing..."
-            autocomplete="off">
-          <mat-icon matPrefix>search</mat-icon>
+      <!-- Search Input with Autocomplete and Filter Button -->
+      <div class="flex gap-2">
+        <div class="flex-1">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Search trips</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="searchTerm"
+              (input)="onSearchInput(searchTerm)"
+              [matAutocomplete]="auto"
+              placeholder="Start typing..."
+              autocomplete="off">
+            <mat-icon matPrefix>search</mat-icon>
+            <button 
+              mat-icon-button 
+              matSuffix 
+              *ngIf="searchTerm"
+              (click)="clearSearch()"
+              aria-label="Clear search">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)">
+              <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        
+        <!-- Filter Toggle Button -->
+        <div class="flex items-end pb-1">
           <button 
-            mat-icon-button 
-            matSuffix 
-            *ngIf="searchTerm"
-            (click)="clearSearch()"
-            aria-label="Clear search">
-            <mat-icon>close</mat-icon>
+            mat-icon-button
+            [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
+            matTooltipPosition="below"
+            (click)="toggleFilters()"
+            [class.bg-blue-50]="showFilters"
+            class="filter-toggle-btn">
+            <mat-icon [class.text-blue-600]="showFilters">
+              {{ showFilters ? 'filter_list_off' : 'filter_list' }}
+            </mat-icon>
+            <span class="filter-badge">{{ getEnabledCount() }}</span>
           </button>
-          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)">
-            <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
-              {{ option }}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-
-      <!-- Filter Toggle Button -->
-      <div class="flex items-center justify-between mt-2">
-        <button 
-          mat-stroked-button 
-          (click)="toggleFilters()"
-          class="text-sm">
-          <mat-icon class="text-base mr-1">{{ showFilters ? 'filter_list_off' : 'filter_list' }}</mat-icon>
-          {{ showFilters ? 'Hide' : 'Show' }} Filters
-          <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
-            {{ getEnabledCount() }}/{{ categoryFilters.size }}
-          </span>
-        </button>
+        </div>
       </div>
 
       <!-- Filter Section (Collapsible) -->
@@ -79,15 +83,15 @@
                 (change)="toggleCategory(category)"
                 (click)="$event.stopPropagation()"
                 color="primary"
-                class="mr-2">
+                class="filter-checkbox">
               </mat-checkbox>
-              <div class="flex items-center gap-1 flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 flex-1 min-w-0">
                 <mat-icon 
-                  class="text-base flex-shrink-0"
+                  class="filter-icon"
                   [ngClass]="getCategoryColor(category)">
                   {{ getCategoryIcon(category) }}
                 </mat-icon>
-                <span class="text-sm truncate">{{ category }}</span>
+                <span class="text-sm font-medium truncate">{{ category }}</span>
               </div>
             </div>
           </div>

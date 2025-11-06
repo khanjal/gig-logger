@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { SearchService } from '@services/search.service';
@@ -35,6 +36,7 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     MatExpansionModule,
     MatCheckboxModule,
     MatAutocompleteModule,
+    MatTooltipModule,
     CurrencyPipe,
     DatePipe,
     TripsQuickViewComponent
