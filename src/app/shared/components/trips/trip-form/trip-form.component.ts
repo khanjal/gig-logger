@@ -197,7 +197,7 @@ export class TripFormComponent implements OnInit {
     trip.pay = pay;
     trip.tip = tip;
     trip.bonus = bonus;
-    trip.cash = NumberHelper.toNumber(this.tripForm.value.cash);
+    trip.cash = NumberHelper.toNullableNumber(this.tripForm.value.cash);
     // total is a calculated field, but ensure nulls are handled
     trip.total = (
       NumberHelper.toNumber(pay) +
@@ -632,6 +632,8 @@ export class TripFormComponent implements OnInit {
     if (result.dropoffAddress) this.setDestinationAddress(result.dropoffAddress);
     if (result.startOdometer) this.tripForm.controls.startOdometer.setValue(result.startOdometer);
     if (result.endOdometer) this.tripForm.controls.endOdometer.setValue(result.endOdometer);
+    if (result.unitNumber) this.tripForm.controls.endUnit.setValue(result.unitNumber);
+    if (result.orderNumber) this.tripForm.controls.orderNumber.setValue(result.orderNumber);
     // Add more fields as needed
     this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
   }

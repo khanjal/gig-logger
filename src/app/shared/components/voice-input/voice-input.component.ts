@@ -21,6 +21,8 @@ interface VoiceParseResult {
   endOdometer?: string;
   pickupAddress?: string;
   dropoffAddress?: string;
+  unitNumber?: string;
+  orderNumber?: string;
 }
 
 @Component({
@@ -450,6 +452,31 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     });
 
     if (type) result.type = type;
+
+    // UNIT NUMBER: apartment, building, floor, room, unit, suite, etc.
+    const unitPatterns = [
+      /(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s*(?:number\s*)?(?:is\s*)?([\w-]+)/i,
+      /(?:in|at)\s+(?<!order\s)(?:unit|apartment|apt|building|bldg|floor|room|suite)\s*(?:number\s*)?(?:is\s*)?([\w-]+)/i,
+      /(?<!order\s)(?:number|#)\s*(?:is\s*)?([\w-]+)/i,
+      /(?:the\s+)?(?<!order\s)(unit|apartment|apt|building|bldg|floor|room|suite)\s+(?:number\s*)?(?:is\s*)?([\w-]+)/i
+    ];
+    const unitNumber = this.matchFirstPattern(unitPatterns, transcript, match => {
+      const raw = match[1].replace(/\s+/g, '').trim();
+      const converted = NumberHelper.convertWordToNumber(raw);
+      return converted || raw;
+    });
+    if (unitNumber) result.unitNumber = unitNumber;
+
+    // ORDER NUMBER: order, delivery, trip, etc.
+    const orderPatterns = [
+      /(?<!unit\s)(?:order number|order|delivery number|delivery|trip number|trip|#)\s*(?:is\s*)?([\dA-Za-z- ]+)/i,
+      /(?<!unit\s)(?:order|delivery|trip)\s*#\s*([\dA-Za-z- ]+)/i
+    ];
+    const orderNumber = this.matchFirstPattern(orderPatterns, transcript, match => {
+      const raw = match[1].replace(/\s+/g, '').trim();
+      return raw;
+    });
+    if (orderNumber) result.orderNumber = orderNumber;
 
     return result;
   }
