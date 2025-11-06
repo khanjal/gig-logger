@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 
 import { SearchService } from '@services/search.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
@@ -49,6 +50,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
   hasSearched: boolean = false;
   showFilters: boolean = false;
+  showBackToTop: boolean = false;
   
   searchResults: ISearchResult[] = [];
   groupedResults: ISearchResultGroup[] = [];
@@ -75,7 +77,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   expandedGroups = new Set<string>();
   expandedResults = new Set<string>();
 
-  constructor(private searchService: SearchService) { }
+  constructor(
+    private searchService: SearchService,
+    private viewportScroller: ViewportScroller
+  ) { }
 
   async ngOnInit(): Promise<void> {
     // Setup debounced search
@@ -98,6 +103,23 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Listen for scroll events to show/hide back to top button
+   */
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    // Show button if scrolled more than 300px
+    this.showBackToTop = scrollPosition > 300;
+  }
+
+  /**
+   * Scroll to the top of the page
+   */
+  scrollToTop(): void {
+    this.viewportScroller.scrollToPosition([0, 0]);
   }
 
   /**

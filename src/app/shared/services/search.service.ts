@@ -279,6 +279,7 @@ export class SearchService {
    */
   groupByMonth(results: ISearchResult[]): ISearchResultGroup[] {
     const groupMap = new Map<string, ISearchResultGroup>();
+    const tripCountPerMonth = new Map<string, Set<number>>();
 
     results.forEach(result => {
       result.trips.forEach(trip => {
@@ -296,9 +297,11 @@ export class SearchService {
             totalTrips: 0,
             totalEarnings: 0
           });
+          tripCountPerMonth.set(monthKey, new Set<number>());
         }
 
         const group = groupMap.get(monthKey)!;
+        const uniqueTrips = tripCountPerMonth.get(monthKey)!;
         
         // Check if this result already exists in the group
         let existingResult = group.results.find(r => r.type === result.type && r.value === result.value);
@@ -318,8 +321,12 @@ export class SearchService {
         existingResult.totalTrips++;
         existingResult.totalEarnings += trip.total || 0;
 
-        group.totalTrips++;
-        group.totalEarnings += trip.total || 0;
+        // Only count unique trips for month totals
+        if (trip.id && !uniqueTrips.has(trip.id)) {
+          uniqueTrips.add(trip.id);
+          group.totalTrips++;
+          group.totalEarnings += trip.total || 0;
+        }
       });
     });
 
