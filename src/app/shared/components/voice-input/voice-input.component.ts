@@ -496,7 +496,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       // SERVICE patterns - from servicePatterns array
       () => {
         const service = this.serviceList.length > 0 ? this.getRandomItem(this.serviceList) : 'DoorDash';
-        const templates = ['I have a {s}', 'Working {s}', 'Service is {s}'];
+        const templates = ['I have a {s}', 'Working {s}', 'Service is {s}', 'Driving {s}', 'Using {s}', 'Got a {s}'];
         return this.getRandomItem(templates).replace('{s}', service);
       },
       
@@ -510,14 +510,14 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       // NAME patterns - from namePatterns array
       () => {
         const name = this.getRandomItem(['John', 'Sarah', 'Mike', 'Emily', 'Lisa', 'David']);
-        const templates = ['The name is {n}', 'The customer is {n}', 'Delivering to {n}'];
+        const templates = ['The name is {n}', 'The customer is {n}', 'Delivering to {n}', 'The client is {n}', 'Drop off to {n}'];
         return this.getRandomItem(templates).replace('{n}', name);
       },
       
       // PLACE patterns - from placePatterns array
       () => {
         const place = this.placeList.length > 0 ? this.getRandomItem(this.placeList) : 'Starbucks';
-        const templates = ['Picking up from {p}', 'Place is {p}'];
+        const templates = ['Picking up from {p}', 'Place is {p}', 'Location is {p}', 'Store is {p}', 'At {p}'];
         return this.getRandomItem(templates).replace('{p}', place);
       },
       
@@ -538,14 +538,14 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       // PAY patterns - from payPatterns array
       () => {
         const pay = this.getRandomNumber(8, 30);
-        const templates = ['Pay is ${p}', 'Payment was ${p}', '${p} dollars'];
+        const templates = ['Pay is ${p}', 'Payment was ${p}', '${p} dollars', 'Payout of ${p}', 'Earning is ${p}', 'Total is ${p} bucks'];
         return this.getRandomItem(templates).replace('${p}', pay.toString());
       },
       
       // TIP patterns - from tipPatterns array
       () => {
         const tip = this.getRandomNumber(2, 10);
-        const templates = ['Tip is ${t}', '${t} dollar tip'];
+        const templates = ['Tip is ${t}', '${t} dollar tip', 'Gratuity is ${t}', '${t} bucks tip', 'Tip of ${t}'];
         return this.getRandomItem(templates).replace('${t}', tip.toString());
       },
       
@@ -559,14 +559,14 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       // BONUS patterns - from bonusPatterns array
       () => {
         const bonus = this.getRandomNumber(2, 10);
-        const templates = ['Bonus is ${b}', '${b} dollar bonus'];
+        const templates = ['Bonus is ${b}', '${b} dollar bonus', 'Peak pay ${b}', 'Quest bonus ${b}', 'Surge ${b}', 'Promo ${b}'];
         return this.getRandomItem(templates).replace('${b}', bonus.toString());
       },
       
       // CASH patterns - from cashPatterns array
       () => {
         const cash = this.getRandomNumber(5, 20);
-        const templates = ['Cash is ${c}', '${c} dollars cash'];
+        const templates = ['Cash is ${c}', '${c} dollars cash', 'Paid in cash ${c}', 'Cash payment ${c}'];
         return this.getRandomItem(templates).replace('${c}', cash.toString());
       },
       
@@ -587,8 +587,22 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       // TYPE patterns - from typePatterns array
       () => {
         const type = this.typeList.length > 0 ? this.getRandomItem(this.typeList) : 'delivery';
-        const templates = ['Type is {t}', 'It\'s a {t}'];
+        const templates = ['Type is {t}', 'It\'s a {t}', 'Got a {t}', 'Have a {t} order', '{t} run'];
         return this.getRandomItem(templates).replace('{t}', type);
+      },
+      
+      // UNIT NUMBER patterns - from unitPatterns array
+      () => {
+        const unit = this.getRandomNumber(100, 999);
+        const templates = ['Unit number {u}', 'Apartment {u}', 'Room {u}', 'Suite {u}', 'The room is {u}'];
+        return this.getRandomItem(templates).replace('{u}', unit.toString());
+      },
+      
+      // ORDER NUMBER patterns - from orderPatterns array
+      () => {
+        const orderNum = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const templates = ['Order number {o}', 'Order ID {o}', 'Confirmation {o}', 'Tracking number {o}'];
+        return this.getRandomItem(templates).replace('{o}', orderNum);
       }
     ];
 
