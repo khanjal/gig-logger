@@ -15,6 +15,7 @@ export interface ISearchResult {
 
 export interface ISearchResultGroup {
   month: string; // e.g., "2024-11" or "November 2024"
+  monthKey?: string; // e.g., "2024-11" for sorting
   year: string;
   results: ISearchResult[];
   totalTrips: number;

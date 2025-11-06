@@ -292,6 +292,7 @@ export class SearchService {
         if (!groupMap.has(monthKey)) {
           groupMap.set(monthKey, {
             month: monthDisplay,
+            monthKey: monthKey, // Add monthKey for proper sorting
             year: date.getFullYear().toString(),
             results: [],
             totalTrips: 0,
@@ -330,9 +331,13 @@ export class SearchService {
       });
     });
 
-    // Sort groups by month (newest first) and sort results within each group
+    // Sort groups by monthKey (newest first) and sort results within each group
     return Array.from(groupMap.values())
-      .sort((a, b) => b.month.localeCompare(a.month))
+      .sort((a, b) => {
+        const monthKeyA = (a as any).monthKey || '';
+        const monthKeyB = (b as any).monthKey || '';
+        return monthKeyB.localeCompare(monthKeyA); // Descending order (newest first)
+      })
       .map(group => ({
         ...group,
         results: group.results.sort((a, b) => b.totalEarnings - a.totalEarnings)

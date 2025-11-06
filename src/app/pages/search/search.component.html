@@ -3,7 +3,7 @@
   <div class="bg-white shadow-sm sticky top-0 z-10">
     <div class="max-w-7xl mx-auto px-4 py-4">
       <!-- Search Input with Autocomplete and Filter Button -->
-      <div class="flex gap-2">
+      <div class="flex gap-2" *ngIf="!hasSearched || isSearching || searchTerm">
         <div class="flex-1">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Search trips</mat-label>
@@ -202,14 +202,14 @@
             </div>
             
             <!-- Date Range -->
-            <div class="mt-2 text-xs text-gray-500" *ngIf="result.firstDate && result.lastDate">
+            <!-- <div class="mt-2 text-xs text-gray-500" *ngIf="result.firstDate && result.lastDate">
               <mat-icon class="text-xs align-middle">date_range</mat-icon>
               {{ result.firstDate | date:'MMM d, yyyy' }} 
               <span *ngIf="result.firstDate !== result.lastDate">
                 - {{ result.lastDate | date:'MMM d, yyyy' }}
               </span>
             </div>
-          </div>
+          </div> -->
 
           <!-- Trip List (Expanded) -->
           <div class="border-t bg-gray-50" *ngIf="isResultExpanded(getResultKey(result, group.month))">
@@ -234,10 +234,8 @@
 <button 
   mat-fab 
   color="primary"
-  class="fixed bottom-20 right-4 z-20 transition-opacity duration-300"
-  [class.opacity-0]="!showBackToTop"
-  [class.pointer-events-none]="!showBackToTop"
-  [class.opacity-100]="showBackToTop"
+  class="floating-back-to-top bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full p-4 flex items-center justify-center transition-opacity duration-200"
+  *ngIf="showBackToTop"
   (click)="scrollToTop()"
   matTooltip="Back to top"
   matTooltipPosition="left"
