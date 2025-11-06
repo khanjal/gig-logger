@@ -1,0 +1,111 @@
+@import "../../shared/styles/color-vars";
+
+.search-page {
+  // Mobile-first styles
+  
+  // Search input customization
+  ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  // Filter section animations
+  .max-h-0 {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .max-h-96 {
+    max-height: 24rem;
+    opacity: 1;
+  }
+
+  // Category filter checkboxes
+  mat-checkbox {
+    ::ng-deep .mdc-checkbox {
+      padding: 0;
+    }
+  }
+
+  // Category chip styling
+  mat-chip {
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  // Results card hover effects
+  .bg-white {
+    transition: all 0.2s ease;
+  }
+
+  // Month group styling
+  .cursor-pointer:hover {
+    transform: translateY(-1px);
+  }
+
+  // Smooth expansion animations
+  .space-y-2 {
+    > * {
+      animation: fadeIn 0.3s ease;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Border color utilities for category colors
+  .border-blue-600 {
+    border-left-color: #2563eb;
+  }
+
+  .border-green-600 {
+    border-left-color: #16a34a;
+  }
+
+  .border-purple-600 {
+    border-left-color: #9333ea;
+  }
+
+  .border-orange-600 {
+    border-left-color: #ea580c;
+  }
+
+  .border-teal-600 {
+    border-left-color: #0d9488;
+  }
+
+  .border-pink-600 {
+    border-left-color: #db2777;
+  }
+
+  .border-gray-600 {
+    border-left-color: #4b5563;
+  }
+
+  // Responsive adjustments
+  @media (min-width: 640px) {
+    // Tablet and up adjustments
+  }
+
+  @media (min-width: 768px) {
+    // Desktop adjustments
+  }
+}

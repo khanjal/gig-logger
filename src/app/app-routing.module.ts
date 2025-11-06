@@ -13,11 +13,13 @@ import { canActivateAuth } from '@guards/auth-guard.service';
 import { ExpensesComponent } from './pages/expenses/expenses.component';
 import { MetricsComponent } from './pages/metrics/metrics.component';
 import { DiagnosticsComponent } from './pages/diagnostics/diagnostics.component';
+import { SearchComponent } from './pages/search/search.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'calculator', component: CalculatorComponent },
   { path: 'policy', component: PolicyComponent },
+  { path: 'search', component: SearchComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'trips', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'trips/edit/:id', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'setup', component: SetupComponent },

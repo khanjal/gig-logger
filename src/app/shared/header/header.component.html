@@ -77,9 +77,13 @@
              matTooltipPosition="below">
             <mat-icon>analytics</mat-icon>
           </a>
-          <button class="action-button action-button--disabled" matTooltip="Coming Soon" matTooltipPosition="below" disabled>
+          <a routerLink="/search"
+             class="action-button"
+             aria-label="Search"
+             matTooltip="Search"
+             matTooltipPosition="below">
             <mat-icon>search</mat-icon>
-          </button>
+          </a>
         </div>
       </ng-container>
 
@@ -184,12 +188,13 @@
             <mat-icon class="menu-icon">analytics</mat-icon>
             <span class="menu-text">Diagnostics</span>
           </a>
-          <!-- Future menu items will go here -->
-          <div class="menu-item menu-item--disabled">
+          <a routerLink="/search"
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="Search">
             <mat-icon class="menu-icon">search</mat-icon>
             <span class="menu-text">Search</span>
-            <span class="menu-badge">Coming Soon</span>
-          </div>
+          </a>
         </div>
         
         <!-- Settings section - always available -->
