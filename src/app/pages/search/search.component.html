@@ -190,6 +190,21 @@
           </div>
         </div>
       </div>
+      <!-- Group Averages Bar -->
+      <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs text-gray-700 font-medium">
+        <div>
+          Avg/trip:
+          <span class="font-bold text-blue-700">
+            {{ getGroupAvgPerTrip(group) }}
+          </span>
+        </div>
+        <div>
+          Avg/hr:
+          <span class="font-bold text-green-700">
+            {{ getGroupAvgRate(group) }}
+          </span>
+        </div>
+      </div>
 
       <!-- Results within this month -->
       <div class="mt-2 space-y-2" *ngIf="isGroupExpanded(group.month)">

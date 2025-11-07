@@ -41,7 +41,8 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     TripsQuickViewComponent
   ],
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+  styleUrls: ['./search.component.scss'],
+  providers: [CurrencyPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
@@ -79,7 +80,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   constructor(
     private searchService: SearchService,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
+    private currencyPipe: CurrencyPipe
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -462,5 +464,42 @@ export class SearchComponent implements OnInit, OnDestroy {
     } else {
       this.expandAll();
     }
+  }
+
+  getGroupAvgPerTrip(group: ISearchResultGroup): string {
+    if (!group || !group.results) return '-';
+    // Collect unique, non-excluded trips
+    const uniqueTrips = new Map<number, any>();
+    group.results.forEach(result => {
+      result.trips.forEach(trip => {
+        if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
+          uniqueTrips.set(trip.id, trip);
+        }
+      });
+    });
+    const tripsArr = Array.from(uniqueTrips.values());
+    if (tripsArr.length === 0) return '-';
+    const total = tripsArr.reduce((sum, trip) => sum + (trip.total || 0), 0);
+    return this.currencyPipe.transform(total / tripsArr.length) || '-';
+  }
+
+  getGroupAvgRate(group: ISearchResultGroup): string {
+    if (!group || !group.results) return '-';
+    // Collect unique, non-excluded trips
+    const uniqueTrips = new Map<number, any>();
+    group.results.forEach(result => {
+      result.trips.forEach(trip => {
+        if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
+          uniqueTrips.set(trip.id, trip);
+        }
+      });
+    });
+    const tripsArr = Array.from(uniqueTrips.values());
+    if (tripsArr.length === 0) return '-';
+    // Only count trips with amountPerTime
+    const withRate = tripsArr.filter(trip => typeof trip.amountPerTime === 'number');
+    if (withRate.length === 0) return '-';
+    const avg = withRate.reduce((sum, trip) => sum + trip.amountPerTime, 0) / withRate.length;
+    return `$${avg.toFixed(2)}`;
   }
 }
