@@ -248,6 +248,21 @@
               </div>
             </div>
           </div>
+          <!-- Sub-result Averages Bar -->
+          <div class="flex items-center justify-between px-4 py-1 bg-gray-50 border-b border-gray-200 text-xs text-gray-700 font-medium">
+            <div>
+              Avg/trip:
+              <span class="font-bold text-blue-700">
+                {{ getResultAvgPerTrip(result) }}
+              </span>
+            </div>
+            <div>
+              Avg/hr:
+              <span class="font-bold text-green-700">
+                {{ getResultAvgRate(result) }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

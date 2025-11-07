@@ -502,4 +502,20 @@ export class SearchComponent implements OnInit, OnDestroy {
     const avg = withRate.reduce((sum, trip) => sum + trip.amountPerTime, 0) / withRate.length;
     return `$${avg.toFixed(2)}`;
   }
+
+  getResultAvgPerTrip(result: ISearchResult): string {
+    if (!result || !result.trips) return '-';
+    const trips = result.trips.filter(trip => typeof trip.id === 'number' && !trip.exclude);
+    if (trips.length === 0) return '-';
+    const total = trips.reduce((sum, trip) => sum + (trip.total || 0), 0);
+    return this.currencyPipe.transform(total / trips.length) || '-';
+  }
+
+  getResultAvgRate(result: ISearchResult): string {
+    if (!result || !result.trips) return '-';
+    const trips = result.trips.filter(trip => typeof trip.amountPerTime === 'number' && !trip.exclude);
+    if (trips.length === 0) return '-';
+    const avg = trips.reduce((sum, trip) => sum + trip.amountPerTime, 0) / trips.length;
+    return `$${avg.toFixed(2)}`;
+  }
 }
