@@ -316,7 +316,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Clear search and reset
+   * Clear search results and reset form
    */
   clearSearch(): void {
     this.searchTerm = '';
@@ -325,6 +325,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.hasSearched = false;
     this.expandedGroups.clear();
     this.expandedResults.clear();
+    // Reset and reload autocomplete
+    this.setupAutocompleteFilter();
   }
 
   /**
