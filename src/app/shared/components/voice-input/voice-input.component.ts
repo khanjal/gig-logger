@@ -3,6 +3,7 @@ import { DropdownDataService } from '@services/dropdown-data.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { NumberHelper } from '@helpers/number.helper';
+import { AddressHelper } from '@helpers/address.helper';
 
 /**
  * Interface for parsed voice input results
@@ -387,7 +388,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
 
     const pickupAddress = this.matchFirstPattern(pickupAddressPatterns, transcript, match => match[1].trim());
-    if (pickupAddress) result.pickupAddress = pickupAddress;
+    if (pickupAddress) result.pickupAddress = AddressHelper.getShortAddress(pickupAddress);
 
     // DROPOFF/DESTINATION ADDRESS: "dropping off at 456 Elm St", "destination is Main Street", "going to 789 Oak Ave"
     const dropoffAddressPatterns = [
@@ -400,7 +401,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
 
     const dropoffAddress = this.matchFirstPattern(dropoffAddressPatterns, transcript, match => match[1].trim());
-    if (dropoffAddress) result.dropoffAddress = dropoffAddress;
+    if (dropoffAddress) result.dropoffAddress = AddressHelper.getShortAddress(dropoffAddress);
 
     // START ODOMETER: "start odometer is 12345", "odometer start 12345", "odo start 12345"
     const startOdometerPatterns = [
