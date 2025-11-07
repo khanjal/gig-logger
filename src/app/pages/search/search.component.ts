@@ -290,11 +290,15 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.searchResults = [];
       this.groupedResults = [];
       this.hasSearched = false;
+      this.expandedGroups.clear();
+      this.expandedResults.clear();
       return;
     }
 
     this.isSearching = true;
     this.hasSearched = true;
+    this.expandedGroups.clear();
+    this.expandedResults.clear();
 
     try {
       const enabledCategories = this.getEnabledCategories();
@@ -445,8 +449,8 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Check if all groups are expanded
    */
   areAllGroupsExpanded(): boolean {
-    return this.groupedResults.length > 0 && 
-           this.expandedGroups.size === this.groupedResults.length;
+    if (this.groupedResults.length === 0) return false;
+    return this.groupedResults.every(group => this.expandedGroups.has(group.month));
   }
 
   /**
