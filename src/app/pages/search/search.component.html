@@ -1,7 +1,7 @@
 <div class="search-page min-h-screen bg-gray-50 pb-20">
   <!-- Search Input with Autocomplete and Filter Button (Overlay) -->
   <div 
-  class="fixed left-0 right-0 z-20 bg-white shadow-md transition-all duration-300"
+  class="fixed left-0 right-0 z-20 pt-4 bg-white shadow-md transition-all duration-300"
   [ngStyle]="{ 'top': '56px' }">
     <div class="max-w-7xl mx-auto px-4 py-3">
       <div class="flex gap-2">
@@ -120,7 +120,7 @@
       </div>
 
       <!-- Results Summary Bar -->
-      <div class="flex items-center justify-between text-sm mt-3 pt-3 border-t border-gray-200" 
+      <div class="flex items-center justify-between text-sm border-t border-gray-200" 
            *ngIf="hasSearched && !isSearching">
         <div class="flex items-center gap-4">
           <span class="text-gray-600">
