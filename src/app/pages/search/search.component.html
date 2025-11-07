@@ -237,22 +237,10 @@
                 </mat-icon>
               </div>
             </div>
-
-          <!-- Trip List (Expanded) -->
-          <div class="border-t bg-gray-50" *ngIf="isResultExpanded(getResultKey(result, group.month))" (click)="$event.stopPropagation()">
-            <div class="p-2">
-              <div class="space-y-2">
-                <trips-quick-view 
-                  *ngFor="let trip of result.trips" 
-                  [trip]="trip"
-                  [showActions]="false"
-                  class="block">
-                </trips-quick-view>
-              </div>
-            </div>
           </div>
+
           <!-- Sub-result Averages Bar -->
-          <div class="flex items-center justify-between px-4 py-1 bg-gray-50 border-b border-gray-200 text-xs text-gray-700 font-medium" 
+          <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-t border-gray-200 text-xs text-gray-700 font-medium" 
                *ngIf="!isResultSameAsGroup(result, group)">
             <div>
               Avg/trip:
@@ -265,6 +253,20 @@
               <span class="font-bold text-green-700">
                 {{ getResultAvgRate(result) }}
               </span>
+            </div>
+          </div>
+
+          <!-- Trip List (Expanded) -->
+          <div class="border-t bg-gray-50" *ngIf="isResultExpanded(getResultKey(result, group.month))" (click)="$event.stopPropagation()">
+            <div class="p-2">
+              <div class="space-y-2">
+                <trips-quick-view 
+                  *ngFor="let trip of result.trips" 
+                  [trip]="trip"
+                  [showActions]="false"
+                  class="block">
+                </trips-quick-view>
+              </div>
             </div>
           </div>
         </div>
