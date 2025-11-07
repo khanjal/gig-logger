@@ -273,7 +273,10 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       /(?:customer|client|person)\s+([\w\s]+?)$/i
     ];
     const name = this.matchFirstPattern(namePatterns, transcript, match => match[1].trim());
-    if (name) result.name = name;
+    if (name) {
+      // Capitalize any single-character word in the name
+      result.name = name.replace(/\b([a-zA-Z])\b/g, (m, c) => c.toUpperCase());
+    }
 
     // PLACE patterns (pickup/pick-up location): "picking up from McDonald's", "picking pick-up from Walmart", "the place is Starbucks", "from McDonald's"
     // Only match if NAME wasn't already set
