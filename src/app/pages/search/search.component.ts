@@ -518,4 +518,39 @@ export class SearchComponent implements OnInit, OnDestroy {
     const avg = trips.reduce((sum, trip) => sum + trip.amountPerTime, 0) / trips.length;
     return `$${avg.toFixed(2)}`;
   }
+
+  /**
+   * Check if a sub-result's trips are the same as the month group's trips
+   * Used to hide redundant sub-results
+   */
+  isResultSameAsGroup(result: ISearchResult, group: ISearchResultGroup): boolean {
+    if (!result || !group) return false;
+    
+    // Get unique trip IDs from the result (excluding excluded trips)
+    const resultTripIds = new Set<number>();
+    result.trips.forEach(trip => {
+      if (typeof trip.id === 'number' && !trip.exclude) {
+        resultTripIds.add(trip.id);
+      }
+    });
+    
+    // Get unique trip IDs from the entire group (excluding excluded trips)
+    const groupTripIds = new Set<number>();
+    group.results.forEach(r => {
+      r.trips.forEach(trip => {
+        if (typeof trip.id === 'number' && !trip.exclude) {
+          groupTripIds.add(trip.id);
+        }
+      });
+    });
+    
+    // Check if both sets have the same size and contain the same IDs
+    if (resultTripIds.size !== groupTripIds.size) return false;
+    
+    for (const id of resultTripIds) {
+      if (!groupTripIds.has(id)) return false;
+    }
+    
+    return true;
+  }
 }

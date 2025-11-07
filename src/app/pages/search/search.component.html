@@ -170,39 +170,42 @@
   <div class="max-w-7xl mx-auto px-4 py-4 content-spacing" *ngIf="!isSearching && groupedResults.length > 0">
     <div *ngFor="let group of groupedResults" class="mb-6">
       <!-- Month Group Header -->
-      <div class="card card-hover p-4" (click)="toggleGroup(group.month)">
-        <div class="flex-between">
-          <div class="flex-start">
-            <mat-icon class="text-blue-600 flex-shrink-0">calendar_month</mat-icon>
-            <div class="flex-1 min-w-0">
-              <div class="text-lg font-bold text-gray-900 text-truncate text-tight">{{ group.month }}</div>
-              <span class="text-xs text-gray-500 text-tight">
-                {{ group.results.length }} {{ group.results.length === 1 ? 'match' : 'matches' }}
-              </span>
+      <div class="card card-hover" (click)="toggleGroup(group.month)">
+        <div class="p-4">
+          <div class="flex-between">
+            <div class="flex-start">
+              <mat-icon class="text-blue-600 flex-shrink-0">calendar_month</mat-icon>
+              <div class="flex-1 min-w-0">
+                <div class="text-lg font-bold text-gray-900 text-truncate text-tight">{{ group.month }}</div>
+                <span class="text-xs text-gray-500 text-tight">
+                  {{ group.results.length }} {{ group.results.length === 1 ? 'match' : 'matches' }}
+                </span>
+              </div>
+            </div>
+            <div class="flex-end">
+              <div class="text-right">
+                <div class="text-sm text-gray-600 whitespace-nowrap">{{ group.totalTrips }} trips</div>
+                <div class="text-sm font-bold text-green-600 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
+              </div>
+              <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
             </div>
           </div>
-          <div class="flex-end">
-            <div class="text-right">
-              <div class="text-sm text-gray-600 whitespace-nowrap">{{ group.totalTrips }} trips</div>
-              <div class="text-sm font-bold text-green-600 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
-            </div>
-            <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        
+        <!-- Group Averages Bar -->
+        <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-t border-gray-200 text-xs text-gray-700 font-medium">
+          <div>
+            Avg/trip:
+            <span class="font-bold text-blue-700">
+              {{ getGroupAvgPerTrip(group) }}
+            </span>
           </div>
-        </div>
-      </div>
-      <!-- Group Averages Bar -->
-      <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs text-gray-700 font-medium">
-        <div>
-          Avg/trip:
-          <span class="font-bold text-blue-700">
-            {{ getGroupAvgPerTrip(group) }}
-          </span>
-        </div>
-        <div>
-          Avg/hr:
-          <span class="font-bold text-green-700">
-            {{ getGroupAvgRate(group) }}
-          </span>
+          <div>
+            Avg/hr:
+            <span class="font-bold text-green-700">
+              {{ getGroupAvgRate(group) }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -249,7 +252,8 @@
             </div>
           </div>
           <!-- Sub-result Averages Bar -->
-          <div class="flex items-center justify-between px-4 py-1 bg-gray-50 border-b border-gray-200 text-xs text-gray-700 font-medium">
+          <div class="flex items-center justify-between px-4 py-1 bg-gray-50 border-b border-gray-200 text-xs text-gray-700 font-medium" 
+               *ngIf="!isResultSameAsGroup(result, group)">
             <div>
               Avg/trip:
               <span class="font-bold text-blue-700">
