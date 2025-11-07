@@ -12,12 +12,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { ViewportScroller } from '@angular/common';
 
 import { SearchService } from '@services/search.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
-import { ITrip } from '@interfaces/trip.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith } from 'rxjs';
 
@@ -397,14 +396,32 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Get total trips across all results
    */
   getTotalTripsCount(): number {
-    return this.searchResults.reduce((sum, result) => sum + result.totalTrips, 0);
+    const uniqueTripIds = new Set<number>();
+    this.searchResults.forEach(result => {
+      result.trips.forEach(trip => {
+        if (typeof trip.id === 'number' && !trip.exclude) uniqueTripIds.add(trip.id);
+      });
+    });
+    return uniqueTripIds.size;
   }
 
   /**
    * Get total earnings across all results
    */
   getTotalEarnings(): number {
-    return this.searchResults.reduce((sum, result) => sum + result.totalEarnings, 0);
+    const uniqueTrips = new Map<number, any>();
+    this.searchResults.forEach(result => {
+      result.trips.forEach(trip => {
+        if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
+          uniqueTrips.set(trip.id, trip);
+        }
+      });
+    });
+    let total = 0;
+    uniqueTrips.forEach(trip => {
+      total += trip.total || 0;
+    });
+    return total;
   }
 
   /**

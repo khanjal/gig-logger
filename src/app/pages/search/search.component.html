@@ -219,16 +219,6 @@
                 </mat-icon>
               </div>
             </div>
-            
-            <!-- Date Range -->
-            <!-- <div class="mt-2 text-xs text-gray-500" *ngIf="result.firstDate && result.lastDate">
-              <mat-icon class="text-xs align-middle">date_range</mat-icon>
-              {{ result.firstDate | date:'MMM d, yyyy' }} 
-              <span *ngIf="result.firstDate !== result.lastDate">
-                - {{ result.lastDate | date:'MMM d, yyyy' }}
-              </span>
-            </div>
-          </div> -->
 
           <!-- Trip List (Expanded) -->
           <div class="border-t bg-gray-50" *ngIf="isResultExpanded(getResultKey(result, group.month))" (click)="$event.stopPropagation()">
