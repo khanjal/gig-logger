@@ -148,19 +148,19 @@
   </div>
 
   <!-- Loading Spinner -->
-  <div class="flex justify-center items-center py-20" [ngStyle]="{'margin-top': '135px'}" *ngIf="isSearching">
+  <div class="flex justify-center items-center py-20 content-spacing" *ngIf="isSearching">
     <mat-spinner diameter="50"></mat-spinner>
   </div>
 
   <!-- Empty State -->
-  <div class="max-w-7xl mx-auto px-4 py-20 text-center" [ngStyle]="{'margin-top': '135px'}" *ngIf="!hasSearched && !isSearching">
+  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="!hasSearched && !isSearching">
     <mat-icon class="text-gray-300 text-6xl mb-4">search</mat-icon>
     <h2 class="text-xl font-semibold text-gray-700 mb-2">Start Searching</h2>
     <p class="text-gray-500">Enter a search term to find trips by service, place, name, address, region, or type</p>
   </div>
 
   <!-- No Results State -->
-  <div class="max-w-7xl mx-auto px-4 py-20 text-center" [ngStyle]="{'margin-top': '135px'}" *ngIf="hasSearched && !isSearching && searchResults.length === 0">
+  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="hasSearched && !isSearching && searchResults.length === 0">
     <mat-icon class="text-gray-300 text-6xl mb-4">search_off</mat-icon>
     <h2 class="text-xl font-semibold text-gray-700 mb-2">No Results Found</h2>
     <p class="text-gray-500">Try a different search term or category filter</p>
