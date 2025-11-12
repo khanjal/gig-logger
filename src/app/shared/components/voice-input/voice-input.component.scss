@@ -48,6 +48,7 @@ button {
     right: calc(2rem + 56px + 1rem); // Same as voice button = 104px
     left: auto;
     bottom: calc(2rem + 56px + 0.75rem); // Above voice button: 32px + 56px + 12px = 100px
+    min-width: 400px; // Added to ensure a wider minimum size
   }
 
   // Border for both listening and heard states
