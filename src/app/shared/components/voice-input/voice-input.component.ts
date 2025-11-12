@@ -406,6 +406,22 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     const dropoffAddress = this.matchFirstPattern(dropoffAddressPatterns, transcript, match => match[1].trim());
     if (dropoffAddress) result.dropoffAddress = AddressHelper.getShortAddress(dropoffAddress);
 
+    // Verify pickupAddress against addressList
+    if (result.pickupAddress) {
+      const verifiedPickup = this._dropdownDataService.findBestMatch(result.pickupAddress, this.addressList, 'Address');
+      if (verifiedPickup) {
+        result.pickupAddress = verifiedPickup;
+      }
+    }
+
+    // Verify dropoffAddress against addressList
+    if (result.dropoffAddress) {
+      const verifiedDropoff = this._dropdownDataService.findBestMatch(result.dropoffAddress, this.addressList, 'Address');
+      if (verifiedDropoff) {
+        result.dropoffAddress = verifiedDropoff;
+      }
+    }
+
     // START ODOMETER: "start odometer is 12345", "odometer start 12345", "odo start 12345"
     const startOdometerPatterns = [
       /(?:start(?:ing)? (?:odometer|odo) (?:is|was|:))\s*([\w.,-]+)/i,

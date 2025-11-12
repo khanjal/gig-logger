@@ -614,7 +614,6 @@ export class TripFormComponent implements OnInit {
   async onVoiceResult(result: any) {
     if (!result) return;
     if (result.service) this.tripForm.controls.service.setValue(result.service);
-    if (result.endAddress) this.tripForm.controls.endAddress.setValue(result.endAddress);
 
     if (result.pay) this.tripForm.controls.pay.setValue(result.pay);
     if (result.tip) this.tripForm.controls.tip.setValue(result.tip);
@@ -628,8 +627,10 @@ export class TripFormComponent implements OnInit {
     if (result.name) this.setName(result.name);
     if (result.bonus) this.tripForm.controls.bonus.setValue(result.bonus);
     if (result.cash) this.tripForm.controls.cash.setValue(result.cash);
+
     if (result.pickupAddress) this.setPickupAddress(result.pickupAddress);
     if (result.dropoffAddress) this.setDestinationAddress(result.dropoffAddress);
+
     if (result.startOdometer) this.tripForm.controls.startOdometer.setValue(result.startOdometer);
     if (result.endOdometer) this.tripForm.controls.endOdometer.setValue(result.endOdometer);
     if (result.unitNumber) this.tripForm.controls.endUnit.setValue(result.unitNumber);
