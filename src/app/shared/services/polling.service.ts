@@ -93,9 +93,10 @@ export class PollingService implements OnDestroy {
     this._logger.info(`App resumed. Time since last poll: ${timeSinceLastPoll}ms, remaining interval: ${remainingInterval}ms`);
 
     if (remainingInterval === 0) {
-      // Interval has already passed, save immediately and restart polling
-      this.saveData();
-      this.restartPolling();
+      // Interval has already passed, give 5 second grace period before syncing
+      const gracePeriod = 5000; // 5 seconds
+      this._logger.info(`Timer expired while backgrounded, syncing in ${gracePeriod}ms`);
+      this.resumePolling(gracePeriod);
     } else {
       // Resume with the remaining interval
       this.resumePolling(remainingInterval);
