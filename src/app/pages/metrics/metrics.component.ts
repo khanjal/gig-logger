@@ -1,5 +1,5 @@
 // Imports
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '../../shared/services/sheets/shift.service';
 import { Subscription as DexieSubscription } from 'dexie';
@@ -52,7 +52,8 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
   imports: [CommonModule, BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
   providers: [ShiftService],
   templateUrl: './metrics.component.html',
-  styleUrls: ['./metrics.component.scss']
+  styleUrls: ['./metrics.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class MetricsComponent implements OnInit, OnDestroy {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;

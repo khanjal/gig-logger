@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
@@ -16,6 +16,7 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     selector: 'app-stats',
     templateUrl: './stats.component.html',
     styleUrls: ['./stats.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
 })
