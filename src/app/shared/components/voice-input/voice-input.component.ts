@@ -13,13 +13,13 @@ interface VoiceParseResult {
   type?: string;
   place?: string;
   name?: string;
-  pay?: string;
-  tip?: string;
-  bonus?: string;
-  cash?: string;
-  distance?: string;
-  startOdometer?: string;
-  endOdometer?: string;
+  pay?: number;
+  tip?: number;
+  bonus?: number;
+  cash?: number;
+  distance?: number;
+  startOdometer?: number;
+  endOdometer?: number;
   pickupAddress?: string;
   dropoffAddress?: string;
   unitNumber?: string;
@@ -304,8 +304,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
         const payValue = NumberHelper.convertWordToNumber(payTipMatch[1].trim());
         const tipValue = NumberHelper.convertWordToNumber(payTipMatch[2].trim());
         // Only set if they're valid numbers
-        if (/^\d+(?:\.\d{1,2})?$/.test(payValue)) result.pay = payValue;
-        if (/^\d+(?:\.\d{1,2})?$/.test(tipValue)) result.tip = tipValue;
+        if (/^\d+(?:\.\d{1,2})?$/.test(payValue.toString())) result.pay = payValue;
+        if (/^\d+(?:\.\d{1,2})?$/.test(tipValue.toString())) result.tip = tipValue;
       }
     }
 
@@ -313,8 +313,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     const payDistancePattern = /(?:pay(?:ment)? (?:is|was|:)|paid|amount (?:is|was|:))?\s*\$?(\d+(?:\.\d{1,2})?)\s*(?:dollar(?:s)?)?\s*for\s*(\d+(?:\.\d+)?)\s*(mile|miles|mi|me|km|kilometer|kilometers)/i;
     const payDistanceMatch = transcript.match(payDistancePattern);
     if (payDistanceMatch) {
-      result.pay = payDistanceMatch[1];
-      result.distance = payDistanceMatch[2];
+      result.pay = NumberHelper.getNumberFromString(payDistanceMatch[1]);
+      result.distance = NumberHelper.getNumberFromString(payDistanceMatch[2]);
     }
 
     // PAYMENT: "$15", "15 dollars", "pay is fifteen" (only if not already set by combined pattern)
@@ -329,7 +329,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
       const pay = this.matchFirstPattern(payPatterns, transcript, match => {
         const converted = NumberHelper.convertWordToNumber(match[1].trim());
-        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+        if (/^\d+(?:\.\d{1,2})?$/.test(converted.toString())) return converted;
         return undefined;
       });
       if (pay) result.pay = pay;
@@ -347,7 +347,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
       const tip = this.matchFirstPattern(tipPatterns, transcript, match => {
         const converted = NumberHelper.convertWordToNumber(match[1].trim());
-        if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+        if (/^\d+(?:\.\d{1,2})?$/.test(converted.toString())) return converted;
         return undefined;
       });
       if (tip) result.tip = tip;
@@ -362,7 +362,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     const bonus = this.matchFirstPattern(bonusPatterns, transcript, match => {
       const converted = NumberHelper.convertWordToNumber(match[1].trim());
-      if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+      if (/^\d+(?:\.\d{1,2})?$/.test(converted.toString())) return converted;
       return undefined;
     });
     if (bonus) result.bonus = bonus;
@@ -377,7 +377,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     const cash = this.matchFirstPattern(cashPatterns, transcript, match => {
       const converted = NumberHelper.convertWordToNumber(match[1].trim());
-      if (/^\d+(?:\.\d{1,2})?$/.test(converted)) return converted;
+      if (/^\d+(?:\.\d{1,2})?$/.test(converted.toString())) return converted;
       return undefined;
     });
     if (cash) result.cash = cash;
@@ -436,14 +436,12 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
     const startOdometerMatch = this.matchFirstPattern(startOdometerPatterns, transcript, match => {
       let raw = NumberHelper.convertWordToNumber(match[1].trim());
-      raw = raw.replace(/,/g, '');
       return raw;
     });
     if (startOdometerMatch) result.startOdometer = startOdometerMatch;
 
     const endOdometerMatch = this.matchFirstPattern(endOdometerPatterns, transcript, match => {
       let raw = NumberHelper.convertWordToNumber(match[1].trim());
-      raw = raw.replace(/,/g, '');
       return raw;
     });
     if (endOdometerMatch) result.endOdometer = endOdometerMatch;
@@ -459,7 +457,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
         /\bfor\s+(\d+(?:\.\d+)?)\s*(?:mile|miles|mi|me|km|kilometer|kilometers)\b/i  // "for 5 miles" or "for 5 km"
       ];
       const distance = this.matchFirstPattern(distancePatterns, transcript, match => match[1]);
-      if (distance) result.distance = distance;
+      if (distance) result.distance = NumberHelper.getNumberFromString(distance);
     }
 
     // TYPE: "type is delivery", "it's a pickup", "delivery order"
@@ -486,7 +484,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     ];
     const unitNumber = this.matchFirstPattern(unitPatterns, transcript, match => {
       const raw = match[1].replace(/\s+/g, '').trim();
-      const converted = NumberHelper.convertWordToNumber(raw);
+      const converted = NumberHelper.convertWordToNumber(raw).toString();
       return converted || raw;
     });
     if (unitNumber) result.unitNumber = unitNumber;

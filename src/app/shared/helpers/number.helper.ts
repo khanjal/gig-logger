@@ -1,10 +1,10 @@
 export class NumberHelper {
     /**
-     * Converts word numbers to digits (e.g., "four" -> "4", "twenty" -> "20")
+     * Converts word numbers to digits (e.g., "four" -> 4, "twenty" -> 20)
      * @param word The word to convert
-     * @returns The numeric string or original word if not matched
+     * @returns The numeric value or NaN if not matched
      */
-    static convertWordToNumber(word: string): string {
+    static convertWordToNumber(word: string): number {
         const wordMap: { [key: string]: string } = {
             'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
             'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9',
@@ -15,12 +15,12 @@ export class NumberHelper {
             'hundred': '100'
         };
         const lower = word.toLowerCase().trim();
-        if (wordMap[lower]) return wordMap[lower];
+        if (wordMap[lower]) return parseInt(wordMap[lower], 10);
         const parts = lower.split(/[\s-]+/);
         if (parts.length === 2 && wordMap[parts[0]] && wordMap[parts[1]]) {
-            return (parseInt(wordMap[parts[0]]) + parseInt(wordMap[parts[1]])).toString();
+            return parseInt(wordMap[parts[0]], 10) + parseInt(wordMap[parts[1]], 10);
         }
-        return word;
+        return NaN;
     }
     
     static getNumberFromString(numberString: string = ""): number {
