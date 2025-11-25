@@ -126,20 +126,20 @@ export class ExpensesComponent implements OnInit {
       actionTime: now,
       saved: false
     };
-    let scrollId: number | undefined;
+
     if (this.editingExpenseId) {
       // Update existing expense by id
+      const existingExpense = this.expenses.find(e => e.id === this.editingExpenseId);
       expense.id = this.editingExpenseId;
+      expense.rowId = existingExpense!.rowId;
       expense.action = ActionEnum.Update;
       await this.expensesService.update([expense]);
-      scrollId = this.editingExpenseId;
       this.editingExpenseId = undefined;
     } else {
       // Insert new expense with rowId
       expense.rowId = await this.expensesService.getMaxRowId() + 1;
       expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
-      scrollId = undefined;
     }
     this.expenseForm.reset({ date: this.getToday() });
     this.showAddForm = false;

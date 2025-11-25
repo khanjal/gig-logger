@@ -10,7 +10,7 @@ export class ExpensesService extends GenericCrudService<IExpense> {
   }
 
   async getUnsaved(): Promise<IExpense[]> {
-    return await spreadsheetDB.expenses.where('saved').equals(0).toArray();
+    return await spreadsheetDB.expenses.filter(e => e.saved === false).toArray();
   }
 
   async saveUnsaved(): Promise<void> {
