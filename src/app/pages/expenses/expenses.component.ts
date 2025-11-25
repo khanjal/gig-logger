@@ -144,27 +144,11 @@ export class ExpensesComponent implements OnInit {
     this.expenseForm.reset({ date: this.getToday() });
     this.showAddForm = false;
     await this.loadExpenses();
-    // Scroll to the updated/added row if possible
-    setTimeout(() => {
-      if (scrollId) {
-        const row = document.getElementById('expense-row-' + scrollId);
-        if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        const top = document.getElementById('expenses-top');
-        if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 0);
   }
 
   editExpense(expense: IExpense) {
-    // Populate the form with the selected expense for editing
     this.expenseForm.patchValue(expense);
     this.editingExpenseId = expense.id;
-    // Scroll to top anchor when editing
-    setTimeout(() => {
-      const top = document.getElementById('expenses-top');
-      if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
     this.showAddForm = true;
   }
 
