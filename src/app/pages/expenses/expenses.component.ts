@@ -49,15 +49,7 @@ import { updateAction } from '@utils/action.utils';
 })
 
 export class ExpensesComponent implements OnInit {
-  // Group expenses by year for yearly totals
-  get groupedExpensesByYear(): { [year: string]: IExpense[] } {
-    return this.expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
-      const year = expense.date.slice(0, 4);
-      if (!groups[year]) groups[year] = [];
-      groups[year].push(expense);
-      return groups;
-    }, {} as { [year: string]: IExpense[] });
-  }
+  groupedExpensesByYear: { [year: string]: IExpense[] } = {};
 
   getYearTotal(expenses: IExpense[]): number {
     return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
@@ -110,6 +102,12 @@ export class ExpensesComponent implements OnInit {
       groups[month].push(expense);
       return groups;
     }, {} as { [month: string]: IExpense[] });
+    this.groupedExpensesByYear = this.expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+      const year = expense.date.slice(0, 4);
+      if (!groups[year]) groups[year] = [];
+      groups[year].push(expense);
+      return groups;
+    }, {} as { [year: string]: IExpense[] });
     this.checkForUnsavedData();
   }
 
