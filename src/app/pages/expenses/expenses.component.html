@@ -1,6 +1,6 @@
 <div id="expenses-top"></div>
 <div class="container mx-auto p-4 max-w-4xl">
-  <div class="flex flex-wrap gap-4 items-center justify-between mb-4">
+  <div class="flex flex-wrap gap-4 items-center justify-between">
     <h1 class="text-2xl font-bold text-blue-700 flex-1">Expenses</h1>
     <button *ngIf="unsavedData && !(showAddForm || editingExpenseId)" mat-mini-fab color="accent" class="save-button !w-9 !h-9" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()" title="Save Changes">
       <mat-icon class="text-base">save</mat-icon>
@@ -13,8 +13,9 @@
     </button>
   </div>
 
-  <form *ngIf="showAddForm || editingExpenseId" [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-lg shadow mb-8">
-    <mat-form-field class="w-full col-span-1 md:col-span-2" appearance="outline">
+  <div *ngIf="showAddForm || editingExpenseId">
+    <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-lg shadow mb-8">
+      <mat-form-field class="w-full col-span-1 md:col-span-2" appearance="outline">
       <mat-label>Date</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="date" />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -37,16 +38,17 @@
       <mat-label>Note</mat-label>
       <input matInput type="text" formControlName="note" maxlength="100" />
     </mat-form-field>
-    <div class="col-span-1 md:col-span-4 flex justify-between items-center">
-      <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">
-        {{ editingExpenseId ? 'Update' : 'Add' }}
-      </button>
-      <button *ngIf="editingExpenseId" mat-stroked-button color="warn" type="button" (click)="deleteCurrentExpense()">Delete</button>
-      <button *ngIf="editingExpenseId" mat-stroked-button type="button" (click)="cancelEdit()">Cancel</button>
-    </div>
-  </form>
+      <div class="col-span-1 md:col-span-4 flex justify-between items-center">
+        <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">
+          {{ editingExpenseId ? 'Update' : 'Add' }}
+        </button>
+        <button *ngIf="editingExpenseId" mat-stroked-button color="warn" type="button" (click)="deleteCurrentExpense()">Delete</button>
+        <button *ngIf="editingExpenseId" mat-stroked-button type="button" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </form>
+  </div>
 
-  <div class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6">
+  <div *ngIf="!(showAddForm || editingExpenseId)" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
     <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold text-blue-800">{{ year.key }}</h2>
