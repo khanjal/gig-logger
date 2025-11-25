@@ -197,6 +197,17 @@ export class ExpensesComponent implements OnInit {
   }
 
   /**
+   * Deletes the currently editing expense
+   */
+  async deleteCurrentExpense() {
+    if (!this.editingExpenseId) return;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (expense) {
+      await this.confirmDeleteExpenseDialog(expense);
+    }
+  }
+
+  /**
    * Confirms deletion with user before deleting expense
    */
   async confirmDeleteExpenseDialog(expense: IExpense) {
@@ -217,6 +228,7 @@ export class ExpensesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async result => {
       if(result) {
         await this.deleteExpense(expense);
+        this.cancelEdit();
       }
     });
   }

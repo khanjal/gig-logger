@@ -37,11 +37,12 @@
       <mat-label>Note</mat-label>
       <input matInput type="text" formControlName="note" maxlength="100" />
     </mat-form-field>
-    <div class="col-span-1 md:col-span-4 flex justify-end gap-2">
+    <div class="col-span-1 md:col-span-4 flex justify-between items-center">
       <button mat-raised-button color="primary" type="submit" [disabled]="expenseForm.invalid" class="font-semibold">
-        {{ editingExpenseId ? 'Update Expense' : 'Add Expense' }}
+        {{ editingExpenseId ? 'Update' : 'Add' }}
       </button>
-      <button *ngIf="editingExpenseId" mat-stroked-button color="warn" type="button" (click)="cancelEdit()">Cancel</button>
+      <button *ngIf="editingExpenseId" mat-stroked-button color="warn" type="button" (click)="deleteCurrentExpense()">Delete</button>
+      <button *ngIf="editingExpenseId" mat-stroked-button type="button" (click)="cancelEdit()">Cancel</button>
     </div>
   </form>
 
@@ -67,7 +68,7 @@
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
-                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base"></th>
+                <th class="py-1 px-1 sm:py-2 sm:px-2 text-left font-semibold text-xs sm:text-base w-12"></th>
               </tr>
             </thead>
             <tbody>
@@ -79,12 +80,9 @@
                   </td>
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
-                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle flex items-center gap-1 sm:gap-2">
+                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-2 align-middle">
                     <button mat-icon-button color="primary" aria-label="Edit" (click)="editExpense(expense)">
                       <mat-icon fontIcon="edit"></mat-icon>
-                    </button>
-                    <button mat-icon-button color="warn" aria-label="Delete" (click)="confirmDeleteExpenseDialog(expense)">
-                      <mat-icon fontIcon="delete"></mat-icon>
                     </button>
                   </td>
                 </tr>
