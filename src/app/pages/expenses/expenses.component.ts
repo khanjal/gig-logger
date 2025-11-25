@@ -39,7 +39,6 @@ import { updateAction } from '@utils/action.utils';
     MatDatepickerToggle,
     MatIconModule,
     OrderByPipe,
-    OrdinalPipe,
     MatAutocompleteModule,
     GroupByMonthPipe
   ],
@@ -81,6 +80,7 @@ export class ExpensesComponent implements OnInit {
 
   async ngOnInit() {
     this.expenseForm = this.fb.group({
+      rowId: [{ value: '', disabled: true }],
       date: [this.getToday(), Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       category: ['', Validators.required],
@@ -156,8 +156,8 @@ export class ExpensesComponent implements OnInit {
    * Resets the form and clears editing state, but keeps the form open.
    * Used when the user wants to clear the form without closing it.
    */
-  resetForm() {
-    this.clearFormState();
+  async resetForm() {
+    await this.clearFormState();
     // Do not close the form here; handled by button
   }
 
@@ -173,9 +173,10 @@ export class ExpensesComponent implements OnInit {
   /**
    * Shared logic to reset the form and clear editing state.
    */
-  private clearFormState() {
+  private async clearFormState() {
     this.editingExpenseId = undefined;
-    this.expenseForm.reset({ date: this.getToday() });
+    const nextRowId = await this.expensesService.getMaxRowId() + 1;
+    this.expenseForm.reset({ date: this.getToday(), rowId: nextRowId });
   }
 
   /**
@@ -186,6 +187,30 @@ export class ExpensesComponent implements OnInit {
     const expense = this.expenses.find(e => e.id === this.editingExpenseId);
     if (expense) {
       await this.confirmDeleteExpenseDialog(expense);
+    }
+  }
+
+  /**
+   * Checks if the currently editing expense is marked for deletion
+   */
+  isEditingDeleted(): boolean {
+    if (!this.editingExpenseId) return false;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    return expense?.action === ActionEnum.Delete;
+  }
+
+  /**
+   * Restores a deleted expense
+   */
+  async restoreCurrentExpense() {
+    if (!this.editingExpenseId) return;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (expense) {
+      updateAction(expense, ActionEnum.Update);
+      expense.saved = false;
+      await this.expensesService.update([expense]);
+      await this.loadExpenses();
+      this.cancelEdit();
     }
   }
 
@@ -284,4 +309,5 @@ export class ExpensesComponent implements OnInit {
   }
 
   sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;
+  actionEnum = ActionEnum;
 }
