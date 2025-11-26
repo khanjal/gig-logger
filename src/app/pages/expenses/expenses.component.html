@@ -18,7 +18,7 @@
       <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
         <mat-form-field class="w-full" appearance="outline">
           <mat-label>Row ID</mat-label>
-          <input matInput formControlName="rowId" [disabled]="true" />
+          <input matInput formControlName="rowId" readonly class="cursor-not-allowed opacity-60" />
         </mat-form-field>
         <mat-form-field class="w-full col-span-2" appearance="outline">
           <mat-label>Date</mat-label>

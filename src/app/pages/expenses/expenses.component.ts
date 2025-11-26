@@ -81,7 +81,7 @@ export class ExpensesComponent implements OnInit {
 
   async ngOnInit() {
     this.expenseForm = this.fb.group({
-      rowId: [{ value: '', disabled: true }],
+      rowId: [''],
       date: [this.getToday(), Validators.required],
       name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
