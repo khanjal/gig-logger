@@ -15,10 +15,6 @@ export class ShiftService extends SyncableCrudService<IShift> {
 
     shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
 
-    public async getMaxShiftId(): Promise<number> {
-        return await spreadsheetDB.shifts.orderBy("rowId").last().then(x => x?.rowId || 1);
-    }
-
     public async getUnsavedShifts(): Promise<IShift[]> {
         return await this.getUnsaved();
     }
@@ -60,15 +56,7 @@ export class ShiftService extends SyncableCrudService<IShift> {
         return shifts;
     }
 
-    public async queryShifts(field: string, value: string | number): Promise<IShift[]> {
-        return await spreadsheetDB.shifts.where(field).equals(value).toArray();
-    }
 
-    public async queryShiftById(id: number): Promise<IShift> {
-        let shift = (await spreadsheetDB.shifts.where('id').equals(id).toArray())[0];
-
-        return shift;
-    }
 
     public async queryShiftByKey(key: string): Promise<IShift> {
         let remoteShift = (await spreadsheetDB.shifts.where('key').equals(key).toArray())[0];

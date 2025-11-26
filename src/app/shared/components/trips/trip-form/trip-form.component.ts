@@ -161,11 +161,11 @@ export class TripFormComponent implements OnInit {
       let shifts: IShift[] = [];
       let today: string = DateHelper.toISO();
 
-      shifts.push(...await this._shiftService.queryShifts("date", today));
+      shifts.push(...await this._shiftService.query("date", today));
       
       shift = ShiftHelper.createNewShift(this.tripForm.value.service ?? "", shifts);
       shift.region = this.tripForm.value.region ?? "";
-      shift.rowId = await this._shiftService.getMaxShiftId() + 1;
+      shift.rowId = await this._shiftService.getMaxRowId() + 1;
       
       await this._shiftService.add(shift);
     }
@@ -223,7 +223,7 @@ export class TripFormComponent implements OnInit {
       trip.dropoffTime = this.tripForm.value.dropoffTime ?? "";
     }
     else {
-      trip.rowId = await this._tripService.getMaxId() + 1;
+      trip.rowId = await this._tripService.getMaxRowId() + 1;
       updateAction(trip, ActionEnum.Add);
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
@@ -509,7 +509,7 @@ export class TripFormComponent implements OnInit {
       }
 
       // Assign most recent trip type if no place is found.
-      let recentTrips = (await this._tripService.getAll()).reverse();
+      let recentTrips = (await this._tripService.list()).reverse();
       let recentTrip = recentTrips[0];
       if (recentTrip) {
         this.tripForm.controls.type.setValue(recentTrip.type);
@@ -530,7 +530,7 @@ export class TripFormComponent implements OnInit {
 
     place = this.selectedPlace.place;
 
-    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place && !x.exclude);
+    let recentTrips = (await this._tripService.list()).reverse().filter((x: ITrip) => x.place === place && !x.exclude);
     let recentTrip = recentTrips[0];
 
     if (!recentTrip) {
@@ -542,7 +542,7 @@ export class TripFormComponent implements OnInit {
       if (recentTrip.startAddress) {
         this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
       } else {
-        let recentAddress = recentTrips.filter(x => x.startAddress)[0];
+        let recentAddress = recentTrips.filter((x: ITrip) => x.startAddress)[0];
         this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? "");
       }
     }
@@ -552,7 +552,7 @@ export class TripFormComponent implements OnInit {
       this.tripForm.controls.type.setValue(recentTrip.type);
     }
     else {
-      let recentType = recentTrips.filter(x => x.type)[0];
+      let recentType = recentTrips.filter((x: ITrip) => x.type)[0];
       this.tripForm.controls.type.setValue(recentType?.type ?? "");
     }
     

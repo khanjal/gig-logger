@@ -140,10 +140,10 @@ export class DataLinkingService {    constructor(
             this._logger.info('Linking name data');
             
             let names = await this._nameService.list();
-            let trips = await this._tripService.getAll();
+            let trips = await this._tripService.list();
 
             for (let name of names) {
-                let addressTrips = trips.filter(x => x.name === name.name && x.endAddress);
+                let addressTrips = trips.filter((x: ITrip) => x.name === name.name && x.endAddress);
                 
                 for (const trip of addressTrips) {
                     if (!name.addresses) {
@@ -184,10 +184,10 @@ export class DataLinkingService {    constructor(
             this._logger.info('Linking address data');
             
             let addresses = await this._addressService.list();
-            let trips = await this._tripService.getAll();
+            let trips = await this._tripService.list();
 
             for (let address of addresses) {
-                let nameTrips = trips.filter(x => x.endAddress === address.address && x.name);
+                let nameTrips = trips.filter((x: ITrip) => x.endAddress === address.address && x.name);
 
                 for (let trip of nameTrips) {
                     if (!address.names) {
@@ -227,19 +227,19 @@ export class DataLinkingService {    constructor(
         try {
             this._logger.info('Linking place data');
             
-            let trips = await this._tripService.getAll();
+            let trips = await this._tripService.list();
             let places = await this._placeService.list();
 
             for (let place of places) {
                 // Addresses
-                let tripPlaceAddresses = trips.filter(x => x.place === place.place && x.startAddress);
+                let tripPlaceAddresses = trips.filter((x: ITrip) => x.place === place.place && x.startAddress);
 
                 for (const tripPlaceAddress of tripPlaceAddresses) {
                     if (!place.addresses) {
                         place.addresses = [];
                     }
 
-                    let placeAddress = place.addresses.find(x => x.address === tripPlaceAddress.startAddress);
+                    let placeAddress = place.addresses.find((x: IAddress) => x.address === tripPlaceAddress.startAddress);
 
                     if (placeAddress) {
                         placeAddress.lastTrip = tripPlaceAddress.date;
@@ -259,14 +259,14 @@ export class DataLinkingService {    constructor(
                 }
 
                 // Types
-                let tripPlaceTypes = trips.filter(x => x.place === place.place && x.type);
+                let tripPlaceTypes = trips.filter((x: ITrip) => x.place === place.place && x.type);
 
                 for (const tripPlaceType of tripPlaceTypes) {
                     if (!place.types) {
                         place.types = [];
                     }
                     
-                    let placeType = place.types.find(x => x.type === tripPlaceType.type);
+                    let placeType = place.types.find((x: IType) => x.type === tripPlaceType.type);
 
                     if (placeType) {
                         placeType.trips++;

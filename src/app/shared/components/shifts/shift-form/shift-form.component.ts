@@ -164,7 +164,7 @@ export class ShiftFormComponent implements OnInit {
     const key = `${days}-${this.computedShiftNumber}-${formValue.service}`;
     const newShift: IShift = {
       id: undefined,
-      rowId: await this.shiftService.getMaxShiftId() + 1,
+      rowId: await this.shiftService.getMaxRowId() + 1,
       date: formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
       distance: formValue.distance,
       active: formValue.active || '',
