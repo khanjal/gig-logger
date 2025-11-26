@@ -27,6 +27,10 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
+    <mat-form-field class="w-full col-span-1 md:col-span-2" appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required />
+    </mat-form-field>
     <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
       <mat-form-field class="w-full" appearance="outline">
         <mat-label>Amount</mat-label>
@@ -75,6 +79,7 @@
             <thead>
               <tr class="bg-blue-100">
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
+                <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Name</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Category</th>
                 <th class="py-1 px-1 sm:py-2 sm:px-2 text-left font-semibold text-xs sm:text-base w-12"></th>
@@ -86,6 +91,7 @@
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
                     {{ expense.date | date:'EEE M/d' }}
                   </td>
+                  <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.name }}</td>
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.amount | currency }}</td>
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">{{ expense.category }}</td>
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-2 align-middle">
@@ -96,7 +102,7 @@
                 </tr>
                 <tr *ngIf="expense.note">
                   <td class="py-0 px-1 sm:px-3"></td>
-                  <td colspan="2" class="py-0 px-1 sm:px-3 text-gray-500 italic text-xs sm:text-base">"{{ expense.note }}"</td>
+                  <td colspan="3" class="py-0 px-1 sm:px-3 text-gray-500 italic text-xs sm:text-base">"{{ expense.note }}"</td>
                   <td class="py-0 px-1 sm:px-3"></td>
                 </tr>
               </ng-container>

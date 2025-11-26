@@ -16,6 +16,7 @@ import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { LoggerService } from '@services/logger.service';
 
@@ -74,6 +75,7 @@ export class TripComponent implements OnInit, OnDestroy {
       private _sheetService: SpreadsheetService,
       private _shiftService: ShiftService,
       private _tripService: TripService,
+      private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
       private viewportScroller: ViewportScroller,
@@ -133,7 +135,7 @@ export class TripComponent implements OnInit, OnDestroy {
     if (showSpinner) {
       this.isLoading = true;
     }
-    this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
+    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
     this.todaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse();
     this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
     await this.average?.load();

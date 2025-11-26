@@ -16,6 +16,7 @@ import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ActionEnum } from '@enums/action.enum';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -67,13 +68,13 @@ export class ExpensesComponent implements OnInit {
   ];
   customCategories: string[] = [];
   editingExpenseId?: number;
-  unsavedExpenses: IExpense[] = [];
   unsavedData: boolean = false;
   saving: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private expensesService: ExpensesService,
+    private unsavedDataService: UnsavedDataService,
     public dialog: MatDialog,
     private _snackBar: MatSnackBar
   ) {}
@@ -82,6 +83,7 @@ export class ExpensesComponent implements OnInit {
     this.expenseForm = this.fb.group({
       rowId: [{ value: '', disabled: true }],
       date: [this.getToday(), Validators.required],
+      name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       category: ['', Validators.required],
       note: ['']
@@ -108,12 +110,8 @@ export class ExpensesComponent implements OnInit {
       groups[year].push(expense);
       return groups;
     }, {} as { [year: string]: IExpense[] });
-    this.checkForUnsavedData();
-  }
 
-  checkForUnsavedData(): void {
-    this.unsavedExpenses = this.expenses.filter(expense => !expense.saved);
-    this.unsavedData = this.unsavedExpenses.length > 0;
+    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
   }
 
   async addExpense() {
