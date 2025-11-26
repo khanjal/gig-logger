@@ -3,14 +3,13 @@
 :host {
   display: block;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .sync-indicator {
   display: flex;
   align-items: center;
   position: relative;
-  flex-wrap: wrap;
   max-width: 100%;
 }
 

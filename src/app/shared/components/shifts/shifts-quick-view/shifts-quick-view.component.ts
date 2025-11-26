@@ -88,7 +88,7 @@ export class ShiftsQuickViewComponent {
   async deleteShift(shift: IShift) {
     if (shift.action === ActionEnum.Add) {
       await this.shiftService.delete(shift.id!);
-      await this.shiftService.updateShiftRowIds(shift.rowId);
+      await this.shiftService.updateRowIds(shift.rowId);
     }
     else {
       updateAction(shift, ActionEnum.Delete);
