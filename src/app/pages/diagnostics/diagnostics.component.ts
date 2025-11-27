@@ -190,7 +190,7 @@ export class DiagnosticsComponent implements OnInit {
     }
 
     // Find all shifts that have duplicates (groups with more than 1 shift)
-    for (const [key, shiftGroup] of keyMap) {
+    for (const shiftGroup of keyMap.values()) {
       if (shiftGroup.length > 1) {
         duplicates.push(...shiftGroup);
         duplicateGroups.push(shiftGroup);

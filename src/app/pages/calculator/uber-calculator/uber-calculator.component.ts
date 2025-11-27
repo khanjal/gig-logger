@@ -6,7 +6,7 @@ import { NgIf, PercentPipe, CurrencyPipe } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { inject } from '@angular/core';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-uber-calculator',

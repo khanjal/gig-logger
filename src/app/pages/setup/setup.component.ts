@@ -19,7 +19,7 @@ import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
-import { AppPermissionsComponent } from '../../shared/components/app-permissions/app-permissions.component';
+import { AppPermissionsComponent } from '@components/app-permissions/app-permissions.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
