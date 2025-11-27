@@ -1,6 +1,7 @@
 // Angular core imports
 import { ViewportScroller, NgFor, NgIf, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
+import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Angular material imports
@@ -58,7 +59,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatMiniFabButton, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableBasicComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatMiniFabButton, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableBasicComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent]
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -133,6 +134,7 @@ export class TripFormComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
+
     this.load();
   }
 
@@ -159,11 +161,11 @@ export class TripFormComponent implements OnInit {
       let shifts: IShift[] = [];
       let today: string = DateHelper.toISO();
 
-      shifts.push(...await this._shiftService.queryShifts("date", today));
+      shifts.push(...await this._shiftService.query("date", today));
       
       shift = ShiftHelper.createNewShift(this.tripForm.value.service ?? "", shifts);
       shift.region = this.tripForm.value.region ?? "";
-      shift.rowId = await this._shiftService.getMaxShiftId() + 1;
+      shift.rowId = await this._shiftService.getMaxRowId() + 1;
       
       await this._shiftService.add(shift);
     }
@@ -197,10 +199,10 @@ export class TripFormComponent implements OnInit {
     trip.bonus = bonus;
     trip.cash = NumberHelper.toNullableNumber(this.tripForm.value.cash);
     // total is a calculated field, but ensure nulls are handled
-    trip.total = NumberHelper.toNullableNumber(
-      (pay ?? 0) +
-      (tip ?? 0) +
-      (bonus ?? 0)
+    trip.total = (
+      NumberHelper.toNumber(pay) +
+      NumberHelper.toNumber(tip) +
+      NumberHelper.toNumber(bonus)
     );
 
     trip.startOdometer = this.tripForm.value.startOdometer;
@@ -221,7 +223,7 @@ export class TripFormComponent implements OnInit {
       trip.dropoffTime = this.tripForm.value.dropoffTime ?? "";
     }
     else {
-      trip.rowId = await this._tripService.getMaxId() + 1;
+      trip.rowId = await this._tripService.getMaxRowId() + 1;
       updateAction(trip, ActionEnum.Add);
       trip.pickupTime = DateHelper.getTimeString(new Date);
     }
@@ -507,7 +509,7 @@ export class TripFormComponent implements OnInit {
       }
 
       // Assign most recent trip type if no place is found.
-      let recentTrips = (await this._tripService.getAll()).reverse();
+      let recentTrips = (await this._tripService.list()).reverse();
       let recentTrip = recentTrips[0];
       if (recentTrip) {
         this.tripForm.controls.type.setValue(recentTrip.type);
@@ -528,7 +530,7 @@ export class TripFormComponent implements OnInit {
 
     place = this.selectedPlace.place;
 
-    let recentTrips = (await this._tripService.getAll()).reverse().filter(x => x.place === place && !x.exclude);
+    let recentTrips = (await this._tripService.list()).reverse().filter((x: ITrip) => x.place === place && !x.exclude);
     let recentTrip = recentTrips[0];
 
     if (!recentTrip) {
@@ -540,7 +542,7 @@ export class TripFormComponent implements OnInit {
       if (recentTrip.startAddress) {
         this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
       } else {
-        let recentAddress = recentTrips.filter(x => x.startAddress)[0];
+        let recentAddress = recentTrips.filter((x: ITrip) => x.startAddress)[0];
         this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? "");
       }
     }
@@ -550,7 +552,7 @@ export class TripFormComponent implements OnInit {
       this.tripForm.controls.type.setValue(recentTrip.type);
     }
     else {
-      let recentType = recentTrips.filter(x => x.type)[0];
+      let recentType = recentTrips.filter((x: ITrip) => x.type)[0];
       this.tripForm.controls.type.setValue(recentType?.type ?? "");
     }
     
@@ -607,4 +609,33 @@ export class TripFormComponent implements OnInit {
 
   // Remove keyboard handling - now handled by focus-scroll directive
   keyboardPadding: boolean = false;
+
+  // --- Voice input result handler ---
+  async onVoiceResult(result: any) {
+    if (!result) return;
+    if (result.service) this.tripForm.controls.service.setValue(result.service);
+
+    if (result.pay) this.tripForm.controls.pay.setValue(result.pay);
+    if (result.tip) this.tripForm.controls.tip.setValue(result.tip);
+    if (result.distance) this.tripForm.controls.distance.setValue(result.distance);
+    if (result.type) this.tripForm.controls.type.setValue(result.type);
+    if (result.place) {
+      this.tripForm.controls.place.setValue(result.place);
+      // Ensure type and address are updated when place is set
+      this.selectPlace();
+    }
+    if (result.name) this.setName(result.name);
+    if (result.bonus) this.tripForm.controls.bonus.setValue(result.bonus);
+    if (result.cash) this.tripForm.controls.cash.setValue(result.cash);
+
+    if (result.pickupAddress) this.setPickupAddress(result.pickupAddress);
+    if (result.dropoffAddress) this.setDestinationAddress(result.dropoffAddress);
+
+    if (result.startOdometer) this.tripForm.controls.startOdometer.setValue(result.startOdometer);
+    if (result.endOdometer) this.tripForm.controls.endOdometer.setValue(result.endOdometer);
+    if (result.unitNumber) this.tripForm.controls.endUnit.setValue(result.unitNumber);
+    if (result.orderNumber) this.tripForm.controls.orderNumber.setValue(result.orderNumber);
+    // Add more fields as needed
+    this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
+  }
 }

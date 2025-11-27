@@ -1,0 +1,375 @@
+@import "color-vars";
+
+:host {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.sync-indicator {
+  display: flex;
+  align-items: center;
+  position: relative;
+  max-width: 100%;
+}
+
+.sync-indicator > * {
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 1;
+}
+
+.sync-button {
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+// Status-specific colors
+.status-idle {
+  .sync-button mat-icon {
+    color: $text-inverse;
+  }
+}
+
+.status-disabled {
+  .sync-button mat-icon {
+    color: $text-disabled;
+    opacity: 0.5;
+  }
+}
+
+.status-syncing {
+  .sync-button mat-icon {
+    color: $info-color;
+  }
+}
+
+.status-success {
+  .sync-button mat-icon {
+    color: $success-color;
+  }
+}
+
+.status-error {
+  .sync-button mat-icon {
+    color: $danger-color;
+  }
+}
+
+// Spinning animation for syncing state
+.spinning-icon {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+// Progress badge
+// Adjust badge to align with shifted icon
+// Adjust badge to be fully visible inside the button
+.progress-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  background-color: $info-color;
+  color: white;
+
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+// Menu styling
+.sync-menu-content {
+  margin-top: -8px;
+  padding: 0;
+  min-width: 280px;
+  max-width: min(400px, 90vw);
+  width: 100%;
+
+  @media (max-width: 480px) {
+    min-width: 280px;
+    max-width: min(320px, 90vw);
+    width: 100%;
+  }
+}
+
+.menu-header {
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 4px 4px 0 0;
+}
+
+.menu-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+}
+
+.title-icon {
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+
+  &.status-syncing {
+    animation: spin 2s linear infinite;
+  }
+}
+
+// Status section
+.status-section {
+  padding: 1rem;
+  border-bottom: 1px solid $border-light;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.status-label {
+  font-weight: 500;
+  color: $text-secondary;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: fit-content;
+
+  &.error-label {
+    color: $danger-color;
+  }
+}
+
+.status-value {
+  font-size: 0.875rem;
+  color: $text-primary;
+  text-align: right;
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  &.status-disabled {
+    color: $text-disabled;
+    font-style: italic;
+  }
+
+  &.status-syncing {
+    color: $info-color;
+    font-weight: 500;
+  }
+
+  &.status-success {
+    color: $success-color;
+    font-weight: 500;
+  }
+
+  &.status-error {
+    color: $danger-color;
+    font-weight: 500;
+  }
+
+  &.error-text {
+    color: $danger-color;
+    font-size: 0.8125rem;
+    word-break: break-word;
+  }
+}
+
+// Progress bar
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: $border-light;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $info-color 0%, lighten($info-color, 10%) 100%);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+// Messages section
+.messages-section {
+  border-top: 1px solid $border-light;
+}
+
+.messages-header {
+  padding: 0.75rem 1rem;
+  background-color: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.messages-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: $text-primary;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.expand-icon {
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.2s ease;
+
+  &.expanded {
+    transform: rotate(180deg);
+  }
+}
+
+.clear-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+
+  mat-icon {
+    font-size: 1.125rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    line-height: 1;
+  }
+}
+
+.messages-list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.message-item {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &.message-error {
+    background-color: rgba($danger-color, 0.08);
+    border-left: 3px solid $danger-color;
+  }
+
+  &.message-warning {
+    background-color: rgba($warning-color, 0.08);
+    border-left: 3px solid $warning-color;
+  }
+
+  &.message-info {
+    border-left: 3px solid $info-color;
+  }
+}
+
+.message-icon {
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+
+  .message-error & {
+    color: $danger-color;
+  }
+
+  .message-warning & {
+    color: $warning-color;
+  }
+
+  .message-info & {
+    color: $info-color;
+  }
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-text {
+  font-size: 0.8125rem;
+  color: $text-primary;
+  word-break: break-word;
+  margin-bottom: 0.125rem;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: $text-tertiary;
+}
+
+// Custom scrollbar for messages list
+.messages-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-list::-webkit-scrollbar-track {
+  background: $border-light;
+  border-radius: 3px;
+}
+
+.messages-list::-webkit-scrollbar-thumb {
+  background: $text-tertiary;
+  border-radius: 3px;
+
+  &:hover {
+    background: $text-secondary;
+  }
+}
+
+.sync-button > .mat-icon {
+  position: relative;
+  top: -4px; // Shift icon up slightly for better alignment
+}

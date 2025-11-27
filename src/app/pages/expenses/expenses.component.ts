@@ -15,8 +15,16 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatMenuModule } from '@angular/material/menu';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ActionEnum } from '@enums/action.enum';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import { updateAction } from '@utils/action.utils';
 
 @Component({
   selector: 'app-expenses',
@@ -33,9 +41,9 @@ import { ActionEnum } from '@enums/action.enum';
     MatDatepickerToggle,
     MatIconModule,
     OrderByPipe,
-    OrdinalPipe,
     MatAutocompleteModule,
-    GroupByMonthPipe
+    GroupByMonthPipe,
+    MatMenuModule
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
@@ -43,15 +51,7 @@ import { ActionEnum } from '@enums/action.enum';
 })
 
 export class ExpensesComponent implements OnInit {
-  // Group expenses by year for yearly totals
-  get groupedExpensesByYear(): { [year: string]: IExpense[] } {
-    return this.expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
-      const year = expense.date.slice(0, 4);
-      if (!groups[year]) groups[year] = [];
-      groups[year].push(expense);
-      return groups;
-    }, {} as { [year: string]: IExpense[] });
-  }
+  groupedExpensesByYear: { [year: string]: IExpense[] } = {};
 
   getYearTotal(expenses: IExpense[]): number {
     return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
@@ -70,15 +70,26 @@ export class ExpensesComponent implements OnInit {
   ];
   customCategories: string[] = [];
   editingExpenseId?: number;
+  unsavedData: boolean = false;
+  saving: boolean = false;
+  actionEnum = ActionEnum;
+  maxRowId: number = 1;
 
   constructor(
     private fb: FormBuilder,
-    private expensesService: ExpensesService
+    private expensesService: ExpensesService,
+    private unsavedDataService: UnsavedDataService,
+    public dialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {}
 
   async ngOnInit() {
+    this.maxRowId = await this.expensesService.getMaxRowId() || 1;
+    const nextRowId = this.maxRowId + 1;
     this.expenseForm = this.fb.group({
+      rowId: [nextRowId],
       date: [this.getToday(), Validators.required],
+      name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       category: ['', Validators.required],
       note: ['']
@@ -92,6 +103,7 @@ export class ExpensesComponent implements OnInit {
 
   async loadExpenses() {
     this.expenses = await spreadsheetDB.expenses.toArray();
+    this.maxRowId = await this.expensesService.getMaxRowId() || 1;
     this.customCategories = Array.from(new Set(this.expenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c))));
     this.groupedExpenses = this.expenses.reduce((groups, expense) => {
       const month = expense.date.slice(0, 7); // yyyy-mm
@@ -99,6 +111,14 @@ export class ExpensesComponent implements OnInit {
       groups[month].push(expense);
       return groups;
     }, {} as { [month: string]: IExpense[] });
+    this.groupedExpensesByYear = this.expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+      const year = expense.date.slice(0, 4);
+      if (!groups[year]) groups[year] = [];
+      groups[year].push(expense);
+      return groups;
+    }, {} as { [year: string]: IExpense[] });
+
+    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
   }
 
   async addExpense() {
@@ -107,47 +127,33 @@ export class ExpensesComponent implements OnInit {
     const formValue = this.expenseForm.value;
     let expense: IExpense = {
       ...formValue,
-      action: ActionEnum.Add, // Initialize action; will be updated if editing
-      actionTime: now
+      action: ActionEnum.Add,
+      actionTime: now,
+      saved: false
     };
-    let scrollId: number | undefined;
+
     if (this.editingExpenseId) {
       // Update existing expense by id
+      const existingExpense = this.expenses.find(e => e.id === this.editingExpenseId);
       expense.id = this.editingExpenseId;
+      expense.rowId = existingExpense!.rowId;
       expense.action = ActionEnum.Update;
       await this.expensesService.update([expense]);
-      scrollId = this.editingExpenseId;
       this.editingExpenseId = undefined;
     } else {
-      // Insert new expense
+      // Insert new expense with rowId (starting at 2, since 1 is the header)
+      expense.rowId = this.maxRowId + 1;
       expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
-      scrollId = undefined;
     }
     this.expenseForm.reset({ date: this.getToday() });
     this.showAddForm = false;
     await this.loadExpenses();
-    // Scroll to the updated/added row if possible
-    setTimeout(() => {
-      if (scrollId) {
-        const row = document.getElementById('expense-row-' + scrollId);
-        if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        const top = document.getElementById('expenses-top');
-        if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 0);
   }
 
   editExpense(expense: IExpense) {
-    // Populate the form with the selected expense for editing
     this.expenseForm.patchValue(expense);
     this.editingExpenseId = expense.id;
-    // Scroll to top anchor when editing
-    setTimeout(() => {
-      const top = document.getElementById('expenses-top');
-      if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
     this.showAddForm = true;
   }
 
@@ -155,8 +161,8 @@ export class ExpensesComponent implements OnInit {
    * Resets the form and clears editing state, but keeps the form open.
    * Used when the user wants to clear the form without closing it.
    */
-  resetForm() {
-    this.clearFormState();
+  async resetForm() {
+    await this.clearFormState();
     // Do not close the form here; handled by button
   }
 
@@ -172,34 +178,142 @@ export class ExpensesComponent implements OnInit {
   /**
    * Shared logic to reset the form and clear editing state.
    */
-  private clearFormState() {
+  private async clearFormState() {
     this.editingExpenseId = undefined;
-    this.expenseForm.reset({ date: this.getToday() });
+    this.expenseForm.reset({ date: this.getToday(), rowId: this.maxRowId + 1 });
+  }
+
+  /**
+   * Deletes the currently editing expense
+   */
+  async deleteCurrentExpense() {
+    if (!this.editingExpenseId) return;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (expense) {
+      await this.confirmDeleteExpenseDialog(expense);
+    }
+  }
+
+  /**
+   * Checks if the currently editing expense is marked for deletion
+   */
+  isEditingDeleted(): boolean {
+    if (!this.editingExpenseId) return false;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    return expense?.action === ActionEnum.Delete;
+  }
+
+  /**
+   * Restores a deleted expense
+   */
+  async restoreCurrentExpense() {
+    if (!this.editingExpenseId) return;
+    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (expense) {
+      updateAction(expense, ActionEnum.Update);
+      expense.saved = false;
+      await this.expensesService.update([expense]);
+      await this.loadExpenses();
+      this.cancelEdit();
+    }
+  }
+
+  /**
+   * Restores an expense from the table menu
+   */
+  async restoreExpense(expense: IExpense) {
+    updateAction(expense, ActionEnum.Update);
+    expense.saved = false;
+    await this.expensesService.update([expense]);
+    await this.loadExpenses();
+  }
+
+  /**
+   * Confirms deletion with user before deleting expense
+   */
+  async confirmDeleteExpenseDialog(expense: IExpense) {
+    const message = `This expense will be deleted from your spreadsheet. Are you sure you want to delete this?`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Delete";
+    dialogData.message = message;
+    dialogData.trueText = "Delete";
+    dialogData.trueColor = "warn";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if(result) {
+        await this.deleteExpense(expense);
+        this.cancelEdit();
+      }
+    });
   }
 
   /**
    * Deletes an expense using soft-delete pattern.
-   * Instead of permanently removing the record, this marks it as deleted
-   * and syncs it to the backend so it can be properly removed from Google Sheets.
-   * This ensures consistency between local storage and the remote spreadsheet.
+   * If the expense was just added (ActionEnum.Add), it's removed from the database.
+   * Otherwise, it's marked as deleted and will be removed from the spreadsheet on next sync.
    */
-  deleteExpense(expense: IExpense) {
-    if (typeof expense.id === 'number') {
-      const deleted: IExpense = {
-        ...expense,
-        action: ActionEnum.Delete,
-        actionTime: Date.now()
-      };
-      this.expensesService.update([deleted]).then(() => {
-        this.syncData();
-      });
+  async deleteExpense(expense: IExpense) {
+    if (expense.action === ActionEnum.Add) {
+      // Permanently delete newly added expenses that haven't been synced yet
+      await this.expensesService.delete(expense.id!);
+    } else {
+      // Mark existing expenses as deleted for sync
+      updateAction(expense, ActionEnum.Delete);
+      expense.saved = false;
+      await this.expensesService.update([expense]);
     }
+    await this.loadExpenses();
   }
 
-  syncData() {
-    // Call the data sync component/service to save changes
-    console.log('Syncing data...');
-    // Implement actual sync logic here
+  async confirmSaveDialog() {
+    const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
+
+    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    dialogData.title = "Confirm Save";
+    dialogData.message = message;
+    dialogData.trueText = "Save";
+    dialogData.falseText = "Cancel";
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "350px",
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: any) => {
+      if(result) {
+        await this.saveSheetDialog('save');
+      }
+    });
+  }
+
+  async saveSheetDialog(inputValue: string) {
+    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+        height: '400px',
+        width: '500px',
+        panelClass: 'custom-modalbox',
+        data: inputValue
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: any) => {
+        if (result) {
+            // Show success message
+            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            
+            // Refresh the page to show updated state
+            await this.loadExpenses();
+        }
+    });
+  }
+
+  hideAddForm() {
+    this.showAddForm = false;
   }
 
   get categories(): string[] {

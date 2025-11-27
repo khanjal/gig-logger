@@ -162,7 +162,7 @@ public class SheetManager : ISheetManager
     public async Task<SheetResponse> SaveData(SheetEntity sheetEntity)
     {
         var returnEntity = new SheetEntity { Messages = new List<MessageEntity>() };
-        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), RaptorSheets.Common.Enums.SheetEnum.SETUP.GetDescription()], sheetEntity)).Messages);
+        returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), SheetEnum.EXPENSES.GetDescription()], sheetEntity)).Messages);
         
         // Save operations typically have small responses, so we don't need to check size
         return SheetResponse.FromSheetEntity(returnEntity);

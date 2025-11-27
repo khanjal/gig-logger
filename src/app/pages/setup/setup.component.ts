@@ -12,7 +12,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 // App Components
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
-import { DiagnosticsComponent } from '@components/settings/diagnostics/diagnostics.component';
 import { LoginComponent } from "@components/auth/login/login.component";
 import { ServiceWorkerStatusComponent } from '@components/data/service-worker-status/service-worker-status.component';
 import { SheetAddFormComponent } from './sheet-add-form/sheet-add-form.component';
@@ -20,7 +19,7 @@ import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
-import { LocationPermissionComponent } from '../../shared/components/location-permission/location-permission.component';
+import { AppPermissionsComponent } from '@components/app-permissions/app-permissions.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -51,7 +50,6 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     MatCardHeader,
     MatFabButton,
     MatIcon,
-    DiagnosticsComponent,
     LoginComponent,
     ServiceWorkerStatusComponent,
     SheetLinkComponent,
@@ -59,7 +57,7 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     SheetQuickViewComponent,
     SheetQuotaComponent,
     AuthStatusComponent,
-    LocationPermissionComponent
+    AppPermissionsComponent
 ]
 })
 export class SetupComponent {

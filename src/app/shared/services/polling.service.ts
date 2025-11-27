@@ -1,10 +1,13 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { GigWorkflowService } from './gig-workflow.service';
-import { ShiftService } from './sheets/shift.service';
-import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
+import { UnsavedDataService } from './unsaved-data.service';
+import { TripService } from './sheets/trip.service';
+import { ShiftService } from './sheets/shift.service';
+import { ExpensesService } from './sheets/expenses.service';
 import { LoggerService } from './logger.service';
+import { GigWorkflowService } from './gig-workflow.service';
+import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 
@@ -27,9 +30,12 @@ export class PollingService implements OnDestroy {
   constructor(
     private _snackBar: MatSnackBar,
     private _sheetService: SpreadsheetService,
-    private _gigLoggerService: GigWorkflowService,
-    private _shiftService: ShiftService,
     private _tripService: TripService,
+    private _shiftService: ShiftService,
+    private _expensesService: ExpensesService,
+    private _unsavedDataService: UnsavedDataService,
+    private _gigWorkflowService: GigWorkflowService,
+    private _syncStatusService: SyncStatusService,
     private _logger: LoggerService
   ) {
     this.initializeWorker();
@@ -91,9 +97,10 @@ export class PollingService implements OnDestroy {
     this._logger.info(`App resumed. Time since last poll: ${timeSinceLastPoll}ms, remaining interval: ${remainingInterval}ms`);
 
     if (remainingInterval === 0) {
-      // Interval has already passed, save immediately and restart polling
-      this.saveData();
-      this.restartPolling();
+      // Interval has already passed, give 5 second grace period before syncing
+      const gracePeriod = 5000; // 5 seconds
+      this._logger.info(`Timer expired while backgrounded, syncing in ${gracePeriod}ms`);
+      this.resumePolling(gracePeriod);
     } else {
       // Resume with the remaining interval
       this.resumePolling(remainingInterval);
@@ -110,6 +117,7 @@ export class PollingService implements OnDestroy {
         type: 'START_POLLING',
         data: { interval: this.currentInterval, initialDelay }
       });
+      this.startCountdown(initialDelay);
     } else {
       // For fallback timer, start with the remaining delay, then use normal interval
       setTimeout(() => {
@@ -122,8 +130,10 @@ export class PollingService implements OnDestroy {
               this.saveData();
             }
           }, this.currentInterval);
+          this.startCountdown(this.currentInterval);
         }
       }, initialDelay);
+      this.startCountdown(initialDelay);
     }
   }
 
@@ -149,6 +159,7 @@ export class PollingService implements OnDestroy {
         type: 'START_POLLING',
         data: { interval }
       });
+      this.startCountdown(interval);
     } else {
       // Fallback to setInterval
       this.fallbackTimer = window.setInterval(() => {
@@ -156,6 +167,7 @@ export class PollingService implements OnDestroy {
           this.saveData();
         }
       }, interval);
+      this.startCountdown(interval);
     }
   }
 
@@ -177,61 +189,100 @@ export class PollingService implements OnDestroy {
       clearInterval(this.fallbackTimer);
       this.fallbackTimer = null;
     }
+
+    this._syncStatusService.stopCountdown();
+  }
+
+  // Countdown logic for next sync
+  private startCountdown(ms: number) {
+    this._syncStatusService.startCountdown(ms);
   }
 
   private async saveData() {
     if (this.processing) {
+      this._logger.info('Save already in progress, skipping');
+      return;
+    }
+
+    // Check if document is visible before triggering sync
+    if (document.visibilityState !== 'visible') {
+      this._logger.info('App is not in focus, deferring sync until visible');
       return;
     }
 
     this.processing = true;
 
     try {
-      // Get unsaved data
+      // Get unsaved data counts first
+      const counts = await this._unsavedDataService.getUnsavedCounts();
+      
+      if (counts.total === 0) {
+        this._logger.info('No unsaved data to sync');
+        return;
+      }
+
+      this._logger.info(`Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
+
+      // Get actual unsaved data
       const sheetData = {} as ISheet;
       const defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
       sheetData.properties = { id: defaultSheet.id, name: "" };
       sheetData.trips = await this._tripService.getUnsaved();
       sheetData.shifts = await this._shiftService.getUnsavedShifts();
+      sheetData.expenses = await this._expensesService.getUnsaved();
 
-      if (sheetData.trips.length === 0 && sheetData.shifts.length === 0) {
-        return;
-      }
+      // Start background sync with status updates
+      this._syncStatusService.startSync('auto-save', counts.total);
+      this._syncStatusService.addMessage(`Saving ${counts.total} item(s) to Google Sheets...`, 'info');
 
-      this._logger.info(`Saving ${sheetData.trips.length} trips and ${sheetData.shifts.length} shifts`);
-
-      // Warm up lambda
-      const warmupResult = await this._sheetService.warmUpLambda();
-      if (!warmupResult) {
-        this._logger.error('Lambda warmup failed');
-        return;
-      }
-
-      // Save to spreadsheet
-      const messages = await this._gigLoggerService.saveSheetData(sheetData);
+      // Perform the save operation
+      const messages = await this._gigWorkflowService.saveSheetData(sheetData);
       
-      // Process the response using the helper
+      // Process the response
       const result = ApiMessageHelper.processSheetSaveResponse(messages);
-      
-      if (!result.success) {
-        this._snackBar.open(`Error saving data: ${result.errorMessage}`, undefined, { duration: 5000 });
-        return;
+
+      if (result.success) {
+        this._logger.info('Auto-save completed successfully');
+        
+        // Mark all items as saved in local database after successful save
+        await this._unsavedDataService.markAllAsSaved();
+        
+        // Add detailed success messages
+        if (counts.trips > 0) {
+          this._syncStatusService.addMessage(`Saved ${counts.trips} trip(s)`, 'info');
+        }
+        if (counts.shifts > 0) {
+          this._syncStatusService.addMessage(`Saved ${counts.shifts} shift(s)`, 'info');
+        }
+        if (counts.expenses > 0) {
+          this._syncStatusService.addMessage(`Saved ${counts.expenses} expense(s)`, 'info');
+        }
+        
+        this._syncStatusService.completeSync(`Saved ${counts.total} item(s) successfully`);
+        
+        // Emit reload event for parent components
+        this.parentReload.emit();
+      } else {
+        const errorMsg = result.errorMessage || 'Unknown error during save';
+        
+        this._logger.warn('Auto-save completed with errors:', errorMsg);
+        this._syncStatusService.failSync(errorMsg);
+        
+        // Show snackbar for errors
+        this._snackBar.open("Auto-save completed with errors", "View Details", { duration: 5000 });
       }
-
-      // Mark as saved
-      await this._tripService.saveUnsaved(sheetData.trips);
-      await this._shiftService.saveUnsavedShifts(sheetData.shifts);
-
-      this._snackBar.open("Data saved to spreadsheet", undefined, { duration: 3000 });
-      this.parentReload.emit();
-      
-      this._logger.info('Data saved successfully');
 
     } catch (error) {
-      this._logger.error('Save failed:', error);
-      this._snackBar.open("Save failed - data remains unsaved", undefined, { duration: 5000 });
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      this._logger.error('Auto-save failed:', error);
+      this._syncStatusService.failSync(errorMsg);
+      this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
     } finally {
       this.processing = false;
+      // Only restart countdown if polling is still enabled
+      if (this.enabled) {
+        this.startCountdown(this.currentInterval);
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 <div class="privacy-policy">
   <h1>Privacy Policy</h1>
-  <p>Last updated: October 31, 2025</p>
+  <p>Last updated: November 3, 2025</p>
 
   <section>
     <h2>Introduction</h2>
@@ -58,6 +58,16 @@
   </section>
 
   <section>
+    <h2>Browser Permissions</h2>
+    <p>The app may request the following browser permissions to enhance your experience:</p>
+    <ul>
+      <li><strong>Microphone:</strong> Used only for optional voice input to speed up data entry. Speech is processed locally in your browser—no audio is recorded, stored, or transmitted to any server.</li>
+      <li><strong>Location:</strong> Used only to help you search for nearby places or addresses when logging trips or expenses. Your location is never tracked, logged, or stored. We do not use location for background tracking or analytics.</li>
+    </ul>
+    <p>Both permissions are completely optional. You can deny them and still use the app—voice input and location-based search features simply won't be available. You remain in full control of your device permissions.</p>
+  </section>
+
+  <section>
     <h2>How We Use Your Information</h2>
     <ul>
       <li>To provide and maintain the gig tracking service</li>
@@ -80,10 +90,11 @@
     <h2>Data Storage, Security, and Retention</h2>
     <ul>
       <li>Your trip and earnings data is stored only in your Google Sheets and on your device (browser IndexedDB)</li>
+      <li>When syncing large datasets (&gt;5MB), data is temporarily stored in AWS S3 for download (accessible via secure link for 10 minutes only), then automatically deleted after 1 day</li>
       <li>We use AWS CloudWatch for operational logs (see above), retained for 30 days</li>
       <li>No third-party analytics or error tracking providers are used</li>
       <li>All logs are non-identifiable and never include your data content</li>
-      <li><strong>Subprocessors:</strong> AWS (Lambda for backend services, CloudWatch for operational logs)</li>
+      <li><strong>Subprocessors:</strong> AWS (Lambda for backend services, S3 for temporary large file transfers, CloudWatch for operational logs)</li>
       <li><strong>We never sell your data</strong> to anyone, for any purpose</li>
     </ul>
   </section>

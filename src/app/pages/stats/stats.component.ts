@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
@@ -16,6 +16,7 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     selector: 'app-stats',
     templateUrl: './stats.component.html',
     styleUrls: ['./stats.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
 })
@@ -83,16 +84,16 @@ export class StatsComponent implements OnInit {
 
       item.name = itemName;
       item.trips = tripFilter.length;
-      item.distance = tripFilter.filter(x => x.distance).map(x => x.distance).reduce((acc, value) => acc + value, 0);
-      item.pay = tripFilter.filter(x => x.pay).map(x => x.pay).reduce((acc, value) => acc + value, 0);
-      item.tip = tripFilter.filter(x => x.tip).map(x => x.tip).reduce((acc, value) => acc + value, 0);
-      item.bonus = tripFilter.filter(x => x.bonus).map(x => x.bonus).reduce((acc, value) => acc + value, 0);
-      item.total = tripFilter.filter(x => x.total).map(x => x.total).reduce((acc, value) => acc + value, 0);
-      item.cash = tripFilter.filter(x => x.cash).map(x => x.cash).reduce((acc, value) => acc + value, 0);
+      item.distance = tripFilter.map(x => x.distance || 0).reduce((acc, value) => acc + value, 0);
+      item.pay = tripFilter.map(x => x.pay || 0).reduce((acc, value) => acc + value, 0);
+      item.tip = tripFilter.map(x => x.tip || 0).reduce((acc, value) => acc + value, 0);
+      item.bonus = tripFilter.map(x => x.bonus || 0).reduce((acc, value) => acc + value, 0);
+      item.total = tripFilter.map(x => x.total || 0).reduce((acc, value) => acc + value, 0);
+      item.cash = tripFilter.map(x => x.cash || 0).reduce((acc, value) => acc + value, 0);
 
       item.amountPerTrip = item.total / item.trips;
       item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
-      item.amountPerTime = tripFilter.filter(x => x.amountPerTime).map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / item.trips;
+      item.amountPerTime = tripFilter.map(x => x.amountPerTime || 0).reduce((acc, value) => acc + value, 0) / item.trips;
 
       items.push(item);
     })
@@ -110,17 +111,17 @@ export class StatsComponent implements OnInit {
       let shiftFilter = shifts.filter((x:any) => x[name] === itemName);
 
       item.name = itemName;
-      item.trips = shiftFilter.filter(x => x.totalTrips).map(x => x.totalTrips).reduce((acc, value) => acc + value, 0);
-      item.distance = shiftFilter.filter(x => x.totalDistance).map(x => x.totalDistance).reduce((acc, value) => acc + value, 0);
-      item.pay = shiftFilter.filter(x => x.totalPay).map(x => x.totalPay).reduce((acc, value) => acc + value, 0);
-      item.tip = shiftFilter.filter(x => x.totalTips).map(x => x.totalTips).reduce((acc, value) => acc + value, 0);
-      item.bonus = shiftFilter.filter(x => x.totalBonus).map(x => x.totalBonus).reduce((acc, value) => acc + value, 0);
-      item.total = shiftFilter.filter(x => x.grandTotal).map(x => x.grandTotal).reduce((acc, value) => acc + value, 0);
-      item.cash = shiftFilter.filter(x => x.totalCash).map(x => x.totalCash).reduce((acc, value) => acc + value, 0);
+      item.trips = shiftFilter.map(x => x.totalTrips || 0).reduce((acc, value) => acc + value, 0);
+      item.distance = shiftFilter.map(x => x.totalDistance || 0).reduce((acc, value) => acc + value, 0);
+      item.pay = shiftFilter.map(x => x.totalPay || 0).reduce((acc, value) => acc + value, 0);
+      item.tip = shiftFilter.map(x => x.totalTips || 0).reduce((acc, value) => acc + value, 0);
+      item.bonus = shiftFilter.map(x => x.totalBonus || 0).reduce((acc, value) => acc + value, 0);
+      item.total = shiftFilter.map(x => x.grandTotal || 0).reduce((acc, value) => acc + value, 0);
+      item.cash = shiftFilter.map(x => x.totalCash || 0).reduce((acc, value) => acc + value, 0);
 
       item.amountPerTrip = item.total / (!item.trips ? 1 : item.trips);
       item.amountPerDistance = item.total / (!item.distance ? 1 : item.distance);
-      item.amountPerTime = shiftFilter.filter(x => x.amountPerTime).map(x => x.amountPerTime).reduce((acc, value) => acc + value, 0) / shiftFilter.length;
+      item.amountPerTime = shiftFilter.map(x => x.amountPerTime || 0).reduce((acc, value) => acc + value, 0) / shiftFilter.length;
 
       items.push(item);
     })

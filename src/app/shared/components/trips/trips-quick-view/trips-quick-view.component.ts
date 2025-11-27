@@ -159,7 +159,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   async setDropoffTime() {
     let dropOffTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.queryShifts("key", this.trip.key))[0];
+    let shift = (await this._shiftService.query("key", this.trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
       updateAction(shift, ActionEnum.Update);
@@ -187,7 +187,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   async setPickupTime() {
     let pickupTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.queryShifts("key", this.trip.key))[0];
+    let shift = (await this._shiftService.query("key", this.trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
       updateAction(shift, ActionEnum.Update);
@@ -201,15 +201,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
   
   async deleteTrip() {
-    if (this.trip.action === ActionEnum.Add) {
-      await this._tripService.delete(this.trip.id!);
-      await this._tripService.updateRowIds(this.trip.rowId);
-    }
-    else {
-      updateAction(this.trip, ActionEnum.Delete);
-      this.trip.saved = false;
-      await this._tripService.update([this.trip]);
-    }
+    await this._tripService.deleteItem(this.trip);
 
     const shift = await this._shiftService.queryShiftByKey(this.trip.key);
     if (shift) {

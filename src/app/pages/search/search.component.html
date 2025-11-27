@@ -1,0 +1,289 @@
+<div class="search-page bg-gray-50 pb-20">
+  <!-- Search Input with Autocomplete and Filter Button (Overlay) -->
+  <div 
+  class="fixed left-0 right-0 z-20 pt-4 bg-white shadow-md transition-all duration-300"
+  [ngStyle]="{ 'top': '56px' }">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex gap-2">
+        <div class="flex-1">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Search</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="searchTerm"
+              (input)="onSearchInput(searchTerm)"
+              [matAutocomplete]="auto"
+              placeholder="Enter a search term..."
+              autocomplete="off">
+            <mat-icon matPrefix>search</mat-icon>
+            <button 
+              mat-icon-button 
+              matSuffix 
+              *ngIf="searchTerm"
+              (click)="clearSearch()"
+              aria-label="Clear search">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)">
+              <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        
+        <!-- Filter Toggle Button -->
+        <div class="flex items-end pb-1">
+          <button 
+            mat-icon-button
+            [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
+            matTooltipPosition="below"
+            (click)="toggleFilters()"
+            [class.bg-blue-50]="showFilters"
+            class="filter-toggle-btn">
+            <mat-icon [class.text-blue-600]="showFilters">
+              {{ showFilters ? 'filter_list_off' : 'filter_list' }}
+            </mat-icon>
+            <span class="filter-badge">{{ getEnabledCount() }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Section (Collapsible) -->
+      <div class="overflow-hidden transition-all duration-300" 
+           [class.max-h-0]="!showFilters" 
+           [class.max-h-96]="showFilters"
+           [class.opacity-0]="!showFilters"
+           [class.opacity-100]="showFilters"
+           [class.mt-3]="showFilters">
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-700">Filter Categories</h3>
+            <div class="flex gap-2">
+              <button mat-button (click)="selectAllCategories()" class="text-xs">
+                <mat-icon class="text-sm">check_box</mat-icon>
+                &nbsp;All
+              </button>
+              <button mat-button (click)="deselectAllCategories()" class="text-xs">
+                <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
+                &nbsp;None
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            <div 
+              *ngFor="let category of getCategoriesArray()"
+              class="flex items-center p-2 rounded border transition-colors cursor-pointer hover:bg-white"
+              [class.bg-white]="isCategoryEnabled(category)"
+              [class.border-blue-500]="isCategoryEnabled(category)"
+              [class.border-gray-300]="!isCategoryEnabled(category)"
+              (click)="toggleCategory(category)">
+              <mat-checkbox 
+                [checked]="isCategoryEnabled(category)"
+                (change)="toggleCategory(category)"
+                (click)="$event.stopPropagation()"
+                color="primary"
+                class="filter-checkbox">
+              </mat-checkbox>
+              <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                <mat-icon 
+                  class="filter-icon"
+                  [ngClass]="getCategoryColor(category)">
+                  {{ getCategoryIcon(category) }}
+                </mat-icon>
+                <span class="text-sm font-medium truncate">{{ category }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exact Match Option -->
+        <div class="mt-3 pt-3 border-t border-gray-200">
+          <div class="flex flex-row gap-4">
+            <mat-checkbox 
+              [(ngModel)]="exactMatch"
+              (change)="onExactMatchChange()"
+              color="primary"
+              class="text-sm">
+              <span class="text-gray-700 font-medium">Exact match only</span>
+            </mat-checkbox>
+            <mat-checkbox 
+              [(ngModel)]="caseSensitive"
+              (change)="onCaseSensitiveChange()"
+              color="primary"
+              class="text-sm">
+              <span class="text-gray-700 font-medium">Case sensitive</span>
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Summary Bar -->
+      <div class="flex items-center justify-between text-sm border-t border-gray-200" 
+           *ngIf="hasSearched && !isSearching">
+        <div class="flex items-center gap-4">
+          <span class="text-gray-600">
+            <span class="font-bold text-gray-900">{{ getTotalResultsCount() }}</span> matches
+          </span>
+          <span class="text-gray-600">
+            <span class="font-bold text-gray-900">{{ getTotalTripsCount() }}</span> trips
+          </span>
+          <span class="text-gray-600">
+            <span class="font-bold text-green-600">{{ getTotalEarnings() | currency }}</span> total
+          </span>
+        </div>
+        <div *ngIf="groupedResults.length > 0">
+          <button 
+            mat-icon-button 
+            (click)="toggleAllGroups()"
+            [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
+            matTooltipPosition="below"
+            class="expand-toggle-btn">
+            <mat-icon>{{ areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="flex justify-center items-center py-20 content-spacing" *ngIf="isSearching">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Empty State -->
+  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="!hasSearched && !isSearching">
+    <mat-icon class="text-gray-300 text-6xl mb-4">search</mat-icon>
+    <h2 class="text-xl font-semibold text-gray-700 mb-2">Start Searching</h2>
+    <p class="text-gray-500">Enter a search term to find trips by service, place, name, address, region, or type</p>
+  </div>
+
+  <!-- No Results State -->
+  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="hasSearched && !isSearching && searchResults.length === 0">
+    <mat-icon class="text-gray-300 text-6xl mb-4">search_off</mat-icon>
+    <h2 class="text-xl font-semibold text-gray-700 mb-2">No Results Found</h2>
+    <p class="text-gray-500">Try a different search term or category filter</p>
+  </div>
+
+  <!-- Search Results - Grouped by Month -->
+  <div class="max-w-7xl mx-auto px-4 py-4 content-spacing" *ngIf="!isSearching && groupedResults.length > 0">
+    <div *ngFor="let group of groupedResults" class="mb-6">
+      <!-- Month Group Header -->
+      <div class="card card-hover" (click)="toggleGroup(group.month)">
+        <div class="p-4">
+          <div class="flex-between">
+            <div class="flex-start">
+              <mat-icon class="text-blue-600 flex-shrink-0">calendar_month</mat-icon>
+              <div class="flex-1 min-w-0">
+                <div class="text-lg font-bold text-gray-900 text-truncate text-tight">{{ group.month }}</div>
+                <span class="text-xs text-gray-500 text-tight">
+                  {{ group.results.length }} {{ group.results.length === 1 ? 'match' : 'matches' }}
+                </span>
+              </div>
+            </div>
+            <div class="flex-end">
+              <div class="text-right">
+                <div class="text-sm text-gray-600 whitespace-nowrap">{{ group.totalTrips }} trips</div>
+                <div class="text-sm font-bold text-green-600 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
+              </div>
+              <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Group Averages Bar -->
+        <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-t border-gray-200 text-xs text-gray-700 font-medium">
+          <div>
+            Avg/trip:
+            <span class="font-bold text-blue-700">
+              {{ getGroupAvgPerTrip(group) }}
+            </span>
+          </div>
+          <div>
+            Avg/hr:
+            <span class="font-bold text-green-700">
+              {{ getGroupAvgRate(group) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results within this month -->
+      <div class="mt-2 space-y-2" *ngIf="isGroupExpanded(group.month)">
+        <div *ngFor="let result of group.results" class="card">
+          <!-- Result Header -->
+          <div 
+            class="p-4 card-hover border-l-4"
+            [ngClass]="getCategoryColor(result.type).replace('text-', 'border-')"
+            (click)="toggleResult(getResultKey(result, group.month))">
+            <div class="flex-between">
+              <div class="flex-start">
+                <mat-icon [ngClass]="getCategoryColor(result.type)">
+                  {{ getCategoryIcon(result.type) }}
+                </mat-icon>
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-gray-900 text-truncate">{{ result.value }}</div>
+                  <div class="text-xs text-gray-500">{{ result.type }}</div>
+                </div>
+              </div>
+              <div class="flex-end gap-4">
+                <div class="text-right">
+                  <div class="text-sm text-gray-600">{{ result.totalTrips }} trips</div>
+                  <div class="text-sm font-bold text-green-600">{{ result.totalEarnings | currency }}</div>
+                </div>
+                <mat-icon class="text-gray-400">
+                  {{ isResultExpanded(getResultKey(result, group.month)) ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-result Averages Bar -->
+          <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-t border-gray-200 text-xs text-gray-700 font-medium" 
+               *ngIf="!isResultSameAsGroup(result, group)">
+            <div>
+              Avg/trip:
+              <span class="font-bold text-blue-700">
+                {{ getResultAvgPerTrip(result) }}
+              </span>
+            </div>
+            <div>
+              Avg/hr:
+              <span class="font-bold text-green-700">
+                {{ getResultAvgRate(result) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Trip List (Expanded) -->
+          <div class="border-t bg-gray-50" *ngIf="isResultExpanded(getResultKey(result, group.month))" (click)="$event.stopPropagation()">
+            <div class="p-2">
+              <div class="space-y-2">
+                <trips-quick-view 
+                  *ngFor="let trip of result.trips" 
+                  [trip]="trip"
+                  [showActions]="false"
+                  class="block">
+                </trips-quick-view>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Back to Top Button -->
+<button 
+  mat-fab 
+  color="primary"
+  class="floating-back-to-top bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full p-4 flex items-center justify-center transition-opacity duration-200"
+  *ngIf="showBackToTop"
+  (click)="scrollToTop()"
+  matTooltip="Back to top"
+  matTooltipPosition="left"
+  aria-label="Scroll to top">
+  <mat-icon>arrow_upward</mat-icon>
+</button>

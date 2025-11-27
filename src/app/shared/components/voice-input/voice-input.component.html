@@ -1,0 +1,36 @@
+<!-- Floating microphone button -->
+<button *ngIf="isSpeechRecognitionSupported()"
+        type="button"
+        [ngClass]="'rounded-full p-4 text-white shadow-lg border-none focus:outline-none focus:ring-2 flex items-center justify-center transition-all ' + micButtonColor"
+        aria-label="Start voice input"
+        (click)="onMicClick()">
+  <mat-icon>{{ recognizing ? 'mic' : 'mic_none' }}</mat-icon>
+</button>
+
+<!-- Transcript display overlay (shows when recognizing or has recent transcript) -->
+<div *ngIf="recognizing || transcript" 
+     class="transcript-overlay"
+     [class.recognizing]="recognizing">
+  <div class="transcript-content">
+    <div class="transcript-header">
+      <mat-icon class="pulse-icon" *ngIf="recognizing">graphic_eq</mat-icon>
+      <span *ngIf="recognizing">Listening...</span>
+      <span *ngIf="!recognizing && transcript">Heard:</span>
+    </div>
+    <p class="transcript-text">{{ transcript || 'Speak now...' }}</p>
+    <p *ngIf="recognizing && suggestionPhrase" class="suggestion-text">Try: "{{ suggestionPhrase }}"</p>
+    <div *ngIf="!recognizing && transcript">
+      <div *ngIf="hasParsedData" class="parsed-result bg-gray-100 rounded p-2 mt-2 text-xs text-gray-700">
+        <span class="font-semibold">Assigned fields:</span>
+        <ng-container *ngFor="let entry of parsedResultEntries">
+          <span class="block"><span class="font-medium">{{ entry.key }}</span> = <span class="font-mono">{{ entry.value }}</span></span>
+        </ng-container>
+      </div>
+      <div *ngIf="parsedResult && !hasParsedData" class="parsed-result bg-gray-100 rounded p-2 mt-2 text-xs text-gray-700">
+        <span class="font-semibold">No data found.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-content></ng-content>

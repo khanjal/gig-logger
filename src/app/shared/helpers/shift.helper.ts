@@ -61,7 +61,6 @@ export class ShiftHelper {
         shift.number = shiftNumber ?? 0;
         shift.start = new Date().toLocaleTimeString();
         shift.total = 0;
-        shift.trips = 0;
         updateAction(shift, ActionEnum.Add);
         
         return shift;

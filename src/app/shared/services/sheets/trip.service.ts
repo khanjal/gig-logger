@@ -2,15 +2,15 @@ import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
-import { ActionEnum } from '@enums/action.enum'; // Adjust the import path as necessary
+import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
-import { GenericCrudService } from '@services/generic-crud.service';
-import { clearAction, updateAction } from '@utils/action.utils';
+import { SyncableCrudService } from '@services/syncable-crud.service';
+import { updateAction } from '@utils/action.utils';
 
 @Injectable({
     providedIn: 'root'
   })
-export class TripService  extends GenericCrudService<ITrip> {
+export class TripService extends SyncableCrudService<ITrip> {
     constructor() {
       super(spreadsheetDB.trips); // Pass the table reference
     }
@@ -20,7 +20,7 @@ export class TripService  extends GenericCrudService<ITrip> {
     public async addNext(trip: ITrip) {
         let nextTrip = {} as ITrip;
         updateAction(nextTrip, ActionEnum.Add);
-        nextTrip.rowId = await this.getMaxId() + 1;
+        nextTrip.rowId = await this.getMaxRowId() + 1;
         nextTrip.key = trip.key;
         nextTrip.date = trip.date;
         nextTrip.region = trip.region;
@@ -36,29 +36,13 @@ export class TripService  extends GenericCrudService<ITrip> {
     async clone(trip: ITrip) {
         let cloneTrip = trip;
         delete cloneTrip.id;
-        cloneTrip.rowId = await this.getMaxId() + 1;
+        cloneTrip.rowId = await this.getMaxRowId() + 1;
         updateAction(cloneTrip, ActionEnum.Add);
         await this.add(cloneTrip);
     }
 
-    public async getMaxId(): Promise<number> {
-        return await spreadsheetDB.trips.orderBy("rowId").last().then(x => x?.rowId || 1);
-    }
-
-    public async getAll(): Promise<ITrip[]> {
-        return await spreadsheetDB.trips.toArray();
-    }
-
-    public async queryById(id: number): Promise<ITrip> {
-        return (await spreadsheetDB.trips.where('id').equals(id).toArray())[0];
-    }
-
     public async getSaved(): Promise<ITrip[]> {
-        return (await this.getAll()).filter(x => x.saved);
-    }
-
-    public async getUnsaved(): Promise<ITrip[]> {
-        return (await this.getAll()).filter(x => !x.saved);
+        return (await this.list()).filter(x => x.saved);
     }
 
     public async getBetweenDates(startDate: string, endDate: string): Promise<ITrip[]> {
@@ -80,49 +64,5 @@ export class TripService  extends GenericCrudService<ITrip> {
         return trips;
     }
 
-    public async saveUnsaved(trips?: ITrip[]) {
-        if (!trips || trips.length === 0) {
-            trips = await this.getUnsaved();
-        }
 
-        let rowId;
-        for (let trip of trips) {
-            if (trip.action === ActionEnum.Delete) {
-                if (!rowId) {
-                    rowId = trip.rowId;
-                }
-                await this.delete(trip.id!);
-                continue;
-            }
-
-            let originalTrip = await this.queryById(trip.id!);
-            if (originalTrip.actionTime === trip.actionTime) {
-                clearAction(trip);
-                await this.update([trip]);
-            }
-            else {
-                updateAction(trip, ActionEnum.Update);
-            }
-        };
-
-        if (rowId) {
-            await this.updateRowIds(rowId);
-        }
-    }
-
-    public async updateRowIds(rowId: number) {
-        let maxId = await this.getMaxId();
-        let nextRowId = rowId + 1;
-        
-        // Need to loop id until it finds a trip. Update that trip with a current row id. Then continue until it hits maxId
-        while (nextRowId <= maxId) {
-            let trip = await spreadsheetDB.trips.where("rowId").equals(nextRowId).first();
-            if (trip) {
-                trip.rowId = rowId;
-                await this.update([trip]);
-                rowId++;
-            }
-            nextRowId++;
-        }
-    }
 }

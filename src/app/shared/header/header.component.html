@@ -44,13 +44,6 @@
           <mat-icon>today</mat-icon>
           <span *ngIf="unsavedShiftsCount > 0" class="notification-badge">{{ unsavedShiftsCount }}</span>
         </a>
-        <a routerLink="/stats" 
-           class="action-button" 
-           aria-label="View statistics"
-           matTooltip="Statistics"
-           matTooltipPosition="below">
-          <mat-icon>table_chart</mat-icon>
-        </a>
         <a routerLink="/metrics" 
            class="action-button" 
            aria-label="View metrics"
@@ -60,6 +53,45 @@
         </a>
       </ng-container>
       
+      <!-- Tools section for desktop only (before sync and setup) -->
+      <ng-container *ngIf="isAuthenticated && defaultSheet">
+        <div class="desktop-tools desktop-only">
+          <a routerLink="/stats" 
+             class="action-button" 
+             aria-label="View statistics"
+             matTooltip="Statistics"
+             matTooltipPosition="below">
+            <mat-icon>table_chart</mat-icon>
+          </a>
+          <a routerLink="/expenses"
+             class="action-button"
+             aria-label="View expenses"
+             matTooltip="Expenses"
+             matTooltipPosition="below">
+            <mat-icon>receipt</mat-icon>
+          </a>
+          <a routerLink="/diagnostics"
+             class="action-button"
+             aria-label="View diagnostics"
+             matTooltip="Diagnostics"
+             matTooltipPosition="below">
+            <mat-icon>analytics</mat-icon>
+          </a>
+          <a routerLink="/search"
+             class="action-button"
+             aria-label="Search"
+             matTooltip="Search"
+             matTooltipPosition="below">
+            <mat-icon>search</mat-icon>
+          </a>
+        </div>
+      </ng-container>
+
+      <!-- Sync Status Indicator (only show when authenticated) -->
+      <ng-container *ngIf="isAuthenticated && defaultSheet">
+        <app-sync-status-indicator></app-sync-status-indicator>
+      </ng-container>
+
       <a routerLink="/setup" 
          class="action-button" 
          aria-label="Open settings"
@@ -142,17 +174,27 @@
             <mat-icon class="menu-icon">table_chart</mat-icon>
             <span class="menu-text">Statistics</span>
           </a>
-          <div class="menu-item menu-item--disabled" aria-label="Expenses (disabled)">
+          <a routerLink="/expenses"
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="View expenses">
             <mat-icon class="menu-icon">receipt</mat-icon>
             <span class="menu-text">Expenses</span>
-            <span class="menu-badge">Coming Soon</span>
-          </div>
-          <!-- Future menu items will go here -->
-          <div class="menu-item menu-item--disabled">
+          </a>
+          <a routerLink="/diagnostics"
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="View diagnostics">
+            <mat-icon class="menu-icon">analytics</mat-icon>
+            <span class="menu-text">Diagnostics</span>
+          </a>
+          <a routerLink="/search"
+             (click)="closeMenu()"
+             class="menu-item"
+             aria-label="Search">
             <mat-icon class="menu-icon">search</mat-icon>
             <span class="menu-text">Search</span>
-            <span class="menu-badge">Coming Soon</span>
-          </div>
+          </a>
         </div>
         
         <!-- Settings section - always available -->

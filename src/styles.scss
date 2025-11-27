@@ -422,3 +422,48 @@ a {
   z-index: 9999;
   /* Responsive: adjust for mobile if needed */
 }
+
+/* Material Date Picker Overlay - Critical Styles for Immediate Application */
+/* These styles ensure the date picker overlay is styled correctly from the moment it appears */
+.mat-datepicker-content {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background-color: $background-card !important;
+  
+  @media (max-width: 768px) {
+    border-radius: 8px !important;
+  }
+}
+
+.mat-calendar {
+  font-family: 'Roboto', sans-serif !important;
+  background-color: $background-card !important;
+}
+
+.mat-datepicker-content-container {
+  background-color: $background-card !important;
+}
+
+/* Ensure CDK Overlay Container is styled immediately */
+.cdk-overlay-container {
+  z-index: 1000 !important;
+}
+
+/* Date Picker Backdrop - Only apply to date picker overlays */
+.cdk-overlay-pane:has(.mat-datepicker-content) ~ .cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.32) !important;
+}
+
+/* Date Picker Positioning - Prevent FOUC (Flash of Unstyled Content) */
+.cdk-overlay-pane:has(.mat-datepicker-content) {
+  .cdk-overlay-connected-position-bounding-box {
+    position: absolute !important;
+  }
+}
+
+.mat-datepicker-popup {
+  &.mat-datepicker-content {
+    transform-origin: center !important;
+  }
+}
