@@ -15,6 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatMenuModule } from '@angular/material/menu';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ActionEnum } from '@enums/action.enum';
@@ -41,7 +42,8 @@ import { updateAction } from '@utils/action.utils';
     MatIconModule,
     OrderByPipe,
     MatAutocompleteModule,
-    GroupByMonthPipe
+    GroupByMonthPipe,
+    MatMenuModule
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
@@ -70,6 +72,7 @@ export class ExpensesComponent implements OnInit {
   editingExpenseId?: number;
   unsavedData: boolean = false;
   saving: boolean = false;
+  actionEnum = ActionEnum;
 
   constructor(
     private fb: FormBuilder,
@@ -213,6 +216,16 @@ export class ExpensesComponent implements OnInit {
   }
 
   /**
+   * Restores an expense from the table menu
+   */
+  async restoreExpense(expense: IExpense) {
+    updateAction(expense, ActionEnum.Update);
+    expense.saved = false;
+    await this.expensesService.update([expense]);
+    await this.loadExpenses();
+  }
+
+  /**
    * Confirms deletion with user before deleting expense
    */
   async confirmDeleteExpenseDialog(expense: IExpense) {
@@ -307,5 +320,4 @@ export class ExpensesComponent implements OnInit {
   }
 
   sortByMonth = (a: {key: string}, b: {key: string}) => a.key > b.key ? -1 : 1;
-  actionEnum = ActionEnum;
 }
