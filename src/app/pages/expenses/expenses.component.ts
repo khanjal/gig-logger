@@ -73,6 +73,7 @@ export class ExpensesComponent implements OnInit {
   unsavedData: boolean = false;
   saving: boolean = false;
   actionEnum = ActionEnum;
+  maxRowId: number = 1;
 
   constructor(
     private fb: FormBuilder,
@@ -83,8 +84,10 @@ export class ExpensesComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.maxRowId = await this.expensesService.getMaxRowId() || 1;
+    const nextRowId = this.maxRowId + 1;
     this.expenseForm = this.fb.group({
-      rowId: [''],
+      rowId: [nextRowId],
       date: [this.getToday(), Validators.required],
       name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
@@ -100,6 +103,7 @@ export class ExpensesComponent implements OnInit {
 
   async loadExpenses() {
     this.expenses = await spreadsheetDB.expenses.toArray();
+    this.maxRowId = await this.expensesService.getMaxRowId() || 1;
     this.customCategories = Array.from(new Set(this.expenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c))));
     this.groupedExpenses = this.expenses.reduce((groups, expense) => {
       const month = expense.date.slice(0, 7); // yyyy-mm
@@ -137,8 +141,8 @@ export class ExpensesComponent implements OnInit {
       await this.expensesService.update([expense]);
       this.editingExpenseId = undefined;
     } else {
-      // Insert new expense with rowId
-      expense.rowId = await this.expensesService.getMaxRowId() + 1;
+      // Insert new expense with rowId (starting at 2, since 1 is the header)
+      expense.rowId = this.maxRowId + 1;
       expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
     }
@@ -176,8 +180,7 @@ export class ExpensesComponent implements OnInit {
    */
   private async clearFormState() {
     this.editingExpenseId = undefined;
-    const nextRowId = await this.expensesService.getMaxRowId() + 1;
-    this.expenseForm.reset({ date: this.getToday(), rowId: nextRowId });
+    this.expenseForm.reset({ date: this.getToday(), rowId: this.maxRowId + 1 });
   }
 
   /**
