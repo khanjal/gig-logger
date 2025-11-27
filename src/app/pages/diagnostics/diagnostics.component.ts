@@ -70,6 +70,8 @@ export class DiagnosticsComponent implements OnInit {
     const places = await this._placeService.list();
     const names = await this._nameService.list();
 
+
+
     // Check for duplicate shifts
     const duplicateShiftsResult = this.findDuplicateShifts(shifts);
     this._logger.debug('Duplicate shifts found:', duplicateShiftsResult);
@@ -110,7 +112,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for duplicate places with different casing
-    const duplicatePlacesResult = this.findDuplicatePlaces(places);
+    const duplicatePlacesResult = this.findDuplicatePlaces(places, trips, addresses);
     this._logger.debug('Duplicate places found:', duplicatePlacesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Places',
@@ -205,7 +207,7 @@ export class DiagnosticsComponent implements OnInit {
     return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
   }
 
-  private findDuplicatePlaces(places: IPlace[]): { items: IPlace[], groups: IPlace[][] } {
+  private findDuplicatePlaces(places: IPlace[], trips: ITrip[], addresses: IAddress[]): { items: IPlace[], groups: IPlace[][] } {
     const duplicates: IPlace[] = [];
     const duplicateGroups: IPlace[][] = [];
     const processedPlaces = new Set<number>();
@@ -236,8 +238,11 @@ export class DiagnosticsComponent implements OnInit {
         }
       }
 
-      // If we found duplicates, add them all
+      // If we found duplicates, recalculate case-sensitive trip counts
       if (matchingPlaces.length > 1) {
+        for (const place of matchingPlaces) {
+          place.trips = trips.filter(t => t.place === place.place).length;
+        }
         duplicates.push(...matchingPlaces);
         duplicateGroups.push(matchingPlaces);
         processedPlaces.add(i);
