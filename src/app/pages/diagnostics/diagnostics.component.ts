@@ -5,6 +5,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
+import { DateHelper } from '@helpers/date.helper';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
@@ -22,21 +26,25 @@ interface DiagnosticItem {
   count: number;
   severity: 'info' | 'warning' | 'error';
   description: string;
-  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name'; // Type of items in the array
-  items?: any[]; // Array of problematic shifts/trips/addresses/places/names
-  groups?: any[][]; // Grouped duplicates for better display
+  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name';
+  items?: any[];
+  groups?: any[][];
+  fixable?: boolean;
+  bulkFixable?: boolean;
+  selectedValues?: Map<number, any>;
 }
 
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
   dataDiagnostics: DiagnosticItem[] = [];
   isLoading = false;
+  selectedValue: any[] = [];
 
   constructor(
     private _shiftService: ShiftService,
@@ -54,7 +62,8 @@ export class DiagnosticsComponent implements OnInit {
 
   async runDiagnostics() {
     this.isLoading = true;
-    this.dataDiagnostics = []; // Clear previous results
+    this.dataDiagnostics = [];
+    this.selectedValue = [];
 
     try {
       await this.checkDataIntegrity();
@@ -388,5 +397,75 @@ export class DiagnosticsComponent implements OnInit {
 
   getTotalIssues(): number {
     return this.dataDiagnostics.reduce((sum, item) => sum + item.count, 0);
+  }
+
+  async mergeDuplicates(group: any[], selectedItem: any, itemType: 'place' | 'name') {
+    const correctValue = itemType === 'place' ? selectedItem.place : selectedItem.name;
+    const trips = await this._tripService.list();
+    
+    for (const item of group) {
+      if (item === selectedItem) continue;
+      const oldValue = itemType === 'place' ? item.place : item.name;
+      
+      const affectedTrips = trips.filter(t => 
+        itemType === 'place' ? t.place === oldValue : t.name === oldValue
+      );
+      for (const trip of affectedTrips) {
+        if (itemType === 'place') {
+          trip.place = correctValue;
+        } else {
+          trip.name = correctValue;
+        }
+        await this._tripService.update([trip]);
+      }
+    }
+    
+    await this.runDiagnostics();
+  }
+
+  async fixShiftDuration(shift: IShift) {
+    if (!shift.start || !shift.finish) return;
+    const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+    shift.time = DateHelper.getDurationString(duration);
+    await this._shiftService.update([shift]);
+    await this.runDiagnostics();
+  }
+
+  async fixTripDuration(trip: ITrip) {
+    if (!trip.pickupTime || !trip.dropoffTime) return;
+    const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
+    trip.duration = DateHelper.getDurationString(duration);
+    await this._tripService.update([trip]);
+    await this.runDiagnostics();
+  }
+
+  async bulkFixShiftDurations() {
+    const shifts = await this._shiftService.list();
+    const shiftsToFix = this.findShiftsWithoutDuration(shifts);
+    
+    for (const shift of shiftsToFix) {
+      if (shift.start && shift.finish) {
+        const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+        shift.time = DateHelper.getDurationString(duration);
+        await this._shiftService.update([shift]);
+      }
+    }
+    
+    await this.runDiagnostics();
+  }
+
+  async bulkFixTripDurations() {
+    const trips = await this._tripService.list();
+    const tripsToFix = this.findTripsWithoutDuration(trips);
+    
+    for (const trip of tripsToFix) {
+      if (trip.pickupTime && trip.dropoffTime) {
+        const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
+        trip.duration = DateHelper.getDurationString(duration);
+        await this._tripService.update([trip]);
+      }
+    }
+    
+    await this.runDiagnostics();
   }
 }
