@@ -49,20 +49,23 @@
       <input matInput type="text" formControlName="note" maxlength="100" />
     </mat-form-field>
       <div class="col-span-1 md:col-span-4 flex flex-row items-center justify-between gap-2 mt-6">
+        <button *ngIf="editingExpenseId" mat-stroked-button type="button" (click)="cancelEdit()">
+          Cancel
+        </button>
         <div class="flex gap-2">
-          <button *ngIf="editingExpenseId" mat-fab extended color="warn" type="button" (click)="cancelEdit()">
-            <mat-icon>cancel</mat-icon> Cancel
+          <button *ngIf="editingExpenseId && !isEditingDeleted()" mat-stroked-button color="warn" type="button" (click)="deleteCurrentExpense()">
+            Delete
           </button>
-          <button *ngIf="editingExpenseId && !isEditingDeleted()" mat-icon-button color="warn" type="button" (click)="deleteCurrentExpense()" title="Delete">
-            <mat-icon>delete</mat-icon>
-          </button>
-          <button *ngIf="editingExpenseId && isEditingDeleted()" mat-icon-button color="primary" type="button" (click)="restoreCurrentExpense()" title="Restore">
-            <mat-icon>restore</mat-icon>
+          <button *ngIf="editingExpenseId && isEditingDeleted()" mat-stroked-button color="primary" type="button" (click)="restoreCurrentExpense()">
+            Restore
           </button>
         </div>
         <div class="flex gap-2">
-          <button mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid">
-            <mat-icon>{{ editingExpenseId ? 'save' : 'add' }}</mat-icon> {{ editingExpenseId ? 'Update' : 'Store' }}
+          <button *ngIf="!editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid">
+            <mat-icon>add</mat-icon> Store
+          </button>
+          <button *ngIf="editingExpenseId" mat-stroked-button color="primary" type="submit" [disabled]="expenseForm.invalid">
+            Update
           </button>
         </div>
       </div>
