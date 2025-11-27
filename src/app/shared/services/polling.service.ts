@@ -200,6 +200,7 @@ export class PollingService implements OnDestroy {
 
   private async saveData() {
     if (this.processing) {
+      this._logger.info('Save already in progress, skipping');
       return;
     }
 
@@ -278,8 +279,10 @@ export class PollingService implements OnDestroy {
       this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
     } finally {
       this.processing = false;
-      // Restart countdown for next sync
-      this.startCountdown(this.currentInterval);
+      // Only restart countdown if polling is still enabled
+      if (this.enabled) {
+        this.startCountdown(this.currentInterval);
+      }
     }
   }
 

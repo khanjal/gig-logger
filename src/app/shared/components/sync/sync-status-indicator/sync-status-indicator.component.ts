@@ -25,6 +25,7 @@ import { PollingService } from '@services/polling.service';
 })
 export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private intervalId?: number;
   
   syncState: SyncState | null = null;
   messages: SyncMessage[] = [];
@@ -53,12 +54,15 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       });
 
     // Update time display every 30 seconds
-    setInterval(() => {
+    this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
     }, 30000);
   }
 
   ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
