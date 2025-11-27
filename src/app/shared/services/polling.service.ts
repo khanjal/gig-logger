@@ -1,8 +1,10 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ShiftService } from './sheets/shift.service';
-import { TripService } from './sheets/trip.service';
 import { SpreadsheetService } from './spreadsheet.service';
+import { UnsavedDataService } from './unsaved-data.service';
+import { TripService } from './sheets/trip.service';
+import { ShiftService } from './sheets/shift.service';
+import { ExpensesService } from './sheets/expenses.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
@@ -28,8 +30,10 @@ export class PollingService implements OnDestroy {
   constructor(
     private _snackBar: MatSnackBar,
     private _sheetService: SpreadsheetService,
-    private _shiftService: ShiftService,
     private _tripService: TripService,
+    private _shiftService: ShiftService,
+    private _expensesService: ExpensesService,
+    private _unsavedDataService: UnsavedDataService,
     private _gigWorkflowService: GigWorkflowService,
     private _syncStatusService: SyncStatusService,
     private _logger: LoggerService
@@ -208,25 +212,27 @@ export class PollingService implements OnDestroy {
     this.processing = true;
 
     try {
-      // Get unsaved data
+      // Get unsaved data counts first
+      const counts = await this._unsavedDataService.getUnsavedCounts();
+      
+      if (counts.total === 0) {
+        this._logger.info('No unsaved data to sync');
+        return;
+      }
+
+      this._logger.info(`Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
+
+      // Get actual unsaved data
       const sheetData = {} as ISheet;
       const defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
       sheetData.properties = { id: defaultSheet.id, name: "" };
       sheetData.trips = await this._tripService.getUnsaved();
       sheetData.shifts = await this._shiftService.getUnsavedShifts();
-
-      const totalItems = sheetData.trips.length + sheetData.shifts.length;
-
-      if (totalItems === 0) {
-        this._logger.info('No unsaved data to sync');
-        return;
-      }
-
-      this._logger.info(`Auto-saving ${sheetData.trips.length} trips and ${sheetData.shifts.length} shifts`);
+      sheetData.expenses = await this._expensesService.getUnsaved();
 
       // Start background sync with status updates
-      this._syncStatusService.startSync('auto-save', totalItems);
-      this._syncStatusService.addMessage(`Saving ${totalItems} item(s) to Google Sheets...`, 'info');
+      this._syncStatusService.startSync('auto-save', counts.total);
+      this._syncStatusService.addMessage(`Saving ${counts.total} item(s) to Google Sheets...`, 'info');
 
       // Perform the save operation
       const messages = await this._gigWorkflowService.saveSheetData(sheetData);
@@ -238,18 +244,20 @@ export class PollingService implements OnDestroy {
         this._logger.info('Auto-save completed successfully');
         
         // Mark all items as saved in local database after successful save
-        await this._tripService.saveUnsaved();
-        await this._shiftService.saveUnsavedShifts();
+        await this._unsavedDataService.markAllAsSaved();
         
         // Add detailed success messages
-        if (sheetData.trips.length > 0) {
-          this._syncStatusService.addMessage(`Saved ${sheetData.trips.length} trip(s)`, 'info');
+        if (counts.trips > 0) {
+          this._syncStatusService.addMessage(`Saved ${counts.trips} trip(s)`, 'info');
         }
-        if (sheetData.shifts.length > 0) {
-          this._syncStatusService.addMessage(`Saved ${sheetData.shifts.length} shift(s)`, 'info');
+        if (counts.shifts > 0) {
+          this._syncStatusService.addMessage(`Saved ${counts.shifts} shift(s)`, 'info');
+        }
+        if (counts.expenses > 0) {
+          this._syncStatusService.addMessage(`Saved ${counts.expenses} expense(s)`, 'info');
         }
         
-        this._syncStatusService.completeSync(`Saved ${totalItems} item(s) successfully`);
+        this._syncStatusService.completeSync(`Saved ${counts.total} item(s) successfully`);
         
         // Emit reload event for parent components
         this.parentReload.emit();

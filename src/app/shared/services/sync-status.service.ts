@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
@@ -25,7 +25,7 @@ export interface SyncMessage {
 @Injectable({
   providedIn: 'root'
 })
-export class SyncStatusService {
+export class SyncStatusService implements OnDestroy {
   private readonly DEFAULT_STATE: SyncState = {
     status: 'idle',
     operation: null,
@@ -47,6 +47,10 @@ export class SyncStatusService {
   public readonly lastSuccessfulSync$: Observable<Date | null> = this.lastSuccessfulSyncSubject.asObservable();
 
   constructor() {}
+
+  ngOnDestroy(): void {
+    this.stopCountdown();
+  }
 
   /**
    * Start a new sync operation

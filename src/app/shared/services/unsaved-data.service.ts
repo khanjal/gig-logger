@@ -33,4 +33,12 @@ export class UnsavedDataService {
       total: trips.length + shifts.length + expenses.length
     };
   }
+
+  async markAllAsSaved(): Promise<void> {
+    await Promise.all([
+      this.tripService.saveUnsaved(),
+      this.shiftService.saveUnsavedShifts(),
+      this.expensesService.saveUnsaved()
+    ]);
+  }
 }

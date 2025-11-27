@@ -1,7 +1,6 @@
 // Angular Core
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
 // Angular Material
 import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
