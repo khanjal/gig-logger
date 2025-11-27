@@ -1,7 +1,7 @@
 // Imports
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
-import { ShiftService } from '../../shared/services/sheets/shift.service';
+import { ShiftService } from '@services/sheets/shift.service';
 import { Subscription as DexieSubscription } from 'dexie';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { DateHelper } from '../../shared/helpers/date.helper';
+import { DateHelper } from '@helpers/date.helper';
 
 // Chart.js registration
 Chart.register(...registerables);
@@ -52,7 +52,8 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
   imports: [CommonModule, BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
   providers: [ShiftService],
   templateUrl: './metrics.component.html',
-  styleUrls: ['./metrics.component.scss']
+  styleUrls: ['./metrics.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class MetricsComponent implements OnInit, OnDestroy {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;

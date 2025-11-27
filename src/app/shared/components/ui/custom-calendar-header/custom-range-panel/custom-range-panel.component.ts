@@ -31,9 +31,13 @@ type CustomPreset = typeof customPresets[number];
 export class CustomRangePanelComponent<D> {
   // list of range presets we want to provide:
   readonly customPresets = customPresets;
-  @HostBinding('class.touch-ui')
-  readonly isTouchUi = this.picker.touchUi;
   selectedPreset: string | null = null;
+
+  // Precompute date ranges during initialization
+  private readonly precomputedRanges: Record<CustomPreset, [start: D, end: D]> = this.customPresets.reduce((acc, preset) => {
+    acc[preset] = this.calculateDateRange(preset);
+    return acc;
+  }, {} as Record<CustomPreset, [start: D, end: D]>);
 
   constructor(
     private dateAdapter: DateAdapter<D>,
@@ -43,7 +47,7 @@ export class CustomRangePanelComponent<D> {
   // called when user selects a range preset:
   selectRange(rangeName: CustomPreset): void {
     this.selectedPreset = rangeName;
-    const [start, end] = this.calculateDateRange(rangeName);
+    const [start, end] = this.precomputedRanges[rangeName];
     this.picker.select(start);
     this.picker.select(end);
     this.picker.close();
@@ -113,10 +117,7 @@ export class CustomRangePanelComponent<D> {
   }
 
   private calculateWeek(forDay: D): [start: D, end: D] {
-    const deltaStart =
-      //this.dateAdapter.getFirstDayOfWeek() -
-      DateHelper.getFirstDayOfWeek() -
-      DateHelper.getDayOfWeek(<Date>forDay);
+    const deltaStart = DateHelper.getFirstDayOfWeek() - DateHelper.getDayOfWeek(<Date>forDay);
     const start = this.dateAdapter.addCalendarDays(forDay, deltaStart);
     const end = this.dateAdapter.addCalendarDays(start, 6);
     return [start, end];
@@ -128,5 +129,11 @@ export class CustomRangePanelComponent<D> {
       throw new Error('date creation failed');
     }
     return today;
+  }
+
+  // Lazy load touch-ui class
+  @HostBinding('class.touch-ui')
+  get isTouchUi(): boolean {
+    return this.picker.touchUi;
   }
 }

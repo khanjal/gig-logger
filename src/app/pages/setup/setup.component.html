@@ -40,7 +40,7 @@
     </mat-card>
   </ng-container>
 
-  <app-location-permission></app-location-permission>
+  <app-permissions></app-permissions>
 
   <mat-card class="mb-6">
     <mat-card-header><h2 class="text-2xl font-semibold">Application Insights</h2></mat-card-header>
@@ -53,12 +53,6 @@
 
   <app-auth-status></app-auth-status>
 
-  <mat-card class="mb-6" *ngIf="spreadsheets?.length">
-    <mat-card-header><h2 class="text-2xl font-semibold">Diagnostics</h2></mat-card-header>
-    <mat-card-content>
-      <app-diagnostics></app-diagnostics>
-    </mat-card-content>
-  </mat-card>
   <div class="mb-6">
     <div class="flex flex-row justify-between items-center gap-2">
       <button mat-fab [extended]="true" color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length" class="flex items-center gap-2"><mat-icon>refresh</mat-icon> Refresh Data</button>

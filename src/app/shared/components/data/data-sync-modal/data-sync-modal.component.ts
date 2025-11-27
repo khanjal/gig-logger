@@ -19,6 +19,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
 import { NgFor, NgClass } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 
@@ -40,6 +41,12 @@ interface SyncState {
   hasNonInfoMessage: boolean;
 }
 
+interface DataSyncConfig {
+  type: SyncType;
+  autoCloseOnError?: boolean;
+  autoCloseTimer?: number;
+}
+
 @Component({
     selector: 'app-data-sync-modal',
     templateUrl: './data-sync-modal.component.html',
@@ -50,9 +57,13 @@ interface SyncState {
 export class DataSyncModalComponent implements OnInit, OnDestroy {
     @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;
     
+    // Configuration inputs
+    public type: SyncType;
+    private autoCloseOnError: boolean;
+    private timerDelay: number;
+    
     // Timer related properties
     private timerSubscription: Subscription | null = null;
-    private readonly timerDelay = 5000;
     currentTime = 0;
     time = 0;
     currentTimeString = "";
@@ -78,14 +89,26 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
     
     constructor(
-        @Inject(MAT_DIALOG_DATA) public type: SyncType,
+        @Inject(MAT_DIALOG_DATA) public config: DataSyncConfig | SyncType,
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
         private _gigLoggerService: GigWorkflowService,
         private _sheetService: SpreadsheetService,
         private _shiftService: ShiftService,
         private _tripService: TripService,
+        private _expensesService: ExpensesService,
         private _timerService: TimerService
-    ) { }
+    ) { 
+        // Support both old string format and new config object format
+        if (typeof config === 'string') {
+            this.type = config;
+            this.autoCloseOnError = false;
+            this.timerDelay = 5000;
+        } else {
+            this.type = config.type;
+            this.autoCloseOnError = config.autoCloseOnError ?? false;
+            this.timerDelay = config.autoCloseTimer ?? 5000;
+        }
+    }
 
     async ngOnInit(): Promise<void> {
         this.defaultSheet = await this._sheetService.getDefaultSheet();
@@ -125,6 +148,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         sheetData.shifts = await this._shiftService.getUnsavedShifts();
         sheetData.trips = await this._tripService.getUnsaved();
+        sheetData.expenses = await this._expensesService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");
         let messages = await this._gigLoggerService.saveSheetData(sheetData);
@@ -148,6 +172,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         // Mark all items as saved in local database after successful save
         await this._tripService.saveUnsaved();
         await this._shiftService.saveUnsavedShifts();
+        await this._expensesService.saveUnsaved();
 
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
     }
@@ -189,7 +214,8 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             this.appendToLastMessage(`APPENDED (${this.currentTime - this.time}s)`);
         }
 
-        if (this.syncState.hasNonInfoMessage) {
+        // Only disable auto-close if there are non-info messages AND autoCloseOnError is false
+        if (this.syncState.hasNonInfoMessage && !this.autoCloseOnError) {
             this.syncState.isAutoClose = false;
             this.appendToTerminal("Auto-close disabled");
         }
@@ -240,19 +266,26 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     private async processFailure(message: string) {
-        this.syncState.isAutoClose = false;
         this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
         this.updateLastMessageType('error');
         
-        if (this.syncState.canContinue) {              
-            this.appendToTerminal("Partial data retrieved - Choose an option:", 'warning');
-            this.appendToTerminal("• Continue with partial data", 'info');
-            this.appendToTerminal("• Retry download", 'info');
-            this.appendToTerminal("• Close", 'info');
-            this.stopTimer();
+        // Check if we should auto-close even on error
+        if (this.autoCloseOnError) {
+            this.syncState.isAutoClose = true;
+            this.appendToTerminal(`Error detected - Modal will auto-close in ${this.timerDelay / 1000}s`);
         } else {
-            this.appendToTerminal('Auto-close disabled');
-            this.stopTimer();
+            this.syncState.isAutoClose = false;
+            
+            if (this.syncState.canContinue) {              
+                this.appendToTerminal("Partial data retrieved - Choose an option:", 'warning');
+                this.appendToTerminal("• Continue with partial data", 'info');
+                this.appendToTerminal("• Retry download", 'info');
+                this.appendToTerminal("• Close", 'info');
+                this.stopTimer();
+            } else {
+                this.appendToTerminal('Auto-close disabled');
+                this.stopTimer();
+            }
         }
     }
 

@@ -1,3 +1,28 @@
+// Desktop only utility class
+
+.desktop-only {
+  display: none !important;
+}
+
+@media (min-width: 1024px) {
+  .desktop-only {
+    display: flex !important;
+    gap: 0.25rem;
+    align-items: center;
+  }
+}
+
+.desktop-tools {
+  gap: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.action-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 // Mobile-First Header Component Styles
 @import "color-vars";
 

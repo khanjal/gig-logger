@@ -59,7 +59,7 @@ export class ShiftsQuickViewComponent {
   }
 
   async checkForDuplicates() {
-    let shifts = await this.shiftService.queryShifts("key", this.shift.key);
+    let shifts = await this.shiftService.query("key", this.shift.key);
     this.duplicateShift = shifts.length > 1;
   }
 
@@ -86,16 +86,7 @@ export class ShiftsQuickViewComponent {
   }
 
   async deleteShift(shift: IShift) {
-    if (shift.action === ActionEnum.Add) {
-      await this.shiftService.delete(shift.id!);
-      await this.shiftService.updateShiftRowIds(shift.rowId);
-    }
-    else {
-      updateAction(shift, ActionEnum.Delete);
-      shift.saved = false;
-      await this.shiftService.update([shift]);
-    }
-
+    await this.shiftService.deleteItem(shift);
     this.parentReload.emit();
   }
 

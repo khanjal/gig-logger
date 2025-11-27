@@ -48,7 +48,7 @@ export class CurrentAverageComponent implements OnInit {
     this.currentDayAmount = 0;
 
     // Current amount
-    let dayShifts = await this._shiftService.queryShifts("date", this.date);
+    let dayShifts = await this._shiftService.query("date", this.date);
     this.currentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
 
     let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));

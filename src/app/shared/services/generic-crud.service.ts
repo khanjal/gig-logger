@@ -33,7 +33,7 @@ export class GenericCrudService<T> implements ICrudService<T> {
         return allItems.filter(item => {
             const fieldValue = item[field];
             if (typeof fieldValue === "string") {
-            return fieldValue.toLocaleLowerCase().includes(value.toLocaleLowerCase());
+                return fieldValue.toLocaleLowerCase().includes(value.toLocaleLowerCase());
             }
             return false;
         });

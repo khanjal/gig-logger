@@ -7,6 +7,7 @@ import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { MatMiniFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf } from '@angular/common';
@@ -38,7 +39,8 @@ export class ShiftsComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog, 
-    private _shiftService: ShiftService, 
+    private _shiftService: ShiftService,
+    private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
     private route: ActivatedRoute
@@ -63,12 +65,7 @@ export class ShiftsComponent implements OnInit {
     this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
     this.currentPage++;
     this.isLoading = false;
-    this.checkForUnsavedData();
-  }
-
-  checkForUnsavedData(): void {
-    this.unsavedShifts = this.shifts.filter(shift => !shift.saved);
-    this.unsavedData = this.unsavedShifts.length > 0;
+    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
   }
 
   onScroll(event: Event): void {
