@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
@@ -18,13 +19,14 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     styleUrls: ['./stats.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
+    imports: [CommonModule, MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   places: IStatItem[] = [];
   services: IStatItem[] = [];
   types: IStatItem[] = [];
+  regions: IStatItem[] = [];
 
   range = new FormGroup({
     start: new FormControl(),
@@ -64,6 +66,7 @@ export class StatsComponent implements OnInit {
     let shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
     
     this.services = this.getShiftList(shifts, "service");
+    this.regions = this.getShiftList(shifts, "region");
   }
 
   async getTripsRange(startDate: string, endDate: string) {
