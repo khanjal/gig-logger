@@ -160,6 +160,8 @@
   color: $text-secondary;
   font-size: 0.875rem;
   white-space: nowrap;
+  flex-shrink: 0;
+  min-width: fit-content;
 
   &.error-label {
     color: $danger-color;
@@ -171,6 +173,8 @@
   color: $text-primary;
   text-align: right;
   flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 
   &.status-disabled {
     color: $text-disabled;
