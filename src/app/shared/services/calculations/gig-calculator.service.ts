@@ -12,7 +12,7 @@ import { LoggerService } from "../logger.service";
 @Injectable({
     providedIn: 'root'
 })
-export class ShiftCalculatorService {
+export class GigCalculatorService {
 
     constructor(
         private _shiftService: ShiftService,
@@ -21,19 +21,42 @@ export class ShiftCalculatorService {
         private _logger: LoggerService
     ) {}
 
-    private handleError(operation: string, error: any): void {
-        this._logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
-            timestamp: new Date().toISOString(),
-            operation
-        });
+    // ============================================================================
+    // TRIP CALCULATIONS
+    // ============================================================================
+
+    /**
+     * Updates trip duration and recalculates shift durations
+     */
+    public async updateTripDuration(trip: ITrip): Promise<void> {
+        if (!trip.pickupTime || !trip.dropoffTime) return;
+        
+        const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
+        trip.duration = DateHelper.getDurationString(duration);
+        
+        if (trip.total && duration) {
+            trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
+        }
+        
+        await this._tripService.update([trip]);
+        
+        // Recalculate shift durations to update active time
+        if (trip.key) {
+            await this.calculateDurationsByKey(trip.key);
+        }
     }
 
+    // ============================================================================
+    // SHIFT CALCULATIONS
+    // ============================================================================
+
+    /**
+     * Calculates shift totals for given shifts (or previous week if none provided)
+     */
     public async calculateShiftTotals(shifts: IShift[] = []) {
         try {
             this._logger.info('Calculating shift totals');
             
-            // Filter out undefined shifts
             shifts = shifts.filter(shift => shift !== undefined);
         
             if (!shifts.length) {
@@ -57,7 +80,7 @@ export class ShiftCalculatorService {
                 }
                 
                 await this._shiftService.update([shift]);
-            };
+            }
 
             let dates = [... new Set(shifts.map(x => x?.date))];
             await this.calculateDailyTotal(dates);
@@ -69,22 +92,20 @@ export class ShiftCalculatorService {
         }
     }
 
-    private sumTripField(trips: ITrip[], field: keyof ITrip): number {
-        return trips
-            .filter(x => x[field] !== undefined)
-            .map(x => +(x[field] as number))
-            .reduce((acc, value) => acc + value, 0);
+    /**
+     * Calculates shift totals by key
+     */
+    public async calculateShiftTotalsByKey(key: string): Promise<void> {
+        const shift = await this._shiftService.queryShiftByKey(key);
+        if (shift) {
+            await this.calculateShiftTotals([shift]);
+        }
     }
 
-    // Converts minutes since midnight to 'HH:mm' string
-    private minutesToTimeString(minutes: number): string {
-        const h = Math.floor(minutes / 60);
-        const m = minutes % 60;
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-    }
-
+    /**
+     * Calculates shift durations (start, finish, time, active time) based on trips
+     */
     public calculateDurations(shift: IShift, trips: ITrip[]): IShift {
-        // Find earliest pickup and latest pickup/dropoff
         const pickupTimes = trips
             .map(trip => trip.pickupTime)
             .filter(Boolean)
@@ -94,26 +115,28 @@ export class ShiftCalculatorService {
             .filter(Boolean)
             .map(time => DateHelper.convertToTimestamp(time));
 
+        // Set shift start/finish times
         if (pickupTimes.length) {
             const earliestPickup = Math.min(...pickupTimes);
-            shift.start = this.minutesToTimeString(earliestPickup);
+            shift.start = DateHelper.minutesToTimeString(earliestPickup);
         }
         if (pickupTimes.length || dropoffTimes.length) {
             const latestPickup = pickupTimes.length ? Math.max(...pickupTimes) : 0;
             const latestDropoff = dropoffTimes.length ? Math.max(...dropoffTimes) : 0;
             const latest = Math.max(latestPickup, latestDropoff);
             if (latest > 0) {
-                shift.finish = this.minutesToTimeString(latest);
+                shift.finish = DateHelper.minutesToTimeString(latest);
             }
         }
 
-        // Calculate total time as the duration between new start and finish
+        // Calculate total time
         if (shift.start && shift.finish) {
             const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
             shift.time = DateHelper.getDurationString(duration);
-            shift.totalTime = DateHelper.getDurationString(duration); // Ensure totalTime is set
+            shift.totalTime = DateHelper.getDurationString(duration);
         }
 
+        // Calculate active time
         const tripsActiveTime = trips
             .map(trip => DateHelper.getTimeNumber(trip.duration))
             .filter(duration => duration > 0)
@@ -128,26 +151,22 @@ export class ShiftCalculatorService {
             );
 
         let mergedTotalTime = 0;
-        const mergedTimeSets = uniqueTimeRanges.reduce((acc: { pickupTime: string; dropoffTime: string }[], currentSet: { pickupTime: string; dropoffTime: string }) => {
+        uniqueTimeRanges.reduce((acc: { pickupTime: string; dropoffTime: string }[], currentSet: { pickupTime: string; dropoffTime: string }) => {
             const lastSet = acc[acc.length - 1];
-
             const pickupTimestamp = DateHelper.convertToTimestamp(currentSet.pickupTime);
             const dropoffTimestamp = DateHelper.convertToTimestamp(lastSet?.dropoffTime);
 
             if (lastSet && pickupTimestamp < dropoffTimestamp) {
                 const currentSetDropoff = DateHelper.convertToTimestamp(currentSet.dropoffTime);
-
                 if (currentSetDropoff > dropoffTimestamp) {
                     currentSet.pickupTime = lastSet.dropoffTime;
                     mergedTotalTime += DateHelper.getDurationSeconds(currentSet.pickupTime, currentSet.dropoffTime);
                     acc.push({ ...currentSet });
                 }
-            }
-            else {
+            } else {
                 mergedTotalTime += DateHelper.getDurationSeconds(currentSet.pickupTime, currentSet.dropoffTime);
                 acc.push({ ...currentSet });
             }
-
             return acc;
         }, [] as { pickupTime: string; dropoffTime: string }[]);
 
@@ -157,11 +176,11 @@ export class ShiftCalculatorService {
         
         if (mergedTotalTime < tripsActiveTime) {
             shift.active = DateHelper.getDurationString(mergedTotalTime);
-        }
-        else {
+        } else {
             shift.active = "";
         }
 
+        // Calculate amount per time
         if (shift.start && shift.finish) {
             const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
             if (duration) {
@@ -172,6 +191,29 @@ export class ShiftCalculatorService {
         return shift;
     }
 
+    /**
+     * Calculates shift durations by key
+     */
+    public async calculateDurationsByKey(key: string): Promise<void> {
+        const shift = await this._shiftService.queryShiftByKey(key);
+        if (!shift) return;
+        
+        const trips = (await this._tripService.query("key", key))
+            .filter(x => x.action !== ActionEnum.Delete && !x.exclude);
+        
+        if (trips.length > 0) {
+            const updatedShift = this.calculateDurations(shift, trips);
+            await this._shiftService.update([updatedShift]);
+        }
+    }
+
+    // ============================================================================
+    // DAILY/WEEKLY CALCULATIONS
+    // ============================================================================
+
+    /**
+     * Calculates daily totals and updates weekday records
+     */
     public async calculateDailyTotal(dates: string[] = []) {
         try {
             this._logger.info('Calculating daily totals');
@@ -212,12 +254,31 @@ export class ShiftCalculatorService {
                     weekday.currentAmount = shiftTotal;
                     await this._weekdayService.update([weekday]);
                 }
-            };
+            }
             
             this._logger.debug('Daily totals calculated successfully');
         } catch (error) {
             this.handleError('calculateDailyTotal', error);
             throw error;
         }
+    }
+
+    // ============================================================================
+    // PRIVATE HELPER METHODS
+    // ============================================================================
+
+    private sumTripField(trips: ITrip[], field: keyof ITrip): number {
+        return trips
+            .filter(x => x[field] !== undefined)
+            .map(x => +(x[field] as number))
+            .reduce((acc, value) => acc + value, 0);
+    }
+
+    private handleError(operation: string, error: any): void {
+        this._logger.error(`${operation} failed`, {
+            message: error.message || 'Unknown error',
+            timestamp: new Date().toISOString(),
+            operation
+        });
     }
 }

@@ -597,6 +597,7 @@ export class TripFormComponent implements OnInit {
   setDropoffTime() {
     this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString());
   }
+  
   close() {
     if (this.isInEditMode) {
       // We're in edit mode on the trips page, emit event to exit edit mode
