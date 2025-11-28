@@ -9,6 +9,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { DateHelper } from '@helpers/date.helper';
+import { updateAction } from '@utils/action.utils';
+import { ActionEnum } from '@enums/action.enum';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
@@ -416,6 +418,7 @@ export class DiagnosticsComponent implements OnInit {
         } else {
           trip.name = correctValue;
         }
+        updateAction(trip, ActionEnum.Update);
         await this._tripService.update([trip]);
       }
     }
@@ -427,6 +430,7 @@ export class DiagnosticsComponent implements OnInit {
     if (!shift.start || !shift.finish) return;
     const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
     shift.time = DateHelper.getDurationString(duration);
+    updateAction(shift, ActionEnum.Update);
     await this._shiftService.update([shift]);
     await this.runDiagnostics();
   }
@@ -435,6 +439,7 @@ export class DiagnosticsComponent implements OnInit {
     if (!trip.pickupTime || !trip.dropoffTime) return;
     const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
     trip.duration = DateHelper.getDurationString(duration);
+    updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
     await this.runDiagnostics();
   }
@@ -447,6 +452,7 @@ export class DiagnosticsComponent implements OnInit {
       if (shift.start && shift.finish) {
         const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
         shift.time = DateHelper.getDurationString(duration);
+        updateAction(shift, ActionEnum.Update);
         await this._shiftService.update([shift]);
       }
     }
@@ -462,6 +468,7 @@ export class DiagnosticsComponent implements OnInit {
       if (trip.pickupTime && trip.dropoffTime) {
         const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
         trip.duration = DateHelper.getDurationString(duration);
+        updateAction(trip, ActionEnum.Update);
         await this._tripService.update([trip]);
       }
     }
