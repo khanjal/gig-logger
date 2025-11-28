@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
@@ -42,13 +43,14 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule, BackToTopComponent, DurationFormatPipe],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DurationFormatPipe],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
   dataDiagnostics: DiagnosticItem[] = [];
   isLoading = false;
+  isBulkFixing = false;
   selectedValue: any[] = [];
   selectedAddress: { [key: number]: string } = {};
   selectedShiftToDelete: { [key: number]: number } = {};
@@ -495,30 +497,40 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   async bulkFixShiftDurations() {
-    const shifts = await this._shiftService.list();
-    const shiftsToFix = this.findShiftsWithoutDuration(shifts);
-    
-    for (const shift of shiftsToFix) {
-      if (shift.start && shift.finish) {
-        const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
-        shift.time = DateHelper.getDurationString(duration);
-        updateAction(shift, ActionEnum.Update);
-        await this._shiftService.update([shift]);
+    this.isBulkFixing = true;
+    try {
+      const shifts = await this._shiftService.list();
+      const shiftsToFix = this.findShiftsWithoutDuration(shifts);
+      
+      for (const shift of shiftsToFix) {
+        if (shift.start && shift.finish) {
+          const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+          shift.time = DateHelper.getDurationString(duration);
+          updateAction(shift, ActionEnum.Update);
+          await this._shiftService.update([shift]);
+        }
       }
+      
+      await this.runDiagnostics();
+    } finally {
+      this.isBulkFixing = false;
     }
-    
-    await this.runDiagnostics();
   }
 
   async bulkFixTripDurations() {
-    const trips = await this._tripService.list();
-    const tripsToFix = this.findTripsWithoutDuration(trips);
-    
-    for (const trip of tripsToFix) {
-      await this._gigCalculator.updateTripDuration(trip);
+    this.isBulkFixing = true;
+    try {
+      const trips = await this._tripService.list();
+      const tripsToFix = this.findTripsWithoutDuration(trips);
+      
+      for (const trip of tripsToFix) {
+        await this._gigCalculator.updateTripDuration(trip);
+      }
+      
+      await this.runDiagnostics();
+    } finally {
+      this.isBulkFixing = false;
     }
-    
-    await this.runDiagnostics();
   }
 
   async applyAddressToTrip(trip: any, address: string) {

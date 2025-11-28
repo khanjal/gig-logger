@@ -81,16 +81,24 @@
         
         <!-- Bulk Fix Button for Missing Durations -->
         <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
-          <button mat-raised-button color="primary" (click)="bulkFixShiftDurations()">
+          <button *ngIf="!isBulkFixing" mat-raised-button color="primary" (click)="bulkFixShiftDurations()">
             <mat-icon>build</mat-icon>
             Fix All ({{ item.count }})
           </button>
+          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Fixing...</span>
+          </div>
         </div>
         <div *ngIf="item.name === 'Trips Missing Duration' && item.count > 0" class="mb-4">
-          <button mat-raised-button color="primary" (click)="bulkFixTripDurations()">
+          <button *ngIf="!isBulkFixing" mat-raised-button color="primary" (click)="bulkFixTripDurations()">
             <mat-icon>build</mat-icon>
             Fix All ({{ item.count }})
           </button>
+          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Fixing...</span>
+          </div>
         </div>
         
         <!-- Grouped Items (Duplicates) -->

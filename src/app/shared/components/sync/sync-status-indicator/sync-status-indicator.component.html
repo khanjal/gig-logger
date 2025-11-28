@@ -78,6 +78,13 @@
             Save Changes
           </button>
         </div>
+
+        <div class="status-row" *ngIf="!hasUnsavedChanges">
+          <button mat-raised-button color="accent" (click)="updateFromSpreadsheet(); $event.stopPropagation()" class="force-sync-button">
+            <mat-icon>cloud_download</mat-icon>
+            Update from Spreadsheet
+          </button>
+        </div>
       </div>
 
       <!-- Messages log (collapsible) -->
