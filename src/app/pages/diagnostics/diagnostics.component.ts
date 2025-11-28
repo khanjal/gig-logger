@@ -149,7 +149,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for duplicate names with different casing
-    const duplicateNamesResult = this.findDuplicateNames(names);
+    const duplicateNamesResult = this.findDuplicateNames(names, trips);
     this._logger.debug('Duplicate names found:', duplicateNamesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Names',
@@ -316,7 +316,7 @@ export class DiagnosticsComponent implements OnInit {
     return { items: duplicates, groups: duplicateGroups };
   }
 
-  private findDuplicateNames(names: IName[]): { items: IName[], groups: IName[][] } {
+  private findDuplicateNames(names: IName[], trips: ITrip[]): { items: IName[], groups: IName[][] } {
     const duplicates: IName[] = [];
     const duplicateGroups: IName[][] = [];
     const processedNames = new Set<number>();
@@ -342,8 +342,13 @@ export class DiagnosticsComponent implements OnInit {
         }
       }
 
-      // If we found duplicates, add them all
+      // If we found duplicates, recalculate case-sensitive trip counts and addresses
       if (matchingNames.length > 1) {
+        for (const name of matchingNames) {
+          const nameTrips = trips.filter(t => t.name === name.name);
+          name.trips = nameTrips.length;
+          name.addresses = [...new Set(nameTrips.map(t => t.endAddress).filter(a => a))];
+        }
         duplicates.push(...matchingNames);
         duplicateGroups.push(matchingNames);
         processedNames.add(i);
