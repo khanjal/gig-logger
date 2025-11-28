@@ -127,22 +127,48 @@
 
         <!-- Individual Items (Non-duplicates) -->
         <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
-          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors flex items-center justify-between" [class.opacity-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')">
-            <div class="flex-1">
-              <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
+          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors" [class.opacity-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
+              </div>
+              <button *ngIf="item.name === 'Shifts Missing Time Duration'" 
+                      mat-icon-button color="primary" 
+                      (click)="fixShiftDuration(problemItem)"
+                      matTooltip="Fix duration">
+                <mat-icon>build</mat-icon>
+              </button>
+              <button *ngIf="item.name === 'Trips Missing Duration'" 
+                      mat-icon-button color="primary" 
+                      (click)="fixTripDuration(problemItem)"
+                      matTooltip="Fix duration">
+                <mat-icon>build</mat-icon>
+              </button>
             </div>
-            <button *ngIf="item.name === 'Shifts Missing Time Duration'" 
-                    mat-icon-button color="primary" 
-                    (click)="fixShiftDuration(problemItem)"
-                    matTooltip="Fix duration">
-              <mat-icon>build</mat-icon>
-            </button>
-            <button *ngIf="item.name === 'Trips Missing Duration'" 
-                    mat-icon-button color="primary" 
-                    (click)="fixTripDuration(problemItem)"
-                    matTooltip="Fix duration">
-              <mat-icon>build</mat-icon>
-            </button>
+            <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-gray-200">
+              <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 text-sm mb-2">
+                <mat-icon class="!text-base">check_circle</mat-icon>
+                <span>Address applied successfully</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <select *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0" 
+                        [(ngModel)]="selectedAddress[problemItem.rowId]" 
+                        class="border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-0 max-w-full">
+                  <option [value]="undefined">Select address...</option>
+                  <option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</option>
+                </select>
+                <input *ngIf="!problemItem.availableAddresses || problemItem.availableAddresses.length === 0"
+                       [(ngModel)]="selectedAddress[problemItem.rowId]"
+                       placeholder="Enter address..."
+                       class="border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-0">
+                <button mat-icon-button color="primary" 
+                        [disabled]="!selectedAddress[problemItem.rowId]"
+                        (click)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
+                        matTooltip="Apply address">
+                  <mat-icon>check</mat-icon>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -211,3 +237,15 @@
     </div>
   </div>
 </ng-template>
+
+<!-- Floating "Back to Top" button -->
+<button 
+    mat-fab 
+    color="primary" 
+    class="!fixed !bottom-6 !right-6 !z-[1000]"
+    [style.display]="showBackToTop ? 'flex' : 'none'"
+    (click)="scrollToTop()"
+    aria-label="Back to Top"
+>
+    <mat-icon>arrow_upward</mat-icon>
+</button>
