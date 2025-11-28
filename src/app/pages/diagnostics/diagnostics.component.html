@@ -104,7 +104,7 @@
               <span class="font-semibold text-sm text-gray-700">Group {{ groupIndex + 1 }}</span>
               <div class="flex items-center gap-2">
                 <span class="text-xs bg-gray-200 px-2 py-1 rounded">{{ group.length }} items</span>
-                <button *ngIf="item.itemType === 'place' || item.itemType === 'name'" 
+                <button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address'" 
                         mat-mini-fab color="primary" 
                         [disabled]="!selectedValue[groupIndex]"
                         (click)="mergeDuplicates(group, selectedValue[groupIndex], item.itemType)"
@@ -114,8 +114,8 @@
               </div>
             </div>
             <mat-radio-group [(ngModel)]="selectedValue[groupIndex]" class="divide-y divide-gray-200">
-              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" [class.opacity-50]="problemItem.trips === 0" [class.bg-green-50]="problemItem.trips === 0">
-                <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name'" 
+              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" [class.opacity-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')">
+                <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address'" 
                                   [value]="problemItem"></mat-radio-button>
                 <div class="flex-1">
                   <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
@@ -127,7 +127,7 @@
 
         <!-- Individual Items (Non-duplicates) -->
         <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
-          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors flex items-center justify-between" [class.opacity-50]="problemItem.trips === 0" [class.bg-green-50]="problemItem.trips === 0">
+          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors flex items-center justify-between" [class.opacity-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')">
             <div class="flex-1">
               <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
             </div>

@@ -406,29 +406,36 @@ export class DiagnosticsComponent implements OnInit {
     return this.dataDiagnostics.reduce((sum, item) => sum + item.count, 0);
   }
 
-  async mergeDuplicates(group: any[], selectedItem: any, itemType: 'place' | 'name') {
-    const correctValue = itemType === 'place' ? selectedItem.place : selectedItem.name;
+  async mergeDuplicates(group: any[], selectedItem: any, itemType: 'place' | 'name' | 'address') {
     const trips = await this._tripService.list();
     
     for (const item of group) {
       if (item === selectedItem) continue;
-      const oldValue = itemType === 'place' ? item.place : item.name;
       
-      const affectedTrips = trips.filter(t => 
-        itemType === 'place' ? t.place === oldValue : t.name === oldValue
-      );
+      let affectedTrips: ITrip[] = [];
+      if (itemType === 'place') {
+        affectedTrips = trips.filter(t => t.place === item.place);
+      } else if (itemType === 'name') {
+        affectedTrips = trips.filter(t => t.name === item.name);
+      } else if (itemType === 'address') {
+        affectedTrips = trips.filter(t => t.startAddress === item.address || t.endAddress === item.address);
+      }
+      
       for (const trip of affectedTrips) {
         if (itemType === 'place') {
-          trip.place = correctValue;
-        } else {
-          trip.name = correctValue;
+          trip.place = selectedItem.place;
+        } else if (itemType === 'name') {
+          trip.name = selectedItem.name;
+        } else if (itemType === 'address') {
+          if (trip.startAddress === item.address) trip.startAddress = selectedItem.address;
+          if (trip.endAddress === item.address) trip.endAddress = selectedItem.address;
         }
         updateAction(trip, ActionEnum.Update);
         await this._tripService.update([trip]);
       }
+      
+      item.trips = 0;
     }
-    
-    await this.runDiagnostics();
   }
 
   async fixShiftDuration(shift: IShift) {
