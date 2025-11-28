@@ -4,6 +4,7 @@ import { ITrip } from "@interfaces/trip.interface";
 import { IWeekday } from "@interfaces/weekday.interface";
 import { ActionEnum } from "@enums/action.enum";
 import { DateHelper } from "@helpers/date.helper";
+import { updateAction } from "@utils/action.utils";
 import { ShiftService } from "../sheets/shift.service";
 import { TripService } from "../sheets/trip.service";
 import { WeekdayService } from "../sheets/weekday.service";
@@ -38,6 +39,7 @@ export class GigCalculatorService {
             trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
         }
         
+        updateAction(trip, ActionEnum.Update);
         await this._tripService.update([trip]);
         
         // Recalculate shift durations to update active time
@@ -188,6 +190,7 @@ export class GigCalculatorService {
             }
         }
 
+        updateAction(shift, ActionEnum.Update);
         return shift;
     }
 

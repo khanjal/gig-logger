@@ -9,6 +9,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
+import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { updateAction } from '@utils/action.utils';
 import { ActionEnum } from '@enums/action.enum';
@@ -41,7 +42,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule, BackToTopComponent],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule, BackToTopComponent, DurationFormatPipe],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
