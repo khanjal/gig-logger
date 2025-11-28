@@ -91,14 +91,4 @@
     }
 </div>
 
-<!-- Floating "Back to Top" button: fixed to viewport, outside main container -->
-<button 
-    mat-fab 
-    color="primary" 
-    class="floating-back-to-top bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full p-4 flex items-center justify-center transition-opacity duration-200"
-    *ngIf="showBackToTop" 
-    (click)="scrollToTop()"
-    aria-label="Back to Top"
->
-    <mat-icon>arrow_upward</mat-icon>
-</button>
+<app-back-to-top *ngIf="!isEditMode"></app-back-to-top>

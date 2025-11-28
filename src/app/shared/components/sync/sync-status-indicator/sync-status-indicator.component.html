@@ -71,6 +71,13 @@
           <span class="status-label error-label">Error:</span>
           <span class="status-value error-text">{{ syncState?.error }}</span>
         </div>
+
+        <div class="status-row" *ngIf="hasUnsavedChanges">
+          <button mat-raised-button color="primary" (click)="forceSync(); $event.stopPropagation()" class="force-sync-button">
+            <mat-icon>save</mat-icon>
+            Save to Spreadsheet
+          </button>
+        </div>
       </div>
 
       <!-- Messages log (collapsible) -->

@@ -6,10 +6,9 @@
 // Floating mic button
 button {
   position: fixed;
-  // Mobile: same position as back-to-top, but lower z-index so back-to-top overlays when visible
-  bottom: 2rem; // Same as back-to-top (32px)
-  right: 2rem; // Same as back-to-top (32px)
-  z-index: 1000; // Lower than back-to-top (9999) so it gets covered when back-to-top appears
+  bottom: 1.5rem; // 24px - same as back-to-top
+  right: 1.5rem; // 24px - same as back-to-top
+  z-index: 999; // Lower than back-to-top (1000) so back-to-top appears on top when scrolled on small screens
   width: 56px;
   height: 56px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -19,19 +18,15 @@ button {
   }
 
   @media (min-width: 768px) {
-    // Desktop: position to the left of back-to-top button
-    // Back-to-top is at right: 2rem (32px), mat-fab is 56x56
-    bottom: 2rem; // Match back-to-top vertical position (32px)
-    right: calc(2rem + 56px + 1rem); // 32px + 56px (button width) + 16px gap = 104px
+    right: calc(1.5rem + 56px + 1rem); // 24px + 56px + 16px = 96px (to the left of back-to-top)
   }
 }
 
 // Transcript overlay
 .transcript-overlay {
   position: fixed;
-  // Mobile: above the voice button (same position as back-to-top)
-  bottom: calc(2rem + 56px + 0.75rem); // 32px + 56px (button height) + 12px gap = 100px
-  right: 16px;
+  bottom: calc(1.5rem + 56px + 0.75rem); // 24px + 56px + 12px = 92px above voice button
+  right: 1.5rem; // 24px - aligned with voice button
   left: 16px;
   max-width: 400px;
   margin: 0 auto;
@@ -39,16 +34,14 @@ button {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  z-index: 999; // Below back-to-top (9999) but above voice button (1000)
+  z-index: 998; // Below voice button (999) and back-to-top (1000)
   animation: slideUp 0.3s ease-out;
   backdrop-filter: blur(10px);
 
   @media (min-width: 768px) {
-    // Desktop: position above the voice button (which is to the left of back-to-top)
-    right: calc(2rem + 56px + 1rem); // Same as voice button = 104px
+    right: calc(1.5rem + 56px + 1rem); // Aligned with voice button on large screens
     left: auto;
-    bottom: calc(2rem + 56px + 0.75rem); // Above voice button: 32px + 56px + 12px = 100px
-    min-width: 400px; // Added to ensure a wider minimum size
+    min-width: 400px;
   }
 
   // Border for both listening and heard states

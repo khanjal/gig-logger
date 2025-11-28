@@ -127,24 +127,12 @@
 
         <!-- Individual Items (Non-duplicates) -->
         <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
-          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors" [class.opacity-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')">
-            <div class="flex items-center justify-between">
-              <div class="flex-1">
-                <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
-              </div>
-              <button *ngIf="item.name === 'Shifts Missing Time Duration'" 
-                      mat-icon-button color="primary" 
-                      (click)="fixShiftDuration(problemItem)"
-                      matTooltip="Fix duration">
-                <mat-icon>build</mat-icon>
-              </button>
-              <button *ngIf="item.name === 'Trips Missing Duration'" 
-                      mat-icon-button color="primary" 
-                      (click)="fixTripDuration(problemItem)"
-                      matTooltip="Fix duration">
-                <mat-icon>build</mat-icon>
-              </button>
+          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-green-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed">
+            <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-green-600 text-sm mb-2">
+              <mat-icon class="!text-base">check_circle</mat-icon>
+              <span>Fixed successfully</span>
             </div>
+            <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType, diagnosticName: item.name, component: this}"></ng-container>
             <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-gray-200">
               <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 text-sm mb-2">
                 <mat-icon class="!text-base">check_circle</mat-icon>
@@ -177,28 +165,49 @@
 </div>
 
 <!-- Reusable Item Display Template -->
-<ng-template #itemDisplay let-item="item" let-type="type">
+<ng-template #itemDisplay let-item="item" let-type="type" let-diagnosticName="diagnosticName" let-component="component">
   <div class="flex flex-col gap-1">
     <!-- Shift Item -->
-    <div *ngIf="type === 'shift'" class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-      <span class="font-semibold text-gray-800">{{ item.date }}</span>
-      <span class="text-gray-600 text-sm">({{ item.key }})</span>
-      <span *ngIf="item.totalTrips !== undefined" class="text-sm text-gray-600">{{ item.totalTrips }} trips</span>
-      <span *ngIf="item.start" class="text-sm text-gray-500">{{ item.start }} - {{ item.finish }}</span>
+    <div *ngIf="type === 'shift'">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
+        <span class="font-semibold text-gray-800">{{ item.date }}</span>
+        <span class="text-gray-600 text-sm">({{ item.key }})</span>
+      </div>
+      <div class="flex items-center justify-between gap-2 mt-1">
+        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+          <span *ngIf="item.totalTrips !== undefined">{{ item.totalTrips }} trips</span>
+          <span *ngIf="item.start" class="text-gray-500">{{ item.start }} - {{ item.finish }}</span>
+        </div>
+        <button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed" 
+                mat-icon-button color="primary" 
+                (click)="component.fixShiftDuration(item)"
+                matTooltip="Fix duration">
+          <mat-icon>build</mat-icon>
+        </button>
+      </div>
     </div>
 
     <!-- Trip Item -->
-    <div *ngIf="type === 'trip'" class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-      <span class="font-semibold text-gray-800">{{ item.date }}</span>
-      <span class="text-gray-600 text-sm">({{ item.key }})</span>
-      <span *ngIf="item.place" class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">{{ item.place }}</span>
-      <span *ngIf="item.name" class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs">{{ item.name }}</span>
-      <span *ngIf="item.startLocation || item.pickup" class="text-sm text-gray-500">{{ item.startLocation || item.pickup }}</span>
-      <span *ngIf="(item.startLocation || item.pickup) && (item.endLocation || item.dropoff)" class="text-gray-400">→</span>
-      <span *ngIf="item.endLocation || item.dropoff" class="text-sm text-gray-500">{{ item.endLocation || item.dropoff }}</span>
-      <span *ngIf="item.exclude" class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">EXCLUDED</span>
+    <div *ngIf="type === 'trip'">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
+        <span class="font-semibold text-gray-800">{{ item.date }}</span>
+        <span class="text-gray-600 text-sm">({{ item.key }})</span>
+      </div>
+      <div class="flex items-center justify-between gap-2 mt-1">
+        <div class="flex flex-wrap items-center gap-2 text-sm">
+          <span *ngIf="item.place" class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">{{ item.place }}</span>
+          <span *ngIf="item.name" class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs">{{ item.name }}</span>
+          <span *ngIf="item.exclude" class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">EXCLUDED</span>
+        </div>
+        <button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed" 
+                mat-icon-button color="primary" 
+                (click)="component.fixTripDuration(item)"
+                matTooltip="Fix duration">
+          <mat-icon>build</mat-icon>
+        </button>
+      </div>
     </div>
 
     <!-- Address Item -->
@@ -238,14 +247,4 @@
   </div>
 </ng-template>
 
-<!-- Floating "Back to Top" button -->
-<button 
-    mat-fab 
-    color="primary" 
-    class="!fixed !bottom-6 !right-6 !z-[1000]"
-    [style.display]="showBackToTop ? 'flex' : 'none'"
-    (click)="scrollToTop()"
-    aria-label="Back to Top"
->
-    <mat-icon>arrow_upward</mat-icon>
-</button>
+<app-back-to-top></app-back-to-top>

@@ -18,6 +18,7 @@ import { ViewportScroller } from '@angular/common';
 import { SearchService } from '@services/search.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
+import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith } from 'rxjs';
 
 @Component({
@@ -38,7 +39,8 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     MatAutocompleteModule,
     MatTooltipModule,
     CurrencyPipe,
-    TripsQuickViewComponent
+    TripsQuickViewComponent,
+    BackToTopComponent
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
@@ -49,7 +51,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
   hasSearched: boolean = false;
   showFilters: boolean = false;
-  showBackToTop: boolean = false;
   exactMatch: boolean = false;
   caseSensitive: boolean = false;
   
@@ -107,22 +108,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Listen for scroll events to show/hide back to top button
-   */
-  @HostListener('window:scroll', [])
-  onWindowScroll(): void {
-    const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    // Show button if scrolled more than 300px
-    this.showBackToTop = scrollPosition > 300;
-  }
 
-  /**
-   * Scroll to the top of the page
-   */
-  scrollToTop(): void {
-    this.viewportScroller.scrollToPosition([0, 0]);
-  }
 
   /**
    * Load all possible autocomplete options based on enabled filters

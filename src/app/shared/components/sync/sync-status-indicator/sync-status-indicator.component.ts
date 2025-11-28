@@ -5,9 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
 import { PollingService } from '@services/polling.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -31,10 +34,13 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   messages: SyncMessage[] = [];
   timeSinceLastSync = 'Never';
   showDetailedView = false;
+  hasUnsavedChanges = false;
 
   constructor(
     private syncStatusService: SyncStatusService,
-    private pollingService: PollingService
+    private pollingService: PollingService,
+    private unsavedDataService: UnsavedDataService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -53,10 +59,33 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.messages = messages;
       });
 
-    // Update time display every 30 seconds
+    // Update time display and check for unsaved changes every 30 seconds
     this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
+      this.checkUnsavedChanges();
     }, 30000);
+    
+    // Initial check for unsaved changes
+    this.checkUnsavedChanges();
+  }
+
+  private async checkUnsavedChanges(): Promise<void> {
+    this.hasUnsavedChanges = await this.unsavedDataService.hasUnsavedData();
+  }
+
+  async forceSync(): Promise<void> {
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
+      height: '400px',
+      width: '500px',
+      panelClass: 'custom-modalbox',
+      data: 'save'
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: any) => {
+      if (result) {
+        await this.checkUnsavedChanges();
+      }
+    });
   }
 
   ngOnDestroy(): void {
