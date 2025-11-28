@@ -222,6 +222,12 @@
           <mat-icon>build</mat-icon>
         </button>
       </div>
+      <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm text-gray-600 mt-1">
+        <span *ngIf="item.pickupTime">{{ item.pickupTime }}</span>
+        <span *ngIf="item.pickupTime && item.dropoffTime">-</span>
+        <span *ngIf="item.dropoffTime">{{ item.dropoffTime }}</span>
+        <span *ngIf="item.duration" class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{{ item.duration | durationFormat }}</span>
+      </div>
     </div>
 
     <!-- Address Item -->
