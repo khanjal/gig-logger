@@ -1,13 +1,14 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule, MatFabButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
+import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DateHelper } from '@helpers/date.helper';
 import { updateAction } from '@utils/action.utils';
 import { ActionEnum } from '@enums/action.enum';
@@ -39,7 +40,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatFabButton, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule, BackToTopComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
@@ -48,7 +49,6 @@ export class DiagnosticsComponent implements OnInit {
   isLoading = false;
   selectedValue: any[] = [];
   selectedAddress: { [key: number]: string } = {};
-  showBackToTop = false;
 
   constructor(
     private _shiftService: ShiftService,
@@ -62,16 +62,6 @@ export class DiagnosticsComponent implements OnInit {
   ngOnInit() {
     // Automatically run diagnostics on page load
     this.runDiagnostics();
-  }
-
-  @HostListener('window:scroll', [])
-  onWindowScroll(): void {
-    const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    this.showBackToTop = scrollPosition > 300;
-  }
-
-  scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async runDiagnostics() {
@@ -489,7 +479,8 @@ export class DiagnosticsComponent implements OnInit {
     shift.time = DateHelper.getDurationString(duration);
     updateAction(shift, ActionEnum.Update);
     await this._shiftService.update([shift]);
-    await this.runDiagnostics();
+    (shift as any).fixed = true;
+    this.decrementDiagnosticCount('Shifts Missing Time Duration');
   }
 
   async fixTripDuration(trip: ITrip) {
@@ -498,7 +489,8 @@ export class DiagnosticsComponent implements OnInit {
     trip.duration = DateHelper.getDurationString(duration);
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
-    await this.runDiagnostics();
+    (trip as any).fixed = true;
+    this.decrementDiagnosticCount('Trips Missing Duration');
   }
 
   async bulkFixShiftDurations() {
@@ -538,5 +530,12 @@ export class DiagnosticsComponent implements OnInit {
     trip.addressApplied = true;
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
+  }
+
+  private decrementDiagnosticCount(diagnosticName: string) {
+    const diagnostic = this.dataDiagnostics.find(d => d.name === diagnosticName);
+    if (diagnostic && diagnostic.count > 0) {
+      diagnostic.count--;
+    }
   }
 }
