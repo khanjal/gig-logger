@@ -145,6 +145,15 @@ export class DateHelper {
         return minutes.toString().padStart(2, '0') + ':' + Math.floor((seconds - minutes * 60)).toString().padStart(2, '0');
     }
 
+    /**
+     * Converts minutes since midnight to 'HH:mm' string format
+     */
+    static minutesToTimeString(minutes: number): string {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
+
     // --- Miscellaneous ---
 
     static getMonday(date: Date = new Date()) {

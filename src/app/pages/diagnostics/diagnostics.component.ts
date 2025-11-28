@@ -18,6 +18,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
+import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -57,7 +58,8 @@ export class DiagnosticsComponent implements OnInit {
     private _addressService: AddressService,
     private _placeService: PlaceService,
     private _nameService: NameService,
-    private _logger: LoggerService
+    private _logger: LoggerService,
+    private _gigCalculator: GigCalculatorService
   ) { }
 
   ngOnInit() {
@@ -485,11 +487,8 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   async fixTripDuration(trip: ITrip) {
-    if (!trip.pickupTime || !trip.dropoffTime) return;
-    const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
-    trip.duration = DateHelper.getDurationString(duration);
-    updateAction(trip, ActionEnum.Update);
-    await this._tripService.update([trip]);
+    await this._gigCalculator.updateTripDuration(trip);
+    
     (trip as any).fixed = true;
     this.decrementDiagnosticCount('Trips Missing Duration');
   }
@@ -515,12 +514,7 @@ export class DiagnosticsComponent implements OnInit {
     const tripsToFix = this.findTripsWithoutDuration(trips);
     
     for (const trip of tripsToFix) {
-      if (trip.pickupTime && trip.dropoffTime) {
-        const duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
-        trip.duration = DateHelper.getDurationString(duration);
-        updateAction(trip, ActionEnum.Update);
-        await this._tripService.update([trip]);
-      }
+      await this._gigCalculator.updateTripDuration(trip);
     }
     
     await this.runDiagnostics();

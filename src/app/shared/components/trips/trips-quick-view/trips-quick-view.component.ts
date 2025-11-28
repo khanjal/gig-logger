@@ -167,15 +167,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     }
 
     this.trip.dropoffTime = dropOffTime;
-    let duration = DateHelper.getDurationSeconds(this.trip.pickupTime, this.trip.dropoffTime);
-    this.trip.duration = DateHelper.getDurationString(duration);
-
-    if (this.trip.total && duration) {
-      this.trip.amountPerTime = this.trip.total / DateHelper.getHoursFromSeconds(duration);
-    }
-
-    updateAction(this.trip, ActionEnum.Update);
-    await this._tripService.update([this.trip]);
+    await this._gigLoggerService.updateTripDuration(this.trip);
+    
     this.isExpanded = false;
     
     // Emit the trip rowId to scroll to this specific trip (matches the HTML id attribute)
