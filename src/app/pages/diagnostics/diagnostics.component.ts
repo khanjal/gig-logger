@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButtonModule, MatFabButton } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -39,7 +39,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatFabButton, MatExpansionModule, MatRadioModule, MatTooltipModule, FormsModule],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
@@ -47,6 +47,8 @@ export class DiagnosticsComponent implements OnInit {
   dataDiagnostics: DiagnosticItem[] = [];
   isLoading = false;
   selectedValue: any[] = [];
+  selectedAddress: { [key: number]: string } = {};
+  showBackToTop = false;
 
   constructor(
     private _shiftService: ShiftService,
@@ -60,6 +62,16 @@ export class DiagnosticsComponent implements OnInit {
   ngOnInit() {
     // Automatically run diagnostics on page load
     this.runDiagnostics();
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    this.showBackToTop = scrollPosition > 300;
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async runDiagnostics() {
@@ -183,6 +195,18 @@ export class DiagnosticsComponent implements OnInit {
       description: 'Trips with pickup/dropoff times but no calculated duration',
       itemType: 'trip',
       items: tripsWithoutDuration
+    });
+
+    // Check for trips with place but no start address
+    const tripsWithPlaceNoAddress = this.findTripsWithPlaceNoAddress(trips, places);
+    this._logger.debug('Trips with place but no address found:', tripsWithPlaceNoAddress);
+    this.dataDiagnostics.push({
+      name: 'Trip Places Missing Address',
+      count: tripsWithPlaceNoAddress.length,
+      severity: tripsWithPlaceNoAddress.length > 0 ? 'warning' : 'info',
+      description: 'Trips with a place but no start address',
+      itemType: 'trip',
+      items: tripsWithPlaceNoAddress
     });
 
     this._logger.info('Final dataDiagnostics:', this.dataDiagnostics);
@@ -380,6 +404,27 @@ export class DiagnosticsComponent implements OnInit {
     });
   }
 
+  private findTripsWithPlaceNoAddress(trips: ITrip[], places: IPlace[]): any[] {
+    const placeMap = new Map<string, IPlace>();
+    places.forEach(p => placeMap.set(p.place, p));
+
+    return trips.filter(trip => {
+      const hasPlace = trip.place && trip.place.trim().length > 0;
+      const hasStartAddress = trip.startAddress && trip.startAddress.trim().length > 0;
+      return hasPlace && !hasStartAddress;
+    }).map(trip => {
+      const place = placeMap.get(trip.place);
+      const availableAddresses = place?.addresses?.map(a => a.address) || [];
+      if (availableAddresses.length === 1) {
+        this.selectedAddress[trip.rowId] = availableAddresses[0];
+      }
+      return {
+        ...trip,
+        availableAddresses
+      };
+    });
+  }
+
   getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
@@ -486,5 +531,12 @@ export class DiagnosticsComponent implements OnInit {
     }
     
     await this.runDiagnostics();
+  }
+
+  async applyAddressToTrip(trip: any, address: string) {
+    trip.startAddress = address;
+    trip.addressApplied = true;
+    updateAction(trip, ActionEnum.Update);
+    await this._tripService.update([trip]);
   }
 }
