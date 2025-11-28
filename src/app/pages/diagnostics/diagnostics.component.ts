@@ -49,6 +49,7 @@ export class DiagnosticsComponent implements OnInit {
   isLoading = false;
   selectedValue: any[] = [];
   selectedAddress: { [key: number]: string } = {};
+  selectedShiftToDelete: { [key: number]: number } = {};
 
   constructor(
     private _shiftService: ShiftService,
@@ -537,5 +538,24 @@ export class DiagnosticsComponent implements OnInit {
     if (diagnostic && diagnostic.count > 0) {
       diagnostic.count--;
     }
+  }
+
+  hasMarkedForDelete(group: IShift[]): boolean {
+    return group.some(s => (s as any).markedForDelete);
+  }
+
+  async markShiftForDelete(group: IShift[], rowId: number, groupIndex: number) {
+    const shift = group.find(s => s.rowId === rowId);
+    if (!shift) return;
+    
+    if (shift.action === ActionEnum.Add) {
+      await this._shiftService.delete(shift.id!);
+    } else {
+      updateAction(shift, ActionEnum.Delete);
+      await this._shiftService.update([shift]);
+    }
+    
+    (shift as any).markedForDelete = true;
+    this.selectedShiftToDelete[groupIndex] = undefined as any;
   }
 }
