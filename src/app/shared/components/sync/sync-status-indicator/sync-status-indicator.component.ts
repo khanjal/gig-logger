@@ -88,6 +88,21 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     });
   }
 
+  async updateFromSpreadsheet(): Promise<void> {
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
+      height: '400px',
+      width: '500px',
+      panelClass: 'custom-modalbox',
+      data: 'load'
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: any) => {
+      if (result) {
+        await this.checkUnsavedChanges();
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
