@@ -166,7 +166,7 @@ export class TripFormComponent implements OnInit {
       shift = ShiftHelper.createNewShift(this.tripForm.value.service ?? "", shifts);
       shift.region = this.tripForm.value.region ?? "";
       shift.rowId = await this._shiftService.getMaxRowId() + 1;
-      
+
       await this._shiftService.add(shift);
     }
     else {
@@ -597,7 +597,7 @@ export class TripFormComponent implements OnInit {
   setDropoffTime() {
     this.tripForm.controls.dropoffTime.setValue(DateHelper.getTimeString());
   }
-  
+
   close() {
     if (this.isInEditMode) {
       // We're in edit mode on the trips page, emit event to exit edit mode
