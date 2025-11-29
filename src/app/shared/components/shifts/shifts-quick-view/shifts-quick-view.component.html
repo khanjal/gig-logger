@@ -52,12 +52,18 @@
       </span>
     </div>
     <!-- Second line: Date + Time Range + Duration -->
-    <div class="flex items-center mt-1 text-xs text-gray-700 w-full">
-      <mat-icon class="text-blue-400 text-base mr-1">schedule</mat-icon>
-      <span class="font-mono font-medium whitespace-nowrap truncate">
-        @if (shift.date) { {{ shift.date | date:'EEE, MMM d' }} }
-        @if (shift.start) { • {{ shift.start | noseconds:prefers24Hour }}@if (shift.finish) { - {{ shift.finish | noseconds:prefers24Hour }} } }
-        @if (shift.totalTime) { • {{shift.totalTime | durationFormat}} }
+    <div class="flex items-center justify-between mt-1 text-xs text-gray-700 w-full gap-2">
+      <span class="flex items-center gap-1 flex-shrink-0">
+        <mat-icon class="text-blue-400 text-base">event</mat-icon>
+        <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:'EEE, MMM d, yy' }} }</span>
+      </span>
+      <span class="flex items-center gap-1 flex-shrink-0">
+        <mat-icon class="text-blue-400 text-base">schedule</mat-icon>
+        <span class="font-medium whitespace-nowrap">@if (shift.start) { {{ shift.start | noseconds:prefers24Hour }}@if (shift.finish) { - {{ shift.finish | noseconds:prefers24Hour }} } }</span>
+      </span>
+      <span class="flex items-center gap-1 flex-shrink-0">
+        <mat-icon class="text-blue-400 text-base">timer</mat-icon>
+        <span class="font-medium whitespace-nowrap">@if (shift.totalTime) { {{shift.totalTime | durationFormat}} }</span>
       </span>
     </div>
     <!-- Divider for visual separation -->
