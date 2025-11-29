@@ -72,14 +72,14 @@
           <span class="status-value error-text">{{ syncState?.error }}</span>
         </div>
 
-        <div class="status-row" *ngIf="hasUnsavedChanges">
+        <div class="status-row" *ngIf="hasUnsavedChanges && syncState?.status !== 'syncing'">
           <button mat-raised-button color="primary" (click)="forceSync(); $event.stopPropagation()" class="force-sync-button">
             <mat-icon>save</mat-icon>
             Save Changes
           </button>
         </div>
 
-        <div class="status-row" *ngIf="!hasUnsavedChanges">
+        <div class="status-row" *ngIf="!hasUnsavedChanges && syncState?.status !== 'syncing'">
           <button mat-raised-button color="accent" (click)="updateFromSpreadsheet(); $event.stopPropagation()" class="force-sync-button">
             <mat-icon>cloud_download</mat-icon>
             Update from Spreadsheet
