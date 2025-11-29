@@ -173,10 +173,12 @@ export class GigCalculatorService {
         }, [] as { pickupTime: string; dropoffTime: string }[]);
 
         if (tripsActiveTime > 0) {
+            updateAction(shift, ActionEnum.Update);
             shift.totalActive = DateHelper.getDurationString(tripsActiveTime);
         }
         
         if (mergedTotalTime < tripsActiveTime) {
+            updateAction(shift, ActionEnum.Update);
             shift.active = DateHelper.getDurationString(mergedTotalTime);
         } else {
             shift.active = "";
@@ -190,7 +192,6 @@ export class GigCalculatorService {
             }
         }
 
-        updateAction(shift, ActionEnum.Update);
         return shift;
     }
 
