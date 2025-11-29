@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
+import { ShiftHelper } from '@helpers/shift.helper';
 import { updateAction } from '@utils/action.utils';
 import { ActionEnum } from '@enums/action.enum';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -21,6 +22,7 @@ import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -62,7 +64,8 @@ export class DiagnosticsComponent implements OnInit {
     private _placeService: PlaceService,
     private _nameService: NameService,
     private _logger: LoggerService,
-    private _gigCalculator: GigCalculatorService
+    private _gigCalculator: GigCalculatorService,
+    private _gigWorkflow: GigWorkflowService
   ) { }
 
   ngOnInit() {
@@ -118,17 +121,16 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for orphaned trips
-    const orphanedTripsResult = this.findOrphanedTripsGrouped(trips, shifts);
-    this._logger.debug('Orphaned trips found:', orphanedTripsResult);
+    const orphanedTrips = this.findOrphanedTrips(trips, shifts);
+    this._logger.debug('Orphaned trips found:', orphanedTrips);
 
     this.dataDiagnostics.push({
       name: 'Orphaned Trips',
-      count: orphanedTripsResult.items.length,
-      severity: orphanedTripsResult.items.length > 0 ? 'error' : 'info',
+      count: orphanedTrips.length,
+      severity: orphanedTrips.length > 0 ? 'error' : 'info',
       description: 'Trips not associated with any shift',
       itemType: 'trip',
-      items: orphanedTripsResult.items,
-      groups: orphanedTripsResult.groups
+      items: orphanedTrips
     });
 
     // Check for duplicate places with different casing
@@ -234,20 +236,9 @@ export class DiagnosticsComponent implements OnInit {
     return { items: duplicates, groups: duplicateGroups };
   }
 
-  private findOrphanedTripsGrouped(trips: ITrip[], shifts: IShift[]): { items: ITrip[], groups: ITrip[][] } {
+  private findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
     const shiftKeys = new Set(shifts.map(s => s.key));
-    const orphanedTrips = trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
-    
-    const keyMap = new Map<string, ITrip[]>();
-    for (const trip of orphanedTrips) {
-      if (!keyMap.has(trip.key)) {
-        keyMap.set(trip.key, []);
-      }
-      keyMap.get(trip.key)!.push(trip);
-    }
-    
-    const groups = Array.from(keyMap.values());
-    return { items: orphanedTrips, groups };
+    return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
   }
 
   private findDuplicatePlaces(places: IPlace[], trips: ITrip[], addresses: IAddress[]): { items: IPlace[], groups: IPlace[][] } {
@@ -552,58 +543,18 @@ export class DiagnosticsComponent implements OnInit {
     await this._tripService.update([trip]);
   }
 
-  async createShiftFromTrips(group: ITrip[]) {
-    if (group.length === 0) return;
+  async createShiftFromTrip(trip: ITrip) {
+    const newShift = ShiftHelper.createShiftFromTrip(trip);
+    newShift.rowId = await this._shiftService.getMaxRowId() + 1;
     
-    const firstTrip = group[0];
-    const maxRowId = await this._shiftService.getMaxRowId() || 1;
-    
-    const newShift: IShift = {
-      rowId: maxRowId + 1,
-      date: firstTrip.date,
-      service: firstTrip.service,
-      number: firstTrip.number,
-      key: firstTrip.key,
-      region: firstTrip.region,
-      trips: 0,
-      totalTrips: 0,
-      distance: 0,
-      totalDistance: 0,
-      start: '',
-      finish: '',
-      time: '',
-      active: '',
-      totalActive: '',
-      totalTime: '',
-      totalPay: 0,
-      totalTips: 0,
-      totalBonus: 0,
-      grandTotal: 0,
-      totalCash: 0,
-      note: '',
-      omit: false,
-      action: ActionEnum.Add,
-      actionTime: Date.now(),
-      saved: false,
-      amountPerTrip: 0,
-      amountPerDistance: 0,
-      amountPerTime: 0,
-      pay: 0,
-      tip: 0,
-      bonus: 0,
-      cash: 0,
-      total: 0
-    };
-    
+    await this._gigWorkflow.calculateShiftTotals([newShift]);
     await this._shiftService.add(newShift);
     
-    for (const trip of group) {
-      (trip as any).fixed = true;
-    }
-    
     const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
-    if (diagnostic) {
-      diagnostic.count -= group.length;
+    if (diagnostic && diagnostic.items) {
+      const tripsWithSameKey = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
+      tripsWithSameKey.forEach((t: ITrip) => (t as any).fixed = true);
+      diagnostic.count -= tripsWithSameKey.length;
     }
   }
 
@@ -618,9 +569,7 @@ export class DiagnosticsComponent implements OnInit {
     return group.some(s => (s as any).markedForDelete);
   }
 
-  hasFixed(group: any[]): boolean {
-    return group.some(item => (item as any).fixed);
-  }
+
 
   async markShiftForDelete(group: IShift[], rowId: number, groupIndex: number) {
     const shift = group.find(s => s.rowId === rowId);

@@ -104,21 +104,14 @@
         <!-- Grouped Items (Duplicates) -->
         <div *ngIf="item.groups && item.groups.length > 0" class="space-y-4">
           <div class="text-sm text-gray-600 mb-3 font-medium">
-            Found {{ item.items?.length }} items in {{ item.groups.length }} {{ item.name === 'Orphaned Trips' ? 'groups' : 'duplicate groups' }}
+            Found {{ item.items?.length }} items in {{ item.groups.length }} duplicate groups
           </div>
           
           <div *ngFor="let group of item.groups; let groupIndex = index" class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
             <div class="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
-              <span class="font-semibold text-sm text-gray-700">{{ item.name === 'Orphaned Trips' ? group[0].key : 'Group ' + (groupIndex + 1) }}</span>
+              <span class="font-semibold text-sm text-gray-700">Group {{ groupIndex + 1 }}</span>
               <div class="flex items-center gap-2">
                 <span class="text-xs bg-gray-200 px-2 py-1 rounded">{{ group.length }} items</span>
-                <button *ngIf="item.itemType === 'trip' && item.name === 'Orphaned Trips'" 
-                        mat-mini-fab color="primary" 
-                        [disabled]="hasFixed(group)"
-                        (click)="createShiftFromTrips(group)"
-                        matTooltip="Create shift from trips">
-                  <mat-icon>add</mat-icon>
-                </button>
                 <button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address'" 
                         mat-mini-fab color="primary" 
                         [disabled]="!selectedValue[groupIndex]"
@@ -136,7 +129,7 @@
               </div>
             </div>
             <mat-radio-group [(ngModel)]="selectedValue[groupIndex]" class="divide-y divide-gray-200">
-              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.markedForDelete || problemItem.fixed" [class.bg-green-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-red-50]="problemItem.markedForDelete">
+              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.markedForDelete" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-red-50]="problemItem.markedForDelete">
                 <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address'" 
                                   [value]="problemItem"></mat-radio-button>
                 <input *ngIf="item.itemType === 'shift'" type="radio" 
@@ -147,10 +140,6 @@
                        class="w-4 h-4">
                 <div class="flex-1">
                   <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
-                  <div *ngIf="problemItem.fixed && item.name === 'Orphaned Trips'" class="flex items-center gap-2 text-green-600 text-sm mt-1">
-                    <mat-icon class="!text-base">check_circle</mat-icon>
-                    <span>Fixed - Shift created</span>
-                  </div>
                 </div>
               </div>
             </mat-radio-group>
@@ -162,9 +151,19 @@
           <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-green-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed">
             <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-green-600 text-sm mb-2">
               <mat-icon class="!text-base">check_circle</mat-icon>
-              <span>Fixed successfully</span>
+              <span>{{ item.name === 'Orphaned Trips' ? 'Fixed - Shift created' : 'Fixed successfully' }}</span>
             </div>
-            <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType, diagnosticName: item.name, component: this}"></ng-container>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex-1">
+                <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType, diagnosticName: item.name, component: this}"></ng-container>
+              </div>
+              <button *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed" 
+                      mat-icon-button color="primary" 
+                      (click)="createShiftFromTrip(problemItem)"
+                      matTooltip="Create shift from trip">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
             <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-gray-200">
               <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 text-sm mb-2">
                 <mat-icon class="!text-base">check_circle</mat-icon>
