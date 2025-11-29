@@ -118,16 +118,17 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for orphaned trips
-    const orphanedTrips = this.findOrphanedTrips(trips, shifts);
-    this._logger.debug('Orphaned trips found:', orphanedTrips);
+    const orphanedTripsResult = this.findOrphanedTripsGrouped(trips, shifts);
+    this._logger.debug('Orphaned trips found:', orphanedTripsResult);
 
     this.dataDiagnostics.push({
       name: 'Orphaned Trips',
-      count: orphanedTrips.length,
-      severity: orphanedTrips.length > 0 ? 'error' : 'info',
+      count: orphanedTripsResult.items.length,
+      severity: orphanedTripsResult.items.length > 0 ? 'error' : 'info',
       description: 'Trips not associated with any shift',
       itemType: 'trip',
-      items: orphanedTrips
+      items: orphanedTripsResult.items,
+      groups: orphanedTripsResult.groups
     });
 
     // Check for duplicate places with different casing
@@ -233,9 +234,20 @@ export class DiagnosticsComponent implements OnInit {
     return { items: duplicates, groups: duplicateGroups };
   }
 
-  private findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
+  private findOrphanedTripsGrouped(trips: ITrip[], shifts: IShift[]): { items: ITrip[], groups: ITrip[][] } {
     const shiftKeys = new Set(shifts.map(s => s.key));
-    return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
+    const orphanedTrips = trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
+    
+    const keyMap = new Map<string, ITrip[]>();
+    for (const trip of orphanedTrips) {
+      if (!keyMap.has(trip.key)) {
+        keyMap.set(trip.key, []);
+      }
+      keyMap.get(trip.key)!.push(trip);
+    }
+    
+    const groups = Array.from(keyMap.values());
+    return { items: orphanedTrips, groups };
   }
 
   private findDuplicatePlaces(places: IPlace[], trips: ITrip[], addresses: IAddress[]): { items: IPlace[], groups: IPlace[][] } {
@@ -540,6 +552,61 @@ export class DiagnosticsComponent implements OnInit {
     await this._tripService.update([trip]);
   }
 
+  async createShiftFromTrips(group: ITrip[]) {
+    if (group.length === 0) return;
+    
+    const firstTrip = group[0];
+    const maxRowId = await this._shiftService.getMaxRowId() || 1;
+    
+    const newShift: IShift = {
+      rowId: maxRowId + 1,
+      date: firstTrip.date,
+      service: firstTrip.service,
+      number: firstTrip.number,
+      key: firstTrip.key,
+      region: firstTrip.region,
+      trips: 0,
+      totalTrips: 0,
+      distance: 0,
+      totalDistance: 0,
+      start: '',
+      finish: '',
+      time: '',
+      active: '',
+      totalActive: '',
+      totalTime: '',
+      totalPay: 0,
+      totalTips: 0,
+      totalBonus: 0,
+      grandTotal: 0,
+      totalCash: 0,
+      note: '',
+      omit: false,
+      action: ActionEnum.Add,
+      actionTime: Date.now(),
+      saved: false,
+      amountPerTrip: 0,
+      amountPerDistance: 0,
+      amountPerTime: 0,
+      pay: 0,
+      tip: 0,
+      bonus: 0,
+      cash: 0,
+      total: 0
+    };
+    
+    await this._shiftService.add(newShift);
+    
+    for (const trip of group) {
+      (trip as any).fixed = true;
+    }
+    
+    const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+    if (diagnostic) {
+      diagnostic.count -= group.length;
+    }
+  }
+
   private decrementDiagnosticCount(diagnosticName: string) {
     const diagnostic = this.dataDiagnostics.find(d => d.name === diagnosticName);
     if (diagnostic && diagnostic.count > 0) {
@@ -549,6 +616,10 @@ export class DiagnosticsComponent implements OnInit {
 
   hasMarkedForDelete(group: IShift[]): boolean {
     return group.some(s => (s as any).markedForDelete);
+  }
+
+  hasFixed(group: any[]): boolean {
+    return group.some(item => (item as any).fixed);
   }
 
   async markShiftForDelete(group: IShift[], rowId: number, groupIndex: number) {
