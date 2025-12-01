@@ -1,0 +1,24 @@
+<div class="space-y-3">
+  <div class="grid grid-cols-2 gap-3 items-end">
+    <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="dateModel" (ngModelChange)="onDateChange()" placeholder="Select date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" floatLabel="always" class="opacity-60 w-full">
+      <mat-label>Shift #</mat-label>
+      <input matInput [disabled]="true" [value]="nextNumber" placeholder="Auto">
+    </mat-form-field>
+  </div>
+
+  <app-search-input [fieldName]="'Service'" [searchType]="'Service'" [isRequired]="true" (valueChanged)="onServiceChange($event)"></app-search-input>
+
+  <app-search-input [fieldName]="'Region'" [searchType]="'Region'" [isRequired]="false" (valueChanged)="region = $event"></app-search-input>
+
+  <div class="flex justify-end gap-2">
+    <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="button" (click)="onSubmit()">Add Shift</button>
+  </div>
+</div>
