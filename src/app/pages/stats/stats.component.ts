@@ -11,6 +11,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatDateRangeInput, MatStartDate, MatEndDate, MatDatepickerToggle, MatDateRangePicker } from '@angular/material/datepicker';
 import { StatsTableComponent } from './stats-table/stats-table.component';
+import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
 
 @Component({
     selector: 'app-stats',
@@ -18,13 +19,15 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     styleUrls: ['./stats.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
+    imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   places: IStatItem[] = [];
   services: IStatItem[] = [];
   types: IStatItem[] = [];
+  trips: ITrip[] = [];
+  shifts: IShift[] = [];
 
   range = new FormGroup({
     start: new FormControl(),
@@ -62,13 +65,13 @@ export class StatsComponent implements OnInit {
 
   async getShiftsRange(startDate: string, endDate: string) {
     let shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
-    
+    this.shifts = shifts;
     this.services = this.getShiftList(shifts, "service");
   }
 
   async getTripsRange(startDate: string, endDate: string) {
     let trips = (await this._tripService.getBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
-    
+    this.trips = trips;
     this.places = this.getTripList(trips, "place");
     this.types = this.getTripList(trips, "type");
   }

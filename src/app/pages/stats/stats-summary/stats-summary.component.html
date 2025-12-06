@@ -1,0 +1,6 @@
+<div class="stats-summary-grid">
+  <div *ngFor="let card of summaryCards" class="summary-row" [class.highlight]="card.highlight">
+    <div class="summary-label">{{ card.label }}</div>
+    <div class="summary-value">{{ card.value }}</div>
+  </div>
+</div>
