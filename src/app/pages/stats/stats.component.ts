@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
@@ -28,6 +29,7 @@ export class StatsComponent implements OnInit {
   places: IStatItem[] = [];
   services: IStatItem[] = [];
   types: IStatItem[] = [];
+  regions: IStatItem[] = [];
   trips: ITrip[] = [];
   shifts: IShift[] = [];
   dailyData: IDaily[] = [];
@@ -77,6 +79,7 @@ export class StatsComponent implements OnInit {
     let shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
     this.shifts = shifts;
     this.services = this.getShiftList(shifts, "service");
+    this.regions = this.getShiftList(shifts, "region");
   }
 
   async getTripsRange(startDate: string, endDate: string) {

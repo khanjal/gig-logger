@@ -5,12 +5,24 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
+import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
+import { DurationFormatPipe } from '@pipes/duration-format.pipe';
+import { DateHelper } from '@helpers/date.helper';
+import { ShiftHelper } from '@helpers/shift.helper';
+import { updateAction } from '@utils/action.utils';
+import { ActionEnum } from '@enums/action.enum';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
+import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
+import { GigWorkflowService } from '@services/gig-workflow.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -22,21 +34,28 @@ interface DiagnosticItem {
   count: number;
   severity: 'info' | 'warning' | 'error';
   description: string;
-  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name'; // Type of items in the array
-  items?: any[]; // Array of problematic shifts/trips/addresses/places/names
-  groups?: any[][]; // Grouped duplicates for better display
+  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name';
+  items?: any[];
+  groups?: any[][];
+  fixable?: boolean;
+  bulkFixable?: boolean;
+  selectedValues?: Map<number, any>;
 }
 
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DurationFormatPipe],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
   dataDiagnostics: DiagnosticItem[] = [];
   isLoading = false;
+  isBulkFixing = false;
+  selectedValue: any[] = [];
+  selectedAddress: { [key: number]: string } = {};
+  selectedShiftToDelete: { [key: number]: number } = {};
 
   constructor(
     private _shiftService: ShiftService,
@@ -44,7 +63,9 @@ export class DiagnosticsComponent implements OnInit {
     private _addressService: AddressService,
     private _placeService: PlaceService,
     private _nameService: NameService,
-    private _logger: LoggerService
+    private _logger: LoggerService,
+    private _gigCalculator: GigCalculatorService,
+    private _gigWorkflow: GigWorkflowService
   ) { }
 
   ngOnInit() {
@@ -54,7 +75,8 @@ export class DiagnosticsComponent implements OnInit {
 
   async runDiagnostics() {
     this.isLoading = true;
-    this.dataDiagnostics = []; // Clear previous results
+    this.dataDiagnostics = [];
+    this.selectedValue = [];
 
     try {
       await this.checkDataIntegrity();
@@ -69,6 +91,8 @@ export class DiagnosticsComponent implements OnInit {
     const addresses = await this._addressService.list();
     const places = await this._placeService.list();
     const names = await this._nameService.list();
+
+
 
     // Check for duplicate shifts
     const duplicateShiftsResult = this.findDuplicateShifts(shifts);
@@ -110,7 +134,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for duplicate places with different casing
-    const duplicatePlacesResult = this.findDuplicatePlaces(places);
+    const duplicatePlacesResult = this.findDuplicatePlaces(places, trips, addresses);
     this._logger.debug('Duplicate places found:', duplicatePlacesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Places',
@@ -136,7 +160,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for duplicate names with different casing
-    const duplicateNamesResult = this.findDuplicateNames(names);
+    const duplicateNamesResult = this.findDuplicateNames(names, trips);
     this._logger.debug('Duplicate names found:', duplicateNamesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Names',
@@ -172,6 +196,18 @@ export class DiagnosticsComponent implements OnInit {
       items: tripsWithoutDuration
     });
 
+    // Check for trips with place but no start address
+    const tripsWithPlaceNoAddress = this.findTripsWithPlaceNoAddress(trips, places);
+    this._logger.debug('Trips with place but no address found:', tripsWithPlaceNoAddress);
+    this.dataDiagnostics.push({
+      name: 'Trip Places Missing Address',
+      count: tripsWithPlaceNoAddress.length,
+      severity: tripsWithPlaceNoAddress.length > 0 ? 'warning' : 'info',
+      description: 'Trips with a place but no start address',
+      itemType: 'trip',
+      items: tripsWithPlaceNoAddress
+    });
+
     this._logger.info('Final dataDiagnostics:', this.dataDiagnostics);
   }
 
@@ -205,7 +241,7 @@ export class DiagnosticsComponent implements OnInit {
     return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
   }
 
-  private findDuplicatePlaces(places: IPlace[]): { items: IPlace[], groups: IPlace[][] } {
+  private findDuplicatePlaces(places: IPlace[], trips: ITrip[], addresses: IAddress[]): { items: IPlace[], groups: IPlace[][] } {
     const duplicates: IPlace[] = [];
     const duplicateGroups: IPlace[][] = [];
     const processedPlaces = new Set<number>();
@@ -236,8 +272,11 @@ export class DiagnosticsComponent implements OnInit {
         }
       }
 
-      // If we found duplicates, add them all
+      // If we found duplicates, recalculate case-sensitive trip counts
       if (matchingPlaces.length > 1) {
+        for (const place of matchingPlaces) {
+          place.trips = trips.filter(t => t.place === place.place).length;
+        }
         duplicates.push(...matchingPlaces);
         duplicateGroups.push(matchingPlaces);
         processedPlaces.add(i);
@@ -300,7 +339,7 @@ export class DiagnosticsComponent implements OnInit {
     return { items: duplicates, groups: duplicateGroups };
   }
 
-  private findDuplicateNames(names: IName[]): { items: IName[], groups: IName[][] } {
+  private findDuplicateNames(names: IName[], trips: ITrip[]): { items: IName[], groups: IName[][] } {
     const duplicates: IName[] = [];
     const duplicateGroups: IName[][] = [];
     const processedNames = new Set<number>();
@@ -326,8 +365,13 @@ export class DiagnosticsComponent implements OnInit {
         }
       }
 
-      // If we found duplicates, add them all
+      // If we found duplicates, recalculate case-sensitive trip counts and addresses
       if (matchingNames.length > 1) {
+        for (const name of matchingNames) {
+          const nameTrips = trips.filter(t => t.name === name.name);
+          name.trips = nameTrips.length;
+          name.addresses = [...new Set(nameTrips.map(t => t.endAddress).filter(a => a))];
+        }
         duplicates.push(...matchingNames);
         duplicateGroups.push(matchingNames);
         processedNames.add(i);
@@ -359,6 +403,27 @@ export class DiagnosticsComponent implements OnInit {
     });
   }
 
+  private findTripsWithPlaceNoAddress(trips: ITrip[], places: IPlace[]): any[] {
+    const placeMap = new Map<string, IPlace>();
+    places.forEach(p => placeMap.set(p.place, p));
+
+    return trips.filter(trip => {
+      const hasPlace = trip.place && trip.place.trim().length > 0;
+      const hasStartAddress = trip.startAddress && trip.startAddress.trim().length > 0;
+      return hasPlace && !hasStartAddress;
+    }).map(trip => {
+      const place = placeMap.get(trip.place);
+      const availableAddresses = place?.addresses?.map(a => a.address) || [];
+      if (availableAddresses.length === 1) {
+        this.selectedAddress[trip.rowId] = availableAddresses[0];
+      }
+      return {
+        ...trip,
+        availableAddresses
+      };
+    });
+  }
+
   getSeverityIcon(severity: string): string {
     switch (severity) {
       case 'error': return 'error';
@@ -383,5 +448,141 @@ export class DiagnosticsComponent implements OnInit {
 
   getTotalIssues(): number {
     return this.dataDiagnostics.reduce((sum, item) => sum + item.count, 0);
+  }
+
+  async mergeDuplicates(group: any[], selectedItem: any, itemType: 'place' | 'name' | 'address') {
+    const trips = await this._tripService.list();
+    
+    for (const item of group) {
+      if (item === selectedItem) continue;
+      
+      let affectedTrips: ITrip[] = [];
+      if (itemType === 'place') {
+        affectedTrips = trips.filter(t => t.place === item.place);
+      } else if (itemType === 'name') {
+        affectedTrips = trips.filter(t => t.name === item.name);
+      } else if (itemType === 'address') {
+        affectedTrips = trips.filter(t => t.startAddress === item.address || t.endAddress === item.address);
+      }
+      
+      for (const trip of affectedTrips) {
+        if (itemType === 'place') {
+          trip.place = selectedItem.place;
+        } else if (itemType === 'name') {
+          trip.name = selectedItem.name;
+        } else if (itemType === 'address') {
+          if (trip.startAddress === item.address) trip.startAddress = selectedItem.address;
+          if (trip.endAddress === item.address) trip.endAddress = selectedItem.address;
+        }
+        updateAction(trip, ActionEnum.Update);
+        await this._tripService.update([trip]);
+      }
+      
+      item.trips = 0;
+    }
+  }
+
+  async fixShiftDuration(shift: IShift) {
+    if (!shift.start || !shift.finish) return;
+    const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+    shift.time = DateHelper.getDurationString(duration);
+    updateAction(shift, ActionEnum.Update);
+    await this._shiftService.update([shift]);
+    (shift as any).fixed = true;
+    this.decrementDiagnosticCount('Shifts Missing Time Duration');
+  }
+
+  async fixTripDuration(trip: ITrip) {
+    await this._gigCalculator.updateTripDuration(trip);
+    
+    (trip as any).fixed = true;
+    this.decrementDiagnosticCount('Trips Missing Duration');
+  }
+
+  async bulkFixShiftDurations() {
+    this.isBulkFixing = true;
+    try {
+      const shifts = await this._shiftService.list();
+      const shiftsToFix = this.findShiftsWithoutDuration(shifts);
+      
+      for (const shift of shiftsToFix) {
+        if (shift.start && shift.finish) {
+          const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
+          shift.time = DateHelper.getDurationString(duration);
+          updateAction(shift, ActionEnum.Update);
+          await this._shiftService.update([shift]);
+        }
+      }
+      
+      await this.runDiagnostics();
+    } finally {
+      this.isBulkFixing = false;
+    }
+  }
+
+  async bulkFixTripDurations() {
+    this.isBulkFixing = true;
+    try {
+      const trips = await this._tripService.list();
+      const tripsToFix = this.findTripsWithoutDuration(trips);
+      
+      for (const trip of tripsToFix) {
+        await this._gigCalculator.updateTripDuration(trip);
+      }
+      
+      await this.runDiagnostics();
+    } finally {
+      this.isBulkFixing = false;
+    }
+  }
+
+  async applyAddressToTrip(trip: any, address: string) {
+    trip.startAddress = address;
+    trip.addressApplied = true;
+    updateAction(trip, ActionEnum.Update);
+    await this._tripService.update([trip]);
+  }
+
+  async createShiftFromTrip(trip: ITrip) {
+    const newShift = ShiftHelper.createShiftFromTrip(trip);
+    newShift.rowId = await this._shiftService.getMaxRowId() + 1;
+    
+    await this._gigWorkflow.calculateShiftTotals([newShift]);
+    await this._shiftService.add(newShift);
+    
+    const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+    if (diagnostic && diagnostic.items) {
+      const tripsWithSameKey = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
+      tripsWithSameKey.forEach((t: ITrip) => (t as any).fixed = true);
+      diagnostic.count -= tripsWithSameKey.length;
+    }
+  }
+
+  private decrementDiagnosticCount(diagnosticName: string) {
+    const diagnostic = this.dataDiagnostics.find(d => d.name === diagnosticName);
+    if (diagnostic && diagnostic.count > 0) {
+      diagnostic.count--;
+    }
+  }
+
+  hasMarkedForDelete(group: IShift[]): boolean {
+    return group.some(s => (s as any).markedForDelete);
+  }
+
+
+
+  async markShiftForDelete(group: IShift[], rowId: number, groupIndex: number) {
+    const shift = group.find(s => s.rowId === rowId);
+    if (!shift) return;
+    
+    if (shift.action === ActionEnum.Add) {
+      await this._shiftService.delete(shift.id!);
+    } else {
+      updateAction(shift, ActionEnum.Delete);
+      await this._shiftService.update([shift]);
+    }
+    
+    (shift as any).markedForDelete = true;
+    this.selectedShiftToDelete[groupIndex] = undefined as any;
   }
 }

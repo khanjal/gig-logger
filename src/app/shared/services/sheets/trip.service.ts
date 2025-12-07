@@ -63,6 +63,4 @@ export class TripService extends SyncableCrudService<ITrip> {
 
         return trips;
     }
-
-
 }

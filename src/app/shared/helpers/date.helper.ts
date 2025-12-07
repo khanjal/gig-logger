@@ -169,6 +169,15 @@ export class DateHelper {
         };
         return weekdayMap[weekday.toLowerCase()];
     }
+    
+    /**
+     * Converts minutes since midnight to 'HH:mm' string format
+     */
+    static minutesToTimeString(minutes: number): string {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
 
     // --- Miscellaneous ---
 

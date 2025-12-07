@@ -20,6 +20,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import { LoggerService } from '@services/logger.service';
 import { NgFor, NgClass } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
 
@@ -96,7 +97,8 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         private _shiftService: ShiftService,
         private _tripService: TripService,
         private _expensesService: ExpensesService,
-        private _timerService: TimerService
+        private _timerService: TimerService,
+        private _logger: LoggerService
     ) { 
         // Support both old string format and new config object format
         if (typeof config === 'string') {
@@ -233,7 +235,16 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // Subscribe to logger messages during load
+        const logSubscription = this._logger.onLog.subscribe((msg: any) => {
+            this.appendToTerminal(msg.message);
+        });
+
         await this._sheetService.loadSpreadsheetData(data);
+        
+        // Unsubscribe after load completes
+        logSubscription.unsubscribe();
+        
         this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
     }
 

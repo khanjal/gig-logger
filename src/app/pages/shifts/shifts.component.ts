@@ -73,7 +73,6 @@ export class ShiftsComponent implements OnInit {
     const scrollTop = target.scrollTop;
     const scrollHeight = target.scrollHeight;
     const clientHeight = target.clientHeight;
-    // Check if the user has scrolled to near the bottom (within threshold or 80% of the way)
     const threshold = ShiftsComponent.SCROLL_THRESHOLD_PX;
     const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
     if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading && !this.noMoreData) {

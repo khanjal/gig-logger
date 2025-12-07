@@ -5,7 +5,7 @@ import { IShift } from "@interfaces/shift.interface";
 import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
 import { DataLinkingService } from "./data/data-linking.service";
-import { ShiftCalculatorService } from "./calculations/shift-calculator.service";
+import { GigCalculatorService } from "./calculations/gig-calculator.service";
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +16,7 @@ export class GigWorkflowService {
         private _apiService: ApiService,
         private _dataLoader: DataLoaderService,
         private _dataLinking: DataLinkingService,
-        private _calculator: ShiftCalculatorService
+        private _calculator: GigCalculatorService
     ) {}
 
     // Auth Methods - Delegate to API Service
@@ -90,6 +90,14 @@ export class GigWorkflowService {
 
     public async calculateDailyTotal(dates: string[] = []) {
         return this._calculator.calculateDailyTotal(dates);
+    }
+
+    public async calculateDurationsByKey(key: string) {
+        return this._calculator.calculateDurationsByKey(key);
+    }
+
+    public async updateTripDuration(trip: any) {
+        return this._calculator.updateTripDuration(trip);
     }
 
     // Data Linking Methods - Delegate to Data Linking

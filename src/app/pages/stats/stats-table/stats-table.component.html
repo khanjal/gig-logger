@@ -10,24 +10,24 @@
     <!-- Table content when data is available -->
     <div class="overflow-x-auto relative rounded-lg border border-gray-200 bg-white">
       <table *ngIf="items.length > 0" class="min-w-full text-sm">
-        <thead class="bg-blue-100">
+        <thead class="bg-blue-100 sticky top-0 z-10">
           <tr>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">{{ name }}</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Trips</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Distance</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Pay</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Tips</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Bonus</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Total</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Cash</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Amt/Time</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Amt/Trip</th>
-            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Amt/Dist</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">{{ name }}</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Trips</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Distance</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Pay</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Tips</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Bonus</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Total</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Cash</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Amt/Time</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Amt/Trip</th>
+            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap bg-blue-100">Amt/Dist</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of items; let i = index" [ngClass]="i % 2 === 0 ? 'bg-blue-50' : 'bg-white'" class="hover:bg-gray-50">
-            <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-700">{{item.name | truncate:10}}</td>
+            <td class="px-3 py-2 font-semibold text-gray-900 max-w-[150px] truncate" [title]="item.name">{{item.name}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.trips}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.distance | number}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.pay | currency}}</td>
