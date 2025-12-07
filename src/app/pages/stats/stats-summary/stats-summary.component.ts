@@ -7,6 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ITrip } from '@interfaces/trip.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { IDaily } from '@interfaces/daily.interface';
+import { ITripStatistics } from '@interfaces/trip-statistics.interface';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { NumberHelper } from '@helpers/number.helper';
 import { StatHelper } from '@helpers/stat.helper';
@@ -28,28 +29,8 @@ interface ISummaryCard {
   imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule, MatTooltipModule]
 })
 export class StatsSummaryComponent implements OnChanges {
-    // Cached summary values
-    private _totalEarnings = 0;
-    private _totalTips = 0;
-    private _totalBonus = 0;
-    private _totalDistance = 0;
-    private _averagePerTrip = 0;
-    private _medianTip = 0;
-    private _medianPay = 0;
-    private _averagePay = 0;
-    private _highestPay = 0;
-    private _lowestPay: number | null = null;
-    private _highestTip = 0;
-    private _zeroTipTrips = 0;
-    private _cashTrips = 0;
-    private _averagePerMile = 0;
-    private _bestEarningsPerMile = 0;
-    private _worstEarningsPerMile = 0;
-    private _averageTip = 0;
-    private _lowestNonZeroTip: number | null = null;
-    private _tipPercentage = 0;
-    private _longestTrip = 0;
-    private _shortestTrip: number | null = null;
+  private stats: ITripStatistics = this.createEmptyStats();
+
   @Input() trips: ITrip[] = [];
   @Input() dailyData: IDaily[] = [];
   @Input() startDate?: string;
@@ -67,37 +48,78 @@ export class StatsSummaryComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['trips'] || changes['shifts'] || changes['dailyData'] || changes['startDate'] || changes['endDate']) {
-      // Compute and cache all expensive summary values
-      const trips = this.trips;
-      this._totalEarnings = trips.map(t => t.total || 0).reduce((acc, val) => acc + val, 0);
-      this._totalTips = trips.map(t => t.tip || 0).reduce((acc, val) => acc + val, 0);
-      this._totalBonus = trips.map(t => t.bonus || 0).reduce((acc, val) => acc + val, 0);
-      this._totalDistance = trips.map(t => t.distance || 0).reduce((acc, val) => acc + val, 0);
-      this._averagePerTrip = trips.length > 0 ? this._totalEarnings / trips.length : 0;
-      this._medianTip = NumberHelper.median(trips.map(t => t.tip || 0));
-      this._medianPay = NumberHelper.median(trips.map(t => t.pay || 0).filter(v => v > 0));
-      const pays = trips.map(t => t.pay || 0).filter(v => v > 0);
-      this._averagePay = pays.length ? pays.reduce((acc, v) => acc + v, 0) / pays.length : 0;
-      this._highestPay = trips.length > 0 ? Math.max(...trips.map(t => t.pay || 0)) : 0;
-      const nonZeroTrips = trips.filter(t => (t.pay || 0) > 0);
-      this._lowestPay = nonZeroTrips.length > 0 ? Math.min(...nonZeroTrips.map(t => t.pay || 0)) : null;
-      this._highestTip = trips.length > 0 ? Math.max(...trips.map(t => t.tip || 0)) : 0;
-      this._zeroTipTrips = trips.filter(t => (t.tip || 0) === 0).length;
-      this._cashTrips = trips.filter(t => (t.cash || 0) > 0).length;
-      this._averagePerMile = this._totalDistance > 0 ? this._totalEarnings / this._totalDistance : 0;
-      const perMile = trips.filter(t => (t.distance || 0) > 1 && (t.pay || 0) > 0).map(t => (t.total || 0) / (t.distance || 1));
-      this._bestEarningsPerMile = perMile.length ? Math.max(...perMile) : 0;
-      this._worstEarningsPerMile = perMile.length ? Math.min(...perMile) : 0;
-      this._averageTip = trips.length > 0 ? this._totalTips / trips.length : 0;
-      const nonZeroTips = trips.filter(t => (t.tip || 0) > 0);
-      this._lowestNonZeroTip = nonZeroTips.length > 0 ? Math.min(...nonZeroTips.map(t => t.tip || 0)) : null;
-      const baseEarnings = trips.map(t => (t.pay || 0) + (t.bonus || 0)).reduce((acc, val) => acc + val, 0);
-      this._tipPercentage = baseEarnings > 0 ? (this._totalTips / baseEarnings) * 100 : 0;
-      this._longestTrip = trips.length > 0 ? Math.max(...trips.map(t => t.distance || 0)) : 0;
-      const nonZeroDistances = trips.filter(t => (t.distance || 0) > 0);
-      this._shortestTrip = nonZeroDistances.length > 0 ? Math.min(...nonZeroDistances.map(t => t.distance || 0)) : null;
+      this.stats = this.calculateStatistics(this.trips);
       this.summaryCards = this.buildSummaryCards();
     }
+  }
+
+  private createEmptyStats(): ITripStatistics {
+    return {
+      totalEarnings: 0,
+      totalTips: 0,
+      totalBonus: 0,
+      totalDistance: 0,
+      averagePerTrip: 0,
+      medianTip: 0,
+      medianPay: 0,
+      averagePay: 0,
+      highestPay: 0,
+      lowestPay: null,
+      highestTip: 0,
+      zeroTipTrips: 0,
+      cashTrips: 0,
+      averagePerMile: 0,
+      bestEarningsPerMile: 0,
+      worstEarningsPerMile: 0,
+      averageTip: 0,
+      lowestNonZeroTip: null,
+      tipPercentage: 0,
+      longestTrip: 0,
+      shortestTrip: null
+    };
+  }
+
+  private calculateStatistics(trips: ITrip[]): ITripStatistics {
+    if (trips.length === 0) {
+      return this.createEmptyStats();
+    }
+
+    const totalEarnings = trips.reduce((sum, t) => sum + (t.total || 0), 0);
+    const totalTips = trips.reduce((sum, t) => sum + (t.tip || 0), 0);
+    const totalBonus = trips.reduce((sum, t) => sum + (t.bonus || 0), 0);
+    const totalDistance = trips.reduce((sum, t) => sum + (t.distance || 0), 0);
+
+    const pays = trips.map(t => t.pay || 0).filter(v => v > 0);
+    const nonZeroTips = trips.filter(t => (t.tip || 0) > 0);
+    const nonZeroDistances = trips.filter(t => (t.distance || 0) > 0);
+    const perMileTrips = trips.filter(t => (t.distance || 0) > 1 && (t.pay || 0) > 0);
+    const perMile = perMileTrips.map(t => (t.total || 0) / (t.distance || 1));
+
+    const baseEarnings = trips.reduce((sum, t) => sum + (t.pay || 0) + (t.bonus || 0), 0);
+
+    return {
+      totalEarnings,
+      totalTips,
+      totalBonus,
+      totalDistance,
+      averagePerTrip: totalEarnings / trips.length,
+      medianTip: NumberHelper.median(trips.map(t => t.tip || 0)),
+      medianPay: NumberHelper.median(pays),
+      averagePay: pays.length ? pays.reduce((sum, v) => sum + v, 0) / pays.length : 0,
+      highestPay: Math.max(...trips.map(t => t.pay || 0)),
+      lowestPay: pays.length > 0 ? Math.min(...pays) : null,
+      highestTip: Math.max(...trips.map(t => t.tip || 0)),
+      zeroTipTrips: trips.filter(t => (t.tip || 0) === 0).length,
+      cashTrips: trips.filter(t => (t.cash || 0) > 0).length,
+      averagePerMile: totalDistance > 0 ? totalEarnings / totalDistance : 0,
+      bestEarningsPerMile: perMile.length ? Math.max(...perMile) : 0,
+      worstEarningsPerMile: perMile.length ? Math.min(...perMile) : 0,
+      averageTip: totalTips / trips.length,
+      lowestNonZeroTip: nonZeroTips.length > 0 ? Math.min(...nonZeroTips.map(t => t.tip || 0)) : null,
+      tipPercentage: baseEarnings > 0 ? (totalTips / baseEarnings) * 100 : 0,
+      longestTrip: Math.max(...trips.map(t => t.distance || 0)),
+      shortestTrip: nonZeroDistances.length > 0 ? Math.min(...nonZeroDistances.map(t => t.distance || 0)) : null
+    };
   }
 
   get busiestDay() {
@@ -150,9 +172,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   private buildSummaryCards(): ISummaryCard[] {
-    const lowestPayValue = this.lowestPay;
-    const lowestTipValue = this.lowestNonZeroTip;
-    const shortestTripValue = this.shortestTrip;
+    const s = this.stats;
 
     return [
       {
@@ -162,74 +182,74 @@ export class StatsSummaryComponent implements OnChanges {
       },
       {
         label: 'Total Earnings',
-        value: `$${NumberHelper.formatNumber(this.totalEarnings)}`,
+        value: `$${NumberHelper.formatNumber(s.totalEarnings)}`,
         highlight: true
       },
       {
         label: 'Average per Trip',
-        value: `$${NumberHelper.formatNumber(this.averagePerTrip)}`,
+        value: `$${NumberHelper.formatNumber(s.averagePerTrip)}`,
         highlight: true
       },
       {
         label: 'Total Tips',
-        value: `$${NumberHelper.formatNumber(this.totalTips)}`,
+        value: `$${NumberHelper.formatNumber(s.totalTips)}`,
       },
       {
         label: 'Average Pay',
-        value: `$${NumberHelper.formatNumber(this.averagePay)}`,
+        value: `$${NumberHelper.formatNumber(s.averagePay)}`,
       },
       {
         label: 'Median Pay',
-        value: `$${NumberHelper.formatNumber(this.medianPay)}`,
+        value: `$${NumberHelper.formatNumber(s.medianPay)}`,
       },
       {
         label: 'Average Tip',
-        value: `$${NumberHelper.formatNumber(this.averageTip)}`,
+        value: `$${NumberHelper.formatNumber(s.averageTip)}`,
       },
       {
         label: 'Median Tip',
-        value: `$${NumberHelper.formatNumber(this.medianTip)}`,
+        value: `$${NumberHelper.formatNumber(s.medianTip)}`,
       },
       {
         label: 'Total Bonus',
-        value: `$${NumberHelper.formatNumber(this.totalBonus)}`,
+        value: `$${NumberHelper.formatNumber(s.totalBonus)}`,
       },
       {
         label: 'Tip Percentage',
-        value: `${this.tipPercentage.toFixed(1)}%`,
+        value: `${s.tipPercentage.toFixed(1)}%`,
       },
       {
         label: 'Highest Tip',
-        value: `$${NumberHelper.formatNumber(this.highestTip)}`,
+        value: `$${NumberHelper.formatNumber(s.highestTip)}`,
         action: () => this.showTripsWithHighestTip()
       },
       {
         label: 'Lowest Tip',
-        value: lowestTipValue !== null ? `$${NumberHelper.formatNumber(lowestTipValue)}` : '—',
-        action: lowestTipValue !== null ? () => this.showTripsWithLowestTip() : undefined
+        value: s.lowestNonZeroTip !== null ? `$${NumberHelper.formatNumber(s.lowestNonZeroTip)}` : '—',
+        action: s.lowestNonZeroTip !== null ? () => this.showTripsWithLowestTip() : undefined
       },
       {
         label: 'Highest Pay Trip',
-        value: `$${NumberHelper.formatNumber(this.highestPay)}`,
+        value: `$${NumberHelper.formatNumber(s.highestPay)}`,
         action: () => this.showTripsWithHighestPay()
       },
       {
         label: 'Lowest Pay Trip',
-        value: lowestPayValue !== null ? `$${NumberHelper.formatNumber(lowestPayValue)}` : '—',
-        action: lowestPayValue !== null ? () => this.showTripsWithLowestPay() : undefined
+        value: s.lowestPay !== null ? `$${NumberHelper.formatNumber(s.lowestPay)}` : '—',
+        action: s.lowestPay !== null ? () => this.showTripsWithLowestPay() : undefined
       },
       {
         label: 'Avg Per Mile',
-        value: `$${NumberHelper.formatNumber(this.averagePerMile)}`,
+        value: `$${NumberHelper.formatNumber(s.averagePerMile)}`,
       },
       {
         label: 'Best $/Mile',
-        value: `$${NumberHelper.formatNumber(this.bestEarningsPerMile)}`,
+        value: `$${NumberHelper.formatNumber(s.bestEarningsPerMile)}`,
         action: () => this.showTripsWithBestPerMile()
       },
       {
         label: 'Worst $/Mile',
-        value: `$${NumberHelper.formatNumber(this.worstEarningsPerMile)}`,
+        value: `$${NumberHelper.formatNumber(s.worstEarningsPerMile)}`,
         action: () => this.showTripsWithWorstPerMile()
       },
       {
@@ -256,53 +276,30 @@ export class StatsSummaryComponent implements OnChanges {
       },
       {
         label: 'Total Distance',
-        value: `${NumberHelper.formatNumber(this.totalDistance)} mi`,
+        value: `${NumberHelper.formatNumber(s.totalDistance)} mi`,
       },
       {
         label: 'Longest Trip',
-        value: `${NumberHelper.formatNumber(this.longestTrip)} mi`,
+        value: `${NumberHelper.formatNumber(s.longestTrip)} mi`,
         action: () => this.showLongestTrips()
       },
       {
         label: 'Shortest Trip',
-        value: shortestTripValue !== null ? `${NumberHelper.formatNumber(shortestTripValue)} mi` : '—',
-        action: shortestTripValue !== null ? () => this.showShortestTrips() : undefined
+        value: s.shortestTrip !== null ? `${NumberHelper.formatNumber(s.shortestTrip)} mi` : '—',
+        action: s.shortestTrip !== null ? () => this.showShortestTrips() : undefined
       },
       {
         label: 'Zero Tip Trips',
-        value: this.zeroTipTrips.toLocaleString(),
-        action: this.zeroTipTrips > 0 ? () => this.showZeroTipTrips() : undefined
+        value: s.zeroTipTrips.toLocaleString(),
+        action: s.zeroTipTrips > 0 ? () => this.showZeroTipTrips() : undefined
       },
       {
         label: 'Cash Trips',
-        value: this.cashTrips.toLocaleString(),
-        action: this.cashTrips > 0 ? () => this.showCashTrips() : undefined
+        value: s.cashTrips.toLocaleString(),
+        action: s.cashTrips > 0 ? () => this.showCashTrips() : undefined
       }
     ];
   }
-
-
-  get totalEarnings(): number { return this._totalEarnings; }
-  get totalTips(): number { return this._totalTips; }
-  get totalBonus(): number { return this._totalBonus; }
-  get totalDistance(): number { return this._totalDistance; }
-  get averagePerTrip(): number { return this._averagePerTrip; }
-  get medianTip(): number { return this._medianTip; }
-  get medianPay(): number { return this._medianPay; }
-  get averagePay(): number { return this._averagePay; }
-  get highestPay(): number { return this._highestPay; }
-  get lowestPay(): number | null { return this._lowestPay; }
-  get highestTip(): number { return this._highestTip; }
-  get zeroTipTrips(): number { return this._zeroTipTrips; }
-  get cashTrips(): number { return this._cashTrips; }
-  get averagePerMile(): number { return this._averagePerMile; }
-  get bestEarningsPerMile(): number { return this._bestEarningsPerMile; }
-  get worstEarningsPerMile(): number { return this._worstEarningsPerMile; }
-  get averageTip(): number { return this._averageTip; }
-  get lowestNonZeroTip(): number | null { return this._lowestNonZeroTip; }
-  get tipPercentage(): number { return this._tipPercentage; }
-  get longestTrip(): number { return this._longestTrip; }
-  get shortestTrip(): number | null { return this._shortestTrip; }
 
   private openTripsModal(title: string, filterFn: (trip: ITrip) => boolean): void {
     const trips = this.trips
@@ -316,7 +313,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showTripsWithHighestTip(): void {
-    const highest = this.highestTip;
+    const highest = this.stats.highestTip;
     this.openTripsModal(
       `Trips with Highest Tip ($${NumberHelper.formatNumber(highest)})`,
       t => (t.tip || 0) === highest
@@ -324,7 +321,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showTripsWithLowestTip(): void {
-    const lowest = this.lowestNonZeroTip;
+    const lowest = this.stats.lowestNonZeroTip;
     if (lowest === null) return;
     this.openTripsModal(
       `Trips with Lowest Tip ($${NumberHelper.formatNumber(lowest)})`,
@@ -333,7 +330,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showLongestTrips(): void {
-    const longest = this.longestTrip;
+    const longest = this.stats.longestTrip;
     this.openTripsModal(
       `Longest Trips (${NumberHelper.formatNumber(longest)} mi)`,
       t => (t.distance || 0) === longest && (t.distance || 0) > 0
@@ -341,7 +338,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showShortestTrips(): void {
-    const shortest = this.shortestTrip;
+    const shortest = this.stats.shortestTrip;
     if (shortest === null) return;
     this.openTripsModal(
       `Shortest Trips (${NumberHelper.formatNumber(shortest)} mi)`,
@@ -350,7 +347,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showTripsWithHighestPay(): void {
-    const highest = this.highestPay;
+    const highest = this.stats.highestPay;
     this.openTripsModal(
       `Trips with Highest Pay ($${NumberHelper.formatNumber(highest)})`,
       t => (t.pay || 0) === highest && (t.pay || 0) > 0
@@ -358,7 +355,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showTripsWithLowestPay(): void {
-    const lowest = this.lowestPay;
+    const lowest = this.stats.lowestPay;
     if (lowest === null) return;
     this.openTripsModal(
       `Trips with Lowest Pay ($${NumberHelper.formatNumber(lowest)})`,
@@ -369,7 +366,7 @@ export class StatsSummaryComponent implements OnChanges {
   // Median drill-down intentionally omitted; median can be non-observed when even counts are averaged.
 
   showTripsWithBestPerMile(): void {
-    const best = this.bestEarningsPerMile;
+    const best = this.stats.bestEarningsPerMile;
     this.openTripsModal(
       `Trips with Best $/Mile ($${NumberHelper.formatNumber(best)})`,
       t => (t.distance || 0) > 1 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), best)
@@ -377,7 +374,7 @@ export class StatsSummaryComponent implements OnChanges {
   }
 
   showTripsWithWorstPerMile(): void {
-    const worst = this.worstEarningsPerMile;
+    const worst = this.stats.worstEarningsPerMile;
     this.openTripsModal(
       `Trips with Worst $/Mile ($${NumberHelper.formatNumber(worst)})`,
       t => (t.distance || 0) > 1 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), worst)
@@ -407,4 +404,27 @@ export class StatsSummaryComponent implements OnChanges {
   showCashTrips(): void {
     this.openTripsModal('Trips with cash collected', t => (t.cash || 0) > 0);
   }
+
+  // Accessor methods for backward compatibility if needed
+  get totalEarnings(): number { return this.stats.totalEarnings; }
+  get totalTips(): number { return this.stats.totalTips; }
+  get totalBonus(): number { return this.stats.totalBonus; }
+  get totalDistance(): number { return this.stats.totalDistance; }
+  get averagePerTrip(): number { return this.stats.averagePerTrip; }
+  get medianTip(): number { return this.stats.medianTip; }
+  get medianPay(): number { return this.stats.medianPay; }
+  get averagePay(): number { return this.stats.averagePay; }
+  get highestPay(): number { return this.stats.highestPay; }
+  get lowestPay(): number | null { return this.stats.lowestPay; }
+  get highestTip(): number { return this.stats.highestTip; }
+  get zeroTipTrips(): number { return this.stats.zeroTipTrips; }
+  get cashTrips(): number { return this.stats.cashTrips; }
+  get averagePerMile(): number { return this.stats.averagePerMile; }
+  get bestEarningsPerMile(): number { return this.stats.bestEarningsPerMile; }
+  get worstEarningsPerMile(): number { return this.stats.worstEarningsPerMile; }
+  get averageTip(): number { return this.stats.averageTip; }
+  get lowestNonZeroTip(): number | null { return this.stats.lowestNonZeroTip; }
+  get tipPercentage(): number { return this.stats.tipPercentage; }
+  get longestTrip(): number { return this.stats.longestTrip; }
+  get shortestTrip(): number | null { return this.stats.shortestTrip; }
 }
