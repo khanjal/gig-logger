@@ -273,14 +273,14 @@ export class StatsSummaryComponent {
 
   get bestEarningsPerMile(): number {
     const perMile = this.trips
-      .filter(t => (t.distance || 0) > 0)
+      .filter(t => (t.distance || 0) > 1)
       .map(t => (t.total || 0) / (t.distance || 1));
     return perMile.length ? Math.max(...perMile) : 0;
   }
 
   get worstEarningsPerMile(): number {
     const perMile = this.trips
-      .filter(t => (t.distance || 0) > 0)
+      .filter(t => (t.distance || 0) > 1 && (t.pay || 0) > 0)
       .map(t => (t.total || 0) / (t.distance || 1));
     return perMile.length ? Math.min(...perMile) : 0;
   }
