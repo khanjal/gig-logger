@@ -23,6 +23,16 @@ export class DateHelper {
         return date.toLocaleDateString('sv-SE');
     }
 
+    /**
+     * Format an ISO date string (YYYY-MM-DD) to a locale-specific date string.
+     * Avoids timezone issues by parsing components directly.
+     */
+    static formatLocaleDateString(dateString: string, locale: string = 'en-US', options?: Intl.DateTimeFormatOptions): string {
+        const date = this.parseLocalDate(dateString);
+        if (isNaN(date.getTime())) return 'Unknown date';
+        return date.toLocaleDateString(locale, options);
+    }
+
     // --- Date Calculation ---
 
     /**

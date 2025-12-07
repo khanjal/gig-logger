@@ -408,7 +408,7 @@ export class StatsSummaryComponent implements OnChanges {
     const { label, date } = this.busiestDay;
     this.openTripsModal(
       `Busiest Day (${label})`,
-      t => DateHelper.toISO(new Date(t.date)) === date
+      t => t.date === date
     );
   }
 
@@ -416,7 +416,7 @@ export class StatsSummaryComponent implements OnChanges {
     const { label, total, date } = this.highestEarningDay;
     this.openTripsModal(
       `Top Earning Day ($${NumberHelper.formatNumber(total)}) - ${label}`,
-      t => DateHelper.toISO(new Date(t.date)) === date
+      t => t.date === date
     );
   }
 

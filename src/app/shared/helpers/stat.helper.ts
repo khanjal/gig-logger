@@ -2,6 +2,7 @@ import { IShift } from "@interfaces/shift.interface";
 import { IStatItem } from "@interfaces/stat-item.interface";
 import { ITrip } from "@interfaces/trip.interface";
 import { IDaily } from "@interfaces/daily.interface";
+import { DateHelper } from "./date.helper";
 
 export class StatHelper {
     private static filterDailyByDate(dailyData: IDaily[], startDate?: string, endDate?: string): IDaily[] {
@@ -41,9 +42,7 @@ export class StatHelper {
     }
 
     static formatDateLabel(dateString: string): string {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Unknown date';
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return DateHelper.formatLocaleDateString(dateString, 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     static getWeekdayAggregatesFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): Record<string, { count: number; total: number; perTimeSum: number; trips: number }> {
