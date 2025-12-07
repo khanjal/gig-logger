@@ -22,7 +22,7 @@ import { IDaily } from '@interfaces/daily.interface';
     styleUrls: ['./stats.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
+    imports: [CommonModule, MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;

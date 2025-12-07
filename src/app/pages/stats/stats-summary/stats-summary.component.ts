@@ -141,6 +141,10 @@ export class StatsSummaryComponent implements OnChanges {
         value: `$${NumberHelper.formatNumber(this.medianTip)}`,
       },
       {
+        label: 'Total Bonus',
+        value: `$${NumberHelper.formatNumber(this.totalBonus)}`,
+      },
+      {
         label: 'Tip Percentage',
         value: `${this.tipPercentage.toFixed(1)}%`,
       },
@@ -150,13 +154,9 @@ export class StatsSummaryComponent implements OnChanges {
         action: () => this.showTripsWithHighestTip()
       },
       {
-        label: 'Lowest Tip (Non-Zero)',
+        label: 'Lowest Tip',
         value: lowestTipValue !== null ? `$${NumberHelper.formatNumber(lowestTipValue)}` : '—',
         action: lowestTipValue !== null ? () => this.showTripsWithLowestTip() : undefined
-      },
-      {
-        label: 'Total Bonus',
-        value: `$${NumberHelper.formatNumber(this.totalBonus)}`,
       },
       {
         label: 'Highest Pay Trip',

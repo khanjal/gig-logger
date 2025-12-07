@@ -95,6 +95,6 @@ export class NumberHelper {
      */
     static formatNumber(value: number, locale: string = 'en-US'): string {
         const rounded = this.roundToTwo(value);
-        return new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(rounded);
+        return new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(rounded);
     }
 }
