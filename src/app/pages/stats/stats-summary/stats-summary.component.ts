@@ -289,7 +289,7 @@ export class StatsSummaryComponent implements OnChanges {
 
   get bestEarningsPerMile(): number {
     const perMile = this.trips
-      .filter(t => (t.distance || 0) > 1)
+      .filter(t => (t.distance || 0) > 1 && (t.pay || 0) > 0)
       .map(t => (t.total || 0) / (t.distance || 1));
     return perMile.length ? Math.max(...perMile) : 0;
   }

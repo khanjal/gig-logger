@@ -6,9 +6,14 @@ import { IDaily } from "@interfaces/daily.interface";
 export class StatHelper {
     private static filterDailyByDate(dailyData: IDaily[], startDate?: string, endDate?: string): IDaily[] {
         if (!startDate && !endDate) return dailyData;
+        
+        const start = startDate ? new Date(startDate).getTime() : null;
+        const end = endDate ? new Date(endDate).getTime() : null;
+        
         return dailyData.filter(d => {
-            if (startDate && d.date < startDate) return false;
-            if (endDate && d.date > endDate) return false;
+            const dateTime = new Date(d.date).getTime();
+            if (start && dateTime < start) return false;
+            if (end && dateTime > end) return false;
             return true;
         });
     }
