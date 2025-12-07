@@ -397,7 +397,7 @@ export class StatsSummaryComponent implements OnChanges {
     const best = this.bestEarningsPerMile;
     this.openTripsModal(
       `Trips with Best $/Mile ($${NumberHelper.formatNumber(best)})`,
-      t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), best)
+      t => (t.distance || 0) > 1 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), best)
     );
   }
 
@@ -405,7 +405,7 @@ export class StatsSummaryComponent implements OnChanges {
     const worst = this.worstEarningsPerMile;
     this.openTripsModal(
       `Trips with Worst $/Mile ($${NumberHelper.formatNumber(worst)})`,
-      t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), worst)
+      t => (t.distance || 0) > 1 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), worst)
     );
   }
 

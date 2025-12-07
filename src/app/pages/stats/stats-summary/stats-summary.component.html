@@ -3,11 +3,12 @@
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
   <div
     *ngFor="let card of summaryCards; let i = index"
-    class="flex flex-col justify-between bg-white rounded-lg shadow-md p-4 transition hover:shadow-lg cursor-pointer border"
+    class="flex flex-col justify-between bg-white rounded-lg shadow-md p-4 transition hover:shadow-lg border"
     [ngClass]="{
       'border-2 border-primary ring-2 ring-primary': card.highlight,
       'hover:bg-gray-50': card.action,
-      'border-gray-200': !card.highlight
+      'border-gray-200': !card.highlight,
+      'cursor-pointer': card.action
     }"
     (click)="card.action ? executeAction(i) : null"
   >
