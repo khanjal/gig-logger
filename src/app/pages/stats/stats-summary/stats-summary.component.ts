@@ -40,13 +40,13 @@ export class StatsSummaryComponent implements OnChanges {
     panelClass: 'custom-modalbox'
   } as const;
 
-  private summaryCardsCache: ISummaryCard[] = [];
+  summaryCards: ISummaryCard[] = [];
 
   constructor(private dialog: MatDialog) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['trips'] || changes['shifts'] || changes['dailyData'] || changes['startDate'] || changes['endDate']) {
-      this.summaryCardsCache = this.buildSummaryCards();
+      this.summaryCards = this.buildSummaryCards();
     }
   }
 
@@ -97,13 +97,6 @@ export class StatsSummaryComponent implements OnChanges {
     if (action) {
       action();
     }
-  }
-
-  get summaryCards(): ISummaryCard[] {
-    if (!this.summaryCardsCache.length) {
-      this.summaryCardsCache = this.buildSummaryCards();
-    }
-    return this.summaryCardsCache;
   }
 
   private buildSummaryCards(): ISummaryCard[] {
@@ -331,149 +324,107 @@ export class StatsSummaryComponent implements OnChanges {
     return nonZeroDistances.length > 0 ? Math.min(...nonZeroDistances.map(t => t.distance || 0)) : null;
   }
 
-  showTripsWithHighestTip(): void {
-    const highest = this.highestTip;
+  private openTripsModal(title: string, filterFn: (trip: ITrip) => boolean): void {
     const trips = this.trips
-      .filter(t => (t.tip || 0) === highest)
+      .filter(filterFn)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
     this.dialog.open(TripsModalComponent, {
       ...this.dialogConfig,
-      data: { title: `Trips with Highest Tip ($${NumberHelper.formatNumber(highest)})`, trips }
+      data: { title, trips }
     });
+  }
+
+  showTripsWithHighestTip(): void {
+    const highest = this.highestTip;
+    this.openTripsModal(
+      `Trips with Highest Tip ($${NumberHelper.formatNumber(highest)})`,
+      t => (t.tip || 0) === highest
+    );
   }
 
   showTripsWithLowestTip(): void {
     const lowest = this.lowestNonZeroTip;
     if (lowest === null) return;
-    const trips = this.trips
-      .filter(t => (t.tip || 0) === lowest && (t.tip || 0) > 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Lowest Tip ($${NumberHelper.formatNumber(lowest)})`, trips }
-    });
+    this.openTripsModal(
+      `Trips with Lowest Tip ($${NumberHelper.formatNumber(lowest)})`,
+      t => (t.tip || 0) === lowest && (t.tip || 0) > 0
+    );
   }
 
   showLongestTrips(): void {
     const longest = this.longestTrip;
-    const trips = this.trips
-      .filter(t => (t.distance || 0) === longest && (t.distance || 0) > 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Longest Trips (${NumberHelper.formatNumber(longest)} mi)`, trips }
-    });
+    this.openTripsModal(
+      `Longest Trips (${NumberHelper.formatNumber(longest)} mi)`,
+      t => (t.distance || 0) === longest && (t.distance || 0) > 0
+    );
   }
 
   showShortestTrips(): void {
     const shortest = this.shortestTrip;
     if (shortest === null) return;
-    const trips = this.trips
-      .filter(t => (t.distance || 0) === shortest && (t.distance || 0) > 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Shortest Trips (${NumberHelper.formatNumber(shortest)} mi)`, trips }
-    });
+    this.openTripsModal(
+      `Shortest Trips (${NumberHelper.formatNumber(shortest)} mi)`,
+      t => (t.distance || 0) === shortest && (t.distance || 0) > 0
+    );
   }
 
   showTripsWithHighestPay(): void {
     const highest = this.highestPay;
-    const trips = this.trips
-      .filter(t => (t.pay || 0) === highest && (t.pay || 0) > 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Highest Pay ($${NumberHelper.formatNumber(highest)})`, trips }
-    });
+    this.openTripsModal(
+      `Trips with Highest Pay ($${NumberHelper.formatNumber(highest)})`,
+      t => (t.pay || 0) === highest && (t.pay || 0) > 0
+    );
   }
 
   showTripsWithLowestPay(): void {
     const lowest = this.lowestPay;
     if (lowest === null) return;
-    const trips = this.trips
-      .filter(t => (t.pay || 0) === lowest && (t.pay || 0) > 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Lowest Pay ($${NumberHelper.formatNumber(lowest)})`, trips }
-    });
+    this.openTripsModal(
+      `Trips with Lowest Pay ($${NumberHelper.formatNumber(lowest)})`,
+      t => (t.pay || 0) === lowest && (t.pay || 0) > 0
+    );
   }
 
   // Median drill-down intentionally omitted; median can be non-observed when even counts are averaged.
 
   showTripsWithBestPerMile(): void {
     const best = this.bestEarningsPerMile;
-    const trips = this.trips
-      .filter(t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), best))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Best $/Mile ($${NumberHelper.formatNumber(best)})`, trips }
-    });
+    this.openTripsModal(
+      `Trips with Best $/Mile ($${NumberHelper.formatNumber(best)})`,
+      t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), best)
+    );
   }
 
   showTripsWithWorstPerMile(): void {
     const worst = this.worstEarningsPerMile;
-    const trips = this.trips
-      .filter(t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), worst))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Worst $/Mile ($${NumberHelper.formatNumber(worst)})`, trips }
-    });
+    this.openTripsModal(
+      `Trips with Worst $/Mile ($${NumberHelper.formatNumber(worst)})`,
+      t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), worst)
+    );
   }
 
   showBusiestDayTrips(): void {
     const { label, date } = this.busiestDay;
-    // Filter trips by the busiest day's date
-    const trips = this.trips.filter(t => {
-      const tripDate = DateHelper.toISO(new Date(t.date));
-      return tripDate === date;
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Busiest Day (${label})`, trips }
-    });
+    this.openTripsModal(
+      `Busiest Day (${label})`,
+      t => DateHelper.toISO(new Date(t.date)) === date
+    );
   }
 
   showHighestEarningDayTrips(): void {
     const { label, total, date } = this.highestEarningDay;
-    // Filter trips by the highest earning day's date
-    const trips = this.trips.filter(t => {
-      const tripDate = DateHelper.toISO(new Date(t.date));
-      return tripDate === date;
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Top Earning Day ($${NumberHelper.formatNumber(total)}) - ${label}`, trips }
-    });
+    this.openTripsModal(
+      `Top Earning Day ($${NumberHelper.formatNumber(total)}) - ${label}`,
+      t => DateHelper.toISO(new Date(t.date)) === date
+    );
   }
 
-
   showZeroTipTrips(): void {
-    const trips = this.trips
-      .filter(t => (t.tip || 0) === 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: 'Trips with $0 tip', trips }
-    });
+    this.openTripsModal('Trips with $0 tip', t => (t.tip || 0) === 0);
   }
 
   showCashTrips(): void {
-    const trips = this.trips
-      .filter(t => (t.cash || 0) > 0)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: 'Trips with cash collected', trips }
-    });
+    this.openTripsModal('Trips with cash collected', t => (t.cash || 0) > 0);
   }
 }
