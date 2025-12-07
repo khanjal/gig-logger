@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
@@ -14,7 +14,6 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
 import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
 import { DailyService } from '@services/sheets/daily.service';
 import { IDaily } from '@interfaces/daily.interface';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-stats',
@@ -26,7 +25,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  private readonly destroyRef = inject(DestroyRef);
   places: IStatItem[] = [];
   services: IStatItem[] = [];
   types: IStatItem[] = [];
@@ -46,9 +44,7 @@ export class StatsComponent implements OnInit {
     private _tripService: TripService,
     private _dailyService: DailyService
   ) {
-    this._dailyService.daily$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data: IDaily[] | undefined) => {
+    this._dailyService.daily$.subscribe((data: IDaily[] | undefined) => {
       this.dailyData = data || [];
     });
   }
