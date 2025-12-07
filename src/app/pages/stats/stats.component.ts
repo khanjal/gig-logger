@@ -1,3 +1,4 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -46,9 +47,11 @@ export class StatsComponent implements OnInit {
     private _tripService: TripService,
     private _dailyService: DailyService
   ) {
-    this._dailyService.daily$.subscribe((data: IDaily[] | undefined) => {
-      this.dailyData = data || [];
-    });
+      this._dailyService.daily$
+        .pipe(takeUntilDestroyed())
+        .subscribe((data: IDaily[] | undefined) => {
+          this.dailyData = data || [];
+        });
   }
 
   async ngOnInit(): Promise<void> {

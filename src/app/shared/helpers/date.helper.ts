@@ -181,7 +181,10 @@ export class DateHelper {
     }
     
     /**
-     * Expands abbreviated weekday names to full names
+     * Normalizes weekday names by expanding abbreviated forms to full names.
+     * If a full weekday name is passed (e.g., "Monday"), it returns the original value unchanged.
+     * @param weekday - Abbreviated (e.g., "Mon") or full weekday name (e.g., "Monday")
+     * @returns Full weekday name or original value if not an abbreviation
      */
     static expandWeekday(weekday: string): string {
         if (!weekday) return weekday;
