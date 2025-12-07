@@ -1,13 +1,19 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ITrip } from '@interfaces/trip.interface';
 import { IShift } from '@interfaces/shift.interface';
+import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 
 interface ISummaryCard {
   label: string;
   value: string;
   icon?: string;
   highlight?: boolean;
+  action?: () => void;
 }
 
 @Component({
@@ -15,14 +21,23 @@ interface ISummaryCard {
   templateUrl: './stats-summary.component.html',
   styleUrls: ['./stats-summary.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule, MatTooltipModule]
 })
 export class StatsSummaryComponent {
   @Input() trips: ITrip[] = [];
   @Input() shifts: IShift[] = [];
 
+  constructor(private dialog: MatDialog) {}
+
   private formatNumber(num: number): string {
     return new Intl.NumberFormat('en-US').format(Math.round(num * 100) / 100);
+  }
+
+  executeAction(index: number): void {
+    const action = this.summaryCards[index].action;
+    if (action) {
+      action();
+    }
   }
 
   get summaryCards(): ISummaryCard[] {
@@ -48,10 +63,12 @@ export class StatsSummaryComponent {
       {
         label: 'Highest Tip',
         value: `$${this.formatNumber(this.highestTip)}`,
+        action: () => this.showTripsWithHighestTip()
       },
       {
         label: 'Lowest Tip (Non-Zero)',
         value: `$${this.formatNumber(this.lowestNonZeroTip)}`,
+        action: () => this.showTripsWithLowestTip()
       },
       {
         label: 'Tip Percentage',
@@ -66,6 +83,16 @@ export class StatsSummaryComponent {
         value: `${this.formatNumber(this.totalDistance)} mi`,
       },
       {
+        label: 'Longest Trip',
+        value: `${this.formatNumber(this.longestTrip)} mi`,
+        action: () => this.showLongestTrips()
+      },
+      {
+        label: 'Shortest Trip',
+        value: `${this.formatNumber(this.shortestTrip)} mi`,
+        action: () => this.showShortestTrips()
+      },
+      {
         label: 'Average per Trip',
         value: `$${this.formatNumber(this.averagePerTrip)}`,
         highlight: true
@@ -73,10 +100,12 @@ export class StatsSummaryComponent {
       {
         label: 'Highest Pay Trip',
         value: `$${this.formatNumber(this.highestPay)}`,
+        action: () => this.showTripsWithHighestPay()
       },
       {
         label: 'Lowest Pay Trip',
         value: `$${this.formatNumber(this.lowestPay)}`,
+        action: () => this.showTripsWithLowestPay()
       },
       {
         label: 'Avg Per Mile',
@@ -150,5 +179,80 @@ export class StatsSummaryComponent {
   get tipPercentage(): number {
     const baseEarnings = this.trips.map(t => (t.pay || 0) + (t.bonus || 0)).reduce((acc, val) => acc + val, 0);
     return baseEarnings > 0 ? (this.totalTips / baseEarnings) * 100 : 0;
+  }
+
+  get longestTrip(): number {
+    return this.trips.length > 0 ? Math.max(...this.trips.map(t => t.distance || 0)) : 0;
+  }
+
+  get shortestTrip(): number {
+    const nonZeroDistances = this.trips.filter(t => (t.distance || 0) > 0);
+    return nonZeroDistances.length > 0 ? Math.min(...nonZeroDistances.map(t => t.distance || 0)) : 0;
+  }
+
+  showTripsWithHighestTip(): void {
+    const highest = this.highestTip;
+    const trips = this.trips.filter(t => (t.tip || 0) === highest).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Highest Tip ($${this.formatNumber(highest)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showTripsWithLowestTip(): void {
+    const lowest = this.lowestNonZeroTip;
+    const trips = this.trips.filter(t => (t.tip || 0) === lowest).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Lowest Tip ($${this.formatNumber(lowest)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showLongestTrips(): void {
+    const longest = this.longestTrip;
+    const trips = this.trips.filter(t => (t.distance || 0) === longest).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Longest Trips (${this.formatNumber(longest)} mi)`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showShortestTrips(): void {
+    const shortest = this.shortestTrip;
+    const trips = this.trips.filter(t => (t.distance || 0) === shortest).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Shortest Trips (${this.formatNumber(shortest)} mi)`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showTripsWithHighestPay(): void {
+    const highest = this.highestPay;
+    const trips = this.trips.filter(t => (t.pay || 0) === highest).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Highest Pay ($${this.formatNumber(highest)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showTripsWithLowestPay(): void {
+    const lowest = this.lowestPay;
+    const trips = this.trips.filter(t => (t.pay || 0) === lowest).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Lowest Pay ($${this.formatNumber(lowest)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
   }
 }

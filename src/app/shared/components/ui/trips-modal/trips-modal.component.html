@@ -1,0 +1,19 @@
+<div class="trips-modal-view">
+  <div class="modal-header">
+    <div>
+      <h2 class="header-title">{{ data.title }}</h2>
+      <p class="trip-count">{{ tripCount }} trip{{ tripCount !== 1 ? 's' : '' }}</p>
+    </div>
+    <button mat-mini-fab class="close-button" (click)="closeModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="trips-list">
+    @for (trip of data.trips; track $index) {
+      <div>
+        <trips-quick-view [trip]="trip" [index]="$index" [showActions]="false" (editClicked)="onEditClicked($event)"></trips-quick-view>
+      </div>
+    }
+  </div>
+</div>

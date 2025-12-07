@@ -1,6 +1,18 @@
 <div class="stats-summary-grid">
-  <div *ngFor="let card of summaryCards" class="summary-row" [class.highlight]="card.highlight">
-    <div class="summary-label">{{ card.label }}</div>
-    <div class="summary-value">{{ card.value }}</div>
+  <div 
+    *ngFor="let card of summaryCards; let i = index" 
+    class="summary-row" 
+    [class.highlight]="card.highlight"
+    [class.clickable]="card.action"
+    (click)="card.action ? executeAction(i) : null">
+    <div class="row-content">
+      <div class="summary-label">{{ card.label }}</div>
+      <div class="summary-value">{{ card.value }}</div>
+    </div>
+    <mat-icon 
+      *ngIf="card.action" 
+      class="action-icon">
+      search
+    </mat-icon>
   </div>
 </div>
