@@ -132,22 +132,20 @@ export class StatsSummaryComponent implements OnChanges {
         value: `$${NumberHelper.formatNumber(this.totalTips)}`,
       },
       {
-        label: 'Average Tip',
-        value: `$${NumberHelper.formatNumber(this.averageTip)}`,
-      },
-      {
-        label: 'Median Tip',
-        value: `$${NumberHelper.formatNumber(this.medianTip)}`,
-        action: () => this.showTripsWithMedianTip()
-      },
-      {
         label: 'Average Pay',
         value: `$${NumberHelper.formatNumber(this.averagePay)}`,
       },
       {
         label: 'Median Pay',
         value: `$${NumberHelper.formatNumber(this.medianPay)}`,
-        action: () => this.showTripsWithMedianPay()
+      },
+      {
+        label: 'Average Tip',
+        value: `$${NumberHelper.formatNumber(this.averageTip)}`,
+      },
+      {
+        label: 'Median Tip',
+        value: `$${NumberHelper.formatNumber(this.medianTip)}`,
       },
       {
         label: 'Tip Percentage',
@@ -402,29 +400,7 @@ export class StatsSummaryComponent implements OnChanges {
     });
   }
 
-  showTripsWithMedianTip(): void {
-    const median = this.medianTip;
-    const trips = this.trips
-      .filter(t => NumberHelper.nearlyEqual(t.tip || 0, median))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Median Tip ($${NumberHelper.formatNumber(median)})`, trips }
-    });
-  }
-
-  showTripsWithMedianPay(): void {
-    const median = this.medianPay;
-    const trips = this.trips
-      .filter(t => (t.pay || 0) > 0 && NumberHelper.nearlyEqual(t.pay || 0, median))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    this.dialog.open(TripsModalComponent, {
-      ...this.dialogConfig,
-      data: { title: `Trips with Median Pay ($${NumberHelper.formatNumber(median)})`, trips }
-    });
-  }
+  // Median drill-down intentionally omitted; median can be non-observed when even counts are averaged.
 
   showTripsWithBestPerMile(): void {
     const best = this.bestEarningsPerMile;
