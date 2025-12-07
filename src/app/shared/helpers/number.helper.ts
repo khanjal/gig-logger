@@ -65,10 +65,21 @@ export class NumberHelper {
     }
 
     /**
-     * Rounds a number to two decimals using bankers rounding.
+     * Rounds a number to two decimals using bankers rounding (round half to even).
      */
     static roundToTwo(value: number): number {
-        return Math.round(value * 100) / 100;
+        const factor = 100;
+        const scaled = value * factor;
+        const floor = Math.floor(scaled);
+        const diff = scaled - floor;
+
+        if (Math.abs(diff) === 0.5) {
+            // If exactly half, round to the nearest even integer
+            const even = floor % 2 === 0 ? floor : floor + (scaled > 0 ? 1 : -1);
+            return even / factor;
+        }
+
+        return Math.round(scaled) / factor;
     }
 
     /**
@@ -86,7 +97,7 @@ export class NumberHelper {
      * Compares two numbers after rounding to two decimals, allowing a small epsilon to smooth float noise.
      */
     static nearlyEqual(a: number, b: number, epsilon = 0.005): boolean {
-        return Math.abs(this.roundToTwo(a) - this.roundToTwo(b)) < epsilon;
+        return Math.abs(this.roundToTwo(a) - this.roundToTwo(b)) <= epsilon;
     }
 
     /**

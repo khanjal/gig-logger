@@ -14,10 +14,6 @@
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 .summary-row {
@@ -44,15 +40,17 @@
     }
   }
 
-  &:nth-child(4n) {
-    border-right: none;
+  @media (min-width: 769px) {
+    &:nth-child(4n) {
+      border-right: none;
+    }
+
+    &:nth-last-child(-n + 4) {
+      border-bottom: none;
+    }
   }
 
-  &:nth-last-child(-n + 4) {
-    border-bottom: none;
-  }
-
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     &:nth-child(2n) {
       border-right: none;
     }

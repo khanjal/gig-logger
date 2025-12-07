@@ -157,16 +157,17 @@ export class DateHelper {
      * Returns undefined if weekday name is not recognized.
      */
     static weekdayToIndex(weekday: string): number | undefined {
+        if (!weekday) return undefined;
         const weekdayMap: Record<string, number> = {
-            'Sun': 0, 'Sunday': 0,
-            'Mon': 1, 'Monday': 1,
-            'Tue': 2, 'Tuesday': 2,
-            'Wed': 3, 'Wednesday': 3,
-            'Thu': 4, 'Thursday': 4,
-            'Fri': 5, 'Friday': 5,
-            'Sat': 6, 'Saturday': 6
+            'sun': 0, 'sunday': 0,
+            'mon': 1, 'monday': 1,
+            'tue': 2, 'tuesday': 2,
+            'wed': 3, 'wednesday': 3,
+            'thu': 4, 'thursday': 4,
+            'fri': 5, 'friday': 5,
+            'sat': 6, 'saturday': 6
         };
-        return weekdayMap[weekday];
+        return weekdayMap[weekday.toLowerCase()];
     }
 
     // --- Miscellaneous ---
