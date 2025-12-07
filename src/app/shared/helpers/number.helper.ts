@@ -63,4 +63,37 @@ export class NumberHelper {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
     }
+
+    /**
+     * Rounds a number to two decimals using bankers rounding.
+     */
+    static roundToTwo(value: number): number {
+        return Math.round(value * 100) / 100;
+    }
+
+    /**
+     * Computes the median of a numeric array. Returns 0 for empty arrays.
+     */
+    static median(values: number[]): number {
+        if (!values.length) return 0;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        if (sorted.length % 2 !== 0) return sorted[mid];
+        return this.roundToTwo((sorted[mid - 1] + sorted[mid]) / 2);
+    }
+
+    /**
+     * Compares two numbers after rounding to two decimals, allowing a small epsilon to smooth float noise.
+     */
+    static nearlyEqual(a: number, b: number, epsilon = 0.005): boolean {
+        return Math.abs(this.roundToTwo(a) - this.roundToTwo(b)) < epsilon;
+    }
+
+    /**
+     * Formats a number with locale grouping and two-decimal rounding.
+     */
+    static formatNumber(value: number, locale: string = 'en-US'): string {
+        const rounded = this.roundToTwo(value);
+        return new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(rounded);
+    }
 }

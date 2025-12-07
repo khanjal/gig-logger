@@ -6,7 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ITrip } from '@interfaces/trip.interface';
 import { IShift } from '@interfaces/shift.interface';
+import { IDaily } from '@interfaces/daily.interface';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
+import { NumberHelper } from '@helpers/number.helper';
+import { StatHelper } from '@helpers/stat.helper';
+import { DateHelper } from '@helpers/date.helper';
 
 interface ISummaryCard {
   label: string;
@@ -26,11 +30,52 @@ interface ISummaryCard {
 export class StatsSummaryComponent {
   @Input() trips: ITrip[] = [];
   @Input() shifts: IShift[] = [];
+  @Input() dailyData: IDaily[] = [];
+  @Input() startDate?: string;
+  @Input() endDate?: string;
 
   constructor(private dialog: MatDialog) {}
 
-  private formatNumber(num: number): string {
-    return new Intl.NumberFormat('en-US').format(Math.round(num * 100) / 100);
+  get busiestDay() {
+    return StatHelper.getBusiestDayFromDaily(this.dailyData, this.startDate, this.endDate);
+  }
+
+  get highestEarningDay() {
+    return StatHelper.getHighestEarningDayFromDaily(this.dailyData, this.startDate, this.endDate);
+  }
+
+  get bestWeekdayPerTrip(): { label: string; value: number; dayIndex: number } | null {
+    const map = StatHelper.getWeekdayAggregatesFromDaily(this.dailyData, this.startDate, this.endDate);
+    let best: { label: string; value: number; dayIndex: number } | null = null;
+
+    Object.entries(map).forEach(([weekday, stats]) => {
+      if (!stats.trips) return;
+      const avg = stats.total / stats.trips;
+      const dayIndex = DateHelper.weekdayToIndex(weekday);
+      if (dayIndex === undefined) return;
+      if (!best || avg > best.value) {
+        best = { label: weekday.substring(0, 3), value: avg, dayIndex };
+      }
+    });
+
+    return best;
+  }
+
+  get bestWeekdayPerTime(): { label: string; value: number; dayIndex: number } | null {
+    const map = StatHelper.getWeekdayAggregatesFromDaily(this.dailyData, this.startDate, this.endDate);
+    let best: { label: string; value: number; dayIndex: number } | null = null;
+
+    Object.entries(map).forEach(([weekday, stats]) => {
+      if (!stats.count) return;
+      const avg = stats.perTimeSum / stats.count;
+      const dayIndex = DateHelper.weekdayToIndex(weekday);
+      if (dayIndex === undefined) return;
+      if (!best || avg > best.value) {
+        best = { label: weekday.substring(0, 3), value: avg, dayIndex };
+      }
+    });
+
+    return best;
   }
 
   executeAction(index: number): void {
@@ -49,21 +94,35 @@ export class StatsSummaryComponent {
       },
       {
         label: 'Total Earnings',
-        value: `$${this.formatNumber(this.totalEarnings)}`,
+        value: `$${NumberHelper.formatNumber(this.totalEarnings)}`,
         highlight: true
       },
       {
         label: 'Average per Trip',
-        value: `$${this.formatNumber(this.averagePerTrip)}`,
+        value: `$${NumberHelper.formatNumber(this.averagePerTrip)}`,
         highlight: true
       },
       {
         label: 'Total Tips',
-        value: `$${this.formatNumber(this.totalTips)}`,
+        value: `$${NumberHelper.formatNumber(this.totalTips)}`,
       },
       {
         label: 'Average Tip',
-        value: `$${this.formatNumber(this.averageTip)}`,
+        value: `$${NumberHelper.formatNumber(this.averageTip)}`,
+      },
+      {
+        label: 'Median Tip',
+        value: `$${NumberHelper.formatNumber(this.medianTip)}`,
+        action: () => this.showTripsWithMedianTip()
+      },
+      {
+        label: 'Average Pay',
+        value: `$${NumberHelper.formatNumber(this.averagePay)}`,
+      },
+      {
+        label: 'Median Pay',
+        value: `$${NumberHelper.formatNumber(this.medianPay)}`,
+        action: () => this.showTripsWithMedianPay()
       },
       {
         label: 'Tip Percentage',
@@ -71,44 +130,72 @@ export class StatsSummaryComponent {
       },
       {
         label: 'Highest Tip',
-        value: `$${this.formatNumber(this.highestTip)}`,
+        value: `$${NumberHelper.formatNumber(this.highestTip)}`,
         action: () => this.showTripsWithHighestTip()
       },
       {
         label: 'Lowest Tip (Non-Zero)',
-        value: `$${this.formatNumber(this.lowestNonZeroTip)}`,
+        value: `$${NumberHelper.formatNumber(this.lowestNonZeroTip)}`,
         action: () => this.showTripsWithLowestTip()
       },
       {
         label: 'Total Bonus',
-        value: `$${this.formatNumber(this.totalBonus)}`,
+        value: `$${NumberHelper.formatNumber(this.totalBonus)}`,
       },
       {
         label: 'Highest Pay Trip',
-        value: `$${this.formatNumber(this.highestPay)}`,
+        value: `$${NumberHelper.formatNumber(this.highestPay)}`,
         action: () => this.showTripsWithHighestPay()
       },
       {
         label: 'Lowest Pay Trip',
-        value: `$${this.formatNumber(this.lowestPay)}`,
+        value: `$${NumberHelper.formatNumber(this.lowestPay)}`,
         action: () => this.showTripsWithLowestPay()
       },
       {
         label: 'Avg Per Mile',
-        value: `$${this.formatNumber(this.averagePerMile)}`,
+        value: `$${NumberHelper.formatNumber(this.averagePerMile)}`,
+      },
+      {
+        label: 'Best $/Mile',
+        value: `$${NumberHelper.formatNumber(this.bestEarningsPerMile)}`,
+        action: () => this.showTripsWithBestPerMile()
+      },
+      {
+        label: 'Worst $/Mile',
+        value: `$${NumberHelper.formatNumber(this.worstEarningsPerMile)}`,
+        action: () => this.showTripsWithWorstPerMile()
+      },
+      {
+        label: 'Busiest Day',
+        value: this.busiestDay.count > 0 ? `${this.busiestDay.count} trips (${this.busiestDay.label})` : '—',
+        action: this.busiestDay.count > 0 ? () => this.showBusiestDayTrips() : undefined
+      },
+      {
+        label: 'Top Earning Day',
+        value: this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)} (${this.highestEarningDay.label})` : '—',
+        action: this.highestEarningDay.total > 0 ? () => this.showHighestEarningDayTrips() : undefined
+      },
+      {
+        label: 'Top Weekday $/Trip',
+        value: this.bestWeekdayPerTrip ? `$${NumberHelper.formatNumber(this.bestWeekdayPerTrip.value)} (${this.bestWeekdayPerTrip.label})` : '—',
+      },
+      {
+        label: 'Top Weekday $/Time',
+        value: this.bestWeekdayPerTime ? `$${NumberHelper.formatNumber(this.bestWeekdayPerTime.value)}/hr (${this.bestWeekdayPerTime.label})` : '—',
       },
       {
         label: 'Total Distance',
-        value: `${this.formatNumber(this.totalDistance)} mi`,
+        value: `${NumberHelper.formatNumber(this.totalDistance)} mi`,
       },
       {
         label: 'Longest Trip',
-        value: `${this.formatNumber(this.longestTrip)} mi`,
+        value: `${NumberHelper.formatNumber(this.longestTrip)} mi`,
         action: () => this.showLongestTrips()
       },
       {
         label: 'Shortest Trip',
-        value: `${this.formatNumber(this.shortestTrip)} mi`,
+        value: `${NumberHelper.formatNumber(this.shortestTrip)} mi`,
         action: () => this.showShortestTrips()
       },
       {
@@ -144,6 +231,21 @@ export class StatsSummaryComponent {
     return this.trips.length > 0 ? this.totalEarnings / this.trips.length : 0;
   }
 
+  get medianTip(): number {
+    const tips = this.trips.map(t => t.tip || 0);
+    return NumberHelper.median(tips);
+  }
+
+  get medianPay(): number {
+    const pays = this.trips.map(t => t.pay || 0).filter(v => v > 0);
+    return NumberHelper.median(pays);
+  }
+
+  get averagePay(): number {
+    const pays = this.trips.map(t => t.pay || 0).filter(v => v > 0);
+    return pays.length ? pays.reduce((acc, v) => acc + v, 0) / pays.length : 0;
+  }
+
   get highestPay(): number {
     return this.trips.length > 0 ? Math.max(...this.trips.map(t => t.pay || 0)) : 0;
   }
@@ -167,6 +269,20 @@ export class StatsSummaryComponent {
 
   get averagePerMile(): number {
     return this.totalDistance > 0 ? this.totalEarnings / this.totalDistance : 0;
+  }
+
+  get bestEarningsPerMile(): number {
+    const perMile = this.trips
+      .filter(t => (t.distance || 0) > 0)
+      .map(t => (t.total || 0) / (t.distance || 1));
+    return perMile.length ? Math.max(...perMile) : 0;
+  }
+
+  get worstEarningsPerMile(): number {
+    const perMile = this.trips
+      .filter(t => (t.distance || 0) > 0)
+      .map(t => (t.total || 0) / (t.distance || 1));
+    return perMile.length ? Math.min(...perMile) : 0;
   }
 
   get averageTip(): number {
@@ -198,7 +314,7 @@ export class StatsSummaryComponent {
       .filter(t => (t.tip || 0) === highest)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.dialog.open(TripsModalComponent, {
-      data: { title: `Trips with Highest Tip ($${this.formatNumber(highest)})`, trips },
+      data: { title: `Trips with Highest Tip ($${NumberHelper.formatNumber(highest)})`, trips },
       height: '600px',
       width: '600px',
       panelClass: 'custom-modalbox'
@@ -211,7 +327,7 @@ export class StatsSummaryComponent {
       .filter(t => (t.tip || 0) === lowest && (t.tip || 0) > 0)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.dialog.open(TripsModalComponent, {
-      data: { title: `Trips with Lowest Tip ($${this.formatNumber(lowest)})`, trips },
+      data: { title: `Trips with Lowest Tip ($${NumberHelper.formatNumber(lowest)})`, trips },
       height: '600px',
       width: '600px',
       panelClass: 'custom-modalbox'
@@ -224,7 +340,7 @@ export class StatsSummaryComponent {
       .filter(t => (t.distance || 0) === longest && (t.distance || 0) > 0)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.dialog.open(TripsModalComponent, {
-      data: { title: `Longest Trips (${this.formatNumber(longest)} mi)`, trips },
+      data: { title: `Longest Trips (${NumberHelper.formatNumber(longest)} mi)`, trips },
       height: '600px',
       width: '600px',
       panelClass: 'custom-modalbox'
@@ -237,7 +353,7 @@ export class StatsSummaryComponent {
       .filter(t => (t.distance || 0) === shortest && (t.distance || 0) > 0)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.dialog.open(TripsModalComponent, {
-      data: { title: `Shortest Trips (${this.formatNumber(shortest)} mi)`, trips },
+      data: { title: `Shortest Trips (${NumberHelper.formatNumber(shortest)} mi)`, trips },
       height: '600px',
       width: '600px',
       panelClass: 'custom-modalbox'
@@ -250,7 +366,7 @@ export class StatsSummaryComponent {
       .filter(t => (t.pay || 0) === highest && (t.pay || 0) > 0)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.dialog.open(TripsModalComponent, {
-      data: { title: `Trips with Highest Pay ($${this.formatNumber(highest)})`, trips },
+      data: { title: `Trips with Highest Pay ($${NumberHelper.formatNumber(highest)})`, trips },
       height: '600px',
       width: '600px',
       panelClass: 'custom-modalbox'
@@ -263,12 +379,101 @@ export class StatsSummaryComponent {
       .filter(t => (t.pay || 0) === lowest && (t.pay || 0) > 0)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.dialog.open(TripsModalComponent, {
-      data: { title: `Trips with Lowest Pay ($${this.formatNumber(lowest)})`, trips },
+      data: { title: `Trips with Lowest Pay ($${NumberHelper.formatNumber(lowest)})`, trips },
       height: '600px',
       width: '600px',
       panelClass: 'custom-modalbox'
     });
   }
+
+  showTripsWithMedianTip(): void {
+    const median = this.medianTip;
+    const trips = this.trips
+      .filter(t => NumberHelper.nearlyEqual(t.tip || 0, median))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Median Tip ($${NumberHelper.formatNumber(median)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showTripsWithMedianPay(): void {
+    const median = this.medianPay;
+    const trips = this.trips
+      .filter(t => (t.pay || 0) > 0 && NumberHelper.nearlyEqual(t.pay || 0, median))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Median Pay ($${NumberHelper.formatNumber(median)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showTripsWithBestPerMile(): void {
+    const best = this.bestEarningsPerMile;
+    const trips = this.trips
+      .filter(t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), best))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Best $/Mile ($${NumberHelper.formatNumber(best)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showTripsWithWorstPerMile(): void {
+    const worst = this.worstEarningsPerMile;
+    const trips = this.trips
+      .filter(t => (t.distance || 0) > 0 && NumberHelper.nearlyEqual((t.total || 0) / (t.distance || 1), worst))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Trips with Worst $/Mile ($${NumberHelper.formatNumber(worst)})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showBusiestDayTrips(): void {
+    const { label, date } = this.busiestDay;
+    // Filter trips by the busiest day's date
+    const trips = this.trips.filter(t => {
+      const tripDate = new Date(t.date).toISOString().split('T')[0];
+      return tripDate === date;
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Busiest Day (${label})`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
+  showHighestEarningDayTrips(): void {
+    const { label, total, date } = this.highestEarningDay;
+    // Filter trips by the highest earning day's date
+    const trips = this.trips.filter(t => {
+      const tripDate = new Date(t.date).toISOString().split('T')[0];
+      return tripDate === date;
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    this.dialog.open(TripsModalComponent, {
+      data: { title: `Top Earning Day ($${NumberHelper.formatNumber(total)}) - ${label}`, trips },
+      height: '600px',
+      width: '600px',
+      panelClass: 'custom-modalbox'
+    });
+  }
+
 
   showZeroTipTrips(): void {
     const trips = this.trips

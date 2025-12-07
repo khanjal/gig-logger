@@ -12,6 +12,8 @@ import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field'
 import { MatDateRangeInput, MatStartDate, MatEndDate, MatDatepickerToggle, MatDateRangePicker } from '@angular/material/datepicker';
 import { StatsTableComponent } from './stats-table/stats-table.component';
 import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
+import { DailyService } from '@services/sheets/daily.service';
+import { IDaily } from '@interfaces/daily.interface';
 
 @Component({
     selector: 'app-stats',
@@ -28,6 +30,9 @@ export class StatsComponent implements OnInit {
   types: IStatItem[] = [];
   trips: ITrip[] = [];
   shifts: IShift[] = [];
+  dailyData: IDaily[] = [];
+  startDate: string = "2000-01-01";
+  endDate: string = DateHelper.toISO();
 
   range = new FormGroup({
     start: new FormControl(),
@@ -36,8 +41,13 @@ export class StatsComponent implements OnInit {
 
   constructor(
     private _shiftService: ShiftService,
-    private _tripService: TripService
-  ) {}
+    private _tripService: TripService,
+    private _dailyService: DailyService
+  ) {
+    this._dailyService.daily$.subscribe(data => {
+      this.dailyData = data || [];
+    });
+  }
 
   async ngOnInit(): Promise<void> {
 
@@ -45,8 +55,8 @@ export class StatsComponent implements OnInit {
   }
 
   async dateChanged() {
-    var startDate = "2000-01-01";
-    var endDate = DateHelper.toISO();
+    this.startDate = "2000-01-01";
+    this.endDate = DateHelper.toISO();
 
     if (!(this.range.valid && 
         ((!this.range.value.start && !this.range.value.end) ||
@@ -55,12 +65,12 @@ export class StatsComponent implements OnInit {
     }    
     
     if (this.range.value.start && this.range.value.end) {
-      startDate = DateHelper.toISO(this.range.value.start);
-      endDate = DateHelper.toISO(this.range.value.end);
+      this.startDate = DateHelper.toISO(this.range.value.start);
+      this.endDate = DateHelper.toISO(this.range.value.end);
     }
 
-    await this.getShiftsRange(startDate, endDate);
-    await this.getTripsRange(startDate, endDate);
+    await this.getShiftsRange(this.startDate, this.endDate);
+    await this.getTripsRange(this.startDate, this.endDate);
   }
 
   async getShiftsRange(startDate: string, endDate: string) {

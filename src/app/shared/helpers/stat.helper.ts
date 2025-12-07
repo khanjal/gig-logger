@@ -1,6 +1,7 @@
 import { IShift } from "@interfaces/shift.interface";
 import { IStatItem } from "@interfaces/stat-item.interface";
 import { ITrip } from "@interfaces/trip.interface";
+import { IDaily } from "@interfaces/daily.interface";
 
 export class StatHelper {
     static getTripsTotal(trips: ITrip[] = []): IStatItem {
@@ -25,7 +26,82 @@ export class StatHelper {
         return item;
     }
 
-    static getShiftsTotal(shifts: IShift[] = []): IStatItem[] {
-        return [];
+    static formatDateLabel(dateString: string): string {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Unknown date';
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    static getWeekdayAggregatesFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): Record<string, { count: number; total: number; perTimeSum: number; trips: number }> {
+        const map: Record<string, { count: number; total: number; perTimeSum: number; trips: number }> = {};
+
+        let filtered = dailyData;
+        if (startDate || endDate) {
+            filtered = dailyData.filter(d => {
+                if (startDate && d.date < startDate) return false;
+                if (endDate && d.date > endDate) return false;
+                return true;
+            });
+        }
+
+        for (const daily of filtered) {
+            const weekday = daily.weekday;
+            if (!weekday) continue;
+            if (!map[weekday]) map[weekday] = { count: 0, total: 0, perTimeSum: 0, trips: 0 };
+            map[weekday].count += 1; // count of days
+            map[weekday].total += daily.total || 0;
+            map[weekday].perTimeSum += daily.amountPerTime || 0;
+            map[weekday].trips += daily.trips || 0;
+        }
+
+        return map;
+    }
+
+    static getBusiestDayFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): { label: string; count: number; date: string } {
+        let filtered = dailyData;
+        if (startDate || endDate) {
+            filtered = dailyData.filter(d => {
+                if (startDate && d.date < startDate) return false;
+                if (endDate && d.date > endDate) return false;
+                return true;
+            });
+        }
+
+        if (!filtered.length) return { label: '—', count: 0, date: '' };
+
+        const top = filtered.sort((a, b) => {
+            if (b.trips !== a.trips) return b.trips - a.trips;
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        })[0];
+
+        return {
+            label: this.formatDateLabel(top.date),
+            count: top.trips,
+            date: top.date
+        };
+    }
+
+    static getHighestEarningDayFromDaily(dailyData: IDaily[], startDate?: string, endDate?: string): { label: string; total: number; date: string } {
+        let filtered = dailyData;
+        if (startDate || endDate) {
+            filtered = dailyData.filter(d => {
+                if (startDate && d.date < startDate) return false;
+                if (endDate && d.date > endDate) return false;
+                return true;
+            });
+        }
+
+        if (!filtered.length) return { label: '—', total: 0, date: '' };
+
+        const top = filtered.sort((a, b) => {
+            if (b.total !== a.total) return b.total - a.total;
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        })[0];
+
+        return {
+            label: this.formatDateLabel(top.date),
+            total: top.total,
+            date: top.date
+        };
     }
 }

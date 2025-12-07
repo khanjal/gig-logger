@@ -145,6 +145,30 @@ export class DateHelper {
         return minutes.toString().padStart(2, '0') + ':' + Math.floor((seconds - minutes * 60)).toString().padStart(2, '0');
     }
 
+    static weekdayLabel(dayIndex: number, style: 'short' | 'long' = 'short'): string {
+        const short = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const long = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const idx = ((dayIndex % 7) + 7) % 7;
+        return style === 'long' ? long[idx] : short[idx];
+    }
+
+    /**
+     * Convert weekday name (full or abbreviated) to day index (0=Sunday, 6=Saturday).
+     * Returns undefined if weekday name is not recognized.
+     */
+    static weekdayToIndex(weekday: string): number | undefined {
+        const weekdayMap: Record<string, number> = {
+            'Sun': 0, 'Sunday': 0,
+            'Mon': 1, 'Monday': 1,
+            'Tue': 2, 'Tuesday': 2,
+            'Wed': 3, 'Wednesday': 3,
+            'Thu': 4, 'Thursday': 4,
+            'Fri': 5, 'Friday': 5,
+            'Sat': 6, 'Saturday': 6
+        };
+        return weekdayMap[weekday];
+    }
+
     // --- Miscellaneous ---
 
     static getMonday(date: Date = new Date()) {
