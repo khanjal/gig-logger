@@ -271,12 +271,12 @@ export class StatsSummaryComponent implements OnChanges {
       {
         label: 'Zero Tip Trips',
         value: this.zeroTipTrips.toLocaleString(),
-        action: () => this.showZeroTipTrips()
+        action: this.zeroTipTrips > 0 ? () => this.showZeroTipTrips() : undefined
       },
       {
         label: 'Cash Trips',
         value: this.cashTrips.toLocaleString(),
-        action: () => this.showCashTrips()
+        action: this.cashTrips > 0 ? () => this.showCashTrips() : undefined
       }
     ];
   }
