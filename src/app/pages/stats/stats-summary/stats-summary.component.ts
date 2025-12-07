@@ -15,6 +15,7 @@ import { DateHelper } from '@helpers/date.helper';
 interface ISummaryCard {
   label: string;
   value: string;
+  subValue?: string;
   icon?: string;
   highlight?: boolean;
   action?: () => void;
@@ -68,7 +69,7 @@ export class StatsSummaryComponent implements OnChanges {
       const dayIndex = DateHelper.weekdayToIndex(weekday);
       if (dayIndex === undefined) return;
       if (!best || avg > best.value) {
-        best = { label: weekday.substring(0, 3), value: avg, dayIndex };
+        best = { label: DateHelper.expandWeekday(weekday), value: avg, dayIndex };
       }
     });
 
@@ -85,7 +86,7 @@ export class StatsSummaryComponent implements OnChanges {
       const dayIndex = DateHelper.weekdayToIndex(weekday);
       if (dayIndex === undefined) return;
       if (!best || avg > best.value) {
-        best = { label: weekday.substring(0, 3), value: avg, dayIndex };
+        best = { label: DateHelper.expandWeekday(weekday), value: avg, dayIndex };
       }
     });
 
@@ -184,21 +185,25 @@ export class StatsSummaryComponent implements OnChanges {
       },
       {
         label: 'Busiest Day',
-        value: this.busiestDay.count > 0 ? `${this.busiestDay.count} trips (${this.busiestDay.label})` : '—',
+        value: this.busiestDay.count > 0 ? `${this.busiestDay.count} trips` : '—',
+        subValue: this.busiestDay.count > 0 ? this.busiestDay.label : undefined,
         action: this.busiestDay.count > 0 ? () => this.showBusiestDayTrips() : undefined
       },
       {
         label: 'Top Earning Day',
-        value: this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)} (${this.highestEarningDay.label})` : '—',
+        value: this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)}` : '—',
+        subValue: this.highestEarningDay.total > 0 ? this.highestEarningDay.label : undefined,
         action: this.highestEarningDay.total > 0 ? () => this.showHighestEarningDayTrips() : undefined
       },
       {
         label: 'Top Weekday $/Trip',
-        value: this.bestWeekdayPerTrip ? `$${NumberHelper.formatNumber(this.bestWeekdayPerTrip.value)} (${this.bestWeekdayPerTrip.label})` : '—',
+        value: this.bestWeekdayPerTrip ? `$${NumberHelper.formatNumber(this.bestWeekdayPerTrip.value)}` : '—',
+        subValue: this.bestWeekdayPerTrip ? this.bestWeekdayPerTrip.label : undefined,
       },
       {
         label: 'Top Weekday $/Time',
-        value: this.bestWeekdayPerTime ? `$${NumberHelper.formatNumber(this.bestWeekdayPerTime.value)}/hr (${this.bestWeekdayPerTime.label})` : '—',
+        value: this.bestWeekdayPerTime ? `$${NumberHelper.formatNumber(this.bestWeekdayPerTime.value)}/hr` : '—',
+        subValue: this.bestWeekdayPerTime ? this.bestWeekdayPerTime.label : undefined,
       },
       {
         label: 'Total Distance',

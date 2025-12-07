@@ -181,6 +181,24 @@ export class DateHelper {
     }
     
     /**
+     * Expands abbreviated weekday names to full names
+     */
+    static expandWeekday(weekday: string): string {
+        if (!weekday) return weekday;
+        const weekdayMap: Record<string, string> = {
+            'sun': 'Sunday',
+            'mon': 'Monday',
+            'tue': 'Tuesday',
+            'wed': 'Wednesday',
+            'thu': 'Thursday',
+            'fri': 'Friday',
+            'sat': 'Saturday'
+        };
+        const expanded = weekdayMap[weekday.toLowerCase()];
+        return expanded || weekday; // Return original if not found
+    }
+    
+    /**
      * Converts minutes since midnight to 'HH:mm' string format
      */
     static minutesToTimeString(minutes: number): string {
