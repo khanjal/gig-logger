@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,11 +45,11 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
 
   summaryCards: ISummaryCard[] = [];
 
-  constructor(private dialog: MatDialog, private dailyService: DailyService) {}
+  constructor(private dialog: MatDialog, private dailyService: DailyService, private destroyRef: DestroyRef) {}
 
   ngOnInit(): void {
     this.dailyService.daily$
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.dailyData = data || [];
         this.refreshSummary();
