@@ -1,4 +1,3 @@
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,8 +13,6 @@ import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field'
 import { MatDateRangeInput, MatStartDate, MatEndDate, MatDatepickerToggle, MatDateRangePicker } from '@angular/material/datepicker';
 import { StatsTableComponent } from './stats-table/stats-table.component';
 import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
-import { DailyService } from '@services/sheets/daily.service';
-import { IDaily } from '@interfaces/daily.interface';
 
 @Component({
     selector: 'app-stats',
@@ -33,7 +30,6 @@ export class StatsComponent implements OnInit {
   regions: IStatItem[] = [];
   trips: ITrip[] = [];
   shifts: IShift[] = [];
-  dailyData: IDaily[] = [];
   startDate: string = "2000-01-01";
   endDate: string = DateHelper.toISO();
 
@@ -44,15 +40,8 @@ export class StatsComponent implements OnInit {
 
   constructor(
     private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _dailyService: DailyService
-  ) {
-      this._dailyService.daily$
-        .pipe(takeUntilDestroyed())
-        .subscribe((data: IDaily[] | undefined) => {
-          this.dailyData = data || [];
-        });
-  }
+    private _tripService: TripService
+  ) {}
 
   async ngOnInit(): Promise<void> {
 

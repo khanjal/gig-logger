@@ -3,11 +3,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { StatsSummaryComponent } from './stats-summary.component';
 import { ITrip } from '@interfaces/trip.interface';
 import { IDaily } from '@interfaces/daily.interface';
+import { BehaviorSubject } from 'rxjs';
+import { DailyService } from '@services/sheets/daily.service';
 
 describe('StatsSummaryComponent', () => {
   let component: StatsSummaryComponent;
   let fixture: ComponentFixture<StatsSummaryComponent>;
   let dialogSpy: MatDialog;
+  let dailySubject: BehaviorSubject<IDaily[]>;
 
   const trips: ITrip[] = [
     { pay: 10, bonus: 0, tip: 2, total: 12, distance: 3, date: '2023-01-01', cash: 0 } as unknown as ITrip,
@@ -22,19 +25,22 @@ describe('StatsSummaryComponent', () => {
 
   beforeEach(async () => {
     dialogSpy = { open: jasmine.createSpy('open') } as unknown as MatDialog;
+    dailySubject = new BehaviorSubject<IDaily[]>(dailyData);
 
     await TestBed.configureTestingModule({
       imports: [StatsSummaryComponent],
-      providers: [{ provide: MatDialog, useValue: dialogSpy }]
+      providers: [
+        { provide: MatDialog, useValue: dialogSpy },
+        { provide: DailyService, useValue: { daily$: dailySubject.asObservable() } }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StatsSummaryComponent);
     component = fixture.componentInstance;
     component.trips = trips;
-    component.dailyData = dailyData;
+    component.ngOnInit();
     component.ngOnChanges({
-      trips: { previousValue: [], currentValue: trips, firstChange: true, isFirstChange: () => true },
-      dailyData: { previousValue: [], currentValue: dailyData, firstChange: true, isFirstChange: () => true }
+      trips: { previousValue: [], currentValue: trips, firstChange: true, isFirstChange: () => true }
     });
     fixture.detectChanges();
   });

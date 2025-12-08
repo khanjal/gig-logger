@@ -1,17 +1,18 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ITrip } from '@interfaces/trip.interface';
-import { IShift } from '@interfaces/shift.interface';
 import { IDaily } from '@interfaces/daily.interface';
 import { ITripStatistics } from '@interfaces/trip-statistics.interface';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { NumberHelper } from '@helpers/number.helper';
 import { StatHelper } from '@helpers/stat.helper';
 import { DateHelper } from '@helpers/date.helper';
+import { DailyService } from '@services/sheets/daily.service';
 
 interface ISummaryCard {
   label: string;
@@ -28,11 +29,11 @@ interface ISummaryCard {
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule, MatTooltipModule]
 })
-export class StatsSummaryComponent implements OnChanges {
+export class StatsSummaryComponent implements OnChanges, OnInit {
   private stats: ITripStatistics = this.createEmptyStats();
+  dailyData: IDaily[] = [];
 
   @Input() trips: ITrip[] = [];
-  @Input() dailyData: IDaily[] = [];
   @Input() startDate?: string;
   @Input() endDate?: string;
 
@@ -44,13 +45,26 @@ export class StatsSummaryComponent implements OnChanges {
 
   summaryCards: ISummaryCard[] = [];
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private dailyService: DailyService) {}
+
+  ngOnInit(): void {
+    this.dailyService.daily$
+      .pipe(takeUntilDestroyed())
+      .subscribe(data => {
+        this.dailyData = data || [];
+        this.refreshSummary();
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['trips'] || changes['shifts'] || changes['dailyData'] || changes['startDate'] || changes['endDate']) {
-      this.stats = this.calculateStatistics(this.trips);
-      this.summaryCards = this.buildSummaryCards();
+    if (changes['trips'] || changes['startDate'] || changes['endDate']) {
+      this.refreshSummary();
     }
+  }
+
+  private refreshSummary(): void {
+    this.stats = this.calculateStatistics(this.trips);
+    this.summaryCards = this.buildSummaryCards();
   }
 
   private createEmptyStats(): ITripStatistics {
