@@ -148,7 +148,18 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     async saveData() {
         let sheetData = {} as ISheet;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
-        sheetData.shifts = await this._shiftService.getUnsavedShifts();
+        
+        // Pre-calculate totals for unsaved shifts before saving
+        const unsavedShifts = await this._shiftService.getUnsavedShifts();
+        if (unsavedShifts.length > 0) {
+            try {
+                await this._gigLoggerService.calculateShiftTotals(unsavedShifts);
+            } catch (e) {
+                this.appendToTerminal('Pre-save shift calculation failed; proceeding with save', 'warning');
+            }
+        }
+        
+        sheetData.shifts = unsavedShifts;
         sheetData.trips = await this._tripService.getUnsaved();
         sheetData.expenses = await this._expensesService.getUnsaved();
 
