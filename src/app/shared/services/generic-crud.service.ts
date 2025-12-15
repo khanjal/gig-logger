@@ -85,4 +85,96 @@ export class GenericCrudService<T> implements ICrudService<T> {
             await this.table.put(item);
         }
     }
+
+    /**
+     * Find potential duplicates for a given string field.
+     * Supports case-insensitive equality and substring matching with optional normalization.
+     */
+    public async findDuplicates<K extends keyof T>(
+        field: K,
+        options?: {
+            mode?: 'equals' | 'contains';
+            caseInsensitive?: boolean;
+            normalize?: boolean; // trim + collapse whitespace
+            minLength?: number; // minimum length to consider when using contains
+            comparator?: (a: string, b: string) => boolean; // custom match rule
+            keyNormalizer?: (s: string) => string; // custom normalization used for grouping keys
+        }
+    ): Promise<{ key: string; items: T[] }[]> {
+        const { mode = 'equals', caseInsensitive = true, normalize = true, minLength = 2, comparator, keyNormalizer } = options || {};
+
+        const items = await this.table.toArray();
+
+        const normalizeValue = (v: unknown): string => {
+            let s = typeof v === 'string' ? v : String(v ?? '');
+            if (normalize) {
+                s = s.trim().replace(/\s+/g, ' ');
+            }
+            if (caseInsensitive) {
+                s = s.toLocaleLowerCase();
+            }
+            return s;
+        };
+
+        const toKey = (s: string): string => (keyNormalizer ? keyNormalizer(s) : s);
+
+        if (mode === 'equals') {
+            const map = new Map<string, T[]>();
+            for (const item of items) {
+                const raw = normalizeValue(item[field]);
+                const key = toKey(raw);
+                const group = map.get(key) || [];
+                group.push(item);
+                map.set(key, group);
+            }
+            const result = Array.from(map.entries())
+                .filter(([, group]) => group.length > 1)
+                .map(([key, group]) => ({ key, items: group }));
+            // If a custom comparator is provided, further split groups to only those that actually match
+            if (comparator) {
+                return result
+                    .map(g => {
+                        const filtered: T[] = [];
+                        for (let i = 0; i < g.items.length; i++) {
+                            const ai = normalizeValue((g.items[i] as any)[field]);
+                            for (let j = i + 1; j < g.items.length; j++) {
+                                const bj = normalizeValue((g.items[j] as any)[field]);
+                                if (comparator(ai, bj)) {
+                                    // push both ensuring uniqueness
+                                    if (!filtered.includes(g.items[i])) filtered.push(g.items[i]);
+                                    if (!filtered.includes(g.items[j])) filtered.push(g.items[j]);
+                                }
+                            }
+                        }
+                        return filtered.length > 1 ? { key: g.key, items: filtered } : undefined;
+                    })
+                    .filter(Boolean) as { key: string; items: T[] }[];
+            }
+            return result;
+        } else {
+            // contains mode: build index then group items according to comparator or substring rules
+            const values = items.map(i => ({ item: i, val: normalizeValue(i[field]) })).filter(v => v.val.length >= minLength);
+            const duplicates: { key: string; items: T[] }[] = [];
+            const visited = new Set<number>();
+
+            for (let i = 0; i < values.length; i++) {
+                if (visited.has(i)) continue;
+                const base = values[i];
+                const group: T[] = [base.item];
+                for (let j = i + 1; j < values.length; j++) {
+                    if (visited.has(j)) continue;
+                    const candidate = values[j];
+                    const match = comparator ? comparator(base.val, candidate.val) : (base.val.includes(candidate.val) || candidate.val.includes(base.val));
+                    if (match) {
+                        group.push(candidate.item);
+                        visited.add(j);
+                    }
+                }
+                if (group.length > 1) {
+                    duplicates.push({ key: toKey(base.val), items: group });
+                }
+            }
+            return duplicates;
+        }
+    }
 }

@@ -112,7 +112,7 @@
               <span class="font-semibold text-sm text-gray-700">Group {{ groupIndex + 1 }}</span>
               <div class="flex items-center gap-2">
                 <span class="text-xs bg-gray-200 px-2 py-1 rounded">{{ group.length }} items</span>
-                <button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address'" 
+                <button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region'" 
                         mat-mini-fab color="primary" 
                         [disabled]="!selectedValue[groupIndex]"
                         (click)="mergeDuplicates(group, selectedValue[groupIndex], item.itemType)"
@@ -129,8 +129,8 @@
               </div>
             </div>
             <mat-radio-group [(ngModel)]="selectedValue[groupIndex]" class="divide-y divide-gray-200">
-              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.markedForDelete" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')" [class.bg-red-50]="problemItem.markedForDelete">
-                <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address'" 
+              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region')) || problemItem.markedForDelete" [class.bg-green-50]="problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region')" [class.bg-red-50]="problemItem.markedForDelete">
+                <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region'" 
                                   [value]="problemItem"></mat-radio-button>
                 <input *ngIf="item.itemType === 'shift'" type="radio" 
                        [name]="'shift-group-' + groupIndex" 
@@ -280,6 +280,28 @@
           <span class="font-medium">Addresses:</span>
           <div *ngFor="let address of item.addresses" class="text-gray-500">• {{ address }}</div>
         </div>
+      </div>
+    </div>
+
+    <!-- Service Item -->
+    <div *ngIf="type === 'service'">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-cyan-100 text-cyan-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
+        <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0">{{ item.service }}</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-1 text-sm text-gray-600">
+        <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
+      </div>
+    </div>
+
+    <!-- Region Item -->
+    <div *ngIf="type === 'region'">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-lime-100 text-lime-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
+        <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0">{{ item.region }}</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-1 text-sm text-gray-600">
+        <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
       </div>
     </div>
   </div>
