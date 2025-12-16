@@ -148,9 +148,7 @@ export class DiagnosticsComponent implements OnInit {
     const duplicatePlacesResult = this.mergeDuplicateGroups(placeEqualsGroups, placeContainsGroups);
     // Recompute trip counts per place using case-sensitive matching
     for (const group of duplicatePlacesResult.groups ?? []) {
-      for (const place of group as IPlace[]) {
-        place.trips = trips.filter(t => t.place === place.place).length;
-      }
+      await this.recomputeGroupCounts('place', group);
     }
     this._logger.debug('Duplicate places found:', duplicatePlacesResult);
     this.dataDiagnostics.push({
@@ -231,6 +229,10 @@ export class DiagnosticsComponent implements OnInit {
       keyNormalizer: (s: string) => s.replace(/,\s*usa$/i, '').trim().replace(/\s+/g, ' ')
     });
     const duplicateAddressesResult = this.mergeDuplicateGroups(addressEqualsGroups, addressContainsGroups);
+    // Recompute trip counts per address
+    for (const group of duplicateAddressesResult.groups ?? []) {
+      await this.recomputeGroupCounts('address', group);
+    }
     this._logger.debug('Duplicate addresses found:', duplicateAddressesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Addresses',
@@ -247,11 +249,7 @@ export class DiagnosticsComponent implements OnInit {
     const duplicateNamesResult = this.mergeDuplicateGroups(nameEqualsGroups, []);
     // Recompute name trip counts and addresses
     for (const group of duplicateNamesResult.groups ?? []) {
-      for (const name of group as IName[]) {
-        const nameTrips = trips.filter(t => t.name === name.name);
-        name.trips = nameTrips.length;
-        name.addresses = [...new Set(nameTrips.map(t => t.endAddress).filter(a => a))];
-      }
+      await this.recomputeGroupCounts('name', group);
     }
     this._logger.debug('Duplicate names found:', duplicateNamesResult);
     this.dataDiagnostics.push({
@@ -268,6 +266,10 @@ export class DiagnosticsComponent implements OnInit {
     const serviceEqualsGroups = await this._serviceService.findDuplicates('service', { mode: 'equals', caseInsensitive: true, normalize: true });
     const serviceContainsGroups = await this._serviceService.findDuplicates('service', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
     const duplicateServicesResult = this.mergeDuplicateGroups(serviceEqualsGroups, serviceContainsGroups);
+    // Recompute trip counts per service
+    for (const group of duplicateServicesResult.groups ?? []) {
+      await this.recomputeGroupCounts('service', group);
+    }
     this._logger.debug('Duplicate services found:', duplicateServicesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Services',
@@ -282,6 +284,10 @@ export class DiagnosticsComponent implements OnInit {
     // Duplicate regions via shared utility (case-insensitive equals only)
     const regionEqualsGroups = await this._regionService.findDuplicates('region', { mode: 'equals', caseInsensitive: true, normalize: true });
     const duplicateRegionsResult = this.mergeDuplicateGroups(regionEqualsGroups, []);
+    // Recompute trip counts per region
+    for (const group of duplicateRegionsResult.groups ?? []) {
+      await this.recomputeGroupCounts('region', group);
+    }
     this._logger.debug('Duplicate regions found:', duplicateRegionsResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Regions',
@@ -479,6 +485,30 @@ export class DiagnosticsComponent implements OnInit {
       }
       
       item.trips = 0;
+    }
+
+    await this.recomputeGroupCounts(itemType, group);
+  }
+
+  private async recomputeGroupCounts(itemType: 'place' | 'name' | 'address' | 'service' | 'region', group: any[]) {
+    const trips = await this._tripService.list();
+    for (const item of group) {
+      if (itemType === 'place') {
+        item.trips = trips.filter((t: ITrip) => t.place === item.place).length;
+      } else if (itemType === 'name') {
+        const nameTrips = trips.filter((t: ITrip) => t.name === item.name);
+        item.trips = nameTrips.length;
+        item.addresses = [...new Set(nameTrips.map(t => t.endAddress).filter(a => a))];
+      } else if (itemType === 'address') {
+        item.trips = trips.filter((t: ITrip) => t.startAddress === item.address || t.endAddress === item.address).length;
+      } else if (itemType === 'service') {
+        item.trips = trips.filter((t: ITrip) => t.service === item.service).length;
+      } else if (itemType === 'region') {
+        item.trips = trips.filter((t: ITrip) => t.region === item.region).length;
+      }
+      if (item.trips === 0) {
+        (item as any).fixed = true;
+      }
     }
   }
 
