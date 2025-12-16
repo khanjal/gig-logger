@@ -450,11 +450,14 @@ export class DiagnosticsComponent implements OnInit {
 
   async mergeDuplicates(group: any[], selectedItem: any, itemType: 'place' | 'name' | 'address' | 'service' | 'region') {
     const trips = await this._tripService.list();
+    const shifts = await this._shiftService.list();
     
     for (const item of group) {
       if (item === selectedItem) continue;
       
       let affectedTrips: ITrip[] = [];
+      let affectedShifts: IShift[] = [];
+      
       if (itemType === 'place') {
         affectedTrips = trips.filter(t => t.place === item.place);
       } else if (itemType === 'name') {
@@ -463,8 +466,10 @@ export class DiagnosticsComponent implements OnInit {
         affectedTrips = trips.filter(t => t.startAddress === item.address || t.endAddress === item.address);
       } else if (itemType === 'service') {
         affectedTrips = trips.filter(t => t.service === item.service);
+        affectedShifts = shifts.filter(s => s.service === item.service);
       } else if (itemType === 'region') {
         affectedTrips = trips.filter(t => t.region === item.region);
+        affectedShifts = shifts.filter(s => s.region === item.region);
       }
       
       for (const trip of affectedTrips) {
@@ -484,7 +489,20 @@ export class DiagnosticsComponent implements OnInit {
         await this._tripService.update([trip]);
       }
       
+      for (const shift of affectedShifts) {
+        if (itemType === 'service') {
+          shift.service = selectedItem.service;
+        } else if (itemType === 'region') {
+          shift.region = selectedItem.region;
+        }
+        updateAction(shift, ActionEnum.Update);
+        await this._shiftService.update([shift]);
+      }
+      
       item.trips = 0;
+      if (itemType === 'service' || itemType === 'region') {
+        item.shifts = 0;
+      }
     }
 
     await this.recomputeGroupCounts(itemType, group);
@@ -492,6 +510,7 @@ export class DiagnosticsComponent implements OnInit {
 
   private async recomputeGroupCounts(itemType: 'place' | 'name' | 'address' | 'service' | 'region', group: any[]) {
     const trips = await this._tripService.list();
+    const shifts = await this._shiftService.list();
     for (const item of group) {
       if (itemType === 'place') {
         item.trips = trips.filter((t: ITrip) => t.place === item.place).length;
@@ -503,10 +522,13 @@ export class DiagnosticsComponent implements OnInit {
         item.trips = trips.filter((t: ITrip) => t.startAddress === item.address || t.endAddress === item.address).length;
       } else if (itemType === 'service') {
         item.trips = trips.filter((t: ITrip) => t.service === item.service).length;
+        item.shifts = shifts.filter((s: IShift) => s.service === item.service).length;
       } else if (itemType === 'region') {
         item.trips = trips.filter((t: ITrip) => t.region === item.region).length;
+        item.shifts = shifts.filter((s: IShift) => s.region === item.region).length;
       }
-      if (item.trips === 0) {
+      const allZero = item.trips === 0 && (itemType === 'place' || itemType === 'name' || itemType === 'address' || item.shifts === 0);
+      if (allZero) {
         (item as any).fixed = true;
       }
     }
