@@ -13,6 +13,7 @@ import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.compo
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
+import { DiagnosticHelper } from '@helpers/diagnostic.helper';
 import { updateAction } from '@utils/action.utils';
 import { ActionEnum } from '@enums/action.enum';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -27,24 +28,8 @@ import { GigCalculatorService } from '@services/calculations/gig-calculator.serv
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
-import { IAddress } from '@interfaces/address.interface';
 import { IPlace } from '@interfaces/place.interface';
-import { IName } from '@interfaces/name.interface';
-import { IService } from '@interfaces/service.interface';
-import { IRegion } from '@interfaces/region.interface';
-
-interface DiagnosticItem {
-  name: string;
-  count: number;
-  severity: 'info' | 'warning' | 'error';
-  description: string;
-  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name' | 'service' | 'region';
-  items?: any[];
-  groups?: any[][];
-  fixable?: boolean;
-  bulkFixable?: boolean;
-  selectedValues?: Map<number, any>;
-}
+import { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 
 @Component({
   selector: 'app-diagnostics',
@@ -54,7 +39,7 @@ interface DiagnosticItem {
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
-  dataDiagnostics: DiagnosticItem[] = [];
+  dataDiagnostics: IDiagnosticItem[] = [];
   isLoading = false;
   isBulkFixing = false;
   selectedValue: any[] = [];
@@ -130,7 +115,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for orphaned trips
-    const orphanedTrips = this.findOrphanedTrips(trips, shifts);
+    const orphanedTrips = DiagnosticHelper.findOrphanedTrips(trips, shifts);
     this._logger.debug('Orphaned trips found:', orphanedTrips);
 
     this.dataDiagnostics.push({
@@ -145,10 +130,10 @@ export class DiagnosticsComponent implements OnInit {
     // Duplicate places via shared utility (equals + contains)
     const placeEqualsGroups = await this._placeService.findDuplicates('place', { mode: 'equals', caseInsensitive: true, normalize: true });
     const placeContainsGroups = await this._placeService.findDuplicates('place', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
-    const duplicatePlacesResult = this.mergeDuplicateGroups(placeEqualsGroups, placeContainsGroups);
+    const duplicatePlacesResult = DiagnosticHelper.mergeDuplicateGroups(placeEqualsGroups, placeContainsGroups);
     // Recompute trip counts per place using case-sensitive matching
     for (const group of duplicatePlacesResult.groups ?? []) {
-      await this.recomputeGroupCounts('place', group);
+      await DiagnosticHelper.recomputeGroupCounts('place', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate places found:', duplicatePlacesResult);
     this.dataDiagnostics.push({
@@ -162,61 +147,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Duplicate addresses via shared utility with address-specific rules
-    const addressComparator = (a: string, b: string): boolean => {
-      const stripCountry = (s: string) => s.replace(/,\s*usa$/i, '');
-      const normalize = (s: string) => stripCountry(s).trim().replace(/\s+/g, ' ');
-      const sa = normalize(a), sb = normalize(b);
-
-      // Split by comma to get potential store name prefix + address parts
-      const splitParts = (s: string) => s.split(',').map(p => p.trim());
-      const pa = splitParts(sa), pb = splitParts(sb);
-
-      // City/State/Zip is always the last parts joined; find where it starts
-      // It contains city name and PA/state abbreviation
-      const extractCityStateZip = (parts: string[]): string => {
-        // City is typically 2nd to last part; state+zip is last part
-        if (parts.length < 2) return '';
-        return parts.slice(-2).join(', ');
-      };
-
-      const aCSZ = extractCityStateZip(pa);
-      const bCSZ = extractCityStateZip(pb);
-
-      // City/State/Zip must match exactly
-      if (!aCSZ || !bCSZ || aCSZ !== bCSZ) return false;
-
-      // Extract street address (remove store name prefix and city/state/zip)
-      // Street is everything before the city+state portion
-      const extractStreet = (parts: string[]): string => {
-        if (parts.length <= 2) return parts[0];
-        // All parts except last 2 (city, state+zip) are street/store prefix
-        return parts.slice(0, -2).join(', ');
-      };
-
-      const aStreet = extractStreet(pa);
-      const bStreet = extractStreet(pb);
-
-      // After extracting street, one might be a store name prefix of the other
-      // e.g., "Wingstop, 1700 Wilmington Rd Ste 950" vs "1700 Wilmington Rd Ste 950"
-      // Extract the numeric house+street part (remove any leading store name)
-      const stripStorePrefix = (s: string): string => {
-        // Find the first number; everything from that point is the address
-        const match = s.match(/\d+.*$/);
-        return match ? match[0] : s;
-      };
-
-      const aCore = stripStorePrefix(aStreet);
-      const bCore = stripStorePrefix(bStreet);
-
-      // Check if house numbers differ
-      const extractNumber = (s: string) => (s.match(/^\d+/)?.[0] ?? '');
-      const numA = extractNumber(aCore);
-      const numB = extractNumber(bCore);
-      if (numA && numB && numA !== numB) return false;
-
-      // After stripping store prefix, they should match
-      return aCore === bCore;
-    };
+    const addressComparator = DiagnosticHelper.createAddressComparator();
 
     const addressEqualsGroups = await this._addressService.findDuplicates('address', {
       mode: 'equals', caseInsensitive: true, normalize: true,
@@ -228,10 +159,10 @@ export class DiagnosticsComponent implements OnInit {
       comparator: addressComparator,
       keyNormalizer: (s: string) => s.replace(/,\s*usa$/i, '').trim().replace(/\s+/g, ' ')
     });
-    const duplicateAddressesResult = this.mergeDuplicateGroups(addressEqualsGroups, addressContainsGroups);
+    const duplicateAddressesResult = DiagnosticHelper.mergeDuplicateGroups(addressEqualsGroups, addressContainsGroups);
     // Recompute trip counts per address
     for (const group of duplicateAddressesResult.groups ?? []) {
-      await this.recomputeGroupCounts('address', group);
+      await DiagnosticHelper.recomputeGroupCounts('address', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate addresses found:', duplicateAddressesResult);
     this.dataDiagnostics.push({
@@ -246,10 +177,10 @@ export class DiagnosticsComponent implements OnInit {
 
     // Duplicate names via shared utility (equals only)
     const nameEqualsGroups = await this._nameService.findDuplicates('name', { mode: 'equals', caseInsensitive: true, normalize: true });
-    const duplicateNamesResult = this.mergeDuplicateGroups(nameEqualsGroups, []);
+    const duplicateNamesResult = DiagnosticHelper.mergeDuplicateGroups(nameEqualsGroups, []);
     // Recompute name trip counts and addresses
     for (const group of duplicateNamesResult.groups ?? []) {
-      await this.recomputeGroupCounts('name', group);
+      await DiagnosticHelper.recomputeGroupCounts('name', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate names found:', duplicateNamesResult);
     this.dataDiagnostics.push({
@@ -265,10 +196,10 @@ export class DiagnosticsComponent implements OnInit {
     // Duplicate services via shared utility (case-insensitive equals)
     const serviceEqualsGroups = await this._serviceService.findDuplicates('service', { mode: 'equals', caseInsensitive: true, normalize: true });
     const serviceContainsGroups = await this._serviceService.findDuplicates('service', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
-    const duplicateServicesResult = this.mergeDuplicateGroups(serviceEqualsGroups, serviceContainsGroups);
+    const duplicateServicesResult = DiagnosticHelper.mergeDuplicateGroups(serviceEqualsGroups, serviceContainsGroups);
     // Recompute trip counts per service
     for (const group of duplicateServicesResult.groups ?? []) {
-      await this.recomputeGroupCounts('service', group);
+      await DiagnosticHelper.recomputeGroupCounts('service', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate services found:', duplicateServicesResult);
     this.dataDiagnostics.push({
@@ -283,10 +214,10 @@ export class DiagnosticsComponent implements OnInit {
 
     // Duplicate regions via shared utility (case-insensitive equals only)
     const regionEqualsGroups = await this._regionService.findDuplicates('region', { mode: 'equals', caseInsensitive: true, normalize: true });
-    const duplicateRegionsResult = this.mergeDuplicateGroups(regionEqualsGroups, []);
+    const duplicateRegionsResult = DiagnosticHelper.mergeDuplicateGroups(regionEqualsGroups, []);
     // Recompute trip counts per region
     for (const group of duplicateRegionsResult.groups ?? []) {
-      await this.recomputeGroupCounts('region', group);
+      await DiagnosticHelper.recomputeGroupCounts('region', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate regions found:', duplicateRegionsResult);
     this.dataDiagnostics.push({
@@ -300,7 +231,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for shifts with start/end times but no duration
-    const shiftsWithoutDuration = this.findShiftsWithoutDuration(shifts);
+    const shiftsWithoutDuration = DiagnosticHelper.findShiftsWithoutDuration(shifts);
     this._logger.debug('Shifts without duration found:', shiftsWithoutDuration);
     this.dataDiagnostics.push({
       name: 'Shifts Missing Time Duration',
@@ -312,7 +243,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for trips with pickup/dropoff times but no duration
-    const tripsWithoutDuration = this.findTripsWithoutDuration(trips);
+    const tripsWithoutDuration = DiagnosticHelper.findTripsWithoutDuration(trips);
     this._logger.debug('Trips without duration found:', tripsWithoutDuration);
     this.dataDiagnostics.push({
       name: 'Trips Missing Duration',
@@ -324,7 +255,7 @@ export class DiagnosticsComponent implements OnInit {
     });
 
     // Check for trips with place but no start address
-    const tripsWithPlaceNoAddress = this.findTripsWithPlaceNoAddress(trips, places);
+    const tripsWithPlaceNoAddress = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, this.selectedAddress);
     this._logger.debug('Trips with place but no address found:', tripsWithPlaceNoAddress);
     this.dataDiagnostics.push({
       name: 'Trip Places Missing Address',
@@ -338,89 +269,7 @@ export class DiagnosticsComponent implements OnInit {
     this._logger.info('Final dataDiagnostics:', this.dataDiagnostics);
   }
 
-  private findOrphanedTrips(trips: ITrip[], shifts: IShift[]): ITrip[] {
-    const shiftKeys = new Set(shifts.map(s => s.key));
-    return trips.filter(t => t.key && !shiftKeys.has(t.key) && !t.exclude);
-  }
 
-  private mergeDuplicateGroups<T>(
-    primary: { key: string; items: T[] }[],
-    secondary: { key: string; items: T[] }[]
-  ): { items: T[]; groups: T[][] } {
-    const groups: T[][] = [];
-    const items: T[] = [];
-
-    const getId = (x: any): string | number =>
-      (x?.id ?? x?.rowId ?? x?.place ?? x?.name ?? x?.address ?? x?.service ?? x?.region ?? JSON.stringify(x));
-
-    const groupKey = (g: T[]) =>
-      g.map(i => getId(i)).sort((a: any, b: any) => ('' + a).localeCompare('' + b)).join('|');
-
-    const seenGroupKeys = new Set<string>();
-    const seenItemIds = new Set<string | number>();
-
-    const pushGroup = (g: T[]) => {
-      const key = groupKey(g);
-      if (seenGroupKeys.has(key)) return;
-      seenGroupKeys.add(key);
-      groups.push(g);
-      for (const it of g) {
-        const id = getId(it);
-        if (!seenItemIds.has(id)) {
-          seenItemIds.add(id);
-          items.push(it);
-        }
-      }
-    };
-
-    for (const g of primary) pushGroup(g.items);
-    for (const g of secondary) pushGroup(g.items);
-
-    return { items, groups };
-  }
-
-  private findShiftsWithoutDuration(shifts: IShift[]): IShift[] {
-    return shifts.filter(shift => {
-      // Check if shift has start and end times but no duration
-      const hasStartTime = shift.start && shift.start.trim().length > 0;
-      const hasEndTime = shift.finish && shift.finish.trim().length > 0;
-      const hasDuration = shift.time && shift.time.trim().length > 0;
-
-      return hasStartTime && hasEndTime && !hasDuration;
-    });
-  }
-
-  private findTripsWithoutDuration(trips: ITrip[]): ITrip[] {
-    return trips.filter(trip => {
-      // Check if trip has pickup and dropoff times but no duration
-      const hasPickupTime = trip.pickupTime && trip.pickupTime.trim().length > 0;
-      const hasDropoffTime = trip.dropoffTime && trip.dropoffTime.trim().length > 0;
-      const hasDuration = trip.duration && trip.duration.trim().length > 0;
-
-      return hasPickupTime && hasDropoffTime && !hasDuration;
-    });
-  }
-
-  private findTripsWithPlaceNoAddress(trips: ITrip[], places: IPlace[]): any[] {
-    const placeMap = new Map<string, IPlace>();
-    places.forEach(p => placeMap.set(p.place, p));
-
-    return trips.filter(trip => {
-      const hasPlace = trip.place && trip.place.trim().length > 0;
-      const hasStartAddress = trip.startAddress && trip.startAddress.trim().length > 0;
-      return hasPlace && !hasStartAddress;
-    }).map(trip => {
-      const place = placeMap.get(trip.place);
-      const availableAddresses = place?.addresses?.map(a => a.address) || [];
-      if (availableAddresses.length === 1) {
-        this.selectedAddress[trip.rowId] = availableAddresses[0];
-      }
-      return {
-        ...trip,
-        availableAddresses
-      };
-    });
-  }
 
   getSeverityIcon(severity: string): string {
     switch (severity) {
@@ -448,7 +297,7 @@ export class DiagnosticsComponent implements OnInit {
     return this.dataDiagnostics.reduce((sum, item) => sum + item.count, 0);
   }
 
-  async mergeDuplicates(group: any[], selectedItem: any, itemType: 'place' | 'name' | 'address' | 'service' | 'region') {
+  async mergeDuplicates(group: any[], selectedItem: any, itemType: DiagnosticEntityType) {
     const trips = await this._tripService.list();
     const shifts = await this._shiftService.list();
     
@@ -505,33 +354,7 @@ export class DiagnosticsComponent implements OnInit {
       }
     }
 
-    await this.recomputeGroupCounts(itemType, group);
-  }
-
-  private async recomputeGroupCounts(itemType: 'place' | 'name' | 'address' | 'service' | 'region', group: any[]) {
-    const trips = await this._tripService.list();
-    const shifts = await this._shiftService.list();
-    for (const item of group) {
-      if (itemType === 'place') {
-        item.trips = trips.filter((t: ITrip) => t.place === item.place).length;
-      } else if (itemType === 'name') {
-        const nameTrips = trips.filter((t: ITrip) => t.name === item.name);
-        item.trips = nameTrips.length;
-        item.addresses = [...new Set(nameTrips.map(t => t.endAddress).filter(a => a))];
-      } else if (itemType === 'address') {
-        item.trips = trips.filter((t: ITrip) => t.startAddress === item.address || t.endAddress === item.address).length;
-      } else if (itemType === 'service') {
-        item.trips = trips.filter((t: ITrip) => t.service === item.service).length;
-        item.shifts = shifts.filter((s: IShift) => s.service === item.service).length;
-      } else if (itemType === 'region') {
-        item.trips = trips.filter((t: ITrip) => t.region === item.region).length;
-        item.shifts = shifts.filter((s: IShift) => s.region === item.region).length;
-      }
-      const allZero = item.trips === 0 && (itemType === 'place' || itemType === 'name' || itemType === 'address' || item.shifts === 0);
-      if (allZero) {
-        (item as any).fixed = true;
-      }
-    }
+    await DiagnosticHelper.recomputeGroupCounts(itemType, group, this._tripService, this._shiftService);
   }
 
   async fixShiftDuration(shift: IShift) {
@@ -555,7 +378,7 @@ export class DiagnosticsComponent implements OnInit {
     this.isBulkFixing = true;
     try {
       const shifts = await this._shiftService.list();
-      const shiftsToFix = this.findShiftsWithoutDuration(shifts);
+      const shiftsToFix = DiagnosticHelper.findShiftsWithoutDuration(shifts);
       
       for (const shift of shiftsToFix) {
         if (shift.start && shift.finish) {
@@ -576,7 +399,7 @@ export class DiagnosticsComponent implements OnInit {
     this.isBulkFixing = true;
     try {
       const trips = await this._tripService.list();
-      const tripsToFix = this.findTripsWithoutDuration(trips);
+      const tripsToFix = DiagnosticHelper.findTripsWithoutDuration(trips);
       
       for (const trip of tripsToFix) {
         await this._gigCalculator.updateTripDuration(trip);
