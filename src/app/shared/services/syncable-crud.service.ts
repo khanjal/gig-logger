@@ -40,7 +40,7 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
 
   async getMaxRowId(): Promise<number> {
     const items = await this.list();
-      if (items.length === 0) return 1;
+    if (items.length === 0) return 1;
     return Math.max(1, ...items.map(x => x.rowId || 0));
   }
 
