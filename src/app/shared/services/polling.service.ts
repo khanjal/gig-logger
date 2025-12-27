@@ -223,6 +223,16 @@ export class PollingService implements OnDestroy {
 
       this._logger.info(`Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
 
+      // Pre-calculate totals for unsaved shifts before saving
+      if (counts.shifts > 0) {
+        const unsavedShifts = await this._shiftService.getUnsavedShifts();
+        try {
+          await this._gigWorkflowService.calculateShiftTotals(unsavedShifts);
+        } catch (e) {
+          this._logger.warn('Pre-save shift calculation failed; proceeding with save');
+        }
+      }
+
       // Get actual unsaved data
       const sheetData = {} as ISheet;
       const defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];

@@ -275,15 +275,4 @@
   </div>
 </div>
 
-<!-- Back to Top Button -->
-<button 
-  mat-fab 
-  color="primary"
-  class="floating-back-to-top bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full p-4 flex items-center justify-center transition-opacity duration-200"
-  *ngIf="showBackToTop"
-  (click)="scrollToTop()"
-  matTooltip="Back to top"
-  matTooltipPosition="left"
-  aria-label="Scroll to top">
-  <mat-icon>arrow_upward</mat-icon>
-</button>
+<app-back-to-top></app-back-to-top>

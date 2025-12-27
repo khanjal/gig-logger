@@ -14,7 +14,11 @@
             ></mat-date-range-picker>
         </mat-form-field>
     </div>
+    
+    <app-stats-summary [trips]="trips" [startDate]="startDate" [endDate]="endDate"></app-stats-summary>
+    
     <app-stats-table [items]="services" name="Services"></app-stats-table>
+    <app-stats-table [items]="regions" name="Regions" *ngIf="regions.length > 0"></app-stats-table>
     <app-stats-table [items]="types" name="Types"></app-stats-table>
     <app-stats-table [items]="places" name="Places"></app-stats-table>
 </div>

@@ -43,8 +43,8 @@ export class NoSecondsPipe implements PipeTransform {
                 if (hour === 0) hour = 12;
                 return hour + ':' + min + ' ' + ampm;
             }
-            // Fallback: already 12hr
-            return time;
+            // Fallback: already 12hr, remove leading zeros
+            return time.replace(/^0(\d)/, '$1');
         }
         return time;
     }

@@ -3,11 +3,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 22.12.0
-        - nvm use 22.12.0
-        - node -v
-        - npm install -g @angular/cli@18
-        - npm i @rollup/rollup-linux-x64-gnu
         - npm ci
     build:
       commands:

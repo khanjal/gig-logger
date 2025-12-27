@@ -3,6 +3,7 @@ import { IShift } from "@interfaces/shift.interface";
 import { sort } from "./sort.helper";
 import { ActionEnum } from "@enums/action.enum";
 import { updateAction } from "@utils/action.utils";
+import { ITrip } from "@interfaces/trip.interface";
 
 export class ShiftHelper {
     static compareShifts(o1: IShift, o2: IShift): boolean {
@@ -60,6 +61,21 @@ export class ShiftHelper {
         shift.date = DateHelper.toISO(DateHelper.getDateFromDays());
         shift.number = shiftNumber ?? 0;
         shift.start = new Date().toLocaleTimeString();
+        shift.total = 0;
+        updateAction(shift, ActionEnum.Add);
+        
+        return shift;
+    }
+
+    static createShiftFromTrip(trip: ITrip): IShift {
+        let shift: IShift = {} as IShift;
+
+        shift.key = trip.key;
+        shift.date = trip.date;
+        shift.service = trip.service;
+        shift.number = trip.number;
+        shift.region = trip.region;
+        shift.start = trip.pickupTime || '';
         shift.total = 0;
         updateAction(shift, ActionEnum.Add);
         

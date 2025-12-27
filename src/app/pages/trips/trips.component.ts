@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,13 +33,14 @@ import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { TruncatePipe } from "@pipes/truncate.pipe";
+import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 
 @Component({
     selector: 'app-trip',
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe]
+    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent]
 })
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
@@ -52,7 +53,6 @@ export class TripComponent implements OnInit, OnDestroy {
   reloading: boolean = false;
   saving: boolean = false;
   pollingEnabled: boolean = false;
-  showBackToTop: boolean = false; // Controls the visibility of the "Back to Top" button
   showYesterdayTrips: boolean = false; // Controls the visibility of yesterday's trips section
   // Edit mode properties
   isEditMode: boolean = false;
@@ -78,7 +78,6 @@ export class TripComponent implements OnInit, OnDestroy {
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
-      private viewportScroller: ViewportScroller,
       private logger: LoggerService,
       private _route: ActivatedRoute,
       private _router: Router
@@ -148,20 +147,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Listen for scroll events
-  @HostListener('window:scroll', [])
-  onWindowScroll(): void {
-    const scrollPosition = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    const formElement = document.getElementById('tripForm');
-    const formHeight = formElement ? formElement.offsetHeight / 2 : 0;
 
-    // Show the button if scrolled past the form
-    this.showBackToTop = (scrollPosition > formHeight) && !this.editingTripId;
-  }  // Scroll to the top of the page
-
-  scrollToTop(): void {
-    this.viewportScroller.scrollToPosition([0, 0]);
-  }
 
   // Toggle yesterday's trips visibility
   toggleYesterdayTrips(): void {
@@ -282,7 +268,6 @@ export class TripComponent implements OnInit, OnDestroy {
     this.reloading = true;
 
     await this.load(!isParentReload); // Don't show spinner if it's a parent reload
-    await this._gigLoggerService.calculateShiftTotals();
 
     this.reloading = false;
 
@@ -336,7 +321,6 @@ export class TripComponent implements OnInit, OnDestroy {
       if (trip && this.tripForm) {
         this.tripForm.data = trip;
         await this.tripForm.load();
-        this.scrollToTop();
       }
     } catch (error) {
       console.error('Error loading trip for editing:', error);

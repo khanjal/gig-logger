@@ -23,6 +23,16 @@ export class DateHelper {
         return date.toLocaleDateString('sv-SE');
     }
 
+    /**
+     * Format an ISO date string (YYYY-MM-DD) to a locale-specific date string.
+     * Avoids timezone issues by parsing components directly.
+     */
+    static formatLocaleDateString(dateString: string, locale: string = 'en-US', options?: Intl.DateTimeFormatOptions): string {
+        const date = this.parseLocalDate(dateString);
+        if (isNaN(date.getTime())) return 'Unknown date';
+        return date.toLocaleDateString(locale, options);
+    }
+
     // --- Date Calculation ---
 
     /**
@@ -143,6 +153,61 @@ export class DateHelper {
     static getMinutesAndSeconds(seconds: number): string {
         const minutes: number = Math.floor(seconds / 60);
         return minutes.toString().padStart(2, '0') + ':' + Math.floor((seconds - minutes * 60)).toString().padStart(2, '0');
+    }
+
+    static weekdayLabel(dayIndex: number, style: 'short' | 'long' = 'short'): string {
+        const short = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const long = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const idx = ((dayIndex % 7) + 7) % 7;
+        return style === 'long' ? long[idx] : short[idx];
+    }
+
+    /**
+     * Convert weekday name (full or abbreviated) to day index (0=Sunday, 6=Saturday).
+     * Returns undefined if weekday name is not recognized.
+     */
+    static weekdayToIndex(weekday: string): number | undefined {
+        if (!weekday) return undefined;
+        const weekdayMap: Record<string, number> = {
+            'sun': 0, 'sunday': 0,
+            'mon': 1, 'monday': 1,
+            'tue': 2, 'tuesday': 2,
+            'wed': 3, 'wednesday': 3,
+            'thu': 4, 'thursday': 4,
+            'fri': 5, 'friday': 5,
+            'sat': 6, 'saturday': 6
+        };
+        return weekdayMap[weekday.toLowerCase()];
+    }
+    
+    /**
+     * Normalizes weekday names by expanding abbreviated forms to full names.
+     * If a full weekday name is passed (e.g., "Monday"), it returns the original value unchanged.
+     * @param weekday - Abbreviated (e.g., "Mon") or full weekday name (e.g., "Monday")
+     * @returns Full weekday name or original value if not an abbreviation
+     */
+    static expandWeekday(weekday: string): string {
+        if (!weekday) return weekday;
+        const weekdayMap: Record<string, string> = {
+            'sun': 'Sunday',
+            'mon': 'Monday',
+            'tue': 'Tuesday',
+            'wed': 'Wednesday',
+            'thu': 'Thursday',
+            'fri': 'Friday',
+            'sat': 'Saturday'
+        };
+        const expanded = weekdayMap[weekday.toLowerCase()];
+        return expanded || weekday; // Return original if not found
+    }
+    
+    /**
+     * Converts minutes since midnight to 'HH:mm' string format
+     */
+    static minutesToTimeString(minutes: number): string {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
 
     // --- Miscellaneous ---
