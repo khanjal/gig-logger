@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
 import { ServiceWorkerStatusComponent } from './service-worker-status.component';
 
 describe('ServiceWorkerStatusComponent', () => {
@@ -8,7 +8,8 @@ describe('ServiceWorkerStatusComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ServiceWorkerStatusComponent]
+      imports: [...commonTestingImports, ServiceWorkerStatusComponent],
+      providers: [...commonTestingProviders]
     })
     .compileComponents();
 

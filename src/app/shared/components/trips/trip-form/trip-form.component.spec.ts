@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { TripFormComponent } from './trip-form.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AddressService } from '@services/sheets/address.service';
@@ -13,13 +13,13 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { TypeService } from '@services/sheets/type.service';
-import { HttpClient, HttpHandler } from '@angular/common/http';
 import { DailyService } from '@services/sheets/daily.service';
 import { MonthlyService } from '@services/sheets/monthly.service';
 import { WeekdayService } from '@services/sheets/weekday.service';
 import { WeeklyService } from '@services/sheets/weekly.service';
 import { YearlyService } from '@services/sheets/yearly.service';
 import { MatAutocomplete } from '@angular/material/autocomplete';
+import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
 
 describe('TripFormComponent', () => {
   let component: TripFormComponent;
@@ -38,10 +38,9 @@ describe('TripFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatDialogModule, MatSnackBarModule, TripFormComponent, MatAutocomplete],
-    providers: [
-        { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: [] },
+      imports: [...commonTestingImports, MatDialogModule, MatSnackBarModule, TripFormComponent, MatAutocomplete],
+      providers: [
+        ...commonTestingProviders,
         { provide: AddressService, useValue: mockAddressService },
         { provide: DeliveryService, useValue: mockDeliveryService },
         { provide: GigWorkflowService, useValue: mockGigWorkflowService },
@@ -53,9 +52,9 @@ describe('TripFormComponent', () => {
         { provide: TimerService, useValue: mockTimerService },
         { provide: TripService, useValue: mockTripService },
         { provide: TypeService, useValue: mockTypeService }
-    ]
-})
-    .compileComponents();
+      ]
+    })
+      .compileComponents();
 
     fixture = TestBed.createComponent(TripFormComponent);
     component = fixture.componentInstance;

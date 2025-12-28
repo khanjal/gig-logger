@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { commonTestingImports, commonTestingProviders } from '../../../test-harness';
 import { SetupComponent } from './setup.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonService } from '@services/common.service';
@@ -16,15 +16,14 @@ describe('SheetSetupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatSnackBarModule, SetupComponent],
-    providers: [
-        { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: [] },
+      imports: [...commonTestingImports, MatSnackBarModule, SetupComponent],
+      providers: [
+        ...commonTestingProviders,
         { provide: CommonService, useValue: mockCommonService },
         { provide: SpreadsheetService, useValue: mockSpreadsheetService },
         { provide: TimerService, useValue: mockTimerService }
-    ]
-})
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(SetupComponent);

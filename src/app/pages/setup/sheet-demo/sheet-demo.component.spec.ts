@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '../../../../test-harness';
 import { SheetDemoComponent } from './sheet-demo.component';
 
 describe('SheetDemoComponent', () => {
@@ -8,7 +8,8 @@ describe('SheetDemoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SheetDemoComponent]
+      imports: [...commonTestingImports, SheetDemoComponent],
+      providers: [...commonTestingProviders]
     })
     .compileComponents();
 

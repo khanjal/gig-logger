@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
 import { TripsQuickViewComponent } from './trips-quick-view.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
@@ -11,9 +11,9 @@ describe('TripsQuickViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [TripsQuickViewComponent, NoSecondsPipe, ShortAddressPipe, TruncatePipe],
-    providers: []
-})
+      imports: [...commonTestingImports, TripsQuickViewComponent, NoSecondsPipe, ShortAddressPipe, TruncatePipe],
+      providers: [...commonTestingProviders]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(TripsQuickViewComponent);
