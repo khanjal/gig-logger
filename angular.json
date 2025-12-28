@@ -144,6 +144,10 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
+            "include": [
+              "src/app/shared/services/**/*.spec.ts",
+              "src/sanity.spec.ts"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"

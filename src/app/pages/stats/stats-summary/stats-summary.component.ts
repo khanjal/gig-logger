@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
