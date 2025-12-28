@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '../../../../test-harness';
 import { SheetQuickViewComponent } from './sheet-quick-view.component';
+import { TruncatePipe } from '@pipes/truncate.pipe';
 
 describe('SheetQuickViewComponent', () => {
   let component: SheetQuickViewComponent;
@@ -8,7 +9,7 @@ describe('SheetQuickViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...commonTestingImports, SheetQuickViewComponent],
+      imports: [...commonTestingImports, SheetQuickViewComponent, TruncatePipe],
       providers: [...commonTestingProviders]
     })
     .compileComponents();
