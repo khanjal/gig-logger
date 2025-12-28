@@ -1,4 +1,3 @@
-import { from } from 'rxjs';
 import { Injectable } from "@angular/core";
 import { spreadsheetDB } from "@data/spreadsheet.db";
 import { IDaily } from "@interfaces/daily.interface";
@@ -13,6 +12,6 @@ export class DailyService extends GenericCrudService<IDaily> {
       super(spreadsheetDB.daily); // Pass the table reference
     }
 
-    daily$ = from(liveQuery(() => spreadsheetDB.daily.toArray()));
+    daily$ = liveQuery(() => spreadsheetDB.daily.toArray());
 
 }

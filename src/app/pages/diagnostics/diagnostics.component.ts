@@ -82,10 +82,6 @@ export class DiagnosticsComponent implements OnInit {
     const addresses = await this._addressService.list();
     const places = await this._placeService.list();
     const names = await this._nameService.list();
-    const services = await this._serviceService.list();
-    const regions = await this._regionService.list();
-
-
 
     // Duplicate shifts via shared utility (same key)
     const shiftGroups = await this._shiftService.findDuplicates('key', { mode: 'equals', caseInsensitive: false, normalize: true });
@@ -301,6 +297,10 @@ export class DiagnosticsComponent implements OnInit {
     const trips = await this._tripService.list();
     const shifts = await this._shiftService.list();
     
+    // Collect all updates in batches
+    const tripsToUpdate: ITrip[] = [];
+    const shiftsToUpdate: IShift[] = [];
+    
     for (const item of group) {
       if (item === selectedItem) continue;
       
@@ -335,7 +335,7 @@ export class DiagnosticsComponent implements OnInit {
           trip.region = selectedItem.region;
         }
         updateAction(trip, ActionEnum.Update);
-        await this._tripService.update([trip]);
+        tripsToUpdate.push(trip);
       }
       
       for (const shift of affectedShifts) {
@@ -345,13 +345,21 @@ export class DiagnosticsComponent implements OnInit {
           shift.region = selectedItem.region;
         }
         updateAction(shift, ActionEnum.Update);
-        await this._shiftService.update([shift]);
+        shiftsToUpdate.push(shift);
       }
       
       item.trips = 0;
       if (itemType === 'service' || itemType === 'region') {
         item.shifts = 0;
       }
+    }
+
+    // Perform batch updates
+    if (tripsToUpdate.length > 0) {
+      await this._tripService.update(tripsToUpdate);
+    }
+    if (shiftsToUpdate.length > 0) {
+      await this._shiftService.update(shiftsToUpdate);
     }
 
     await DiagnosticHelper.recomputeGroupCounts(itemType, group, this._tripService, this._shiftService);
