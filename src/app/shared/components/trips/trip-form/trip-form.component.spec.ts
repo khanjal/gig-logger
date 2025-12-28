@@ -19,7 +19,7 @@ import { WeekdayService } from '@services/sheets/weekday.service';
 import { WeeklyService } from '@services/sheets/weekly.service';
 import { YearlyService } from '@services/sheets/yearly.service';
 import { MatAutocomplete } from '@angular/material/autocomplete';
-import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 
 describe('TripFormComponent', () => {
   let component: TripFormComponent;

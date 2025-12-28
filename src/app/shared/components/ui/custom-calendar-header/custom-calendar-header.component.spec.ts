@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { CustomCalendarHeaderComponent } from './custom-calendar-header.component';
 import { MatCalendar } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';

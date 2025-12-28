@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AddressDialogComponent } from './address-dialog.component';
-import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 
 describe('AddressDialogComponent', () => {
   let component: AddressDialogComponent;

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchInputComponent } from './search-input.component';
-import { commonTestingImports, commonTestingProviders } from '../../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 
 describe('SearchInputComponent', () => {
   let component: SearchInputComponent;

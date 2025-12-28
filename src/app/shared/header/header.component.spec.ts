@@ -4,7 +4,7 @@ import { HeaderComponent } from './header.component';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { commonTestingImports, commonTestingProviders, createAuthGoogleServiceMock, createShiftServiceMock, createTripServiceMock } from '../../../test-harness';
+import { commonTestingImports, commonTestingProviders, createAuthGoogleServiceMock, createShiftServiceMock, createTripServiceMock } from '@test-harness';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';

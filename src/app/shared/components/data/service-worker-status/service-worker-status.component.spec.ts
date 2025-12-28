@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from '../../../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { ServiceWorkerStatusComponent } from './service-worker-status.component';
 
 describe('ServiceWorkerStatusComponent', () => {
