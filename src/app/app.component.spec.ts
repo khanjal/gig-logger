@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from '../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {

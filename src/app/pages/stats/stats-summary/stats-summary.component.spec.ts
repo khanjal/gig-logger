@@ -5,7 +5,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { IDaily } from '@interfaces/daily.interface';
 import { BehaviorSubject } from 'rxjs';
 import { DailyService } from '@services/sheets/daily.service';
-import { commonTestingImports, commonTestingProviders, createDialogSpy } from '../../../../test-harness';
+import { commonTestingImports, commonTestingProviders, createDialogSpy } from '@test-harness';
 
 describe('StatsSummaryComponent', () => {
   let component: StatsSummaryComponent;

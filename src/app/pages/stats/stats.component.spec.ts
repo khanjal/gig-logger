@@ -4,7 +4,7 @@ import { StatsComponent } from './stats.component';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { DailyService } from '@services/sheets/daily.service';
-import { commonTestingImports, commonTestingProviders, createShiftServiceMock, createTripServiceMock } from '../../../test-harness';
+import { commonTestingImports, commonTestingProviders, createShiftServiceMock, createTripServiceMock } from '@test-harness';
 
 describe('StatsComponent', () => {
   let component: StatsComponent;

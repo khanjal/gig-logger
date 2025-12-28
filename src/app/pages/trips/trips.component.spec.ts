@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from '../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { TripComponent } from './trips.component';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from '../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { ShiftsComponent } from './shifts.component';
 
 describe('ShiftsComponent', () => {

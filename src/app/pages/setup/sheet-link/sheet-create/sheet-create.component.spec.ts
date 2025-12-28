@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { commonTestingImports, commonTestingProviders } from 'src/test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { SheetCreateComponent } from './sheet-create.component';
 
 describe('SheetCreateComponent', () => {
