@@ -195,7 +195,8 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async saveSheetDialog(inputValue: string) {
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+    this.saving = true;
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',
         width: '500px',
         panelClass: 'custom-modalbox',
@@ -203,10 +204,14 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
+      try {
+        if (result) {
           this._snackBar.open("Trip(s) Saved to Spreadsheet");
           await this.reload("todaysTrips");
           this._viewportScroller.scrollToAnchor("todaysTrips");
+        }
+      } finally {
+        this.saving = false;
       }
     });
   }
@@ -226,7 +231,8 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
+      if (result) {
+        this.saving = true;
         await this.saveSheetDialog('save');
       }
     });
