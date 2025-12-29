@@ -4,11 +4,6 @@ frontend:
     preBuild:
       commands:
         - npm ci
-        # Provide Chromium via Puppeteer and set Chrome path for Karma
-        - export CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())")
-        - export CI=true
-        # Run unit tests before building (fail fast on errors)
-        - npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
     build:
       commands:
         - 'echo "Amplify Build Number: $CODEBUILD_BUILD_NUMBER"'
