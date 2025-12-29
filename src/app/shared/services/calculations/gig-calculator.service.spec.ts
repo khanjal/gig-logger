@@ -4,6 +4,7 @@ import { ShiftService } from '../sheets/shift.service';
 import { TripService } from '../sheets/trip.service';
 import { WeekdayService } from '../sheets/weekday.service';
 import { LoggerService } from '../logger.service';
+import { DateHelper } from '@helpers/date.helper';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IWeekday } from '@interfaces/weekday.interface';
@@ -189,15 +190,44 @@ describe('GigCalculatorService', () => {
   });
 
   it('updates weekday current amount in daily calculation', async () => {
-    const shifts = [makeShift({ date: '2024-01-01', grandTotal: 50 })];
-    const weekday: IWeekday = { day: 'Monday', currentAmount: 0 } as IWeekday;
+    // Use a future date to avoid early return in calculateDailyTotal
+    const testDate = '2099-01-01';
+    const shifts = [makeShift({ date: testDate, grandTotal: 50 })];
+    const weekday: IWeekday = {
+      id: 1,
+      rowId: 1,
+      day: 1,
+      days: 0,
+      dailyAverage: 0,
+      dailyPrevAverage: 0,
+      currentAmount: 0, // Different from shift grandTotal, so update should be called
+      previousAmount: 0,
+      trips: 0,
+      distance: 0,
+      time: '',
+      pay: 0,
+      tip: 0,
+      bonus: 0,
+      cash: 0,
+      total: 0,
+      amountPerTrip: 0,
+      amountPerDistance: 0,
+      amountPerTime: 0
+    };
 
+    // Mock date calculations
+    spyOn(DateHelper, 'getDayOfWeek').and.returnValue(1);
+    spyOn(DateHelper, 'getDateFromISO').and.returnValue(new Date(testDate));
+    spyOn(DateHelper, 'getStartOfWeekDate').and.returnValue(testDate);
+    
     shiftService.getShiftsByDate.and.returnValue(Promise.resolve(shifts));
     weekdayService.query.and.returnValue(Promise.resolve([weekday]));
     weekdayService.update.and.returnValue(Promise.resolve());
 
-    await service.calculateDailyTotal(['2024-01-01']);
+    await service.calculateDailyTotal([testDate]);
 
     expect(weekdayService.update).toHaveBeenCalled();
+    const updatedWeekday = (weekdayService.update as jasmine.Spy).calls.mostRecent().args[0][0];
+    expect(updatedWeekday.currentAmount).toBe(50);
   });
 });

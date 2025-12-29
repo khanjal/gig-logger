@@ -10,11 +10,9 @@ describe('PlaceService', () => {
     id: overrides.id ?? 1,
     rowId: overrides.rowId ?? 1,
     saved: overrides.saved ?? true,
-    action: overrides.action ?? '',
-    actionTime: overrides.actionTime ?? 0,
     place: overrides.place ?? 'Target',
     addresses: overrides.addresses ?? [],
-    lastTrip: overrides.lastTrip ?? '2024-01-01',
+    types: overrides.types ?? [],
     trips: overrides.trips ?? 5,
     pay: overrides.pay ?? 50,
     tip: overrides.tip ?? 10,
@@ -30,9 +28,9 @@ describe('PlaceService', () => {
 
     service = TestBed.inject(PlaceService);
 
-    spyOn(spreadsheetDB.places, 'toArray').and.returnValue(Promise.resolve([]));
-    spyOn(spreadsheetDB.places, 'delete').and.returnValue(Promise.resolve());
-    spyOn(spreadsheetDB.places, 'bulkPut').and.returnValue(Promise.resolve(1));
+    spyOn(spreadsheetDB.places, 'toArray').and.resolveTo([]);
+    spyOn(spreadsheetDB.places, 'delete').and.resolveTo();
+    spyOn(spreadsheetDB.places, 'bulkPut').and.resolveTo(1);
   });
 
   it('should be created', () => {

@@ -50,10 +50,19 @@ describe('DiagnosticHelper', () => {
   } as IShift);
 
   const makePlace = (overrides: Partial<IPlace> = {}): IPlace => ({
+    id: overrides.id ?? 1,
+    rowId: overrides.rowId ?? 1,
+    saved: overrides.saved ?? true,
     place: overrides.place ?? 'Store A',
-    lastTrip: overrides.lastTrip ?? '',
     addresses: overrides.addresses ?? [],
-  } as IPlace);
+    types: overrides.types ?? [],
+    trips: overrides.trips ?? 0,
+    pay: overrides.pay ?? 0,
+    tip: overrides.tip ?? 0,
+    bonus: overrides.bonus ?? 0,
+    cash: overrides.cash ?? 0,
+    total: overrides.total ?? 0,
+  });
 
   it('finds orphaned trips without matching shifts and not excluded', () => {
     const trips = [
@@ -103,7 +112,25 @@ describe('DiagnosticHelper', () => {
 
   it('auto-selects address when only one available', () => {
     const trips = [makeTrip({ rowId: 5, place: 'Store A', startAddress: '' })];
-    const places = [makePlace({ place: 'Store A', addresses: [{ address: '123 Main', lastTrip: '' }] })];
+    const places = [makePlace({ 
+      place: 'Store A', 
+      addresses: [{
+        id: 1,
+        rowId: 1,
+        saved: true,
+        address: '123 Main',
+        names: [],
+        notes: [],
+        trips: 0,
+        firstTrip: '',
+        lastTrip: '',
+        pay: 0,
+        tip: 0,
+        bonus: 0,
+        cash: 0,
+        total: 0
+      }]
+    })];
     const selected: Record<number, string> = {};
 
     const result = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, selected);
@@ -114,11 +141,11 @@ describe('DiagnosticHelper', () => {
 
   it('merges duplicate groups without duplication', () => {
     const primary: IDuplicateGroup<any>[] = [
-      { items: [{ id: 1 }, { id: 2 }] },
+      { key: 'group1', items: [{ id: 1 }, { id: 2 }] },
     ];
     const secondary: IDuplicateGroup<any>[] = [
-      { items: [{ id: 2 }, { id: 1 }] },
-      { items: [{ id: 3 }] },
+      { key: 'group2', items: [{ id: 2 }, { id: 1 }] },
+      { key: 'group3', items: [{ id: 3 }] },
     ];
 
     const result = DiagnosticHelper.mergeDuplicateGroups(primary, secondary);
