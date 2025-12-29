@@ -3,6 +3,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { LoggerService } from '@services/logger.service';
 import { CommonModule } from '@angular/common';
 
 type PermissionState = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'checking';
@@ -41,6 +42,8 @@ export class AppPermissionsComponent implements OnInit {
     canRequest: false,
     canRevoke: false
   };
+
+  constructor(private logger: LoggerService) {}
 
   async ngOnInit() {
     await this.checkLocationPermission();
@@ -116,7 +119,7 @@ export class AppPermissionsComponent implements OnInit {
         }
       );
     } catch (error) {
-      console.error('Error requesting location:', error);
+      this.logger.error('Error requesting location:', error);
     }
   }
 
@@ -130,7 +133,7 @@ export class AppPermissionsComponent implements OnInit {
     } catch (error) {
       this.microphonePermission.state = 'denied';
       this.microphonePermission.canRequest = false;
-      console.error('Error requesting microphone:', error);
+      this.logger.error('Error requesting microphone:', error);
     }
   }
 

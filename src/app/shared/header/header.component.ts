@@ -3,6 +3,7 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { LoggerService } from '@services/logger.service';
 import { RouterLink, RouterOutlet, NavigationEnd, Router } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
@@ -59,7 +60,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthGoogleService,
     private router: Router,
     private shiftService: ShiftService,
-    private tripService: TripService
+    private tripService: TripService,
+    private logger: LoggerService
   ) { 
     // Subscribe to header updates
     this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
@@ -91,7 +93,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // Initial fetch of unsaved counts (after authentication check)
       await this.updateUnsavedCounts();
     } catch (error) {
-      console.error('Error during header initialization:', error);
+      this.logger.error('Error during header initialization:', error);
       this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
@@ -120,7 +122,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         )
       ]);
     } catch (error) {
-      console.error('Error loading header data:', error);
+      this.logger.error('Error loading header data:', error);
       this.error.emit(error instanceof Error ? error : new Error('Header data loading failed'));
       // Don't throw - allow app to continue with degraded functionality
     } finally {

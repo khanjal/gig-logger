@@ -329,7 +329,7 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.tripForm.load();
       }
     } catch (error) {
-      console.error('Error loading trip for editing:', error);
+      this.logger.error('Error loading trip for editing:', error);
       this._router.navigate(['/trips']);
     }
     

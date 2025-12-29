@@ -16,6 +16,7 @@ import { CurrencyPipe } from '@angular/common';
 import { ViewportScroller } from '@angular/common';
 
 import { SearchService } from '@services/search.service';
+import { LoggerService } from '@services/logger.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
@@ -82,7 +83,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   constructor(
     private searchService: SearchService,
     private viewportScroller: ViewportScroller,
-    private currencyPipe: CurrencyPipe
+    private currencyPipe: CurrencyPipe,
+    private logger: LoggerService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -293,7 +295,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.searchResults = await this.searchService.searchMultipleCategories(term, enabledCategories, this.exactMatch, this.caseSensitive);
       this.groupedResults = this.searchService.groupByMonth(this.searchResults);
     } catch (error) {
-      console.error('Search error:', error);
+      this.logger.error('Search error:', error);
       this.searchResults = [];
       this.groupedResults = [];
     } finally {

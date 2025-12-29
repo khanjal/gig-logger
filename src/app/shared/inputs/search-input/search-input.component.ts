@@ -34,6 +34,7 @@ import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
+import { LoggerService } from '@services/logger.service';
 
 // Application-specific imports - Pipes
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -126,7 +127,8 @@ export class SearchInputComponent implements OnDestroy {
     private _regionService: RegionService,
     private _serviceService: ServiceService,
     private _typeService: TypeService,
-    private _serverGooglePlacesService: ServerGooglePlacesService
+    private _serverGooglePlacesService: ServerGooglePlacesService,
+    private logger: LoggerService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -138,7 +140,7 @@ export class SearchInputComponent implements OnDestroy {
 
   private validateSearchType(): void {
     if (!isValidSearchType(this.searchType)) {
-      console.warn(`Invalid search type: ${this.searchType}`);
+      this.logger.warn(`Invalid search type: ${this.searchType}`);
     }
   }
   async ngOnChanges(): Promise<void> {
@@ -166,7 +168,7 @@ export class SearchInputComponent implements OnDestroy {
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (!target) {
-      console.warn('Invalid input target in onInputChange');
+      this.logger.warn('Invalid input target in onInputChange');
       return;
     }
     
@@ -219,7 +221,7 @@ export class SearchInputComponent implements OnDestroy {
           finalAddress = fullAddress;
         }
       } catch (error) {
-        console.warn('Error getting full address with zip:', error);
+        this.logger.warn('Error getting full address with zip:', error);
         // Continue with original value
       }
     }
@@ -340,7 +342,7 @@ export class SearchInputComponent implements OnDestroy {
         this.autocompleteTrigger.openPanel();
       }
     } catch (error) {
-      console.warn('Error triggering Google search:', error);
+      this.logger.warn('Error triggering Google search:', error);
       this.showGoogleMapsIcon = true;
       this.showNoGoogleResults = true;
     } finally {
@@ -566,7 +568,7 @@ export class SearchInputComponent implements OnDestroy {
     if (this.isRateLimitError(error) && this.isGoogleSearchType()) {
       this.showGoogleMapsIcon = true;
     }
-    console.warn('Error getting Google predictions:', error);
+    this.logger.warn('Error getting Google predictions:', error);
   }
 
   private isRateLimitError(error: any): boolean {

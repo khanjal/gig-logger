@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
+import { LoggerService } from '@services/logger.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgIf, CommonModule } from '@angular/common';
@@ -29,7 +30,10 @@ export class GoogleAddressComponent implements OnInit, OnDestroy {
     address: new FormControl('')
   });
 
-  constructor(private serverGooglePlacesService: ServerGooglePlacesService) { }
+  constructor(
+    private serverGooglePlacesService: ServerGooglePlacesService,
+    private logger: LoggerService
+  ) { }
 
   async ngOnInit(): Promise<void> {
     this.addressForm.controls.address.setValue(this.address);
@@ -66,7 +70,7 @@ export class GoogleAddressComponent implements OnInit, OnDestroy {
       this.suggestions = results;
       this.showSuggestions = true;
     } catch (error) {
-      console.error('Error fetching autocomplete suggestions:', error);
+      this.logger.error('Error fetching autocomplete suggestions:', error);
       this.suggestions = [];
     } finally {
       this.isLoading = false;
