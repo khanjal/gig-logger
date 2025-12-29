@@ -8,11 +8,12 @@ import { commonTestingImports, commonTestingProviders, createAuthGoogleServiceMo
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
+import { of } from 'rxjs';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  const mockCommonService = jasmine.createSpyObj("CommonService", ["updateHeaderLink"], { onHeaderLinkUpdate: { subscribe: () => ({ unsubscribe: () => {} }) } });
+  const mockCommonService = jasmine.createSpyObj("CommonService", ["updateHeaderLink"], { onHeaderLinkUpdate: of(null) });
   const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["querySpreadsheets"]);
 
   beforeEach(async () => {
