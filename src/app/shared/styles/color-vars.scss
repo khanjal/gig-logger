@@ -1,6 +1,8 @@
 // =============================================================================
 // CORE COLOR PALETTE - Mobile-First Design System
 // =============================================================================
+// This file uses @forward to make all variables available when using @use
+// Modern Sass module system - compatible with both @use and legacy @import
 
 // Base Color Scales
 $blue: (

@@ -1,5 +1,5 @@
-@import "color-vars";
-@import "../../../styles/modal-mixins";
+@use 'color-vars' as *;
+@use '../../../styles/modal-mixins' as modals;
 
 // Mobile-first confirm dialog styling
 .confirm-dialog {
@@ -193,4 +193,4 @@
 }
 
 // Use global modal backdrop styling
-@include setup-modal-backdrop('medium');
+@include modals.setup-modal-backdrop('medium');

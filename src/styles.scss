@@ -1,11 +1,11 @@
 /* Global Variables and Mixins */
-@import "color-vars";
-@import "app/shared/styles/modal-mixins";
-@import "app/shared/styles/buttons";
-@import "app/shared/styles/forms";
-@import "app/shared/styles/components";
-@import "app/shared/styles/tables";
-@import "app/pages/setup/sheet-link/custom-modalbox";
+@use 'color-vars' as *;
+@use 'app/shared/styles/modal-mixins' as modals;
+@use 'app/shared/styles/buttons';
+@use 'app/shared/styles/forms';
+@use 'app/shared/styles/components';
+@use 'app/shared/styles/tables';
+@use 'app/pages/setup/sheet-link/custom-modalbox';
 
 /* Tailwind CSS imports */
 @tailwind base;
@@ -395,23 +395,23 @@ a {
 
 /* GLOBAL MODAL BACKDROP BLUR STYLES */
 .modal-backdrop-light {
-  @include setup-modal-backdrop('light');
+  @include modals.setup-modal-backdrop('light');
 }
 
 .modal-backdrop-medium {
-  @include setup-modal-backdrop('medium');
+  @include modals.setup-modal-backdrop('medium');
 }
 
 .modal-backdrop-strong {
-  @include setup-modal-backdrop('strong');
+  @include modals.setup-modal-backdrop('strong');
 }
 
 .modal-backdrop-heavy {
-  @include setup-modal-backdrop('heavy');
+  @include modals.setup-modal-backdrop('heavy');
 }
 
 .modal-backdrop {
-  @include setup-modal-backdrop('medium');
+  @include modals.setup-modal-backdrop('medium');
 }
 
 /* Floating Back to Top Button */

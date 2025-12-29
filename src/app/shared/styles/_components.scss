@@ -1,6 +1,6 @@
 // Shared Component Styles - Mobile-First Design
 // Used by trip-quick-view and shift-quick-view components
-@import "color-vars";
+@use 'color-vars' as *;
 
 /* ========================================
    UTILITY CLASSES - Reusable Components

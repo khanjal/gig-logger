@@ -1,4 +1,5 @@
-@import "color-vars";
+@use 'sass:color';
+@use 'color-vars' as *;
 
 :host {
   display: block;
@@ -111,7 +112,7 @@
 }
 
 .menu-header {
-  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
   color: white;
   padding: 1rem;
   border-radius: 4px 4px 0 0;
@@ -215,7 +216,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, $info-color 0%, lighten($info-color, 10%) 100%);
+  background: linear-gradient(90deg, $info-color 0%, color.adjust($info-color, $lightness: 10%) 100%);
   transition: width 0.3s ease;
   border-radius: 3px;
 }

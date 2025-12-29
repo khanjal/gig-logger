@@ -1,4 +1,4 @@
 // Mobile-First Custom Calendar Header Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // No custom SCSS needed; all layout and styling is handled by Tailwind in the template.

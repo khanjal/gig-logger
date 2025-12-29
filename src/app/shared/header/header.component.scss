@@ -1,3 +1,5 @@
+@use 'color-vars' as *;
+
 // Desktop only utility class
 
 .desktop-only {
@@ -24,7 +26,6 @@
   pointer-events: none;
 }
 // Mobile-First Header Component Styles
-@import "color-vars";
 
 /* App Header Container */
 .app-header {

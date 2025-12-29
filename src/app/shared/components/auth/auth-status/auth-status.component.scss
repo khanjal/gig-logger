@@ -1,5 +1,5 @@
 // Mobile-First Auth Status Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Auth Status Card Container - Mobile First
 .auth-status-card {
