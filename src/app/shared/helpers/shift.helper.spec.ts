@@ -270,4 +270,14 @@ describe('ShiftHelper', () => {
       expect(result.length).toBe(3);
     });
   });
+
+  describe('getTodaysShifts', () => {
+    it('returns empty when no shifts are tracked internally', () => {
+      spyOn(DateHelper, 'toISO').and.callThrough();
+
+      const result = ShiftHelper.getTodaysShifts();
+
+      expect(result.length).toBe(0);
+    });
+  });
 });

@@ -50,6 +50,14 @@ describe('DateHelper', () => {
     });
   });
 
+  describe('getDateISO and getDateKey', () => {
+    it('mirror toISO output and keep keys stable', () => {
+      const date = new Date(2024, 4, 10);
+      expect(DateHelper.getDateISO(date)).toBe('2024-05-10');
+      expect(DateHelper.getDateKey(date)).toBe('2024-05-10');
+    });
+  });
+
   describe('formatLocaleDateString', () => {
     it('should format ISO date string to locale format', () => {
       const result = DateHelper.formatLocaleDateString('2024-03-15', 'en-US');
