@@ -71,19 +71,57 @@ describe('TripFormComponent', () => {
     deliveryService = TestBed.inject(DeliveryService) as jasmine.SpyObj<DeliveryService>;
     timerService = TestBed.inject(TimerService) as jasmine.SpyObj<TimerService>;
     dialogRef = TestBed.inject(MatDialogRef) as jasmine.SpyObj<MatDialogRef<TripFormComponent>>;
+    deliveryService.queryRemoteDeliveries.and.returnValue(Promise.resolve([]));
+    addressService.find.and.returnValue(Promise.resolve(undefined));
+    nameService.find.and.returnValue(Promise.resolve(undefined));
 
     const fixture = TestBed.createComponent(TripFormComponent);
     component = fixture.componentInstance;
+
+    spyOn(component as any, 'setDefaultShift').and.returnValue(Promise.resolve());
+    spyOn(component, 'selectPlace').and.returnValue(Promise.resolve());
+    spyOn(component, 'showNameAddresses').and.returnValue(Promise.resolve());
+    spyOn(component, 'showAddressNames').and.returnValue(Promise.resolve());
 
     // Common spies defaults
     timerService.delay.and.returnValue(Promise.resolve());
     shiftService.getMaxRowId.and.returnValue(Promise.resolve(100));
     tripService.getMaxRowId.and.returnValue(Promise.resolve(200));
     tripService.query.and.returnValue(Promise.resolve([]));
-    placeService.list.and.returnValue(Promise.resolve([]));
-    tripService.list.and.returnValue(Promise.resolve([]));
+    placeService.list.and.callFake(async () => []);
+    tripService.list.and.callFake(async () => []);
+    shiftService.list.and.callFake(async () => []);
     shiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([]));
-    shiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined));
+    shiftService.queryShiftByKey.and.returnValue(Promise.resolve({
+      key: 'k1',
+      region: '',
+      service: '',
+      date: '',
+      distance: 0,
+      active: '',
+      finish: '',
+      number: 0,
+      start: '',
+      time: '',
+      trips: 0,
+      totalActive: '',
+      totalTime: '',
+      totalTrips: 0,
+      totalDistance: 0,
+      totalPay: 0,
+      totalTips: 0,
+      totalBonus: 0,
+      grandTotal: 0,
+      totalCash: 0,
+      note: '',
+      omit: false,
+      amountPerDistance: 0,
+      amountPerTime: 0,
+      action: '',
+      actionTime: 0,
+      rowId: 0,
+      saved: true
+    } as any));
     shiftService.getMaxRowId.and.returnValue(Promise.resolve(1));
 
     await component.ngOnInit();
@@ -189,7 +227,8 @@ describe('TripFormComponent', () => {
   });
 
   it('onVoiceResult should update fields and call selectPlace when place provided', async () => {
-    const spySelect = spyOn(component, 'selectPlace').and.returnValue(Promise.resolve());
+    const spySelect = component.selectPlace as jasmine.Spy;
+    spySelect.and.returnValue(Promise.resolve());
     await component.onVoiceResult({
       service: 'DoorDash',
       pay: 10,
