@@ -1,11 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  SyncStatusService,
-  SyncStatus,
-  SyncOperation,
-  SyncState,
-  SyncMessage
-} from './sync-status.service';
+import { SyncStatusService, SyncStatus } from './sync-status.service';
 
 describe('SyncStatusService', () => {
   let service: SyncStatusService;

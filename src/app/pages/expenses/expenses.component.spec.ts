@@ -8,7 +8,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { IExpense } from '@interfaces/expense.interface';
 import { ActionEnum } from '@enums/action.enum';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 

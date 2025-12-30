@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { CustomRangePanelComponent } from './custom-range-panel.component';
-import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 
 describe('CustomRangePanelComponent', () => {

@@ -1,4 +1,4 @@
-import { ApiMessageHelper, ApiMessage, MessageProcessingResult } from './api-message.helper';
+import { ApiMessageHelper, ApiMessage } from './api-message.helper';
 
 describe('ApiMessageHelper', () => {
   const makeMessage = (overrides: Partial<ApiMessage> = {}): ApiMessage => ({

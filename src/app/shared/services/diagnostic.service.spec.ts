@@ -160,7 +160,6 @@ describe('DiagnosticService', () => {
 
     it('should handle service worker registration check failure', (done) => {
       if ('serviceWorker' in navigator) {
-        const originalGetRegistrations = navigator.serviceWorker.getRegistrations;
         spyOn(navigator.serviceWorker, 'getRegistrations').and.returnValue(
           Promise.reject(new Error('Registration check failed'))
         );

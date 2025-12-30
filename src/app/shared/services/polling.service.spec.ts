@@ -261,7 +261,6 @@ describe('PollingService', () => {
     });
 
     it('should update lastPollTime', async () => {
-      const time1 = Date.now();
       await service.startPolling();
       const pollTime1 = service['lastPollTime'];
 

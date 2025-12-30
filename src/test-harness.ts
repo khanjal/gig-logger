@@ -7,7 +7,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { SwUpdate } from '@angular/service-worker';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ActivatedRoute } from '@angular/router';
-import { of, BehaviorSubject, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 const createDialogRefStub = () => ({ close: () => {} });
 

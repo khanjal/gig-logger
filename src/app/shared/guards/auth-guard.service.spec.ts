@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { AuthGuardService, canActivateAuth } from './auth-guard.service';
+import { AuthGuardService } from './auth-guard.service';
 import { AuthGoogleService } from '../services/auth-google.service';
 
 describe('AuthGuardService', () => {

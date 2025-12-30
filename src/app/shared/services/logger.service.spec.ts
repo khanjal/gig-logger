@@ -213,7 +213,7 @@ describe('LoggerService', () => {
       service.onLog.subscribe(() => {
         subscriber2Called = true;
         
-        if (subscriber1Called && subscriber2Called) {
+        if (subscriber1Called) {
           done();
         }
       });

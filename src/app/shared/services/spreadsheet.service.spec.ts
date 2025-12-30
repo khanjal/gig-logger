@@ -4,7 +4,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import { localDB } from '@data/local.db';
-import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ISheet } from '@interfaces/sheet.interface';
 
