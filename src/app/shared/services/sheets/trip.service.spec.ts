@@ -3,6 +3,7 @@ import { TripService } from './trip.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
+import { DateHelper } from '@helpers/date.helper';
 
 describe('TripService', () => {
   let service: TripService;
@@ -127,10 +128,8 @@ describe('TripService', () => {
   });
 
   describe('getPreviousDays', () => {
-    it('returns trips from specified days ago to present', async () => {
-      spyOn(service as any, 'DateHelper', { toISO: () => '2024-01-20' });
-      const mockDate = '2024-01-15';
-      spyOn(DateHelper, 'toISO').and.returnValue(mockDate);
+    it('returns trips on or after computed start date', async () => {
+      spyOn(DateHelper, 'toISO').and.callFake((d?: Date) => d ? d.toLocaleDateString('sv-SE') : '2024-01-15');
       spyOn(DateHelper, 'getDateFromDays').and.returnValue(new Date('2024-01-15'));
 
       await spreadsheetDB.trips.bulkAdd([
@@ -141,7 +140,7 @@ describe('TripService', () => {
 
       const result = await service.getPreviousDays(5);
 
-      expect(result.length).toBeGreaterThanOrEqual(0);
+      expect(result.map(t => t.date)).toEqual(['2024-01-16', '2024-01-20']);
     });
   });
 });

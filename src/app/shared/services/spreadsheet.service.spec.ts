@@ -49,7 +49,7 @@ describe('SpreadsheetService', () => {
 
   describe('add', () => {
     it('adds spreadsheet to local database', async () => {
-      const spreadsheet: ISpreadsheet = { id: 'sheet-1', name: 'Test', default: false } as ISpreadsheet;
+      const spreadsheet: ISpreadsheet = { id: 'sheet-1', name: 'Test', default: 'false', size: 0 } as ISpreadsheet;
 
       await service.add(spreadsheet);
 
@@ -77,8 +77,8 @@ describe('SpreadsheetService', () => {
   describe('getDefaultSheet', () => {
     it('returns the spreadsheet marked as default', async () => {
       await localDB.spreadsheets.bulkAdd([
-        { id: 'sheet-1', name: 'Sheet 1', default: false } as ISpreadsheet,
-        { id: 'sheet-2', name: 'Default', default: 'true' } as unknown as ISpreadsheet
+        { id: 'sheet-1', name: 'Sheet 1', default: 'false', size: 0 } as ISpreadsheet,
+        { id: 'sheet-2', name: 'Default', default: 'true', size: 0 } as ISpreadsheet
       ]);
 
       const result = await service.getDefaultSheet();
@@ -90,14 +90,14 @@ describe('SpreadsheetService', () => {
   describe('querySpreadsheets', () => {
     it('queries spreadsheets by field and value', async () => {
       await localDB.spreadsheets.bulkAdd([
-        { id: 'sheet-1', name: 'Sheet 1', owner: 'user1' } as ISpreadsheet,
-        { id: 'sheet-2', name: 'Sheet 2', owner: 'user1' } as ISpreadsheet,
-        { id: 'sheet-3', name: 'Sheet 3', owner: 'user2' } as ISpreadsheet
+        { id: 'sheet-1', name: 'Sheet 1', default: 'true', size: 0 } as ISpreadsheet,
+        { id: 'sheet-2', name: 'Sheet 2', default: 'false', size: 0 } as ISpreadsheet,
+        { id: 'sheet-3', name: 'Sheet 3', default: 'false', size: 0 } as ISpreadsheet
       ]);
 
-      const result = await service.querySpreadsheets('owner', 'user1');
+      const result = await service.querySpreadsheets('default', 'true');
 
-      expect(result.length).toBe(2);
+      expect(result.length).toBe(1);
     });
   });
 
@@ -151,10 +151,10 @@ describe('SpreadsheetService', () => {
   describe('getSpreadsheetData', () => {
     it('fetches sheet data and updates sheet info', async () => {
       const spreadsheet = { id: 'sheet-123', name: 'Test' } as ISpreadsheet;
-      const sheetData = { 
-        trips: [], 
-        properties: { name: 'Updated Name' } 
-      } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-123', name: 'Updated Name' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       
       await localDB.spreadsheets.add(spreadsheet);
       mockGigWorkflow.getSheetData.and.returnValue(Promise.resolve(sheetData));
@@ -180,7 +180,10 @@ describe('SpreadsheetService', () => {
 
   describe('loadSpreadsheetData', () => {
     it('shows snackbar notifications and loads data', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'id', name: 'n' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       mockGigWorkflow.loadData.and.returnValue(Promise.resolve());
 
       await service.loadSpreadsheetData(sheetData);
@@ -193,7 +196,10 @@ describe('SpreadsheetService', () => {
 
   describe('appendSpreadsheetData', () => {
     it('shows snackbar notifications and appends data', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'id', name: 'n' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       mockGigWorkflow.appendData.and.returnValue(Promise.resolve());
 
       await service.appendSpreadsheetData(sheetData);

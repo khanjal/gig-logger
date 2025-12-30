@@ -128,7 +128,8 @@ describe('DataLoaderService', () => {
 
   describe('loadData', () => {
     it('loads all sheet data in parallel then sequentially loads shifts and trips', async () => {
-      const sheetData = {
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
         addresses: [],
         daily: [],
         expenses: [],
@@ -137,13 +138,15 @@ describe('DataLoaderService', () => {
         places: [],
         regions: [],
         services: [],
+        setup: [],
         shifts: [],
         trips: [],
         types: [],
         weekdays: [],
         weekly: [],
-        yearly: []
-      } as ISheet;
+        yearly: [],
+        messages: []
+      };
 
       await service.loadData(sheetData);
 
@@ -155,7 +158,25 @@ describe('DataLoaderService', () => {
     });
 
     it('links all data after loading', async () => {
-      const sheetData = {} as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
+        addresses: [],
+        daily: [],
+        expenses: [],
+        monthly: [],
+        names: [],
+        places: [],
+        regions: [],
+        services: [],
+        setup: [],
+        shifts: [],
+        trips: [],
+        types: [],
+        weekdays: [],
+        weekly: [],
+        yearly: [],
+        messages: []
+      };
 
       await service.loadData(sheetData);
 
@@ -164,7 +185,25 @@ describe('DataLoaderService', () => {
     });
 
     it('clears deliveries before linking', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
+        addresses: [],
+        daily: [],
+        expenses: [],
+        monthly: [],
+        names: [],
+        places: [],
+        regions: [],
+        services: [],
+        setup: [],
+        shifts: [],
+        trips: [],
+        types: [],
+        weekdays: [],
+        weekly: [],
+        yearly: [],
+        messages: []
+      };
 
       await service.loadData(sheetData);
 
@@ -183,7 +222,10 @@ describe('DataLoaderService', () => {
     });
 
     it('logs and rethrows errors', async () => {
-      const sheetData = {} as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       const error = new Error('Load failed');
       mockAddressService.load.and.returnValue(Promise.reject(error));
 
@@ -195,11 +237,10 @@ describe('DataLoaderService', () => {
 
   describe('appendData', () => {
     it('appends addresses and names then links deliveries', async () => {
-      const sheetData = {
-        addresses: [],
-        names: [],
-        trips: []
-      } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
 
       await service.appendData(sheetData);
 
@@ -209,7 +250,10 @@ describe('DataLoaderService', () => {
     });
 
     it('logs append operations', async () => {
-      const sheetData = {} as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
 
       await service.appendData(sheetData);
 
@@ -218,7 +262,10 @@ describe('DataLoaderService', () => {
     });
 
     it('logs and rethrows errors on failure', async () => {
-      const sheetData = {} as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'sheet-id', name: 'Sheet' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       const error = new Error('Append failed');
       mockAddressService.append.and.returnValue(Promise.reject(error));
 

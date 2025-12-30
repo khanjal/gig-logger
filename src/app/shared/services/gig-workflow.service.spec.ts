@@ -111,7 +111,10 @@ describe('GigWorkflowService', () => {
 
   describe('Sheet Methods', () => {
     it('delegates getSheetData to ApiService', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'id', name: 'name' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       mockApiService.getSheetData.and.returnValue(Promise.resolve(sheetData));
 
       const result = await service.getSheetData('sheet-id-123');
@@ -129,7 +132,10 @@ describe('GigWorkflowService', () => {
     });
 
     it('delegates saveSheetData to ApiService', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'id', name: 'name' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       mockApiService.saveSheetData.and.returnValue(Promise.resolve({ success: true }));
 
       await service.saveSheetData(sheetData);
@@ -156,7 +162,10 @@ describe('GigWorkflowService', () => {
 
   describe('Data Methods', () => {
     it('delegates loadData to DataLoaderService', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'id', name: 'name' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       mockDataLoader.loadData.and.returnValue(Promise.resolve());
 
       await service.loadData(sheetData);
@@ -165,7 +174,10 @@ describe('GigWorkflowService', () => {
     });
 
     it('delegates appendData to DataLoaderService', async () => {
-      const sheetData = { trips: [] } as ISheet;
+      const sheetData: ISheet = {
+        properties: { id: 'id', name: 'name' },
+        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
+      };
       mockDataLoader.appendData.and.returnValue(Promise.resolve());
 
       await service.appendData(sheetData);
@@ -202,7 +214,13 @@ describe('GigWorkflowService', () => {
     });
 
     it('delegates updateTripDuration to GigCalculatorService', async () => {
-      const trip = { id: 1 };
+      const trip = {
+        id: 1,
+        date: '2024-01-01', distance: 0,
+        endAddress: '', endUnit: '', endOdometer: 0,
+        exclude: false, dropoffTime: '', duration: '', key: 'k', name: '', note: '', number: 1, orderNumber: '', pickupTime: '', place: '', region: '', service: '', startAddress: '', startOdometer: 0, type: '', amountPerDistance: 0, amountPerTime: 0,
+        action: '', actionTime: 0, pay: 0, tip: 0, bonus: 0, cash: 0, total: 0, saved: true
+      } as any;
       mockCalculator.updateTripDuration.and.returnValue(Promise.resolve());
 
       await service.updateTripDuration(trip);

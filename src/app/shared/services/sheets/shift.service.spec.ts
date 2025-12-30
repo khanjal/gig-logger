@@ -7,8 +7,9 @@ import { DateHelper } from '@helpers/date.helper';
 describe('ShiftService', () => {
   let service: ShiftService;
 
+  let idCounter = 1;
   const makeShift = (overrides: Partial<IShift> = {}): IShift => ({
-    id: overrides.id ?? 1,
+    id: overrides.id ?? idCounter++,
     rowId: overrides.rowId ?? 1,
     key: overrides.key ?? 'shift-1',
     date: overrides.date ?? '2024-01-01',
@@ -144,7 +145,7 @@ describe('ShiftService', () => {
     it('returns shift matching the key', async () => {
       await spreadsheetDB.shifts.bulkAdd([
         makeShift({ key: 'shift-a' }),
-        makeShift({ key: 'shift-b' })
+        makeShift({ key: 'shift-b', number: 2 })
       ]);
 
       const result = await service.queryShiftByKey('shift-b');
