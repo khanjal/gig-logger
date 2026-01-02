@@ -233,13 +233,13 @@ describe('DateHelper', () => {
 
   describe('getDayOfWeek', () => {
     it('should return 1 for Monday', () => {
-      const monday = new Date('2024-12-24'); // Known Monday (Christmas Eve 2024)
+      const monday = DateHelper.parseLocalDate('2024-12-23'); // Known Monday
       const result = DateHelper.getDayOfWeek(monday);
       expect(result).toBe(1);
     });
 
     it('should return 7 for Sunday (converted from 0)', () => {
-      const sunday = new Date('2024-12-23'); // Known Sunday  
+      const sunday = DateHelper.parseLocalDate('2024-12-22'); // Known Sunday  
       const result = DateHelper.getDayOfWeek(sunday);
       expect(result).toBe(7);
     });

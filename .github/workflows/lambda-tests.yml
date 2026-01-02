@@ -11,6 +11,10 @@ on:
     paths:
       - 'amplify/backend/function/GigRaptorService/**'
 
+concurrency:
+  group: lambda-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest

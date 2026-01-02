@@ -121,6 +121,7 @@ export class DateHelper {
     }
 
     static getDayOfWeek(date: Date = new Date()) {
+        // Use local getDay() with properly parsed dates to avoid timezone issues
         let dayOfWeek = new Date(date).getDay();
         return dayOfWeek === 0 ? 7 : dayOfWeek;
     }
