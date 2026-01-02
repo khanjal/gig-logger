@@ -351,46 +351,7 @@ export class SearchInputComponent implements OnDestroy {
   }
   // #endregion
 
-  // #region Private Helpers
-  private updateValidators(): void {
-    const control = this.searchForm.controls.searchInput;
-    if (this.isRequired) {
-      control.setValidators([Validators.required]);
-    } else {
-      control.clearValidators();
-    }
-  }
-
-  private setGoogleSearchType(): void {
-    if (this.searchType === 'Address') {
-      this.googleSearch = 'address';
-    } else if (this.searchType === 'Place') {
-      this.googleSearch = 'place';
-    }
-  }
-
-  private setupFilteredItems(): void {
-    if (this.searchSubscription) {
-      this.searchSubscription.unsubscribe();
-    }
-    this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
-      debounceTime(this.DEBOUNCE_TIME),
-      distinctUntilChanged(),
-      switchMap(async value => {
-        const trimmedValue = value?.trim() || '';
-        if (trimmedValue && this.showGoogleMapsIcon) {
-          this.showGoogleMapsIcon = false;
-        }
-        // No need to clear address listeners - server-side only now
-        return await this._filterItems(trimmedValue);
-      })
-    );
-    this.searchSubscription = this.filteredItems.subscribe(items => {
-      this.filteredItemsArray = items;
-    });
-    this.filteredItemsArray = [];
-  }
-
+  // #region Search Filtering
   private async getAllItemsForType(): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Address':
@@ -491,6 +452,48 @@ export class SearchInputComponent implements OnDestroy {
                           value.length >= this.MIN_GOOGLE_SEARCH_LENGTH;
     this.showGoogleMapsIcon = shouldShowIcon;
   }
+  // #endregion
+
+  // #region Setup & Configuration
+  private updateValidators(): void {
+    const control = this.searchForm.controls.searchInput;
+    if (this.isRequired) {
+      control.setValidators([Validators.required]);
+    } else {
+      control.clearValidators();
+    }
+  }
+
+  private setGoogleSearchType(): void {
+    if (this.searchType === 'Address') {
+      this.googleSearch = 'address';
+    } else if (this.searchType === 'Place') {
+      this.googleSearch = 'place';
+    }
+  }
+
+  private setupFilteredItems(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+    this.filteredItems = this.searchForm.controls.searchInput.valueChanges.pipe(
+      debounceTime(this.DEBOUNCE_TIME),
+      distinctUntilChanged(),
+      switchMap(async value => {
+        const trimmedValue = value?.trim() || '';
+        if (trimmedValue && this.showGoogleMapsIcon) {
+          this.showGoogleMapsIcon = false;
+        }
+        // No need to clear address listeners - server-side only now
+        return await this._filterItems(trimmedValue);
+      })
+    );
+    this.searchSubscription = this.filteredItems.subscribe(items => {
+      this.filteredItemsArray = items;
+    });
+    this.filteredItemsArray = [];
+  }
+  // #endregion
 
   // #region Private Filter Methods
   private async _filterAddress(value: string): Promise<IAddress[]> {
@@ -513,6 +516,7 @@ export class SearchInputComponent implements OnDestroy {
   }
   // #endregion
 
+  // #region Private Google Helpers
   private async getGooglePredictions(value: string): Promise<ISearchItem[]> {
     if (!this.googleSearch) {
       return [];
@@ -576,21 +580,7 @@ export class SearchInputComponent implements OnDestroy {
   }
   // #endregion
 
-  // #region Utility
-  isGoogleResult(item: ISearchItem): boolean {
-    return isGoogleResult(item);
-  }
-  // #endregion
-
-  private isGoogleAllowed(): boolean {
-    const hostname = window.location.hostname;
-    return hostname.includes('gig-test') || hostname === 'localhost';
-  }
-
-  public isGoogleSearchType(): boolean {
-    return this.searchType === 'Address' || this.searchType === 'Place';
-  }
-
+  // #region Data Transformation
   private setInputValue(val: string): void {
     this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     this.onChange(val);
@@ -656,4 +646,15 @@ export class SearchInputComponent implements OnDestroy {
     }
     return items;
   }
+  // #endregion
+
+  // #region Utility Methods
+  public isGoogleResult(item: ISearchItem): boolean {
+    return isGoogleResult(item);
+  }
+
+  public isGoogleSearchType(): boolean {
+    return this.searchType === 'Address' || this.searchType === 'Place';
+  }
+  // #endregion
 }
