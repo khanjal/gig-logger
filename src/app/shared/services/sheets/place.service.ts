@@ -1,4 +1,5 @@
 import { liveQuery } from 'dexie';
+import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IPlace } from '@interfaces/place.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
@@ -12,7 +13,7 @@ export class PlaceService extends GenericCrudService<IPlace> {
       super(spreadsheetDB.places); // Pass the table reference
     }
     
-    places$ = liveQuery(() => spreadsheetDB.places.toArray());
+    places$ = from(liveQuery(() => spreadsheetDB.places.toArray()));
 
     public async deleteUnsaved() {
         let places = await this.getUnsaved();

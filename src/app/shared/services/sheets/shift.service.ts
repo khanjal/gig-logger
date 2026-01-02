@@ -1,4 +1,5 @@
 import { liveQuery } from 'dexie';
+import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IShift } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
@@ -13,7 +14,7 @@ export class ShiftService extends SyncableCrudService<IShift> {
       super(spreadsheetDB.shifts); // Pass the table reference
     }
 
-    shifts$ = liveQuery(() => spreadsheetDB.shifts.toArray());
+    shifts$ = from(liveQuery(() => spreadsheetDB.shifts.toArray()));
 
     public async getUnsavedShifts(): Promise<IShift[]> {
         return await this.getUnsaved();
