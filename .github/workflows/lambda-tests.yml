@@ -31,6 +31,11 @@ jobs:
     - name: Run tests
       run: dotnet test amplify/backend/function/GigRaptorService/GigRaptorService.sln --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
+    - name: List coverage files
+      run: |
+        echo "Contents of coverage directory:"
+        ls -R coverage/ || echo "No coverage directory found"
+
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
       with:
