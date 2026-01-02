@@ -86,8 +86,7 @@ npm test -- --watch=false --browsers=ChromeHeadless  # Single run with headless 
 npm test -- --watch=false --code-coverage --browsers=ChromeHeadless  # With coverage report
 ```
 
-**Coverage Goal**: Incrementally increase from current 28.9% to 50%+ over time
-**Current Status**: 669 passing tests (December 2024)
+**Coverage Goal**: Achieve 70%+ test coverage across the codebase
 
 ### Test Development Patterns
 - **Always run frontend tests from gig-logger directory**: `cd c:\Users\khanj\Projects\gig-logger; npm test`
