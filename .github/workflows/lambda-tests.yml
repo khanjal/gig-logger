@@ -2,18 +2,9 @@ name: Lambda Tests
 
 on:
   push:
-    branches: [ main, test ]
     paths:
       - 'amplify/backend/function/GigRaptorService/**'
       - '.github/workflows/lambda-tests.yml'
-  pull_request:
-    branches: [ main, test ]
-    paths:
-      - 'amplify/backend/function/GigRaptorService/**'
-
-concurrency:
-  group: lambda-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   test:

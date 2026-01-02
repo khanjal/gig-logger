@@ -2,13 +2,6 @@ name: Frontend Tests
 
 on:
   push:
-    branches: [ main, test ]
-  pull_request:
-    branches: [ main, test ]
-
-concurrency:
-  group: frontend-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   test:
