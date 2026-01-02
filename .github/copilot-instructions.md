@@ -196,6 +196,15 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 - Custom SCSS variables for brand colors and themes
 - Mobile-first breakpoints: `sm:`, `md:`, `lg:`, `xl:`
 
+### GitHub Issue Management
+When a GitHub issue link (e.g., `https://github.com/khanjal/gig-logger/issues/344`) is provided:
+- Use GitHub CLI (`gh`) to interact with the issue programmatically
+- Common workflows:
+  - Close issue after fix: `gh issue close <issue-number> --comment "Fixes: implementation details"`
+  - Add comment: `gh issue comment <issue-number> --body "Comment text"`
+  - Check issue status: `gh issue view <issue-number>`
+- This automates issue tracking without manual GitHub website updates
+
 ## Critical Dependencies
 - **@angular/material**: UI component library
 - **dexie**: IndexedDB wrapper for local storage
