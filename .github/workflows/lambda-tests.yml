@@ -39,6 +39,7 @@ jobs:
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./coverage
         flags: lambda
         name: lambda-coverage
