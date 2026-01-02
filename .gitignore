@@ -39,6 +39,11 @@ yarn-error.log
 testem.log
 /typings
 
+# Test coverage and results
+TestResults/
+*.cobertura.xml
+coverage.cobertura.xml
+
 # System Files
 .DS_Store
 Thumbs.db
