@@ -12,6 +12,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatDateRangeInput, MatStartDate, MatEndDate, MatDatepickerToggle, MatDateRangePicker } from '@angular/material/datepicker';
 import { StatsTableComponent } from './stats-table/stats-table.component';
+import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
 
 @Component({
     selector: 'app-stats',
@@ -19,7 +20,7 @@ import { StatsTableComponent } from './stats-table/stats-table.component';
     styleUrls: ['./stats.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [CommonModule, MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent]
+    imports: [CommonModule, MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
@@ -27,6 +28,10 @@ export class StatsComponent implements OnInit {
   services: IStatItem[] = [];
   types: IStatItem[] = [];
   regions: IStatItem[] = [];
+  trips: ITrip[] = [];
+  shifts: IShift[] = [];
+  startDate: string = "2000-01-01";
+  endDate: string = DateHelper.toISO();
 
   range = new FormGroup({
     start: new FormControl(),
@@ -44,8 +49,8 @@ export class StatsComponent implements OnInit {
   }
 
   async dateChanged() {
-    var startDate = "2000-01-01";
-    var endDate = DateHelper.toISO();
+    this.startDate = "2000-01-01";
+    this.endDate = DateHelper.toISO();
 
     if (!(this.range.valid && 
         ((!this.range.value.start && !this.range.value.end) ||
@@ -54,24 +59,24 @@ export class StatsComponent implements OnInit {
     }    
     
     if (this.range.value.start && this.range.value.end) {
-      startDate = DateHelper.toISO(this.range.value.start);
-      endDate = DateHelper.toISO(this.range.value.end);
+      this.startDate = DateHelper.toISO(this.range.value.start);
+      this.endDate = DateHelper.toISO(this.range.value.end);
     }
 
-    await this.getShiftsRange(startDate, endDate);
-    await this.getTripsRange(startDate, endDate);
+    await this.getShiftsRange(this.startDate, this.endDate);
+    await this.getTripsRange(this.startDate, this.endDate);
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
     let shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
-    
+    this.shifts = shifts;
     this.services = this.getShiftList(shifts, "service");
     this.regions = this.getShiftList(shifts, "region");
   }
 
   async getTripsRange(startDate: string, endDate: string) {
     let trips = (await this._tripService.getBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
-    
+    this.trips = trips;
     this.places = this.getTripList(trips, "place");
     this.types = this.getTripList(trips, "type");
   }

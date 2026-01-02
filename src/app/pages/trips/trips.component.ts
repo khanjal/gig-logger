@@ -268,7 +268,6 @@ export class TripComponent implements OnInit, OnDestroy {
     this.reloading = true;
 
     await this.load(!isParentReload); // Don't show spinner if it's a parent reload
-    await this._gigLoggerService.calculateShiftTotals();
 
     this.reloading = false;
 

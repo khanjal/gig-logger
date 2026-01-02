@@ -1,0 +1,27 @@
+
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+  <div
+    *ngFor="let card of summaryCards; let i = index"
+    class="flex flex-col justify-between bg-white rounded-lg shadow-md p-4 transition hover:shadow-lg border"
+    [ngClass]="{
+      'border-2 border-primary ring-2 ring-primary': card.highlight,
+      'hover:bg-gray-50': card.action,
+      'border-gray-200': !card.highlight,
+      'cursor-pointer': card.action
+    }"
+    (click)="card.action ? executeAction(i) : null"
+  >
+    <div class="relative">
+      <mat-icon
+        *ngIf="card.action"
+        class="absolute right-0 top-0 text-primary/20 text-4xl pointer-events-none select-none"
+      >
+        search
+      </mat-icon>
+      <div class="text-xs font-medium text-gray-500 mb-1">{{ card.label }}</div>
+      <div class="text-2xl font-bold text-primary">{{ card.value }}</div>
+      <div *ngIf="card.subValue" class="text-sm text-gray-600 mt-1">{{ card.subValue }}</div>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { TripService } from '@services/sheets/trip.service';
-import { ShiftTripsQuickViewComponent } from '@components/shifts/shift-trips-quick-view/shift-trips-quick-view.component';
+import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { NoSecondsPipe as NoSecondsPipe } from '@pipes/no-seconds.pipe';
@@ -58,10 +58,10 @@ export class ShiftTripsTableComponent {
   }
 
   async viewTrips(trips: ITrip[]) {
-    this.dialog.open(ShiftTripsQuickViewComponent, {
-      data: trips,
-      height: '500px',
-      width: '500px',
+    this.dialog.open(TripsModalComponent, {
+      data: { title: 'Shift trips', trips },
+      height: '600px',
+      width: '600px',
       panelClass: 'custom-modalbox'
     });
   }
