@@ -1,5 +1,10 @@
 # Raptor Gig
 
+[![Frontend Tests](https://github.com/khanj/gig-logger/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/khanj/gig-logger/actions/workflows/frontend-tests.yml)
+[![Lambda Tests](https://github.com/khanj/gig-logger/actions/workflows/lambda-tests.yml/badge.svg)](https://github.com/khanj/gig-logger/actions/workflows/lambda-tests.yml)
+[![codecov](https://codecov.io/gh/khanj/gig-logger/graph/badge.svg)](https://codecov.io/gh/khanj/gig-logger)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ![Architectual Diagram of Raptor Gig](RaptorGig.drawio.png?raw=true "Raptor Gig Diagram")
 
 ## Overview
