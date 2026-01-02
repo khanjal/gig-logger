@@ -29,4 +29,12 @@ jobs:
       run: dotnet build amplify/backend/function/GigRaptorService/GigRaptorService.sln --no-restore
 
     - name: Run tests
-      run: dotnet test amplify/backend/function/GigRaptorService/GigRaptorService.sln --no-build --verbosity normal
+      run: dotnet test amplify/backend/function/GigRaptorService/GigRaptorService.sln --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/**/coverage.cobertura.xml
+        flags: lambda
+        name: lambda-coverage
+        fail_ci_if_error: false
