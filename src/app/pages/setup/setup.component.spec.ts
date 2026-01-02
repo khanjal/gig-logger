@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { commonTestingImports, commonTestingProviders } from '../../../test-harness';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { SetupComponent } from './setup.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonService } from '@services/common.service';
