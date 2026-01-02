@@ -191,10 +191,13 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 - **Handle long operations**: Use `PollingService` for Google Sheets operations that may take 30+ seconds
 
 ### Styling Approach
-- Use Tailwind classes for layout and spacing
-- Angular Material components for interactive elements
-- Custom SCSS variables for brand colors and themes
+- **Prefer Tailwind CSS utility classes over custom SCSS** for all styling needs
+- Use Tailwind for layout, spacing, colors, typography, and responsive design
+- Angular Material components for interactive UI elements
+- Reserve SCSS only for truly custom needs (animations, complex selectors, vendor prefixes)
 - Mobile-first breakpoints: `sm:`, `md:`, `lg:`, `xl:`
+- Reference `color-vars.scss` for brand colors, but prefer Tailwind's color system
+- Avoid creating new SCSS files - migrate existing ones to Tailwind utilities
 
 ### GitHub Issue Management
 When a GitHub issue link (e.g., `https://github.com/khanjal/gig-logger/issues/344`) is provided:
