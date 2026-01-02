@@ -21,7 +21,7 @@ const logger = {
 };
 
 // Path to the Lambda project directory
-const LAMBDA_PROJECT_PATH = path.join(__dirname, '..', 'amplify', 'backend', 'function', 'GigRaptorService', 'GigRaptorService', 'src', 'GigRaptorService');
+const LAMBDA_PROJECT_PATH = path.join(__dirname, '..', 'amplify', 'backend', 'function', 'GigRaptorService', 'src', 'GigRaptorService');
 
 function runCommand(command, args, options = {}) {
   return new Promise((resolve, reject) => {
