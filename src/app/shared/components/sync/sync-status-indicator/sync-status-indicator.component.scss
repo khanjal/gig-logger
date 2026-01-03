@@ -150,6 +150,7 @@
   align-items: flex-start;
   margin-bottom: 0.5rem;
   gap: 0.5rem;
+  width: 100%;
 
   &:last-child {
     margin-bottom: 0;
@@ -173,7 +174,8 @@
   font-size: 0.875rem;
   color: $text-primary;
   text-align: right;
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
 
