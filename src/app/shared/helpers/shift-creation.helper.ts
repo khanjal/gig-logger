@@ -41,6 +41,7 @@ export class ShiftCreationHelper {
             amountPerTrip: 0,
             amountPerDistance: 0,
             note: '',
+            omit: false,
             saved: false,
             action: '',
             actionTime: 0

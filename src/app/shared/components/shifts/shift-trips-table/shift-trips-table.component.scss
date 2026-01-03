@@ -1,5 +1,5 @@
 // Shift Trips Table Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 .trips-container {
   margin: 0;

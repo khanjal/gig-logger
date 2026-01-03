@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
+import { LoggerService } from '@services/logger.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { NumberHelper } from '@helpers/number.helper';
@@ -53,7 +54,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   private readonly TRANSCRIPT_AUTO_HIDE_DELAY = 3000;
 
   constructor(
-    private _dropdownDataService: DropdownDataService
+    private _dropdownDataService: DropdownDataService,
+    private logger: LoggerService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -156,7 +158,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   }
 
   private handleRecognitionError(event: any): void {
-    console.error('[VoiceInput] Speech recognition error:', event.error);
+    this.logger.error('VoiceInput - Speech recognition error:', event.error);
     
     const errorMessages: { [key: string]: string } = {
       'no-speech': 'No speech detected. Please try again.',
@@ -179,7 +181,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       this.recognition.start();
       this.recognizing = true;
     } catch (error) {
-      console.error('[VoiceInput] Failed to start recognition:', error);
+      this.logger.error('VoiceInput - Failed to start recognition:', error);
       this.recognizing = false;
     }
   }

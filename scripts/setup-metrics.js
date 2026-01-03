@@ -13,9 +13,17 @@ const LAMBDA_FUNCTION_NAME = 'raptor-gig-service';
 const AWS_REGION = 'us-east-1';
 const DASHBOARD_NAME = 'RaptorGig-Metrics';
 
+// Inline logger for consistent format (matches LoggerService)
+const logger = {
+  info: (msg, ...args) => console.log(`[INFO]: ${msg}`, ...args),
+  warn: (msg, ...args) => console.warn(`[WARN]: ${msg}`, ...args),
+  error: (msg, ...args) => console.error(`[ERROR]: ${msg}`, ...args),
+  debug: (msg, ...args) => console.log(`[DEBUG]: ${msg}`, ...args)
+};
+
 function runCommand(command, args, options = {}) {
   return new Promise((resolve, reject) => {
-    console.log(`Running: ${command} ${args.join(' ')}`);
+    logger.debug(`Running: ${command} ${args.join(' ')}`);
     
     const process = spawn(command, args, {
       stdio: 'inherit',
@@ -70,7 +78,7 @@ function runCommandWithOutput(command, args, options = {}) {
 
 async function createCloudWatchDashboard() {
   try {
-    console.log('\n📊 Creating CloudWatch Dashboard...');
+    logger.info('Creating CloudWatch Dashboard...');
     
     // Check if dashboard already exists
     try {
@@ -79,15 +87,15 @@ async function createCloudWatchDashboard() {
         'get-dashboard',
         '--dashboard-name', DASHBOARD_NAME
       ]);
-      console.log('   ✓ Dashboard already exists - updating...');
+      logger.info('Dashboard already exists - updating...');
     } catch (error) {
-      console.log('   📋 Creating new dashboard...');
+      logger.info('Creating new dashboard...');
     }
     
     const dashboardPath = path.join(__dirname, '..', 'amplify', 'backend', 'function', 'GigRaptorService', 'GigRaptorService', 'src', 'GigRaptorService', 'Infrastructure', 'cloudwatch-dashboard.json');
     
     if (!fs.existsSync(dashboardPath)) {
-      console.log('❌ Dashboard configuration file not found at:', dashboardPath);
+      logger.error('Dashboard configuration file not found at:', dashboardPath);
       return;
     }
     
@@ -97,7 +105,7 @@ async function createCloudWatchDashboard() {
     try {
       JSON.parse(dashboardBody);
     } catch (parseError) {
-      console.log('❌ Invalid JSON in dashboard configuration file');
+      logger.error('Invalid JSON in dashboard configuration file');
       return;
     }
     
@@ -116,22 +124,22 @@ async function createCloudWatchDashboard() {
     // Clean up temp file
     fs.unlinkSync(tempDashboardFile);
     
-    console.log('✅ CloudWatch dashboard configured successfully!');
-    console.log(`   View at: https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#dashboards:name=${DASHBOARD_NAME}`);
+    logger.info('CloudWatch dashboard configured successfully!');
+    logger.info(`View at: https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#dashboards:name=${DASHBOARD_NAME}`);
     
   } catch (error) {
-    console.log('⚠️  Could not create dashboard automatically.');
-    console.log(`   Error: ${error.message}`);
-    console.log('   You can manually import cloudwatch-dashboard.json in the AWS console.');
-    console.log('   Manual steps:');
-    console.log('   1. Go to CloudWatch → Dashboards → Create dashboard');
-    console.log('   2. Choose "Import dashboard" and upload the JSON file');
+    logger.warn('Could not create dashboard automatically.');
+    logger.warn(`Error: ${error.message}`);
+    logger.warn('You can manually import cloudwatch-dashboard.json in the AWS console.');
+    logger.warn('Manual steps:');
+    logger.warn('1. Go to CloudWatch → Dashboards → Create dashboard');
+    logger.warn('2. Choose "Import dashboard" and upload the JSON file');
   }
 }
 
 async function setupCloudWatchAlarms() {
   try {
-    console.log('\n⚠️  Setting up CloudWatch Alarms...');
+    logger.info('Setting up CloudWatch Alarms...');
     
     const alarms = [
       {
@@ -169,9 +177,9 @@ async function setupCloudWatchAlarms() {
             'describe-alarms',
             '--alarm-names', alarm.name
           ]);
-          console.log(`   ✓ Alarm already exists - updating: ${alarm.name}`);
+          logger.info(`Alarm already exists - updating: ${alarm.name}`);
         } catch (error) {
-          console.log(`   📋 Creating new alarm: ${alarm.name}`);
+          logger.info(`Creating new alarm: ${alarm.name}`);
         }
         
         // Create alarm configuration as JSON file
@@ -201,45 +209,45 @@ async function setupCloudWatchAlarms() {
         // Clean up temp file
         fs.unlinkSync(tempAlarmFile);
         
-        console.log(`   ✅ Configured alarm: ${alarm.name}`);
+        logger.info(`Configured alarm: ${alarm.name}`);
       } catch (error) {
-        console.log(`   ⚠️  Failed to create alarm: ${alarm.name} - ${error.message}`);
+        logger.warn(`Failed to create alarm: ${alarm.name} - ${error.message}`);
       }
     }
     
   } catch (error) {
-    console.log('⚠️  Could not create alarms automatically.');
-    console.log('   You can manually create alarms in the AWS CloudWatch console.');
+    logger.warn('Could not create alarms automatically.');
+    logger.warn('You can manually create alarms in the AWS CloudWatch console.');
   }
 }
 
 async function setupMetrics() {
   try {
-    console.log('🎯 Setting up RaptorGig Lambda Metrics...');
+    logger.info('Setting up RaptorGig Lambda Metrics...');
     
     await createCloudWatchDashboard();
     await setupCloudWatchAlarms();
     
-    console.log('\n🎉 Metrics setup completed!');
-    console.log('\n📋 What was configured:');
-    console.log('   ✓ CloudWatch Dashboard for monitoring');
-    console.log('   ✓ CloudWatch Alarms for critical issues');
-    console.log('   ✓ Custom metrics namespace: RaptorGig/Lambda');
+    logger.info('Metrics setup completed!');
+    logger.info('What was configured:');
+    logger.info('✓ CloudWatch Dashboard for monitoring');
+    logger.info('✓ CloudWatch Alarms for critical issues');
+    logger.info('✓ Custom metrics namespace: RaptorGig/Lambda');
     
-    console.log('\n📈 Next steps:');
-    console.log('   1. Deploy your Lambda function with: npm run update-lambda');
-    console.log('   2. View metrics in CloudWatch console');
-    console.log('   3. Monitor gig worker app performance');
+    logger.info('Next steps:');
+    logger.info('1. Deploy your Lambda function with: npm run update-lambda');
+    logger.info('2. View metrics in CloudWatch console');
+    logger.info('3. Monitor gig worker app performance');
     
-    console.log('\n🔄 Repeated runs of this script are safe and will:');
-    console.log('   • Update dashboard with latest configuration');
-    console.log('   • Update alarm thresholds if changed');
-    console.log('   • Skip setup if everything is already configured');
-    console.log('   • Never delete existing metrics data');
+    logger.info('Repeated runs of this script are safe and will:');
+    logger.info('• Update dashboard with latest configuration');
+    logger.info('• Update alarm thresholds if changed');
+    logger.info('• Skip setup if everything is already configured');
+    logger.info('• Never delete existing metrics data');
     
   } catch (error) {
-    console.error('\n❌ Metrics setup failed:');
-    console.error(error.message);
+    logger.error('Metrics setup failed:');
+    logger.error(error.message);
     process.exit(1);
   }
 }

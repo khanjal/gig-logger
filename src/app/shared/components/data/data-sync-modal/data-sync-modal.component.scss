@@ -1,4 +1,4 @@
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Only keep message type styles used by [ngClass]
 .info {

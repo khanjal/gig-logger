@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { ShiftsComponent } from './shifts.component';
 
 describe('ShiftsComponent', () => {
@@ -8,8 +8,9 @@ describe('ShiftsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [ShiftsComponent]
-})
+      imports: [...commonTestingImports, ShiftsComponent],
+      providers: [...commonTestingProviders]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(ShiftsComponent);

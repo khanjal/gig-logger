@@ -40,7 +40,7 @@
             });
             
             if (shouldClear) {
-              console.log('Clearing potentially stale caches on first load');
+              console.log('[INFO]: Index - Clearing potentially stale caches on first load');
               return Promise.all(
                 cacheNames.map(function(cacheName) {
                   if (cacheName.includes('ngsw') || cacheName.includes('raptor-gig')) {
@@ -50,7 +50,7 @@
               );
             }
           }).catch(function(err) {
-            console.warn('Cache clearing failed:', err);
+            console.warn('[WARN]: Index - Cache clearing failed:', err);
           });
         }
       }
@@ -141,7 +141,7 @@
     // Override resource error handling
     window.addEventListener('error', function(e) {
       if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
-        console.error('Failed to load resource:', e.target.src || e.target.href);
+        console.error('[ERROR]: Index - Failed to load resource:', e.target.src || e.target.href);
         window.resourceLoadErrors.push({
           url: e.target.src || e.target.href,
           tag: e.target.tagName,
@@ -169,7 +169,7 @@
             
             var newSrc = strategies[window.retryAttempts - 1];
             if (newSrc && src !== newSrc) {
-              console.log('Retry attempt ' + window.retryAttempts + ' with strategy:', newSrc);
+              console.log('[INFO]: Index - Retry attempt ' + window.retryAttempts + ' with strategy:', newSrc);
               var newScript = document.createElement('script');
               newScript.src = newSrc;
               newScript.type = e.target.type || 'text/javascript';
@@ -201,7 +201,7 @@
         });
         
         if (hasCriticalFailures) {
-          console.log('Critical resource loading failure detected. Auto-refreshing...');
+          console.log('[WARN]: Index - Critical resource loading failure detected. Auto-refreshing...');
           autoRefreshTriggered = true;
           
           // Clear service worker caches before refresh

@@ -27,7 +27,8 @@ import { TripsTableGroupComponent } from '@components/trips/trips-table-group/tr
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
 import { environment } from 'src/environments/environment';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -66,7 +67,9 @@ export class TripComponent implements OnInit, OnDestroy {
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
-  parentReloadSubscription!: Subscription;
+  
+  // Destroy subject for managing subscription cleanup
+  private destroy$ = new Subject<void>();
 
   constructor(
       public dialog: MatDialog,
@@ -85,24 +88,25 @@ export class TripComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._pollingService.stopPolling();
     
-    // Unsubscribe from parent reload subscription to prevent memory leaks
-    if (this.parentReloadSubscription) {
-      this.parentReloadSubscription.unsubscribe();
-    }
+    // Complete the destroy subject to trigger takeUntil in all subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   async ngOnInit(): Promise<void> {
-    // Check if we're in edit mode based on route
-    this._route.paramMap.subscribe(params => {
-      const tripId = params.get('id');
-      if (tripId) {
-        this.isEditMode = true;
-        this.editingTripId = tripId;
-      } else {
-        this.isEditMode = false;
-        this.editingTripId = null;
-      }
-    });
+    // Check if we're in edit mode based on route with automatic cleanup
+    this._route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const tripId = params.get('id');
+        if (tripId) {
+          this.isEditMode = true;
+          this.editingTripId = tripId;
+        } else {
+          this.isEditMode = false;
+          this.editingTripId = null;
+        }
+      });
 
     // Load polling preference from localStorage
     const savedPollingState = localStorage.getItem('pollingEnabled');
@@ -123,9 +127,12 @@ export class TripComponent implements OnInit, OnDestroy {
       await this.loadTripForEditing();
     }
     
-    this.parentReloadSubscription = this._pollingService.parentReload.subscribe(async () => {
-      await this.reload(undefined, true); // Pass true to indicate this is a parent reload
-    });
+    // Subscribe to parent reload with automatic cleanup
+    this._pollingService.parentReload
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async () => {
+        await this.reload(undefined, true); // Pass true to indicate this is a parent reload
+      });
   }
 
   public async load(showSpinner: boolean = true) {
@@ -195,7 +202,8 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async saveSheetDialog(inputValue: string) {
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+    this.saving = true;
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
         height: '400px',
         width: '500px',
         panelClass: 'custom-modalbox',
@@ -203,10 +211,14 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
+      try {
+        if (result) {
           this._snackBar.open("Trip(s) Saved to Spreadsheet");
           await this.reload("todaysTrips");
           this._viewportScroller.scrollToAnchor("todaysTrips");
+        }
+      } finally {
+        this.saving = false;
       }
     });
   }
@@ -226,7 +238,8 @@ export class TripComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
+      if (result) {
+        this.saving = true;
         await this.saveSheetDialog('save');
       }
     });
@@ -323,7 +336,7 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.tripForm.load();
       }
     } catch (error) {
-      console.error('Error loading trip for editing:', error);
+      this.logger.error('Error loading trip for editing:', error);
       this._router.navigate(['/trips']);
     }
     

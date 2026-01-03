@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { DiagnosticsComponent } from './diagnostics.component';
 
 describe('DiagnosticsComponent', () => {
@@ -8,7 +8,8 @@ describe('DiagnosticsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DiagnosticsComponent]
+      imports: [...commonTestingImports, DiagnosticsComponent],
+      providers: [...commonTestingProviders]
     })
     .compileComponents();
 

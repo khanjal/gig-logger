@@ -12,12 +12,20 @@ const LAMBDA_FUNCTION_NAME = 'raptor-gig-service';
 const AWS_REGION = 'us-east-1';
 const LAMBDA_RUNTIME = 'dotnet8';
 
+// Inline logger for consistent format (matches LoggerService)
+const logger = {
+  info: (msg, ...args) => console.log(`[INFO]: ${msg}`, ...args),
+  warn: (msg, ...args) => console.warn(`[WARN]: ${msg}`, ...args),
+  error: (msg, ...args) => console.error(`[ERROR]: ${msg}`, ...args),
+  debug: (msg, ...args) => console.log(`[DEBUG]: ${msg}`, ...args)
+};
+
 // Path to the Lambda project directory
-const LAMBDA_PROJECT_PATH = path.join(__dirname, '..', 'amplify', 'backend', 'function', 'GigRaptorService', 'GigRaptorService', 'src', 'GigRaptorService');
+const LAMBDA_PROJECT_PATH = path.join(__dirname, '..', 'amplify', 'backend', 'function', 'GigRaptorService', 'src', 'GigRaptorService');
 
 function runCommand(command, args, options = {}) {
   return new Promise((resolve, reject) => {
-    console.log(`Running: ${command} ${args.join(' ')}`);
+    logger.debug(`Running: ${command} ${args.join(' ')}`);
     
     const process = spawn(command, args, {
       stdio: 'inherit',
@@ -41,19 +49,19 @@ function runCommand(command, args, options = {}) {
 
 async function updateLambda() {
   try {
-    console.log('🚀 Starting Lambda deployment...');
-    console.log(`📍 Working directory: ${LAMBDA_PROJECT_PATH}`);
+    logger.info('Starting Lambda deployment...');
+    logger.info(`Working directory: ${LAMBDA_PROJECT_PATH}`);
     
     // Step 1: Configure AWS region
-    console.log('\n📡 Configuring AWS region...');
+    logger.info('Configuring AWS region...');
     await runCommand('aws', ['configure', 'set', 'region', AWS_REGION]);
     
     // Step 2: Check and setup CloudWatch permissions for metrics (one-time setup)
-    console.log('\n📊 Checking CloudWatch permissions for metrics...');
+    logger.info('Checking CloudWatch permissions for metrics...');
     await setupCloudWatchPermissions();
     
     // Step 3: Deploy the Lambda function
-    console.log('\n🔨 Deploying Lambda function...');
+    logger.info('Deploying Lambda function...');
     await runCommand('dotnet', [
       'lambda', 
       'deploy-function', 
@@ -63,19 +71,18 @@ async function updateLambda() {
       cwd: LAMBDA_PROJECT_PATH
     });
     
-    console.log('\n✅ Lambda deployment completed successfully!');
-    console.log('\n📈 Metrics are now enabled! View them at:');
-    console.log(`   https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#metricsV2:graph=~();search=GigRaptor~%2FLambda`);
+    logger.info('Lambda deployment completed successfully!');
+    logger.info('Metrics are now enabled! View them at:');
+    logger.info(`https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#metricsV2:graph=~();search=GigRaptor~%2FLambda`);
     
   } catch (error) {
-    console.error('\n❌ Lambda deployment failed:');
-    console.error(error.message);
-    
-    console.log('\n🔧 Troubleshooting tips:');
-    console.log('- Ensure AWS CLI is installed and configured');
-    console.log('- Ensure .NET CLI and Lambda tools are installed: dotnet tool install -g Amazon.Lambda.Tools');
-    console.log('- Check that you have proper AWS permissions for Lambda deployment');
-    console.log('- Verify you are in the correct directory');
+    logger.error('Lambda deployment failed:');
+    logger.error(error.message);
+    logger.info('Troubleshooting tips:');
+    logger.info('- Ensure AWS CLI is installed and configured');
+    logger.info('- Ensure .NET CLI and Lambda tools are installed: dotnet tool install -g Amazon.Lambda.Tools');
+    logger.info('- Check that you have proper AWS permissions for Lambda deployment');
+    logger.info('- Verify you are in the correct directory');
     
     process.exit(1);
   }
@@ -91,7 +98,7 @@ async function setupCloudWatchPermissions() {
       const result = await runCommandWithOutput('aws', getLambdaCommand);
       functionConfig = JSON.parse(result);
     } catch (error) {
-      console.log('⚠️  Lambda function not found. CloudWatch permissions will be set up after deployment.');
+      logger.warn('Lambda function not found. CloudWatch permissions will be set up after deployment.');
       return;
     }
     
@@ -99,12 +106,12 @@ async function setupCloudWatchPermissions() {
     const roleArn = functionConfig.Configuration.Role;
     const roleName = roleArn.split('/').pop();
     
-    console.log(`   Found Lambda role: ${roleName}`);
+    logger.info(`Found Lambda role: ${roleName}`);
     
     // Check if CloudWatch policy already exists
     try {
       await runCommandWithOutput('aws', ['iam', 'get-role-policy', '--role-name', roleName, '--policy-name', 'GigRaptorCloudWatchMetrics']);
-      console.log('   ✓ CloudWatch permissions already configured');
+      logger.info('CloudWatch permissions already configured');
       return;
     } catch (error) {
       // Policy doesn't exist, we need to create it
@@ -139,11 +146,11 @@ async function setupCloudWatchPermissions() {
     // Clean up temp file
     require('fs').unlinkSync(tempPolicyFile);
     
-    console.log('   ✓ CloudWatch permissions configured successfully!');
+    logger.info('CloudWatch permissions configured successfully!');
     
   } catch (error) {
-    console.log('   ⚠️  Could not configure CloudWatch permissions automatically.');
-    console.log('   📝 Please manually add cloudwatch:PutMetricData permission to your Lambda role.');
+    logger.warn('Could not configure CloudWatch permissions automatically.');
+    logger.warn('Please manually add cloudwatch:PutMetricData permission to your Lambda role.');
   }
 }
 
@@ -189,7 +196,7 @@ async function checkPrerequisites() {
     try {
       await runCommand(tool.command, ['--version'], { stdio: 'pipe' });
     } catch (error) {
-      console.error(`❌ ${tool.name} is not installed or not in PATH`);
+      logger.error(`${tool.name} is not installed or not in PATH`);
       process.exit(1);
     }
   }
@@ -197,7 +204,7 @@ async function checkPrerequisites() {
 
 // Main execution
 async function main() {
-  console.log('🔍 Checking prerequisites...');
+  logger.info('Checking prerequisites...');
   await checkPrerequisites();
   await updateLambda();
 }

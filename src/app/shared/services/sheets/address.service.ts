@@ -26,39 +26,42 @@ export class AddressService extends GenericCrudService<IAddress> {
     }
 
     public async append(addresses: IAddress[]) {
-        for (let address of addresses) {
-            let existingAddress = await this.find('address', address.address);
+        for (let i = 0; i < addresses.length; i++) {
+            const address = addresses[i];
+            const existingAddress = await this.find('address', address.address);
 
             if (existingAddress) {
-                address = existingAddress;
-                address.bonus += existingAddress.bonus;
-                address.cash += existingAddress.cash;
-                address.pay += existingAddress.pay;
-                address.tip += existingAddress.tip;
-                address.total += existingAddress.total;
-                address.trips += existingAddress.trips;
+                // Accumulate new address values into existing address
+                existingAddress.bonus += address.bonus;
+                existingAddress.cash += address.cash;
+                existingAddress.pay += address.pay;
+                existingAddress.tip += address.tip;
+                existingAddress.total += address.total;
+                existingAddress.trips += address.trips;
 
-                if (!address.names) {
-                    address.names = [];
+                if (!existingAddress.names) {
+                    existingAddress.names = [];
                 }
 
-                if (existingAddress.names) {
-                    address.names.push(...existingAddress.names);
+                if (address.names) {
+                    existingAddress.names.push(...address.names);
                 }
 
-                if (!address.notes) {
-                    address.notes = [];
+                if (!existingAddress.notes) {
+                    existingAddress.notes = [];
                 }
 
-                if (existingAddress.notes) {
-                    address.notes.push(...existingAddress.notes);
+                if (address.notes) {
+                    existingAddress.notes.push(...address.notes);
                 }
+
+                // Replace with merged address
+                addresses[i] = existingAddress;
             }
             else {
                 address.id = undefined;
             }
-
-        };
+        }
 
         await spreadsheetDB.addresses.bulkPut(addresses);
     }

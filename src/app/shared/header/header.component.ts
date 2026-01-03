@@ -3,13 +3,14 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { LoggerService } from '@services/logger.service';
 import { RouterLink, RouterOutlet, NavigationEnd, Router } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgIf } from '@angular/common';
-import { interval, Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indicator/sync-status-indicator.component';
@@ -49,9 +50,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Timeout for header initialization (ms)
   public static readonly HEADER_INIT_TIMEOUT_MS = 10000;
 
-  private headerSubscription: Subscription;
-  private routerSubscription: Subscription;
-  private unsavedCountInterval: Subscription;
+  // Destroy subject for managing subscription cleanup
+  private destroy$ = new Subject<void>();
 
   constructor(
     private _commonService: CommonService,
@@ -59,22 +59,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthGoogleService,
     private router: Router,
     private shiftService: ShiftService,
-    private tripService: TripService
+    private tripService: TripService,
+    private logger: LoggerService
   ) { 
-    // Subscribe to header updates
-    this.headerSubscription = this._commonService.onHeaderLinkUpdate.subscribe((data: any) => {
+    // Subscribe to header updates with automatic cleanup on destroy
+    this._commonService.onHeaderLinkUpdate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
         this.load();
-    });
+      });
     
-    // Subscribe to route changes for loading indicator
-    this.routerSubscription = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+    // Subscribe to route changes for loading indicator with automatic cleanup
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.url;
         this.setLoadingState(false); // Hide loading when navigation completes
       });
-    // Start polling for unsaved counts at configurable interval
-    this.unsavedCountInterval = interval(this.unsavedPollInterval).subscribe(() => this.updateUnsavedCounts());
+    
+    // Start polling for unsaved counts at configurable interval with automatic cleanup
+    interval(this.unsavedPollInterval)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.updateUnsavedCounts());
   }
 
   async ngOnInit(): Promise<void> {
@@ -91,7 +100,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // Initial fetch of unsaved counts (after authentication check)
       await this.updateUnsavedCounts();
     } catch (error) {
-      console.error('Error during header initialization:', error);
+      this.logger.error('Error during header initialization:', error);
       this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
@@ -120,7 +129,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         )
       ]);
     } catch (error) {
-      console.error('Error loading header data:', error);
+      this.logger.error('Error loading header data:', error);
       this.error.emit(error instanceof Error ? error : new Error('Header data loading failed'));
       // Don't throw - allow app to continue with degraded functionality
     } finally {
@@ -180,16 +189,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe to prevent memory leaks
-    if (this.headerSubscription) {
-      this.headerSubscription.unsubscribe();
-    }
-    
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
-    if (this.unsavedCountInterval) {
-      this.unsavedCountInterval.unsubscribe();
-    }
+    // Complete the destroy subject to trigger takeUntil in all subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

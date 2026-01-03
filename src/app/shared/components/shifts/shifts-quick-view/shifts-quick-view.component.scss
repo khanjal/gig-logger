@@ -1,5 +1,5 @@
 ﻿// Mobile-First Shift Quick View Component Styles
-@import 'src/app/shared/styles/color-vars';
+@use 'src/app/shared/styles/color-vars' as *;
 
 /* Shift border classes - match trips quick view */
 .shift-border-saved {

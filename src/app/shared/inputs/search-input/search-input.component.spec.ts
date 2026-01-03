@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchInputComponent } from './search-input.component';
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 
 describe('SearchInputComponent', () => {
   let component: SearchInputComponent;
@@ -8,7 +9,8 @@ describe('SearchInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchInputComponent]
+      imports: [...commonTestingImports, SearchInputComponent],
+      providers: [...commonTestingProviders]
     })
     .compileComponents();
     

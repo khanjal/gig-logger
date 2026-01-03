@@ -1,4 +1,13 @@
 // Simple Web Worker for polling
+
+// Inline logger for consistent format (matches LoggerService)
+const logger = {
+  info: (msg, ...args) => console.info(`[INFO]: ${msg}`, ...args),
+  warn: (msg, ...args) => console.warn(`[WARN]: ${msg}`, ...args),
+  error: (msg, ...args) => console.error(`[ERROR]: ${msg}`, ...args),
+  log: (msg, ...args) => console.log(`[LOG]: ${msg}`, ...args)
+};
+
 let pollingInterval = null;
 let intervalMs = 60000; // Default 60 seconds
 let initialDelayTimeout = null; // Store the timeout ID for initial delay
@@ -18,12 +27,12 @@ self.onmessage = function(event) {
       intervalMs = data?.interval || intervalMs;
       break;
     default:
-      console.warn('[Polling Worker] Unknown message type:', type);
+      logger.warn('Polling Worker - Unknown message type:', type);
   }
 };
 
 function startPolling(interval, initialDelay = 0) {
-  console.log('[Polling Worker] Starting polling with interval:', interval, 'initial delay:', initialDelay);
+  logger.info('Polling Worker - Starting polling with interval:', interval, 'initial delay:', initialDelay);
   intervalMs = interval;
   
   // Clear any existing interval or timeout
@@ -72,7 +81,7 @@ function startPolling(interval, initialDelay = 0) {
 }
 
 function stopPolling() {
-  console.log('[Polling Worker] Stopping polling');
+  logger.info('Polling Worker - Stopping polling');
   
   if (pollingInterval) {
     clearInterval(pollingInterval);

@@ -29,25 +29,29 @@ export class TypeService extends GenericCrudService<IType> {
     }
 
     public async append(types: IType[]) {
-        let items = await this.list();
+        const items = await this.list();
 
-        types.forEach(async item => {
-            let foundItem = items.find(x => x.type === item.type);
+        for (let i = 0; i < types.length; i++) {
+            const item = types[i];
+            const foundItem = items.find(x => x.type === item.type);
 
             if (foundItem) {
                 this._logger.debug('Found existing type item', foundItem);
-                item.id = foundItem.id;
-                item.bonus += foundItem.bonus;
-                item.cash += foundItem.cash;
-                item.pay += foundItem.pay;
-                item.tip += foundItem.tip;
-                item.total += foundItem.total;
-                item.trips += foundItem.trips;
+                // Accumulate new values into existing
+                foundItem.bonus += item.bonus;
+                foundItem.cash += item.cash;
+                foundItem.pay += item.pay;
+                foundItem.tip += item.tip;
+                foundItem.total += item.total;
+                foundItem.trips += item.trips;
+
+                // Replace with merged type
+                types[i] = foundItem;
             }
             else {
                 item.id = undefined;
             }
-        });
+        }
 
         await spreadsheetDB.types.bulkPut(types);
     }

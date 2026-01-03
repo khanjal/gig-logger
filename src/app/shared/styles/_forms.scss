@@ -1,5 +1,5 @@
 /* Mobile-First Form Styles for Gig Logger PWA */
-@import "color-vars";
+@use 'color-vars' as *;
 
 /* Form Header Utilities */
 .form-header {

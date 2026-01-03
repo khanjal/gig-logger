@@ -1,5 +1,5 @@
 // Mobile-First Search Input Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Host element styling to ensure proper width inheritance
 :host {

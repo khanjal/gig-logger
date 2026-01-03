@@ -1,4 +1,5 @@
 import { liveQuery } from 'dexie';
+import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
@@ -15,7 +16,7 @@ export class TripService extends SyncableCrudService<ITrip> {
       super(spreadsheetDB.trips); // Pass the table reference
     }
 
-    trips$ = liveQuery(() => spreadsheetDB.trips.toArray());
+    trips$ = from(liveQuery(() => spreadsheetDB.trips.toArray()));
     
     public async addNext(trip: ITrip) {
         let nextTrip = {} as ITrip;

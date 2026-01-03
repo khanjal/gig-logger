@@ -1,5 +1,5 @@
 /* Mobile-First Table Styles for Gig Logger PWA */
-@import "color-vars";
+@use 'color-vars' as *;
 
 // =============================================================================
 // TABLE CONTAINER & RESPONSIVE UTILITIES

@@ -1,4 +1,4 @@
 // Mobile-First Current Average Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // No custom SCSS needed. All styling is handled by Tailwind utility classes in the template.

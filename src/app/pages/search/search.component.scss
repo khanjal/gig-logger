@@ -1,4 +1,4 @@
-@import "../../shared/styles/color-vars";
+@use '../../shared/styles/color-vars' as *;
 
 .search-page {
   // Mobile-first styles

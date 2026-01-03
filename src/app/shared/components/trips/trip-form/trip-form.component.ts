@@ -293,12 +293,10 @@ export class TripFormComponent implements OnInit {
   }
   private async setDefaultShift() {
     this.shifts = await this._shiftService.getPreviousWeekShifts();
-
     if (this.shifts.length > 0) {
       sort(this.shifts, '-key');
     }
 
-    // If editing, ensure the trip's shift is present in the list
     if (this.data?.key) {
       const tripShift = await this._shiftService.queryShiftByKey(this.data.key);
       if (tripShift && !this.shifts.some(s => s.key === tripShift.key)) {
@@ -307,13 +305,11 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    // Default to the last used shift (from the most recent trip today)
     if (!this.data?.id) {
-      let today = DateHelper.toISO();
-      // Only get trips from today
-      let todaysTrips = await this._tripService.query('date', today);
+      const today = DateHelper.toISO();
+      const todaysTrips = await this._tripService.query('date', today);
       sort(todaysTrips, '-id');
-      let lastTrip = todaysTrips[0];
+      const lastTrip = todaysTrips[0];
       let lastUsedShift: IShift | undefined = undefined;
       if (lastTrip) {
         lastUsedShift = this.shifts.find(x => x.key === lastTrip.key);
@@ -322,8 +318,7 @@ export class TripFormComponent implements OnInit {
         this.selectedShift = lastUsedShift;
       }
 
-      // Set place if only one in the list.
-      let places = await this._placeService.list();
+      const places = await this._placeService.list();
       if (places.length === 1) {
         this.tripForm.controls.place.setValue(places[0].place);
         await this.selectPlace();
@@ -334,62 +329,60 @@ export class TripFormComponent implements OnInit {
   }
 
   public async addTrip() {
-    let shift = await this.createShift();
-    let trip = await this.createTrip(shift);
-    await this._tripService.add(trip);
-    
-    // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateShiftTotals([shift]);
+    try {
+      const shift = await this.createShift();
+      const trip = await this.createTrip(shift);
+      await this._tripService.add(trip);
 
-    // Update ancillary info
-    await this._gigLoggerService.updateAncillaryInfo();
+      await this._gigLoggerService.calculateShiftTotals([shift]);
+      await this._gigLoggerService.updateAncillaryInfo();
 
-    this._snackBar.open("Trip Stored to Device");
+      this._snackBar.open('Trip Stored to Device');
 
-    await this.formReset();
-    this.parentReload.emit();
-    
-    // Give the UI time to update before scrolling
-    await this._timerService.delay(1000);
-    this._viewportScroller.scrollToAnchor("todaysTrips");
+      await this.formReset();
+      this.parentReload.emit();
+
+      await this._timerService.delay(1000);
+      this._viewportScroller.scrollToAnchor('todaysTrips');
+    } catch (error) {
+      this._snackBar.open('Failed to store trip. Please try again.', 'Dismiss', { duration: 5000 });
+    }
   }
 
   public async editTrip() {
-    let shifts: IShift[] = [];
+    try {
+      let shifts: IShift[] = [];
 
-    if (this.selectedShift) {
-      shifts.push(this.selectedShift);
-    }
+      if (this.selectedShift) {
+        shifts.push(this.selectedShift);
+      }
 
-    let shift = await this.createShift();
-    let trip = await this.createTrip(shift);
+      const shift = await this.createShift();
+      const trip = await this.createTrip(shift);
 
-    updateAction(shift, ActionEnum.Update);
-    this._shiftService.update([shift]);
-    
-    shifts.push(shift);
+      updateAction(shift, ActionEnum.Update);
+      this._shiftService.update([shift]);
 
-    if (shifts.length > 1) {
-      shifts = [...new Set(shifts)]; // Remove duplicates
-    }
+      shifts.push(shift);
 
-    await this._tripService.update([trip]);
+      if (shifts.length > 1) {
+        shifts = [...new Set(shifts)];
+      }
 
-    // Update shift numbers & weekday current amount.
-    await this._gigLoggerService.calculateShiftTotals(shifts);
+      await this._tripService.update([trip]);
 
-    // Update ancillary info
-    await this._gigLoggerService.updateAncillaryInfo();
+      await this._gigLoggerService.calculateShiftTotals(shifts);
+      await this._gigLoggerService.updateAncillaryInfo();
 
-    this._snackBar.open("Trip Updated");
+      this._snackBar.open('Trip Updated');
 
-    // Handle different scenarios for closing
-    if (this.isInEditMode) {
-      // We're in edit mode on the trips page, emit event to exit edit mode
-      this.editModeExit.emit(trip.rowId?.toString());
-    } else if (this.dialogRef) {
-      // We're in a dialog, close it
-      this.dialogRef.close();
+      if (this.isInEditMode) {
+        this.editModeExit.emit(trip.rowId?.toString());
+      } else if (this.dialogRef) {
+        this.dialogRef.close();
+      }
+    } catch (error) {
+      this._snackBar.open('Failed to update trip. Please try again.', 'Dismiss', { duration: 5000 });
     }
   }
 
@@ -420,36 +413,30 @@ export class TripFormComponent implements OnInit {
       this.tripForm.controls.service.clearValidators();
       this.tripForm.controls.service.updateValueAndValidity();
       this.tripForm.controls.region.setValue(this.data.region ?? value.region);
-      
       return;
     }
 
     this.isNewShift = true;
     this.tripForm.controls.service.setValidators([Validators.required]);
 
-    // Get the most recent shift
-    let shifts = (await this._shiftService.list()).reverse();
-    let shift = shifts[0];
+    const shifts = (await this._shiftService.list()).reverse();
+    const shift = shifts[0];
 
     if (!shift) {
       return;
     }
 
-    //Set the most recent service as default.
     if (shift.service) {
       this.tripForm.controls.service.setValue(shift.service);
-    }
-    else {
-      let recentService = shifts.filter(x => x.service)[0];
+    } else {
+      const recentService = shifts.filter(x => x.service)[0];
       this.tripForm.controls.service.setValue(recentService.service);
     }
 
-    //Set the most recent region as default.
     if (shift.region) {
       this.tripForm.controls.region.setValue(shift.region);
-    }
-    else {
-      let recentRegion = shifts.filter(x => x.region)[0];
+    } else {
+      const recentRegion = shifts.filter(x => x.region)[0];
       this.tripForm.controls.region.setValue(recentRegion?.region);
     }
 
@@ -476,9 +463,7 @@ export class TripFormComponent implements OnInit {
 
   async showAddressNames() {
     let address = this.tripForm.value.endAddress;
-
     if (!address) { this.selectedAddressDeliveries = []; return; }
-
     this.selectedAddress = await this._addressService.find('address', address);
     this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
     sort(this.selectedAddressDeliveries, 'name');
@@ -486,9 +471,7 @@ export class TripFormComponent implements OnInit {
 
   async showNameAddresses() {
     let name = this.tripForm.value.name;
-
     if (!name) { this.selectedNameDeliveries = []; return; }
-
     this.selectedName = await this._nameService.find('name', name);
     this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
     sort(this.selectedNameDeliveries, 'address');
@@ -496,66 +479,58 @@ export class TripFormComponent implements OnInit {
 
   async selectPlace() {
     let place = this.tripForm.value.place;
-
     if (!place) {
       this.selectedPlace = undefined;
       return;
     }
-
     this.selectedPlace = await this._placeService.find('place', place);
     if (!this.selectedPlace) {
       if (this.tripForm.controls.type.value) {
         return;
       }
 
-      // Assign most recent trip type if no place is found.
-      let recentTrips = (await this._tripService.list()).reverse();
-      let recentTrip = recentTrips[0];
+      const recentTrips = (await this._tripService.list()).reverse();
+      const recentTrip = recentTrips[0];
       if (recentTrip) {
         this.tripForm.controls.type.setValue(recentTrip.type);
-      }
-      else {
-        this.tripForm.controls.type.setValue("Pickup");
+      } else {
+        this.tripForm.controls.type.setValue('Pickup');
       }
       return;
     }
 
-    // Filter addresses to show only those with trips in the last year.
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-    this.selectedPlaceAddresses = this.selectedPlace?.addresses?.filter(address => 
+    this.selectedPlaceAddresses = this.selectedPlace?.addresses?.filter(address =>
       new Date(address.lastTrip) >= oneYearAgo
     );
 
     place = this.selectedPlace.place;
 
-    let recentTrips = (await this._tripService.list()).reverse().filter((x: ITrip) => x.place === place && !x.exclude);
-    let recentTrip = recentTrips[0];
+    const recentTrips = (await this._tripService.list()).reverse().filter((x: ITrip) => x.place === place && !x.exclude);
+    const recentTrip = recentTrips[0];
 
     if (!recentTrip) {
       return;
     }
 
-    // Only assign a startAddress if one isn't already set
     if (!this.tripForm.controls.startAddress.value) {
       if (recentTrip.startAddress) {
         this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
       } else {
-        let recentAddress = recentTrips.filter((x: ITrip) => x.startAddress)[0];
-        this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? "");
+        const recentAddress = recentTrips.filter((x: ITrip) => x.startAddress)[0];
+        this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? '');
       }
     }
 
-    // Auto assign to most recent type.
     if (recentTrip.type) {
       this.tripForm.controls.type.setValue(recentTrip.type);
+    } else {
+      const recentType = recentTrips.filter((x: ITrip) => x.type)[0];
+      this.tripForm.controls.type.setValue(recentType?.type ?? '');
     }
-    else {
-      let recentType = recentTrips.filter((x: ITrip) => x.type)[0];
-      this.tripForm.controls.type.setValue(recentType?.type ?? "");
-    }
-    
+
     if (!this.showPickupAddress) {
       this.togglePickupAddress();
     }

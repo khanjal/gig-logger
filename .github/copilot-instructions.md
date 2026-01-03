@@ -81,8 +81,58 @@ cd amplify/backend/function/GigRaptorService && dotnet restore
 
 ### Testing
 ```bash
-npm test              # Run unit tests (project needs more test coverage)
+npm test                                      # Run unit tests in watch mode
+npm test -- --watch=false --browsers=ChromeHeadless  # Single run with headless Chrome
+npm test -- --watch=false --code-coverage --browsers=ChromeHeadless  # With coverage report
 ```
+
+**Coverage Goal**: Achieve 70%+ test coverage across the codebase
+
+### Test Development Patterns
+- **Always run frontend tests from gig-logger directory**: `cd c:\Users\khanj\Projects\gig-logger; npm test`
+- **Component Tests**: Use `NO_ERRORS_SCHEMA` for shallow testing, mock all injected services
+- **Service Tests**: Create jasmine spy objects for dependencies, test business logic in isolation
+- **Pipe Tests**: Simple input/output assertions, no TestBed needed for pure pipes
+- **Guard Tests**: Mock Router and AuthService, verify navigation behavior
+- **Quick Wins Strategy**: Target simple files first (pipes, helpers, basic services) to build momentum
+
+### Test File Patterns
+```typescript
+// Component test setup
+beforeEach(async () => {
+  const serviceSpy = jasmine.createSpyObj('ServiceName', ['method1', 'method2']);
+  
+  await TestBed.configureTestingModule({
+    imports: [ComponentName, HttpClientTestingModule],
+    providers: [
+      { provide: ServiceName, useValue: serviceSpy },
+      { provide: MatDialogRef, useValue: dialogSpy },
+      // ... other providers
+    ],
+    schemas: [NO_ERRORS_SCHEMA]  // Ignore unknown child components
+  }).compileComponents();
+});
+
+// Mock data factory pattern
+const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
+  id: overrides.id ?? 1,
+  // ... all required properties with defaults
+  ...overrides
+});
+```
+
+### Testing Guidelines
+1. **DI Dependencies**: All injected services need mocks - common ones:
+   - `HttpClient` → add `HttpClientTestingModule` to imports
+   - `MatSnackBar`, `MatDialog`, `MatDialogRef` → create spy objects
+   - Custom services → spy with all methods stubbed
+2. **Async Operations**: Use `async/await` in tests, stub service methods to return `Promise.resolve()`
+3. **Reactive Queries**: Mock Dexie `liveQuery()` to return Observable with test data
+4. **Coverage Reports**: Located in `coverage/raptor-gig/index.html` after running with `--code-coverage`
+5. **Common Gotchas**:
+   - Missing service method in spy → Add to `createSpyObj()` array
+   - "Cannot read property of undefined" → Stub the return value with `.and.returnValue()`
+   - Sort errors → Ensure array is defined before calling `sort()` helper
 
 ### Deployment
 - **Auto-deployment**: Amplify automatically deploys from `main` and `test` branches
@@ -107,7 +157,30 @@ npm test              # Run unit tests (project needs more test coverage)
 3. Create interfaces in `shared/interfaces/`
 4. Implement services in `shared/services/`
 5. Add Dexie database tables if needed
-6. **Add tests** - project currently lacks comprehensive test coverage
+6. **Write tests alongside implementation** - aim for 60%+ coverage on new code
+7. Run tests before committing: `npm test -- --watch=false --browsers=ChromeHeadless`
+
+### Test-Driven Development Workflow
+1. **Identify target**: Pick a file with 0% coverage or low-hanging fruit
+2. **Read implementation**: Understand what the code does before writing tests
+3. **Set up mocks**: Create spy objects for all dependencies
+4. **Write tests**: Cover happy path, edge cases, error handling
+5. **Run and verify**: Ensure tests pass and check coverage increase
+6. **Commit incrementally**: Don't batch too many test files in one commit
+
+### Ongoing Test Coverage Initiative (Issue #355)
+**Goal**: Systematically increase test coverage across the codebase
+**Strategy**: 
+- Focus on "quick wins" - simple pipes, helpers, and services first
+- Add component tests for key user flows (trips, shifts, expenses)
+- Target files with business logic that are currently untested
+- Track progress: Update issue with coverage metrics after each batch
+
+**Files Added (Dec 2024)**:
+- Pipes: `truncate`, `duration-format`, `ordinal`, `no-seconds`, `short-address`, `order-by-date-asc`, `group-by-month`
+- Guards: `auth-guard.service`
+- Services: `dropdown-data.service`
+- Components: `trip-form`, `trips-table-basic`
 
 ### API Integration
 - Extend `ApiService` with new endpoints using `API_ENDPOINTS` constants
@@ -117,10 +190,22 @@ npm test              # Run unit tests (project needs more test coverage)
 - **Handle long operations**: Use `PollingService` for Google Sheets operations that may take 30+ seconds
 
 ### Styling Approach
-- Use Tailwind classes for layout and spacing
-- Angular Material components for interactive elements
-- Custom SCSS variables for brand colors and themes
+- **Prefer Tailwind CSS utility classes over custom SCSS** for all styling needs
+- Use Tailwind for layout, spacing, colors, typography, and responsive design
+- Angular Material components for interactive UI elements
+- Reserve SCSS only for truly custom needs (animations, complex selectors, vendor prefixes)
 - Mobile-first breakpoints: `sm:`, `md:`, `lg:`, `xl:`
+- Reference `color-vars.scss` for brand colors, but prefer Tailwind's color system
+- Avoid creating new SCSS files - migrate existing ones to Tailwind utilities
+
+### GitHub Issue Management
+When a GitHub issue link (e.g., `https://github.com/khanjal/gig-logger/issues/344`) is provided:
+- Use GitHub CLI (`gh`) to interact with the issue programmatically
+- Common workflows:
+  - Close issue after fix: `gh issue close <issue-number> --comment "Fixes: implementation details"`
+  - Add comment: `gh issue comment <issue-number> --body "Comment text"`
+  - Check issue status: `gh issue view <issue-number>`
+- This automates issue tracking without manual GitHub website updates
 
 ## Critical Dependencies
 - **@angular/material**: UI component library
