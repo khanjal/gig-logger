@@ -1,5 +1,5 @@
 // Mobile-First Diagnostics Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Main Container - Mobile First (Minimal Padding)
 .diagnostics-container {

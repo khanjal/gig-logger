@@ -1,5 +1,5 @@
 // Mobile-First Google Address Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Full width field container
 .field-full-width {

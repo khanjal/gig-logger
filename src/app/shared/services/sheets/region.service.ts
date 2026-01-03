@@ -29,24 +29,29 @@ export class RegionService extends GenericCrudService<IRegion> {
     }
 
      public async append(regions: IRegion[]) {
-        let items = await this.list();
-        regions.forEach(async item => {
-            let foundItem = items.find(x => x.region === item.region);
+        const items = await this.list();
+        
+        for (let i = 0; i < regions.length; i++) {
+            const item = regions[i];
+            const foundItem = items.find(x => x.region === item.region);
 
             if (foundItem) {
                 this._logger.debug('Found existing region item', foundItem);
-                item.id = foundItem.id;
-                item.bonus += foundItem.bonus;
-                item.cash += foundItem.cash;
-                item.pay += foundItem.pay;
-                item.tip += foundItem.tip;
-                item.total += foundItem.total;
-                item.trips += foundItem.trips;
+                // Accumulate new values into existing
+                foundItem.bonus += item.bonus;
+                foundItem.cash += item.cash;
+                foundItem.pay += item.pay;
+                foundItem.tip += item.tip;
+                foundItem.total += item.total;
+                foundItem.trips += item.trips;
+
+                // Replace with merged region
+                regions[i] = foundItem;
             }
             else {
                 item.id = undefined;
             }
-        });
+        }
 
         await spreadsheetDB.regions.bulkPut(regions);
     }

@@ -4,6 +4,7 @@ import { TypeService } from '@services/sheets/type.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { AddressService } from '@services/sheets/address.service';
 import { RegionService } from '@services/sheets/region.service';
+import { LoggerService } from '@services/logger.service';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
 import { IPlace } from '@interfaces/place.interface';
@@ -37,7 +38,8 @@ export class DropdownDataService {
     private _typeService: TypeService,
     private _placeService: PlaceService,
     private _addressService: AddressService,
-    private _regionService: RegionService
+    private _regionService: RegionService,
+    private logger: LoggerService
   ) {
     this.loadCanonicalLists();
   }
@@ -60,9 +62,9 @@ export class DropdownDataService {
       this.canonicalPlaces = places || [];
       this.canonicalLoaded = true;
       
-      console.log('[DropdownDataService] Loaded canonical lists');
+      this.logger.info('DropdownDataService - Loaded canonical lists');
     } catch (error) {
-      console.error('[DropdownDataService] Failed to load canonical lists:', error);
+      this.logger.error('DropdownDataService - Failed to load canonical lists:', error);
       // Continue anyway - will use database values only
     }
   }
@@ -167,7 +169,7 @@ export class DropdownDataService {
     // 1. Try exact match in database list
     let found = list?.find(item => normalize(item) === normalizedRaw);
     if (found) {
-      console.log(`[DropdownDataService] Exact match in database: "${raw}" -> "${found}"`);
+      this.logger.debug(`DropdownDataService - Exact match in database: "${raw}" -> "${found}"`);
       return found;
     }
     
@@ -175,7 +177,7 @@ export class DropdownDataService {
     if (canonicalList.length > 0) {
       found = canonicalList.find(item => normalize(item) === normalizedRaw);
       if (found) {
-        console.log(`[DropdownDataService] Exact match in canonical list: "${raw}" -> "${found}"`);
+        this.logger.debug(`DropdownDataService - Exact match in canonical list: "${raw}" -> "${found}"`);
         return found;
       }
     }
@@ -187,7 +189,7 @@ export class DropdownDataService {
              normalizedRaw.includes(normalizedItem);
     });
     if (found) {
-      console.log(`[DropdownDataService] Partial match in database: "${raw}" -> "${found}"`);
+      this.logger.debug(`DropdownDataService - Partial match in database: "${raw}" -> "${found}"`);
       return found;
     }
     
@@ -199,13 +201,13 @@ export class DropdownDataService {
                normalizedRaw.includes(normalizedItem);
       });
       if (found) {
-        console.log(`[DropdownDataService] Partial match in canonical list: "${raw}" -> "${found}"`);
+        this.logger.debug(`DropdownDataService - Partial match in canonical list: "${raw}" -> "${found}"`);
         return found;
       }
     }
     
     // 5. No match - return properly cased input
-    console.log(`[DropdownDataService] No match found for: "${raw}", returning proper case`);
+    this.logger.debug(`DropdownDataService - No match found for: "${raw}", returning proper case`);
     return this.toProperCase(raw);
   }
 

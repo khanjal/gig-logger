@@ -51,6 +51,7 @@
       "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"],
       "@utils/*": ["./src/app/shared/utils/*"],
+      "@test-harness": ["./src/test-harness"],
     },
     //"types": [
     //  "google.maps",

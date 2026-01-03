@@ -1,4 +1,4 @@
-@import "color-vars";
+@use 'color-vars' as *;
 
 .span-icon {
     vertical-align: middle;

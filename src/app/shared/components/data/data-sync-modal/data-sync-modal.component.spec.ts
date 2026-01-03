@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { DataSyncModalComponent } from './data-sync-modal.component';
 
 describe('DataSyncModalComponent', () => {
@@ -8,8 +8,9 @@ describe('DataSyncModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [DataSyncModalComponent]
-})
+      imports: [...commonTestingImports, DataSyncModalComponent],
+      providers: [...commonTestingProviders]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(DataSyncModalComponent);

@@ -1,4 +1,4 @@
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Mobile-First Range Panel Component Styles
 :host {

@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { from } from "rxjs";
 import { spreadsheetDB } from "@data/spreadsheet.db";
 import { IYearly } from "@interfaces/yearly.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
@@ -12,6 +13,6 @@ export class YearlyService extends GenericCrudService<IYearly> {
       super(spreadsheetDB.yearly); // Pass the table reference
     }
 
-    yearly$ = liveQuery(() => spreadsheetDB.yearly.toArray());
+    yearly$ = from(liveQuery(() => spreadsheetDB.yearly.toArray()));
 
 }

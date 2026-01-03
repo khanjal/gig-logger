@@ -24,6 +24,20 @@ export class DateHelper {
     }
 
     /**
+     * Backward-compatible wrapper for ISO formatting.
+     */
+    static getDateISO(date?: Date): string {
+        return this.toISO(date);
+    }
+
+    /**
+     * Generate a stable date key (yyyy-MM-dd) for shift identifiers.
+     */
+    static getDateKey(date: Date): string {
+        return this.toISO(date);
+    }
+
+    /**
      * Format an ISO date string (YYYY-MM-DD) to a locale-specific date string.
      * Avoids timezone issues by parsing components directly.
      */
@@ -107,6 +121,7 @@ export class DateHelper {
     }
 
     static getDayOfWeek(date: Date = new Date()) {
+        // Use local getDay() with properly parsed dates to avoid timezone issues
         let dayOfWeek = new Date(date).getDay();
         return dayOfWeek === 0 ? 7 : dayOfWeek;
     }

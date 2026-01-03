@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { GoogleAddressComponent } from './google-address.component';
 
 describe('GoogleAddressComponent', () => {
@@ -8,8 +8,9 @@ describe('GoogleAddressComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [GoogleAddressComponent]
-})
+      imports: [...commonTestingImports, GoogleAddressComponent],
+      providers: [...commonTestingProviders]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(GoogleAddressComponent);

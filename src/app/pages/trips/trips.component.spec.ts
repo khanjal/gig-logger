@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { TripComponent } from './trips.component';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -18,16 +18,15 @@ describe('TripComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [MatDialogModule, MatSnackBarModule, TripComponent],
-    providers: [
-        { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: [] },
+      imports: [...commonTestingImports, MatDialogModule, MatSnackBarModule, TripComponent],
+      providers: [
+        ...commonTestingProviders,
         { provide: GigWorkflowService, useValue: mockGigWorkflowService },
         { provide: SpreadsheetService, useValue: mockSpreadsheetService },
         { provide: ShiftService, useValue: mockShiftService },
         { provide: TripService, useValue: mockTripService }
-    ]
-})
+      ]
+    })
     .compileComponents();
 
     fixture = TestBed.createComponent(TripComponent);

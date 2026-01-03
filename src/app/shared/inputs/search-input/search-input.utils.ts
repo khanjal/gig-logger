@@ -7,7 +7,7 @@ export function createSearchItem(item: any, nameProperty: string): ISearchItem {
   
   const name = item[nameProperty];
   if (typeof name !== 'string') {
-    console.warn(`Invalid name property '${nameProperty}' in item:`, item);
+    console.warn(`[WARN]: Invalid name property '${nameProperty}' in item:`, item);
     return {
       id: item.id,
       name: String(name || ''),
@@ -53,7 +53,7 @@ export async function searchJson(searchType: string, value: string): Promise<ISe
         trips: 0
       }));
   } catch (error) {
-    console.warn(`Error loading ${searchType}.json:`, error);
+    console.warn(`[WARN]: Error loading ${searchType}.json:`, error);
     return [];
   }
 }

@@ -1,3 +1,11 @@
+// Inline logger for consistent format (matches LoggerService)
+const logger = {
+  info: (msg, ...args) => console.info(`[INFO]: ${msg}`, ...args),
+  warn: (msg, ...args) => console.warn(`[WARN]: ${msg}`, ...args),
+  error: (msg, ...args) => console.error(`[ERROR]: ${msg}`, ...args),
+  log: (msg, ...args) => console.log(`[LOG]: ${msg}`, ...args)
+};
+
 // Define the version and cache names
 const CACHE_VERSION = 'v1.0.9';
 const STATIC_CACHE = `static-cache-${CACHE_VERSION}`;
@@ -47,16 +55,16 @@ function shouldCache(request) {
 
 // Install event
 self.addEventListener('install', (event) => {
-  console.log(`[Service Worker] Installing version: ${CACHE_VERSION}`);
+  logger.info(`Service Worker - Installing version: ${CACHE_VERSION}`);
   
   // Skip waiting to activate the new service worker immediately
   self.skipWaiting();
   
   event.waitUntil(
     caches.open(CACHE_STRATEGIES.STATIC.name).then((cache) => {
-      console.log('[Service Worker] Caching app shell and static assets');
+      logger.info('Service Worker - Caching app shell and static assets');
       return cache.addAll(FILES_TO_CACHE).catch((error) => {
-        console.error('[Service Worker] Failed to cache files during install:', error);
+        logger.error('Service Worker - Failed to cache files during install:', error);
       });
     })
   );
@@ -64,7 +72,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event with cache cleanup
 self.addEventListener('activate', (event) => {
-  console.log(`[Service Worker] Activating version: ${CACHE_VERSION}`);
+  logger.info(`Service Worker - Activating version: ${CACHE_VERSION}`);
   const CACHE_WHITELIST = [
     CACHE_STRATEGIES.STATIC.name,
     CACHE_STRATEGIES.DYNAMIC.name,
@@ -78,7 +86,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (!CACHE_WHITELIST.includes(cacheName)) {
-            console.log(`[Service Worker] Deleting old cache: ${cacheName}`);
+            logger.info(`Service Worker - Deleting old cache: ${cacheName}`);
             return caches.delete(cacheName);
           }
         })
@@ -171,7 +179,7 @@ async function handleHtmlRequest(request) {
   // If both fail, serve offline page
   const offlineResponse = await caches.match('/offline.html');
   if (offlineResponse) {
-    console.log('[Service Worker] Serving offline page');
+    logger.info('Service Worker - Serving offline page');
     return offlineResponse;
   }
 
@@ -215,7 +223,7 @@ async function handleStaticRequest(request) {
       return response;
     }
   } catch (error) {
-    console.error('[Service Worker] Failed to fetch static asset:', error);
+    logger.error('Service Worker - Failed to fetch static asset:', error);
   }
   
   return new Response('Not Found', { status: 404 });
@@ -236,7 +244,7 @@ async function addToSyncQueue(request) {
       await self.registration.sync.register('sync-gig-data');
     }
   } catch (error) {
-    console.error('[Service Worker] Failed to add to sync queue:', error);
+    logger.error('Service Worker - Failed to add to sync queue:', error);
   }
 }
 
@@ -249,7 +257,7 @@ async function updateCache(request) {
       await cache.put(request, response);
     }
   } catch (error) {
-    console.error('[Service Worker] Background cache update failed:', error);
+    logger.error('Service Worker - Background cache update failed:', error);
   }
 }
 

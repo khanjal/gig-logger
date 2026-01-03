@@ -48,6 +48,11 @@ export class DiagnosticHelper {
     places: IPlace[], 
     selectedAddress: { [key: number]: string }
   ): any[] {
+    // Validate selectedAddress parameter
+    if (!selectedAddress || typeof selectedAddress !== 'object') {
+      throw new Error('selectedAddress parameter must be a valid object');
+    }
+
     const placeMap = new Map<string, IPlace>();
     places.forEach(p => placeMap.set(p.place, p));
 
@@ -156,8 +161,10 @@ export class DiagnosticHelper {
       }
 
       // Mark as fixed if all counts are zero
-      const allZero = item.trips === 0 && 
-        (itemType === 'place' || itemType === 'name' || itemType === 'address' || item.shifts === 0);
+      // For types without shifts (place, name, address), only check trips
+      const allZero = itemType === 'place' || itemType === 'name' || itemType === 'address'
+        ? item.trips === 0
+        : item.trips === 0 && item.shifts === 0;
       
       if (allZero) {
         (item as any).fixed = true;

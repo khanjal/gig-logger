@@ -1,4 +1,4 @@
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Enhanced stat cards
 .stat-card {

@@ -7,6 +7,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { ShiftService } from '@services/sheets/shift.service';
+import { LoggerService } from '@services/logger.service';
 import { ActionEnum } from '@enums/action.enum';
 import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
@@ -72,7 +73,12 @@ export class ShiftFormComponent implements OnInit {
   shift: IShift | undefined;
   maxRowId: number = 1;
 
-  constructor(private shiftService: ShiftService, private tripService: TripService, private router: Router) {}
+  constructor(
+    private shiftService: ShiftService,
+    private tripService: TripService,
+    private router: Router,
+    private logger: LoggerService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.maxRowId = await this.shiftService.getMaxRowId() || 1;
@@ -211,7 +217,7 @@ export class ShiftFormComponent implements OnInit {
     if (this.shiftForm.valid && this.rowId) {
       const formValue = this.shiftForm.value;
       if (this.shift) {
-        console.log('Editing shift with form value:', formValue);
+        this.logger.debug('Editing shift with form value:', formValue);
         // Store old key for comparison
         const oldKey = this.shift.key;
         // Update shift fields
@@ -271,7 +277,7 @@ export class ShiftFormComponent implements OnInit {
           }
         }
 
-        console.log('Updated shift:', this.shift);
+        this.logger.debug('Updated shift:', this.shift);
 
         await this.shiftService.update([this.shift]);
         this.editModeExit.emit(this.shift.rowId?.toString() || '');

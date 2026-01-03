@@ -1,5 +1,5 @@
 // Stats Table Component Styles
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Component-specific styles only - global table styles are in _tables.scss
 

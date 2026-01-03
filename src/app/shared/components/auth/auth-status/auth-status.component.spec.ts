@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { AuthStatusComponent } from './auth-status.component';
 
 describe('AuthStatusComponent', () => {
@@ -8,7 +8,8 @@ describe('AuthStatusComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthStatusComponent]
+      imports: [...commonTestingImports, AuthStatusComponent],
+      providers: [...commonTestingProviders]
     })
     .compileComponents();
 

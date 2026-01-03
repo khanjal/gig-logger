@@ -9,6 +9,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
+import { LoggerService } from '@services/logger.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -40,7 +41,8 @@ export class DiagnosticsComponent implements OnInit {
     private _tripService: TripService,
     private _addressService: AddressService,
     private _placeService: PlaceService,
-    private _nameService: NameService
+    private _nameService: NameService,
+    private logger: LoggerService
   ) {}
   ngOnInit() {
     // Diagnostics will only run when the user clicks the "Run Diagnostics" button
@@ -63,7 +65,7 @@ export class DiagnosticsComponent implements OnInit {
     
     // Check for duplicate shifts
     const duplicateShiftsResult = this.findDuplicateShifts(shifts);
-    console.log('Duplicate shifts found:', duplicateShiftsResult);
+    this.logger.debug('Duplicate shifts found:', duplicateShiftsResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Shifts',
       count: duplicateShiftsResult.items.length,
@@ -76,7 +78,7 @@ export class DiagnosticsComponent implements OnInit {
     
     // Check for empty shifts
     const emptyShifts = shifts.filter((s: IShift) => !s.start && !s.finish && s.trips === 0 && s.totalTrips === 0);
-    console.log('Empty shifts found:', emptyShifts);    this.dataDiagnostics.push({
+    this.logger.debug('Empty shifts found:', emptyShifts);    this.dataDiagnostics.push({
       name: 'Empty Shifts',
       count: emptyShifts.length,
       severity: emptyShifts.length > 0 ? 'warning' : 'info',
@@ -87,7 +89,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Check for orphaned trips
     const orphanedTrips = this.findOrphanedTrips(trips, shifts);
-    console.log('Orphaned trips found:', orphanedTrips);    this.dataDiagnostics.push({
+    this.logger.debug('Orphaned trips found:', orphanedTrips);    this.dataDiagnostics.push({
       name: 'Orphaned Trips',
       count: orphanedTrips.length,
       severity: orphanedTrips.length > 0 ? 'error' : 'info',
@@ -98,7 +100,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Check for duplicate places with different casing
     const duplicatePlacesResult = this.findDuplicatePlaces(places);
-    console.log('Duplicate places found:', duplicatePlacesResult);
+    this.logger.debug('Duplicate places found:', duplicatePlacesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Places',
       count: duplicatePlacesResult.items.length,
@@ -111,7 +113,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Check for duplicate addresses with different casing/variations
     const duplicateAddressesResult = this.findDuplicateAddresses(addresses);
-    console.log('Duplicate addresses found:', duplicateAddressesResult);
+    this.logger.debug('Duplicate addresses found:', duplicateAddressesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Addresses',
       count: duplicateAddressesResult.items.length,
@@ -124,7 +126,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Check for duplicate names with different casing
     const duplicateNamesResult = this.findDuplicateNames(names);
-    console.log('Duplicate names found:', duplicateNamesResult);
+    this.logger.debug('Duplicate names found:', duplicateNamesResult);
     this.dataDiagnostics.push({
       name: 'Duplicate Names',
       count: duplicateNamesResult.items.length,
@@ -135,7 +137,7 @@ export class DiagnosticsComponent implements OnInit {
       groups: duplicateNamesResult.groups
     });
     
-    console.log('Final dataDiagnostics:', this.dataDiagnostics);
+    this.logger.info('Final dataDiagnostics:', this.dataDiagnostics);
   }
 
   private findDuplicateShifts(shifts: IShift[]): { items: IShift[], groups: IShift[][] } {

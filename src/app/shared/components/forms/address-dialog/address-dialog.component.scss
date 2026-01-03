@@ -1,4 +1,4 @@
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Mobile-first address dialog styling
 .address-dialog {

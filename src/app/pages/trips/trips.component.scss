@@ -1,5 +1,5 @@
 // Mobile-First Trips Component Styles
-@import "../../shared/styles/color-vars";
+@use '../../shared/styles/color-vars' as *;
 
 // Remove all styles now handled by Tailwind in the HTML
 // Only keep styles that are still needed and not replaced by Tailwind

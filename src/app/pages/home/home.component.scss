@@ -1,5 +1,5 @@
 // Mobile-First Home Component Styles
-@import "../../shared/styles/color-vars";
+@use '../../shared/styles/color-vars' as *;
 
 .container {
   max-width: 100%;

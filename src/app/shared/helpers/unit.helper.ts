@@ -54,6 +54,6 @@ export class UnitHelper {
     static setPreferredDistanceUnit(unit: 'mi' | 'km'): void {
         // TODO: Implement when user preference system is added
         // localStorage.setItem('preferredDistanceUnit', unit);
-        console.log(`Distance unit preference set to: ${unit} (not persisted yet)`);
+        console.log(`[INFO]: Distance unit preference set to: ${unit} (not persisted yet)`);
     }
 }

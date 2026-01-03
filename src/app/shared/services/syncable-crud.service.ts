@@ -59,15 +59,20 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
   async updateRowIds(rowId: number): Promise<void> {
     const maxId = await this.getMaxRowId();
     let nextRowId = rowId + 1;
+    const itemsToUpdate: T[] = [];
     
     while (nextRowId <= maxId) {
       const item = await this.getByRowId(nextRowId);
       if (item) {
         item.rowId = rowId;
-        await this.update([item]);
+        itemsToUpdate.push(item);
         rowId++;
       }
       nextRowId++;
+    }
+
+    if (itemsToUpdate.length > 0) {
+      await this.update(itemsToUpdate);
     }
   }
 }

@@ -1,4 +1,4 @@
-@import "color-vars";
+@use 'color-vars' as *;
 
 // Enhanced add button for mobile
 .add-button {

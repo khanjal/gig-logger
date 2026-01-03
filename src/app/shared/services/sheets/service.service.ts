@@ -29,25 +29,29 @@ export class ServiceService extends GenericCrudService<IService> {
     }
 
     public async append(services: IService[]) {
-        let existingServices = await this.list();
+        const existingServices = await this.list();
 
-        services.forEach(async service => {
-            let existingService = existingServices.find(x => x.service === service.service);
+        for (let i = 0; i < services.length; i++) {
+            const service = services[i];
+            const existingService = existingServices.find(x => x.service === service.service);
 
             if (existingService) {
                 this._logger.debug('Found existing service', existingService);
-                service.id = existingService.id;
-                service.bonus += existingService.bonus;
-                service.cash += existingService.cash;
-                service.pay += existingService.pay;
-                service.tip += existingService.tip;
-                service.total += existingService.total;
-                service.trips += existingService.trips;
+                // Accumulate new values into existing
+                existingService.bonus += service.bonus;
+                existingService.cash += service.cash;
+                existingService.pay += service.pay;
+                existingService.tip += service.tip;
+                existingService.total += service.total;
+                existingService.trips += service.trips;
+
+                // Replace with merged service
+                services[i] = existingService;
             }
             else {
                 service.id = undefined;
             }
-        });
+        }
 
         await spreadsheetDB.services.bulkPut(services);
     }
