@@ -175,9 +175,8 @@
   color: $text-primary;
   text-align: right;
   flex: 1 1 auto;
-  min-width: 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  min-width: fit-content;
+  white-space: nowrap;
 
   &.status-disabled {
     color: $text-disabled;
@@ -202,7 +201,9 @@
   &.error-text {
     color: $danger-color;
     font-size: 0.8125rem;
-    word-break: break-word;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
