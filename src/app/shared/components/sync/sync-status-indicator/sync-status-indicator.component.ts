@@ -6,6 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
 import { PollingService } from '@services/polling.service';
@@ -40,7 +41,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     private syncStatusService: SyncStatusService,
     private pollingService: PollingService,
     private unsavedDataService: UnsavedDataService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +52,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       .subscribe(state => {
         this.syncState = state;
         this.updateTimeSinceLastSync();
+        // Check for unsaved changes when sync state changes
+        this.checkUnsavedChanges();
       });
 
     // Subscribe to messages
@@ -59,11 +63,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.messages = messages;
       });
 
-    // Update time display and check for unsaved changes every 30 seconds
+    // Update time display and check for unsaved changes every 5 seconds for better responsiveness
     this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
       this.checkUnsavedChanges();
-    }, 30000);
+    }, 5000);
     
     // Initial check for unsaved changes
     this.checkUnsavedChanges();
@@ -73,7 +77,17 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.hasUnsavedChanges = await this.unsavedDataService.hasUnsavedData();
   }
 
-  async forceSync(): Promise<void> {
+  async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
+    await this.checkUnsavedChanges();
+    if (this.hasUnsavedChanges) {
+      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
       height: '400px',
       width: '500px',
@@ -89,6 +103,18 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   async updateFromSpreadsheet(): Promise<void> {
+    // Safety check: prevent update if there are unsaved changes
+    await this.checkUnsavedChanges();
+    if (this.hasUnsavedChanges) {
+      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
       height: '400px',
       width: '500px',
