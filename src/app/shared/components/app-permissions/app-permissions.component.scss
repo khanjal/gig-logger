@@ -1,6 +1,9 @@
 .permissions-card {
   margin-bottom: 1.5rem;
 
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+
   mat-card-title {
     mat-icon {
       margin-right: 0.5rem;
@@ -68,8 +71,30 @@
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--color-surface) 3%, black);
+  background: color-mix(in srgb, var(--color-surface) 92%, white);
   width: fit-content;
+}
+
+// Light mode state accents
+.status-badge.text-green-600 {
+  background: color-mix(in srgb, var(--success-500) 12%, white);
+  color: var(--success-800);
+}
+
+.status-badge.text-red-600 {
+  background: color-mix(in srgb, var(--error-500) 12%, white);
+  color: var(--error-800);
+}
+
+.status-badge.text-yellow-600 {
+  background: color-mix(in srgb, var(--warning-500) 12%, white);
+  color: var(--warning-800);
+}
+
+.status-badge.text-gray-500,
+.status-badge.text-gray-400 {
+  background: color-mix(in srgb, var(--color-surface) 88%, white);
+  color: var(--gray-700);
 }
 
 .status-icon {
@@ -149,5 +174,62 @@
   p {
     margin: 0;
     line-height: 1.5;
+  }
+}
+
+:host-context(html.theme-dark) {
+  .permissions-card {
+    background: var(--color-surface);
+  }
+
+  .status-badge {
+    background: color-mix(in srgb, var(--color-surface-2) 35%, transparent);
+  }
+
+  .status-badge.text-green-600 {
+    background: color-mix(in srgb, var(--success-500) 18%, transparent);
+    color: var(--success-200);
+  }
+
+  .status-badge.text-red-600 {
+    background: color-mix(in srgb, var(--error-500) 18%, transparent);
+    color: var(--error-200);
+  }
+
+  .status-badge.text-yellow-600 {
+    background: color-mix(in srgb, var(--warning-500) 18%, transparent);
+    color: var(--warning-200);
+  }
+
+  .status-badge.text-gray-500,
+  .status-badge.text-gray-400 {
+    background: color-mix(in srgb, var(--color-surface-2) 45%, transparent);
+    color: var(--gray-200);
+  }
+
+  .permission-help {
+    background: color-mix(in srgb, var(--info-400) 10%, transparent);
+    border-left-color: var(--info-400);
+
+    &.warning {
+      background: color-mix(in srgb, var(--warning-400) 12%, transparent);
+      border-left-color: var(--warning-400);
+
+      .help-icon {
+        color: var(--warning-300);
+      }
+    }
+
+    .help-icon {
+      color: var(--info-300);
+    }
+
+    p {
+      color: var(--color-text-primary);
+    }
+  }
+
+  .permissions-footer .footer-icon {
+    color: var(--gray-300);
   }
 }

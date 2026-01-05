@@ -108,7 +108,7 @@
         
         <!-- Grouped Items (Duplicates) -->
         <div *ngIf="item.groups && item.groups.length > 0" class="space-y-4">
-          <div class="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">
+          <div class="text-sm text-gray-600 dark:text-gray-200 mb-3 font-medium">
             Found {{ item.items?.length }} items in {{ item.groups.length }} duplicate groups
           </div>
           
@@ -116,7 +116,7 @@
             <div class="bg-surface-3 px-4 py-2 border-b border-soft flex items-center justify-between">
               <span class="font-semibold text-sm text-gray-700 dark:text-gray-300">Group {{ groupIndex + 1 }}</span>
               <div class="flex items-center gap-2">
-                <span class="text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-300 px-2 py-1 rounded">{{ group.length }} items</span>
+                <span class="text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-100 px-2 py-1 rounded">{{ group.length }} items</span>
                 <button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region'" 
                         mat-mini-fab color="primary" 
                         [disabled]="!selectedValue[groupIndex]"
@@ -212,13 +212,13 @@
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-2 py-0.5 bg-primary-500/20 text-blue-700 dark:text-blue-300 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
         <span class="font-semibold text-gray-800 dark:text-gray-200" [class.line-through]="item.markedForDelete">{{ item.date }}</span>
-        <span class="text-gray-600 dark:text-gray-300 text-sm">({{ item.key }})</span>
+        <span class="text-gray-600 dark:text-gray-200 text-sm">({{ item.key }})</span>
         <span *ngIf="item.markedForDelete" class="px-2 py-0.5 bg-error-500/20 text-red-700 dark:text-red-400 rounded text-xs">MARKED FOR DELETE</span>
       </div>
       <div class="flex items-center justify-between gap-2 mt-1">
-        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-200">
           <span *ngIf="item.totalTrips !== undefined">{{ item.totalTrips }} trips</span>
-          <span *ngIf="item.start" class="text-gray-500 dark:text-gray-400">{{ item.start }} - {{ item.finish }}</span>
+          <span *ngIf="item.start" class="text-gray-500 dark:text-gray-300">{{ item.start }} - {{ item.finish }}</span>
         </div>
         <button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed" 
                 mat-icon-button color="primary" 
@@ -234,7 +234,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-2 py-0.5 bg-success-500/20 text-green-700 dark:text-green-400 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
         <span class="font-semibold text-gray-800 dark:text-gray-200">{{ item.date }}</span>
-        <span class="text-gray-600 dark:text-gray-300 text-sm">({{ item.key }})</span>
+        <span class="text-gray-600 dark:text-gray-200 text-sm">({{ item.key }})</span>
       </div>
       <div class="flex items-center justify-between gap-2 mt-1">
         <div class="flex flex-wrap items-center gap-2 text-sm">
@@ -249,7 +249,7 @@
           <mat-icon>build</mat-icon>
         </button>
       </div>
-      <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
+      <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-200 mt-1">
         <span *ngIf="item.pickupTime">{{ item.pickupTime }}</span>
         <span *ngIf="item.pickupTime && item.dropoffTime">-</span>
         <span *ngIf="item.dropoffTime">{{ item.dropoffTime }}</span>

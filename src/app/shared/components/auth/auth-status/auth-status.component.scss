@@ -3,11 +3,8 @@
 
 // Auth Status Card Container - Mobile First
 .auth-status-card {
-  margin: 1rem 0;
   background: var(--color-surface);
-  border-radius: 1rem;
   box-shadow: var(--shadow-light), var(--shadow-sm);
-  border: 1px solid var(--color-border-light);
   overflow: hidden;
   
   mat-card-header {
@@ -448,10 +445,20 @@
 
 // Mat-chip styling overrides for better mobile display
 mat-chip {
+  --chip-text-color: var(--color-text-primary);
   min-height: 32px;
   font-size: 0.75rem;
   font-weight: 500;
   flex-shrink: 0;
+  color: var(--chip-text-color);
+  .mat-mdc-chip__text,
+  .mdc-evolution-chip__text-label {
+    color: var(--chip-text-color) !important;
+  }
+  .chip-text {
+    color: var(--chip-text-color) !important;
+    font-weight: 600;
+  }
   
   @media (min-width: 768px) {
     min-height: 36px;
@@ -466,7 +473,6 @@ mat-chip {
   // Custom color classes for authentication status
   &.chip-success {
     background-color: color-mix(in srgb, var(--success-500) 20%, transparent) !important;
-    color: var(--success-700) !important;
     border: 1px solid color-mix(in srgb, var(--success-500) 30%, transparent);
     
     &:hover {
@@ -476,7 +482,6 @@ mat-chip {
 
   &.chip-error {
     background-color: color-mix(in srgb, var(--error-500) 20%, transparent) !important;
-    color: var(--error-700) !important;
     border: 1px solid color-mix(in srgb, var(--error-500) 30%, transparent);
     
     &:hover {
@@ -486,12 +491,18 @@ mat-chip {
 
   &.chip-warning {
     background-color: color-mix(in srgb, var(--warning-500) 20%, transparent) !important;
-    color: var(--warning-700) !important;
     border: 1px solid color-mix(in srgb, var(--warning-500) 30%, transparent);
     
     &:hover {
       background-color: color-mix(in srgb, var(--warning-500) 30%, transparent) !important;
     }
+  }
+}
+
+// Dark mode: force chip text to white for readability
+:host-context(html.theme-dark) {
+  mat-chip {
+    --chip-text-color: white;
   }
 }
 
