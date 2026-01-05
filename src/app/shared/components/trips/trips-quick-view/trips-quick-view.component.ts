@@ -35,6 +35,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
   @Input() index: number = 0;
+  @Input() stripeEven?: boolean;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
@@ -102,6 +103,22 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
   private setExpansionState() {
     this.isExpanded = (!this.trip.dropoffTime && !this.trip.exclude);
+  }
+
+  /**
+   * Determine stripe parity: external override → loop index → rowId fallback
+   */
+  get isEvenStripe(): boolean {
+    if (this.stripeEven !== undefined) {
+      return this.stripeEven;
+    }
+
+    if (this.index !== undefined && this.index !== null) {
+      return this.index % 2 === 0;
+    }
+
+    const rowId = this.trip?.rowId ?? 0;
+    return rowId % 2 === 0;
   }
 
   toggleExpansion() {

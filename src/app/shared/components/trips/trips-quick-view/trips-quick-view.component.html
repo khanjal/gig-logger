@@ -7,8 +7,8 @@
     'trip-border-update': !trip.saved && trip.action === 'UPDATE',
     'trip-border-delete': !trip.saved && trip.action === 'DELETE',
     'trip-border-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
-    'bg-gradient-to-r from-blue-500/5 to-surface': trip.rowId % 2 === 0 && !trip.exclude,
-    'bg-gradient-to-r from-green-500/5 to-surface': trip.rowId % 2 === 1 && !trip.exclude
+    'bg-gradient-to-r from-blue-500/5 to-surface': isEvenStripe && !trip.exclude,
+    'bg-gradient-to-r from-green-500/5 to-surface': !isEvenStripe && !trip.exclude
   }"
   style="position: relative;"
 >
@@ -26,8 +26,8 @@
   <!-- Simplified Mobile-First Header -->
   <div class="p-3 border-b border-soft"
     [ngClass]="{
-      'bg-blue-500/10': trip.rowId % 2 === 0,
-      'bg-green-500/10': trip.rowId % 2 === 1
+      'bg-blue-500/10': isEvenStripe,
+      'bg-green-500/10': !isEvenStripe
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -269,8 +269,8 @@
   <div class="flex items-center justify-between p-3 border-t border-soft"
     *ngIf="showActions"
     [ngClass]="{
-      'bg-blue-500/10': trip.rowId % 2 === 0,
-      'bg-green-500/10': trip.rowId % 2 === 1
+      'bg-blue-500/10': isEvenStripe,
+      'bg-green-500/10': !isEvenStripe
     }">
     <!-- Edit Button -->
     <button mat-button 
