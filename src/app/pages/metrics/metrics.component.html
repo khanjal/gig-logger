@@ -14,7 +14,7 @@
     </mat-form-field>
   </div>
 
-  <div class="bg-white rounded-lg shadow p-4 md:col-span-2">
+  <div class="bg-surface rounded-lg shadow p-4 md:col-span-2 mb-8">
       <h2 class="text-lg font-semibold mb-2">Total Pay</h2>
       <canvas baseChart
       [data]="payData"
@@ -22,7 +22,7 @@
       [type]="'bar'"
       class="w-full h-[500px] max-h-[500px]"></canvas>
   </div>
-  <div *ngIf="dailyEarningsData.datasets.length > 1" class="bg-white rounded-lg shadow p-4 md:col-span-2">
+  <div *ngIf="dailyEarningsData.datasets.length > 1" class="bg-surface rounded-lg shadow p-4 md:col-span-2 mb-8">
     <h2 class="text-lg font-semibold mb-2">Daily Earnings by Service</h2>
     <canvas baseChart
       [data]="dailyEarningsData"
@@ -31,7 +31,7 @@
       class="w-full h-[500px] max-h-[500px]"></canvas>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white rounded-lg shadow p-4">
+      <div class="bg-surface rounded-lg shadow p-4">
       <h2 class="text-lg font-semibold mb-2">Total Trips</h2>
       <canvas baseChart
           [data]="tripsData"
@@ -39,7 +39,7 @@
           [type]="'bar'"
           class="w-full h-[500px] max-h-[500px]"></canvas>
       </div>
-      <div class="bg-white rounded-lg shadow p-4">
+      <div class="bg-surface rounded-lg shadow p-4">
       <h2 class="text-lg font-semibold mb-2">Total Distance</h2>
       <canvas baseChart
           [data]="distanceData"
@@ -47,7 +47,7 @@
           [type]="'line'"
           class="w-full h-[500px] max-h-[500px]"></canvas>
       </div>
-      <div *ngIf="servicePieData && servicePieData.labels && servicePieData.labels.length > 1" class="bg-white rounded-lg shadow p-4 md:col-span-2 max-w-md mx-auto">
+      <div *ngIf="servicePieData && servicePieData.labels && servicePieData.labels.length > 1" class="bg-surface rounded-lg shadow p-4 md:col-span-2 max-w-md mx-auto">
       <h2 class="text-lg font-semibold mb-2">Service Count Distribution</h2>
       <canvas baseChart
           [data]="servicePieData"

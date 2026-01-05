@@ -105,8 +105,8 @@ html.theme-dark {
   --color-text-inverse: #e5e7eb;
   --color-text-disabled: #475569;
 
-  --color-border: #{map-get($gray, 700)};
-  --color-border-light: #{map-get($gray, 700)};
+  --color-border: #{map-get($gray, 600)};
+  --color-border-light: #{map-get($gray, 600)};
   --color-border-dark: #{map-get($gray, 500)};
   --color-border-focus: #{$primary-color};
 

@@ -86,7 +86,7 @@
         <div class="overflow-x-auto">
           <table class="min-w-full bg-surface rounded-lg shadow mb-8">
             <thead>
-              <tr class="bg-blue-100">
+              <tr class="bg-primary-500/20">
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Name</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
@@ -96,7 +96,7 @@
             </thead>
             <tbody>
               <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
-                <tr class="even:bg-gray-50" [class.!bg-yellow-100]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
+                <tr class="even:bg-gray-50" [class.!bg-warning-500/20]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
                     {{ expense.date | date:'EEE M/d' }}
                   </td>
