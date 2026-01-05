@@ -79,6 +79,7 @@
               [class.dark:bg-slate-800]="isCategoryEnabled(category)"
               [class.border-blue-500]="isCategoryEnabled(category)"
               [class.border-gray-300]="!isCategoryEnabled(category)"
+              [class.dark:border-gray-600]="!isCategoryEnabled(category)"
               [class.dark:border-blue-400]="isCategoryEnabled(category)"
               [class.dark:border-slate-600]="!isCategoryEnabled(category)"
               (click)="toggleCategory(category)">
@@ -188,7 +189,7 @@
             <div class="flex-end">
               <div class="text-right">
                 <div class="text-sm text-secondary whitespace-nowrap">{{ group.totalTrips }} trips</div>
-                <div class="text-sm font-bold text-green-600 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
+                <div class="text-sm font-bold text-green-600 dark:text-green-400 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
               </div>
               <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
             </div>
@@ -232,10 +233,10 @@
               </div>
               <div class="flex-end gap-4">
                 <div class="text-right">
-                  <div class="text-sm text-gray-600">{{ result.totalTrips }} trips</div>
-                  <div class="text-sm font-bold text-green-600">{{ result.totalEarnings | currency }}</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ result.totalTrips }} trips</div>
+                  <div class="text-sm font-bold text-green-600 dark:text-green-400">{{ result.totalEarnings | currency }}</div>
                 </div>
-                <mat-icon class="text-gray-400">
+                <mat-icon class="text-gray-400 dark:text-gray-500">
                   {{ isResultExpanded(getResultKey(result, group.month)) ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
               </div>

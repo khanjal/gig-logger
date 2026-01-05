@@ -40,7 +40,7 @@
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">{{ trip.dropoffTime | noseconds:prefers24Hour }}</span>
                                 </td>
-                                <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400': (trip.tip + trip.cash) === 0, 'text-green-600 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400 dark:text-gray-500': (trip.tip + trip.cash) === 0, 'text-green-600 dark:text-green-400 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.name | truncate:10}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.endAddress | truncate:75}}</td>
                             </tr>

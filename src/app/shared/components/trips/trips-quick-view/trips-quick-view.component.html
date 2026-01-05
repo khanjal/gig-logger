@@ -155,17 +155,17 @@
       </div>
       <div *ngIf="trip.amountPerTime" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
         <div class="text-xs text-secondary mb-1">Rate/Hr</div>
-        <div class="text-sm font-bold text-green-600">${{trip.amountPerTime | number:'1.2-2'}}</div>
+        <div class="text-sm font-bold text-green-600 dark:text-green-400">${{trip.amountPerTime | number:'1.2-2'}}</div>
       </div>
       <div *ngIf="trip.total && trip.distance > 0" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
         <div class="text-xs text-secondary mb-1">Rate/Mile</div>
-        <div class="text-sm font-bold text-blue-600">${{(trip.total / trip.distance) | number:'1.2-2'}}</div>
+        <div class="text-sm font-bold text-blue-600 dark:text-blue-400">${{(trip.total / trip.distance) | number:'1.2-2'}}</div>
       </div>
     </div>
     <!-- Payment Breakdown -->
     <div class="mb-4" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
       <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-        <mat-icon class="text-blue-400 text-base">payments</mat-icon>
+        <mat-icon class="text-blue-400 dark:text-blue-300 text-base">payments</mat-icon>
         Payment Details
       </h3>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -188,15 +188,15 @@
       </div>
       <div *ngIf="trip.total" class="mt-2 p-2 bg-success-500/10 rounded border border-success-200 dark:border-success-700">
         <div class="flex justify-between items-center">
-          <span class="text-sm font-semibold text-green-700">Total</span>
-          <span class="text-lg font-bold text-green-700">{{trip.total | currency}}</span>
+          <span class="text-sm font-semibold text-green-700 dark:text-green-400">Total</span>
+          <span class="text-lg font-bold text-green-700 dark:text-green-400">{{trip.total | currency}}</span>
         </div>
       </div>
     </div>
     <!-- Addresses -->
     <div class="mb-4" *ngIf="trip.startAddress || trip.endAddress">
       <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-        <mat-icon class="text-green-400 text-base">place</mat-icon>
+        <mat-icon class="text-green-400 dark:text-green-300 text-base">place</mat-icon>
         Addresses
       </h3>
       <div class="space-y-2">
@@ -225,7 +225,7 @@
     <!-- Additional Info: Only show if more than just region -->
     <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region">
       <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-        <mat-icon class="text-purple-400 text-base">info</mat-icon>
+        <mat-icon class="text-purple-400 dark:text-purple-300 text-base">info</mat-icon>
         Trip Info
       </h3>
       <div class="grid grid-cols-2 gap-2">
@@ -258,11 +258,11 @@
     </div>
     <!-- Note -->
     <div *ngIf="trip.note" class="p-3 bg-warning-500/10 rounded-lg border border-warning-200 dark:border-warning-700">
-      <h3 class="text-sm font-semibold text-yellow-800 mb-2 flex items-center gap-2">
-        <mat-icon class="text-yellow-600 text-base">format_quote</mat-icon>
+      <h3 class="text-sm font-semibold text-yellow-800 dark:text-yellow-300 mb-2 flex items-center gap-2">
+        <mat-icon class="text-yellow-600 dark:text-yellow-400 text-base">format_quote</mat-icon>
         Note
       </h3>
-      <p class="text-sm text-yellow-700 italic">{{trip.note}}</p>
+      <p class="text-sm text-yellow-700 dark:text-yellow-300 italic">{{trip.note}}</p>
     </div>
   </div>
   <!-- Simplified Action Bar -->
@@ -274,7 +274,7 @@
     }">
     <!-- Edit Button -->
     <button mat-button 
-            class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 rounded-lg text-sm font-medium hover:bg-primary-500/20 transition" 
+            class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 dark:border-blue-700 rounded-lg text-sm font-medium hover:bg-primary-500/20 transition" 
             (click)="editTrip()" 
             title="Edit Trip">
       <mat-icon class="text-blue-600 dark:text-blue-400 text-base">edit</mat-icon>
@@ -283,19 +283,19 @@
     <!-- Center Action Buttons -->
     <div class="flex gap-2">
       <button mat-button 
-              class="flex items-center gap-1 px-3 py-2 bg-success-500/10 text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-success-500/20 transition" 
+              class="flex items-center gap-1 px-3 py-2 bg-success-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-700 rounded-lg text-sm font-medium hover:bg-success-500/20 transition" 
               (click)="setPickupTime()"
               *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Pickup Time">
-        <mat-icon class="text-green-500 text-base">file_upload</mat-icon>
+        <mat-icon class="text-green-500 dark:text-green-400 text-base">file_upload</mat-icon>
         <span class="hidden sm:inline">Pickup</span>
       </button>
       <button mat-button 
-              class="flex items-center gap-1 px-3 py-2 bg-warning-500/10 text-orange-700 border border-orange-200 rounded-lg text-sm font-medium hover:bg-warning-500/20 transition" 
+              class="flex items-center gap-1 px-3 py-2 bg-warning-500/10 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-700 rounded-lg text-sm font-medium hover:bg-warning-500/20 transition" 
               (click)="setDropoffTime()"
               *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
               title="Set Dropoff Time">
-        <mat-icon class="text-orange-500 text-base">file_download</mat-icon>
+        <mat-icon class="text-orange-500 dark:text-orange-400 text-base">file_download</mat-icon>
         <span class="hidden sm:inline">Dropoff</span>
       </button>
     </div>
