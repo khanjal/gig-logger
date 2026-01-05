@@ -1,226 +1,177 @@
 <!-- Mobile-First PWA Header Component -->
-<header class="app-header">
-  <!-- Main Toolbar -->
-  <mat-toolbar class="main-toolbar">
-    <!-- Menu Button -->
-    <div class="toolbar-section toolbar-section--menu">
-      <button (click)="toggleMenu()" 
-              class="menu-button" 
+<header class="fixed inset-x-0 top-0 z-[1000] bg-surface shadow-soft">
+  <mat-toolbar class="flex items-center h-14 min-h-14 px-4 bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-700)] text-inverse gap-2">
+    <div class="flex items-center">
+      <button (click)="toggleMenu()"
+              class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
               aria-label="Toggle menu"
               matTooltip="Menu"
               matTooltipPosition="below">
         <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
       </button>
     </div>
-    
-    <!-- Spacer -->
-    <div class="toolbar-spacer"></div>
-    
-    <!-- Action Buttons -->
-    <div class="toolbar-section toolbar-section--actions">
-      <a routerLink="/" 
-         class="action-button" 
+
+    <div class="flex-1"></div>
+
+    <div class="flex items-center gap-1">
+      <a routerLink="/"
+         class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
          aria-label="Go to home page"
          matTooltip="Home"
          matTooltipPosition="below">
         <mat-icon>home</mat-icon>
       </a>
-      
-      <!-- Authenticated user navigation -->
+
       <ng-container *ngIf="isAuthenticated && defaultSheet">
-        <a routerLink="/trips" 
-           class="action-button" 
+        <a routerLink="/trips"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View trips"
            matTooltip="Trips"
            matTooltipPosition="below">
           <mat-icon>navigation</mat-icon>
           <span *ngIf="unsavedTripsCount > 0" class="notification-badge">{{ unsavedTripsCount }}</span>
         </a>
-        <a routerLink="/shifts" 
-           class="action-button" 
+        <a routerLink="/shifts"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View shifts"
            matTooltip="Shifts"
            matTooltipPosition="below">
           <mat-icon>today</mat-icon>
           <span *ngIf="unsavedShiftsCount > 0" class="notification-badge">{{ unsavedShiftsCount }}</span>
         </a>
-        <a routerLink="/metrics" 
-           class="action-button" 
+        <a routerLink="/metrics"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View metrics"
            matTooltip="Metrics"
            matTooltipPosition="below">
           <mat-icon>bar_chart</mat-icon>
         </a>
       </ng-container>
-      
-      <!-- Tools section for desktop only (before sync and setup) -->
+
+      <button (click)="cycleTheme()"
+              class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+              aria-label="Toggle theme"
+              matTooltip="Theme: {{ themeLabel }}"
+              matTooltipPosition="below">
+        <mat-icon>{{ themeIcon }}</mat-icon>
+      </button>
+
       <ng-container *ngIf="isAuthenticated && defaultSheet">
-        <div class="desktop-tools desktop-only">
-          <a routerLink="/stats" 
-             class="action-button" 
-             aria-label="View statistics"
-             matTooltip="Statistics"
-             matTooltipPosition="below">
+        <div class="hidden lg:flex items-center gap-1">
+          <a routerLink="/stats" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View statistics" matTooltip="Statistics" matTooltipPosition="below">
             <mat-icon>table_chart</mat-icon>
           </a>
-          <a routerLink="/expenses"
-             class="action-button"
-             aria-label="View expenses"
-             matTooltip="Expenses"
-             matTooltipPosition="below">
+          <a routerLink="/expenses" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View expenses" matTooltip="Expenses" matTooltipPosition="below">
             <mat-icon>receipt_long</mat-icon>
           </a>
-          <a routerLink="/diagnostics"
-             class="action-button"
-             aria-label="View diagnostics"
-             matTooltip="Diagnostics"
-             matTooltipPosition="below">
+          <a routerLink="/diagnostics" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View diagnostics" matTooltip="Diagnostics" matTooltipPosition="below">
             <mat-icon>troubleshoot</mat-icon>
           </a>
-          <a routerLink="/search"
-             class="action-button"
-             aria-label="Search"
-             matTooltip="Search"
-             matTooltipPosition="below">
+          <a routerLink="/search" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Search" matTooltip="Search" matTooltipPosition="below">
             <mat-icon>search</mat-icon>
           </a>
         </div>
       </ng-container>
 
-      <!-- Sync Status Indicator (only show when authenticated) -->
       <ng-container *ngIf="isAuthenticated && defaultSheet">
         <app-sync-status-indicator></app-sync-status-indicator>
       </ng-container>
 
-      <a routerLink="/setup" 
-         class="action-button" 
+      <a routerLink="/setup"
+         class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
          aria-label="Open settings"
          matTooltip="Settings"
          matTooltipPosition="below">
         <mat-icon>settings</mat-icon>
       </a>
     </div>
-      </mat-toolbar>
-  
-  <!-- Slide-out Menu Overlay -->
-  <div class="menu-overlay" 
-       [class.menu-overlay--open]="isMenuOpen" 
+  </mat-toolbar>
+
+  <div class="fixed inset-0 z-[1001] bg-overlay backdrop-blur-sm opacity-0 pointer-events-none transition"
+       [class.opacity-100]="isMenuOpen"
+       [class.pointer-events-auto]="isMenuOpen"
        (click)="closeMenu()"
        role="dialog"
        aria-modal="true"
        aria-labelledby="menu-title">
-    
-    <nav class="slide-menu" 
+    <nav class="absolute top-0 left-0 h-full w-72 max-w-[90vw] bg-surface shadow-strong transform -translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto"
+         [class.translate-x-0]="isMenuOpen"
          (click)="$event.stopPropagation()"
          role="navigation"
          aria-label="Main menu">
-      
-      <div class="menu-header">
-        <div class="menu-header-content">
-          <h2 id="menu-title" class="menu-title">Raptor Gig</h2>
-          <div class="menu-tagline">Quick logs, big insights</div>
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-light)] bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-700)] text-inverse">
+        <div class="flex flex-col">
+          <h2 id="menu-title" class="text-lg font-semibold leading-tight">Raptor Gig</h2>
+          <div class="text-sm opacity-80">Quick logs, big insights</div>
         </div>
-        <button (click)="closeMenu()" 
-                class="menu-close" 
+        <button (click)="closeMenu()"
+                class="flex h-9 w-9 items-center justify-center rounded-md text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
                 aria-label="Close menu">
           <mat-icon>close</mat-icon>
         </button>
       </div>
-        <div class="menu-content">
-        <!-- Always available navigation items -->
-        <div class="menu-section">
-          <h3 class="menu-section-title">Navigation</h3>
-          <a routerLink="/" 
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="Go to home">
-            <mat-icon class="menu-icon">home</mat-icon>
-            <span class="menu-text">Home</span>
+
+      <div class="flex-1 py-4">
+        <div class="px-6 pb-3 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Navigation</div>
+        <a routerLink="/"
+           (click)="closeMenu()"
+           class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md"
+           aria-label="Go to home">
+          <mat-icon class="text-secondary">home</mat-icon>
+          <span class="text-base font-medium">Home</span>
+        </a>
+
+        <ng-container *ngIf="isAuthenticated && defaultSheet">
+          <a routerLink="/trips" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View trips">
+            <mat-icon class="text-secondary">navigation</mat-icon>
+            <span class="text-base font-medium">Trips</span>
           </a>
-          
-          <!-- Authenticated user navigation items -->
-          <ng-container *ngIf="isAuthenticated && defaultSheet">
-            <a routerLink="/trips" 
-               (click)="closeMenu()"
-               class="menu-item"
-               aria-label="View trips">
-              <mat-icon class="menu-icon">navigation</mat-icon>
-              <span class="menu-text">Trips</span>
-            </a>
-            <a routerLink="/shifts" 
-               (click)="closeMenu()"
-               class="menu-item"
-               aria-label="View shifts">
-              <mat-icon class="menu-icon">today</mat-icon>
-              <span class="menu-text">Shifts</span>
-            </a>
-            <a routerLink="/metrics" 
-               (click)="closeMenu()"
-               class="menu-item"
-               aria-label="View metrics">
-              <mat-icon class="menu-icon">bar_chart</mat-icon>
-              <span class="menu-text">Metrics</span>
-            </a>
-          </ng-container>
-        </div>
-        
-        <!-- Tools section - only for authenticated users -->
-        <div class="menu-section" *ngIf="isAuthenticated && defaultSheet">
-          <h3 class="menu-section-title">Tools</h3>
-          <a routerLink="/stats" 
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="View statistics">
-            <mat-icon class="menu-icon">table_chart</mat-icon>
-            <span class="menu-text">Statistics</span>
+          <a routerLink="/shifts" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View shifts">
+            <mat-icon class="text-secondary">today</mat-icon>
+            <span class="text-base font-medium">Shifts</span>
           </a>
-          <a routerLink="/expenses"
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="View expenses">
-            <mat-icon class="menu-icon">receipt_long</mat-icon>
-            <span class="menu-text">Expenses</span>
+          <a routerLink="/metrics" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View metrics">
+            <mat-icon class="text-secondary">bar_chart</mat-icon>
+            <span class="text-base font-medium">Metrics</span>
           </a>
-          <a routerLink="/diagnostics"
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="View diagnostics">
-            <mat-icon class="menu-icon">troubleshoot</mat-icon>
-            <span class="menu-text">Diagnostics</span>
+        </ng-container>
+
+        <div *ngIf="isAuthenticated && defaultSheet" class="mt-4">
+          <div class="px-6 pb-3 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Tools</div>
+          <a routerLink="/stats" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View statistics">
+            <mat-icon class="text-secondary">table_chart</mat-icon>
+            <span class="text-base font-medium">Statistics</span>
           </a>
-          <a routerLink="/search"
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="Search">
-            <mat-icon class="menu-icon">search</mat-icon>
-            <span class="menu-text">Search</span>
+          <a routerLink="/expenses" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View expenses">
+            <mat-icon class="text-secondary">receipt_long</mat-icon>
+            <span class="text-base font-medium">Expenses</span>
+          </a>
+          <a routerLink="/diagnostics" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View diagnostics">
+            <mat-icon class="text-secondary">troubleshoot</mat-icon>
+            <span class="text-base font-medium">Diagnostics</span>
+          </a>
+          <a routerLink="/search" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Search">
+            <mat-icon class="text-secondary">search</mat-icon>
+            <span class="text-base font-medium">Search</span>
           </a>
         </div>
-        
-        <!-- Settings section - always available -->
-        <div class="menu-section">
-          <h3 class="menu-section-title">Settings</h3>
-          <a routerLink="/setup" 
-             (click)="closeMenu()"
-             class="menu-item"
-             aria-label="Open settings">
-            <mat-icon class="menu-icon">settings</mat-icon>
-            <span class="menu-text">Settings</span>
+
+        <div class="mt-4">
+          <div class="px-6 pb-3 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Settings</div>
+          <a routerLink="/setup" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Open settings">
+            <mat-icon class="text-secondary">settings</mat-icon>
+            <span class="text-base font-medium">Settings</span>
           </a>
         </div>
       </div>
-      
     </nav>
   </div>
-  
-  <!-- Progress Indicator for PWA Loading -->
+
   <div class="loading-indicator" [class.loading-indicator--visible]="isLoading">
     <div class="loading-bar"></div>
   </div>
-  
 </header>
 
-<!-- Main Content Area -->
-<main class="main-content" role="main">
+<main class="pt-14 min-h-screen bg-[var(--color-bg)]" role="main">
   <router-outlet></router-outlet>
 </main>

@@ -1,6 +1,3 @@
-@use 'sass:color';
-@use 'color-vars' as *;
-
 :host {
   display: block;
   max-width: 100%;
@@ -25,39 +22,39 @@
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
   }
 }
 
 // Status-specific colors
 .status-idle {
   .sync-button mat-icon {
-    color: $text-inverse;
+    color: var(--color-text-inverse);
   }
 }
 
 .status-disabled {
   .sync-button mat-icon {
-    color: $text-disabled;
+    color: var(--color-text-disabled);
     opacity: 0.5;
   }
 }
 
 .status-syncing {
   .sync-button mat-icon {
-    color: $info-color;
+    color: var(--primary-600);
   }
 }
 
 .status-success {
   .sync-button mat-icon {
-    color: $success-color;
+    color: var(--success-500);
   }
 }
 
 .status-error {
   .sync-button mat-icon {
-    color: $danger-color;
+    color: var(--error-500);
   }
 }
 
@@ -83,8 +80,8 @@
   position: absolute;
   top: 2px;
   right: 0;
-  background-color: $info-color;
-  color: white;
+  background-color: var(--primary-600);
+  color: var(--color-text-inverse);
 
   font-size: 9px;
   font-weight: 600;
@@ -93,7 +90,7 @@
   min-width: 16px;
   text-align: center;
   line-height: 1.2;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px var(--shadow-medium);
 }
 
 // Menu styling
@@ -112,8 +109,8 @@
 }
 
 .menu-header {
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  color: var(--color-text-inverse);
   padding: 1rem;
   border-radius: 4px 4px 0 0;
 }
@@ -125,7 +122,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .title-icon {
@@ -141,7 +138,7 @@
 // Status section
 .status-section {
   padding: 1rem;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .status-row {
@@ -159,47 +156,47 @@
 
 .status-label {
   font-weight: 500;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   white-space: nowrap;
   flex-shrink: 0;
   min-width: fit-content;
 
   &.error-label {
-    color: $danger-color;
+    color: var(--error-500);
   }
 }
 
 .status-value {
   font-size: 0.875rem;
-  color: $text-primary;
+  color: var(--color-text-primary);
   text-align: right;
   flex: 1 1 auto;
   min-width: fit-content;
   white-space: nowrap;
 
   &.status-disabled {
-    color: $text-disabled;
+    color: var(--color-text-disabled);
     font-style: italic;
   }
 
   &.status-syncing {
-    color: $info-color;
+    color: var(--primary-600);
     font-weight: 500;
   }
 
   &.status-success {
-    color: $success-color;
+    color: var(--success-500);
     font-weight: 500;
   }
 
   &.status-error {
-    color: $danger-color;
+    color: var(--error-500);
     font-weight: 500;
   }
 
   &.error-text {
-    color: $danger-color;
+    color: var(--error-500);
     font-size: 0.8125rem;
     white-space: normal;
     word-wrap: break-word;
@@ -212,7 +209,7 @@
 .progress-bar {
   width: 100%;
   height: 6px;
-  background-color: $border-light;
+  background-color: var(--color-border-light);
   border-radius: 3px;
   overflow: hidden;
   margin-top: 0.25rem;
@@ -220,19 +217,19 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, $info-color 0%, color.adjust($info-color, $lightness: 10%) 100%);
+  background: linear-gradient(90deg, var(--primary-600) 0%, var(--primary-700) 100%);
   transition: width 0.3s ease;
   border-radius: 3px;
 }
 
 // Messages section
 .messages-section {
-  border-top: 1px solid $border-light;
+  border-top: 1px solid var(--color-border-light);
 }
 
 .messages-header {
   padding: 0.75rem 1rem;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -240,14 +237,14 @@
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
   }
 }
 
 .messages-title {
   font-weight: 500;
   font-size: 0.875rem;
-  color: $text-primary;
+  color: var(--color-text-primary);
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -296,25 +293,25 @@
   padding: 0.5rem;
   margin-bottom: 0.25rem;
   border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
   }
 
   &.message-error {
-    background-color: rgba($danger-color, 0.08);
-    border-left: 3px solid $danger-color;
+    background-color: color-mix(in srgb, var(--error-500) 12%, transparent);
+    border-left: 3px solid var(--error-500);
   }
 
   &.message-warning {
-    background-color: rgba($warning-color, 0.08);
-    border-left: 3px solid $warning-color;
+    background-color: color-mix(in srgb, var(--warning-500) 12%, transparent);
+    border-left: 3px solid var(--warning-500);
   }
 
   &.message-info {
-    border-left: 3px solid $info-color;
+    border-left: 3px solid var(--primary-600);
   }
 }
 
@@ -326,15 +323,15 @@
   margin-top: 0.125rem;
 
   .message-error & {
-    color: $danger-color;
+    color: var(--error-500);
   }
 
   .message-warning & {
-    color: $warning-color;
+    color: var(--warning-500);
   }
 
   .message-info & {
-    color: $info-color;
+    color: var(--primary-600);
   }
 }
 
@@ -345,14 +342,14 @@
 
 .message-text {
   font-size: 0.8125rem;
-  color: $text-primary;
+  color: var(--color-text-primary);
   word-break: break-word;
   margin-bottom: 0.125rem;
 }
 
 .message-time {
   font-size: 0.75rem;
-  color: $text-tertiary;
+  color: var(--color-text-tertiary);
 }
 
 // Custom scrollbar for messages list
@@ -361,16 +358,16 @@
 }
 
 .messages-list::-webkit-scrollbar-track {
-  background: $border-light;
+  background: var(--color-border-light);
   border-radius: 3px;
 }
 
 .messages-list::-webkit-scrollbar-thumb {
-  background: $text-tertiary;
+  background: var(--color-text-tertiary);
   border-radius: 3px;
 
   &:hover {
-    background: $text-secondary;
+    background: var(--color-text-secondary);
   }
 }
 
