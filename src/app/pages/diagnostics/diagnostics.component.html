@@ -9,7 +9,7 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-3 gap-4 mb-6" *ngIf="dataDiagnostics.length > 0">
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+    <div class="bg-error-500/10 border-l-4 border-error-500 p-4 rounded-lg">
       <div class="flex items-center gap-1 text-2xl font-bold text-red-700 mb-1 lg:mb-0 leading-none">
         <mat-icon class="text-red-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
         <span>{{ getCountBySeverity('error') }}</span>
@@ -17,7 +17,7 @@
       </div>
       <div class="text-sm text-red-600 text-center lg:hidden">Errors</div>
     </div>
-    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-lg">
+    <div class="bg-warning-500/10 border-l-4 border-warning-500 p-4 rounded-lg">
       <div class="flex items-center gap-1 text-2xl font-bold text-orange-700 mb-1 lg:mb-0 leading-none">
         <mat-icon class="text-orange-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">warning</mat-icon>
         <span>{{ getCountBySeverity('warning') }}</span>
@@ -43,7 +43,7 @@
   </div>
 
   <!-- All Clear State -->
-  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-green-50 rounded-lg border border-green-200">
+  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-500/10 rounded-lg border border-success-200 dark:border-success-700">
     <mat-icon class="text-green-500 !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
     <h2 class="text-xl font-semibold text-green-700 mb-2">All Clear!</h2>
     <p class="text-green-600">No issues found in your data. Everything looks good!</p>
@@ -132,7 +132,7 @@
               <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" 
                    [class.opacity-50]="((item.itemType === 'service' || item.itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address') && problemItem.trips === 0) || problemItem.markedForDelete" 
                    [class.bg-green-50]="((item.itemType === 'service' || item.itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address') && problemItem.trips === 0)" 
-                   [class.bg-red-50]="problemItem.markedForDelete">
+                   [class.bg-error-500/10]="problemItem.markedForDelete">
                 <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region'" 
                                   [value]="problemItem"></mat-radio-button>
                 <input *ngIf="item.itemType === 'shift'" type="radio" 
@@ -204,7 +204,7 @@
     <!-- Shift Item -->
     <div *ngIf="type === 'shift'">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
+        <span class="px-2 py-0.5 bg-primary-500/20 text-blue-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
         <span class="font-semibold text-gray-800" [class.line-through]="item.markedForDelete">{{ item.date }}</span>
         <span class="text-gray-600 text-sm">({{ item.key }})</span>
         <span *ngIf="item.markedForDelete" class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">MARKED FOR DELETE</span>
@@ -226,7 +226,7 @@
     <!-- Trip Item -->
     <div *ngIf="type === 'trip'">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
+        <span class="px-2 py-0.5 bg-success-500/20 text-green-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
         <span class="font-semibold text-gray-800">{{ item.date }}</span>
         <span class="text-gray-600 text-sm">({{ item.key }})</span>
       </div>
@@ -247,7 +247,7 @@
         <span *ngIf="item.pickupTime">{{ item.pickupTime }}</span>
         <span *ngIf="item.pickupTime && item.dropoffTime">-</span>
         <span *ngIf="item.dropoffTime">{{ item.dropoffTime }}</span>
-        <span *ngIf="item.duration" class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{{ item.duration | durationFormat }}</span>
+        <span *ngIf="item.duration" class="px-2 py-0.5 bg-primary-500/20 text-blue-700 rounded text-xs">{{ item.duration | durationFormat }}</span>
       </div>
     </div>
 

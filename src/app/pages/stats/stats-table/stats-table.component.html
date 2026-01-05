@@ -27,32 +27,32 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of items; let i = index" [ngClass]="i % 2 === 0 ? 'bg-primary-500/5' : 'bg-surface'" class="hover:bg-surface-2">
-            <td class="px-3 py-2 font-semibold text-gray-900 max-w-[150px] truncate" [title]="item.name">{{item.name}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.trips}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.distance | number}}</td>
+            <td class="px-3 py-2 font-semibold text-primary max-w-[150px] truncate" [title]="item.name">{{item.name}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.trips}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.distance | number}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.pay | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.tip | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.bonus | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-green-800 font-semibold">{{item.total | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-gray-600">{{item.cash | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-blue-700">{{item.amountPerTime | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-blue-700">{{item.amountPerTrip | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-blue-700">{{item.amountPerDistance | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.cash | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerTime | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerTrip | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerDistance | currency}}</td>
           </tr>
         </tbody>
         <tfoot class="bg-primary-500/20">
           <tr>
-            <td class="px-3 py-2 font-bold text-blue-900">Total</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("trips")}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("distance") | number}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("pay") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("tip") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("bonus") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("total") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getTotal("cash") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getAverage("amountPerTime") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getAverage("amountPerTrip") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-blue-900">{{getAverage("amountPerDistance") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">Total</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("trips")}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("distance") | number}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("pay") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("tip") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("bonus") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("total") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getTotal("cash") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getAverage("amountPerTime") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getAverage("amountPerTrip") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{getAverage("amountPerDistance") | currency}}</td>
           </tr>
         </tfoot>
       </table>

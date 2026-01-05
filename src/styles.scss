@@ -218,6 +218,131 @@ h6 { font-size: 0.75rem; }  /* 12px */
 }
 
 /* Material Design Component Overrides */
+
+/* Material Form Field Dark Mode Support */
+html.theme-dark {
+  .mat-mdc-form-field {
+    // Input text color
+    .mat-mdc-input-element,
+    .mat-mdc-select-value,
+    input,
+    textarea {
+      color: var(--color-text-primary) !important;
+      caret-color: var(--color-text-primary);
+    }
+    
+    // Label color
+    .mat-mdc-floating-label,
+    .mdc-floating-label {
+      color: var(--color-text-secondary) !important;
+    }
+    
+    // Focused label
+    &.mat-focused .mat-mdc-floating-label,
+    &.mat-focused .mdc-floating-label {
+      color: var(--primary-500) !important;
+    }
+    
+    // Outline border
+    .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--color-border) !important;
+      }
+    }
+    
+    // Focused outline
+    &.mat-focused .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--primary-500) !important;
+      }
+    }
+    
+    // Hover outline
+    &:hover:not(.mat-focused) .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--color-border-dark) !important;
+      }
+    }
+    
+    // Placeholder
+    .mat-mdc-input-element::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--color-text-tertiary) !important;
+    }
+    
+    // Disabled state
+    &.mat-form-field-disabled {
+      .mat-mdc-input-element,
+      input,
+      textarea {
+        color: var(--color-text-disabled) !important;
+      }
+    }
+  }
+  
+  // Material Select dropdown
+  .mat-mdc-select-panel {
+    background-color: var(--color-surface-secondary) !important;
+    
+    .mat-mdc-option {
+      color: var(--color-text-primary) !important;
+      
+      &:hover,
+      &.mat-mdc-option-active {
+        background-color: var(--color-surface-tertiary) !important;
+      }
+      
+      &.mat-selected {
+        background-color: color-mix(in srgb, var(--primary-500) 20%, var(--color-surface-secondary)) !important;
+      }
+    }
+  }
+  
+  // Material Datepicker
+  .mat-datepicker-content {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+    
+    .mat-calendar {
+      background-color: var(--color-surface) !important;
+      
+      .mat-calendar-header {
+        color: var(--color-text-primary) !important;
+      }
+      
+      .mat-calendar-body-label,
+      .mat-calendar-body-cell-content {
+        color: var(--color-text-primary) !important;
+      }
+      
+      .mat-calendar-body-cell:hover .mat-calendar-body-cell-content {
+        background-color: var(--color-surface-tertiary) !important;
+      }
+      
+      .mat-calendar-body-selected {
+        background-color: var(--primary-600) !important;
+        color: white !important;
+      }
+    }
+  }
+  
+  // Datepicker toggle button icon
+  .mat-datepicker-toggle button {
+    color: var(--color-text-secondary) !important;
+    
+    &:hover {
+      color: var(--color-text-primary) !important;
+    }
+  }
+}
+
 .custom-modalbox {
   max-width: calc(100vw - 2rem) !important;
   width: 100% !important;

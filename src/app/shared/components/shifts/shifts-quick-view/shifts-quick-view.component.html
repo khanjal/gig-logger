@@ -36,7 +36,7 @@
       <!-- Row ID -->
       <span class="text-base font-bold text-blue-500 font-mono flex-shrink-0">#{{shift.rowId}}</span>
       <!-- Service Name, Number (flexible, grows) -->
-      <span class="font-bold text-gray-900 text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
+      <span class="font-bold text-primary text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
   <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
       </span>
       <!-- Total (far right) -->
@@ -52,7 +52,7 @@
       </span>
     </div>
     <!-- Second line: Date + Time Range + Duration -->
-    <div class="flex items-center justify-between mt-1 text-xs text-gray-700 w-full gap-2">
+    <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2">
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon class="text-blue-400 text-base">event</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:'EEE, MMM d, yy' }} }</span>
@@ -69,23 +69,23 @@
     <!-- Divider for visual separation -->
     <div class="my-2 border-t border-gray-200"></div>
     <!-- Info Row: trips (left), distance (center), active (right) -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center w-full relative">
+    <div class="mt-1 text-xs text-secondary truncate text-center flex items-center w-full relative">
       @if (shift.totalTrips) {
         <span class="flex items-center gap-1 flex-1 justify-start">
           <mat-icon class="text-blue-400 text-base">route</mat-icon>
-          <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
+          <span class="font-mono text-xs text-primary">{{shift.totalTrips}} trips</span>
         </span>
       }
       @if (shift.totalDistance) {
         <span class="flex items-center gap-1 flex-1 justify-center">
           <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
-          <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
+          <span class="font-mono text-xs text-primary">{{formatDistance(shift.totalDistance)}}</span>
         </span>
       }
       @if (shift.totalActive) {
         <span class="flex items-center gap-1 flex-1 justify-end">
           <mat-icon class="text-blue-400 text-base">directions_car</mat-icon>
-          <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
+          <span class="font-mono text-xs text-primary">{{shift.totalActive | durationFormat}} active</span>
         </span>
       }
     </div>
@@ -138,7 +138,7 @@
     <!-- Payment Breakdown -->
     @if (shift.totalPay || shift.totalTips || shift.totalBonus || shift.totalCash) {
       <div class="mb-4">
-        <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
           <mat-icon class="text-blue-400 text-base">payments</mat-icon>
           Payment Details
         </h3>
@@ -163,7 +163,7 @@
           }
           @if (shift.totalCash) {
             <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-              <span class="text-xs text-gray-600">Cash</span>
+              <span class="text-xs text-secondary">Cash</span>
               <span class="text-sm font-bold">{{shift.totalCash | currency}}</span>
             </div>
           }
@@ -201,7 +201,7 @@
       'bg-green-500/10': shift.rowId % 2 === 1
     }">
     <!-- Edit Button -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium transition"
+    <button class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 rounded-lg text-sm font-medium transition"
       (click)="editShift()" 
       [disabled]="!canEditShift()"
       [class.cursor-not-allowed]="!canEditShift()"

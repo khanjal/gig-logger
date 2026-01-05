@@ -46,17 +46,17 @@
         @else { check_circle }
       </mat-icon>
       <!-- Row ID -->
-      <span class="text-xs font-bold text-gray-700 font-mono flex-shrink-0">#{{trip.rowId}}</span>
+      <span class="text-xs font-bold text-primary font-mono flex-shrink-0">#{{trip.rowId}}</span>
       <!-- Service Name and Trip Number (tight, number always visible, service truncates, always a space) -->
-      <span class="font-bold text-gray-900 text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
+      <span class="font-bold text-primary text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
         <span class="truncate block max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
       </span>
       <!-- Time (center) -->
       <span class="flex-1 flex items-center justify-center gap-1">
         <span class="font-mono text-sm font-medium"
               [ngClass]="{
-                'text-gray-400': !trip.pickupTime,
-                'text-gray-700': trip.pickupTime
+                'text-tertiary': !trip.pickupTime,
+                'text-primary': trip.pickupTime
               }">
           {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
         </span>
@@ -76,9 +76,9 @@
       </span>
     </div>
     <!-- Date/Place/Distance Row (always visible if present) -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
+    <div class="mt-1 text-xs text-secondary truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
       <!-- Date (left) -->
-      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-gray-600 border border-gray-200 flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
+      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-secondary border border-soft flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
       <!-- Place -> Name (center, inline until overflow) -->
       <div class="flex-1 flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden">
         <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
@@ -87,7 +87,7 @@
       </div>
       <!-- Distance (right) -->
       <span *ngIf="trip.distance" class="flex items-center gap-1 flex-shrink-0 ml-2">
-        <span class="font-mono text-xs text-gray-700">{{trip.distance | number:'1.1'}} mi</span>
+        <span class="font-mono text-xs text-primary">{{trip.distance | number:'1.1'}} mi</span>
       </span>
     </div>
     <!-- Toggle Button and Chips Row -->
@@ -164,7 +164,7 @@
     </div>
     <!-- Payment Breakdown -->
     <div class="mb-4" *ngIf="trip.pay || trip.tip || trip.bonus || trip.cash">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+      <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
         <mat-icon class="text-blue-400 text-base">payments</mat-icon>
         Payment Details
       </h3>
@@ -182,7 +182,7 @@
           <span class="text-sm font-bold text-primary">{{trip.bonus | currency}}</span>
         </div>
         <div *ngIf="trip.cash" class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
-          <span class="text-xs text-gray-600">Cash</span>
+          <span class="text-xs text-secondary">Cash</span>
           <span class="text-sm font-bold">{{trip.cash | currency}}</span>
         </div>
       </div>
@@ -195,7 +195,7 @@
     </div>
     <!-- Addresses -->
     <div class="mb-4" *ngIf="trip.startAddress || trip.endAddress">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+      <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
         <mat-icon class="text-green-400 text-base">place</mat-icon>
         Addresses
       </h3>
@@ -224,7 +224,7 @@
     </div>
     <!-- Additional Info: Only show if more than just region -->
     <div class="mb-4" *ngIf="trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+      <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
         <mat-icon class="text-purple-400 text-base">info</mat-icon>
         Trip Info
       </h3>
@@ -251,7 +251,7 @@
           <span class="text-sm font-medium text-primary">{{trip.type}}</span>
         </div>
         <div *ngIf="trip.region" class="flex flex-row items-center gap-2 p-2 bg-surface-3 rounded border border-soft col-span-2">
-          <span class="text-xs text-gray-600 whitespace-nowrap">Region</span>
+          <span class="text-xs text-secondary whitespace-nowrap">Region</span>
           <span class="text-sm font-medium break-words text-left w-full">{{trip.region}}</span>
         </div>
       </div>
@@ -274,7 +274,7 @@
     }">
     <!-- Edit Button -->
     <button mat-button 
-            class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-primary-500/20 transition" 
+            class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 rounded-lg text-sm font-medium hover:bg-primary-500/20 transition" 
             (click)="editTrip()" 
             title="Edit Trip">
       <mat-icon class="text-blue-500 text-base">edit</mat-icon>
@@ -301,7 +301,7 @@
     </div>
     <!-- Menu Button -->
     <button mat-icon-button 
-            class="w-10 h-10 bg-gray-200 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-300 transition" 
+            class="w-10 h-10 bg-surface-2 text-primary border border-soft rounded-lg hover:bg-surface-3 transition" 
             [matMenuTriggerFor]="menu" 
             title="More options">
       <mat-icon>more_vert</mat-icon>

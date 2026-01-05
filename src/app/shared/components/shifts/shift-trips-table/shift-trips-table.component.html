@@ -3,7 +3,7 @@
         <div class="flex items-center justify-center w-10 h-10">
             <mat-icon class="text-blue-400 text-2xl">route</mat-icon>
         </div>
-        <h4 class="flex-1 text-lg font-semibold text-blue-900 text-center">Trips ({{ trips.length }})</h4>
+        <h4 class="flex-1 text-lg font-semibold text-primary text-center">Trips ({{ trips.length }})</h4>
         <button class="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition" (click)="viewTrips(trips)">
             <mat-icon>view_agenda</mat-icon>
         </button>
@@ -12,12 +12,12 @@
         <table class="min-w-full text-sm">
             <thead class="bg-blue-100">
                 <tr>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Place</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Pickup</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Dropoff</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Total</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Name</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Address</th>
+                    <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Place</th>
+                    <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Pickup</th>
+                    <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Dropoff</th>
+                    <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Total</th>
+                    <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Name</th>
+                    <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +34,7 @@
             </tbody>
         </table>
     </div>
-    <div class="table-scroll-indicator w-full text-center py-3 text-sm font-medium text-blue-600 bg-blue-50 border-t-2 border-blue-200 rounded-b-lg mt-[-0.5rem]" *ngIf="trips && trips.length > 0">
+    <div class="table-scroll-indicator w-full text-center py-3 text-sm font-medium text-blue-600 bg-primary-500/10 border-t-2 border-blue-200 rounded-b-lg mt-[-0.5rem]" *ngIf="trips && trips.length > 0">
         ← Scroll horizontally for more columns →
     </div>
     <div class="no-trips-message flex flex-col items-center justify-center py-8 text-gray-500" *ngIf="!trips || trips.length === 0">

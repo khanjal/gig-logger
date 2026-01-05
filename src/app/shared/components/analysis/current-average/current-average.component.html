@@ -1,22 +1,22 @@
 <div class="flex flex-col items-start w-full">
-  <div *ngIf="showDailyAverage" (click)="toggle()" class="flex items-center gap-2 p-2 rounded-md bg-green-100 hover:bg-green-200 cursor-pointer transition-colors text-sm min-h-[40px]">
+  <div *ngIf="showDailyAverage" (click)="toggle()" class="flex items-center gap-2 p-2 rounded-md bg-success-500/20 hover:bg-success-500/30 cursor-pointer transition-colors text-sm min-h-[40px]">
     <mat-icon class="text-green-600 text-xl min-w-[24px]">event</mat-icon>
     <div class="flex flex-col min-w-0">
-      <div class="font-semibold text-green-900 whitespace-nowrap">{{ currentDayAmount | currency }} <span class="text-gray-500 font-normal">/ {{ dailyAverage | currency }}</span></div>
+      <div class="font-semibold text-primary whitespace-nowrap">{{ currentDayAmount | currency }} <span class="text-secondary font-normal">/ {{ dailyAverage | currency }}</span></div>
     </div>
   </div>
 
-  <div *ngIf="showWeeklyAverage" (click)="toggle()" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 hover:bg-blue-200 cursor-pointer transition-colors text-sm min-h-[40px]">
+  <div *ngIf="showWeeklyAverage" (click)="toggle()" class="flex items-center gap-2 p-2 rounded-md bg-primary-500/20 hover:bg-primary-500/30 cursor-pointer transition-colors text-sm min-h-[40px]">
     <mat-icon class="text-blue-600 text-xl min-w-[24px]">date_range</mat-icon>
     <div class="flex flex-col min-w-0">
-      <div class="font-semibold text-blue-900 whitespace-nowrap">{{ currentWeekAmount | currency }} <span class="text-gray-500 font-normal">/ {{ weeklyAverage | currency }}</span></div>
+      <div class="font-semibold text-primary whitespace-nowrap">{{ currentWeekAmount | currency }} <span class="text-secondary font-normal">/ {{ weeklyAverage | currency }}</span></div>
     </div>
   </div>
 
-  <div *ngIf="showMonthlyAverage" (click)="toggle()" class="flex items-center gap-2 p-2 rounded-md bg-yellow-100 hover:bg-yellow-200 cursor-pointer transition-colors text-sm min-h-[40px]">
+  <div *ngIf="showMonthlyAverage" (click)="toggle()" class="flex items-center gap-2 p-2 rounded-md bg-warning-500/20 hover:bg-warning-500/30 cursor-pointer transition-colors text-sm min-h-[40px]">
     <mat-icon class="text-yellow-600 text-xl min-w-[24px]">calendar_month</mat-icon>
     <div class="flex flex-col min-w-0">
-      <div class="font-semibold text-yellow-900 whitespace-nowrap">{{ currentMonthAmount | currency }} <span class="text-gray-500 font-normal">/ {{ monthlyAverage | currency }}</span></div>
+      <div class="font-semibold text-primary whitespace-nowrap">{{ currentMonthAmount | currency }} <span class="text-secondary font-normal">/ {{ monthlyAverage | currency }}</span></div>
     </div>
   </div>
 </div>
