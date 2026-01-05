@@ -205,7 +205,7 @@
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.startAddress" 
              target="_blank" 
              rel="noopener noreferrer"
-             class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+             class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center gap-1">
             {{ trip.startAddress | shortaddress:trip.place | truncate:50}}
             <mat-icon class="text-xs">open_in_new</mat-icon>
           </a>
@@ -215,7 +215,7 @@
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
              target="_blank" 
              rel="noopener noreferrer"
-             class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+             class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center gap-1">
             {{ trip.endAddress | shortaddress | truncate:50}}
             <mat-icon class="text-xs">open_in_new</mat-icon>
           </a>

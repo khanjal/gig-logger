@@ -478,24 +478,55 @@ mat-card {
 
 /* Link Styles - Enhanced */
 a {
-  color: var(--primary-600);
+  color: #2563eb; // blue-600 for light mode
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease-in-out;
   
   &:hover {
-    color: var(--primary-700);
+    color: #1d4ed8; // blue-700 for light mode
     text-decoration: underline;
   }
   
   &:visited {
-    color: var(--primary-600);
+    color: #2563eb; // blue-600 for light mode
   }
   
   &:focus {
     outline: 2px solid var(--color-border-focus);
     outline-offset: 2px;
     border-radius: 0.25rem;
+  }
+}
+
+html.theme-dark {
+  a {
+    color: #60a5fa; // blue-400 for dark mode
+    
+    &:hover {
+      color: #93c5fd; // blue-300 for dark mode
+    }
+    
+    &:visited {
+      color: #60a5fa; // blue-400 for dark mode
+    }
+  }
+}
+
+/* Link color utility class - use instead of hardcoded text-blue-600 */
+.link-color {
+  color: #2563eb; // blue-600 for light mode
+  
+  &:hover {
+    color: #1d4ed8; // blue-700 for light mode
+  }
+}
+
+html.theme-dark .link-color {
+  color: #60a5fa; // blue-400 for dark mode
+  
+  &:hover {
+    color: #93c5fd; // blue-300 for dark mode
   }
 }
 
