@@ -9,7 +9,7 @@
     
     &:hover {
         transform: scale(0.95);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-light);
     }
     
     @media (max-width: 768px) {
@@ -41,11 +41,11 @@
     }
 
     &:nth-child(even){
-        background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, var(--color-surface) 100%);
     }
 
     &:nth-child(odd){
-        background: linear-gradient(135deg, $secondary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--secondary-500) 10%, transparent) 0%, var(--color-surface) 100%);
     }
     
     @media (max-width: 768px) {
@@ -69,7 +69,7 @@
 
 // Enhanced disabled card state
 .mat-card-disabled {
-    background: linear-gradient(135deg, $disabled-color 0%, rgba(128, 128, 128, 0.1) 100%) !important;
+    background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, color-mix(in srgb, var(--color-text-disabled) 10%, transparent) 100%) !important;
     opacity: 0.6;
     cursor: not-allowed;
     
@@ -85,7 +85,7 @@
     box-sizing: border-box;
     padding-right: 0.5rem;
     scrollbar-width: thin;
-    scrollbar-color: $accent-color $background-light;
+    scrollbar-color: var(--accent-600) var(--color-surface-tertiary);
     
     @media (max-width: 768px) {
         height: calc(100vh - 180px); // Account for mobile navigation
@@ -111,16 +111,16 @@
     }
     
     &::-webkit-scrollbar-track {
-        background: $background-light;
+        background: var(--color-surface-tertiary);
         border-radius: 4px;
     }
     
     &::-webkit-scrollbar-thumb {
-        background: $accent-color;
+        background: var(--accent-600);
         border-radius: 4px;
         
         &:hover {
-            background: $accent-600;
+            background: var(--accent-600);
         }
     }
 }

@@ -19,76 +19,76 @@
 
 /* Trip border classes - clean CSS without !important */
 .trip-border-saved {
-  border: 2px solid $border-dark; // gray-300
+  border: 2px solid var(--color-border-dark); // gray-300
 }
 
 .trip-border-add {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $success-color; // green
+  border: 2px solid var(--color-border-dark); // gray-300
+  border-left: 8px solid var(--success-500); // green
 }
 
 .trip-border-update {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $primary-color; // blue
+  border: 2px solid var(--color-border-dark); // gray-300
+  border-left: 8px solid var(--primary-600); // blue
 }
 
 .trip-border-delete {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $error-color; // red
+  border: 2px solid var(--color-border-dark); // gray-300
+  border-left: 8px solid var(--error-500); // red
 }
 
 .trip-border-other {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $warning-color; // orange/yellow
+  border: 2px solid var(--color-border-dark); // gray-300
+  border-left: 8px solid var(--warning-500); // orange/yellow
 }
 
 // Trip icon color classes (sync with border color logic)
 .trip-icon-saved {
-  color: $text-secondary;
+  color: var(--color-text-secondary);
 }
 
 .trip-icon-add {
-  color: $success-color;
+  color: var(--success-500);
 }
 
 .trip-icon-update {
-  color: $primary-color;
+  color: var(--primary-600);
 }
 
 .trip-icon-delete {
-  color: $error-color;
+  color: var(--error-500);
 }
 
 .trip-icon-other {
-  color: $warning-color;
+  color: var(--warning-500);
 }
 
 // Menu color utility classes for trip menu
 .menu-blue {
-  color: $primary-color !important;
+  color: var(--primary-600) !important;
 }
 .menu-green {
-  color: $success-dark !important;
+  color: var(--success-700) !important;
 }
 .menu-red {
-  color: $error-dark !important;
+  color: var(--error-700) !important;
 }
 .menu-purple {
-  color: $secondary-dark !important;
+  color: var(--secondary-700) !important;
 }
 
 // Optionally, add hover backgrounds if needed
 .menu-blue:hover, .mat-menu-item.menu-blue:hover {
-  background: $primary-50 !important;
+  background: color-mix(in srgb, var(--primary-500) 10%, transparent) !important;
 }
 .menu-green:hover, .mat-menu-item.menu-green:hover {
-  background: $success-50 !important;
+  background: color-mix(in srgb, var(--success-500) 10%, transparent) !important;
 }
 .menu-red:hover, .mat-menu-item.menu-red:hover {
-  background: $error-50 !important;
+  background: color-mix(in srgb, var(--error-500) 10%, transparent) !important;
 }
 .menu-purple:hover, .mat-menu-item.menu-purple:hover {
-  background: $secondary-50 !important;
+  background: color-mix(in srgb, var(--secondary-500) 10%, transparent) !important;
 }
 
 /* Pattern overlay for disabled/excluded trips */

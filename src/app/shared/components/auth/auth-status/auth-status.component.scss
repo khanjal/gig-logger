@@ -4,14 +4,14 @@
 // Auth Status Card Container - Mobile First
 .auth-status-card {
   margin: 1rem 0;
-  background: $surface-color;
+  background: var(--color-surface);
   border-radius: 1rem;
-  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
-  border: 1px solid $border-light;
+  box-shadow: var(--shadow-light), var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
   overflow: hidden;
   
   mat-card-header {
-    background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, color-mix(in srgb, var(--accent-500) 10%, transparent) 100%);
     padding: 1rem;
     margin-bottom: 0;
     
@@ -20,7 +20,7 @@
     }
     
     mat-card-title {
-      color: $text-primary;
+      color: var(--color-text-primary);
       font-size: 1.25rem;
       font-weight: 600;
       margin: 0;
@@ -31,7 +31,7 @@
     }
     
     mat-card-subtitle {
-      color: $text-secondary;
+      color: var(--color-text-secondary);
       font-size: 0.875rem;
       margin-top: 0.25rem;
       
@@ -52,8 +52,8 @@
   mat-card-actions {
     padding: 1rem;
     margin: 0;
-    border-top: 1px solid $border-light;
-    background: $surface-secondary;
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-surface-tertiary);
     
     @media (min-width: 768px) {
       padding: 1.5rem;
@@ -87,14 +87,14 @@
   flex-direction: column;
   align-items: center;
   padding: 1rem;
-  background: $surface-color;
+  background: var(--color-surface);
   border-radius: 0.75rem;
-  border: 1px solid $border-light;
-  box-shadow: 0 1px 3px $shadow-light;
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease-in-out;
   
   &:hover {
-    box-shadow: 0 4px 12px $shadow-medium;
+    box-shadow: var(--shadow-medium);
     transform: translateY(-2px);
   }
   
@@ -116,20 +116,20 @@
   font-weight: 600;
   
   &.online {
-    background: $success-color;
+    background: var(--success-500);
   }
   
   &.offline {
-    background: $status-offline;
+    background: var(--gray-400);
   }
   
   &.syncing {
-    background: $info-color;
+    background: var(--info-600);
     animation: pulse 2s infinite;
   }
   
   &.error {
-    background: $danger-color;
+    background: var(--error-500);
   }
   
   @media (min-width: 768px) {
@@ -142,7 +142,7 @@
 .status-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: $text-primary;
+  color: var(--color-text-primary);
   text-align: left;
   margin-bottom: 0.25rem;
   
@@ -154,7 +154,7 @@
 // Status Value
 .status-value {
   font-size: 0.75rem;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   text-align: center;
   
   @media (min-width: 768px) {
@@ -170,21 +170,21 @@
   font-size: 0.875rem;
   
   &.connected {
-    background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
-    color: $success-700;
-    border-bottom: 1px solid $success-200;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--success-500) 10%, transparent) 0%, color-mix(in srgb, var(--success-500) 20%, transparent) 100%);
+    color: var(--success-700);
+    border-bottom: 1px solid color-mix(in srgb, var(--success-500) 30%, transparent);
   }
   
   &.disconnected {
-    background: linear-gradient(135deg, $danger-50 0%, $danger-100 100%);
-    color: $danger-700;
-    border-bottom: 1px solid $danger-200;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--error-500) 10%, transparent) 0%, color-mix(in srgb, var(--error-500) 20%, transparent) 100%);
+    color: var(--error-700);
+    border-bottom: 1px solid color-mix(in srgb, var(--error-500) 30%, transparent);
   }
   
   &.syncing {
-    background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
-    color: $info-700;
-    border-bottom: 1px solid $info-200;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--info-500) 10%, transparent) 0%, color-mix(in srgb, var(--info-500) 20%, transparent) 100%);
+    color: var(--info-700);
+    border-bottom: 1px solid color-mix(in srgb, var(--info-500) 30%, transparent);
   }
   
   @media (min-width: 768px) {
@@ -216,34 +216,34 @@
   transition: all 0.2s ease-in-out;
   
   &.primary {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-700 100%);
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
     color: white;
     border: none;
     
     &:hover {
-      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-600) 30%, transparent);
       transform: translateY(-1px);
     }
   }
   
   &.secondary {
-    background: $surface-color;
-    color: $text-primary;
-    border: 1px solid $border-color;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
     
     &:hover {
-      background: $surface-secondary;
-      box-shadow: 0 2px 8px $shadow-light;
+      background: var(--color-surface-tertiary);
+      box-shadow: var(--shadow-light);
     }
   }
   
   &.danger {
-    background: linear-gradient(135deg, $danger-color 0%, $danger-700 100%);
+    background: linear-gradient(135deg, var(--error-500) 0%, var(--error-600) 100%);
     color: white;
     border: none;
     
     &:hover {
-      box-shadow: 0 4px 12px rgba($danger-color, 0.3);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--error-500) 30%, transparent);
       transform: translateY(-1px);
     }
   }
@@ -258,16 +258,16 @@
 .status-details {
   margin-top: 1rem;
   padding: 1rem;
-  background: $surface-secondary;
+  background: var(--color-surface-tertiary);
   border-radius: 0.5rem;
-  border: 1px solid $border-light;
+  border: 1px solid var(--color-border-light);
   
   .detail-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 0;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--color-border-light);
     
     &:last-child {
       border-bottom: none;
@@ -275,21 +275,21 @@
     
     .detail-label {
       font-weight: 500;
-      color: $text-primary;
+      color: var(--color-text-primary);
       font-size: 0.875rem;
     }
     
     .detail-value {
-      color: $text-secondary;
+      color: var(--color-text-secondary);
       font-size: 0.875rem;
       text-align: right;
       
       &.status-good {
-        color: $success-color;
+        color: var(--success-500);
       }
       
       &.status-bad {
-        color: $danger-color;
+        color: var(--error-500);
       }
     }
   }
@@ -301,7 +301,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid var(--color-border-light);
   gap: 1rem;
   
   &:last-child {
@@ -316,7 +316,7 @@
   }
     .status-label {
     font-weight: 500;
-    color: $text-primary;
+    color: var(--color-text-primary);
     font-size: 0.875rem;
     min-width: 120px;
     flex-shrink: 0;
@@ -338,9 +338,9 @@
 
 // Token Preview Styling
 .token-preview {
-  background: $info-100;
-  border: 1px solid $info-200;
-  color: $info-800;
+  background: color-mix(in srgb, var(--info-500) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--info-500) 30%, transparent);
+  color: var(--info-800);
   border-radius: 0.375rem;
   padding: 0.5rem;
   font-family: 'Courier New', monospace;
@@ -364,7 +364,7 @@
 
 // Timestamp Styling
 .timestamp {
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   font-family: monospace;
   flex-shrink: 0;
@@ -382,13 +382,13 @@
 .status-breakdown {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: $surface-secondary;
+  background: var(--color-surface-tertiary);
   border-radius: 0.5rem;
-  border: 1px solid $border-light;
+  border: 1px solid var(--color-border-light);
   
   h4 {
     margin: 0 0 1rem 0;
-    color: $text-primary;
+    color: var(--color-text-primary);
     font-size: 1rem;
     font-weight: 600;
     
@@ -428,18 +428,18 @@
       }
       
       &.status-good {
-        color: $success-color;
+        color: var(--success-500);
         
         mat-icon {
-          color: $success-color;
+          color: var(--success-500);
         }
       }
       
       &.status-bad {
-        color: $danger-color;
+        color: var(--error-500);
         
         mat-icon {
-          color: $danger-color;
+          color: var(--error-500);
         }
       }
     }
@@ -465,32 +465,32 @@ mat-chip {
   }
   // Custom color classes for authentication status
   &.chip-success {
-    background-color: $success-100 !important;
-    color: $success-700 !important;
-    border: 1px solid $success-200;
+    background-color: color-mix(in srgb, var(--success-500) 20%, transparent) !important;
+    color: var(--success-700) !important;
+    border: 1px solid color-mix(in srgb, var(--success-500) 30%, transparent);
     
     &:hover {
-      background-color: $success-200 !important;
+      background-color: color-mix(in srgb, var(--success-500) 30%, transparent) !important;
     }
   }
 
   &.chip-error {
-    background-color: $error-100 !important;
-    color: $error-700 !important;
-    border: 1px solid $error-200;
+    background-color: color-mix(in srgb, var(--error-500) 20%, transparent) !important;
+    color: var(--error-700) !important;
+    border: 1px solid color-mix(in srgb, var(--error-500) 30%, transparent);
     
     &:hover {
-      background-color: $error-200 !important;
+      background-color: color-mix(in srgb, var(--error-500) 30%, transparent) !important;
     }
   }
 
   &.chip-warning {
-    background-color: $warning-100 !important;
-    color: $warning-700 !important;
-    border: 1px solid $warning-200;
+    background-color: color-mix(in srgb, var(--warning-500) 20%, transparent) !important;
+    color: var(--warning-700) !important;
+    border: 1px solid color-mix(in srgb, var(--warning-500) 30%, transparent);
     
     &:hover {
-      background-color: $warning-200 !important;
+      background-color: color-mix(in srgb, var(--warning-500) 30%, transparent) !important;
     }
   }
 }
@@ -513,15 +513,15 @@ mat-card-title {
       font-size: 2rem;
     }    // Custom color classes for header icon
     &.text-success {
-      color: $success-600;
+      color: var(--success-600);
     }
 
     &.text-warning {
-      color: $warning-600;
+      color: var(--warning-600);
     }
 
     &.text-error {
-      color: $error-600;
+      color: var(--error-600);
     }
   }
 }

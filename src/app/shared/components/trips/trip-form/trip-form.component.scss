@@ -30,16 +30,16 @@
 }
 
 .address-button--selected, .name-button--selected {
-  background-color: colors.$primary-50 !important;
-  border-color: colors.$primary-200 !important;
-  color: colors.$primary-600 !important;
+  background-color: color-mix(in srgb, var(--primary-500) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary-500) 20%, transparent) !important;
+  color: var(--primary-600) !important;
   font-weight: 500;
 }
 
 .address-button:not(.address-button--selected):hover,
 .name-button:not(.name-button--selected):hover {
-  background-color: colors.$primary-50;
-  border-color: colors.$primary-200;
+  background-color: color-mix(in srgb, var(--primary-500) 10%, transparent);
+  border-color: color-mix(in srgb, var(--primary-500) 20%, transparent);
 }
 
 // Global keyboard-open state for viewport adjustments (handled by focus-scroll directive)

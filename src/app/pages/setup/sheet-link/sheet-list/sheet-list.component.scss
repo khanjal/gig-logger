@@ -22,7 +22,7 @@
   
   p {
     margin-top: 12px;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--color-text-secondary);
   }
 }
 
@@ -34,7 +34,7 @@
   text-align: center;
   padding: 24px;
   min-height: 200px;
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--color-text-secondary);
   
   .empty-icon {
     font-size: 48px;
@@ -46,7 +46,7 @@
   
   h3 {
     margin: 12px 0 6px 0;
-    color: rgba(0, 0, 0, 0.8);
+    color: var(--color-text-primary);
   }
 }
 
@@ -69,12 +69,12 @@
   
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-medium);
   }
   
   &.selected {
-    border-color: #1976d2;
-    background-color: rgba(25, 118, 210, 0.04);
+    border-color: var(--primary-600);
+    background-color: color-mix(in srgb, var(--primary-600) 4%, transparent);
   }
 }
 
@@ -85,7 +85,7 @@
 }
 
 .sheet-icon {
-  color: #0f9d58;
+  color: var(--success-600);
   font-size: 24px;
   width: 24px;
   height: 24px;
@@ -110,7 +110,7 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  color: #1976d2;
+  color: var(--primary-600);
   
   mat-icon {
     font-size: 18px;
@@ -123,8 +123,8 @@
 .button-container {
   position: sticky;
   bottom: 0;
-  background: white;
-  border-top: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
   padding: 16px;
   z-index: 10;
 }

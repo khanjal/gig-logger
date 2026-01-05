@@ -2,18 +2,18 @@
 
 // Only keep message type styles used by [ngClass]
 .info {
-    color: #00ff88;
+    color: var(--success-400);
     font-weight: 500;
 }
 
 .warning {
-    color: #00d4ff;
+    color: var(--info-400);
     font-weight: 500;
 }
 
 .error {
-    color: #ff8c42;
+    color: var(--error-400);
     font-weight: 600;
-    text-shadow: 0 0 2px rgba(255, 140, 66, 0.3);
+    text-shadow: 0 0 2px color-mix(in srgb, var(--error-500) 30%, transparent);
 }
 

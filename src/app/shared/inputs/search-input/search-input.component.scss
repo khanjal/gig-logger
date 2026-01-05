@@ -50,20 +50,20 @@
     width: 100%;
     
     .mat-mdc-form-field-flex {
-      background: $surface-color;
+      background: var(--color-surface);
       border-radius: 1rem;
-      border: 1px solid $border-color;
+      border: 1px solid var(--color-border);
       transition: all 0.2s ease-in-out;
-      box-shadow: 0 1px 3px $shadow-light;
+      box-shadow: var(--shadow-sm);
       
       &:hover {
-        border-color: $primary-300;
-        box-shadow: 0 2px 8px $shadow-medium;
+        border-color: var(--primary-300);
+        box-shadow: var(--shadow-light);
       }
       
       &.mdc-text-field--focused {
-        border-color: $primary-color;
-        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        border-color: var(--primary-600);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
       }
     }
     
@@ -79,10 +79,10 @@
     
     input {
       font-size: 1rem;
-      color: $text-primary;
+      color: var(--color-text-primary);
       
       &::placeholder {
-        color: $text-tertiary;
+        color: var(--color-text-tertiary);
       }
       
       @media (min-width: 768px) {
@@ -91,7 +91,7 @@
     }
     
     .mat-mdc-form-field-label {
-      color: $text-secondary;
+      color: var(--color-text-secondary);
       font-weight: 500;
     }
   }
@@ -126,7 +126,7 @@ mat-form-field {
         .mat-mdc-form-field-outline-end {
           border-width: 1px;
           border-style: solid;
-          border-color: $border-color;
+          border-color: var(--color-border);
         }
       }
       
@@ -135,7 +135,7 @@ mat-form-field {
           .mat-mdc-form-field-outline-start,
           .mat-mdc-form-field-outline-gap,
           .mat-mdc-form-field-outline-end {
-            border-color: $primary-color;
+            border-color: var(--primary-600);
             border-width: 2px;
           }
         }
@@ -206,7 +206,7 @@ mat-form-field {
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: $text-tertiary;
+  color: var(--color-text-tertiary);
   z-index: 2;
   transition: color 0.2s ease-in-out;
   
@@ -215,7 +215,7 @@ mat-form-field {
   }
   
   &.active {
-    color: $primary-color;
+    color: var(--primary-600);
   }
 }
 
@@ -230,16 +230,16 @@ mat-form-field {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba($text-tertiary, 0.1);
-  color: $text-tertiary;
+  background: color-mix(in srgb, var(--color-text-tertiary) 10%, transparent);
+  color: var(--color-text-tertiary);
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   z-index: 2;
   
   &:hover {
-    background: rgba($danger-color, 0.1);
-    color: $danger-color;
+    background: color-mix(in srgb, var(--error-500) 10%, transparent);
+    color: var(--error-500);
     transform: translateY(-50%) scale(1.1);
   }
   
@@ -284,13 +284,13 @@ mat-form-field {
     border-radius: 0.75rem;
     margin: 0;
     transition: all 0.2s ease-in-out;
-    border: 1px solid $border-color;
-    background: $surface-color;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
     
     &:hover {
-      background: $surface-secondary;
-      border-color: $primary-color;
-      box-shadow: 0 2px 8px $shadow-light;
+      background: var(--color-surface-tertiary);
+      border-color: var(--primary-600);
+      box-shadow: var(--shadow-light);
       transform: translateY(-1px);
     }
     
@@ -304,7 +304,7 @@ mat-form-field {
     }
     
     mat-icon {
-      color: $text-primary;
+      color: var(--color-text-primary);
     }
   }
 }
@@ -315,10 +315,10 @@ mat-form-field {
   top: 100%;
   left: 0;
   right: 0;
-  background: $surface-color;
-  border: 1px solid $border-color;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0 0 1rem 1rem;
-  box-shadow: 0 4px 16px $shadow-medium;
+  box-shadow: var(--shadow-medium);
   z-index: 1000;
   max-height: 300px;
   overflow: hidden;
@@ -339,15 +339,15 @@ mat-form-field {
   }
   
   &::-webkit-scrollbar-track {
-    background: $surface-secondary;
+    background: var(--color-surface-tertiary);
   }
   
   &::-webkit-scrollbar-thumb {
-    background: $border-color;
+    background: var(--color-border);
     border-radius: 3px;
     
     &:hover {
-      background: $text-tertiary;
+      background: var(--color-text-tertiary);
     }
   }
 }
@@ -372,13 +372,13 @@ mat-form-field {
 // Search Result Item
 .search-result-item {
   padding: 1rem;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid var(--color-border-light);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   
   &:hover {
-    background: $primary-50;
-    color: $primary-color;
+    background: color-mix(in srgb, var(--primary-500) 10%, transparent);
+    color: var(--primary-600);
   }
   
   &:last-child {
@@ -386,8 +386,8 @@ mat-form-field {
   }
   
   &.selected {
-    background: linear-gradient(135deg, $primary-50 0%, $primary-100 100%);
-    color: $primary-color;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, color-mix(in srgb, var(--primary-500) 20%, transparent) 100%);
+    color: var(--primary-600);
   }
   
   @media (min-width: 768px) {
@@ -406,7 +406,7 @@ mat-form-field {
   
   .result-subtitle {
     font-size: 0.75rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     
     @media (min-width: 768px) {
       font-size: 0.875rem;
@@ -418,7 +418,7 @@ mat-form-field {
 .no-results {
   padding: 2rem 1rem;
   text-align: center;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   
   mat-icon {
@@ -426,7 +426,7 @@ mat-form-field {
     width: 2rem;
     height: 2rem;
     margin-bottom: 0.5rem;
-    color: $text-tertiary;
+    color: var(--color-text-tertiary);
   }
   
   @media (min-width: 768px) {
@@ -449,8 +449,8 @@ mat-form-field {
   .loading-spinner {
     width: 24px;
     height: 24px;
-    border: 2px solid $border-color;
-    border-top: 2px solid $primary-color;
+    border: 2px solid var(--color-border);
+    border-top: 2px solid var(--primary-600);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 0.5rem;
@@ -458,18 +458,18 @@ mat-form-field {
   
   .loading-text {
     font-size: 0.875rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
   }
 }
 
 // Search Suggestions
 .search-suggestions {
   padding: 0.5rem;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid var(--color-border-light);
   
   .suggestions-title {
     font-size: 0.75rem;
-    color: $text-tertiary;
+    color: var(--color-text-tertiary);
     font-weight: 500;
     text-transform: uppercase;
     margin-bottom: 0.5rem;
@@ -480,18 +480,18 @@ mat-form-field {
     display: inline-block;
     padding: 0.25rem 0.75rem;
     margin: 0.25rem;
-    background: $surface-secondary;
-    border: 1px solid $border-light;
+    background: var(--color-surface-tertiary);
+    border: 1px solid var(--color-border-light);
     border-radius: 1rem;
     font-size: 0.75rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     
     &:hover {
-      background: $primary-50;
-      border-color: $primary-color;
-      color: $primary-color;
+      background: color-mix(in srgb, var(--primary-500) 10%, transparent);
+      border-color: var(--primary-600);
+      color: var(--primary-600);
     }
   }
 }
@@ -617,12 +617,12 @@ mat-form-field {
 
 .mat-icon-button:focus,
 .clear-button:focus {
-  outline: 2px solid $primary-color;
+  outline: 2px solid var(--primary-600);
   outline-offset: 2px;
 }
 
 .search-result-item:focus {
-  outline: 2px solid $primary-color;
+  outline: 2px solid var(--primary-600);
   outline-offset: -2px;
 }
 
@@ -741,12 +741,12 @@ mat-form-field {
   }
   
   &:hover {
-    background: $surface-secondary !important;
-    box-shadow: 0 2px 8px $shadow-light !important;
+    background: var(--color-surface-tertiary) !important;
+    box-shadow: var(--shadow-light) !important;
   }
   
   mat-icon {
-    color: $text-primary !important;
+    color: var(--color-text-primary) !important;
     margin: 0 !important;
     line-height: 1 !important;
   }
@@ -767,20 +767,20 @@ mat-form-field {
     gap: 0.75rem !important;
     font-size: 0.875rem !important;
       mat-icon {
-      color: $text-secondary !important;
+      color: var(--color-text-secondary) !important;
     }
     
     span {
       flex: 1 !important;
-      color: $text-primary !important;
+      color: var(--color-text-primary) !important;
     }
     
     &:hover {
-      background: $primary-50 !important;
+      background: color-mix(in srgb, var(--primary-500) 10%, transparent) !important;
       
       mat-icon,
       span {
-        color: $primary-color !important;
+        color: var(--primary-600) !important;
       }
     }
   }

@@ -884,7 +884,7 @@ mat-header-cell {
     min-height: 3rem;
       mat-header-cell,
     th[mat-header-cell] {
-      color: $primary-700 !important;
+      color: var(--primary-700) !important;
       font-weight: 700;
       font-size: 0.9rem;
       text-transform: uppercase;

@@ -29,7 +29,7 @@
 .dialog-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: $text-primary;
+  color: var(--color-text-primary);
   margin-bottom: 1rem;
   text-align: center;
   
@@ -47,7 +47,7 @@
 // Enhanced dialog content
 .dialog-content {
   font-size: 1rem;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   line-height: 1.5;
   margin-bottom: 1.5rem;
   text-align: center;
@@ -92,15 +92,15 @@
 
 // Confirm button styling
 .confirm-button {
-  background: linear-gradient(135deg, $success-color 0%, $success-600 100%) !important;
+  background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%) !important;
   color: white !important;
   border: none !important;
   
   &:hover {
-    background: linear-gradient(135deg, $success-600 0%, $success-700 100%) !important;
+    background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%) !important;
     color: white !important;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--success-500) 30%, transparent);
   }
   
   &:active {
@@ -110,14 +110,14 @@
 
 // Cancel button styling
 .cancel-button {
-  background: linear-gradient(135deg, $background-light 0%, $border-color 100%);
-  color: $text-primary;
-  border: 1px solid $border-color;
+  background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, var(--color-border) 100%);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
   
   &:hover {
-    background: linear-gradient(135deg, $border-light 0%, $background-light 100%);
+    background: linear-gradient(135deg, var(--color-border) 0%, var(--color-surface-tertiary) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
   }
   
   &:active {
@@ -127,14 +127,14 @@
 
 // Danger/Delete button styling
 .danger-button {
-  background: linear-gradient(135deg, $danger-color 0%, $danger-600 100%);
+  background: linear-gradient(135deg, var(--error-500) 0%, var(--error-600) 100%);
   color: white;
   border: none;
   
   &:hover {
-    background: linear-gradient(135deg, $danger-600 0%, $danger-700 100%);
+    background: linear-gradient(135deg, var(--error-600) 0%, var(--error-700) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--error-500) 30%, transparent);
   }
   
   &:active {
@@ -145,7 +145,7 @@
 // Warning icon styling
 .warning-icon {
   font-size: 3rem;
-  color: $warn-color;
+  color: var(--warning-500);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
@@ -162,7 +162,7 @@
 // Success icon styling
 .success-icon {
   font-size: 3rem;
-  color: $success-color;
+  color: var(--success-500);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
@@ -179,7 +179,7 @@
 // Confirm dialog info icon styling - large display icon
 .confirm-info-icon {
   font-size: 3rem;
-  color: $info-color;
+  color: var(--info-500);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
