@@ -248,7 +248,7 @@ html.theme-dark {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: var(--color-border) !important;
+        border-color: rgba(203, 213, 225, 0.3) !important; // gray-300 with 30% opacity - very light
       }
     }
     
@@ -266,7 +266,7 @@ html.theme-dark {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: var(--color-border-dark) !important;
+        border-color: rgba(203, 213, 225, 0.5) !important; // gray-300 with 50% opacity
       }
     }
     
@@ -285,6 +285,11 @@ html.theme-dark {
         color: var(--color-text-disabled) !important;
       }
     }
+    
+    // Select arrow color
+    .mat-mdc-select-arrow {
+      color: var(--color-text-secondary) !important;
+    }
   }
   
   // Material Select dropdown
@@ -299,8 +304,9 @@ html.theme-dark {
         background-color: var(--color-surface-tertiary) !important;
       }
       
-      &.mat-selected {
-        background-color: color-mix(in srgb, var(--primary-500) 20%, var(--color-surface-secondary)) !important;
+      &.mat-selected:not(.mat-mdc-option-multiple) {
+        background-color: rgba(59, 130, 246, 0.1) !important; // primary-500 with 10% opacity - very subtle
+        color: var(--color-text-primary) !important;
       }
     }
   }
@@ -340,6 +346,31 @@ html.theme-dark {
     &:hover {
       color: var(--color-text-primary) !important;
     }
+  }
+  
+  // Additional Material overrides for form fields
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(203, 213, 225, 0.3) !important;
+    }
+    
+    &:not(.mdc-text-field--focused):hover {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(203, 213, 225, 0.5) !important;
+      }
+    }
+  }
+}
+
+// Global Material overrides for dark theme (outside html.theme-dark for higher specificity)
+html.theme-dark {
+  .mat-mdc-option.mat-mdc-option-active,
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+    background-color: rgba(59, 130, 246, 0.08) !important;
   }
 }
 
