@@ -2,6 +2,52 @@
   display: block;
 }
 
+// Fix Material icon button backgrounds in header toolbar
+.mat-toolbar {
+  button.mat-mdc-icon-button,
+  a.mat-mdc-icon-button {
+    background: transparent !important;
+    color: inherit;
+    
+    mat-icon {
+      color: inherit;
+    }
+  }
+  
+  // Fix plain buttons with mat-icon (menu, theme toggle)
+  button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    
+    mat-icon {
+      color: inherit;
+    }
+    
+    // Remove Material's button ripple background
+    .mat-mdc-button-persistent-ripple,
+    .mat-mdc-button-ripple {
+      display: none;
+    }
+  }
+}
+
+// Fix close button in menu header
+nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  
+  mat-icon {
+    color: inherit;
+  }
+  
+  .mat-mdc-button-persistent-ripple,
+  .mat-mdc-button-ripple {
+    display: none;
+  }
+}
+
 .notification-badge {
   position: absolute;
   top: -0.25rem;

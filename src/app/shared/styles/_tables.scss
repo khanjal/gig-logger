@@ -15,7 +15,7 @@
   // Enhanced touch scrolling
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: $primary-color $background-secondary;
+  scrollbar-color: var(--primary-600) var(--color-surface-secondary);
   
   // Custom scrollbar styling
   &::-webkit-scrollbar {
@@ -27,20 +27,20 @@
   }
   
   &::-webkit-scrollbar-track {
-    background: $background-secondary;
+    background: var(--color-surface-secondary);
     border-radius: 3px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, $primary-color, $accent-color);
+    background: linear-gradient(45deg, var(--primary-600), var(--success-500));
     border-radius: 3px;
     
     &:hover {
-      background: linear-gradient(45deg, $primary-600, $accent-600);
+      background: linear-gradient(45deg, var(--primary-700), color-mix(in srgb, var(--success-500) 85%, transparent));
     }
     
     @media (max-width: 768px) {
-      background: linear-gradient(45deg, $primary-color, $accent-color);
+      background: linear-gradient(45deg, var(--primary-600), var(--success-500));
       border-radius: 4px;
     }
   }
@@ -52,10 +52,10 @@
   margin: 0 auto;
   overflow: hidden;
   margin-bottom: 1.5rem;
-  background: $surface-color;
+  background: var(--color-surface);
   border-radius: 1rem;
-  box-shadow: 0 2px 8px $shadow-light, 0 1px 4px $shadow-medium;
-  border: 1px solid $border-light;
+  box-shadow: 0 2px 8px var(--shadow-light), 0 1px 4px var(--shadow-medium);
+  border: 1px solid var(--color-border-light);
   width: 100%;
   max-width: 100%;
   
@@ -87,7 +87,7 @@ table[mat-table] {
   display: table;
   border-collapse: separate;
   border-spacing: 0;
-  background: $surface-color;
+  background: var(--color-surface);
   // Dynamic sizing for responsive behavior
   &.table-responsive-sizing {
     width: 100%;
@@ -117,7 +117,7 @@ tr[mat-row],
 tr[mat-header-row] {
   display: table-row;
   transition: all 0.2s ease;
-  border-bottom: 1px solid rgba($border-light, 0.5);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border-light) 80%, transparent);
   height: 2.75rem; // Fixed compact height
   min-height: 2.75rem;
   
@@ -135,10 +135,14 @@ tr[mat-header-row] {
 /* Header Row Styling */
 mat-header-row,
 tr[mat-header-row] {
-  background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%) !important;
-  color: $primary-700;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 0%,
+    color-mix(in srgb, var(--primary-600) 6%, var(--color-surface)) 100%
+  ) !important;
+  color: var(--color-text-primary);
   font-weight: 600;
-  border-bottom: 2px solid $primary-200;
+  border-bottom: 1px solid var(--color-border-light);
   height: 2.25rem; // More compact header height
   min-height: 2.25rem;
   
@@ -154,26 +158,30 @@ tr[mat-header-row] {
   
   // Alternative light theme
   &.table-header-light {
-    background: $surface-secondary !important;
-    color: $text-primary;
-    border-bottom: 1px solid $border-light;
+    background: var(--color-surface-secondary) !important;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-light);
   }
   
   // Alternative accent theme  
   &.table-header-accent {
-    background: linear-gradient(135deg, $accent-50 0%, $primary-50 100%) !important;
-    color: $accent-700;
-    border-bottom: 2px solid $accent-200;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--success-500) 12%, var(--color-surface)) 0%,
+      color-mix(in srgb, var(--primary-600) 12%, var(--color-surface)) 100%
+    ) !important;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid color-mix(in srgb, var(--primary-600) 35%, var(--color-border-light));
   }
   
   // Primary branded theme
   &.table-header-primary {
-    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%) !important;
-    color: white;
-    border-bottom: 2px solid $primary-600;
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%) !important;
+    color: var(--color-text-inverse);
+    border-bottom: 2px solid var(--primary-700);
     
     mat-header-cell {
-      color: white !important;
+      color: var(--color-text-inverse) !important;
       font-weight: 600;
     }
   }
@@ -182,62 +190,62 @@ tr[mat-header-row] {
 /* Data Row Styling with Alternating Colors */
 mat-row {
   &:nth-child(even) {
-    background: linear-gradient(135deg, $primary-50 0%, rgba($primary-color, 0.03) 100%);
+    background: color-mix(in srgb, var(--primary-600) 6%, var(--color-surface));
   }
 
   &:nth-child(odd) {
-    background: linear-gradient(135deg, $secondary-50 0%, rgba($secondary-color, 0.03) 100%);
+    background: color-mix(in srgb, var(--primary-600) 3%, var(--color-surface));
   }
   
   &:hover {
-    background: linear-gradient(135deg, $primary-100 0%, rgba($primary-color, 0.08) 100%) !important;
+    background: color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) !important;
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px $shadow-light;
+    box-shadow: 0 2px 4px var(--shadow-light);
     cursor: pointer;
   }
   
   // Alternative subtle alternating pattern
   &.table-rows-subtle {
     &:nth-child(even) {
-      background: $surface-color;
+      background: var(--color-surface);
     }
     
     &:nth-child(odd) {
-      background: rgba($primary-50, 0.3);
+      background: color-mix(in srgb, var(--primary-600) 6%, var(--color-surface));
     }
     
     &:hover {
-      background: rgba($primary-50, 0.5) !important;
+      background: color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) !important;
     }
   }
   
   // Striped pattern for dense data
   &.table-rows-striped {
     &:nth-child(even) {
-      background: $background-secondary;
+      background: var(--color-surface-secondary);
     }
     
     &:nth-child(odd) {
-      background: $surface-color;
+      background: var(--color-surface);
     }
     
     &:hover {
-      background: $primary-100 !important;
+      background: color-mix(in srgb, var(--primary-600) 12%, var(--color-surface)) !important;
     }
   }
   
   // High contrast alternating for accessibility
   &.table-rows-contrast {
     &:nth-child(even) {
-      background: white;
+      background: var(--color-bg);
     }
     
     &:nth-child(odd) {
-      background: rgba($primary-50, 0.6);
+      background: color-mix(in srgb, var(--primary-600) 12%, var(--color-surface));
     }
     
     &:hover {
-      background: rgba($accent-100, 0.7) !important;
+      background: color-mix(in srgb, var(--success-500) 14%, var(--color-surface)) !important;
     }
   }
 }
@@ -260,7 +268,7 @@ th[mat-header-cell] {
   overflow: hidden;
   vertical-align: middle;
   font-size: 0.875rem;
-  border-right: 1px solid rgba($border-light, 0.3);
+  border-right: 1px solid color-mix(in srgb, var(--color-border-light) 60%, transparent);
   text-overflow: ellipsis;
   line-height: 1.2; // Tighter line height
   
@@ -282,7 +290,7 @@ th[mat-header-cell] {
 /* Header Cell Specific Styling - Compact */
 mat-header-cell {
   font-weight: 600;
-  color: $primary-700;
+  color: var(--color-text-primary);
   text-transform: uppercase;
   font-size: 0.7rem; // Reduced from 0.75rem
   letter-spacing: 0.3px; // Reduced from 0.5px
@@ -315,7 +323,7 @@ mat-header-cell {
   right: 0;
   text-align: center;
   font-size: 0.7rem;
-  color: $primary-600;
+  color: var(--primary-600);
   padding: 0.25rem 0.5rem;
   background: transparent;
   border: none;
@@ -378,10 +386,10 @@ mat-header-cell {
 
 /* Row State Utilities */
 .table-row-highlighted {
-  background: rgba($primary-200, 0.3) !important;
+  background: color-mix(in srgb, var(--primary-600) 24%, var(--color-surface)) !important;
   
   &:hover {
-    background: rgba($primary-300, 0.4) !important;
+    background: color-mix(in srgb, var(--primary-600) 28%, var(--color-surface)) !important;
   }
 }
 
@@ -396,11 +404,11 @@ mat-header-cell {
 }
 
 .table-row-selected {
-  background: rgba($accent-200, 0.3) !important;
-  border-left: 4px solid $accent-color;
+  background: color-mix(in srgb, var(--success-500) 22%, var(--color-surface)) !important;
+  border-left: 4px solid var(--success-500);
   
   &:hover {
-    background: rgba($accent-200, 0.4) !important;
+    background: color-mix(in srgb, var(--success-500) 28%, var(--color-surface)) !important;
   }
 }
 
@@ -416,15 +424,15 @@ mat-header-cell {
 
 /* Currency/Money Styling */
 .table-currency {
-  color: $success-color !important;
+  color: var(--success-500) !important;
   font-weight: 600;
   
   &.table-currency-negative {
-    color: $error-color !important;
+    color: var(--error-500) !important;
   }
   
   &.table-currency-zero {
-    color: $text-secondary !important;
+    color: var(--color-text-secondary) !important;
     opacity: 0.8;
   }
 }
@@ -432,28 +440,28 @@ mat-header-cell {
 /* Status Indicator Styling */
 .table-status {
   &.table-status-success {
-    color: $success-color !important;
+    color: var(--success-500) !important;
     font-weight: 600;
     
     &::after {
       content: ' ✓';
-      color: $success-color;
+      color: var(--success-500);
       font-weight: bold;
     }
   }
   
   &.table-status-warning {
-    color: $warn-color !important;
+    color: var(--warning-500) !important;
     font-weight: 500;
   }
   
   &.table-status-error {
-    color: $error-color !important;
+    color: var(--error-500) !important;
     font-weight: 500;
   }
   
   &.table-status-none {
-    color: $warn-color !important;
+    color: var(--warning-500) !important;
     font-weight: 500;
     opacity: 0.8;
   }
@@ -462,22 +470,22 @@ mat-header-cell {
 /* Efficiency Level Styling */
 .table-efficiency {
   &.table-efficiency-excellent {
-    color: $efficiency-excellent !important;
+    color: var(--success-500) !important;
     font-weight: 600;
   }
   
   &.table-efficiency-good {
-    color: $efficiency-good !important;
+    color: var(--primary-600) !important;
     font-weight: 500;
   }
   
   &.table-efficiency-average {
-    color: $efficiency-average !important;
+    color: var(--warning-500) !important;
     font-weight: 500;
   }
   
   &.table-efficiency-poor {
-    color: $efficiency-poor !important;
+    color: var(--error-500) !important;
     font-weight: 500;
   }
 }
@@ -750,7 +758,7 @@ mat-header-cell {
   
   mat-header-row {
     background: transparent;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--color-border-light);
   }
   
   mat-row {
@@ -759,11 +767,11 @@ mat-header-cell {
     }
     
     &:nth-child(odd) {
-      background: rgba($primary-50, 0.1);
+      background: color-mix(in srgb, var(--primary-600) 8%, var(--color-surface));
     }
     
     &:hover {
-      background: rgba($primary-50, 0.2) !important;
+      background: color-mix(in srgb, var(--primary-600) 14%, var(--color-surface)) !important;
       transform: none;
       box-shadow: none;
     }
@@ -772,38 +780,38 @@ mat-header-cell {
 
 /* Dark Theme - High contrast for dark mode */
 .table-theme-dark {
-  background: $text-primary;
-  color: $text-inverse;
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
   
   mat-table {
-    background: $text-primary;
-    color: $text-inverse;
+    background: var(--color-text-primary);
+    color: var(--color-text-inverse);
   }
   
   mat-header-row {
-    background: rgba($primary-600, 0.2);
-    color: $text-inverse;
-    border-bottom: 2px solid $primary-600;
+    background: color-mix(in srgb, var(--primary-600) 22%, var(--color-surface));
+    color: var(--color-text-inverse);
+    border-bottom: 2px solid var(--primary-600);
   }
   
   mat-row {
     &:nth-child(even) {
-      background: rgba($surface-color, 0.05);
+      background: color-mix(in srgb, var(--color-surface) 95%, var(--primary-600) 5%);
     }
     
     &:nth-child(odd) {
-      background: rgba($primary-600, 0.1);
+      background: color-mix(in srgb, var(--primary-600) 10%, var(--color-surface));
     }
     
     &:hover {
-      background: rgba($primary-600, 0.2) !important;
+      background: color-mix(in srgb, var(--primary-600) 18%, var(--color-surface)) !important;
     }
   }
   
   mat-cell,
   mat-header-cell {
-    color: $text-inverse;
-    border-right: 1px solid rgba($border-light, 0.2);
+    color: var(--color-text-inverse);
+    border-right: 1px solid color-mix(in srgb, var(--color-border-light) 30%, transparent);
   }
 }
 
@@ -811,9 +819,13 @@ mat-header-cell {
 .table-theme-standard {
   mat-header-row,
   tr[mat-header-row] {
-    background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%) !important;
-    color: $primary-700;
-    border-bottom: 2px solid $primary-200;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 0%,
+      color-mix(in srgb, var(--primary-600) 6%, var(--color-surface)) 100%
+    ) !important;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-light);
       mat-header-cell,
     th[mat-header-cell] {
       // Mobile responsive font sizing
@@ -847,15 +859,15 @@ mat-header-cell {
   mat-row,
   tr[mat-row] {
     &:nth-child(even) {
-      background: linear-gradient(135deg, $primary-50 0%, rgba($primary-color, 0.03) 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 6%, var(--color-surface)) 100%);
     }
     
     &:nth-child(odd) {
-      background: linear-gradient(135deg, $secondary-50 0%, rgba($secondary-color, 0.03) 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 8%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 4%, var(--color-surface)) 100%);
     }
     
     &:hover {
-      background: linear-gradient(135deg, $primary-100 0%, rgba($primary-color, 0.08) 100%) !important;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 14%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 100%) !important;
     }
   }
 }
@@ -864,9 +876,9 @@ mat-header-cell {
 .table-theme-premium {
   mat-header-row,
   tr[mat-header-row] {
-    background: linear-gradient(135deg, rgba($primary-color, 0.03) 0%, rgba($secondary-color, 0.05) 100%) !important;
-    color: $primary-700;
-    border-bottom: 2px solid $primary-300;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 8%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 6%, var(--color-surface)) 100%) !important;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-light);
     font-weight: 700;
     height: 3rem;
     min-height: 3rem;
@@ -912,29 +924,29 @@ mat-header-cell {
   mat-row,
   tr[mat-row] {
     &:nth-child(even) {
-      background: linear-gradient(135deg, rgba($primary-color, 0.02) 0%, rgba($primary-color, 0.04) 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 6%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 4%, var(--color-surface)) 100%);
     }
     
     &:nth-child(odd) {
-      background: linear-gradient(135deg, rgba($accent-color, 0.02) 0%, rgba($accent-color, 0.04) 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--success-500) 6%, var(--color-surface)) 0%, color-mix(in srgb, var(--success-500) 4%, var(--color-surface)) 100%);
     }
     
     &:hover {
-      background: linear-gradient(135deg, rgba($primary-color, 0.06) 0%, rgba($primary-color, 0.08) 100%) !important;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 14%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 12%, var(--color-surface)) 100%) !important;
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--shadow-light) 60%, transparent);
     }
   }  mat-footer-row,
   tr[mat-footer-row] {
-    background: linear-gradient(135deg, rgba($secondary-color, 0.04) 0%, rgba($primary-color, 0.06) 100%) !important;
-    color: $secondary-700;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 8%, var(--color-surface)) 100%) !important;
+    color: var(--color-text-primary);
     font-weight: 700;
-    border-top: 3px solid $secondary-600;
+    border-top: 3px solid color-mix(in srgb, var(--primary-600) 50%, var(--color-border-light));
     height: 2.8rem;
     min-height: 2.8rem;
       mat-footer-cell,
     td[mat-footer-cell] {
-      color: $secondary-700 !important;
+      color: var(--color-text-primary) !important;
       font-weight: 700;
       font-size: 0.9rem;
       padding: 0 12px;
@@ -977,25 +989,25 @@ mat-header-cell {
   mat-header-row,
   tr[mat-header-row] {
     background: transparent !important;
-    color: $text-primary;
-    border-bottom: 2px solid $border-light;
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-light);
     font-weight: 600;
   }
   
   mat-row,
   tr[mat-row] {
-    border-bottom: 1px solid rgba($border-light, 0.3);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border-light) 50%, transparent);
     
     &:nth-child(even) {
       background: transparent;
     }
     
     &:nth-child(odd) {
-      background: rgba($primary-50, 0.2);
+      background: color-mix(in srgb, var(--primary-600) 12%, var(--color-surface));
     }
     
     &:hover {
-      background: rgba($primary-50, 0.4) !important;
+      background: color-mix(in srgb, var(--primary-600) 18%, var(--color-surface)) !important;
     }
   }
   
@@ -1011,8 +1023,8 @@ mat-header-cell {
   tr[mat-header-row] {
     height: 1.875rem !important;
     min-height: 1.875rem !important;
-    background: $primary-100 !important;
-    color: $primary-800;
+    background: color-mix(in srgb, var(--primary-600) 14%, var(--color-surface)) !important;
+    color: var(--color-text-primary);
     
     @media (max-width: 768px) {
       height: 1.75rem !important;
@@ -1045,24 +1057,24 @@ mat-header-cell {
 
 /* Total Row Styling - For summary/total rows */
 .table-total-row {
-  background: linear-gradient(135deg, $accent-100 0%, $primary-100 100%) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--success-500) 12%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 12%, var(--color-surface)) 100%) !important;
   font-weight: 700;
-  color: $primary-800;
-  border-top: 2px solid $primary-300;
-  border-bottom: 2px solid $primary-300;
+  color: var(--color-text-primary);
+  border-top: 2px solid color-mix(in srgb, var(--primary-600) 35%, var(--color-border-light));
+  border-bottom: 2px solid color-mix(in srgb, var(--primary-600) 35%, var(--color-border-light));
   
   mat-cell {
     font-weight: 700;
-    color: $primary-800;
+    color: var(--color-text-primary);
     
     &:last-child {
       font-size: 1.1rem;
-      color: $accent-700;
+      color: var(--success-500);
     }
   }
   
   &:hover {
-    background: linear-gradient(135deg, $accent-200 0%, $primary-200 100%) !important;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--success-500) 16%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 16%, var(--color-surface)) 100%) !important;
     transform: none; // Disable hover transform for total rows
   }
 }
@@ -1070,17 +1082,17 @@ mat-header-cell {
 /* Footer Row Styling - For table footers */
 mat-footer-row,
 tr[mat-footer-row] {
-  background: linear-gradient(135deg, $secondary-100 0%, $primary-100 100%) !important;
-  color: $primary-700;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 8%, var(--color-surface)) 100%) !important;
+  color: var(--color-text-primary);
   font-weight: 600;
-  border-top: 2px solid $primary-200;
+  border-top: 2px solid color-mix(in srgb, var(--primary-600) 28%, var(--color-border-light));
   height: 2.5rem;
   min-height: 2.5rem;
   
   mat-footer-cell,
   td[mat-footer-cell] {
     font-weight: 600;
-    color: $primary-700;
+    color: var(--color-text-primary);
     font-size: 0.875rem;
   }
 }
