@@ -42,7 +42,7 @@ describe('ThemeService', () => {
       },
       dispatchEvent: () => false,
       trigger: (nextValue: boolean) => {
-        mediaQuery.matches = nextValue;
+        Object.defineProperty(mediaQuery, 'matches', { value: nextValue, writable: true });
         listeners.forEach(listener => listener({ matches: nextValue } as MediaQueryListEvent));
       }
     } as MockMediaQuery;
@@ -76,7 +76,7 @@ describe('ThemeService', () => {
     mockMatchMedia(true);
     const service = createService();
 
-    expect(service.activeTheme).toBe<'dark'>('dark');
+    expect(service.activeTheme).toBe('dark');
     expect(documentRef.documentElement.classList.contains('theme-dark')).toBeTrue();
     expect(documentRef.documentElement.getAttribute('data-theme-preference')).toBe('system');
   });
@@ -87,7 +87,7 @@ describe('ThemeService', () => {
 
     service.setTheme('dark');
 
-    expect(service.activeTheme).toBe<'dark'>('dark');
+    expect(service.activeTheme).toBe('dark');
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
     expect(documentRef.documentElement.classList.contains('theme-dark')).toBeTrue();
     expect(documentRef.documentElement.style.colorScheme).toBe('dark');
@@ -97,7 +97,7 @@ describe('ThemeService', () => {
     mockMatchMedia(false);
     const service = createService();
 
-    expect(service.activeTheme).toBe<'light'>('light');
+    expect(service.activeTheme).toBe('light');
     expect(documentRef.documentElement.classList.contains('theme-light')).toBeTrue();
   });
 
@@ -108,7 +108,7 @@ describe('ThemeService', () => {
     service.setTheme('system');
     mediaQuery.trigger?.(true);
 
-    expect(service.activeTheme).toBe<'dark'>('dark');
+    expect(service.activeTheme).toBe('dark');
     expect(documentRef.documentElement.classList.contains('theme-dark')).toBeTrue();
   });
 

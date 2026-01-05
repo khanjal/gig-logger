@@ -124,7 +124,7 @@
         @if (shift.amountPerTime) {
           <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
             <div class="text-xs text-secondary mb-1">Rate/Hr</div>
-            <div class="text-sm font-bold text-green-600">\${{shift.amountPerTime | number:'1.2-2'}}</div>
+            <div class="text-sm font-bold text-green-600">${{shift.amountPerTime | number:'1.2-2'}}</div>
           </div>
         }
         @if (shift.grandTotal && shift.totalDistance) {

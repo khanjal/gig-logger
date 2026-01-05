@@ -149,6 +149,126 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 - **Color system**: Reference `color-vars.scss` for consistent theming
 - **Spacing**: Use Tailwind's extended spacing scale (includes custom 0.5, 18, 88)
 
+## Dark/Light Theme System
+
+### Theme Architecture
+- **Theme Toggle**: Users can switch between light, dark, and system preference modes
+- **CSS Variables**: Core theme colors defined in `src/styles.scss` with `:root` (light) and `html.theme-dark` (dark) blocks
+- **Tailwind Dark Mode**: Uses `darkMode: 'class'` strategy with `html.theme-dark` selector
+- **Theme Service**: `ThemeService` manages theme state, persistence, and system preference detection
+
+### Color Standards & Best Practices
+
+**REQUIRED: Always implement both light and dark mode variants for all UI elements**
+
+#### 1. Text Colors
+Use Tailwind's gray scale with proper dark mode variants:
+```html
+<!-- Standard text -->
+<p class="text-gray-800 dark:text-gray-200">Primary content</p>
+<p class="text-gray-600 dark:text-gray-300">Secondary content</p>
+<p class="text-gray-500 dark:text-gray-400">Tertiary content</p>
+
+<!-- Semantic color text -->
+<span class="text-blue-700 dark:text-blue-300">Blue accent</span>
+<span class="text-green-700 dark:text-green-400">Success</span>
+<span class="text-red-700 dark:text-red-400">Error</span>
+<span class="text-orange-700 dark:text-orange-400">Warning</span>
+```
+
+**Rule**: Light mode uses darker shades (600-800), dark mode uses lighter shades (200-400)
+
+#### 2. Background Colors
+```html
+<!-- Card/surface backgrounds -->
+<div class="bg-gray-50 dark:bg-gray-900">Surface</div>
+<div class="bg-white dark:bg-gray-800">Container</div>
+
+<!-- Accent backgrounds -->
+<div class="bg-blue-50 dark:bg-blue-950">Info card</div>
+<div class="bg-green-50 dark:bg-green-950">Success card</div>
+<div class="bg-red-50 dark:bg-red-950">Error card</div>
+<div class="bg-orange-50 dark:bg-orange-950">Warning card</div>
+
+<!-- Translucent backgrounds (when opacity is needed) -->
+<div class="bg-blue-100 dark:bg-blue-900/30">Badge</div>
+<div class="bg-purple-100 dark:bg-purple-900/30">Tag</div>
+```
+
+**Rule**: Light mode uses -50/-100 shades, dark mode uses -950 shades or -900/opacity for translucency
+
+#### 3. Border Colors
+```html
+<!-- Subtle borders -->
+<div class="border border-gray-200 dark:border-gray-700">Card</div>
+<div class="divide-y divide-gray-200 dark:divide-gray-700">List</div>
+
+<!-- Accent borders -->
+<div class="border-blue-200 dark:border-blue-800">Info border</div>
+```
+
+**Rule**: Light mode uses -200 shades, dark mode uses -700/-800 shades
+
+#### 4. CSS Variables (for complex SCSS components)
+When Tailwind classes are insufficient (e.g., Material components), use CSS variables:
+```scss
+.my-component {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+```
+
+Available CSS variables (defined in `src/styles.scss`):
+- `--color-surface`, `--color-surface-2`, `--color-surface-3`: Background layers
+- `--color-text-primary`, `--color-text-secondary`, `--color-text-tertiary`: Text hierarchy
+- `--color-border`, `--color-border-light`: Borders and dividers
+- `--color-error`, `--color-warning`, `--color-success`, `--color-info`: Semantic colors
+
+#### 5. Semantic Utility Classes
+For automatic theme-aware styling, use these semantic classes (defined in styles.scss):
+```html
+<p class="text-primary">Auto-themed primary text</p>
+<p class="text-secondary">Auto-themed secondary text</p>
+<div class="bg-surface">Auto-themed surface</div>
+<div class="bg-surface-2">Auto-themed elevated surface</div>
+<div class="border-soft">Auto-themed border</div>
+```
+
+### Common Mistakes to Avoid
+❌ **DON'T**: Use hardcoded colors without dark variants
+```html
+<p class="text-gray-600">This will be too dark in dark mode</p>
+<div class="bg-blue-50">This will be too light in dark mode</div>
+```
+
+✅ **DO**: Always include dark mode variants
+```html
+<p class="text-gray-600 dark:text-gray-300">Proper contrast in both modes</p>
+<div class="bg-blue-50 dark:bg-blue-950">Proper background in both modes</div>
+```
+
+❌ **DON'T**: Override CSS variables in component SCSS without dark mode consideration
+```scss
+.my-component {
+  color: #333; // Hardcoded - bad!
+}
+```
+
+✅ **DO**: Use CSS variables or Tailwind classes
+```scss
+.my-component {
+  color: var(--color-text-primary); // Theme-aware - good!
+}
+```
+
+### Testing Dark Mode
+- **Always test visual changes in both light and dark modes**
+- Use browser DevTools to toggle `html.theme-dark` class
+- Check contrast ratios for accessibility (WCAG AA minimum)
+- Verify readability of all text elements
+- Ensure backgrounds have appropriate opacity/darkness
+
 ## Common Development Workflows
 
 ### Adding New Features

@@ -199,13 +199,13 @@
         <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium">
           <div>
             Avg/trip:
-            <span class="font-bold text-blue-700">
+            <span class="font-bold text-blue-700 dark:text-blue-300">
               {{ getGroupAvgPerTrip(group) }}
             </span>
           </div>
           <div>
             Avg/hr:
-            <span class="font-bold text-green-700">
+            <span class="font-bold text-green-700 dark:text-green-400">
               {{ getGroupAvgRate(group) }}
             </span>
           </div>
@@ -247,7 +247,7 @@
                *ngIf="!isResultSameAsGroup(result, group)">
             <div>
               Avg/trip:
-              <span class="font-bold text-blue-700">
+              <span class="font-bold text-blue-700 dark:text-blue-300">
                 {{ getResultAvgPerTrip(result) }}
               </span>
             </div>

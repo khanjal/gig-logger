@@ -7,7 +7,8 @@
     margin-bottom: 1rem;
     border-radius: 0.5rem !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
     
     &:before {
       display: none;
@@ -22,6 +23,8 @@
     padding: 0.75rem 0.5rem;
     min-height: 48px !important;
     height: auto !important;
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
     
     @media (min-width: 768px) {
       padding: 1rem 1.5rem;
@@ -41,6 +44,7 @@
 
   .mat-expansion-panel-body {
     padding: 0 !important;
+    background-color: var(--color-surface);
   }
 
   mat-panel-title {
@@ -51,6 +55,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: var(--color-text-primary);
     
     @media (min-width: 768px) {
       font-size: 1rem;
@@ -83,6 +88,7 @@
     justify-content: flex-end;
     margin-left: 0;
     flex-shrink: 0;
+    color: var(--color-text-secondary);
   }
 }
 
