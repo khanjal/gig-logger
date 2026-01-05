@@ -562,7 +562,7 @@ mat-form-field {
       .trips-indicator {
         flex-shrink: 0; // Never shrink the trips count
         font-size: 0.875rem; // Slightly smaller than main text
-        color: #666; // Muted color
+        color: var(--color-text-secondary); // Muted color
         margin-right: 8px; // Space between trips count and address
         font-weight: 500;
       }

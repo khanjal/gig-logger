@@ -38,14 +38,14 @@ button {
   animation: slideUp 0.3s ease-out;
   backdrop-filter: blur(10px);
 
+  // Border for both listening and heard states
+  border: 2px solid var(--color-border); // Default gray border for "heard" state
+
   @media (min-width: 768px) {
     right: calc(1.5rem + 56px + 1rem); // Aligned with voice button on large screens
     left: auto;
     min-width: 400px;
   }
-
-  // Border for both listening and heard states
-  border: 2px solid var(--color-border); // Default gray border for "heard" state
 
   &.recognizing {
     border: 2px solid var(--primary-600); // Blue border when actively listening

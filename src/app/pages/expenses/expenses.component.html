@@ -16,7 +16,7 @@
   </div>
 
   <div *ngIf="showAddForm || editingExpenseId" class="my-4">
-    <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-lg shadow mb-4">
+    <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-6 rounded-lg shadow mb-4">
       <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
         <mat-form-field class="w-full" appearance="outline">
           <mat-label>Row ID</mat-label>
@@ -84,7 +84,7 @@
           </div>
         </div>
         <div class="overflow-x-auto">
-          <table class="min-w-full bg-white rounded-lg shadow mb-8">
+          <table class="min-w-full bg-surface rounded-lg shadow mb-8">
             <thead>
               <tr class="bg-blue-100">
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>

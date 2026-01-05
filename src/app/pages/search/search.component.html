@@ -1,7 +1,7 @@
-<div class="search-page bg-gray-50 pb-20">
+<div class="search-page bg-surface-2 pb-20">
   <!-- Search Input with Autocomplete and Filter Button (Overlay) -->
   <div 
-  class="fixed left-0 right-0 z-20 pt-4 bg-white shadow-md transition-all duration-300"
+  class="fixed left-0 right-0 z-20 pt-4 bg-surface shadow-md transition-all duration-300"
   [ngStyle]="{ 'top': '56px' }">
     <div class="max-w-7xl mx-auto px-4 py-3">
       <div class="flex gap-2">
@@ -39,7 +39,7 @@
             [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
             matTooltipPosition="below"
             (click)="toggleFilters()"
-            [class.bg-blue-50]="showFilters"
+            [class.bg-primary-500/10]="showFilters"
             class="filter-toggle-btn">
             <mat-icon [class.text-blue-600]="showFilters">
               {{ showFilters ? 'filter_list_off' : 'filter_list' }}
@@ -193,7 +193,7 @@
         </div>
         
         <!-- Group Averages Bar -->
-        <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-t border-gray-200 text-xs text-gray-700 font-medium">
+        <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium">
           <div>
             Avg/trip:
             <span class="font-bold text-blue-700">
@@ -240,7 +240,7 @@
           </div>
 
           <!-- Sub-result Averages Bar -->
-          <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-t border-gray-200 text-xs text-gray-700 font-medium" 
+          <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium" 
                *ngIf="!isResultSameAsGroup(result, group)">
             <div>
               Avg/trip:

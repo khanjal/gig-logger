@@ -219,7 +219,7 @@
   }
   
   &.mat-mdc-raised-button:hover:not(:disabled) {
-    background-color: #fef7f0;
-    color: #c5221f;
+    background-color: color-mix(in srgb, var(--error-500) 10%, transparent);
+    color: var(--error-600);
   }
 }
