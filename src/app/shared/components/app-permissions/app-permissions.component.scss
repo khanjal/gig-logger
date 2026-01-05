@@ -162,6 +162,17 @@
   gap: 0.75rem;
   padding-top: 1rem;
 
+  button.mat-stroked-button {
+    border-color: var(--color-border-light);
+    color: var(--color-text-primary);
+    background: color-mix(in srgb, var(--color-surface) 90%, white);
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-surface) 75%, white);
+      border-color: var(--color-border);
+    }
+  }
+
   .footer-icon {
     font-size: 1.25rem;
     width: 1.25rem;
@@ -231,5 +242,16 @@
 
   .permissions-footer .footer-icon {
     color: var(--gray-300);
+  }
+
+  .permissions-footer button.mat-stroked-button {
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+      border-color: var(--color-border-light);
+    }
   }
 }

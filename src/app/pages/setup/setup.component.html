@@ -6,11 +6,6 @@
   </div>
 
   <ng-container *ngIf="isAuthenticated">
-    <!-- <div class="mb-6">
-      <h2 class="text-2xl font-semibold flex items-center gap-2">Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
-      <sheet-add-form (parentReload)="reload()"></sheet-add-form>
-    </div> -->
-
     <div class="mb-6" *ngIf="!spreadsheets?.length">
       <h2 class="text-2xl font-semibold text-primary dark:text-primary">Set Up Your Spreadsheet</h2>
       <app-sheet-link (parentReload)="reload()"></app-sheet-link>

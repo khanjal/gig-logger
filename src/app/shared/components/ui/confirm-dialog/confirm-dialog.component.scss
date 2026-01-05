@@ -9,6 +9,8 @@
   border-radius: 16px;
   height: auto;
   min-height: auto;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   
   @media (max-width: 768px) {
     padding: 1rem;
@@ -194,3 +196,56 @@
 
 // Use global modal backdrop styling
 @include modals.setup-modal-backdrop('medium');
+
+// Dark mode support
+:host-context(html.theme-dark) {
+  .confirm-dialog {
+    background: var(--color-surface);
+  }
+
+  .cancel-button {
+    background: color-mix(in srgb, var(--color-surface-2) 60%, transparent);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-surface-2) 75%, transparent);
+      border-color: var(--color-border-light);
+    }
+  }
+}
+
+// Style the Material dialog container to match theme and prevent white corners
+::ng-deep .mat-mdc-dialog-container {
+  background: var(--color-surface) !important;
+  border-radius: 16px;
+  
+  .mdc-dialog__surface {
+    background: var(--color-surface) !important;
+    border-radius: 16px;
+  }
+  
+  @media (max-width: 768px) {
+    border-radius: 12px;
+    
+    .mdc-dialog__surface {
+      border-radius: 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    border-radius: 8px;
+    
+    .mdc-dialog__surface {
+      border-radius: 8px;
+    }
+  }
+}
+
+:host-context(html.theme-dark) ::ng-deep .mat-mdc-dialog-container {
+  background: var(--color-surface) !important;
+  
+  .mdc-dialog__surface {
+    background: var(--color-surface) !important;
+  }
+}
