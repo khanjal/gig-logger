@@ -105,6 +105,11 @@
   .address-button--selected, .name-button--selected {
     color: var(--color-text-primary) !important;
   }
+  
+  // Fix mat-slide-toggle label text color in dark mode
+  ::ng-deep .mat-mdc-slide-toggle label {
+    color: var(--color-text-primary) !important;
+  }
 }
 
 .button-disabled {
