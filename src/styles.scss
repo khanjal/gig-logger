@@ -114,6 +114,10 @@ html.theme-dark {
   --shadow-medium: rgba(0, 0, 0, 0.45);
   --shadow-heavy: rgba(0, 0, 0, 0.6);
 
+  // Override primary colors for better visibility in dark mode
+  --primary-600: #60a5fa; // Lighter blue for links
+  --primary-700: #93c5fd; // Even lighter for hover
+  
   color-scheme: dark;
 }
 

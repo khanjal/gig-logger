@@ -34,19 +34,19 @@
         @else { check_circle }
       </mat-icon>
       <!-- Row ID -->
-      <span class="text-base font-bold text-blue-500 font-mono flex-shrink-0">#{{shift.rowId}}</span>
+      <span class="text-base font-bold text-blue-600 dark:text-blue-400 font-mono flex-shrink-0">#{{shift.rowId}}</span>
       <!-- Service Name, Number (flexible, grows) -->
       <span class="font-bold text-primary text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
   <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
-        @if (!shift.grandTotal) {<mat-icon class="text-gray-400 text-base">hourglass_empty</mat-icon>}
-        @if (shift.amountPerTime >= 25) {<mat-icon class="text-green-600 text-base">trending_up</mat-icon>}
-        @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-blue-600 text-base">trending_neutral</mat-icon>}
-        @if (shift.amountPerTime < 20) {<mat-icon class="text-red-500 text-base">trending_down</mat-icon>}
+        @if (!shift.grandTotal) {<mat-icon class="text-tertiary text-base">hourglass_empty</mat-icon>}
+        @if (shift.amountPerTime >= 25) {<mat-icon class="text-green-600 dark:text-green-400 text-base">trending_up</mat-icon>}
+        @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-blue-600 dark:text-blue-400 text-base">trending_neutral</mat-icon>}
+        @if (shift.amountPerTime < 20) {<mat-icon class="text-red-600 dark:text-red-400 text-base">trending_down</mat-icon>}
         <span class="font-bold text-sm sm:text-base"
-              [ngClass]="{ 'text-gray-400': !shift.grandTotal, 'text-green-600': shift.amountPerTime >= 25, 'text-blue-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-500': shift.amountPerTime < 20 }">
+              [ngClass]="{ 'text-tertiary': !shift.grandTotal, 'text-green-600 dark:text-green-400': shift.amountPerTime >= 25, 'text-blue-600 dark:text-blue-400': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-600 dark:text-red-400': shift.amountPerTime < 20 }">
           {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
         </span>
       </span>
@@ -54,15 +54,15 @@
     <!-- Second line: Date + Time Range + Duration -->
     <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2">
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">event</mat-icon>
+        <mat-icon class="text-blue-600 dark:text-blue-400 text-base">event</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:'EEE, MMM d, yy' }} }</span>
       </span>
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">schedule</mat-icon>
+        <mat-icon class="text-blue-600 dark:text-blue-400 text-base">schedule</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.start) { {{ shift.start | noseconds:prefers24Hour }}@if (shift.finish) { - {{ shift.finish | noseconds:prefers24Hour }} } }</span>
       </span>
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">timer</mat-icon>
+        <mat-icon class="text-blue-600 dark:text-blue-400 text-base">timer</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.totalTime) { {{shift.totalTime | durationFormat}} }</span>
       </span>
     </div>
@@ -72,26 +72,26 @@
     <div class="mt-1 text-xs text-secondary truncate text-center flex items-center w-full relative">
       @if (shift.totalTrips) {
         <span class="flex items-center gap-1 flex-1 justify-start">
-          <mat-icon class="text-blue-400 text-base">route</mat-icon>
+          <mat-icon class="text-blue-600 dark:text-blue-400 text-base">route</mat-icon>
           <span class="font-mono text-xs text-primary">{{shift.totalTrips}} trips</span>
         </span>
       }
       @if (shift.totalDistance) {
         <span class="flex items-center gap-1 flex-1 justify-center">
-          <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
+          <mat-icon class="text-blue-600 dark:text-blue-400 text-base">straighten</mat-icon>
           <span class="font-mono text-xs text-primary">{{formatDistance(shift.totalDistance)}}</span>
         </span>
       }
       @if (shift.totalActive) {
         <span class="flex items-center gap-1 flex-1 justify-end">
-          <mat-icon class="text-blue-400 text-base">directions_car</mat-icon>
+          <mat-icon class="text-blue-600 dark:text-blue-400 text-base">directions_car</mat-icon>
           <span class="font-mono text-xs text-primary">{{shift.totalActive | durationFormat}} active</span>
         </span>
       }
     </div>
     <!-- Toggle Button Bar -->
     <div class="focus-within:ring-0 focus-within:outline-none mt-2">
-      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-tertiary hover:text-primary-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
               (click)="toggleExpansion()" 
               tabindex="0" 
               [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"

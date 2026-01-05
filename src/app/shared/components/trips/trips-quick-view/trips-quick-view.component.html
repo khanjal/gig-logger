@@ -65,11 +65,11 @@
       <span class="flex items-center gap-1 flex-shrink-0">
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
-                'text-gray-400': !(trip.pay || trip.tip || trip.bonus),
-                'text-green-600': trip.amountPerTime > 30,
-                'text-blue-600': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
-                'text-yellow-600': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
-                'text-red-500': trip.amountPerTime < 20
+                'text-tertiary': !(trip.pay || trip.tip || trip.bonus),
+                'text-green-600 dark:text-green-400': trip.amountPerTime > 30,
+                'text-blue-600 dark:text-blue-400': trip.amountPerTime >= 25 && trip.amountPerTime <= 30,
+                'text-yellow-600 dark:text-yellow-400': trip.amountPerTime >= 20 && trip.amountPerTime < 25,
+                'text-red-600 dark:text-red-400': trip.amountPerTime < 20
               }">
           {{trip.total | currency}}
         </span>
@@ -97,38 +97,38 @@
       <div class="flex items-center gap-0.5 flex-shrink-0 min-w-0 max-w-[200px] overflow-x-auto h-6" *ngIf="!!trip">
         <div class="flex items-center gap-1 px-1 overflow-x-auto scrollbar-hide">
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.tip && trip.tip > 0) ? 'text-green-600' : 'text-gray-300 opacity-50'"
+                    [ngClass]="(trip.tip && trip.tip > 0) ? 'text-green-600 dark:text-green-400' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="(trip.tip && trip.tip > 0) ? ('Tip: $' + trip.tip) : 'No tip'">monetization_on</mat-icon>
 
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.bonus && trip.bonus > 0) ? 'text-yellow-600' : 'text-gray-300 opacity-50'"
+                    [ngClass]="(trip.bonus && trip.bonus > 0) ? 'text-yellow-600 dark:text-yellow-400' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="(trip.bonus && trip.bonus > 0) ? ('Bonus: $' + trip.bonus) : 'No bonus'">star</mat-icon>
 
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.cash && trip.cash > 0) ? 'text-purple-600' : 'text-gray-300 opacity-50'"
+                    [ngClass]="(trip.cash && trip.cash > 0) ? 'text-purple-600 dark:text-purple-400' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="(trip.cash && trip.cash > 0) ? ('Cash: $' + trip.cash) : 'No cash'">payments</mat-icon>
 
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="(trip.startOdometer || trip.endOdometer) ? 'text-red-600' : 'text-gray-300 opacity-50'"
+                    [ngClass]="(trip.startOdometer || trip.endOdometer) ? 'text-red-600 dark:text-red-400' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="(trip.startOdometer || trip.endOdometer) ? 'Odometer readings available' : 'No odometer'">speed</mat-icon>
 
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="trip.startAddress ? 'text-blue-600' : 'text-gray-300 opacity-50'"
+                    [ngClass]="trip.startAddress ? 'text-blue-600 dark:text-blue-400' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="trip.startAddress ? ('Pickup address: ' + trip.startAddress) : 'No pickup address'">place</mat-icon>
 
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="trip.endAddress ? 'text-indigo-600' : 'text-gray-300 opacity-50'"
+                    [ngClass]="trip.endAddress ? 'text-indigo-600 dark:text-indigo-400' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="trip.endAddress ? ('Destination address: ' + trip.endAddress) : 'No destination address'">flag</mat-icon>
 
           <!-- Note icon: always shown, colored when note exists -->
           <mat-icon class="inline-flex items-center justify-center w-5 h-5 leading-none align-middle flex-shrink-0"
-                    [ngClass]="trip.note ? 'text-yellow-700' : 'text-gray-300 opacity-50'"
+                    [ngClass]="trip.note ? 'text-yellow-700 dark:text-yellow-300' : 'text-tertiary opacity-50'"
                     [attr.aria-label]="trip.note ? ('Note: ' + trip.note) : 'No note'">format_quote</mat-icon>
         </div>
       </div>
       <!-- Toggle Button (right side) -->
       <div class="focus-within:ring-0 focus-within:outline-none flex-1 flex justify-end">
-        <button class="flex items-center justify-end gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+        <button class="flex items-center justify-end gap-2 py-1 text-xs text-tertiary hover:text-primary-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
                 (click)="toggleExpansion()" 
                 tabindex="0" 
                 [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
@@ -277,7 +277,7 @@
             class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 rounded-lg text-sm font-medium hover:bg-primary-500/20 transition" 
             (click)="editTrip()" 
             title="Edit Trip">
-      <mat-icon class="text-blue-500 text-base">edit</mat-icon>
+      <mat-icon class="text-blue-600 dark:text-blue-400 text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>
     </button>
     <!-- Center Action Buttons -->

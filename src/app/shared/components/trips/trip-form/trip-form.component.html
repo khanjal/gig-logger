@@ -189,7 +189,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
-            <div class="text-gray-500 font-medium" *ngIf="!delivery.address">
+            <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
             </div>
             <button 
@@ -231,7 +231,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
-            <div class="text-gray-500 font-medium" *ngIf="!delivery.name">
+            <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
             </div>
             <button 

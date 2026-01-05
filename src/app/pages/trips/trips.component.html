@@ -3,7 +3,7 @@
     @if (isLoading) {
         <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div class="flex flex-col items-center justify-center p-8 bg-surface rounded-lg shadow-lg">
-                <mat-icon class="animate-spin text-blue-500 text-4xl mb-2">refresh</mat-icon>
+                <mat-icon class="animate-spin text-blue-600 dark:text-blue-400 text-4xl mb-2">refresh</mat-icon>
                 <p class="text-lg font-semibold">Loading...</p>
             </div>
         </div>
@@ -55,8 +55,8 @@
                 <!-- Info icon for first trip (rowId === 2) -->
                 <ng-container *ngIf="trip.rowId === 2">
                     <div class="flex items-center mt-1 mb-2">
-                        <mat-icon matTooltip="ID 1 is reserved for the spreadsheet header. Your first trip starts at row 2." class="text-blue-400 text-base ml-2 cursor-pointer align-middle">info</mat-icon>
-                        <span class="text-xs text-gray-500 ml-1">ID 1 is the header in your spreadsheet.</span>
+                        <mat-icon matTooltip="ID 1 is reserved for the spreadsheet header. Your first trip starts at row 2." class="text-blue-600 dark:text-blue-400 text-base ml-2 cursor-pointer align-middle">info</mat-icon>
+                        <span class="text-xs text-secondary ml-1">ID 1 is the header in your spreadsheet.</span>
                     </div>
                 </ng-container>
             </div>

@@ -57,7 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Theme state
   themePreference: ThemePreference = 'system';
   resolvedTheme: 'light' | 'dark' = 'light';
-  toolbarGradient = 'linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%)';
+  toolbarGradient = 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)'; // Consistent dark blue for both light and dark modes
 
   constructor(
     private _commonService: CommonService,

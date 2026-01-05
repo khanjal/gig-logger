@@ -58,12 +58,48 @@
 ::ng-deep .mat-expansion-panel {
   box-shadow: none !important;
   border: none !important;
+  background-color: var(--color-surface-secondary) !important;
 }
 ::ng-deep .mat-expansion-panel:not(:last-child) {
   border-bottom: none !important;
 }
 ::ng-deep .mat-expansion-panel-header {
   border-bottom: none !important;
+  background-color: var(--color-surface-secondary) !important;
+}
+
+// Dark mode specific overrides for expansion panels
+:host-context(html.theme-dark) {
+  ::ng-deep .mat-accordion .mat-expansion-panel,
+  ::ng-deep .mat-expansion-panel {
+    background-color: var(--color-surface-secondary) !important;
+  }
+  
+  ::ng-deep .mat-expansion-panel-header {
+    background-color: var(--color-surface-secondary) !important;
+    
+    &:hover {
+      background-color: var(--color-surface-tertiary) !important;
+    }
+  }
+  
+  ::ng-deep .mat-expansion-panel-body {
+    background-color: var(--color-surface-secondary) !important;
+  }
+  
+  // Fix mat-stroked-button text color in dark mode
+  ::ng-deep .mat-mdc-outlined-button {
+    color: var(--color-text-primary) !important;
+    
+    &:not(.address-button--selected):not(.name-button--selected) {
+      border-color: var(--color-border-soft) !important;
+    }
+  }
+  
+  // Ensure selected button colors work in dark mode
+  .address-button--selected, .name-button--selected {
+    color: var(--color-text-primary) !important;
+  }
 }
 
 .button-disabled {

@@ -724,8 +724,9 @@
 .app-footer {
   padding: 2.5rem 1rem 1.25rem;
   text-align: center;
-  background: var(--color-text-primary);
-  color: var(--color-text-inverse);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border-top: 1px solid var(--color-border);
   
   .legal-links {
     margin-bottom: 1rem;
@@ -1092,23 +1093,37 @@
   background: #fffbe7;
   border: 1px solid #ffe0a3;
   border-radius: 1rem;
-  margin: 2rem auto 0 auto;
+  margin: 2rem auto 4rem auto;
   max-width: 420px;
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   box-shadow: 0 2px 12px rgba(255, 193, 7, 0.08);
   text-align: center;
+  
+  @media (prefers-color-scheme: dark) {
+    background: #3f3015;
+    border-color: #6b5c33;
+    box-shadow: 0 2px 12px rgba(255, 193, 7, 0.04);
+  }
   
   h2 {
     color: #b47b00;
     margin-bottom: 0.5rem;
     font-size: 1.4rem;
     font-weight: 700;
+    
+    @media (prefers-color-scheme: dark) {
+      color: #fbbf24;
+    }
   }
   .donation-content {
     p {
       color: #7a5a00;
       margin-bottom: 1.2rem;
       font-size: 1.05rem;
+      
+      @media (prefers-color-scheme: dark) {
+        color: #ddd6a0;
+      }
     }
     .donation-link {
       display: inline-flex;
@@ -1124,9 +1139,21 @@
       box-shadow: 0 2px 8px rgba(255, 193, 7, 0.10);
       transition: background 0.2s, color 0.2s;
       margin-top: 0.2rem;
+      
+      @media (prefers-color-scheme: dark) {
+        background: #92661b;
+        color: #fde047;
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.05);
+      }
+      
       &:hover, &:focus {
         background: #ffd54f;
         color: #7a5a00;
+        
+        @media (prefers-color-scheme: dark) {
+          background: #a8761f;
+          color: #fef08a;
+        }
       }
       mat-icon {
         font-size: 1.3em;
