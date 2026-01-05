@@ -17,21 +17,21 @@
                 <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
             </h3>
             <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-primary-500/20">
+                <table class="table-theme min-w-full text-sm">
+                    <thead>
                         <tr>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Service</th>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Place</th>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Pickup</th>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Dropoff</th>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Total</th>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Name</th>
-                            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Address</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Service</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Place</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Pickup</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Dropoff</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Total</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Name</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Address</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngFor="let trip of tripGroup.trips; let j = index">
-                            <tr [ngClass]="trip.exclude ? 'bg-gray-200 dark:bg-slate-600 line-through' : (j % 2 === 0 ? 'bg-blue-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800')">
+                        <ng-container *ngFor="let trip of tripGroup.trips">
+                            <tr [ngClass]="{ 'line-through text-tertiary': trip.exclude }">
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.service}}-{{ trip.number ? trip.number : 0}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.place | truncate:15}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">

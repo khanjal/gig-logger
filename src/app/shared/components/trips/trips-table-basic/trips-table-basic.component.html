@@ -1,8 +1,8 @@
 <div class="w-full">
     @if (trips && trips.length > 0) {
     <div class="overflow-x-auto relative mb-5 bg-surface trips-table-container max-w-full sm:max-w-none">
-            <table class="min-w-full text-sm">
-                <thead class="bg-primary-500/20">
+            <table class="table-theme min-w-full text-sm">
+                <thead>
                     <tr>
                         <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Date</th>
                         <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap">Service</th>
@@ -12,7 +12,7 @@
                 </thead>
                 <tbody>
                     @for (trip of trips; track trip.id || $index; let i = $index) {
-                        <tr [ngClass]="(i % 2 === 0 ? 'bg-blue-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800')">
+                        <tr>
                             <td class="px-3 py-2 whitespace-nowrap">
                                 <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">
                                     {{ trip.date | date:'yy MMM d' }}
@@ -25,7 +25,7 @@
                             </td>
                         </tr>
                         @if (hasSecondaryData(trip)) {
-                            <tr [ngClass]="(i % 2 === 0 ? 'bg-blue-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800')">
+                            <tr>
                                 <td class="px-3 py-2" colspan="4">
                                     <span *ngIf="trip.endUnit"><strong class="font-semibold">Apt/Unit:</strong> {{trip.endUnit}}</span>
                                     <span *ngIf="trip.endUnit && trip.note">, </span>

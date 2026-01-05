@@ -2,7 +2,7 @@
   <h2 class="text-xl font-bold mb-2">{{ name }} Stats</h2>
   <div class="table-responsive overflow-x-auto">
     <!-- Empty state for when no data is available -->
-    <div *ngIf="items.length === 0" class="flex flex-col items-center justify-center py-8 text-gray-500">
+    <div *ngIf="items.length === 0" class="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
       <mat-icon class="text-4xl mb-2">info_outline</mat-icon>
       <h3 class="text-lg font-semibold mb-1">No {{ name }} Data</h3>
       <p>There are currently no {{ name?.toLowerCase() }} data available for the selected period.</p>
@@ -30,10 +30,10 @@
             <td class="px-3 py-2 font-semibold text-primary max-w-[150px] truncate" [title]="item.name">{{item.name}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.trips}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.distance | number}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.pay | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.tip | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-green-700">{{item.bonus | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-green-800 font-semibold">{{item.total | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-700 dark:text-green-400">{{item.pay | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-700 dark:text-green-400">{{item.tip | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-700 dark:text-green-400">{{item.bonus | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-green-800 dark:text-green-400 font-semibold">{{item.total | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.cash | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerTime | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerTrip | currency}}</td>
@@ -59,7 +59,7 @@
     </div>
     <!-- Scroll indicator -->
     <div class="table-scroll-indicator absolute right-2 top-1/2 transform -translate-y-1/2" *ngIf="items.length > 0">
-      <mat-icon class="text-gray-400">chevron_left</mat-icon>
+      <mat-icon class="text-gray-400 dark:text-gray-500">chevron_left</mat-icon>
     </div>
   </div>
 </div>

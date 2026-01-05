@@ -74,6 +74,61 @@
   }
 }
 
+/* Themeable plain table (non-Material) with light/dark support */
+.table-theme {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  thead {
+    background: color-mix(in srgb, var(--primary-600) 12%, var(--color-surface));
+  }
+
+  thead th,
+  tfoot td,
+  tfoot th {
+    color: var(--primary-700, var(--primary-600));
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 600;
+  }
+
+  tbody td {
+    color: var(--color-text-secondary);
+  }
+
+  tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--primary-600) 6%, var(--color-surface));
+  }
+
+  tbody tr:nth-child(odd) {
+    background: color-mix(in srgb, var(--primary-600) 3%, var(--color-surface));
+  }
+
+  tbody tr:hover {
+    background: color-mix(in srgb, var(--primary-500) 8%, var(--color-surface-2));
+    color: var(--color-text-primary);
+  }
+
+  th,
+  td {
+    border-left: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+
+    &:first-child {
+      border-left: none;
+    }
+  }
+
+  thead th:first-child,
+  tfoot td:first-child,
+  tfoot th:first-child {
+    border-left: none;
+  }
+}
+
 // =============================================================================
 // ANGULAR MATERIAL TABLE BASE STYLES
 // =============================================================================
