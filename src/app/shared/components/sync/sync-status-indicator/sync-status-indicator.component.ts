@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
 import { PollingService } from '@services/polling.service';
@@ -21,8 +21,8 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatMenuModule,
-    MatBadgeModule
+    MatBadgeModule,
+    OverlayModule
   ],
   templateUrl: './sync-status-indicator.component.html',
   styleUrls: ['./sync-status-indicator.component.scss']
@@ -37,6 +37,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   timeSinceLastSync = 'Never';
   showDetailedView = false;
   hasUnsavedChanges = false;
+  menuOpen = false;
+  overlayPositions: ConnectedPosition[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
+  ];
 
   constructor(
     private syncStatusService: SyncStatusService,
@@ -72,6 +77,15 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     
     // Initial check for unsaved changes
     this.checkUnsavedChanges();
+  }
+
+  toggleMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 
   private async checkUnsavedChanges(): Promise<void> {
