@@ -49,7 +49,7 @@ describe('UpdatesService', () => {
 
   it('should include the initial commit', (done) => {
     service.getUpdates().subscribe(updates => {
-      const hasInitialCommit = updates.some(u => u.date === '2022-08-01');
+      const hasInitialCommit = updates.some(u => u.date === '2022-08-19-21');
       expect(hasInitialCommit).toBe(true);
       done();
     });
