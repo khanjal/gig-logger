@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+export interface UpdateDetail {
+  title: string;
+  changes?: string[];
+  pagesAffected?: string[];
+}
+
 export interface UpdateEntry {
   date: string;
   dateLabel: string;
@@ -8,34 +14,22 @@ export interface UpdateEntry {
   updates: UpdateDetail[];
 }
 
-export interface UpdateDetail {
-  title: string;
-  description?: string;
-  filesChanged?: string[];
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class UpdatesService {
-  private readonly updates: UpdateEntry[] = [
+  private updatesSubject = new BehaviorSubject<UpdateEntry[]>([
     {
       date: '2026-01-02',
       dateLabel: 'January 2, 2026',
       updates: [
         {
           title: 'Issues & Refactoring',
-          description: 'General code cleanup, bug fixes, and refactoring for improved maintainability'
-        }
-      ]
-    },
-    {
-      date: '2025-12-27',
-      dateLabel: 'December 27, 2025',
-      updates: [
-        {
-          title: 'Test Updates',
-          description: 'Improved test coverage and fixed test-related issues'
+          changes: [
+            'Code cleanup and bug fixes',
+            'Performance improvements',
+            'Enhanced error handling'
+          ]
         }
       ]
     },
@@ -44,36 +38,54 @@ export class UpdatesService {
       dateLabel: 'November 27, 2025',
       updates: [
         {
-          title: 'Added Search with Voice Support',
-          description: 'Users can now search trips and shifts with optional voice input for hands-free operation while working',
-          filesChanged: ['src/app/pages/search/']
-        },
-        {
-          title: 'Moved Diagnostics to Dedicated Page',
-          description: 'Diagnostics now has its own full page for better visibility and management of data issues',
-          filesChanged: ['src/app/pages/diagnostics/']
+          title: 'Search with Voice Support',
+          changes: [
+            'Added voice command input for trips',
+            'Improved search accuracy with fuzzy matching',
+            'Moved diagnostics to dedicated page',
+            'Enhanced search filters'
+          ],
+          pagesAffected: ['Search', 'Diagnostics']
         }
       ]
     },
     {
-      date: '2025-10-25-11-01',
-      dateLabel: 'October 25 - November 1, 2025',
+      date: '2025-11-01',
+      dateLabel: 'November 1, 2025',
+      updates: [
+        {
+          title: 'Privacy Policy & Expense Enhancements',
+          changes: [
+            'Updated privacy policy for clarity',
+            'Added expense categories',
+            'Improved expense tracking features'
+          ],
+          pagesAffected: ['Policy', 'Expenses']
+        }
+      ]
+    },
+    {
+      date: '2025-10-25-26',
+      dateLabel: 'October 25-26, 2025',
       isWeekly: true,
       updates: [
         {
-          title: 'Updated Privacy Policy & Expenses',
-          description: 'Enhanced privacy policy documentation and expanded expense tracking capabilities',
-          filesChanged: ['src/app/pages/policy/', 'src/app/pages/expenses/']
-        },
-        {
-          title: 'Setup Page Styling',
-          description: 'Improved visual organization and mobile responsiveness for initial setup',
-          filesChanged: ['src/app/pages/setup/setup.component.scss']
-        },
-        {
           title: 'Demo Spreadsheet Support',
-          description: 'Users can now try the app with a demo spreadsheet without setup',
-          filesChanged: ['src/app/pages/setup/setup.component.ts']
+          changes: [
+            'Users can test with demo data',
+            'No Google account required for demo',
+            'Sample trips and shifts included'
+          ],
+          pagesAffected: ['Setup']
+        },
+        {
+          title: 'Setup Page Styling Updates',
+          changes: [
+            'Improved setup page layout',
+            'Better mobile responsiveness',
+            'Enhanced visual design'
+          ],
+          pagesAffected: ['Setup']
         }
       ]
     },
@@ -83,61 +95,77 @@ export class UpdatesService {
       updates: [
         {
           title: 'UI Table Improvements',
-          description: 'Enhanced table styling, sorting, filtering, and responsive layout for better data visualization',
-          filesChanged: ['src/app/shared/components/trips-table/', 'src/app/shared/components/']
+          changes: [
+            'Enhanced table layouts',
+            'Better sorting and filtering',
+            'Improved mobile table views'
+          ],
+          pagesAffected: ['Trips', 'Shifts']
         }
       ]
     },
     {
-      date: '2025-07-01-07-05',
-      dateLabel: 'July 1 - 5, 2025',
+      date: '2025-07-01-05',
+      dateLabel: 'July 1-5, 2025',
       isWeekly: true,
       updates: [
         {
-          title: 'Rate Limiting & API Updates',
-          description: 'Added rate limiting to prevent API throttling, improved call efficiency',
-          filesChanged: ['src/app/shared/services/api.service.ts']
-        },
-        {
-          title: 'Mobile & Desktop Layout Improvements',
-          description: 'Better responsive design for trips and shift pages across all screen sizes',
-          filesChanged: ['src/app/pages/trips/', 'src/app/pages/shifts/']
-        },
-        {
-          title: 'UI Adjustments',
-          description: 'Various styling and spacing refinements',
-          filesChanged: ['src/app/shared/styles/']
+          title: 'Trip & Shift Page Layout Improvements',
+          changes: [
+            'Better mobile and desktop layouts',
+            'UI adjustments for better usability',
+            'Rate limiting for API calls',
+            'Fixed back-to-top button'
+          ],
+          pagesAffected: ['Trips', 'Shifts']
         }
       ]
     },
     {
-      date: '2025-06-08-06-22',
-      dateLabel: 'June 8 - 22, 2025',
+      date: '2025-06-22-29',
+      dateLabel: 'June 22-29, 2025',
       isWeekly: true,
       updates: [
         {
-          title: 'Major UI Rework',
-          description: 'Complete redesign for better usability and visual consistency. Improved color system and component styling',
-          filesChanged: ['src/styles.scss', 'src/app/shared/styles/color-vars.scss']
-        },
-        {
-          title: 'S3 Integration for Large Sheets',
-          description: 'Implemented S3 for efficient downloading of large spreadsheets'
-        },
-        {
-          title: 'Angular Configuration Updates',
-          description: 'Optimized angular.json for better build performance'
+          title: 'UI Rework & S3 Download',
+          changes: [
+            'Major UI redesign',
+            'S3 download for large spreadsheets',
+            'Improved search results with JSON fallback',
+            'Better place/name display'
+          ],
+          pagesAffected: ['All Pages']
         }
       ]
     },
     {
-      date: '2025-06-03',
-      dateLabel: 'June 3, 2025',
+      date: '2025-06-03-08',
+      dateLabel: 'June 3-8, 2025',
+      isWeekly: true,
       updates: [
         {
-          title: 'Google OAuth2 Implementation',
-          description: 'Switched from API keys to OAuth2 tokens for better security. Users now authenticate with Google accounts',
-          filesChanged: ['src/app/shared/services/auth-google.service.ts', 'src/app/shared/services/auth.service.ts']
+          title: 'Google Authentication',
+          changes: [
+            'Integrated Google OAuth',
+            'Token-based spreadsheet access',
+            'Secure authentication flow'
+          ],
+          pagesAffected: ['Setup']
+        }
+      ]
+    },
+    {
+      date: '2025-05-29',
+      dateLabel: 'May 29, 2025',
+      updates: [
+        {
+          title: 'Google Maps Search',
+          changes: [
+            'Search for places on Google Maps',
+            'Search for addresses on Google Maps',
+            'Direct map integration from app'
+          ],
+          pagesAffected: ['Trips']
         }
       ]
     },
@@ -146,74 +174,79 @@ export class UpdatesService {
       dateLabel: 'May 10, 2025',
       updates: [
         {
-          title: 'All Standalone Components',
-          description: 'Removed traditional NgModules. Entire project now uses Angular standalone components for simpler architecture',
-          filesChanged: ['src/app/', 'src/app/pages/', 'src/app/shared/']
+          title: 'Standalone Components Migration',
+          changes: [
+            'Removed NgModules',
+            'Converted all components to standalone',
+            'Modern Angular architecture'
+          ],
+          pagesAffected: ['All Pages']
         }
       ]
     },
     {
-      date: '2025-05-03-05-29',
-      dateLabel: 'May 3 - 29, 2025',
+      date: '2025-05-03',
+      dateLabel: 'May 3, 2025',
+      updates: [
+        {
+          title: 'Rate Limiter & Refactoring',
+          changes: [
+            'Added API rate limiting',
+            'Code refactoring for better performance',
+            'Optimized API calls'
+          ]
+        }
+      ]
+    },
+    {
+      date: '2025-04-08-27',
+      dateLabel: 'April 8-27, 2025',
       isWeekly: true,
       updates: [
         {
-          title: 'Google Maps Place Search',
-          description: 'Users can search for places and addresses directly from Google Maps with autocomplete',
-          filesChanged: ['src/app/shared/components/google-address/']
-        },
-        {
-          title: 'API Rate Limiter',
-          description: 'Implemented rate limiting to prevent Google API quota issues'
+          title: 'Polling & Data Updates',
+          changes: [
+            'Added polling for data sync',
+            'Improved saved data handling',
+            'UI improvements and fixes',
+            'Better Google Places API integration'
+          ],
+          pagesAffected: ['Trips', 'Shifts']
         }
       ]
     },
     {
-      date: '2024-12-31',
-      dateLabel: 'December 31, 2024',
-      updates: [
-        {
-          title: 'Package Updates & Refactoring',
-          description: 'Updated all npm dependencies to latest versions and refactored code for maintainability',
-          filesChanged: ['package.json', 'package-lock.json']
-        }
-      ]
-    },
-    {
-      date: '2024-09-08-09-15',
-      dateLabel: 'September 8 - 15, 2024',
+      date: '2024-09-08-15',
+      dateLabel: 'September 8-15, 2024',
       isWeekly: true,
       updates: [
         {
-          title: 'New AWS Lambda Backend',
-          description: 'Created new C# Lambda service backend with AWS Amplify. Replaces Node.js backend with better performance',
-          filesChanged: ['amplify/backend/function/GigRaptorService/']
-        },
-        {
-          title: 'Multi-Sheet Support',
-          description: 'Users can now work with multiple Google Sheets simultaneously in a single app instance',
-          filesChanged: ['src/app/shared/services/api.service.ts']
-        },
-        {
-          title: 'Create Sheets in App',
-          description: 'Added ability to create new Google Sheets directly from the application'
+          title: 'New Backend & Multi-Sheet Support',
+          changes: [
+            'Created new AWS Lambda backend',
+            'Refactored to support new API',
+            'Support for multiple sheets',
+            'Added Create Sheets functionality',
+            'Sheet-Id in request headers'
+          ],
+          pagesAffected: ['All Pages']
         }
       ]
     },
     {
-      date: '2024-02-19-02-27',
-      dateLabel: 'February 19 - 27, 2024',
+      date: '2024-02-11-27',
+      dateLabel: 'February 11-27, 2024',
       isWeekly: true,
       updates: [
         {
-          title: 'Address Input Component',
-          description: 'Created reusable address-input component with Google Places API integration',
-          filesChanged: ['src/app/shared/inputs/address-input/']
-        },
-        {
-          title: 'Generic Search Input',
-          description: 'Built generalized search-input for places, names, regions, and service types',
-          filesChanged: ['src/app/shared/inputs/search-input/']
+          title: 'Search Input Components',
+          changes: [
+            'Created reusable search-input component',
+            'Google Places autocomplete integration',
+            'Added confirm dialogs for delete actions',
+            'Improved input field styling'
+          ],
+          pagesAffected: ['Trips', 'Setup']
         }
       ]
     },
@@ -223,138 +256,72 @@ export class UpdatesService {
       updates: [
         {
           title: 'Angular 17 Upgrade',
-          description: 'Upgraded entire project to Angular 17 and Angular Material 17 with improved performance',
-          filesChanged: ['package.json', 'tsconfig.json', 'angular.json']
+          changes: [
+            'Upgraded to Angular 17',
+            'Updated Material Design to v17',
+            'Modernized guard functions',
+            'Improved build performance'
+          ],
+          pagesAffected: ['All Pages']
         }
       ]
     },
     {
-      date: '2023-11-27',
-      dateLabel: 'November 27, 2023',
-      updates: [
-        {
-          title: 'Stats & Metrics Pages',
-          description: 'Added comprehensive statistics and metrics tracking with daily/weekly/monthly/yearly views',
-          filesChanged: ['src/app/pages/stats/', 'src/app/pages/metrics/']
-        }
-      ]
-    },
-    {
-      date: '2023-09-03',
-      dateLabel: 'September 3, 2023',
-      updates: [
-        {
-          title: 'Region Tracking',
-          description: 'Added region property to trips and shifts for better organization and filtering',
-          filesChanged: ['src/app/shared/models/trip.model.ts', 'src/app/shared/models/shift.model.ts']
-        },
-        {
-          title: 'Centralized Calculations',
-          description: 'Moved shift and daily total calculations to GigLoggerService for DRY principle',
-          filesChanged: ['src/app/shared/services/gig-logger.service.ts']
-        }
-      ]
-    },
-    {
-      date: '2023-08-17-08-20',
-      dateLabel: 'August 17 - 20, 2023',
+      date: '2023-12-11-26',
+      dateLabel: 'December 11-26, 2023',
       isWeekly: true,
       updates: [
         {
-          title: 'Region Dropdown in Forms',
-          description: 'Made region a selectable dropdown field in trip form populated from current shifts',
-          filesChanged: ['src/app/pages/quick/quick-form.component.ts', 'src/app/pages/quick/quick-form.component.html']
+          title: 'Loading & Saving Modals',
+          changes: [
+            'Added load modal for data sync',
+            'Added save modal for feedback',
+            'Cancel button for long operations',
+            'Bug fixes for total calculations',
+            'Calendar link improvements'
+          ],
+          pagesAffected: ['Trips', 'Shifts']
         }
       ]
     },
     {
-      date: '2023-08-11-08-14',
-      dateLabel: 'August 11 - 14, 2023',
+      date: '2023-03-06-23',
+      dateLabel: 'March 6-23, 2023',
       isWeekly: true,
       updates: [
         {
-          title: 'Automated Sheet Generation',
-          description: 'Built backend system that auto-generates formatted Google Sheets with formulas, data validation, and protection',
-          filesChanged: ['amplify/backend/function/GigRaptorService/src/Helpers/SheetHelper.cs']
-        },
-        {
-          title: 'Daily/Weekly/Monthly/Yearly Sheets',
-          description: 'Auto-generated analytical sheets with array formulas, conditional formatting, and protected ranges',
-          filesChanged: ['amplify/backend/function/GigRaptorService/src/']
+          title: 'Trip Form & Google Sheets Integration',
+          changes: [
+            'Created trip entry forms',
+            'Google Sheets API integration',
+            'Places autocomplete for addresses',
+            'Quick add component',
+            'Shift tracking functionality',
+            'Upgraded to Angular 15'
+          ],
+          pagesAffected: ['Trips', 'Shifts']
         }
       ]
     },
     {
-      date: '2023-05-25',
-      dateLabel: 'May 25, 2023',
-      updates: [
-        {
-          title: 'AWS Amplify Backend',
-          description: 'Added serverless backend using AWS Amplify with API Gateway and Lambda functions',
-          filesChanged: ['amplify/', 'src/environments/']
-        }
-      ]
-    },
-    {
-      date: '2023-03-23',
-      dateLabel: 'March 23, 2023',
-      updates: [
-        {
-          title: 'Google Sheets Bulk Save',
-          description: 'Implemented batch operations for efficiently saving trips and shifts to Google Sheets',
-          filesChanged: ['src/app/shared/services/googleSheet.service.ts']
-        },
-        {
-          title: 'Truncate Pipe',
-          description: 'Created custom pipe for safely truncating long text in templates',
-          filesChanged: ['src/app/shared/pipes/truncate.pipe.ts']
-        }
-      ]
-    },
-    {
-      date: '2023-03-13-03-14',
-      dateLabel: 'March 13 - 14, 2023',
+      date: '2022-08-19-21',
+      dateLabel: 'August 19-21, 2022',
       isWeekly: true,
       updates: [
         {
-          title: 'Quick Add Component',
-          description: 'Core component for fast trip and shift entry - the heart of the app',
-          filesChanged: ['src/app/pages/quick/']
-        },
-        {
-          title: 'Data Models',
-          description: 'Created TypeScript interfaces for Name, Address, Place, Service, Shift, and Trip entities',
-          filesChanged: ['src/app/shared/models/']
-        }
-      ]
-    },
-    {
-      date: '2023-03-06',
-      dateLabel: 'March 6, 2023',
-      updates: [
-        {
-          title: 'Angular 15 Upgrade',
-          description: 'Upgraded to Angular 15 and Angular Material 15 for modern features and performance',
-          filesChanged: ['package.json', 'tsconfig.json']
-        }
-      ]
-    },
-    {
-      date: '2022-08-21',
-      dateLabel: 'August 21, 2022',
-      updates: [
-        {
-          title: 'Initial Codebase',
-          description: 'Created initial Angular project with home, shifts, and header components. Project foundation laid',
-          filesChanged: ['src/app/', 'src/environments/', 'package.json', 'angular.json']
+          title: 'Initial Project Setup',
+          changes: [
+            'Angular app initialization',
+            'Basic project structure',
+            'Git repository setup',
+            'Development environment configured'
+          ]
         }
       ]
     }
-  ];
-
-  constructor() { }
+  ]);
 
   getUpdates(): Observable<UpdateEntry[]> {
-    return new BehaviorSubject(this.updates).asObservable();
+    return this.updatesSubject.asObservable();
   }
 }

@@ -19,8 +19,10 @@ describe('UpdatesComponent', () => {
       updates: [
         {
           title: 'Issues & Refactoring',
-          description: undefined,
-          filesChanged: undefined
+          changes: [
+            'Cleaned up code',
+            'Fixed bugs'
+          ]
         }
       ] as UpdateDetail[]
     },
@@ -31,13 +33,18 @@ describe('UpdatesComponent', () => {
       updates: [
         {
           title: 'Updated privacy policy',
-          description: 'Improved clarity on data handling',
-          filesChanged: ['src/assets/json/']
+          changes: [
+            'Improved clarity on data handling',
+            'Added local storage info'
+          ],
+          pagesAffected: ['Policy']
         },
         {
           title: 'Added demo spreadsheet support',
-          description: undefined,
-          filesChanged: ['src/app/shared/services/']
+          changes: [
+            'Demo mode available'
+          ],
+          pagesAffected: ['Setup']
         }
       ] as UpdateDetail[]
     }
@@ -111,19 +118,21 @@ describe('UpdatesComponent', () => {
     expect(titles[0].textContent).toContain('Issues & Refactoring');
   });
 
-  it('should display descriptions when available', () => {
+  it('should display changes as bullet list when available', () => {
     component.updates = mockUpdates;
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    const descriptions = compiled.querySelectorAll('.update-description');
-    expect(descriptions.length).toBeGreaterThan(0);
+    const changesList = compiled.querySelectorAll('.changes-list');
+    expect(changesList.length).toBeGreaterThan(0);
+    const changeItems = compiled.querySelectorAll('.change-item');
+    expect(changeItems.length).toBeGreaterThan(0);
   });
 
-  it('should display file changes when available', () => {
+  it('should display pages affected when available', () => {
     component.updates = mockUpdates;
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    const fileItems = compiled.querySelectorAll('.file-path');
-    expect(fileItems.length).toBeGreaterThan(0);
+    const pageBadges = compiled.querySelectorAll('.page-badge');
+    expect(pageBadges.length).toBe(2); // Policy + Setup
   });
 });

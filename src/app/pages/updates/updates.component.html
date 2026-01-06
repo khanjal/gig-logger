@@ -17,21 +17,23 @@
             <h3 class="update-title">{{ update.title }}</h3>
           </div>
           
-          <p *ngIf="update.description" class="update-description">
-            {{ update.description }}
-          </p>
+          <ul *ngIf="update.changes && update.changes.length > 0" class="changes-list">
+            <li *ngFor="let change of update.changes" class="change-item">
+              {{ change }}
+            </li>
+          </ul>
 
-          <div *ngIf="update.filesChanged && update.filesChanged.length > 0" class="files-changed">
-            <div class="files-label">Files changed:</div>
-            <div class="file-list">
-              <span *ngFor="let file of update.filesChanged" class="file-path">
-                <mat-icon class="file-icon">folder</mat-icon>
-                {{ file }}
+          <div *ngIf="update.pagesAffected && update.pagesAffected.length > 0" class="pages-affected">
+            <span class="pages-label">Pages:</span>
+            <div class="page-list">
+              <span *ngFor="let page of update.pagesAffected" class="page-badge">
+                <mat-icon class="page-icon">article</mat-icon>
+                {{ page }}
               </span>
             </div>
           </div>
 
-          <div *ngIf="!lastUpdate" class="update-divider"></div>
+          <mat-divider *ngIf="!lastUpdate" class="update-divider"></mat-divider>
         </div>
       </div>
 

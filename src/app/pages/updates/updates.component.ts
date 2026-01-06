@@ -18,7 +18,7 @@ export class UpdatesComponent implements OnInit {
   constructor(private updatesService: UpdatesService) { }
 
   ngOnInit(): void {
-    this.updatesService.getUpdates().subscribe(updates => {
+    this.updatesService.getUpdates().subscribe((updates: UpdateEntry[]) => {
       this.updates = updates;
     });
   }
