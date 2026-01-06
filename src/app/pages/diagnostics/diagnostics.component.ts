@@ -30,11 +30,13 @@ import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import { DiagnosticGroupComponent } from './diagnostic-group/diagnostic-group.component';
+import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.component';
 
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DurationFormatPipe],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DurationFormatPipe, DiagnosticGroupComponent, DiagnosticItemComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
