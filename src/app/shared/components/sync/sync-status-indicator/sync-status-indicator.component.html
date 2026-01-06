@@ -4,7 +4,7 @@
     <!-- Current status -->
     <div class="p-4 space-y-2 border-b border-[var(--color-border-light)] bg-[var(--color-surface)]">
       <div class="flex items-start justify-between gap-2 text-sm">
-        <span class="font-medium text-secondary whitespace-nowrap">Status:</span>
+        <span class="font-medium text-secondary whitespace-nowrap">Sync Status:</span>
         <span class="font-medium text-right" [ngClass]="getStatusClass()">
           {{ getStatusText() }}
         </span>
@@ -31,9 +31,9 @@
         <span class="text-right text-primary">{{ timeSinceLastSync }}</span>
       </div>
 
-      <div class="flex items-start justify-between gap-2 text-sm" *ngIf="(syncState?.nextSyncIn || 0) > 0">
+      <div class="flex items-start justify-between gap-2 text-sm">
         <span class="font-medium text-secondary whitespace-nowrap">Next check:</span>
-        <span class="text-right text-primary">in {{ syncState?.nextSyncIn }}s</span>
+        <span class="text-right text-primary">{{ getNextCheckText() }}</span>
       </div>
 
       <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState?.error">
@@ -41,18 +41,17 @@
         <span class="text-right text-[var(--error-500)] text-sm">{{ syncState?.error }}</span>
       </div>
 
-      <div *ngIf="hasUnsavedChanges && getStatusClass() !== 'status-syncing'">
-        <button mat-raised-button color="primary" (click)="forceSync(); $event.stopPropagation()" class="force-sync-button w-full mt-2 flex items-center justify-center gap-2">
-          <mat-icon>save</mat-icon>
-          Save Changes
-        </button>
-      </div>
-
-      <div *ngIf="!hasUnsavedChanges && getStatusClass() !== 'status-syncing'">
-        <button mat-raised-button color="accent" (click)="updateFromSpreadsheet(); $event.stopPropagation()" class="force-sync-button w-full mt-2 flex items-center justify-center gap-2">
-          <mat-icon>cloud_download</mat-icon>
-          Update from Spreadsheet
-        </button>
+      <div class="pt-2">
+        <app-quick-controls
+          [hasUnsavedChanges]="hasUnsavedChanges"
+          [status]="syncState?.status || 'idle'"
+          [autoSaveEnabled]="autoSaveEnabled"
+          [themePreference]="themePreference"
+          (save)="forceSync()"
+          (refresh)="updateFromSpreadsheet()"
+          (autoSaveToggle)="toggleAutoSave($event)"
+          (themeChange)="setTheme($event)">
+        </app-quick-controls>
       </div>
     </div>
 

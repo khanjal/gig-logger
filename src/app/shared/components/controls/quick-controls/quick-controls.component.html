@@ -1,16 +1,76 @@
-<div class="quick-controls-trigger flex items-center">
-  <button
-    mat-icon-button
-    [matMenuTriggerFor]="quickControlsMenu"
-    matTooltip="Quick controls"
-    matTooltipPosition="below"
-    class="control-button relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]">
-    <mat-icon>tune</mat-icon>
-  </button>
-
-  <mat-menu #quickControlsMenu="matMenu" panelClass="quick-controls-menu">
-    <div class="quick-controls-menu__content" (click)="$event.stopPropagation()">
-      <app-sync-status-indicator mode="panel"></app-sync-status-indicator>
+<div class="flex flex-col gap-4 text-[var(--color-text-primary)]" (click)="$event.stopPropagation()">
+  <div class="flex flex-wrap items-center gap-3 justify-between w-full">
+    <div class="flex items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
+      <mat-icon class="text-base">autorenew</mat-icon>
+      Auto-save
     </div>
-  </mat-menu>
+    <mat-slide-toggle
+      color="primary"
+      [checked]="autoSaveEnabled"
+      [disabled]="status === 'syncing'"
+      (change)="onAutoSaveToggle($event)">
+      <span class="text-sm text-[var(--color-text-primary)]">{{ autoSaveEnabled ? 'On' : 'Off' }}</span>
+    </mat-slide-toggle>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 justify-between w-full">
+    <div class="flex items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
+      <mat-icon class="text-base">palette</mat-icon>
+      Theme
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        class="quick-theme-button px-3 py-2 text-sm"
+        [ngClass]="{ 'active': themePreference === 'light' }"
+        (click)="onThemeSelect('light', $event)">
+        Light
+      </button>
+      <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        class="quick-theme-button px-3 py-2 text-sm"
+        [ngClass]="{ 'active': themePreference === 'dark' }"
+        (click)="onThemeSelect('dark', $event)">
+        Dark
+      </button>
+      <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        class="quick-theme-button px-3 py-2 text-sm"
+        [ngClass]="{ 'active': themePreference === 'system' }"
+        (click)="onThemeSelect('system', $event)">
+        System
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      mat-raised-button
+      color="primary"
+      class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
+      [disabled]="status === 'syncing' || !hasUnsavedChanges"
+      matTooltip="Save pending changes"
+      (click)="onSaveClick($event)">
+      <mat-icon class="text-base">save</mat-icon>
+      Save
+    </button>
+
+    <button
+      *ngIf="!hasUnsavedChanges"
+      mat-raised-button
+      color="accent"
+      class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
+      [disabled]="status === 'syncing'"
+      matTooltip="Refresh from spreadsheet"
+      (click)="onRefreshClick($event)">
+      <mat-icon class="text-base">cloud_download</mat-icon>
+      Update
+    </button>
+  </div>
 </div>

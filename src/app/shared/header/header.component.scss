@@ -4,13 +4,18 @@
 
 // Fix Material icon button backgrounds in header toolbar
 .mat-toolbar {
+  a,
+  button {
+    color: var(--color-text-inverse) !important;
+  }
+
   button.mat-mdc-icon-button,
   a.mat-mdc-icon-button {
     background: transparent !important;
     color: inherit;
     
     mat-icon {
-      color: inherit;
+      color: inherit !important;
     }
   }
   

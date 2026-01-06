@@ -1,12 +1,32 @@
-.quick-controls-menu .mat-mdc-menu-content {
-  padding: 0;
+// Minimal: rely on Tailwind utilities; add a few theme-aware tweaks
+.quick-theme-button {
+	border-radius: 0.5rem;
+	border: 1px solid var(--color-border-light);
+	background: var(--color-surface);
+	color: var(--color-text-primary);
 }
 
-.quick-controls-menu__content {
-  padding: 0;
+.quick-theme-button.active {
+	background: var(--primary-600);
+	color: var(--color-text-inverse);
+	border-color: var(--primary-600);
 }
 
-.control-button.mat-mdc-icon-button {
-  background: transparent !important;
-  border-radius: 0.75rem !important;
+.mat-mdc-slide-toggle.mat-primary .mdc-switch__track::before,
+.mat-mdc-slide-toggle.mat-primary .mdc-switch__track::after {
+	background-color: var(--primary-600);
+}
+
+:host-context(html.theme-dark) {
+	.quick-theme-button {
+		border-color: var(--color-border);
+		background: var(--color-surface-2);
+		color: var(--color-text-primary);
+	}
+
+	.quick-theme-button.active {
+		background: var(--primary-600);
+		color: var(--color-text-inverse);
+		border-color: var(--primary-600);
+	}
 }

@@ -12,6 +12,8 @@ import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status
 import { PollingService } from '@services/polling.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
+import { ThemePreference, ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -22,7 +24,8 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
     MatButtonModule,
     MatTooltipModule,
     MatBadgeModule,
-    OverlayModule
+    OverlayModule,
+    QuickControlsComponent
   ],
   templateUrl: './sync-status-indicator.component.html',
   styleUrls: ['./sync-status-indicator.component.scss']
@@ -38,6 +41,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   showDetailedView = false;
   hasUnsavedChanges = false;
   menuOpen = false;
+  autoSaveEnabled = false;
+  themePreference: ThemePreference = 'system';
   overlayPositions: ConnectedPosition[] = [
     { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
     { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
@@ -48,7 +53,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     private pollingService: PollingService,
     private unsavedDataService: UnsavedDataService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +66,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.updateTimeSinceLastSync();
         // Check for unsaved changes when sync state changes
         this.checkUnsavedChanges();
+        this.autoSaveEnabled = this.pollingService.isPollingEnabled();
       });
 
     // Subscribe to messages
@@ -69,14 +76,35 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.messages = messages;
       });
 
+    // Track theme preference
+    this.themePreference = this.themeService.currentPreference;
+    this.themeService.preferenceChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(pref => this.themePreference = pref);
+
     // Update time display and check for unsaved changes every 5 seconds for better responsiveness
     this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
       this.checkUnsavedChanges();
+      this.autoSaveEnabled = this.pollingService.isPollingEnabled();
     }, 5000);
     
     // Initial check for unsaved changes
     this.checkUnsavedChanges();
+  }
+
+  async toggleAutoSave(enabled: boolean): Promise<void> {
+    this.autoSaveEnabled = enabled;
+    if (enabled) {
+      await this.pollingService.startPolling();
+    } else {
+      this.pollingService.stopPolling();
+    }
+  }
+
+  setTheme(preference: ThemePreference): void {
+    this.themeService.setTheme(preference);
+    this.themePreference = preference;
   }
 
   toggleMenu(event: MouseEvent): void {
@@ -230,6 +258,19 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     };
     
     return operationLabels[this.syncState.operation] || '';
+  }
+
+  getNextCheckText(): string {
+    if (!this.pollingService.isPollingEnabled()) {
+      return '-';
+    }
+
+    const next = this.syncState?.nextSyncIn;
+    if (!next || next <= 0) {
+      return '-';
+    }
+
+    return `in ${next}s`;
   }
 
   toggleDetailedView(): void {
