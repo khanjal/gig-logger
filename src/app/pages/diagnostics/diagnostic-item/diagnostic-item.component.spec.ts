@@ -57,6 +57,16 @@ describe('DiagnosticItemComponent', () => {
       });
     });
 
+    it('should not emit applyAddress event when selectedAddress is empty string', () => {
+      spyOn(component.applyAddress, 'emit');
+      component.item = { id: 1 };
+      component.selectedAddress = '';
+
+      component.onApplyAddress();
+
+      expect(component.applyAddress.emit).not.toHaveBeenCalled();
+    });
+
     it('should not emit applyAddress event when selectedAddress is not set', () => {
       spyOn(component.applyAddress, 'emit');
       component.selectedAddress = undefined;
@@ -70,12 +80,18 @@ describe('DiagnosticItemComponent', () => {
   describe('onCreateShift', () => {
     it('should emit createShift event', () => {
       spyOn(component.createShift, 'emit');
-      component.item = { id: 1, date: '2024-01-01' };
+      const itemRef = { id: 1, date: '2024-01-01' };
+      component.item = itemRef;
 
       component.onCreateShift();
 
-      expect(component.createShift.emit).toHaveBeenCalledWith(component.item);
+      expect(component.createShift.emit).toHaveBeenCalledWith(itemRef);
     });
+  });
+
+  it('should initialize safely with default item and not throw during change detection', () => {
+    // Default item is an empty object; detectChanges already ran in beforeEach
+    expect(component.item).toEqual({});
   });
 
   describe('onAddressChange', () => {

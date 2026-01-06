@@ -15,7 +15,7 @@ import { DiagnosticEntityType } from '@interfaces/diagnostic.interface';
   styleUrl: './diagnostic-item.component.scss'
 })
 export class DiagnosticItemComponent {
-  @Input() item: any;
+  @Input() item: any = {};
   @Input() itemType: DiagnosticEntityType = 'trip';
   @Input() diagnosticName: string = '';
   @Input() selectedAddress: string | undefined;

@@ -95,6 +95,7 @@ npm test -- --watch=false --code-coverage --browsers=ChromeHeadless  # With cove
 - **Pipe Tests**: Simple input/output assertions, no TestBed needed for pure pipes
 - **Guard Tests**: Mock Router and AuthService, verify navigation behavior
 - **Quick Wins Strategy**: Target simple files first (pipes, helpers, basic services) to build momentum
+- **Unit Test Rule**: Every new component, service, pipe, guard, or helper must ship with a matching `.spec.ts` covering happy path and edge cases.
 
 ### Test File Patterns
 ```typescript
@@ -247,6 +248,106 @@ For automatic theme-aware styling, use these semantic classes (defined in styles
 <p class="text-gray-600 dark:text-gray-300">Proper contrast in both modes</p>
 <div class="bg-blue-50 dark:bg-blue-950">Proper background in both modes</div>
 ```
+
+### Material Expansion Panel Dark Mode Challenge
+
+**CRITICAL**: Angular Material expansion panels use shadow DOM encapsulation that blocks both Tailwind's `dark:` utility classes and standard CSS from penetrating into panel content.
+
+#### The Problem
+When content is inside `<mat-expansion-panel>`, Tailwind dark mode classes like `dark:text-gray-300` **will not work** even with `::ng-deep`:
+
+```html
+<!-- ❌ This WILL NOT work inside mat-expansion-panel -->
+<div class="text-gray-600 dark:text-gray-300">
+  This text stays dark gray in dark mode
+</div>
+```
+
+#### The Solution: Extract to Child Components
+Create separate standalone components for panel content and use `:host-context(html.theme-dark)` in component SCSS:
+
+```typescript
+// diagnostic-item.component.ts
+@Component({
+  selector: 'app-diagnostic-item',
+  standalone: true,
+  templateUrl: './diagnostic-item.component.html',
+  styleUrl: './diagnostic-item.component.scss'
+})
+export class DiagnosticItemComponent {
+  @Input() item: any;
+  @Input() itemType: string;
+}
+```
+
+```html
+<!-- diagnostic-item.component.html -->
+<div class="item-content">
+  <span class="item-name">{{ item.name }}</span>
+  <span class="item-meta">{{ item.trips }} trips</span>
+</div>
+```
+
+```scss
+// diagnostic-item.component.scss
+.item-name {
+  color: rgb(31 41 55); // text-gray-800
+}
+
+.item-meta {
+  color: rgb(75 85 99); // text-gray-600
+}
+
+:host-context(html.theme-dark) {
+  .item-name {
+    color: rgb(229 231 235); // text-gray-200
+  }
+
+  .item-meta {
+    color: rgb(209 213 219); // text-gray-300
+  }
+}
+```
+
+```html
+<!-- Parent component using expansion panel -->
+<mat-expansion-panel>
+  <mat-expansion-panel-header>...</mat-expansion-panel-header>
+  <div>
+    <app-diagnostic-item [item]="item" [itemType]="type"></app-diagnostic-item>
+  </div>
+</mat-expansion-panel>
+```
+
+#### Why This Works
+- Child components have their own style encapsulation that bypasses Material's shadow DOM
+- `:host-context(html.theme-dark)` can detect theme changes from the parent HTML element
+- SCSS with direct RGB values (not Tailwind classes) ensures styles apply correctly
+
+#### Parent Panel SCSS Fallback
+For text directly in the panel (not in child components), use aggressive `::ng-deep` selectors:
+
+```scss
+:host-context(html.theme-dark) {
+  ::ng-deep .mat-expansion-panel-body {
+    // Override specific Tailwind classes
+    .text-gray-600,
+    div.text-gray-600,
+    p.text-gray-600 {
+      color: rgb(229 231 235) !important; // text-gray-200
+    }
+  }
+}
+```
+
+#### Real-World Example
+The diagnostics page (`diagnostics.component.ts`) uses this pattern:
+- `diagnostic-group.component` - handles grouped duplicate items
+- `diagnostic-item.component` - handles individual diagnostic items
+- Both use `:host-context(html.theme-dark)` with SCSS class-based styling
+- Parent `diagnostics.component.scss` uses `::ng-deep` for direct panel text
+
+**Best Practice**: When adding new content to Material expansion panels, dialogs, or bottom sheets, always create child components for complex content that needs dark mode styling.
 
 ❌ **DON'T**: Override CSS variables in component SCSS without dark mode consideration
 ```scss
