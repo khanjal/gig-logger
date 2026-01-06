@@ -1,7 +1,7 @@
 <div class="table-container w-full p-2">
     @if (link) {
         <h2 class="flex items-center gap-2 text-xl font-bold mb-2">
-            <span class="title-content">{{ title }}</span>
+            <span class="title-content text-blue-600 dark:text-blue-400">{{ title }}</span>
             <a [href]="'https://docs.google.com/spreadsheets/d/' + link" target="_blank" class="link-icon text-blue-600 dark:text-blue-400 hover:underline">
                 <mat-icon>open_in_new</mat-icon>
             </a>
