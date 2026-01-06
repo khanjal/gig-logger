@@ -78,20 +78,94 @@
   // Category filter alignment fixes
   .filter-checkbox {
     margin-right: 8px;
-    
-    ::ng-deep {
-      .mdc-checkbox {
-        padding: 0;
-        margin: 0;
-        display: flex;
-        align-items: center;
+  }
+
+  :host ::ng-deep .search-autocomplete-panel {
+    background: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: var(--shadow-light);
+
+    .mat-mdc-option {
+      color: var(--color-text-primary) !important;
+
+      &.mdc-list-item--selected,
+      &.mdc-list-item--activated {
+        background: var(--color-surface-tertiary) !important;
       }
-      
-      .mdc-checkbox__background {
-        top: 0;
-        left: 0;
+
+      &:hover {
+        background: var(--color-surface-3) !important;
+      }
+
+      .mdc-list-item__primary-text {
+        color: var(--color-text-primary) !important;
       }
     }
+  }
+
+  :host-context(html.theme-dark) ::ng-deep .search-autocomplete-panel {
+    background: var(--color-surface-2) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-border) !important;
+    box-shadow: var(--shadow-light);
+
+    .mat-mdc-option {
+      color: var(--color-text-primary) !important;
+
+      &.mdc-list-item--selected,
+      &.mdc-list-item--activated {
+        background: var(--color-surface-tertiary) !important;
+      }
+
+      &:hover {
+        background: var(--color-surface-tertiary) !important;
+      }
+
+      .mdc-list-item__primary-text {
+        color: var(--color-text-primary) !important;
+      }
+    }
+  }
+
+  ::ng-deep {
+    .mdc-checkbox {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .mdc-checkbox__background {
+      top: 0;
+      left: 0;
+      border-color: var(--color-border) !important;
+      background: transparent;
+    }
+
+    .mdc-form-field {
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+      border-color: var(--color-border) !important;
+    }
+
+    .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+    .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+      border-color: var(--primary-500) !important;
+      background-color: var(--primary-500) !important;
+    }
+  }
+
+  :host-context(html.theme-dark) ::ng-deep .mdc-checkbox__background,
+  :host-context(html.theme-dark) ::ng-deep .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+    border-color: var(--color-border) !important;
+  }
+
+  .exact-options {
+    min-height: 48px;
   }
 
   .filter-icon {

@@ -24,7 +24,7 @@
               aria-label="Clear search">
               <mat-icon>close</mat-icon>
             </button>
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)">
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)" panelClass="search-autocomplete-panel">
               <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
                 {{ option }}
               </mat-option>
@@ -56,15 +56,15 @@
            [class.opacity-0]="!showFilters"
            [class.opacity-100]="showFilters"
            [class.mt-3]="showFilters">
-        <div class="bg-surface-2 rounded-lg p-4 border border-soft">
+        <div class="bg-surface-2 dark:bg-[var(--color-surface-2)] rounded-lg p-4 border border-soft dark:border-[var(--color-border)]">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-primary">Filter Categories</h3>
             <div class="flex gap-2">
-              <button mat-button (click)="selectAllCategories()" class="text-xs">
+              <button mat-button color="primary" (click)="selectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900">
                 <mat-icon class="text-sm">check_box</mat-icon>
                 &nbsp;All
               </button>
-              <button mat-button (click)="deselectAllCategories()" class="text-xs">
+              <button mat-button color="primary" (click)="deselectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:bg-slate-200 dark:hover:bg-slate-700">
                 <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
                 &nbsp;None
               </button>
@@ -74,21 +74,15 @@
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             <div 
               *ngFor="let category of getCategoriesArray()"
-              class="flex items-center p-2 rounded border transition-colors cursor-pointer hover:bg-white dark:hover:bg-slate-700"
-              [class.bg-white]="isCategoryEnabled(category)"
-              [class.dark:bg-slate-800]="isCategoryEnabled(category)"
-              [class.border-blue-500]="isCategoryEnabled(category)"
-              [class.border-gray-300]="!isCategoryEnabled(category)"
-              [class.dark:border-gray-600]="!isCategoryEnabled(category)"
-              [class.dark:border-blue-400]="isCategoryEnabled(category)"
-              [class.dark:border-slate-600]="!isCategoryEnabled(category)"
+              class="flex items-center p-2 rounded border transition-colors cursor-pointer bg-[var(--color-surface)] dark:bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] dark:hover:bg-[var(--color-surface-tertiary)] border-[var(--color-border-light)] dark:border-[var(--color-border)]"
+              [ngClass]="{ 'border-blue-500 dark:border-blue-400': isCategoryEnabled(category) }"
               (click)="toggleCategory(category)">
               <mat-checkbox 
                 [checked]="isCategoryEnabled(category)"
                 (change)="toggleCategory(category)"
                 (click)="$event.stopPropagation()"
-                color="primary"
-                class="filter-checkbox">
+                class="filter-checkbox"
+                [color]="isCategoryEnabled(category) ? 'primary' : undefined">
               </mat-checkbox>
               <div class="flex items-center gap-1.5 flex-1 min-w-0">
                 <mat-icon 
@@ -103,21 +97,21 @@
         </div>
 
         <!-- Exact Match Option -->
-        <div class="mt-3 pt-3 border-t border-soft">
-          <div class="flex flex-row gap-4">
+        <div class="mt-3 border-t border-soft">
+          <div class="flex flex-row flex-wrap items-center justify-center gap-4 exact-options">
             <mat-checkbox 
               [(ngModel)]="exactMatch"
               (change)="onExactMatchChange()"
               color="primary"
-              class="text-sm">
-              <span class="text-primary font-medium">Exact match only</span>
+              class="text-sm text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
+              <span class="text-primary font-medium leading-tight">Exact match only</span>
             </mat-checkbox>
             <mat-checkbox 
               [(ngModel)]="caseSensitive"
               (change)="onCaseSensitiveChange()"
               color="primary"
-              class="text-sm">
-              <span class="text-primary font-medium">Case sensitive</span>
+              class="text-sm text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
+              <span class="text-primary font-medium leading-tight">Case sensitive</span>
             </mat-checkbox>
           </div>
         </div>
