@@ -23,6 +23,16 @@ export class QuickControlsComponent {
   @Output() autoSaveToggle = new EventEmitter<boolean>();
   @Output() themeChange = new EventEmitter<ThemePreference>();
 
+  private themeCycle: ThemePreference[] = ['light', 'dark', 'system'];
+
+  onThemeCycle(event: MouseEvent): void {
+    event.stopPropagation();
+    const currentIndex = this.themeCycle.indexOf(this.themePreference);
+    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % this.themeCycle.length;
+    const nextTheme = this.themeCycle[nextIndex];
+    this.themeChange.emit(nextTheme);
+  }
+
   onSaveClick(event: MouseEvent): void {
     event.stopPropagation();
     if (this.status === 'syncing') return;

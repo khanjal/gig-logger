@@ -18,43 +18,23 @@
       <mat-icon class="text-base">palette</mat-icon>
       Theme
     </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <button
-        type="button"
-        mat-stroked-button
-        color="primary"
-        class="quick-theme-button px-3 py-2 text-sm"
-        [ngClass]="{ 'active': themePreference === 'light' }"
-        (click)="onThemeSelect('light', $event)">
-        Light
-      </button>
-      <button
-        type="button"
-        mat-stroked-button
-        color="primary"
-        class="quick-theme-button px-3 py-2 text-sm"
-        [ngClass]="{ 'active': themePreference === 'dark' }"
-        (click)="onThemeSelect('dark', $event)">
-        Dark
-      </button>
-      <button
-        type="button"
-        mat-stroked-button
-        color="primary"
-        class="quick-theme-button px-3 py-2 text-sm"
-        [ngClass]="{ 'active': themePreference === 'system' }"
-        (click)="onThemeSelect('system', $event)">
-        System
-      </button>
-    </div>
+    <button
+      type="button"
+      mat-stroked-button
+      class="theme-cycle-btn flex items-center gap-2 px-3 py-2 text-sm font-semibold"
+      (click)="onThemeCycle($event)">
+      <mat-icon class="text-base">sync</mat-icon>
+      <span>{{ themePreference | titlecase }} mode</span>
+    </button>
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
     <button
+      *ngIf="hasUnsavedChanges"
       mat-raised-button
       color="primary"
       class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
-      [disabled]="status === 'syncing' || !hasUnsavedChanges"
+      [disabled]="status === 'syncing'"
       matTooltip="Save pending changes"
       (click)="onSaveClick($event)">
       <mat-icon class="text-base">save</mat-icon>

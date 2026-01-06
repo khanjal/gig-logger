@@ -10,6 +10,7 @@ import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
+import { BehaviorSubject } from 'rxjs';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
@@ -26,6 +27,9 @@ export class PollingService implements OnDestroy {
   private currentInterval = DEFAULT_INTERVAL;
   private lastPollTime = 0;
   private visibilityChangeListener: (() => void) | null = null;
+  private enabledState = new BehaviorSubject<boolean>(false);
+
+  pollingEnabled$ = this.enabledState.asObservable();
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -110,6 +114,7 @@ export class PollingService implements OnDestroy {
   private resumePolling(initialDelay: number) {
     this.stopPolling();
     this.enabled = true;
+    this.enabledState.next(true);
 
     if (this.worker) {
       // For web worker, we need to restart with the remaining delay
@@ -152,6 +157,7 @@ export class PollingService implements OnDestroy {
     this.enabled = true;
     this.currentInterval = interval;
     this.lastPollTime = Date.now();
+    this.enabledState.next(true);
     this._logger.info(`Starting polling with interval: ${interval}ms`);
 
     if (this.worker) {
@@ -179,6 +185,7 @@ export class PollingService implements OnDestroy {
     }
 
     this.enabled = false;
+    this.enabledState.next(false);
     this._logger.info('Stopping polling');
 
     if (this.worker) {

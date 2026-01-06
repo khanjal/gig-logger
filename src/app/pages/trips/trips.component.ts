@@ -112,6 +112,14 @@ export class TripComponent implements OnInit, OnDestroy {
     const savedPollingState = localStorage.getItem('pollingEnabled');
     this.pollingEnabled = savedPollingState ? JSON.parse(savedPollingState) : false;
 
+    // Keep local toggle in sync with global polling state (e.g., sync menu)
+    this._pollingService.pollingEnabled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(enabled => {
+        this.pollingEnabled = enabled;
+        localStorage.setItem('pollingEnabled', JSON.stringify(enabled));
+      });
+
     // Only load if not in edit mode
     if (!this.isEditMode) {
       await this.load();
