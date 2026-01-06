@@ -14,11 +14,13 @@ import { ExpensesComponent } from './pages/expenses/expenses.component';
 import { MetricsComponent } from './pages/metrics/metrics.component';
 import { DiagnosticsComponent } from './pages/diagnostics/diagnostics.component';
 import { SearchComponent } from './pages/search/search.component';
+import { UpdatesComponent } from './pages/updates/updates.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'calculator', component: CalculatorComponent },
   { path: 'policy', component: PolicyComponent },
+  { path: 'updates', component: UpdatesComponent },
   { path: 'search', component: SearchComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'trips', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'trips/edit/:id', component: TripComponent, canActivate: [canActivateSheet, canActivateAuth] },

@@ -1,0 +1,41 @@
+<div class="updates-container">
+  <div class="updates-header">
+    <h1>Updates & Changelog</h1>
+    <p class="subtitle">A detailed history of changes, improvements, and new features</p>
+  </div>
+
+  <div class="updates-list">
+    <div *ngFor="let entry of updates; let last = last" class="update-entry">
+      <div class="update-date">
+        <span class="date-label">{{ entry.dateLabel }}</span>
+        <span *ngIf="entry.isWeekly" class="weekly-badge">Weekly Summary</span>
+      </div>
+
+      <div class="updates-group">
+        <div *ngFor="let update of entry.updates; let lastUpdate = last" class="update-item">
+          <div class="update-header">
+            <h3 class="update-title">{{ update.title }}</h3>
+          </div>
+          
+          <p *ngIf="update.description" class="update-description">
+            {{ update.description }}
+          </p>
+
+          <div *ngIf="update.filesChanged && update.filesChanged.length > 0" class="files-changed">
+            <div class="files-label">Files changed:</div>
+            <div class="file-list">
+              <span *ngFor="let file of update.filesChanged" class="file-path">
+                <mat-icon class="file-icon">folder</mat-icon>
+                {{ file }}
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="!lastUpdate" class="update-divider"></div>
+        </div>
+      </div>
+
+      <mat-divider *ngIf="!last" class="entry-divider"></mat-divider>
+    </div>
+  </div>
+</div>
