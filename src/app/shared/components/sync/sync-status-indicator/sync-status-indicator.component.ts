@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,6 +28,7 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
   styleUrls: ['./sync-status-indicator.component.scss']
 })
 export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
+  @Input() mode: 'button' | 'panel' = 'button';
   private destroy$ = new Subject<void>();
   private intervalId?: number;
   

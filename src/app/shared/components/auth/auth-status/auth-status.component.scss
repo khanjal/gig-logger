@@ -359,6 +359,14 @@
   }
 }
 
+:host-context(html.theme-dark) {
+  .token-preview {
+    background: color-mix(in srgb, var(--info-500) 18%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--info-500) 35%, transparent);
+    color: var(--color-text-primary);
+  }
+}
+
 // Timestamp Styling
 .timestamp {
   color: var(--color-text-secondary);

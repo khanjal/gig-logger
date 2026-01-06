@@ -1,0 +1,16 @@
+<div class="quick-controls-trigger flex items-center">
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="quickControlsMenu"
+    matTooltip="Quick controls"
+    matTooltipPosition="below"
+    class="control-button relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]">
+    <mat-icon>tune</mat-icon>
+  </button>
+
+  <mat-menu #quickControlsMenu="matMenu" panelClass="quick-controls-menu">
+    <div class="quick-controls-menu__content" (click)="$event.stopPropagation()">
+      <app-sync-status-indicator mode="panel"></app-sync-status-indicator>
+    </div>
+  </mat-menu>
+</div>

@@ -10,7 +10,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
-import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DiagnosticHelper } from '@helpers/diagnostic.helper';
@@ -36,7 +35,7 @@ import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.compo
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DurationFormatPipe, DiagnosticGroupComponent, DiagnosticItemComponent],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DiagnosticGroupComponent, DiagnosticItemComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })

@@ -1,123 +1,137 @@
 <!-- Compact sync status indicator -->
 <div class="sync-indicator flex items-center relative max-w-full" [ngClass]="getStatusClass()">
-  <!-- Main status button with menu trigger -->
-  <button 
-    mat-icon-button 
-    [matMenuTriggerFor]="syncMenu"
-    [matTooltip]="getTooltipText()"
-    matTooltipPosition="below"
-    class="sync-button relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]"
-    [class.spinning]="syncState?.status === 'syncing'">
-    <mat-icon [class.spinning-icon]="syncState?.status === 'syncing'">
-      {{ getStatusIcon() }}
-    </mat-icon>
-    <!-- Progress badge for syncing state -->
-    <span 
-      *ngIf="syncState?.status === 'syncing' && (syncState?.totalItems || 0) > 0"
-      class="progress-badge">
-      {{ syncState?.itemsSynced }}/{{ syncState?.totalItems }}
-    </span>
-  </button>
+  <ng-template #syncContent>
+    <!-- Header -->
+    <div class="sync-header flex items-center gap-2 px-4 py-2 rounded-t text-inverse">
+      <h3 class="m-0 text-base font-semibold flex items-center gap-2">
+        <mat-icon class="title-icon" [ngClass]="getStatusClass()">
+          {{ getStatusIcon() }}
+        </mat-icon>
+        Sync Status
+      </h3>
+    </div>
 
-  <!-- Dropdown menu with detailed sync information -->
-  <mat-menu #syncMenu="matMenu" panelClass="sync-menu-panel">
-    <div class="sync-menu-content" (click)="$event.stopPropagation()">
-      <!-- Header -->
-      <div class="flex items-center gap-2 px-4 py-3 rounded-t bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-700)] text-inverse">
-        <h3 class="m-0 text-base font-semibold flex items-center gap-2">
-          <mat-icon class="title-icon" [ngClass]="getStatusClass()">
-            {{ getStatusIcon() }}
+    <!-- Current status -->
+    <div class="p-4 space-y-2 border-b border-[var(--color-border-light)]">
+      <div class="flex items-start justify-between gap-2 text-sm">
+        <span class="font-medium text-secondary whitespace-nowrap">Status:</span>
+        <span class="font-medium text-right" [ngClass]="getStatusClass()">
+          {{ getStatusText() }}
+        </span>
+      </div>
+      
+      <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState?.status === 'syncing'">
+        <span class="font-medium text-secondary whitespace-nowrap">Progress:</span>
+        <span class="text-right text-primary">
+          {{ syncState?.progress }}%
+          <span *ngIf="(syncState?.totalItems || 0) > 0">
+            ({{ syncState?.itemsSynced }}/{{ syncState?.totalItems }})
+          </span>
+        </span>
+      </div>
+
+      <div *ngIf="syncState?.status === 'syncing' && (syncState?.progress || 0) > 0">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="syncState?.progress || 0"></div>
+        </div>
+      </div>
+
+      <div class="flex items-start justify-between gap-2 text-sm">
+        <span class="font-medium text-secondary whitespace-nowrap">Last sync:</span>
+        <span class="text-right text-primary">{{ timeSinceLastSync }}</span>
+      </div>
+
+      <div class="flex items-start justify-between gap-2 text-sm" *ngIf="(syncState?.nextSyncIn || 0) > 0">
+        <span class="font-medium text-secondary whitespace-nowrap">Next check:</span>
+        <span class="text-right text-primary">in {{ syncState?.nextSyncIn }}s</span>
+      </div>
+
+      <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState?.error">
+        <span class="font-medium text-[var(--error-500)] whitespace-nowrap">Error:</span>
+        <span class="text-right text-[var(--error-500)] text-sm">{{ syncState?.error }}</span>
+      </div>
+
+      <div *ngIf="hasUnsavedChanges && getStatusClass() !== 'status-syncing'">
+        <button mat-raised-button color="primary" (click)="forceSync(); $event.stopPropagation()" class="force-sync-button w-full mt-2 flex items-center justify-center gap-2">
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+      </div>
+
+      <div *ngIf="!hasUnsavedChanges && getStatusClass() !== 'status-syncing'">
+        <button mat-raised-button color="accent" (click)="updateFromSpreadsheet(); $event.stopPropagation()" class="force-sync-button w-full mt-2 flex items-center justify-center gap-2">
+          <mat-icon>cloud_download</mat-icon>
+          Update from Spreadsheet
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages log (collapsible) -->
+    <div class="messages-section border-t border-[var(--color-border-light)]" *ngIf="messages.length > 0">
+      <div class="messages-header px-4 py-3 flex justify-between items-center bg-overlay/5 hover:bg-overlay/10 cursor-pointer transition" (click)="toggleDetailedView(); $event.stopPropagation()">
+        <span class="messages-title flex items-center gap-1 text-sm font-medium text-primary">
+          <mat-icon class="expand-icon text-secondary" [class.expanded]="showDetailedView">
+            expand_more
           </mat-icon>
-          Sync Status
-        </h3>
+          Activity Log ({{ messages.length }})
+        </span>
+        <button 
+          mat-icon-button 
+          (click)="clearMessages(); $event.stopPropagation()"
+          class="clear-button flex h-8 w-8 items-center justify-center"
+          matTooltip="Clear log">
+          <mat-icon>clear_all</mat-icon>
+        </button>
       </div>
 
-      <!-- Current status -->
-      <div class="p-4 space-y-2 border-b border-[var(--color-border-light)]">
-        <div class="flex items-start justify-between gap-2 text-sm">
-          <span class="font-medium text-secondary whitespace-nowrap">Status:</span>
-          <span class="font-medium text-right" [ngClass]="getStatusClass()">
-            {{ getStatusText() }}
-          </span>
-        </div>
-        
-        <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState?.status === 'syncing'">
-          <span class="font-medium text-secondary whitespace-nowrap">Progress:</span>
-          <span class="text-right text-primary">
-            {{ syncState?.progress }}%
-            <span *ngIf="(syncState?.totalItems || 0) > 0">
-              ({{ syncState?.itemsSynced }}/{{ syncState?.totalItems }})
-            </span>
-          </span>
-        </div>
-
-        <div *ngIf="syncState?.status === 'syncing' && (syncState?.progress || 0) > 0">
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="syncState?.progress || 0"></div>
-          </div>
-        </div>
-
-        <div class="flex items-start justify-between gap-2 text-sm">
-          <span class="font-medium text-secondary whitespace-nowrap">Last sync:</span>
-          <span class="text-right text-primary">{{ timeSinceLastSync }}</span>
-        </div>
-
-        <div class="flex items-start justify-between gap-2 text-sm" *ngIf="(syncState?.nextSyncIn || 0) > 0">
-          <span class="font-medium text-secondary whitespace-nowrap">Next check:</span>
-          <span class="text-right text-primary">in {{ syncState?.nextSyncIn }}s</span>
-        </div>
-
-        <div class="flex items-start justify-between gap-2 text-sm" *ngIf="syncState?.error">
-          <span class="font-medium text-[var(--error-500)] whitespace-nowrap">Error:</span>
-          <span class="text-right text-[var(--error-500)] text-sm">{{ syncState?.error }}</span>
-        </div>
-
-        <div *ngIf="hasUnsavedChanges && getStatusClass() !== 'status-syncing'">
-          <button mat-raised-button color="primary" (click)="forceSync(); $event.stopPropagation()" class="force-sync-button w-full mt-2 flex items-center justify-center gap-2">
-            <mat-icon>save</mat-icon>
-            Save Changes
-          </button>
-        </div>
-
-        <div *ngIf="!hasUnsavedChanges && getStatusClass() !== 'status-syncing'">
-          <button mat-raised-button color="accent" (click)="updateFromSpreadsheet(); $event.stopPropagation()" class="force-sync-button w-full mt-2 flex items-center justify-center gap-2">
-            <mat-icon>cloud_download</mat-icon>
-            Update from Spreadsheet
-          </button>
-        </div>
-      </div>
-
-      <!-- Messages log (collapsible) -->
-      <div class="messages-section border-t border-[var(--color-border-light)]" *ngIf="messages.length > 0">
-        <div class="messages-header px-4 py-3 flex justify-between items-center bg-overlay/5 hover:bg-overlay/10 cursor-pointer transition" (click)="toggleDetailedView(); $event.stopPropagation()">
-          <span class="messages-title flex items-center gap-1 text-sm font-medium text-primary">
-            <mat-icon class="expand-icon text-secondary" [class.expanded]="showDetailedView">
-              expand_more
-            </mat-icon>
-            Activity Log ({{ messages.length }})
-          </span>
-          <button 
-            mat-icon-button 
-            (click)="clearMessages(); $event.stopPropagation()"
-            class="clear-button flex h-8 w-8 items-center justify-center"
-            matTooltip="Clear log">
-            <mat-icon>clear_all</mat-icon>
-          </button>
-        </div>
-
-        <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1" *ngIf="showDetailedView">
-          <div 
-            *ngFor="let message of messages.slice(-10).reverse()" 
-            class="message-item flex gap-2 p-2 rounded border-l-4 transition"
-            [ngClass]="'message-' + message.type">
-            <mat-icon class="message-icon text-secondary">{{ getMessageIcon(message.type) }}</mat-icon>
-            <div class="message-content flex-1 min-w-0">
-              <div class="message-text text-sm text-primary break-words">{{ message.text }}</div>
-              <div class="message-time text-xs text-tertiary">{{ formatTimestamp(message.timestamp) }}</div>
-            </div>
+      <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1" *ngIf="showDetailedView">
+        <div 
+          *ngFor="let message of messages.slice(-10).reverse()" 
+          class="message-item flex gap-2 p-2 rounded border-l-4 transition"
+          [ngClass]="'message-' + message.type">
+          <mat-icon class="message-icon text-secondary">{{ getMessageIcon(message.type) }}</mat-icon>
+          <div class="message-content flex-1 min-w-0">
+            <div class="message-text text-sm text-primary break-words">{{ message.text }}</div>
+            <div class="message-time text-xs text-tertiary">{{ formatTimestamp(message.timestamp) }}</div>
           </div>
         </div>
       </div>
     </div>
-  </mat-menu>
+  </ng-template>
+
+  <ng-container *ngIf="mode === 'button'; else panelMode">
+    <!-- Main status button with menu trigger -->
+    <button 
+      mat-icon-button 
+      [matMenuTriggerFor]="syncMenu"
+      [matTooltip]="getTooltipText()"
+      matTooltipPosition="below"
+      class="sync-button relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]"
+      [class.spinning]="syncState?.status === 'syncing'">
+      <mat-icon [class.spinning-icon]="syncState?.status === 'syncing'">
+        {{ getStatusIcon() }}
+      </mat-icon>
+      <!-- Progress badge for syncing state -->
+      <span 
+        *ngIf="syncState?.status === 'syncing' && (syncState?.totalItems || 0) > 0"
+        class="progress-badge">
+        {{ syncState?.itemsSynced }}/{{ syncState?.totalItems }}
+      </span>
+    </button>
+
+    <!-- Dropdown menu with detailed sync information -->
+    <mat-menu #syncMenu="matMenu" panelClass="sync-menu-panel">
+      <div class="sync-menu-content" (click)="$event.stopPropagation()">
+        <ng-container *ngTemplateOutlet="syncContent"></ng-container>
+      </div>
+    </mat-menu>
+  </ng-container>
+
+  <ng-template #panelMode>
+    <div class="sync-menu-panel sync-menu-panel--embedded">
+      <div class="sync-menu-content embedded" (click)="$event.stopPropagation()">
+        <ng-container *ngTemplateOutlet="syncContent"></ng-container>
+      </div>
+    </div>
+  </ng-template>
 </div>

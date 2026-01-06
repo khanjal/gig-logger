@@ -3,14 +3,12 @@
   background: transparent !important;
   border-radius: 0.5rem !important;
   padding: 0 !important;
-  
-  // Remove Material's circular shape and ripple
+
   .mat-mdc-button-persistent-ripple,
   .mat-mdc-button-ripple {
     display: none;
   }
-  
-  // Reset icon positioning
+
   mat-icon {
     position: static !important;
     margin: 0 !important;
@@ -24,7 +22,6 @@
 .status-success .sync-button mat-icon { color: var(--success-500); }
 .status-error .sync-button mat-icon { color: var(--error-500); }
 
-// Make disabled sync button more visible on toolbar with subtle background
 .status-disabled .sync-button {
   background: rgba(255, 255, 255, 0.08) !important;
 }
@@ -50,22 +47,30 @@
   box-shadow: 0 1px 3px var(--shadow-medium);
 }
 
-// Menu sizing
+// Menu sizing and surfaces
 .sync-menu-content {
   margin-top: -8px;
   padding: 0;
   min-width: 280px;
   max-width: min(400px, 90vw);
   width: 100%;
+  background: var(--color-surface);
 
   @media (max-width: 480px) {
     min-width: 280px;
     max-width: min(320px, 90vw);
-    width: 100%;
   }
 }
 
-// Mat menu surface uses theme tokens for light/dark
+.sync-header {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  color: var(--color-text-inverse);
+  padding: 0.35rem 1.1rem;
+  height: 32px;
+  align-items: center;
+}
+
+// Panel styling
 .sync-menu-panel.mat-mdc-menu-panel {
   background-color: var(--color-surface);
   color: var(--color-text-primary);
@@ -73,9 +78,23 @@
   box-shadow: 0 16px 40px var(--shadow-heavy);
 }
 
+.sync-menu-panel--embedded {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+  box-shadow: 0 16px 40px var(--shadow-heavy);
+}
+
 .sync-menu-panel .mat-mdc-menu-content {
   padding: 0;
-  background-color: transparent;
+  background-color: var(--color-surface);
+}
+
+.sync-menu-content.embedded {
+  padding: 0;
+  min-width: 340px;
+  max-width: 480px;
+  background: var(--color-surface);
 }
 
 // Title icon variants
@@ -104,3 +123,33 @@
 .message-error { border-left-color: var(--error-500); background-color: color-mix(in srgb, var(--error-500) 12%, transparent); }
 .message-warning { border-left-color: var(--warning-500); background-color: color-mix(in srgb, var(--warning-500) 12%, transparent); }
 .message-info { border-left-color: var(--primary-600); background-color: color-mix(in srgb, var(--primary-600) 8%, transparent); }
+
+:host-context(html.theme-dark) {
+  .sync-menu-panel.mat-mdc-menu-panel {
+    background-color: var(--color-surface-2);
+    border-color: var(--color-border);
+  }
+
+  .sync-menu-panel--embedded {
+    background-color: var(--color-surface-2);
+    border-color: var(--color-border);
+  }
+
+  .sync-menu-panel .mat-mdc-menu-content {
+    background-color: var(--color-surface-2);
+  }
+
+  .sync-menu-content,
+  .sync-menu-content.embedded {
+    background: var(--color-surface-2);
+  }
+
+  .message-error { background-color: color-mix(in srgb, var(--error-500) 18%, transparent); }
+  .message-warning { background-color: color-mix(in srgb, var(--warning-500) 18%, transparent); }
+  .message-info { background-color: color-mix(in srgb, var(--primary-500) 14%, transparent); }
+
+  .sync-header {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    color: var(--color-text-inverse);
+  }
+}
