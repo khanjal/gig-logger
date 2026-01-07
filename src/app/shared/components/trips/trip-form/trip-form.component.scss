@@ -118,3 +118,33 @@
   filter: grayscale(60%);
   cursor: not-allowed !important;
 }
+
+/* Shift dropdown selected option - lighter blue for visibility */
+::ng-deep .shift-select-panel .mdc-list-item--selected,
+::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected {
+  background-color: rgb(239 246 255) !important; /* blue-50 */
+}
+::ng-deep .shift-select-panel .mdc-list-item--selected .mdc-list-item__primary-text,
+::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
+  color: rgb(29 78 216) !important; /* blue-700 */
+  font-weight: 600;
+}
+::ng-deep .shift-select-panel .mdc-list-item--selected:hover {
+  background-color: rgb(219 234 254) !important; /* blue-100 */
+}
+
+/* Dark mode variant */
+:host-context(html.theme-dark) {
+  ::ng-deep .shift-select-panel .mdc-list-item--selected,
+  ::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected {
+    background-color: rgba(30, 64, 175, 0.25) !important; /* blue-800 @ 0.25 */
+  }
+  ::ng-deep .shift-select-panel .mdc-list-item--selected .mdc-list-item__primary-text,
+  ::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
+    color: rgb(191 219 254) !important; /* blue-200 */
+    font-weight: 600;
+  }
+  ::ng-deep .shift-select-panel .mdc-list-item--selected:hover {
+    background-color: rgba(30, 64, 175, 0.35) !important; /* blue-800 @ 0.35 */
+  }
+}
