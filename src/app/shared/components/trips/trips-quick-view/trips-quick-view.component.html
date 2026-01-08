@@ -1,5 +1,5 @@
 <!-- Enhanced Mobile-First Trip Quick View -->
-<div class="bg-surface rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
+<div class="rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
   [ngClass]="{
     'opacity-60 bg-surface-2': trip.exclude,
     'trip-border-saved': trip.saved,
@@ -7,8 +7,8 @@
     'trip-border-update': !trip.saved && trip.action === 'UPDATE',
     'trip-border-delete': !trip.saved && trip.action === 'DELETE',
     'trip-border-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE')),
-    'bg-gradient-to-r from-blue-500/5 to-surface': isEvenStripe && !trip.exclude,
-    'bg-gradient-to-r from-green-500/5 to-surface': !isEvenStripe && !trip.exclude
+    'stripe-even': isEvenStripe && !trip.exclude,
+    'stripe-odd': !isEvenStripe && !trip.exclude
   }"
   style="position: relative;"
 >
@@ -24,10 +24,10 @@
     </span>
   </div>
   <!-- Simplified Mobile-First Header -->
-  <div class="p-3 border-b border-soft"
+  <div class="p-3 border-b border-soft header-stripe"
     [ngClass]="{
-      'bg-blue-500/10': isEvenStripe,
-      'bg-green-500/10': !isEvenStripe
+      'stripe-header-even': isEvenStripe,
+      'stripe-header-odd': !isEvenStripe
     }">
     <!-- Single-Line Header Row -->
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
@@ -266,11 +266,11 @@
     </div>
   </div>
   <!-- Simplified Action Bar -->
-  <div class="flex items-center justify-between p-3 border-t border-soft"
+  <div class="flex items-center justify-between p-3 border-t border-soft actionbar-stripe"
     *ngIf="showActions"
     [ngClass]="{
-      'bg-blue-500/10': isEvenStripe,
-      'bg-green-500/10': !isEvenStripe
+      'stripe-header-even': isEvenStripe,
+      'stripe-header-odd': !isEvenStripe
     }">
     <!-- Edit Button -->
     <button mat-button 

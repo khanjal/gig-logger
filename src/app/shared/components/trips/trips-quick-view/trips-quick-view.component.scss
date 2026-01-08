@@ -111,3 +111,25 @@
   min-width: 88px;
   justify-content: center;
 }
+
+/* Primary-blue test palette (selected) */
+:host {
+  --stripe-even: #dbeafe; /* blue-100 (lighter) */
+  --stripe-odd: #bfdbfe;  /* blue-200 (lighter for light mode) */
+}
+
+/* Dark mode: low-opacity primary overlays */
+:host-context(html.theme-dark) {
+  --stripe-even: rgba(59,130,246,0.12); /* primary blue @12% */
+  --stripe-odd: rgba(99,102,241,0.18);  /* indigo overlay @18% for stronger contrast */
+}
+
+.stripe-even { background-color: var(--stripe-even) !important; }
+.stripe-odd { background-color: var(--stripe-odd) !important; }
+
+/* Header/action bar stripe alignment (match card stripes) */
+.stripe-header-even { background-color: var(--stripe-even) !important; }
+.stripe-header-odd { background-color: var(--stripe-odd) !important; }
+
+/* Ensure overlays and badges remain readable above the test stripes */
+.pattern-overlay-disabled { mix-blend-mode: multiply; }
