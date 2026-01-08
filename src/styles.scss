@@ -314,6 +314,31 @@ html.theme-dark {
       }
     }
   }
+
+  // Material Autocomplete panel (overlay) dark mode
+  .mat-mdc-autocomplete-panel,
+  .mat-autocomplete-panel,
+  .search-autocomplete-panel {
+    background-color: var(--color-surface-secondary) !important;
+
+    .mat-mdc-option,
+    .mat-option {
+      color: var(--color-text-primary) !important;
+
+      &:hover,
+      &.mat-mdc-option-active,
+      &.mat-option-active,
+      &.mdc-list-item--active {
+        background-color: var(--color-surface-tertiary) !important;
+      }
+
+      &.mat-selected,
+      &.mdc-list-item--selected {
+        background-color: rgba(59, 130, 246, 0.08) !important;
+        color: var(--color-text-primary) !important;
+      }
+    }
+  }
   
   // Material Datepicker
   .mat-datepicker-content {
