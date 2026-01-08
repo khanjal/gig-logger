@@ -38,6 +38,15 @@
     }
   }
 
+  // Dark mode text tweaks for All/None buttons
+  :host-context(html.theme-dark) .all-btn {
+    color: rgb(191 219 254) !important; // blue-200
+  }
+
+  :host-context(html.theme-dark) .none-btn {
+    color: rgb(226 232 240) !important; // slate-200
+  }
+
   // Expand/Collapse toggle button
   .expand-toggle-btn {
     width: 40px;
@@ -96,30 +105,6 @@
 
       &:hover {
         background: var(--color-surface-3) !important;
-      }
-
-      .mdc-list-item__primary-text {
-        color: var(--color-text-primary) !important;
-      }
-    }
-  }
-
-  :host-context(html.theme-dark) ::ng-deep .search-autocomplete-panel {
-    background: var(--color-surface-2) !important;
-    color: var(--color-text-primary) !important;
-    border-color: var(--color-border) !important;
-    box-shadow: var(--shadow-light);
-
-    .mat-mdc-option {
-      color: var(--color-text-primary) !important;
-
-      &.mdc-list-item--selected,
-      &.mdc-list-item--activated {
-        background: var(--color-surface-tertiary) !important;
-      }
-
-      &:hover {
-        background: var(--color-surface-tertiary) !important;
       }
 
       .mdc-list-item__primary-text {

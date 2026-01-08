@@ -60,11 +60,11 @@
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-primary">Filter Categories</h3>
             <div class="flex gap-2">
-              <button mat-button color="primary" (click)="selectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900">
+              <button mat-button color="primary" (click)="selectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900 all-btn">
                 <mat-icon class="text-sm">check_box</mat-icon>
                 &nbsp;All
               </button>
-              <button mat-button color="primary" (click)="deselectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:bg-slate-200 dark:hover:bg-slate-700">
+              <button mat-button color="primary" (click)="deselectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-blue-50 hover:bg-slate-200 dark:hover:bg-slate-700 none-btn">
                 <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
                 &nbsp;None
               </button>
@@ -120,7 +120,7 @@
       <!-- Results Summary Bar -->
       <div class="flex items-center justify-between text-sm border-t border-soft" 
            *ngIf="hasSearched && !isSearching">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 pl-5">
           <span class="text-secondary">
             <span class="font-bold text-primary">{{ getTotalResultsCount() }}</span> matches
           </span>
@@ -194,7 +194,7 @@
         <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium">
           <div>
             Avg/trip:
-            <span class="font-bold text-blue-700 dark:text-blue-300">
+            <span class="font-bold text-blue-500">
               {{ getGroupAvgPerTrip(group) }}
             </span>
           </div>
@@ -227,7 +227,7 @@
               </div>
               <div class="flex-end gap-4">
                 <div class="text-right">
-                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ result.totalTrips }} trips</div>
+                  <div class="text-sm text-gray-500">{{ result.totalTrips }} trips</div>
                   <div class="text-sm font-bold text-green-600 dark:text-green-400">{{ result.totalEarnings | currency }}</div>
                 </div>
                 <mat-icon class="text-gray-400 dark:text-gray-500">
@@ -259,8 +259,9 @@
             <div class="p-2">
               <div class="space-y-2">
                 <trips-quick-view 
-                  *ngFor="let trip of result.trips" 
+                  *ngFor="let trip of result.trips; let i = index" 
                   [trip]="trip"
+                  [stripeEven]="i % 2 === 0"
                   [showActions]="false"
                   class="block">
                 </trips-quick-view>
