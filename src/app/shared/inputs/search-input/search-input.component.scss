@@ -931,25 +931,3 @@ mat-form-field {
   font-size: 0.98rem;
   font-weight: 500;
 }
-
-// Dark mode autocomplete styling
-::ng-deep html.theme-dark {
-  .mat-mdc-autocomplete-panel {
-    background-color: var(--color-surface-secondary) !important;
-    
-    .mat-mdc-option {
-      color: var(--color-text-primary) !important;
-      
-      &:hover,
-      &.mat-mdc-option-active {
-        background-color: var(--color-surface-tertiary) !important;
-      }
-      
-      &.mat-selected,
-      &.mdc-list-item--selected {
-        background-color: rgba(59, 130, 246, 0.08) !important; // Very subtle blue tint
-        color: var(--color-text-primary) !important;
-      }
-    }
-  }
-}

@@ -241,11 +241,3 @@
     }
   }
 }
-
-:host-context(html.theme-dark) ::ng-deep .mat-mdc-dialog-container {
-  background: var(--color-surface) !important;
-  
-  .mdc-dialog__surface {
-    background: var(--color-surface) !important;
-  }
-}
