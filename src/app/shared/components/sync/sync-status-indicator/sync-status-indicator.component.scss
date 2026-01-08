@@ -22,10 +22,6 @@
 .status-success .sync-button mat-icon { color: var(--success-500); }
 .status-error .sync-button mat-icon { color: var(--error-500); }
 
-.status-disabled .sync-button {
-  background: rgba(255, 255, 255, 0.08) !important;
-}
-
 // Spinner for syncing icons
 .spinning-icon { animation: spin 2s linear infinite; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
