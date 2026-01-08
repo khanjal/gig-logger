@@ -43,6 +43,10 @@
     background-color: var(--color-surface-tertiary);
     color: var(--color-text-primary);
   }
+
+  h1 {
+    color: var(--color-text-primary);
+  }
 }
 
 /* Theme CSS variables for runtime light/dark switching */
