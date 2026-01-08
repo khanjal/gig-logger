@@ -24,7 +24,7 @@
          class="p-3 hover:bg-surface-3 transition-colors flex items-center gap-2 item-row" 
          [class.opacity-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) || problemItem.markedForDelete" 
          [class.bg-green-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0)"
-         [class.dark:bg-green-900/20]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0)" 
+         [ngClass]="{ 'dark:bg-green-900/20': ((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) }"
          [class.bg-error-500/10]="problemItem.markedForDelete">
       <mat-radio-button *ngIf="canMerge" 
                         [value]="problemItem"></mat-radio-button>

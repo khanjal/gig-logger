@@ -70,18 +70,20 @@
         </mat-panel-title>
         <mat-panel-description>
           <span class="hidden md:inline text-gray-600 dark:text-gray-300 text-sm mr-2">{{ item.description }}</span>
-          <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
+                <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
                 [class.bg-error-500/20]="item.severity === 'error' && item.count > 0"
                 [class.text-red-700]="item.severity === 'error' && item.count > 0"
-                [class.dark:text-red-400]="item.severity === 'error' && item.count > 0"
                 [class.bg-orange-100]="item.severity === 'warning' && item.count > 0"
-                [class.dark:bg-orange-900/30]="item.severity === 'warning' && item.count > 0"
                 [class.text-orange-700]="item.severity === 'warning' && item.count > 0"
-                [class.dark:text-orange-400]="item.severity === 'warning' && item.count > 0"
                 [class.bg-gray-100]="item.count === 0"
-                [class.dark:bg-gray-800]="item.count === 0"
                 [class.text-gray-600]="item.count === 0"
-                [class.dark:text-gray-400]="item.count === 0">
+                [ngClass]="{
+                  'dark:text-red-400': item.severity === 'error' && item.count > 0,
+                  'dark:bg-orange-900/30': item.severity === 'warning' && item.count > 0,
+                  'dark:text-orange-400': item.severity === 'warning' && item.count > 0,
+                  'dark:bg-gray-800': item.count === 0,
+                  'dark:text-gray-400': item.count === 0
+                }">
             {{ item.count }}
           </span>
         </mat-panel-description>

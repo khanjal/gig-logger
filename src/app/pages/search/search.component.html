@@ -41,7 +41,7 @@
             (click)="toggleFilters()"
             [class.bg-primary-500/10]="showFilters"
             class="filter-toggle-btn">
-            <mat-icon [class.text-blue-600]="showFilters" [class.dark:text-blue-400]="showFilters">
+            <mat-icon [class.text-blue-600]="showFilters" [ngClass]="{ 'dark:text-blue-400': showFilters }">
               {{ showFilters ? 'filter_list_off' : 'filter_list' }}
             </mat-icon>
             <span class="filter-badge">{{ getEnabledCount() }}</span>

@@ -5,10 +5,9 @@
         border-soft bg-primary-500/10 text-primary
         hover:bg-primary-500/20 hover:border-strong focus:bg-primary-500/20 focus:border-strong focus:outline-none focus:ring-2 focus:ring-primary-500/50"
         [class.bg-blue-500]="selectedPreset === item"
-        [class.dark:bg-blue-600]="selectedPreset === item"
+        [ngClass]="{ 'dark:bg-blue-600': selectedPreset === item, 'dark:border-blue-700': selectedPreset === item }"
         [class.text-white]="selectedPreset === item"
         [class.border-blue-600]="selectedPreset === item"
-        [class.dark:border-blue-700]="selectedPreset === item"
         (click)="selectRange(item)"
         (keydown.enter)="selectRange(item)"
         (keydown.space)="selectRange(item)"
