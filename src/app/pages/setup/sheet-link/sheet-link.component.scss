@@ -1,1 +1,8 @@
 @use 'color-vars' as *;
+
+:host-context(html.theme-dark) {
+	.section {
+		// ensure background uses theme variable in dark mode
+		background-color: var(--color-surface);
+	}
+}
