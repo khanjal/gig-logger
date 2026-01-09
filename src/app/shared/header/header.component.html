@@ -45,7 +45,6 @@
            matTooltipPosition="below">
           <mat-icon>bar_chart</mat-icon>
         </a>
-        <!-- Add Search to mobile top bar so mobile shows Home + Trips + Shifts + Metrics + Search (5 items) -->
         <a routerLink="/search"
            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="Search"
@@ -56,7 +55,7 @@
       </ng-container>
 
       <ng-container *ngIf="isAuthenticated && defaultSheet">
-        <div class="hidden lg:flex items-center gap-1">
+        <div class="hidden md:flex items-center gap-1">
           <a routerLink="/stats" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View statistics" matTooltip="Statistics" matTooltipPosition="below">
             <mat-icon>table_chart</mat-icon>
           </a>
@@ -69,7 +68,6 @@
           <a routerLink="/search" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Search" matTooltip="Search" matTooltipPosition="below">
             <mat-icon>search</mat-icon>
           </a>
-          <!-- Expose Updates in full-screen header so header mirrors sidebar icons -->
           <a routerLink="/updates" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Updates" matTooltip="Updates" matTooltipPosition="below">
             <mat-icon>history</mat-icon>
           </a>
