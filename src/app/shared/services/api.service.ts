@@ -90,20 +90,28 @@ export class ApiService {
      * @returns Sheet data or null
      */
     private async handleSheetResponse(response: any, operation: string): Promise<any> {
-        if (response.isStoredInS3 && response.s3Link) {
-            this.logger.debug(`Large ${operation} data stored in S3, fetching from: ${response.s3Link}`);
-            const s3Response = await firstValueFrom(
-                this._http.get<any>(response.s3Link)
-            );
-            return s3Response;
-        } else if (response.sheetEntity) {
-            this.logger.debug(`${operation} data loaded directly`);
-            return response.sheetEntity;
-        } else {
-            this.logger.warn(`Invalid response format for ${operation}: no sheetEntity or s3Link provided`);
-            return null;
+        try {
+            if (response.isStoredInS3 && response.s3Link) {
+                this.logger.debug(`Large ${operation} data stored in S3, fetching from: ${response.s3Link}`);
+                const s3Response = await firstValueFrom(
+                    this._http.get<any>(response.s3Link)
+                );
+                // Tag the returned payload so callers know it originated from S3
+                try { (s3Response as any)._source = 's3'; } catch {}
+                return s3Response;
+            } else if (response.sheetEntity) {
+                this.logger.debug(`${operation} data loaded directly`);
+                try { (response.sheetEntity as any)._source = 'lambda'; } catch {}
+                return response.sheetEntity;
+            } else {
+                this.logger.warn(`Invalid response format for ${operation}: no sheetEntity or s3Link provided`);
+                return null;
+            }
+        } catch (err) {
+            this.logger.error(`Error while handling ${operation} response`, err);
+            throw err;
         }
-    }    
+    }
     
     // ========================================
     // AUTH METHODS
