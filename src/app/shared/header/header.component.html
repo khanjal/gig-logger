@@ -45,6 +45,14 @@
            matTooltipPosition="below">
           <mat-icon>bar_chart</mat-icon>
         </a>
+        <!-- Add Search to mobile top bar so mobile shows Home + Trips + Shifts + Metrics + Search (5 items) -->
+        <a routerLink="/search"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+           aria-label="Search"
+           matTooltip="Search"
+           matTooltipPosition="below">
+          <mat-icon>search</mat-icon>
+        </a>
       </ng-container>
 
       <ng-container *ngIf="isAuthenticated && defaultSheet">
@@ -60,6 +68,10 @@
           </a>
           <a routerLink="/search" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Search" matTooltip="Search" matTooltipPosition="below">
             <mat-icon>search</mat-icon>
+          </a>
+          <!-- Expose Updates in full-screen header so header mirrors sidebar icons -->
+          <a routerLink="/updates" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Updates" matTooltip="Updates" matTooltipPosition="below">
+            <mat-icon>history</mat-icon>
           </a>
         </div>
       </ng-container>
@@ -85,12 +97,12 @@
        role="dialog"
        aria-modal="true"
        aria-labelledby="menu-title">
-    <nav class="absolute top-0 left-0 h-full w-72 max-w-[90vw] bg-surface shadow-strong transform -translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto"
+    <nav class="absolute top-0 left-0 h-full w-64 max-w-[90vw] bg-surface shadow-strong transform -translate-x-full transition-transform duration-300 flex flex-col"
          [class.translate-x-0]="isMenuOpen"
          (click)="$event.stopPropagation()"
          role="navigation"
          aria-label="Main menu">
-      <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-light)] bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-inverse">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-light)] bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-inverse">
         <div class="flex flex-col">
           <h2 id="menu-title" class="text-lg font-semibold leading-tight text-white">Raptor Gig</h2>
           <div class="text-sm opacity-90 text-white">Quick logs, big insights</div>
@@ -102,60 +114,63 @@
         </button>
       </div>
 
-      <div class="flex-1 py-4">
-        <div class="px-6 pb-3 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Navigation</div>
-        <a routerLink="/"
-           (click)="closeMenu()"
-           class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md"
-           aria-label="Go to home">
+      <div class="flex-1 py-3">
+        <a routerLink="/" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Go to home">
           <mat-icon class="text-secondary">home</mat-icon>
-          <span class="text-base font-medium">Home</span>
+          <span class="text-sm font-medium">Home</span>
         </a>
 
         <ng-container *ngIf="isAuthenticated && defaultSheet">
-          <a routerLink="/trips" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View trips">
-            <mat-icon class="text-secondary">navigation</mat-icon>
-            <span class="text-base font-medium">Trips</span>
-          </a>
-          <a routerLink="/shifts" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View shifts">
-            <mat-icon class="text-secondary">today</mat-icon>
-            <span class="text-base font-medium">Shifts</span>
-          </a>
-          <a routerLink="/metrics" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View metrics">
-            <mat-icon class="text-secondary">bar_chart</mat-icon>
-            <span class="text-base font-medium">Metrics</span>
-          </a>
+          <div class="mt-3">
+            <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Logging</div>
+            <a routerLink="/trips" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View trips">
+              <mat-icon class="text-secondary">navigation</mat-icon>
+              <span class="text-sm font-medium">Trips</span>
+            </a>
+            <a routerLink="/shifts" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View shifts">
+              <mat-icon class="text-secondary">today</mat-icon>
+              <span class="text-sm font-medium">Shifts</span>
+            </a>
+            <a routerLink="/expenses" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View expenses">
+              <mat-icon class="text-secondary">receipt_long</mat-icon>
+              <span class="text-sm font-medium">Expenses</span>
+            </a>
+          </div>
+
+          <div class="mt-3">
+            <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Insights</div>
+            <a routerLink="/metrics" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View metrics">
+              <mat-icon class="text-secondary">bar_chart</mat-icon>
+              <span class="text-sm font-medium">Metrics</span>
+            </a>
+            <a routerLink="/stats" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View statistics">
+              <mat-icon class="text-secondary">table_chart</mat-icon>
+              <span class="text-sm font-medium">Statistics</span>
+            </a>
+          </div>
+
+          <div class="mt-3">
+            <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Tools</div>
+            <a routerLink="/search" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Search">
+              <mat-icon class="text-secondary">search</mat-icon>
+              <span class="text-sm font-medium">Search</span>
+            </a>
+            <a routerLink="/diagnostics" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View diagnostics">
+              <mat-icon class="text-secondary">troubleshoot</mat-icon>
+              <span class="text-sm font-medium">Diagnostics</span>
+            </a>
+          </div>
         </ng-container>
 
-        <div *ngIf="isAuthenticated && defaultSheet" class="mt-4">
-          <div class="px-6 pb-3 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Tools</div>
-          <a routerLink="/stats" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View statistics">
-            <mat-icon class="text-secondary">table_chart</mat-icon>
-            <span class="text-base font-medium">Statistics</span>
-          </a>
-          <a routerLink="/expenses" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View expenses">
-            <mat-icon class="text-secondary">receipt_long</mat-icon>
-            <span class="text-base font-medium">Expenses</span>
-          </a>
-          <a routerLink="/diagnostics" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View diagnostics">
-            <mat-icon class="text-secondary">troubleshoot</mat-icon>
-            <span class="text-base font-medium">Diagnostics</span>
-          </a>
-          <a routerLink="/search" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Search">
-            <mat-icon class="text-secondary">search</mat-icon>
-            <span class="text-base font-medium">Search</span>
-          </a>
-        </div>
-
-        <div class="mt-4">
-          <div class="px-6 pb-3 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Settings</div>
-          <a routerLink="/setup" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Open settings">
+        <div class="mt-3">
+          <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Settings</div>
+          <a routerLink="/setup" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="Open settings">
             <mat-icon class="text-secondary">settings</mat-icon>
-            <span class="text-base font-medium">Settings</span>
+            <span class="text-sm font-medium">Settings</span>
           </a>
-          <a routerLink="/updates" (click)="closeMenu()" class="flex items-center gap-3 px-6 py-2.5 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View updates and changelog">
+          <a routerLink="/updates" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)] transition rounded-md" aria-label="View updates and changelog">
             <mat-icon class="text-secondary">history</mat-icon>
-            <span class="text-base font-medium">Updates</span>
+            <span class="text-sm font-medium">Updates</span>
           </a>
         </div>
       </div>
