@@ -1,15 +1,19 @@
 .sheet-list-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  max-width: 800px;
+  height: 100%;
+  min-height: 0; // allow flex children to clamp inside dialog
+  width: 100%;
+  max-width: none; // inherit dialog width
+  position: relative;
 }
 
 .content-area {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  margin: 0 auto;
+  margin: 0;
+  padding-bottom: 140px; // reserve space for bottom action bar
 }
 
 .loading-container {
@@ -145,12 +149,28 @@
 
 // Sticky bottom buttons
 .button-container {
-  position: sticky;
+  /* Dialog-local pinned action bar: full-width and absolute within dialog */
+  position: absolute;
+  left: 0;
+  right: 0;
   bottom: 0;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  padding: 16px;
-  z-index: 10;
+  z-index: 60;
+  pointer-events: auto;
+  width: 100%;
+  max-width: none;
+
+  .flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 12px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 -6px 18px rgba(2,6,23,0.12);
+    backdrop-filter: blur(4px);
+  }
 }
 
 // Responsive design
