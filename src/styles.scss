@@ -416,6 +416,8 @@ html.theme-dark {
     border-radius: 1rem;
     max-height: calc(100vh - 4rem);
     overflow-y: auto;
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
   }
 }
 

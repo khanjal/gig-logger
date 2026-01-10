@@ -74,7 +74,31 @@
   
   &.selected {
     border-color: var(--primary-600);
-    background-color: color-mix(in srgb, var(--primary-600) 4%, transparent);
+    background-color: color-mix(in srgb, var(--primary-600) 4%, var(--color-surface-2));
+  }
+}
+
+/* Theme-aware background/border for the card element to support dark mode */
+.sheet-card {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+
+  mat-card-content {
+    padding: 12px !important;
+    color: inherit;
+  }
+
+  .sheet-icon {
+    color: var(--success-600);
+  }
+
+  .sheet-name {
+    color: var(--color-text-primary);
+  }
+
+  .selection-indicator {
+    color: var(--primary-600);
   }
 }
 
