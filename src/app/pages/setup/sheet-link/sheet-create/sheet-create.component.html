@@ -1,4 +1,4 @@
-<div class="section bg-surface text-gray-800 dark:text-gray-200 p-4 rounded-md">
+<div class="section bg-surface text-gray-800 dark:text-gray-200 rounded-md">
   <form class="sheet-form" [formGroup]="sheetCreate" *ngIf="!saving">
       <mat-form-field class="field-full-width" appearance="outline">
           <mat-label>Sheet Name</mat-label>
@@ -11,7 +11,7 @@
       <div class="creating-sheet-text">Creating sheet...</div>
   </div>
 
-  <div *ngIf="!saving" class="row-flex" style="justify-content: space-between;">
+  <div *ngIf="!saving" class="row-flex pt-2" style="justify-content: space-between;">
       <button mat-fab extended color="warn" (click)="closeModal()" class="mr-auto bg-warn/80 dark:bg-warn-600 text-white"><mat-icon>refresh</mat-icon> Cancel</button>
       <button mat-fab extended color="primary" (click)="createSheet()" [class.spinner]="saving" [disabled]="!sheetCreate.valid || saving" class="ml-auto bg-primary/80 dark:bg-primary-600 text-white"><mat-icon>add</mat-icon> Create</button>
   </div>
