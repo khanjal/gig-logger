@@ -46,9 +46,30 @@ export class PollingService implements OnDestroy {
     this.setupVisibilityChangeListener();
   }
 
+  // Use safe logging in case tests provide a partial/mock logger without all methods
+  private safeLog(level: 'info' | 'warn' | 'error' | 'debug', ...args: any[]) {
+    try {
+      const fn = (this._logger as any)?.[level];
+      if (typeof fn === 'function') {
+        fn.apply(this._logger, args);
+        return;
+      }
+    } catch (e) {
+      // fall through to console fallback
+    }
+
+    // Fallback to console if LoggerService is missing the method (common in unit spies)
+    switch (level) {
+      case 'warn': console.warn(...args); break;
+      case 'error': console.error(...args); break;
+      case 'debug': console.debug(...args); break;
+      default: console.info(...args); break;
+    }
+  }
+
   private initializeWorker() {
     if (typeof Worker === 'undefined') {
-      this._logger.warn('Web Workers not supported, using fallback timer');
+      this.safeLog('warn', 'Web Workers not supported, using fallback timer');
       return;
     }
 
@@ -66,12 +87,12 @@ export class PollingService implements OnDestroy {
       };
 
       this.worker.onerror = (error) => {
-        this._logger.error('Worker error:', error);
+        this.safeLog('error', 'Worker error:', error);
         this.worker = null;
       };
 
     } catch (error) {
-      this._logger.error('Failed to create worker:', error);
+      this.safeLog('error', 'Failed to create worker:', error);
       this.worker = null;
     }
   }
@@ -98,12 +119,12 @@ export class PollingService implements OnDestroy {
     const timeSinceLastPoll = now - this.lastPollTime;
     const remainingInterval = Math.max(0, this.currentInterval - timeSinceLastPoll);
 
-    this._logger.info(`App resumed. Time since last poll: ${timeSinceLastPoll}ms, remaining interval: ${remainingInterval}ms`);
+    this.safeLog('info', `App resumed. Time since last poll: ${timeSinceLastPoll}ms, remaining interval: ${remainingInterval}ms`);
 
     if (remainingInterval === 0) {
       // Interval has already passed, give 5 second grace period before syncing
       const gracePeriod = 5000; // 5 seconds
-      this._logger.info(`Timer expired while backgrounded, syncing in ${gracePeriod}ms`);
+      this.safeLog('info', `Timer expired while backgrounded, syncing in ${gracePeriod}ms`);
       this.resumePolling(gracePeriod);
     } else {
       // Resume with the remaining interval
@@ -150,7 +171,7 @@ export class PollingService implements OnDestroy {
   async startPolling(interval: number = DEFAULT_INTERVAL) {
     // Guard against multiple starts
     if (this.enabled) {
-      this._logger.warn('Polling already enabled, skipping start');
+      this.safeLog('warn', 'Polling already enabled, skipping start');
       return;
     }
 
@@ -158,7 +179,7 @@ export class PollingService implements OnDestroy {
     this.currentInterval = interval;
     this.lastPollTime = Date.now();
     this.enabledState.next(true);
-    this._logger.info(`Starting polling with interval: ${interval}ms`);
+    this.safeLog('info', `Starting polling with interval: ${interval}ms`);
 
     if (this.worker) {
       this.worker.postMessage({
@@ -180,13 +201,13 @@ export class PollingService implements OnDestroy {
   stopPolling() {
     // Guard against multiple stops
     if (!this.enabled) {
-      this._logger.warn('Polling already disabled, skipping stop');
+      this.safeLog('warn', 'Polling already disabled, skipping stop');
       return;
     }
 
     this.enabled = false;
     this.enabledState.next(false);
-    this._logger.info('Stopping polling');
+    this.safeLog('info', 'Stopping polling');
 
     if (this.worker) {
       this.worker.postMessage({ type: 'STOP_POLLING' });
@@ -207,13 +228,13 @@ export class PollingService implements OnDestroy {
 
   private async saveData() {
     if (this.processing) {
-      this._logger.info('Save already in progress, skipping');
+      this.safeLog('info', 'Save already in progress, skipping');
       return;
     }
 
     // Check if document is visible before triggering sync
     if (document.visibilityState !== 'visible') {
-      this._logger.info('App is not in focus, deferring sync until visible');
+      this.safeLog('info', 'App is not in focus, deferring sync until visible');
       return;
     }
 
@@ -228,7 +249,7 @@ export class PollingService implements OnDestroy {
         return;
       }
 
-      this._logger.info(`Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
+      this.safeLog('info', `Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
 
       // Pre-calculate totals for unsaved shifts before saving
       if (counts.shifts > 0) {
@@ -236,7 +257,7 @@ export class PollingService implements OnDestroy {
         try {
           await this._gigWorkflowService.calculateShiftTotals(unsavedShifts);
         } catch (e) {
-          this._logger.warn('Pre-save shift calculation failed; proceeding with save');
+          this.safeLog('warn', 'Pre-save shift calculation failed; proceeding with save');
         }
       }
 
@@ -259,7 +280,7 @@ export class PollingService implements OnDestroy {
       const result = ApiMessageHelper.processSheetSaveResponse(messages);
 
       if (result.success) {
-        this._logger.info('Auto-save completed successfully');
+        this.safeLog('info', 'Auto-save completed successfully');
         
         // Mark all items as saved in local database after successful save
         await this._unsavedDataService.markAllAsSaved();
@@ -282,7 +303,7 @@ export class PollingService implements OnDestroy {
       } else {
         const errorMsg = result.errorMessage || 'Unknown error during save';
         
-        this._logger.warn('Auto-save completed with errors:', errorMsg);
+        this.safeLog('warn', 'Auto-save completed with errors:', errorMsg);
         this._syncStatusService.failSync(errorMsg);
         
         // Show snackbar for errors
@@ -291,7 +312,7 @@ export class PollingService implements OnDestroy {
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      this._logger.error('Auto-save failed:', error);
+      this.safeLog('error', 'Auto-save failed:', error);
       this._syncStatusService.failSync(errorMsg);
       this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
     } finally {

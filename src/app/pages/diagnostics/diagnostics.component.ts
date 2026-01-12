@@ -490,12 +490,20 @@ export class DiagnosticsComponent implements OnInit {
     try {
       this._pollingService.stopPolling();
     } catch (e) {
-      this._logger.warn('Failed to stop polling when disabling autosave', e);
+      if (this._logger && typeof (this._logger as any).warn === 'function') {
+        (this._logger as any).warn('Failed to stop polling when disabling autosave', e);
+      } else {
+        console.warn('Failed to stop polling when disabling autosave', e);
+      }
     }
     try {
       localStorage.setItem('pollingEnabled', JSON.stringify(false));
     } catch (e) {
-      this._logger.warn('Failed to persist polling preference', e);
+      if (this._logger && typeof (this._logger as any).warn === 'function') {
+        (this._logger as any).warn('Failed to persist polling preference', e);
+      } else {
+        console.warn('Failed to persist polling preference', e);
+      }
     }
   }
 }
