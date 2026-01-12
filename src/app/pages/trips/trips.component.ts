@@ -86,8 +86,6 @@ export class TripComponent implements OnInit, OnDestroy {
       private _router: Router
     ) { }
   ngOnDestroy(): void {
-    this._pollingService.stopPolling();
-    
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
     this.destroy$.complete();
