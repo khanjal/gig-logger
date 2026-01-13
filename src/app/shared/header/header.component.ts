@@ -160,7 +160,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private async loadHeaderData(): Promise<void> {
     // Only load data if authenticated
     if (this.isAuthenticated) {
-      this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+      const sheets = (await this._spreadsheetService.querySpreadsheets("default", "true")) || [];
+      this.defaultSheet = sheets[0];
     }
   }
   
@@ -172,8 +173,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.unsavedShiftsCount = 0;
       return;
     }
-    this.unsavedTripsCount = (await this.tripService.getUnsaved()).length;
-    this.unsavedShiftsCount = (await this.shiftService.getUnsavedShifts()).length;
+    const trips = (await this.tripService.getUnsaved()) || [];
+    const shifts = (await this.shiftService.getUnsavedShifts()) || [];
+    this.unsavedTripsCount = trips.length;
+    this.unsavedShiftsCount = shifts.length;
   }
   
   /**

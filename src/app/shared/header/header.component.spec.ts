@@ -76,6 +76,49 @@ describe('HeaderComponent', () => {
     expect(themeSpy.setTheme).toHaveBeenCalled();
   });
 
+  it('updateUnsavedCounts sets counts to 0 when not authenticated', async () => {
+    // authSpy default returns false
+    await (component as any).updateUnsavedCounts();
+    expect(component.unsavedTripsCount).toBe(0);
+    expect(component.unsavedShiftsCount).toBe(0);
+  });
+
+  it('updateUnsavedCounts sets counts when authenticated', async () => {
+    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    tripSpy.getUnsaved.and.returnValue(Promise.resolve([1,2,3]));
+    shiftSpy.getUnsavedShifts.and.returnValue(Promise.resolve([1]));
+
+    await (component as any).updateUnsavedCounts();
+
+    expect(component.unsavedTripsCount).toBe(3);
+    expect(component.unsavedShiftsCount).toBe(1);
+  });
+
+  it('ngOnInit initializes header and loads default sheet when authenticated', async () => {
+    // Make auth return true and spreadsheet service return a default sheet
+    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'sheet-1' }]));
+
+    // Call ngOnInit and wait for it to complete
+    await component.ngOnInit();
+
+    expect(component.isLoading).toBeFalse();
+    expect(component.defaultSheet).toBeDefined();
+    expect(component.defaultSheet && (component.defaultSheet as any).id).toBe('sheet-1');
+  });
+
+  it('themeLabel and themeIcon reflect preference and resolved theme', () => {
+    component.themePreference = 'dark';
+    expect(component.themeLabel).toBe('Dark');
+
+    component.themePreference = 'light';
+    component.resolvedTheme = 'light';
+    expect(component.themeIcon).toBe('light_mode');
+
+    component.themePreference = 'system';
+    expect(component.themeIcon).toBe('brightness_auto');
+  });
+
   it('setLoadingState delays hiding', fakeAsync(() => {
     // Ensure any pending timers from component init are flushed
     tick();
