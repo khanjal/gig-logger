@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
+  // Use a custom dark selector to match the app's theme toggling (html.theme-dark)
+  darkMode: ['class', 'html.theme-dark'],
   content: [
     "./src/**/*.{html,ts}",
   ],
