@@ -88,7 +88,8 @@ button {
   font-style: italic;
   opacity: 0.8;
   padding: 8px;
-  background: color-mix(in srgb, var(--color-surface) 3%, black);
+  background: color-mix(in srgb, var(--color-surface-secondary) 55%, transparent);
+  box-shadow: var(--shadow-medium);
   border-radius: 6px;
   border-left: 3px solid var(--primary-600);
 }
