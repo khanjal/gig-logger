@@ -118,21 +118,3 @@
   filter: grayscale(60%);
   cursor: not-allowed !important;
 }
-
-/* Shift dropdown selected option - light blue highlight */
-::ng-deep .shift-select-panel .mdc-list-item--selected,
-::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected {
-  background-color: rgb(219 234 254) !important; /* blue-100 */
-  color: rgb(29 78 216) !important; /* blue-700 */
-}
-
-::ng-deep .shift-select-panel .mdc-list-item--selected .mdc-list-item__primary-text,
-::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
-  color: inherit !important;
-  font-weight: 600;
-}
-
-::ng-deep .shift-select-panel .mdc-list-item--selected:hover,
-::ng-deep .shift-select-panel .mat-mdc-option.mdc-list-item--selected:hover {
-  background-color: rgb(191 219 254) !important; /* blue-200 */
-}

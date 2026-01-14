@@ -163,12 +163,12 @@
                 <span>Address applied successfully</span>
               </div>
               <div class="flex items-center gap-2">
-                <select *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0" 
-                        [(ngModel)]="selectedAddress[problemItem.rowId]" 
-                        class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 max-w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                  <option [value]="undefined">Select address...</option>
-                  <option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</option>
-                </select>
+                <mat-form-field *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0" appearance="outline" class="flex-1 min-w-0">
+                  <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
+                    <mat-option [value]="undefined">Select address...</mat-option>
+                    <mat-option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
                 <input *ngIf="!problemItem.availableAddresses || problemItem.availableAddresses.length === 0"
                        [(ngModel)]="selectedAddress[problemItem.rowId]"
                        placeholder="Enter address..."

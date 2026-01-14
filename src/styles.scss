@@ -5,6 +5,7 @@
 @use 'app/shared/styles/forms';
 @use 'app/shared/styles/components';
 @use 'app/shared/styles/tables';
+@use 'app/shared/styles/mat-select-panels';
 @use 'app/pages/setup/sheet-link/custom-modalbox';
 
 /* Tailwind CSS imports */
@@ -313,10 +314,15 @@ html.theme-dark {
       }
       
       &.mat-selected:not(.mat-mdc-option-multiple) {
-        background-color: rgba(59, 130, 246, 0.1) !important; // primary-500 with 10% opacity - very subtle
+        background-color: rgba(59, 130, 246, 0.1) !important;
         color: var(--color-text-primary) !important;
       }
     }
+  }
+
+  /* Keep default dark theme select panel background */
+  .cdk-overlay-container .mat-mdc-select-panel {
+    background-color: var(--color-surface-secondary) !important;
   }
 
   // Material Autocomplete panel (overlay) dark mode
