@@ -80,22 +80,11 @@
 
 // Enhanced scrollable area with mobile optimizations
 .shifts-scrollable {
-    height: 80vh;
     overflow-y: auto;
     box-sizing: border-box;
     padding-right: 0.5rem;
     scrollbar-width: thin;
     scrollbar-color: var(--accent-600) var(--color-surface-tertiary);
-    
-    @media (max-width: 768px) {
-        height: calc(100vh - 180px); // Account for mobile navigation
-        padding-right: 0.25rem;
-    }
-    
-    @media (max-width: 480px) {
-        height: calc(100vh - 160px);
-        padding-right: 0;
-    }
     
     // Custom scrollbar for webkit browsers
     &::-webkit-scrollbar {
