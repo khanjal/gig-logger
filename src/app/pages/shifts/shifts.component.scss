@@ -35,6 +35,7 @@
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    box-shadow: none; /* remove default/material shadow for shifts quick views */
     
     &:hover {
         transform: translateY(-2px);
@@ -69,6 +70,29 @@
 
 // Enhanced disabled card state
 .mat-card-disabled {
+    background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, color-mix(in srgb, var(--color-text-disabled) 10%, transparent) 100%) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    
+    &:hover {
+        transform: none !important;
+    }
+}
+
+// Local shift card to avoid Material's global mat-card shadow
+.shift-card {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    box-shadow: none !important;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.shift-card-disabled {
     background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, color-mix(in srgb, var(--color-text-disabled) 10%, transparent) 100%) !important;
     opacity: 0.6;
     cursor: not-allowed;

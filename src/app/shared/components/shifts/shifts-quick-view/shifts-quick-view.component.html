@@ -1,5 +1,5 @@
 <!-- Enhanced Mobile-First Shift Quick View (Trips Style, with border and alternating color) -->
-<div class="bg-surface rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
+<div class="bg-surface rounded-xl mb-4 overflow-hidden"
   [ngClass]="{
     'opacity-60 bg-surface-2': shift.action === ActionEnum.Delete,
     'shift-border-saved': shift.saved,
@@ -7,14 +7,14 @@
     'shift-border-update': !shift.saved && shift.action === ActionEnum.Update,
     'shift-border-delete': !shift.saved && shift.action === ActionEnum.Delete,
     'shift-border-other': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete)),
-    'bg-gradient-to-r from-blue-500/5 to-surface': shift.rowId % 2 === 0 && shift.action !== ActionEnum.Delete,
-    'bg-gradient-to-r from-green-500/5 to-surface': shift.rowId % 2 === 1 && shift.action !== ActionEnum.Delete
+    'bg-gradient-to-r from-blue-500/5 to-surface': index % 2 === 0 && shift.action !== ActionEnum.Delete,
+    'bg-gradient-to-r from-green-500/5 to-surface': index % 2 === 1 && shift.action !== ActionEnum.Delete
   }">
   <!-- Header Row -->
   <div class="p-3 border-b border-soft"
     [ngClass]="{
-      'bg-blue-500/10': shift.rowId % 2 === 0,
-      'bg-green-500/10': shift.rowId % 2 === 1
+      'bg-blue-500/10': index % 2 === 0,
+      'bg-green-500/10': index % 2 === 1
     }">
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
       <!-- Status Icon -->
@@ -37,7 +37,7 @@
       <span class="text-base font-bold text-blue-600 dark:text-blue-400 font-mono flex-shrink-0">#{{shift.rowId}}</span>
       <!-- Service Name, Number (flexible, grows) -->
       <span class="font-bold text-primary text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
-  <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
+        <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
@@ -91,7 +91,7 @@
     </div>
     <!-- Toggle Button Bar -->
     <div class="focus-within:ring-0 focus-within:outline-none mt-2">
-      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-tertiary hover:text-primary-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-tertiary hover:text-primary-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0"
               (click)="toggleExpansion()" 
               tabindex="0" 
               [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
@@ -197,8 +197,8 @@
   <!-- Action Bar -->
   <div class="flex items-center justify-between p-3 border-t border-soft"
     [ngClass]="{
-      'bg-blue-500/10': shift.rowId % 2 === 0,
-      'bg-green-500/10': shift.rowId % 2 === 1
+      'bg-blue-500/10': index % 2 === 0,
+      'bg-green-500/10': index % 2 === 1
     }">
     <!-- Edit Button -->
     <button class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 dark:border-blue-700 rounded-lg text-sm font-medium transition"
