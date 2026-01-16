@@ -415,7 +415,6 @@ html.theme-dark {
 
 .custom-modalbox {
   max-width: calc(100vw - 2rem) !important;
-  width: 100% !important;
   
   .mat-mdc-dialog-container .mdc-dialog__surface {
     padding: .25rem;
@@ -424,17 +423,6 @@ html.theme-dark {
     overflow-y: auto;
     background-color: var(--color-surface) !important;
     color: var(--color-text-primary) !important;
-  }
-}
-
-@media (min-width: 768px) {
-  .custom-modalbox {
-    max-width: 600px !important;
-    width: 90% !important;
-    
-    .mat-mdc-dialog-container .mdc-dialog__surface {
-      padding: 1.5rem;
-    }
   }
 }
 

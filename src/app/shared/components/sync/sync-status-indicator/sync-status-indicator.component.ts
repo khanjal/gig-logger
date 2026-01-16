@@ -132,8 +132,6 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       return;
     }
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
-      height: '400px',
-      width: '500px',
       panelClass: 'custom-modalbox',
       data: 'save'
     });
@@ -159,8 +157,6 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
 
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
-      height: '400px',
-      width: '500px',
       panelClass: 'custom-modalbox',
       data: 'load'
     });

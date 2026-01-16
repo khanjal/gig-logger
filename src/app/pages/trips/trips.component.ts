@@ -194,8 +194,6 @@ export class TripComponent implements OnInit, OnDestroy {
 
   async loadSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
         panelClass: 'custom-modalbox',
         data: inputValue
     });
@@ -210,8 +208,6 @@ export class TripComponent implements OnInit, OnDestroy {
   async saveSheetDialog(inputValue: string) {
     this.saving = true;
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
         panelClass: 'custom-modalbox',
         data: inputValue
     });
