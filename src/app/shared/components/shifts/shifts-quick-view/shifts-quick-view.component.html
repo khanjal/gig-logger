@@ -100,8 +100,8 @@
               (keydown.space)="toggleExpansion()"
               [attr.aria-expanded]="isExpanded">
         <span class="flex-1 h-px bg-gray-400 dark:bg-gray-600"></span>
-        <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-        <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
+        <mat-icon class="text-base text-blue-600 dark:text-blue-400">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        <span class="font-normal text-blue-600 dark:text-blue-400">{{isExpanded ? 'Less' : 'More'}} Details</span>
         <span class="flex-1 h-px bg-gray-400 dark:bg-gray-600"></span>
       </button>
     </div>

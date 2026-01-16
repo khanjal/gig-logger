@@ -135,8 +135,8 @@
                 [title]="isExpanded ? 'Hide details' : 'Show details'"
                 (keydown.enter)="toggleExpansion()" 
                 (keydown.space)="toggleExpansion()">
-          <span>{{ isExpanded ? 'Hide' : 'More' }} Details</span>
-          <mat-icon class="text-sm">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <span class="text-blue-600 dark:text-blue-400">{{ isExpanded ? 'Hide' : 'More' }} Details</span>
+          <mat-icon class="text-sm text-blue-600 dark:text-blue-400">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
         </button>
       </div>
     </div>
@@ -159,7 +159,7 @@
       </div>
       <div *ngIf="trip.total && trip.distance > 0" class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
         <div class="text-xs text-secondary mb-1">Rate/Mile</div>
-        <div class="text-sm font-bold text-blue-500">${{(trip.total / trip.distance) | number:'1.2-2'}}</div>
+        <div class="text-sm font-bold text-blue-600 dark:text-blue-400">${{(trip.total / trip.distance) | number:'1.2-2'}}</div>
       </div>
     </div>
     <!-- Payment Breakdown -->
