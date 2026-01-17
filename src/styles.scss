@@ -792,3 +792,22 @@ html.theme-dark .link-color {
     transform-origin: center !important;
   }
 }
+
+/* Force brighter weekday header labels in dark theme for datepickers (overlay) */
+html.theme-dark {
+  .cdk-overlay-container .mat-calendar .mat-calendar-table-header th,
+  .cdk-overlay-container .mat-calendar-table-header th,
+  .mat-calendar-table-header th,
+  .mat-calendar .mat-calendar-table-header th {
+    color: var(--color-text-secondary) !important;
+    opacity: 1 !important;
+  }
+
+  /* Ensure weekday abbreviations and day numbers are readable */
+  .cdk-overlay-container .mat-calendar .mat-calendar-body-label,
+  .mat-calendar .mat-calendar-body-label,
+  .cdk-overlay-container .mat-calendar .mat-calendar-body-cell-content,
+  .mat-calendar .mat-calendar-body-cell-content {
+    color: var(--color-text-primary) !important;
+  }
+}
