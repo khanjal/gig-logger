@@ -92,58 +92,6 @@
   }
 }
 
-// Confirm button styling
-.confirm-button {
-  background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%) !important;
-  color: white !important;
-  border: none !important;
-  
-  &:hover {
-    background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%) !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--success-500) 30%, transparent);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-// Cancel button styling
-.cancel-button {
-  background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, var(--color-border) 100%);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  
-  &:hover {
-    background: linear-gradient(135deg, var(--color-border) 0%, var(--color-surface-tertiary) 100%);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-// Danger/Delete button styling
-.danger-button {
-  background: linear-gradient(135deg, var(--error-500) 0%, var(--error-600) 100%);
-  color: white;
-  border: none;
-  
-  &:hover {
-    background: linear-gradient(135deg, var(--error-600) 0%, var(--error-700) 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--error-500) 30%, transparent);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-}
-
 // Warning icon styling
 .warning-icon {
   font-size: 3rem;
@@ -196,24 +144,6 @@
 
 // Use global modal backdrop styling
 @include modals.setup-modal-backdrop('medium');
-
-// Dark mode support
-:host-context(html.theme-dark) {
-  .confirm-dialog {
-    background: var(--color-surface);
-  }
-
-  .cancel-button {
-    background: color-mix(in srgb, var(--color-surface-2) 60%, transparent);
-    border-color: var(--color-border);
-    color: var(--color-text-primary);
-
-    &:hover {
-      background: color-mix(in srgb, var(--color-surface-2) 75%, transparent);
-      border-color: var(--color-border-light);
-    }
-  }
-}
 
 // Style the Material dialog container to match theme and prevent white corners
 ::ng-deep .mat-mdc-dialog-container {
