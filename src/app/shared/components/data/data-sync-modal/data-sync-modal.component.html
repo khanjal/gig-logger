@@ -2,17 +2,21 @@
     <div class="modal-container rounded-lg shadow-lg w-full max-w-md p-6 flex flex-col bg-white dark:bg-gray-800">
         <div class="bg-gray-900 dark:bg-gray-950 rounded-md p-4 mb-4 text-white font-mono text-sm overflow-y-auto h-80" #terminal>
             <div class="flex mb-1 items-start">
-                <span class="text-green-400 dark:text-green-300 whitespace-nowrap w-10">00:00</span>
-                <span class="ml-2 text-green-400 dark:text-green-300 flex-1">Please wait while your data is {{ type === 'save' ? 'saved' : 'loaded' }}.</span>
+                <span class="text-green-400 whitespace-nowrap w-10">00:00</span>
+                <span class="ml-2 text-green-400 flex-1">Please wait while your data is {{ type === 'save' ? 'saved' : 'loaded' }}.</span>
             </div>
             <div class="flex mb-3 items-start">
-                <span class="text-green-400 dark:text-green-300 whitespace-nowrap w-10">00:00</span>
-                <span class="ml-2 text-green-400 dark:text-green-300 flex-1">Modal will close when complete.</span>
+                <span class="text-green-400 whitespace-nowrap w-10">00:00</span>
+                <span class="ml-2 text-green-400 flex-1">Modal will close when complete.</span>
             </div>
             <ng-container *ngFor="let message of terminalMessages">
                 <div class="flex mb-1 items-start">
-                    <span class="text-green-400 dark:text-green-300 whitespace-nowrap w-10">{{ message.time }}</span>
-                    <span [ngClass]="message.type" class="ml-2 text-green-400 dark:text-green-300 flex-1">{{ message.text }}</span>
+                    <span class="text-green-400 whitespace-nowrap w-10">{{ message.time }}</span>
+                    <span [ngClass]="{
+                        'text-green-400': message.type === 'info',
+                        'text-yellow-400': message.type === 'warning',
+                        'text-red-400': message.type === 'error'
+                    }" class="ml-2 flex-1">{{ message.text }}</span>
                 </div>
             </ng-container>
         </div>

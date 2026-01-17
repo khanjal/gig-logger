@@ -16,23 +16,6 @@ button[disabled] {
     }
 }
 
-// Message type styles used by [ngClass] - override Tailwind classes
-.info {
-    color: var(--success-400) !important;
-    font-weight: 500;
-}
-
-.warning {
-    color: var(--info-400) !important;
-    font-weight: 500;
-}
-
-.error {
-    color: var(--error-400) !important;
-    font-weight: 600;
-    text-shadow: 0 0 2px color-mix(in srgb, var(--error-500) 30%, transparent);
-}
-
 :host-context(html.theme-dark) {
     .modal-container {
         background: var(--color-surface);
