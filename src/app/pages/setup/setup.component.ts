@@ -264,7 +264,7 @@ export class SetupComponent {
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
-    dialogData.trueColor = "warning";
+    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -310,7 +310,7 @@ export class SetupComponent {
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;
-    dialogData.trueColor = "warning";
+    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

@@ -17,10 +17,10 @@ export class ConfirmDialogComponent {
   message!: string;
   trueIcon: string | undefined;
   trueText! :string;
-  trueColor: string = "primary";
+  trueColor: string;
   falseIcon: string | undefined;
   falseText! :string;
-  falseColor: string = "accent";
+  falseColor: string;
 
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IConfirmDialog) {
@@ -28,8 +28,10 @@ export class ConfirmDialogComponent {
     this.title = data.title;
     this.message = data.message;
     this.trueText = data.trueText;
+    this.trueIcon = data.trueIcon;
     this.trueColor = data.trueColor ?? "primary";
     this.falseText = data.falseText;
+    this.falseIcon = data.falseIcon;
     this.falseColor = data.falseColor ?? "accent";
   }
 
