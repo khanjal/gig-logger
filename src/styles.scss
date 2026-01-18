@@ -279,6 +279,19 @@ html.theme-dark {
       }
     }
     
+    // Invalid field styling
+    &.mat-form-field-invalid:not(.mat-focused) .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #ef4444 !important;
+      }
+    }
+    
+    &.mat-form-field-invalid .mat-mdc-floating-label {
+      color: #ef4444 !important;
+    }
+    
     // Placeholder
     .mat-mdc-input-element::placeholder,
     input::placeholder,
