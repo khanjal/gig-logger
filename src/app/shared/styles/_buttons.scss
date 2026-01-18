@@ -497,3 +497,10 @@
   align-items: center;
   justify-content: center;
 }
+
+// Disabled button state styling
+.button-disabled {
+  opacity: 0.5 !important;
+  filter: grayscale(60%);
+  cursor: not-allowed !important;
+}

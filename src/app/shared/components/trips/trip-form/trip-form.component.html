@@ -314,10 +314,10 @@
       <button *ngIf="data?.id" mat-fab extended color="warn" (click)="close()">
         <mat-icon>cancel</mat-icon> Cancel
       </button>
-      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid" [class.button-disabled]="!tripForm.valid">
+      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="tripForm.invalid" [class.button-disabled]="tripForm.invalid">
         <mat-icon>add</mat-icon> Store
       </button>
-      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
+      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="tripForm.invalid" [class.button-disabled]="tripForm.invalid">
         <mat-icon>save</mat-icon> Update
       </button>
     </div>

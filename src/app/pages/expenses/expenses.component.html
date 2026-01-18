@@ -57,10 +57,10 @@
           </button>
         </div>
         <div class="flex gap-2">
-          <button *ngIf="!editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid">
+          <button *ngIf="!editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid" [class.button-disabled]="expenseForm.invalid">
             <mat-icon>add</mat-icon> Store
           </button>
-          <button *ngIf="editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid">
+          <button *ngIf="editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid" [class.button-disabled]="expenseForm.invalid">
             <mat-icon>save</mat-icon> Update
           </button>
         </div>

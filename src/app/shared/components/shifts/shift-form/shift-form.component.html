@@ -128,10 +128,10 @@
         </button>
       </div>
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="!shiftForm.valid">
+        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
           <mat-icon>add</mat-icon> Store
         </button>
-        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="!shiftForm.valid">
+        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
           <mat-icon>save</mat-icon> Update
         </button>
       </div>
