@@ -1,31 +1,31 @@
 <!-- Enhanced Mobile-First Shift Quick View (Trips Style, with border and alternating color) -->
-<div class="bg-white rounded-xl mb-4 overflow-hidden shadow transition-shadow shadow-sm hover:shadow-md"
+<div class="bg-surface rounded-xl mb-4 overflow-hidden"
   [ngClass]="{
-    'opacity-60 bg-gray-50': shift.action === ActionEnum.Delete,
+    'opacity-60 bg-surface-2': shift.action === ActionEnum.Delete,
     'shift-border-saved': shift.saved,
     'shift-border-add': !shift.saved && shift.action === ActionEnum.Add,
     'shift-border-update': !shift.saved && shift.action === ActionEnum.Update,
     'shift-border-delete': !shift.saved && shift.action === ActionEnum.Delete,
     'shift-border-other': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete)),
-    'bg-gradient-to-r from-blue-50 to-white': shift.rowId % 2 === 0 && shift.action !== ActionEnum.Delete,
-    'bg-gradient-to-r from-green-50 to-white': shift.rowId % 2 === 1 && shift.action !== ActionEnum.Delete
+    'bg-gradient-to-r from-blue-500/5 to-surface': index % 2 === 0 && shift.action !== ActionEnum.Delete,
+    'bg-gradient-to-r from-green-500/5 to-surface': index % 2 === 1 && shift.action !== ActionEnum.Delete
   }">
   <!-- Header Row -->
-  <div class="p-3 border-b"
+  <div class="p-3 border-b border-soft"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': shift.rowId % 2 === 0,
-      'bg-green-100 border-green-300': shift.rowId % 2 === 1
+      'bg-blue-500/10': index % 2 === 0,
+      'bg-green-500/10': index % 2 === 1
     }">
     <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
       <!-- Status Icon -->
       <mat-icon class="text-xl flex-shrink-0"
         [ngClass]="{
           'text-gray-400': shift.saved && !duplicateShift,
-          'text-green-500': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
-          'text-blue-500': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
-          'text-red-500': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
-          'text-yellow-500': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
-          'text-orange-500': duplicateShift
+          'text-green-500 dark:text-green-400': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
+          'text-blue-500 dark:text-blue-400': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
+          'text-red-500 dark:text-red-400': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
+          'text-yellow-500 dark:text-yellow-400': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
+          'text-orange-500 dark:text-orange-400': duplicateShift
         }">
         @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
         @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }
@@ -34,64 +34,64 @@
         @else { check_circle }
       </mat-icon>
       <!-- Row ID -->
-      <span class="text-base font-bold text-blue-500 font-mono flex-shrink-0">#{{shift.rowId}}</span>
+      <span class="text-base font-bold text-blue-600 dark:text-blue-400 font-mono flex-shrink-0">#{{shift.rowId}}</span>
       <!-- Service Name, Number (flexible, grows) -->
-      <span class="font-bold text-gray-900 text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
-  <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
+      <span class="font-bold text-primary text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
+        <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
       </span>
       <!-- Total (far right) -->
       <span class="flex items-center gap-1 flex-shrink-0 justify-end">
-        @if (!shift.grandTotal) {<mat-icon class="text-gray-400 text-base">hourglass_empty</mat-icon>}
-        @if (shift.amountPerTime >= 25) {<mat-icon class="text-green-600 text-base">trending_up</mat-icon>}
-        @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-blue-600 text-base">trending_neutral</mat-icon>}
-        @if (shift.amountPerTime < 20) {<mat-icon class="text-red-500 text-base">trending_down</mat-icon>}
+        @if (!shift.grandTotal) {<mat-icon class="text-tertiary text-base">hourglass_empty</mat-icon>}
+        @if (shift.amountPerTime >= 25) {<mat-icon class="text-green-600 dark:text-green-400 text-base">trending_up</mat-icon>}
+        @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-blue-600 dark:text-blue-400 text-base">trending_neutral</mat-icon>}
+        @if (shift.amountPerTime < 20) {<mat-icon class="text-red-600 dark:text-red-400 text-base">trending_down</mat-icon>}
         <span class="font-bold text-sm sm:text-base"
-              [ngClass]="{ 'text-gray-400': !shift.grandTotal, 'text-green-600': shift.amountPerTime >= 25, 'text-blue-600': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-500': shift.amountPerTime < 20 }">
+              [ngClass]="{ 'text-tertiary': !shift.grandTotal, 'text-green-600 dark:text-green-400': shift.amountPerTime >= 25, 'text-blue-600 dark:text-blue-400': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-red-600 dark:text-red-400': shift.amountPerTime < 20 }">
           {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
         </span>
       </span>
     </div>
     <!-- Second line: Date + Time Range + Duration -->
-    <div class="flex items-center justify-between mt-1 text-xs text-gray-700 w-full gap-2">
+    <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2">
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">event</mat-icon>
+        <mat-icon class="text-blue-600 dark:text-blue-400 text-base">event</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:'EEE, MMM d, yy' }} }</span>
       </span>
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">schedule</mat-icon>
+        <mat-icon class="text-blue-600 dark:text-blue-400 text-base">schedule</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.start) { {{ shift.start | noseconds:prefers24Hour }}@if (shift.finish) { - {{ shift.finish | noseconds:prefers24Hour }} } }</span>
       </span>
       <span class="flex items-center gap-1 flex-shrink-0">
-        <mat-icon class="text-blue-400 text-base">timer</mat-icon>
+        <mat-icon class="text-blue-600 dark:text-blue-400 text-base">timer</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.totalTime) { {{shift.totalTime | durationFormat}} }</span>
       </span>
     </div>
     <!-- Divider for visual separation -->
-    <div class="my-2 border-t border-gray-200"></div>
+    <div class="my-2 border-t border-soft"></div>
     <!-- Info Row: trips (left), distance (center), active (right) -->
-    <div class="mt-1 text-xs text-gray-600 truncate text-center flex items-center w-full relative">
+    <div class="mt-1 text-xs text-secondary truncate text-center flex items-center w-full relative">
       @if (shift.totalTrips) {
         <span class="flex items-center gap-1 flex-1 justify-start">
-          <mat-icon class="text-blue-400 text-base">route</mat-icon>
-          <span class="font-mono text-xs text-gray-700">{{shift.totalTrips}} trips</span>
+          <mat-icon class="text-blue-600 dark:text-blue-400 text-base">route</mat-icon>
+          <span class="font-mono text-xs text-primary">{{shift.totalTrips}} trips</span>
         </span>
       }
       @if (shift.totalDistance) {
         <span class="flex items-center gap-1 flex-1 justify-center">
-          <mat-icon class="text-blue-400 text-base">straighten</mat-icon>
-          <span class="font-mono text-xs text-gray-700">{{formatDistance(shift.totalDistance)}}</span>
+          <mat-icon class="text-blue-600 dark:text-blue-400 text-base">straighten</mat-icon>
+          <span class="font-mono text-xs text-primary">{{formatDistance(shift.totalDistance)}}</span>
         </span>
       }
       @if (shift.totalActive) {
         <span class="flex items-center gap-1 flex-1 justify-end">
-          <mat-icon class="text-blue-400 text-base">directions_car</mat-icon>
-          <span class="font-mono text-xs text-gray-700">{{shift.totalActive | durationFormat}} active</span>
+          <mat-icon class="text-blue-600 dark:text-blue-400 text-base">directions_car</mat-icon>
+          <span class="font-mono text-xs text-primary">{{shift.totalActive | durationFormat}} active</span>
         </span>
       }
     </div>
     <!-- Toggle Button Bar -->
     <div class="focus-within:ring-0 focus-within:outline-none mt-2">
-      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-gray-400 hover:text-blue-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0 shadow-none"
+      <button class="w-full flex items-center justify-center gap-2 py-1 text-xs text-tertiary hover:text-primary-500 transition-colors bg-transparent font-medium outline-none ring-0 focus:outline-none focus:ring-0 border-0"
               (click)="toggleExpansion()" 
               tabindex="0" 
               [attr.aria-label]="isExpanded ? 'Hide details' : 'Show details'"
@@ -99,21 +99,21 @@
               (keydown.enter)="toggleExpansion()" 
               (keydown.space)="toggleExpansion()"
               [attr.aria-expanded]="isExpanded">
-        <span class="flex-1 h-px bg-gray-400"></span>
-        <mat-icon class="text-base">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
-        <span class="font-normal">{{isExpanded ? 'Less' : 'More'}} Details</span>
-        <span class="flex-1 h-px bg-gray-400"></span>
+        <span class="flex-1 h-px bg-gray-400 dark:bg-gray-600"></span>
+        <mat-icon class="text-base text-blue-600 dark:text-blue-400">{{isExpanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+        <span class="font-normal text-blue-600 dark:text-blue-400">{{isExpanded ? 'Less' : 'More'}} Details</span>
+        <span class="flex-1 h-px bg-gray-400 dark:bg-gray-600"></span>
       </button>
     </div>
   </div>
   <!-- Details Section -->
   @if (isExpanded) {
-    <div class="p-3 bg-gray-50 border-t">
+    <div class="p-3 bg-surface-2 border-t border-soft">
     <!-- Region Row (moved from summary) -->
     @if (shift.region) {
       <div class="mb-4">
-        <span class="inline-block px-3 py-1 rounded bg-gray-100 text-sm text-gray-700 border border-gray-200 font-medium max-w-full truncate" title="{{shift.region}}">
-          <mat-icon class="text-gray-400 text-base mr-1 align-middle">public</mat-icon>
+        <span class="inline-block px-3 py-1 rounded bg-surface-3 text-sm text-primary border border-soft font-medium max-w-full truncate" title="{{shift.region}}">
+          <mat-icon class="text-gray-400 dark:text-gray-500 text-base mr-1 align-middle">public</mat-icon>
           {{shift.region}}
         </span>
       </div>
@@ -122,15 +122,15 @@
     @if (shift.amountPerTime || (shift.grandTotal && shift.totalDistance)) {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         @if (shift.amountPerTime) {
-          <div class="text-center p-2 bg-white rounded-lg border">
-            <div class="text-xs text-gray-500 mb-1">Rate/Hr</div>
-            <div class="text-sm font-bold text-green-600">${{shift.amountPerTime | number:'1.2-2'}}</div>
+          <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
+            <div class="text-xs text-secondary mb-1">Rate/Hr</div>
+            <div class="text-sm font-bold text-green-600 dark:text-green-400">${{shift.amountPerTime | number:'1.2-2'}}</div>
           </div>
         }
         @if (shift.grandTotal && shift.totalDistance) {
-          <div class="text-center p-2 bg-white rounded-lg border">
-            <div class="text-xs text-gray-500 mb-1">Rate/Mile</div>
-            <div class="text-sm font-bold text-blue-600">${{(shift.grandTotal / shift.totalDistance) | number:'1.2-2'}}</div>
+          <div class="text-center p-2 bg-surface-3 rounded-lg border border-soft">
+            <div class="text-xs text-secondary mb-1">Rate/Mile</div>
+            <div class="text-sm font-bold text-blue-600 dark:text-blue-400">${{(shift.grandTotal / shift.totalDistance) | number:'1.2-2'}}</div>
           </div>
         }
       </div>
@@ -138,41 +138,41 @@
     <!-- Payment Breakdown -->
     @if (shift.totalPay || shift.totalTips || shift.totalBonus || shift.totalCash) {
       <div class="mb-4">
-        <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-          <mat-icon class="text-blue-400 text-base">payments</mat-icon>
+        <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
+          <mat-icon class="text-blue-400 dark:text-blue-300 text-base">payments</mat-icon>
           Payment Details
         </h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
           @if (shift.totalPay) {
-            <div class="flex justify-between p-2 bg-white rounded border">
-              <span class="text-xs text-gray-600">Pay</span>
-              <span class="text-sm font-bold">{{shift.totalPay | currency}}</span>
+            <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+              <span class="text-xs text-secondary">Pay</span>
+              <span class="text-sm font-bold text-primary">{{shift.totalPay | currency}}</span>
             </div>
           }
           @if (shift.totalTips) {
-            <div class="flex justify-between p-2 bg-white rounded border">
-              <span class="text-xs text-gray-600">Tip</span>
-              <span class="text-sm font-bold">{{shift.totalTips | currency}}</span>
+            <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+              <span class="text-xs text-secondary">Tip</span>
+              <span class="text-sm font-bold text-primary">{{shift.totalTips | currency}}</span>
             </div>
           }
           @if (shift.totalBonus) {
-            <div class="flex justify-between p-2 bg-white rounded border">
-              <span class="text-xs text-gray-600">Bonus</span>
-              <span class="text-sm font-bold">{{shift.totalBonus | currency}}</span>
+            <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+              <span class="text-xs text-secondary">Bonus</span>
+              <span class="text-sm font-bold text-primary">{{shift.totalBonus | currency}}</span>
             </div>
           }
           @if (shift.totalCash) {
-            <div class="flex justify-between p-2 bg-white rounded border">
-              <span class="text-xs text-gray-600">Cash</span>
+            <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+              <span class="text-xs text-secondary">Cash</span>
               <span class="text-sm font-bold">{{shift.totalCash | currency}}</span>
             </div>
           }
         </div>
         @if (shift.grandTotal) {
-          <div class="mt-2 p-2 bg-green-50 rounded border border-green-200">
+          <div class="mt-2 p-2 bg-success-500/10 rounded border border-success-200 dark:border-success-700">
             <div class="flex justify-between items-center">
-              <span class="text-sm font-semibold text-green-700">Total</span>
-              <span class="text-lg font-bold text-green-700">{{shift.grandTotal | currency}}</span>
+              <span class="text-sm font-semibold text-green-700 dark:text-green-400">Total</span>
+              <span class="text-lg font-bold text-green-700 dark:text-green-400">{{shift.grandTotal | currency}}</span>
             </div>
           </div>
         }
@@ -180,12 +180,12 @@
     }
     <!-- Note -->
     @if (shift.note) {
-      <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-        <h3 class="text-sm font-semibold text-yellow-800 mb-2 flex items-center gap-2">
-          <mat-icon class="text-yellow-600 text-base">format_quote</mat-icon>
+      <div class="p-3 bg-warning-500/10 rounded-lg border border-warning-200 dark:border-warning-700">
+        <h3 class="text-sm font-semibold text-yellow-800 dark:text-yellow-300 mb-2 flex items-center gap-2">
+          <mat-icon class="text-yellow-600 dark:text-yellow-400 text-base">format_quote</mat-icon>
           Note
         </h3>
-        <p class="text-sm text-yellow-700 italic">{{shift.note}}</p>
+        <p class="text-sm text-yellow-700 dark:text-yellow-300 italic">{{shift.note}}</p>
       </div>
     }
     <!-- Trips Table -->
@@ -195,13 +195,13 @@
     </div>
   }
   <!-- Action Bar -->
-  <div class="flex items-center justify-between p-3 border-t"
+  <div class="flex items-center justify-between p-3 border-t border-soft"
     [ngClass]="{
-      'bg-blue-100 border-blue-300': shift.rowId % 2 === 0,
-      'bg-green-100 border-green-300': shift.rowId % 2 === 1
+      'bg-blue-500/10': index % 2 === 0,
+      'bg-green-500/10': index % 2 === 1
     }">
     <!-- Edit Button -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium transition"
+    <button class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 dark:border-blue-700 rounded-lg text-sm font-medium transition"
       (click)="editShift()" 
       [disabled]="!canEditShift()"
       [class.cursor-not-allowed]="!canEditShift()"
@@ -209,13 +209,13 @@
       [class.grayscale]="!canEditShift()"
       [attr.aria-label]="'Edit shift'"
       [attr.title]="'Edit shift'">
-      <mat-icon class="text-blue-500 text-base">edit</mat-icon>
+      <mat-icon class="text-blue-500 dark:text-blue-400 text-base">edit</mat-icon>
       <span class="hidden sm:inline">Edit</span>
     </button>
     <!-- Center Action Buttons (none for now) -->
     <div class="flex gap-2"></div>
     <!-- Delete Button -->
-    <button class="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium transition"
+    <button class="flex items-center gap-2 px-3 py-2 bg-error-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-700 rounded-lg text-sm font-medium transition"
       [class.cursor-not-allowed]="!canDeleteShift()"
       [class.opacity-50]="!canDeleteShift()"
       [class.grayscale]="!canDeleteShift()"

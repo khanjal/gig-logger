@@ -9,7 +9,7 @@
     
     &:hover {
         transform: scale(0.95);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-light);
     }
     
     @media (max-width: 768px) {
@@ -35,17 +35,18 @@
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    box-shadow: none; /* remove default/material shadow for shifts quick views */
     
     &:hover {
         transform: translateY(-2px);
     }
 
     &:nth-child(even){
-        background: linear-gradient(135deg, $primary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, var(--color-surface) 100%);
     }
 
     &:nth-child(odd){
-        background: linear-gradient(135deg, $secondary-50 0%, rgba(255, 255, 255, 0.8) 100%);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--secondary-500) 10%, transparent) 0%, var(--color-surface) 100%);
     }
     
     @media (max-width: 768px) {
@@ -69,7 +70,30 @@
 
 // Enhanced disabled card state
 .mat-card-disabled {
-    background: linear-gradient(135deg, $disabled-color 0%, rgba(128, 128, 128, 0.1) 100%) !important;
+    background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, color-mix(in srgb, var(--color-text-disabled) 10%, transparent) 100%) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    
+    &:hover {
+        transform: none !important;
+    }
+}
+
+// Local shift card to avoid Material's global mat-card shadow
+.shift-card {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    box-shadow: none !important;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.shift-card-disabled {
+    background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, color-mix(in srgb, var(--color-text-disabled) 10%, transparent) 100%) !important;
     opacity: 0.6;
     cursor: not-allowed;
     
@@ -80,22 +104,11 @@
 
 // Enhanced scrollable area with mobile optimizations
 .shifts-scrollable {
-    height: 80vh;
     overflow-y: auto;
     box-sizing: border-box;
     padding-right: 0.5rem;
     scrollbar-width: thin;
-    scrollbar-color: $accent-color $background-light;
-    
-    @media (max-width: 768px) {
-        height: calc(100vh - 180px); // Account for mobile navigation
-        padding-right: 0.25rem;
-    }
-    
-    @media (max-width: 480px) {
-        height: calc(100vh - 160px);
-        padding-right: 0;
-    }
+    scrollbar-color: var(--accent-600) var(--color-surface-tertiary);
     
     // Custom scrollbar for webkit browsers
     &::-webkit-scrollbar {
@@ -111,16 +124,16 @@
     }
     
     &::-webkit-scrollbar-track {
-        background: $background-light;
+        background: var(--color-surface-tertiary);
         border-radius: 4px;
     }
     
     &::-webkit-scrollbar-thumb {
-        background: $accent-color;
+        background: var(--accent-600);
         border-radius: 4px;
         
         &:hover {
-            background: $accent-600;
+            background: var(--accent-600);
         }
     }
 }

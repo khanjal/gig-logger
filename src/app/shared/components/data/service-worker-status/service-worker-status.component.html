@@ -1,12 +1,12 @@
-<div class="mb-2 text-gray-700">
+<div class="mb-2">
   Service Worker Status:
-  <strong 
+  <strong
     [ngClass]="{
-      'text-blue-700': serviceWorkerStatus === 'Active',
-      'text-yellow-700': serviceWorkerStatus.includes('Update'),
-      'text-red-700': serviceWorkerStatus != 'Active' && !serviceWorkerStatus.includes('Update')
+      'text-blue-700 dark:text-blue-400': serviceWorkerStatus === 'Active',
+      'text-yellow-700 dark:text-yellow-400': serviceWorkerStatus.includes('Update'),
+      'text-red-700 dark:text-red-400': serviceWorkerStatus != 'Active' && !serviceWorkerStatus.includes('Update')
     }"
-    class="font-semibold"
+    class="font-semibold text-gray-800 dark:text-gray-50"
   >
     {{ serviceWorkerStatus }}
   </strong>

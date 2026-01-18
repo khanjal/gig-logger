@@ -15,28 +15,28 @@
   .address-input {
     width: 100%;
     padding: 0.875rem 1rem;
-    border: 2px solid $border-light;
+    border: 2px solid var(--color-border);
     border-radius: 0.75rem;
     font-size: 1rem;
-    background: $surface-color;
-    color: $text-primary;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
     transition: all 0.3s ease;
     outline: none;
     
     &::placeholder {
-      color: $text-secondary;
+      color: var(--color-text-secondary);
       opacity: 1;
     }
     
     &:focus {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
-      background: $surface-color;
+      border-color: var(--primary-600);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
+      background: var(--color-surface);
     }
     
     &:disabled {
-      background: $background-secondary;
-      color: $text-disabled;
+      background: var(--color-surface-secondary);
+      color: var(--color-text-disabled);
       cursor: not-allowed;
     }
     
@@ -53,7 +53,7 @@
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: $primary-color;
+    color: var(--primary-600);
     
     @media (min-width: 768px) {
       right: 1.25rem;
@@ -68,10 +68,10 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: $surface-color;
-  border: 1px solid $border-light;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px $shadow-medium, 0 2px 6px $shadow-light;
+  box-shadow: var(--shadow-heavy);
   margin-top: 0.25rem;
   max-height: 12rem;
   overflow-y: auto;
@@ -82,16 +82,16 @@
   }
   
   &::-webkit-scrollbar-track {
-    background: $background-secondary;
+    background: var(--color-surface-secondary);
     border-radius: 3px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, $primary-color, $accent-color);
+    background: linear-gradient(45deg, var(--primary-600), var(--accent-600));
     border-radius: 3px;
     
     &:hover {
-      background: linear-gradient(45deg, $primary-600, $accent-600);
+      background: linear-gradient(45deg, var(--primary-700), var(--accent-700));
     }
   }
   
@@ -99,7 +99,7 @@
     padding: 0.875rem 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -109,16 +109,16 @@
     }
     
     &:hover {
-      background: linear-gradient(135deg, $primary-50 0%, $accent-50 100%);
-      color: $primary-700;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, color-mix(in srgb, var(--accent-500) 10%, transparent) 100%);
+      color: var(--primary-700);
     }
     
     &:active {
-      background: linear-gradient(135deg, $primary-100 0%, $accent-100 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 20%, transparent) 0%, color-mix(in srgb, var(--accent-500) 20%, transparent) 100%);
     }
     
     .suggestion-icon {
-      color: $primary-color;
+      color: var(--primary-600);
       font-size: 1.125rem;
       flex-shrink: 0;
     }
@@ -126,7 +126,7 @@
     .suggestion-text {
       flex: 1;
       font-size: 0.875rem;
-      color: $text-primary;
+      color: var(--color-text-primary);
       
       .suggestion-main {
         font-weight: 500;
@@ -135,7 +135,7 @@
       
       .suggestion-secondary {
         font-size: 0.75rem;
-        color: $text-secondary;
+        color: var(--color-text-secondary);
       }
     }
     
@@ -164,13 +164,13 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: #f5f5f5;
+  background: var(--color-surface-tertiary);
   padding: 8px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-light);
   border-top: none;
   border-radius: 0 0 4px 4px;
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
   z-index: 1000;
   margin-top: -1rem;
 }
@@ -180,24 +180,24 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-top: none;
   border-radius: 0 0 4px 4px;
   max-height: 300px;
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-medium);
   margin-top: -1rem;
 }
 
 .suggestion-item {
   padding: 12px 16px;
   cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border-light);
   
   &:hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-surface-tertiary);
   }
   
   &:last-child {
@@ -207,32 +207,32 @@
 
 .suggestion-main {
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-primary);
   margin-bottom: 4px;
 }
 
 .suggestion-secondary {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 // Address Validation States
 .address-input-container {
   &.valid {
     .address-input {
-      border-color: $success-color;
+      border-color: var(--success-500);
     }
   }
   
   &.invalid {
     .address-input {
-      border-color: $danger-color;
+      border-color: var(--error-500);
     }
   }
   
   &.warning {
     .address-input {
-      border-color: $warn-color;
+      border-color: var(--warning-500);
     }
   }
 }
@@ -246,15 +246,15 @@
   gap: 0.5rem;
   
   &.success {
-    color: $success-color;
+    color: var(--success-500);
   }
   
   &.error {
-    color: $danger-color;
+    color: var(--error-500);
   }
   
   &.warning {
-    color: $warn-color;
+    color: var(--warning-500);
   }
   
   .validation-icon {

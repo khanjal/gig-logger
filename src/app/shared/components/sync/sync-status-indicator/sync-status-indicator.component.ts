@@ -1,16 +1,19 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
 import { PollingService } from '@services/polling.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
+import { ThemePreference, ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -20,13 +23,15 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatMenuModule,
-    MatBadgeModule
+    MatBadgeModule,
+    OverlayModule,
+    QuickControlsComponent
   ],
   templateUrl: './sync-status-indicator.component.html',
   styleUrls: ['./sync-status-indicator.component.scss']
 })
 export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
+  @Input() mode: 'button' | 'panel' = 'button';
   private destroy$ = new Subject<void>();
   private intervalId?: number;
   
@@ -35,12 +40,21 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   timeSinceLastSync = 'Never';
   showDetailedView = false;
   hasUnsavedChanges = false;
+  menuOpen = false;
+  autoSaveEnabled = false;
+  themePreference: ThemePreference = 'system';
+  overlayPositions: ConnectedPosition[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
+  ];
 
   constructor(
     private syncStatusService: SyncStatusService,
     private pollingService: PollingService,
     private unsavedDataService: UnsavedDataService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +64,9 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       .subscribe(state => {
         this.syncState = state;
         this.updateTimeSinceLastSync();
+        // Check for unsaved changes when sync state changes
+        this.checkUnsavedChanges();
+        this.autoSaveEnabled = this.pollingService.isPollingEnabled();
       });
 
     // Subscribe to messages
@@ -59,24 +76,62 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.messages = messages;
       });
 
-    // Update time display and check for unsaved changes every 30 seconds
+    // Track theme preference
+    this.themePreference = this.themeService.currentPreference;
+    this.themeService.preferenceChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(pref => this.themePreference = pref);
+
+    // Update time display and check for unsaved changes every 5 seconds for better responsiveness
     this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
       this.checkUnsavedChanges();
-    }, 30000);
+      this.autoSaveEnabled = this.pollingService.isPollingEnabled();
+    }, 5000);
     
     // Initial check for unsaved changes
     this.checkUnsavedChanges();
+  }
+
+  async toggleAutoSave(enabled: boolean): Promise<void> {
+    this.autoSaveEnabled = enabled;
+    if (enabled) {
+      await this.pollingService.startPolling();
+    } else {
+      this.pollingService.stopPolling();
+    }
+  }
+
+  setTheme(preference: ThemePreference): void {
+    this.themeService.setTheme(preference);
+    this.themePreference = preference;
+  }
+
+  toggleMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 
   private async checkUnsavedChanges(): Promise<void> {
     this.hasUnsavedChanges = await this.unsavedDataService.hasUnsavedData();
   }
 
-  async forceSync(): Promise<void> {
+  async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
+    await this.checkUnsavedChanges();
+    if (this.hasUnsavedChanges) {
+      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
-      height: '400px',
-      width: '500px',
       panelClass: 'custom-modalbox',
       data: 'save'
     });
@@ -89,9 +144,19 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   async updateFromSpreadsheet(): Promise<void> {
+    // Safety check: prevent update if there are unsaved changes
+    await this.checkUnsavedChanges();
+    if (this.hasUnsavedChanges) {
+      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
-      height: '400px',
-      width: '500px',
       panelClass: 'custom-modalbox',
       data: 'load'
     });
@@ -189,6 +254,19 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     };
     
     return operationLabels[this.syncState.operation] || '';
+  }
+
+  getNextCheckText(): string {
+    if (!this.pollingService.isPollingEnabled()) {
+      return '-';
+    }
+
+    const next = this.syncState?.nextSyncIn;
+    if (!next || next <= 0) {
+      return '-';
+    }
+
+    return `in ${next}s`;
   }
 
   toggleDetailedView(): void {

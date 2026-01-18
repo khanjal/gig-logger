@@ -6,11 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
-import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { DiagnosticHelper } from '@helpers/diagnostic.helper';
@@ -26,15 +27,17 @@ import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
+import { PollingService } from '@services/polling.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
-import { IPlace } from '@interfaces/place.interface';
 import { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import { DiagnosticGroupComponent } from './diagnostic-group/diagnostic-group.component';
+import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.component';
 
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DurationFormatPipe],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DiagnosticGroupComponent, DiagnosticItemComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
@@ -56,7 +59,8 @@ export class DiagnosticsComponent implements OnInit {
     private _regionService: RegionService,
     private _logger: LoggerService,
     private _gigCalculator: GigCalculatorService,
-    private _gigWorkflow: GigWorkflowService
+    private _gigWorkflow: GigWorkflowService,
+    private _pollingService: PollingService
   ) { }
 
   ngOnInit() {
@@ -363,6 +367,9 @@ export class DiagnosticsComponent implements OnInit {
     }
 
     await DiagnosticHelper.recomputeGroupCounts(itemType, group, this._tripService, this._shiftService);
+
+    // Disable autosave after making data fixes to avoid unintended background syncs
+    this.disableAutoSave();
   }
 
   async fixShiftDuration(shift: IShift) {
@@ -373,6 +380,7 @@ export class DiagnosticsComponent implements OnInit {
     await this._shiftService.update([shift]);
     (shift as any).fixed = true;
     this.decrementDiagnosticCount('Shifts Missing Time Duration');
+    this.disableAutoSave();
   }
 
   async fixTripDuration(trip: ITrip) {
@@ -380,11 +388,14 @@ export class DiagnosticsComponent implements OnInit {
     
     (trip as any).fixed = true;
     this.decrementDiagnosticCount('Trips Missing Duration');
+    this.disableAutoSave();
   }
 
   async bulkFixShiftDurations() {
     this.isBulkFixing = true;
     try {
+      // Ensure autosave is disabled before long-running batch updates
+      this.disableAutoSave();
       const shifts = await this._shiftService.list();
       const shiftsToFix = DiagnosticHelper.findShiftsWithoutDuration(shifts);
       
@@ -406,6 +417,8 @@ export class DiagnosticsComponent implements OnInit {
   async bulkFixTripDurations() {
     this.isBulkFixing = true;
     try {
+      // Ensure autosave is disabled before long-running batch updates
+      this.disableAutoSave();
       const trips = await this._tripService.list();
       const tripsToFix = DiagnosticHelper.findTripsWithoutDuration(trips);
       
@@ -424,6 +437,7 @@ export class DiagnosticsComponent implements OnInit {
     trip.addressApplied = true;
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
+    this.disableAutoSave();
   }
 
   async createShiftFromTrip(trip: ITrip) {
@@ -438,6 +452,7 @@ export class DiagnosticsComponent implements OnInit {
       const tripsWithSameKey = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
       tripsWithSameKey.forEach((t: ITrip) => (t as any).fixed = true);
       diagnostic.count -= tripsWithSameKey.length;
+    this.disableAutoSave();
     }
   }
 
@@ -467,5 +482,30 @@ export class DiagnosticsComponent implements OnInit {
     
     (shift as any).markedForDelete = true;
     this.selectedShiftToDelete[groupIndex] = undefined as any;
+    this.disableAutoSave();
+  }
+
+  /**
+   * Stop runtime polling and persist preference disabled, wrapped in safe try/catch.
+   */
+  private disableAutoSave(): void {
+    try {
+      this._pollingService.stopPolling();
+    } catch (e) {
+      if (this._logger && typeof (this._logger as any).warn === 'function') {
+        (this._logger as any).warn('Failed to stop polling when disabling autosave', e);
+      } else {
+        console.warn('Failed to stop polling when disabling autosave', e);
+      }
+    }
+    try {
+      localStorage.setItem('pollingEnabled', JSON.stringify(false));
+    } catch (e) {
+      if (this._logger && typeof (this._logger as any).warn === 'function') {
+        (this._logger as any).warn('Failed to persist polling preference', e);
+      } else {
+        console.warn('Failed to persist polling preference', e);
+      }
+    }
   }
 }

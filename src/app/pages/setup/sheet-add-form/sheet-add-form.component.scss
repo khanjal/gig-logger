@@ -1,7 +1,7 @@
 @use 'color-vars' as *;
 
 .sheet-form {
-    background-color: $background-color;
+    background-color: var(--color-surface-card);
     min-width: 100px;
     max-width: 750px;
     margin: 0 auto;

@@ -1,0 +1,7 @@
+// Dark mode specific overrides for shift form
+:host-context(html.theme-dark) {
+  // Fix mat-slide-toggle label text color in dark mode
+  ::ng-deep .mat-mdc-slide-toggle label {
+    color: var(--color-text-primary) !important;
+  }
+}

@@ -1,0 +1,58 @@
+// Minimal: rely on Tailwind utilities; add a few theme-aware tweaks
+.quick-theme-button {
+	border-radius: 0.5rem;
+	border: 1px solid var(--color-border-light);
+	background: var(--color-surface);
+	color: var(--color-text-primary);
+}
+
+.quick-theme-button.active {
+	background: var(--primary-600);
+	color: var(--color-text-inverse);
+	border-color: var(--primary-600);
+}
+
+.mat-mdc-slide-toggle.mat-primary .mdc-switch__track::before,
+.mat-mdc-slide-toggle.mat-primary .mdc-switch__track::after {
+	background-color: var(--primary-600);
+}
+
+:host-context(html.theme-dark) {
+	.quick-theme-button {
+		border-color: var(--color-border);
+		background: var(--color-surface-2);
+		color: var(--color-text-primary);
+	}
+
+	.quick-theme-button.active {
+		background: var(--primary-600);
+		color: var(--color-text-inverse);
+		border-color: var(--primary-600);
+	}
+}
+
+.theme-cycle-btn {
+	border-radius: 0.75rem !important;
+	border: 1px solid rgba(59, 130, 246, 0.3) !important; /* blue-500 */
+	background: rgba(59, 130, 246, 0.12) !important;
+	color: rgb(30, 64, 175) !important; /* blue-800 */
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+	&:hover {
+		background: rgba(59, 130, 246, 0.18) !important;
+		border-color: rgba(59, 130, 246, 0.5) !important;
+	}
+}
+
+:host-context(html.theme-dark) {
+	.theme-cycle-btn {
+		border-color: rgba(147, 197, 253, 0.5) !important; /* blue-200 */
+		background: rgba(59, 130, 246, 0.22) !important;
+		color: rgb(219, 234, 254) !important; /* blue-100 */
+
+		&:hover {
+			background: rgba(59, 130, 246, 0.3) !important;
+			border-color: rgba(147, 197, 253, 0.7) !important;
+		}
+	}
+}

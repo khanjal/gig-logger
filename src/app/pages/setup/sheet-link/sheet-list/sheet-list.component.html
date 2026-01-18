@@ -1,37 +1,37 @@
-<div class="sheet-list-container">
+<div class="sheet-list-container bg-surface text-primary">
   <div class="content-area">
     <!-- Loading State -->
     <div *ngIf="loading" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading sheets...</p>
+      <p class="text-secondary">Loading sheets...</p>
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading && sheets.length === 0" class="empty-state">
-      <mat-icon class="empty-icon">description</mat-icon>
-      <h3>No sheets found</h3>
-      <p>No sheets available to select.</p>
+    <div *ngIf="!loading && sheets.length === 0" class="empty-state text-center">
+      <mat-icon class="empty-icon text-secondary">description</mat-icon>
+      <h3 class="text-primary">No sheets found</h3>
+      <p class="text-secondary">No sheets available to select.</p>
     </div>
 
     <!-- Sheet List -->
     <div *ngIf="!loading && sheets.length > 0" class="sheets-grid">
-      <mat-card 
-        *ngFor="let sheet of sheets; trackBy: trackBySheetId" 
-        class="sheet-card"
+      <mat-card
+        *ngFor="let sheet of sheets; trackBy: trackBySheetId"
+        class="sheet-card bg-surface-2 border-soft hover:shadow-md transition"
         [class.selected]="selectedSheet?.id === sheet.id"
         (click)="selectSheet(sheet)">
-        
+
         <mat-card-content>
-          <div class="sheet-header">
-            <mat-icon class="sheet-icon">description</mat-icon>
+          <div class="sheet-header flex items-center gap-3">
+            <mat-icon class="sheet-icon text-secondary">description</mat-icon>
             <div class="sheet-info">
-              <h3 class="sheet-name">{{ sheet.name | truncate:30 }}</h3>
+              <h3 class="sheet-name text-primary" [title]="sheet.name" [matTooltip]="sheet.name" matTooltipPosition="above">{{ sheet.name | truncate:30 }}</h3>
             </div>
           </div>
-          
+
           <!-- Selection indicator -->
           <div class="selection-indicator" *ngIf="selectedSheet?.id === sheet.id">
-            <mat-icon>check_circle</mat-icon>
+            <mat-icon class="text-primary">check_circle</mat-icon>
           </div>
         </mat-card-content>
       </mat-card>
@@ -39,8 +39,8 @@
   </div>
 
   <!-- Fixed bottom buttons -->
-  <div class="button-container">
-    <div class="flex justify-between items-center">
+  <div class="button-container bg-surface border-t border-[var(--color-border-light)]">
+    <div class="flex justify-between items-center p-3">
       <button mat-fab extended color="warn" (click)="cancel()">
         <mat-icon>refresh</mat-icon> Cancel
       </button>  

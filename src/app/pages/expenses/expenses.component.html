@@ -1,7 +1,7 @@
 <div id="expenses-top"></div>
 <div class="container mx-auto p-4 max-w-4xl">
   <div class="flex flex-wrap gap-3 items-center justify-between">
-    <h1 class="text-2xl font-bold text-blue-700 flex-1">Expenses</h1>
+    <h1 class="text-2xl font-bold flex-1">Expenses</h1>
     <div class="flex gap-2">
       <button *ngIf="unsavedData && !(showAddForm || editingExpenseId)" mat-mini-fab color="accent" class="save-button !w-10 !h-10" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()" title="Save Changes">
         <mat-icon>save</mat-icon>
@@ -16,7 +16,7 @@
   </div>
 
   <div *ngIf="showAddForm || editingExpenseId" class="my-4">
-    <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-lg shadow mb-4">
+    <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-6 rounded-lg shadow mb-4">
       <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
         <mat-form-field class="w-full" appearance="outline">
           <mat-label>Row ID</mat-label>
@@ -57,10 +57,10 @@
           </button>
         </div>
         <div class="flex gap-2">
-          <button *ngIf="!editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid">
+          <button *ngIf="!editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid" [class.button-disabled]="expenseForm.invalid">
             <mat-icon>add</mat-icon> Store
           </button>
-          <button *ngIf="editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid">
+          <button *ngIf="editingExpenseId" mat-fab extended color="primary" type="submit" [disabled]="expenseForm.invalid" [class.button-disabled]="expenseForm.invalid">
             <mat-icon>save</mat-icon> Update
           </button>
         </div>
@@ -71,22 +71,22 @@
   <div *ngIf="!(showAddForm || editingExpenseId)" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
     <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-blue-800">{{ year.key }}</h2>
-        <div class="text-right text-lg font-semibold text-blue-900">
+        <h2 class="text-xl font-bold text-blue-800 dark:text-blue-300">{{ year.key }}</h2>
+        <div class="text-right text-lg font-semibold text-blue-900 dark:text-blue-300">
           Year Total: {{ getYearTotal(year.value) | currency }}
         </div>
       </div>
       <div *ngFor="let month of (year.value | groupByMonth | keyvalue:sortByMonth)">
         <div class="flex items-end justify-between mb-0 py-1">
-          <h3 class="text-lg font-bold text-blue-700 pb-0">{{ month.key | date:'MMMM yyyy' }}</h3>
-          <div class="text-right text-base font-semibold text-blue-900 mb-2">
+          <h3 class="text-lg font-bold text-blue-700 dark:text-blue-300 pb-0">{{ month.key | date:'MMMM yyyy' }}</h3>
+          <div class="text-right text-base font-semibold text-blue-900 dark:text-blue-300 mb-2">
             Total: {{ getMonthTotal(month.value) | currency }}
           </div>
         </div>
         <div class="overflow-x-auto">
-          <table class="min-w-full bg-white rounded-lg shadow mb-8">
+          <table class="min-w-full bg-surface rounded-lg shadow mb-8">
             <thead>
-              <tr class="bg-blue-100">
+              <tr class="bg-primary-500/20">
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Name</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
@@ -96,7 +96,7 @@
             </thead>
             <tbody>
               <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
-                <tr class="even:bg-gray-50" [class.!bg-yellow-100]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
+                <tr class="even:bg-gray-50 dark:even:bg-slate-800/50" [class.!bg-warning-500/20]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
                     {{ expense.date | date:'EEE M/d' }}
                   </td>

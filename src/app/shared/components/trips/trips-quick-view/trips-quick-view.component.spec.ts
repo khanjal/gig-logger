@@ -4,15 +4,29 @@ import { TripsQuickViewComponent } from './trips-quick-view.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
+import { GigWorkflowService } from '@services/gig-workflow.service';
+import { TripService } from '@services/sheets/trip.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { Router } from '@angular/router';
 
 describe('TripsQuickViewComponent', () => {
   let component: TripsQuickViewComponent;
   let fixture: ComponentFixture<TripsQuickViewComponent>;
+  const mockGig = jasmine.createSpyObj('GigWorkflowService', ['updateTripDuration','calculateShiftTotals']);
+  const mockTrip = jasmine.createSpyObj('TripService', ['update','clone','addNext','deleteItem','getByRowId']);
+  const mockShift = jasmine.createSpyObj('ShiftService', ['query','queryShiftByKey','update']);
+  const mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, TripsQuickViewComponent, NoSecondsPipe, ShortAddressPipe, TruncatePipe],
-      providers: [...commonTestingProviders]
+      providers: [
+        ...commonTestingProviders,
+        { provide: GigWorkflowService, useValue: mockGig },
+        { provide: TripService, useValue: mockTrip },
+        { provide: ShiftService, useValue: mockShift },
+        { provide: Router, useValue: mockRouter }
+      ]
     })
     .compileComponents();
 
@@ -23,5 +37,24 @@ describe('TripsQuickViewComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('computes stripe parity correctly and toggles expansion', () => {
+    component.index = 1;
+    expect(component.isEvenStripe).toBeFalse();
+    component.index = 2;
+    expect(component.isEvenStripe).toBeTrue();
+    component.stripeEven = true;
+    expect(component.isEvenStripe).toBeTrue();
+
+    component.isExpanded = false;
+    component.toggleExpansion();
+    expect(component.isExpanded).toBeTrue();
+  });
+
+  it('navigates on editTrip', async () => {
+    component.trip = { rowId: 123 } as any;
+    await component.editTrip();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/trips/edit', component.trip.rowId]);
   });
 });

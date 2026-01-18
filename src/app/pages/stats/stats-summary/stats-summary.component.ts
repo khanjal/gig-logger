@@ -39,7 +39,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   @Input() endDate?: string;
 
   private readonly dialogConfig = {
-    height: '600px',
+    height: '550px',
     width: '600px',
     panelClass: 'custom-modalbox'
   } as const;

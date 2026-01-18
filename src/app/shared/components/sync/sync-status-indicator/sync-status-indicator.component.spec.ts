@@ -3,7 +3,9 @@ import { SyncStatusIndicatorComponent } from './sync-status-indicator.component'
 import { SyncStatusService } from '@services/sync-status.service';
 import { PollingService } from '@services/polling.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
+import { ThemeService, ThemePreference } from '@services/theme.service';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -14,25 +16,35 @@ describe('SyncStatusIndicatorComponent', () => {
   let pollingSpy: jasmine.SpyObj<PollingService>;
   let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
+  let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
+  let themeSpy: jasmine.SpyObj<ThemeService>;
   let syncState$: BehaviorSubject<any>;
   let messages$: BehaviorSubject<any[]>;
+  let preference$: BehaviorSubject<ThemePreference>;
 
   beforeEach(async () => {
     syncState$ = new BehaviorSubject({ status: 'idle', message: 'Ready', progress: 0 });
     messages$ = new BehaviorSubject<any[]>([]);
+    preference$ = new BehaviorSubject<ThemePreference>('system');
     
     syncStatusSpy = jasmine.createSpyObj('SyncStatusService', ['clearMessages', 'getTimeSinceLastSync']);
     Object.defineProperty(syncStatusSpy, 'syncState$', { value: syncState$.asObservable() });
     Object.defineProperty(syncStatusSpy, 'messages$', { value: messages$.asObservable() });
     syncStatusSpy.getTimeSinceLastSync.and.returnValue('2 min ago');
 
-    pollingSpy = jasmine.createSpyObj('PollingService', ['isPollingEnabled']);
+    pollingSpy = jasmine.createSpyObj('PollingService', ['isPollingEnabled', 'startPolling', 'stopPolling']);
     pollingSpy.isPollingEnabled.and.returnValue(true);
+    pollingSpy.startPolling.and.returnValue(Promise.resolve());
+    pollingSpy.stopPolling.and.returnValue(undefined);
 
     unsavedDataSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
     unsavedDataSpy.hasUnsavedData.and.returnValue(Promise.resolve(false));
 
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+
+    snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+
+    themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { currentPreference: 'system', preferenceChanges: preference$.asObservable() });
 
     await TestBed.configureTestingModule({
       imports: [SyncStatusIndicatorComponent],
@@ -40,7 +52,9 @@ describe('SyncStatusIndicatorComponent', () => {
         { provide: SyncStatusService, useValue: syncStatusSpy },
         { provide: PollingService, useValue: pollingSpy },
         { provide: UnsavedDataService, useValue: unsavedDataSpy },
-        { provide: MatDialog, useValue: dialogSpy }
+        { provide: MatDialog, useValue: dialogSpy },
+        { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: ThemeService, useValue: themeSpy }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -48,6 +62,49 @@ describe('SyncStatusIndicatorComponent', () => {
     fixture = TestBed.createComponent(SyncStatusIndicatorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  describe('toggleAutoSave', () => {
+    it('enables polling when toggled on', async () => {
+      pollingSpy.isPollingEnabled.and.returnValue(false);
+
+      await component.toggleAutoSave(true);
+
+      expect(pollingSpy.startPolling).toHaveBeenCalled();
+      expect(component.autoSaveEnabled).toBeTrue();
+    });
+
+    it('stops polling when toggled off', async () => {
+      await component.toggleAutoSave(false);
+
+      expect(pollingSpy.stopPolling).toHaveBeenCalled();
+      expect(component.autoSaveEnabled).toBeFalse();
+    });
+  });
+
+  describe('getNextCheckText', () => {
+    it('returns dash when polling disabled', () => {
+      pollingSpy.isPollingEnabled.and.returnValue(false);
+      syncState$.next({ status: 'idle', nextSyncIn: 30 });
+
+      expect(component.getNextCheckText()).toBe('-');
+    });
+
+    it('returns formatted seconds when next sync available', () => {
+      pollingSpy.isPollingEnabled.and.returnValue(true);
+      syncState$.next({ status: 'idle', nextSyncIn: 45 });
+
+      expect(component.getNextCheckText()).toBe('in 45s');
+    });
+  });
+
+  describe('setTheme', () => {
+    it('updates theme preference and notifies service', () => {
+      component.setTheme('dark');
+
+      expect(themeSpy.setTheme).toHaveBeenCalledWith('dark');
+      expect(component.themePreference).toBe('dark');
+    });
   });
 
   afterEach(() => {
