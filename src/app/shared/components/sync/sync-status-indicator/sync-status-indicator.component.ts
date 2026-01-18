@@ -122,15 +122,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
   async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
-    if (this.hasUnsavedChanges) {
-      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['error-snackbar']
-      });
-      return;
-    }
+
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
       panelClass: 'custom-modalbox',
       data: 'save'
