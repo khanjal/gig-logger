@@ -73,7 +73,7 @@
 
             <!-- Google search icon - shows when text is entered but no selection made -->
             <button mat-icon-button matSuffix class="standard-button" 
-                    *ngIf="isGoogleSearchType() && value && !hasSelection && !isGoogleSearching"
+                    *ngIf="isGoogleSearchType() && isLocationAllowed() && value && !hasSelection && !isGoogleSearching"
                     color="primary"
                     aria-label="Trigger Google Autocomplete Search"
                     title="Search with Google Autocomplete"
@@ -83,7 +83,7 @@
 
             <!-- Google Maps icon - shows when text is entered and a selection has been made -->
             <button mat-icon-button matSuffix class="standard-button"
-                    *ngIf="isGoogleSearchType() && value && hasSelection"
+                    *ngIf="isGoogleSearchType() && value && (hasSelection || !isLocationAllowed())"
                     color="primary"
                     aria-label="Open Google Maps"
                     title="Open Google Maps with this search"

@@ -35,6 +35,7 @@ import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
 
 // Application-specific imports - Pipes
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -128,7 +129,8 @@ export class SearchInputComponent implements OnDestroy {
     private _serviceService: ServiceService,
     private _typeService: TypeService,
     private _serverGooglePlacesService: ServerGooglePlacesService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private _permissionService: PermissionService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -655,6 +657,10 @@ export class SearchInputComponent implements OnDestroy {
 
   public isGoogleSearchType(): boolean {
     return this.searchType === 'Address' || this.searchType === 'Place';
+  }
+
+  public isLocationAllowed(): boolean {
+    return this._permissionService.getLocationState() !== 'denied';
   }
   // #endregion
 }
