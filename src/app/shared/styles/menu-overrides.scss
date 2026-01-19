@@ -1,0 +1,143 @@
+/* Menu overlay overrides - centralized for mat-menu / mdc menu panels
+   Placed here so overlay panels (rendered in .cdk-overlay-container) pick
+   up theme-aware variables while keeping rules organized. */
+
+.cdk-overlay-container .mat-menu-panel,
+.cdk-overlay-container .mat-mdc-menu-panel {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid var(--color-border-light) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .mat-menu-content,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list {
+  padding: 6px 0 !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .mat-menu-item,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item {
+  color: var(--color-text-primary) !important;
+  min-height: 40px;
+  padding: 8px 16px !important;
+}
+
+/* Ensure text inside menu items (labels, spans, anchors) inherit the intended color
+   even if Material's internal markup applies its own color. Exclude .mat-icon so
+   icon colors remain controlled by their own rules. */
+.cdk-overlay-container .mat-menu-panel button.mat-menu-item,
+.cdk-overlay-container .mat-menu-panel button.mat-menu-item span,
+.cdk-overlay-container .mat-menu-panel button.mat-menu-item a,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item span,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item a {
+  color: var(--color-text-primary) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .mat-menu-item .mat-icon,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item .mat-icon {
+  color: var(--color-text-secondary) !important;
+  margin-right: 8px;
+}
+
+.cdk-overlay-container .mat-menu-panel .mat-menu-item:hover,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item:hover,
+.cdk-overlay-container .mat-menu-panel .mat-menu-item.cdk-focused,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item.cdk-focused {
+  background-color: var(--color-surface-tertiary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Named icon utility classes used by components */
+.cdk-overlay-container .mat-menu-panel .menu-blue,
+.cdk-overlay-container .mat-mdc-menu-panel .menu-blue {
+  color: var(--primary-600) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .menu-green,
+.cdk-overlay-container .mat-mdc-menu-panel .menu-green {
+  color: var(--success-500) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .menu-red,
+.cdk-overlay-container .mat-mdc-menu-panel .menu-red {
+  color: var(--error-500) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .menu-purple,
+.cdk-overlay-container .mat-mdc-menu-panel .menu-purple {
+  color: #a78bfa !important;
+}
+
+/* Ensure SVG icons inherit currentColor */
+.cdk-overlay-container .mat-menu-panel .mat-icon svg path,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon svg path {
+  fill: currentColor !important;
+}
+
+/* Dark mode adjustments */
+html.theme-dark {
+  .cdk-overlay-container .mat-menu-panel,
+  .cdk-overlay-container .mat-mdc-menu-panel {
+    background-color: var(--color-surface-secondary) !important;
+    border: 1px solid var(--color-border) !important;
+  }
+
+  .cdk-overlay-container .mat-menu-panel .menu-blue,
+  .cdk-overlay-container .mat-mdc-menu-panel .menu-blue {
+    color: var(--primary-600) !important;
+  }
+
+  .cdk-overlay-container .mat-menu-panel .menu-green,
+  .cdk-overlay-container .mat-mdc-menu-panel .menu-green {
+    color: var(--success-500) !important;
+  }
+
+  .cdk-overlay-container .mat-menu-panel .menu-red,
+  .cdk-overlay-container .mat-mdc-menu-panel .menu-red {
+    color: var(--error-500) !important;
+  }
+
+  .cdk-overlay-container .mat-menu-panel .menu-purple,
+  .cdk-overlay-container .mat-mdc-menu-panel .menu-purple {
+    color: #a78bfa !important;
+  }
+}
+
+/* Strong fallback: force all text inside menu overlays to use theme text color.
+   We exclude .mat-icon so icons keep their own colors. This handles cases
+   where Material applies its own inline-like color rules deeper in the DOM. */
+.cdk-overlay-container .mat-menu-panel,
+.cdk-overlay-container .mat-mdc-menu-panel {
+  color: var(--color-text-primary) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel *:not(.mat-icon),
+.cdk-overlay-container .mat-mdc-menu-panel *:not(.mat-icon) {
+  color: var(--color-text-primary) !important;
+}
+
+/* Default icon color unless a utility class is present; utility classes (.menu-*) will override this. */
+.cdk-overlay-container .mat-menu-panel .mat-icon:not(.menu-blue):not(.menu-green):not(.menu-red):not(.menu-purple),
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon:not(.menu-blue):not(.menu-green):not(.menu-red):not(.menu-purple) {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Re-assert colored icon classes with higher specificity so they win over the default rule. */
+.cdk-overlay-container .mat-menu-panel .mat-icon.menu-blue,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon.menu-blue {
+  color: var(--primary-600) !important;
+}
+.cdk-overlay-container .mat-menu-panel .mat-icon.menu-green,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon.menu-green {
+  color: var(--success-500) !important;
+}
+.cdk-overlay-container .mat-menu-panel .mat-icon.menu-red,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon.menu-red {
+  color: var(--error-500) !important;
+}
+.cdk-overlay-container .mat-menu-panel .mat-icon.menu-purple,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon.menu-purple {
+  color: #a78bfa !important;
+}
