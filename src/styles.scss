@@ -465,17 +465,12 @@ html.theme-dark {
     padding-top: env(safe-area-inset-top, 12px) !important;
   }
 
-  /* Ensure dialog container provides safe-area padding so surface isn't flush to viewport edge */
-  .custom-modalbox.responsive-dialog .mat-mdc-dialog-container {
-    padding-left: max(env(safe-area-inset-left, 24px), 24px) !important;
-    padding-right: max(env(safe-area-inset-right, 24px), 24px) !important;
-  }
 
   /* Extra inset for very narrow phones (e.g. S24 and similar) */
   @media (max-width: 420px) {
     .custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
-      width: calc(100vw - 96px) !important; /* 48px each side */
-      max-width: calc(100vw - 96px) !important;
+      width: calc(100vw - 64px) !important; /* 32px each side */
+      max-width: calc(100vw - 64px) !important;
       max-height: calc(100vh - 64px) !important;
       padding-left: max(env(safe-area-inset-left, 32px), 32px) !important;
       padding-right: max(env(safe-area-inset-right, 32px), 32px) !important;
@@ -483,10 +478,7 @@ html.theme-dark {
       margin: 12px auto !important;
     }
 
-    .custom-modalbox.responsive-dialog .mat-mdc-dialog-container {
-      padding-left: max(env(safe-area-inset-left, 32px), 32px) !important;
-      padding-right: max(env(safe-area-inset-right, 32px), 32px) !important;
-    }
+    
   }
 }
 
@@ -495,6 +487,14 @@ html.theme-dark {
   display: flex !important;
   flex-direction: column !important;
   padding: 0 !important; /* forms usually handle inner padding */
+}
+
+/* Ensure the dialog container centers the surface and has no extra padding that could shift it */
+.custom-modalbox.responsive-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* Common selectors used in dialogs: ensure content scrolls and actions stick */
