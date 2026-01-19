@@ -473,6 +473,19 @@ export class DiagnosticsComponent implements OnInit {
       const newShifts: IShift[] = [];
 
       for (const trip of reps) {
+        // Skip if a shift with this key already exists
+        const existing = await this._shiftService.queryShiftByKey(trip.key);
+        if (existing) {
+          // mark diagnostic item fixed for this trip
+          const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+          if (diagnostic && diagnostic.items) {
+            const matched = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
+            matched.forEach((t: ITrip) => (t as any).fixed = true);
+            diagnostic.count -= matched.length;
+          }
+          continue;
+        }
+
         const shift = ShiftHelper.createShiftFromTrip(trip);
         shift.rowId = nextRowId++;
         delete (shift as any).id;
@@ -483,7 +496,7 @@ export class DiagnosticsComponent implements OnInit {
       // Calculate totals for all new shifts in one call
       await this._gigWorkflow.calculateShiftTotals(newShifts);
 
-      if (newShifts.length > 0) {
+      if (newShifts.length > 1) {
         await this.runDiagnostics();
       }
 
