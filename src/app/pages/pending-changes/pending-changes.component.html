@@ -3,8 +3,8 @@
     <h2 class="text-lg font-semibold">Pending Changes</h2>
   </div>
 
-  <mat-accordion>
-    <mat-expansion-panel [expanded]="true">
+  <mat-accordion multi="false">
+    <mat-expansion-panel id="shifts-panel" [expanded]="expandedShifts">
       <mat-expansion-panel-header>
         <mat-panel-title>Shifts ({{ shifts.length || 0 }})</mat-panel-title>
       </mat-expansion-panel-header>
@@ -19,7 +19,7 @@
       </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel id="trips-panel" [expanded]="expandedTrips">
       <mat-expansion-panel-header>
         <mat-panel-title>Trips ({{ trips.length || 0 }})</mat-panel-title>
       </mat-expansion-panel-header>

@@ -128,9 +128,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  openPendingChanges(): void {
+  openPendingChanges(section?: 'trips' | 'shifts'): void {
     this.closeMenu();
-    this.router.navigate(['/pending-changes']);
+    const extras: any = {};
+    if (section) extras.queryParams = { section };
+    this.router.navigate(['/pending-changes'], extras);
   }
 
   async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes

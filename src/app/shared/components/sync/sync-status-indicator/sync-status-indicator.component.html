@@ -43,11 +43,11 @@
 
       <div class="flex items-start justify-between gap-2 text-sm">
         <span class="font-medium text-primary">Pending Changes</span>
-          <div class="text-sm text-tertiary">
-            <span class="pc-trips">{{ unsavedCounts.trips }} trips</span>
-            <span class="pc-sep"> • </span>
-            <span class="pc-shifts">{{ unsavedCounts.shifts }} shifts</span>
-          </div>
+              <div class="text-sm text-tertiary">
+                <a role="link" tabindex="0" aria-label="Open pending trips" class="pending-link pc-trips" (click)="openPendingChanges('trips'); $event.stopPropagation()" (keydown.enter)="openPendingChanges('trips'); $event.stopPropagation()">{{ unsavedCounts.trips }} trips</a>
+                <span class="pc-sep"> • </span>
+                <a role="link" tabindex="0" aria-label="Open pending shifts" class="pending-link pc-shifts" (click)="openPendingChanges('shifts'); $event.stopPropagation()" (keydown.enter)="openPendingChanges('shifts'); $event.stopPropagation()">{{ unsavedCounts.shifts }} shifts</a>
+              </div>
       </div>
 
       <div class="pt-2">

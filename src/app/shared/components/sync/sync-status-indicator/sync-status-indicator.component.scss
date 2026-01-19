@@ -50,6 +50,28 @@
 .title-icon.status-success { color: var(--success-500); }
 .title-icon.status-error { color: var(--error-500); }
 
+.pending-link {
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
+.pending-link:hover,
+.pending-link:focus {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  background: color-mix(in srgb, var(--primary-600) 6%, transparent);
+  outline: none;
+}
+
+.pending-link:focus-visible {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-600) 12%, transparent);
+  border-radius: 6px;
+}
+
 // Progress bar
 .progress-bar {
   width: 100%;
