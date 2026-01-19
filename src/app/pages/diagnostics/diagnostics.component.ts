@@ -441,18 +441,63 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   async createShiftFromTrip(trip: ITrip) {
-    const newShift = ShiftHelper.createShiftFromTrip(trip);
-    
-    newShift.rowId = await this._shiftService.getMaxRowId() + 1;
-    await this._shiftService.add(newShift);
-    await this._gigWorkflow.calculateShiftTotals([newShift]);
+    // Delegate to the batch flow so single-create reuses same logic
+    await this.createShiftsFromTrips([trip]);
+  }
 
-    const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
-    if (diagnostic && diagnostic.items) {
-      const tripsWithSameKey = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
-      tripsWithSameKey.forEach((t: ITrip) => (t as any).fixed = true);
-      diagnostic.count -= tripsWithSameKey.length;
-    this.disableAutoSave();
+  /**
+   * Create shifts for multiple trips in a single batch.
+   * - Groups trips by `key` and creates one shift per group (uses first trip)
+   * - Assigns sequential `rowId`s starting from getMaxRowId()+1
+   * - Persists all new shifts, then calls `calculateShiftTotals` once with the array
+   * - Marks matching orphaned trips as fixed in diagnostics
+   */
+  async createShiftsFromTrips(trips: ITrip[]) {
+    if (!trips || trips.length === 0) return;
+
+    this.isBulkFixing = true;
+    try {
+      // Ensure autosave is disabled during batch operation
+      this.disableAutoSave();
+
+      // Group by key and pick one trip per key
+      const map = new Map<string, ITrip>();
+      for (const t of trips) {
+        if (!map.has(t.key)) map.set(t.key, t);
+      }
+
+      const reps = Array.from(map.values());
+      if (reps.length === 0) return;
+
+      let nextRowId = await this._shiftService.getMaxRowId() + 1;
+      const newShifts: IShift[] = [];
+
+      for (const trip of reps) {
+        const shift = ShiftHelper.createShiftFromTrip(trip);
+        shift.rowId = nextRowId++;
+        delete (shift as any).id;
+        await this._shiftService.add(shift);
+        newShifts.push(shift);
+      }
+
+      // Calculate totals for all new shifts in one call
+      await this._gigWorkflow.calculateShiftTotals(newShifts);
+
+      if (newShifts.length > 0) {
+        await this.runDiagnostics();
+      }
+
+      // Update diagnostics: mark orphaned trips as fixed for each created shift
+      const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+      if (diagnostic && diagnostic.items) {
+        for (const s of newShifts) {
+          const matched = diagnostic.items.filter((t: ITrip) => t.key === s.key);
+          matched.forEach((t: ITrip) => (t as any).fixed = true);
+          diagnostic.count -= matched.length;
+        }
+      }
+    } finally {
+      this.isBulkFixing = false;
     }
   }
 
