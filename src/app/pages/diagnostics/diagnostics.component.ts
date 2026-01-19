@@ -442,11 +442,11 @@ export class DiagnosticsComponent implements OnInit {
 
   async createShiftFromTrip(trip: ITrip) {
     const newShift = ShiftHelper.createShiftFromTrip(trip);
+    
     newShift.rowId = await this._shiftService.getMaxRowId() + 1;
-    
-    await this._gigWorkflow.calculateShiftTotals([newShift]);
     await this._shiftService.add(newShift);
-    
+    await this._gigWorkflow.calculateShiftTotals([newShift]);
+
     const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
     if (diagnostic && diagnostic.items) {
       const tripsWithSameKey = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
