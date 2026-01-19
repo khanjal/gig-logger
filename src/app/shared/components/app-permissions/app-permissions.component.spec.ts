@@ -1,19 +1,37 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppPermissionsComponent } from './app-permissions.component';
 import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('AppPermissionsComponent', () => {
   let component: AppPermissionsComponent;
   let fixture: ComponentFixture<AppPermissionsComponent>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
+  let permissionServiceSpy: jasmine.SpyObj<PermissionService>;
+  let locationState$: BehaviorSubject<any>;
+  let microphoneState$: BehaviorSubject<any>;
 
   beforeEach(async () => {
     loggerSpy = jasmine.createSpyObj('LoggerService', ['error', 'info', 'warn']);
+    locationState$ = new BehaviorSubject('checking');
+    microphoneState$ = new BehaviorSubject('checking');
+    
+    permissionServiceSpy = jasmine.createSpyObj('PermissionService', 
+      ['getLocationState', 'getMicrophoneState', 'requestLocation', 'requestMicrophone'],
+      {
+        getLocationState$: () => locationState$.asObservable(),
+        getMicrophoneState$: () => microphoneState$.asObservable()
+      }
+    );
+    permissionServiceSpy.getLocationState.and.returnValue('checking');
+    permissionServiceSpy.getMicrophoneState.and.returnValue('checking');
 
     await TestBed.configureTestingModule({
       imports: [AppPermissionsComponent],
       providers: [
-        { provide: LoggerService, useValue: loggerSpy }
+        { provide: LoggerService, useValue: loggerSpy },
+        { provide: PermissionService, useValue: permissionServiceSpy }
       ]
     }).compileComponents();
 
@@ -31,171 +49,83 @@ describe('AppPermissionsComponent', () => {
       expect(component.microphonePermission.state).toBe('checking');
     });
 
-    it('checks permissions on init', async () => {
-      spyOn(component, 'checkLocationPermission').and.returnValue(Promise.resolve());
-      spyOn(component, 'checkMicrophonePermission').and.returnValue(Promise.resolve());
-
+    it('subscribes to permission state changes on init', async () => {
       await component.ngOnInit();
-
-      expect(component.checkLocationPermission).toHaveBeenCalled();
-      expect(component.checkMicrophonePermission).toHaveBeenCalled();
+      
+      expect(permissionServiceSpy.getLocationState).toHaveBeenCalled();
+      expect(permissionServiceSpy.getMicrophoneState).toHaveBeenCalled();
     });
   });
 
-  describe('checkLocationPermission', () => {
-    it('sets unsupported when permissions API unavailable', async () => {
-      const originalPermissions = (navigator as any).permissions;
-      Object.defineProperty(navigator, 'permissions', { value: undefined, configurable: true });
-
-      await component.checkLocationPermission();
-
-      expect(component.locationPermission.state).toBe('unsupported');
-      Object.defineProperty(navigator, 'permissions', { value: originalPermissions, configurable: true });
-    });
-
-    it('queries geolocation permission and updates state', async () => {
-      const mockResult = { state: 'granted', onchange: null };
-      const originalPermissions = (navigator as any).permissions;
-      Object.defineProperty(navigator, 'permissions', {
-        value: { query: async () => mockResult },
-        configurable: true
-      });
-
-      await component.checkLocationPermission();
-
+  describe('permission state updates', () => {
+    it('updates location permission when state changes to granted', async () => {
+      await component.ngOnInit();
+      locationState$.next('granted');
+      
       expect(component.locationPermission.state).toBe('granted');
       expect(component.locationPermission.canRequest).toBeFalse();
-      Object.defineProperty(navigator, 'permissions', { value: originalPermissions, configurable: true });
     });
 
-    it('sets prompt state when permission not yet requested', async () => {
-      const mockResult = { state: 'prompt', onchange: null };
-      const originalPermissions = (navigator as any).permissions;
-      Object.defineProperty(navigator, 'permissions', {
-        value: { query: async () => mockResult },
-        configurable: true
-      });
-
-      await component.checkLocationPermission();
-
+    it('updates location permission when state changes to prompt', async () => {
+      await component.ngOnInit();
+      locationState$.next('prompt');
+      
       expect(component.locationPermission.state).toBe('prompt');
       expect(component.locationPermission.canRequest).toBeTrue();
-      Object.defineProperty(navigator, 'permissions', { value: originalPermissions, configurable: true });
-    });
-  });
-
-  describe('checkMicrophonePermission', () => {
-    it('sets unsupported when permissions API unavailable', async () => {
-      const originalPermissions = (navigator as any).permissions;
-      Object.defineProperty(navigator, 'permissions', { value: undefined, configurable: true });
-      const originalMediaDevices = navigator.mediaDevices;
-      Object.defineProperty(navigator, 'mediaDevices', { value: undefined, configurable: true });
-
-      await component.checkMicrophonePermission();
-
-      expect(component.microphonePermission.state).toBe('unsupported');
-      Object.defineProperty(navigator, 'permissions', { value: originalPermissions, configurable: true });
-      Object.defineProperty(navigator, 'mediaDevices', { value: originalMediaDevices, configurable: true });
     });
 
-    it('queries microphone permission and updates state', async () => {
-      const mockResult = { state: 'granted', onchange: null };
-      const originalPermissions = (navigator as any).permissions;
-      Object.defineProperty(navigator, 'permissions', {
-        value: { query: async () => mockResult },
-        configurable: true
-      });
-
-      await component.checkMicrophonePermission();
-
+    it('updates microphone permission when state changes to granted', async () => {
+      await component.ngOnInit();
+      microphoneState$.next('granted');
+      
       expect(component.microphonePermission.state).toBe('granted');
-      Object.defineProperty(navigator, 'permissions', { value: originalPermissions, configurable: true });
+      expect(component.microphonePermission.canRequest).toBeFalse();
     });
 
-    it('handles query failure and checks media devices API', async () => {
-      const originalPermissions = (navigator as any).permissions;
-      Object.defineProperty(navigator, 'permissions', {
-        value: { query: async () => { throw new Error('Query failed'); } },
-        configurable: true
-      });
-      const originalMediaDevices = navigator.mediaDevices;
-      Object.defineProperty(navigator, 'mediaDevices', {
-        value: { getUserMedia: () => Promise.resolve(new MediaStream()) },
-        configurable: true
-      });
-
-      await component.checkMicrophonePermission();
-
+    it('updates microphone permission when state changes to prompt', async () => {
+      await component.ngOnInit();
+      microphoneState$.next('prompt');
+      
       expect(component.microphonePermission.state).toBe('prompt');
       expect(component.microphonePermission.canRequest).toBeTrue();
-      Object.defineProperty(navigator, 'permissions', { value: originalPermissions, configurable: true });
-      Object.defineProperty(navigator, 'mediaDevices', { value: originalMediaDevices, configurable: true });
     });
   });
 
   describe('requestLocation', () => {
     it('updates state to granted on success', async () => {
-      const originalGeo = navigator.geolocation;
-      Object.defineProperty(navigator, 'geolocation', {
-        value: {
-          getCurrentPosition: (success: any) => success({ coords: { latitude: 1, longitude: 2 } })
-        },
-        configurable: true
-      });
-
+      permissionServiceSpy.requestLocation.and.returnValue(Promise.resolve('granted'));
+      
       await component.requestLocation();
-
+      
       expect(component.locationPermission.state).toBe('granted');
       expect(component.locationPermission.canRequest).toBeFalse();
-      Object.defineProperty(navigator, 'geolocation', { value: originalGeo, configurable: true });
     });
 
     it('updates state to denied on error', async () => {
-      const originalGeo = navigator.geolocation;
-      Object.defineProperty(navigator, 'geolocation', {
-        value: {
-          getCurrentPosition: (_success: any, error: any) => error({ message: 'denied' })
-        },
-        configurable: true
-      });
-
+      permissionServiceSpy.requestLocation.and.returnValue(Promise.resolve('denied'));
+      
       await component.requestLocation();
-
+      
       expect(component.locationPermission.state).toBe('denied');
-      Object.defineProperty(navigator, 'geolocation', { value: originalGeo, configurable: true });
     });
   });
 
   describe('requestMicrophone', () => {
-    it('grants permission and stops tracks after success', async () => {
-      const mockTrack = { stop: jasmine.createSpy('stop') };
-      const mockStream = { getTracks: () => [mockTrack] };
-      const originalMediaDevices = navigator.mediaDevices;
-      Object.defineProperty(navigator, 'mediaDevices', {
-        value: { getUserMedia: async () => mockStream },
-        configurable: true
-      });
-
+    it('grants permission on success', async () => {
+      permissionServiceSpy.requestMicrophone.and.returnValue(Promise.resolve('granted'));
+      
       await component.requestMicrophone();
-
+      
       expect(component.microphonePermission.state).toBe('granted');
       expect(component.microphonePermission.canRequest).toBeFalse();
-      expect(mockTrack.stop).toHaveBeenCalled();
-      Object.defineProperty(navigator, 'mediaDevices', { value: originalMediaDevices, configurable: true });
     });
 
     it('updates state to denied on error', async () => {
-      const originalMediaDevices = navigator.mediaDevices;
-      Object.defineProperty(navigator, 'mediaDevices', {
-        value: { getUserMedia: async () => { throw new Error('denied'); } },
-        configurable: true
-      });
-
+      permissionServiceSpy.requestMicrophone.and.returnValue(Promise.resolve('denied'));
+      
       await component.requestMicrophone();
-
+      
       expect(component.microphonePermission.state).toBe('denied');
-      expect(loggerSpy.error).toHaveBeenCalled();
-      Object.defineProperty(navigator, 'mediaDevices', { value: originalMediaDevices, configurable: true });
     });
   });
 

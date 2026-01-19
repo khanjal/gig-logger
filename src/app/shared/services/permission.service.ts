@@ -111,7 +111,7 @@ export class PermissionService {
 
   async requestLocation(): Promise<PermissionState> {
     try {
-      if (!('geolocation' in navigator)) {
+      if (!('geolocation' in navigator) || !navigator.geolocation) {
         this.locationState$.next('unsupported');
         return 'unsupported';
       }
