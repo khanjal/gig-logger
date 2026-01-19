@@ -14,6 +14,7 @@ import { ITrip } from '@interfaces/trip.interface';
 
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
+import { UiPreferencesService } from '@services/ui-preferences.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
@@ -81,6 +82,7 @@ export class TripComponent implements OnInit, OnDestroy {
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
+      private _uiPreferences: UiPreferencesService,
       private logger: LoggerService,
       private _route: ActivatedRoute,
       private _router: Router
@@ -106,16 +108,11 @@ export class TripComponent implements OnInit, OnDestroy {
         }
       });
 
-    // Load polling preference from localStorage
-    const savedPollingState = localStorage.getItem('pollingEnabled');
-    this.pollingEnabled = savedPollingState ? JSON.parse(savedPollingState) : false;
-
-    // Keep local toggle in sync with global polling state (e.g., sync menu)
-    this._pollingService.pollingEnabled$
+    // Sync polling preference via UiPreferencesService
+    this._uiPreferences.pollingEnabled$
       .pipe(takeUntil(this.destroy$))
       .subscribe(enabled => {
         this.pollingEnabled = enabled;
-        localStorage.setItem('pollingEnabled', JSON.stringify(enabled));
       });
 
     // Only load if not in edit mode
@@ -292,17 +289,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
   
   async changePolling() {
-    this.pollingEnabled = !this.pollingEnabled;
-
-    // Save polling preference to localStorage
-    localStorage.setItem('pollingEnabled', JSON.stringify(this.pollingEnabled));
-
-    // Start or stop polling based on new state
-    if (this.pollingEnabled && !this.isEditMode) {
-      await this.startPolling();
-    } else {
-      this.stopPolling();
-    }
+    await this._uiPreferences.togglePolling();
   }
 
   async startPolling() {

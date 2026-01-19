@@ -121,7 +121,6 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     // Verify microphone permission if possible; if explicitly denied, don't proceed
     const micAllowed = await this.hasMicrophonePermission();
     if (!micAllowed) {
-      console.log(micAllowed);
       alert('Microphone access is denied. Please enable microphone permissions in your browser.');
       return;
     }

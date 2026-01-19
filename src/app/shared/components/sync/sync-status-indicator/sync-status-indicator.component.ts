@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
-import { PollingService } from '@services/polling.service';
+import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
@@ -52,7 +52,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
   constructor(
     private syncStatusService: SyncStatusService,
-    private pollingService: PollingService,
+    private uiPreferences: UiPreferencesService,
     private unsavedDataService: UnsavedDataService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -69,7 +69,6 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         this.updateTimeSinceLastSync();
         // Check for unsaved changes when sync state changes
         this.checkUnsavedChanges();
-        this.autoSaveEnabled = this.pollingService.isPollingEnabled();
       });
 
     // Subscribe to messages
@@ -85,11 +84,17 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(pref => this.themePreference = pref);
 
+    // Subscribe to UI preference for polling/auto-save
+    this.uiPreferences.pollingEnabled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(enabled => {
+        this.autoSaveEnabled = enabled;
+      });
+
     // Update time display and check for unsaved changes every 5 seconds for better responsiveness
     this.intervalId = window.setInterval(() => {
       this.updateTimeSinceLastSync();
       this.checkUnsavedChanges();
-      this.autoSaveEnabled = this.pollingService.isPollingEnabled();
     }, 5000);
     
     // Initial check for unsaved changes
@@ -98,11 +103,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
   async toggleAutoSave(enabled: boolean): Promise<void> {
     this.autoSaveEnabled = enabled;
-    if (enabled) {
-      await this.pollingService.startPolling();
-    } else {
-      this.pollingService.stopPolling();
-    }
+    await this.uiPreferences.setPolling(enabled);
   }
 
   setTheme(preference: ThemePreference): void {
@@ -191,7 +192,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     if (!this.syncState) return 'cloud_off';
     
     // Check if auto-sync is disabled
-    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
       return 'sync_disabled';
     }
     
@@ -212,7 +213,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     if (!this.syncState) return 'status-idle';
     
     // Check if auto-sync is disabled
-    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
       return 'status-disabled';
     }
     
@@ -223,7 +224,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     if (!this.syncState) return 'Sync status unknown';
 
     // Check if auto-sync is disabled
-    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
       return 'Auto-sync disabled';
     }
 
@@ -244,7 +245,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     if (!this.syncState) return 'Unknown';
     
     // Check if auto-sync is disabled
-    if (!this.pollingService.isPollingEnabled() && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
       return 'Disabled';
     }
     
@@ -264,7 +265,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   getNextCheckText(): string {
-    if (!this.pollingService.isPollingEnabled()) {
+    if (!this.autoSaveEnabled) {
       return '-';
     }
 

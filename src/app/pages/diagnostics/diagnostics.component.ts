@@ -28,6 +28,7 @@ import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
+import { UiPreferencesService } from '@services/ui-preferences.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
@@ -60,7 +61,8 @@ export class DiagnosticsComponent implements OnInit {
     private _logger: LoggerService,
     private _gigCalculator: GigCalculatorService,
     private _gigWorkflow: GigWorkflowService,
-    private _pollingService: PollingService
+    private _pollingService: PollingService,
+    private _uiPreferences: UiPreferencesService
   ) { }
 
   ngOnInit() {
@@ -538,22 +540,12 @@ export class DiagnosticsComponent implements OnInit {
    */
   private disableAutoSave(): void {
     try {
-      this._pollingService.stopPolling();
+      // setPolling may be async; handle rejection explicitly
+      this._uiPreferences.setPolling(false).catch((err: any) => {
+        this._logger.warn('Failed to persist/stop polling when disabling autosave', err);
+      });
     } catch (e) {
-      if (this._logger && typeof (this._logger as any).warn === 'function') {
-        (this._logger as any).warn('Failed to stop polling when disabling autosave', e);
-      } else {
-        console.warn('Failed to stop polling when disabling autosave', e);
-      }
-    }
-    try {
-      localStorage.setItem('pollingEnabled', JSON.stringify(false));
-    } catch (e) {
-      if (this._logger && typeof (this._logger as any).warn === 'function') {
-        (this._logger as any).warn('Failed to persist polling preference', e);
-      } else {
-        console.warn('Failed to persist polling preference', e);
-      }
+      this._logger.warn('Failed to disable autosave', e);
     }
   }
 }

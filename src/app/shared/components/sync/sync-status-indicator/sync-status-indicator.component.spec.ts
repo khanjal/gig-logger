@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SyncStatusIndicatorComponent } from './sync-status-indicator.component';
 import { SyncStatusService } from '@services/sync-status.service';
-import { PollingService } from '@services/polling.service';
+import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ThemeService, ThemePreference } from '@services/theme.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ describe('SyncStatusIndicatorComponent', () => {
   let component: SyncStatusIndicatorComponent;
   let fixture: ComponentFixture<SyncStatusIndicatorComponent>;
   let syncStatusSpy: jasmine.SpyObj<SyncStatusService>;
-  let pollingSpy: jasmine.SpyObj<PollingService>;
+  let uiPreferencesSpy: any;
   let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
@@ -32,10 +32,12 @@ describe('SyncStatusIndicatorComponent', () => {
     Object.defineProperty(syncStatusSpy, 'messages$', { value: messages$.asObservable() });
     syncStatusSpy.getTimeSinceLastSync.and.returnValue('2 min ago');
 
-    pollingSpy = jasmine.createSpyObj('PollingService', ['isPollingEnabled', 'startPolling', 'stopPolling']);
-    pollingSpy.isPollingEnabled.and.returnValue(true);
-    pollingSpy.startPolling.and.returnValue(Promise.resolve());
-    pollingSpy.stopPolling.and.returnValue(undefined);
+    const pollingEnabledSubject = new BehaviorSubject<boolean>(true);
+    uiPreferencesSpy = {
+      pollingEnabled$: pollingEnabledSubject.asObservable(),
+      pollingEnabledSubject,
+      setPolling: jasmine.createSpy('setPolling').and.returnValue(Promise.resolve())
+    };
 
     unsavedDataSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
     unsavedDataSpy.hasUnsavedData.and.returnValue(Promise.resolve(false));
@@ -50,7 +52,7 @@ describe('SyncStatusIndicatorComponent', () => {
       imports: [SyncStatusIndicatorComponent],
       providers: [
         { provide: SyncStatusService, useValue: syncStatusSpy },
-        { provide: PollingService, useValue: pollingSpy },
+        { provide: UiPreferencesService, useValue: uiPreferencesSpy },
         { provide: UnsavedDataService, useValue: unsavedDataSpy },
         { provide: MatDialog, useValue: dialogSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
@@ -66,32 +68,30 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('toggleAutoSave', () => {
     it('enables polling when toggled on', async () => {
-      pollingSpy.isPollingEnabled.and.returnValue(false);
-
       await component.toggleAutoSave(true);
 
-      expect(pollingSpy.startPolling).toHaveBeenCalled();
+      expect(uiPreferencesSpy.setPolling).toHaveBeenCalledWith(true);
       expect(component.autoSaveEnabled).toBeTrue();
     });
 
     it('stops polling when toggled off', async () => {
       await component.toggleAutoSave(false);
 
-      expect(pollingSpy.stopPolling).toHaveBeenCalled();
+      expect(uiPreferencesSpy.setPolling).toHaveBeenCalledWith(false);
       expect(component.autoSaveEnabled).toBeFalse();
     });
   });
 
   describe('getNextCheckText', () => {
     it('returns dash when polling disabled', () => {
-      pollingSpy.isPollingEnabled.and.returnValue(false);
+      uiPreferencesSpy.pollingEnabledSubject.next(false);
       syncState$.next({ status: 'idle', nextSyncIn: 30 });
 
       expect(component.getNextCheckText()).toBe('-');
     });
 
     it('returns formatted seconds when next sync available', () => {
-      pollingSpy.isPollingEnabled.and.returnValue(true);
+      uiPreferencesSpy.pollingEnabledSubject.next(true);
       syncState$.next({ status: 'idle', nextSyncIn: 45 });
 
       expect(component.getNextCheckText()).toBe('in 45s');
@@ -155,7 +155,7 @@ describe('SyncStatusIndicatorComponent', () => {
   describe('getStatusIcon', () => {
     it('returns sync_disabled when polling disabled and idle', () => {
       component.syncState = { status: 'idle' } as any;
-      pollingSpy.isPollingEnabled.and.returnValue(false);
+      uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getStatusIcon()).toBe('sync_disabled');
     });
@@ -194,7 +194,7 @@ describe('SyncStatusIndicatorComponent', () => {
   describe('getStatusClass', () => {
     it('returns status-disabled when polling disabled', () => {
       component.syncState = { status: 'idle' } as any;
-      pollingSpy.isPollingEnabled.and.returnValue(false);
+      uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getStatusClass()).toBe('status-disabled');
     });
@@ -215,7 +215,7 @@ describe('SyncStatusIndicatorComponent', () => {
   describe('getTooltipText', () => {
     it('returns auto-sync disabled message when polling off', () => {
       component.syncState = { status: 'idle' } as any;
-      pollingSpy.isPollingEnabled.and.returnValue(false);
+      uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getTooltipText()).toBe('Auto-sync disabled');
     });
