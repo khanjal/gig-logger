@@ -34,6 +34,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
+  @Input() inlineMode: boolean = false;
   @Input() index: number = 0;
   @Input() stripeEven?: boolean;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -224,8 +225,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   async editTrip() {
     // Emit edit event for parent components to handle (e.g., closing dialogs)
     this.editClicked.emit(this.trip);
-    
-    // Navigate to trips page with edit mode and trip rowId
-    this._router.navigate(['/trips/edit', this.trip.rowId]);
+    // Only navigate when not embedded inline
+    if (!this.inlineMode) {
+      this._router.navigate(['/trips/edit', this.trip.rowId]);
+    }
   }
 }

@@ -15,6 +15,7 @@ import { MetricsComponent } from './pages/metrics/metrics.component';
 import { DiagnosticsComponent } from './pages/diagnostics/diagnostics.component';
 import { SearchComponent } from './pages/search/search.component';
 import { UpdatesComponent } from './pages/updates/updates.component';
+import { PendingChangesComponent } from './pages/pending-changes/pending-changes.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path: 'expenses', component: ExpensesComponent, canActivate: [canActivateSheet, canActivateAuth] },
   { path: 'metrics', component: MetricsComponent },
   { path: 'diagnostics', component: DiagnosticsComponent, canActivate: [canActivateSheet, canActivateAuth] },
+  { path: 'pending-changes', component: PendingChangesComponent, canActivate: [canActivateSheet, canActivateAuth] },
 ];
 
 @NgModule({

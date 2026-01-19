@@ -1,0 +1,37 @@
+<div class="p-4 max-w-4xl mx-auto">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">Pending Changes</h2>
+  </div>
+
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Shifts ({{ shifts.length || 0 }})</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div *ngIf="shifts && shifts.length > 0; else noShifts">
+        <div *ngFor="let s of shifts; let i = index">
+          <app-shifts-quick-view [shift]="s" [index]="i" [inlineMode]="true" (parentReload)="load()" (edit)="openShiftEditor($event)"></app-shifts-quick-view>
+        </div>
+      </div>
+      <ng-template #noShifts>
+        <div class="p-4 text-sm no-pending">No pending shifts</div>
+      </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Trips ({{ trips.length || 0 }})</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div *ngIf="trips && trips.length > 0; else noTrips">
+        <div *ngFor="let t of trips; let i = index">
+          <trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></trips-quick-view>
+        </div>
+      </div>
+      <ng-template #noTrips>
+        <div class="p-4 text-sm no-pending">No pending trips</div>
+      </ng-template>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

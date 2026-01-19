@@ -6,6 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
@@ -40,6 +41,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   timeSinceLastSync = 'Never';
   showDetailedView = false;
   hasUnsavedChanges = false;
+  unsavedCounts: { trips: number; shifts: number; expenses: number; total: number } = { trips: 0, shifts: 0, expenses: 0, total: 0 };
   menuOpen = false;
   autoSaveEnabled = false;
   themePreference: ThemePreference = 'system';
@@ -54,6 +56,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     private unsavedDataService: UnsavedDataService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    private router: Router,
     private themeService: ThemeService
   ) {}
 
@@ -118,6 +121,16 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
   private async checkUnsavedChanges(): Promise<void> {
     this.hasUnsavedChanges = await this.unsavedDataService.hasUnsavedData();
+    try {
+      this.unsavedCounts = await this.unsavedDataService.getUnsavedCounts();
+    } catch (err) {
+      // ignore errors getting counts
+    }
+  }
+
+  openPendingChanges(): void {
+    this.closeMenu();
+    this.router.navigate(['/pending-changes']);
   }
 
   async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes

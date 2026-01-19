@@ -1,0 +1,34 @@
+/* Pending Changes page styles - use CSS variables for theme awareness */
+:host {
+  display: block;
+}
+
+/* Ensure the panels use surface variables and readable text */
+mat-accordion, mat-expansion-panel, mat-expansion-panel-header {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* Quick view spacing */
+app-shifts-quick-view, trips-quick-view {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Empty state */
+.no-pending {
+  padding: 1rem;
+  color: var(--color-text-tertiary);
+}
+
+/* Dark theme tweaks */
+:host-context(html.theme-dark) {
+  mat-accordion, mat-expansion-panel, mat-expansion-panel-header {
+    background: var(--color-surface-2);
+    color: var(--color-text-primary);
+  }
+
+  .no-pending {
+    color: var(--color-text-tertiary);
+  }
+}
