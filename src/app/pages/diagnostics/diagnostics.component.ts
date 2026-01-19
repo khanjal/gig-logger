@@ -478,11 +478,7 @@ export class DiagnosticsComponent implements OnInit {
         if (existing) {
           // mark diagnostic item fixed for this trip
           const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
-          if (diagnostic && diagnostic.items) {
-            const matched = diagnostic.items.filter((t: ITrip) => t.key === trip.key);
-            matched.forEach((t: ITrip) => (t as any).fixed = true);
-            diagnostic.count -= matched.length;
-          }
+          DiagnosticHelper.markOrphanedTripsFixed(diagnostic, [trip.key]);
           continue;
         }
 
@@ -502,13 +498,7 @@ export class DiagnosticsComponent implements OnInit {
 
       // Update diagnostics: mark orphaned trips as fixed for each created shift
       const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
-      if (diagnostic && diagnostic.items) {
-        for (const s of newShifts) {
-          const matched = diagnostic.items.filter((t: ITrip) => t.key === s.key);
-          matched.forEach((t: ITrip) => (t as any).fixed = true);
-          diagnostic.count -= matched.length;
-        }
-      }
+      DiagnosticHelper.markOrphanedTripsFixed(diagnostic, newShifts.map(s => s.key));
     } finally {
       this.isBulkFixing = false;
     }

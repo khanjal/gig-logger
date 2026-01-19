@@ -228,4 +228,17 @@ export class DiagnosticHelper {
       return aCore === bCore;
     };
   }
+
+  /**
+   * Mark orphaned-trip diagnostic items as fixed for the provided shift keys
+   */
+  static markOrphanedTripsFixed(diagnostic: any | undefined, keys: string[]) {
+    if (!diagnostic || !diagnostic.items || !Array.isArray(keys) || keys.length === 0) return;
+
+    for (const key of keys) {
+      const matched = diagnostic.items.filter((t: ITrip) => t.key === key);
+      matched.forEach((t: ITrip) => (t as any).fixed = true);
+      diagnostic.count = Math.max(0, diagnostic.count - matched.length);
+    }
+  }
 }
