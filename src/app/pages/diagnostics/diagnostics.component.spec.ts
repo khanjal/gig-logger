@@ -31,7 +31,7 @@ describe('DiagnosticsComponent', () => {
   let gigWorkflow: any;
 
   beforeEach(async () => {
-    shiftService = jasmine.createSpyObj('ShiftService', ['list', 'findDuplicates', 'update', 'getMaxRowId', 'add', 'delete']);
+    shiftService = jasmine.createSpyObj('ShiftService', ['list', 'findDuplicates', 'update', 'getMaxRowId', 'add', 'delete', 'queryShiftByKey']);
     tripService = jasmine.createSpyObj('TripService', ['list', 'update']);
     addressService = jasmine.createSpyObj('AddressService', ['list', 'findDuplicates']);
     placeService = jasmine.createSpyObj('PlaceService', ['list', 'findDuplicates']);
@@ -48,6 +48,7 @@ describe('DiagnosticsComponent', () => {
     shiftService.getMaxRowId.and.returnValue(Promise.resolve(0));
     shiftService.add.and.returnValue(Promise.resolve());
     shiftService.delete.and.returnValue(Promise.resolve());
+    shiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined));
 
     tripService.list.and.returnValue(Promise.resolve([]));
     tripService.update.and.returnValue(Promise.resolve());
