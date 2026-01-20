@@ -42,11 +42,9 @@ export class DataLinkingService {
 
     public async linkAllData() {
         try {
-            await Promise.all([
-                this.linkNameData(),
-                this.linkAddressData(),
-                this.linkPlaceData()
-            ]);
+            await this.linkNameData();
+            await this.linkAddressData();
+            await this.linkPlaceData();
         } catch (error) {
             this.handleError('linkAllData', error);
             throw error;
