@@ -1,4 +1,4 @@
-name: Add new issues to Project V2 (fixed)
+name: Add new issues to Project
 
 on:
   issues:
