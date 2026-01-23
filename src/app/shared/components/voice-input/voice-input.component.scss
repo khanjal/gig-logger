@@ -11,7 +11,7 @@ button {
   z-index: 999; // Lower than back-to-top (1000) so back-to-top appears on top when scrolled on small screens
   width: 56px;
   height: 56px;
-  box-shadow: var(--shadow-heavy);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   &:active {
     transform: scale(0.95);
@@ -30,16 +30,13 @@ button {
   left: 16px;
   max-width: 400px;
   margin: 0 auto;
-  background: color-mix(in srgb, var(--color-surface) 98%, transparent);
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   z-index: 998; // Below voice button (999) and back-to-top (1000)
   animation: slideUp 0.3s ease-out;
   backdrop-filter: blur(10px);
-
-  // Border for both listening and heard states
-  border: 2px solid var(--color-border); // Default gray border for "heard" state
 
   @media (min-width: 768px) {
     right: calc(1.5rem + 56px + 1rem); // Aligned with voice button on large screens
@@ -47,9 +44,14 @@ button {
     min-width: 400px;
   }
 
+  // Border for both listening and heard states
+  & {
+    border: 2px solid #d3d3d3; // Default gray border for "heard" state
+  }
+
   &.recognizing {
-    border: 2px solid var(--primary-600); // Blue border when actively listening
-    background: color-mix(in srgb, var(--primary-600) 5%, transparent);
+    border: 2px solid #1976d2; // Blue border when actively listening
+    background: rgba(25, 118, 210, 0.05);
   }
 }
 
@@ -64,18 +66,18 @@ button {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: var(--primary-600);
+  color: #1976d2;
   font-size: 14px;
 
   .pulse-icon {
     animation: pulse 1.5s ease-in-out infinite;
-    color: var(--error-500);
+    color: #d32f2f;
   }
 }
 
 .transcript-text {
   margin: 0;
-  color: var(--color-text-primary);
+  color: #333;
   font-size: 16px;
   line-height: 1.5;
   min-height: 24px;
@@ -83,15 +85,14 @@ button {
 
 .suggestion-text {
   margin: 8px 0 0 0;
-  color: var(--color-text-secondary);
+  color: #666;
   font-size: 13px;
   font-style: italic;
   opacity: 0.8;
   padding: 8px;
-  background: color-mix(in srgb, var(--color-surface-secondary) 55%, transparent);
-  box-shadow: var(--shadow-medium);
+  background: rgba(0, 0, 0, 0.03);
   border-radius: 6px;
-  border-left: 3px solid var(--primary-600);
+  border-left: 3px solid #1976d2;
 }
 
 // Animations
