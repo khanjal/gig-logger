@@ -1,0 +1,148 @@
+/* Pending Changes page styles - use CSS variables for theme awareness */
+:host {
+  display: block;
+}
+
+/* Page-level surface + text color so background isn't pure black/white */
+:host {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  padding: 0.75rem 0.5rem;
+}
+
+/* Ensure the panels use surface variables and readable text */
+mat-accordion, mat-expansion-panel, mat-expansion-panel-header {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+/* Make expansion panels visually consistent (borders, spacing) */
+mat-expansion-panel {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.mat-expansion-panel-header {
+  padding: 0.75rem 1rem;
+  background: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.mat-expansion-panel-header.mat-expanded {
+  background: var(--color-surface-2) !important;
+}
+
+.mat-expansion-panel-body, .mat-expansion-panel-content {
+  background: var(--color-surface-2);
+  color: var(--color-text-primary);
+  padding: 0.75rem 1rem !important;
+}
+
+/* Quick view spacing */
+app-shifts-quick-view, trips-quick-view {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Empty state */
+.no-pending {
+  padding: 1rem;
+  color: var(--color-text-tertiary);
+}
+
+/* Dark theme tweaks */
+:host-context(html.theme-dark) {
+  mat-accordion, mat-expansion-panel, mat-expansion-panel-header {
+    background: var(--color-surface-2);
+    color: var(--color-text-primary);
+  }
+
+  mat-expansion-panel {
+    border-color: var(--color-border) !important;
+    box-shadow: none !important;
+  }
+
+  .mat-expansion-panel-header {
+    background: var(--color-surface-2) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  .mat-expansion-panel-header.mat-expanded {
+    background: var(--color-surface-3) !important;
+  }
+
+  .mat-expansion-panel-body, .mat-expansion-panel-content {
+    background: transparent !important;
+  }
+
+  .no-pending {
+    color: var(--color-text-tertiary);
+  }
+}
+
+/* Dark-mode host background override to keep readable text */
+:host-context(html.theme-dark) {
+  :host {
+    background: var(--color-surface-2);
+    color: var(--color-text-primary);
+  }
+}
+
+/* Force overrides into Material internals for dark mode (penetrate view encapsulation) */
+:host-context(html.theme-dark) {
+  ::ng-deep .mat-expansion-panel,
+  ::ng-deep .mat-expansion-panel-header,
+  ::ng-deep .mat-expansion-panel-body,
+  ::ng-deep .mat-expansion-panel-content,
+  ::ng-deep .mat-expansion-panel-header .mat-expansion-panel-header-title,
+  ::ng-deep .mat-expansion-panel-header .mat-expansion-panel-header-description {
+    background: var(--ColorUnset, transparent) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  ::ng-deep .mat-expansion-panel-header {
+    background: var(--color-surface-2) !important;
+  }
+
+  ::ng-deep .mat-expansion-panel-header.mat-expanded {
+    background: var(--color-surface-3) !important;
+  }
+
+  ::ng-deep .mat-expansion-panel-body,
+  ::ng-deep .mat-expansion-panel-content {
+    background: var(--color-surface-2) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  ::ng-deep .mat-expansion-panel-header .mat-expansion-panel-header-title,
+  ::ng-deep .mat-expansion-panel-header .mat-expansion-panel-header-description {
+    color: var(--color-text-primary) !important;
+  }
+}
+
+/* Force a visible surface for expansion panels to match other accordions */
+::ng-deep .mat-expansion-panel-content,
+::ng-deep .mat-expansion-panel-body,
+::ng-deep .mat-expansion-panel {
+  background: color-mix(in srgb, var(--color-overlay) 8%, var(--color-surface)) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 1px 3px var(--shadow-light) !important;
+}
+
+/* Slightly different surface for header to read as a separate bar */
+::ng-deep .mat-expansion-panel-header {
+  background: color-mix(in srgb, var(--color-overlay) 6%, var(--color-surface)) !important;
+}
+
+/* In dark theme use the darker surface variables */
+:host-context(html.theme-dark) ::ng-deep .mat-expansion-panel-content,
+:host-context(html.theme-dark) ::ng-deep .mat-expansion-panel-body,
+:host-context(html.theme-dark) ::ng-deep .mat-expansion-panel {
+  background: color-mix(in srgb, var(--color-overlay) 6%, var(--color-surface-2)) !important;
+}
+
+:host-context(html.theme-dark) ::ng-deep .mat-expansion-panel-header {
+  background: color-mix(in srgb, var(--color-overlay) 4%, var(--color-surface-2)) !important;
+}

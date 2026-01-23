@@ -2,16 +2,16 @@
 
 // Enhanced stat cards
 .stat-card {
-  background: linear-gradient(135deg, $background-card 0%, $surface-secondary 100%);
+  background: linear-gradient(135deg, var(--color-surface-card) 0%, var(--color-surface-secondary) 100%);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid $border-light;
+  border: 1px solid var(--color-border);
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-medium);
   }
   
   @media (max-width: 768px) {
@@ -20,7 +20,7 @@
     
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-light);
     }
   }
   
@@ -30,7 +30,7 @@
     
     &:hover {
       transform: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-sm);
     }
   }
   
@@ -59,29 +59,29 @@
     }
     
     &.earnings {
-      background: linear-gradient(135deg, $success-100 0%, $success-200 100%);
-      color: $success-700;
+      background: color-mix(in srgb, var(--success-500) 20%, transparent);
+      color: var(--success-700);
     }
     
     &.trips {
-      background: linear-gradient(135deg, $primary-100 0%, $primary-200 100%);
-      color: $primary-700;
+      background: color-mix(in srgb, var(--primary-500) 20%, transparent);
+      color: var(--primary-700);
     }
     
     &.hours {
-      background: linear-gradient(135deg, $info-100 0%, $info-200 100%);
-      color: $info-700;
+      background: color-mix(in srgb, var(--info-500) 20%, transparent);
+      color: var(--info-700);
     }
     
     &.efficiency {
-      background: linear-gradient(135deg, $accent-100 0%, $accent-200 100%);
-      color: $accent-700;
+      background: color-mix(in srgb, var(--accent-500) 20%, transparent);
+      color: var(--accent-700);
     }
   }
   
   .stat-label {
     font-size: 0.9rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     font-weight: 500;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
@@ -101,7 +101,7 @@
   .stat-value {
     font-size: 2rem;
     font-weight: 700;
-    color: $text-primary;
+    color: var(--color-text-primary);
     margin-bottom: 0.5rem;
     
     @media (max-width: 768px) {
@@ -131,15 +131,15 @@
     }
     
     &.positive {
-      color: $success-600;
+      color: var(--success-600);
     }
     
     &.negative {
-      color: $danger-600;
+      color: var(--error-600);
     }
     
     &.neutral {
-      color: $text-secondary;
+      color: var(--color-text-secondary);
     }
   }
 }
@@ -165,11 +165,11 @@
 
 // Enhanced chart cards
 .chart-card {
-  background: linear-gradient(135deg, $background-card 0%, $surface-secondary 100%);
+  background: linear-gradient(135deg, var(--color-surface-card) 0%, var(--color-surface-secondary) 100%);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 1px solid $border-light;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--color-border);
   
   @media (max-width: 768px) {
     border-radius: 12px;
@@ -187,7 +187,7 @@
     justify-content: space-between;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--color-border);
     
     @media (max-width: 768px) {
       flex-direction: column;
@@ -204,7 +204,7 @@
     .chart-title {
       font-size: 1.25rem;
       font-weight: 600;
-      color: $text-primary;
+      color: var(--color-text-primary);
       
       @media (max-width: 768px) {
         font-size: 1.1rem;
@@ -235,11 +235,11 @@
 
 // Enhanced data table
 .data-table-container {
-  background: linear-gradient(135deg, $background-card 0%, $surface-secondary 100%);
+  background: linear-gradient(135deg, var(--color-surface-card) 0%, var(--color-surface-secondary) 100%);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 1px solid $border-light;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--color-border);
   overflow-x: auto;
   
   @media (max-width: 768px) {
@@ -271,7 +271,7 @@
   
   .loading-text {
     margin-top: 1rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     font-size: 1rem;
     
     @media (max-width: 768px) {
@@ -299,7 +299,7 @@
   
   .empty-icon {
     font-size: 4rem;
-    color: $text-tertiary;
+    color: var(--color-text-tertiary);
     margin-bottom: 1rem;
     
     @media (max-width: 768px) {
@@ -314,7 +314,7 @@
   .empty-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: $text-primary;
+    color: var(--color-text-primary);
     margin-bottom: 0.5rem;
     
     @media (max-width: 768px) {
@@ -327,7 +327,7 @@
   }
   
   .empty-description {
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     font-size: 1rem;
     
     @media (max-width: 768px) {

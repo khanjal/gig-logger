@@ -4,21 +4,23 @@ import { IDelivery } from "@interfaces/delivery.interface";
 import { INote } from "@interfaces/note.interface";
 import { IAddress } from "@interfaces/address.interface";
 import { IType } from "@interfaces/type.interface";
-import { AddressService } from "../sheets/address.service";
-import { NameService } from "../sheets/name.service";
-import { PlaceService } from "../sheets/place.service";
-import { RegionService } from "../sheets/region.service";
-import { ServiceService } from "../sheets/service.service";
-import { TripService } from "../sheets/trip.service";
-import { TypeService } from "../sheets/type.service";
-import { DeliveryService } from "../delivery.service";
-import { LoggerService } from "../logger.service";
+import { AddressService } from "@services/sheets/address.service";
+import { NameService } from "@services/sheets/name.service";
+import { PlaceService } from "@services/sheets/place.service";
+import { RegionService } from "@services/sheets/region.service";
+import { ServiceService } from "@services/sheets/service.service";
+import { TripService } from "@services/sheets/trip.service";
+import { TypeService } from "@services/sheets/type.service";
+import { DeliveryService } from "@services/delivery.service";
+import { LoggerService } from "@services/logger.service";
 import { sort } from "@helpers/sort.helper";
+import { groupBy, uniquePush } from "@helpers/array.helper";
 
 @Injectable({
     providedIn: 'root'
 })
-export class DataLinkingService {    constructor(
+export class DataLinkingService {
+    constructor(
         private _addressService: AddressService,
         private _deliveryService: DeliveryService,
         private _nameService: NameService,
@@ -40,11 +42,9 @@ export class DataLinkingService {    constructor(
 
     public async linkAllData() {
         try {
-            await Promise.all([
-                this.linkNameData(),
-                this.linkAddressData(),
-                this.linkPlaceData()
-            ]);
+            await this.linkNameData();
+            await this.linkAddressData();
+            await this.linkPlaceData();
         } catch (error) {
             this.handleError('linkAllData', error);
             throw error;
@@ -53,81 +53,71 @@ export class DataLinkingService {    constructor(
 
     public async linkDeliveries(trips: ITrip[]) {
         try {
-            let deliveries: IDelivery[] = await this._deliveryService.getRemoteDeliveries();
+            let deliveries: IDelivery[] = await this._deliveryService.list();
+            // Build quick lookup for existing deliveries to avoid O(n*m) finds
+            const keyFor = (addr?: string, name?: string) => `${addr || ''}::${name || ''}`;
+            const deliveryMap = new Map<string, IDelivery>(deliveries.map(d => [keyFor(d.address, d.name), d]));
 
-            trips.forEach(async trip => {
-                if (!trip.endAddress && !trip.name) {
-                    return;
-                }
+            for (const trip of trips) {
+                if (!trip.endAddress && !trip.name) continue;
 
-                let delivery: IDelivery | undefined;
                 let note: INote | undefined;
-
                 if (trip.note) {
-                    note = {} as INote;
-                    note.date = trip.date;
-                    note.text = trip.note;
+                    note = { date: trip.date, text: trip.note } as INote;
                 }
 
-                delivery = deliveries.find(x => x.address === trip.endAddress && x.name === trip.name);
+                const key = keyFor(trip.endAddress, trip.name);
+                let delivery = deliveryMap.get(key);
 
-                if (delivery){
-                    delivery.bonus += trip.bonus,
-                    delivery.cash += trip.cash,
-                    delivery.pay += trip.pay;
-                    delivery.tip += trip.tip;
+                if (delivery) {
+                    delivery.bonus = (delivery.bonus || 0) + (trip.bonus || 0);
+                    delivery.cash = (delivery.cash || 0) + (trip.cash || 0);
+                    delivery.pay = (delivery.pay || 0) + (trip.pay || 0);
+                    delivery.tip = (delivery.tip || 0) + (trip.tip || 0);
+                    delivery.trips = delivery.trips || [];
                     delivery.trips.push(trip);
-                    delivery.total += trip.total;
-                    delivery.visits++;
-                    
+                    delivery.total = (delivery.total || 0) + (trip.total || 0);
+                    delivery.visits = (delivery.visits || 0) + 1;
+
                     sort(delivery.trips, '-key');
 
-                    if (trip.date) {
-                        delivery.dates.push(trip.date);
-                        delivery.dates = [...new Set(delivery.dates)];
-                    }
-                    
-                    if (trip.place) {
-                        delivery.places.push(trip.place);
-                        delivery.places = [...new Set(delivery.places)].sort();
-                    }
+                    delivery.dates = delivery.dates || [];
+                    if (trip.date) uniquePush(delivery.dates, trip.date);
 
-                    if (trip.service) {
-                        delivery.services.push(trip.service);
-                        delivery.services = [...new Set(delivery.services)].sort();
-                    }
-                    
-                    if (trip.endUnit) {
-                        delivery.units.push(trip.endUnit);
-                        delivery.units = [...new Set(delivery.units)];
-                    }
+                    delivery.places = delivery.places || [];
+                    if (trip.place) uniquePush(delivery.places, trip.place);
 
-                    if (note) {
-                        delivery.notes.push(note);
-                    }
-                }
-                else {
-                    delivery = {} as IDelivery;
+                    delivery.services = delivery.services || [];
+                    if (trip.service) uniquePush(delivery.services, trip.service);
 
-                    delivery.address = trip.endAddress;
-                    delivery.bonus = trip.bonus;
-                    delivery.cash = trip.cash;
-                    delivery.dates = trip.date ? [trip.date] : [];
-                    delivery.name = trip.name;
-                    delivery.notes = note ? [note] : [];
-                    delivery.pay = trip.pay;
-                    delivery.places = trip.place ? [trip.place] : [];
-                    delivery.services = trip.service? [trip.service] : [];
-                    delivery.tip = trip.tip;
-                    delivery.trips = [trip];
-                    delivery.total = trip.total;
-                    delivery.units = trip.endUnit ? [trip.endUnit] : [];
-                    delivery.visits = 1;
+                    delivery.units = delivery.units || [];
+                    if (trip.endUnit) uniquePush(delivery.units, trip.endUnit);
+
+                    delivery.notes = delivery.notes || [];
+                    if (note) delivery.notes.push(note);
+                } else {
+                    delivery = {
+                        address: trip.endAddress,
+                        bonus: trip.bonus || 0,
+                        cash: trip.cash || 0,
+                        dates: trip.date ? [trip.date] : [],
+                        name: trip.name,
+                        notes: note ? [note] : [],
+                        pay: trip.pay || 0,
+                        places: trip.place ? [trip.place] : [],
+                        services: trip.service ? [trip.service] : [],
+                        tip: trip.tip || 0,
+                        trips: [trip],
+                        total: trip.total || 0,
+                        units: trip.endUnit ? [trip.endUnit] : [],
+                        visits: 1
+                    } as IDelivery;
 
                     deliveries.push(delivery);
+                    deliveryMap.set(key, delivery);
                 }
-            });
-            await this._deliveryService.loadDeliveries(deliveries);
+            }
+            await this._deliveryService.load(deliveries);
             this._logger.info('Deliveries linked successfully');
         } catch (error) {
             this.handleError('linkDeliveries', error);
@@ -142,35 +132,32 @@ export class DataLinkingService {    constructor(
             let names = await this._nameService.list();
             let trips = await this._tripService.list();
 
-            for (let name of names) {
-                let addressTrips = trips.filter((x: ITrip) => x.name === name.name && x.endAddress);
-                
+            // group trips by name for single-pass updates
+            const tripsByName = groupBy(trips.filter((x: ITrip) => !!x.endAddress && !!x.name), x => x.name as string);
+
+            for (const name of names) {
+                const addressTrips = tripsByName.get(name.name) || [];
+                if (!addressTrips.length) continue;
+
+                name.addresses = name.addresses || [];
+                name.notes = name.notes || [];
+
                 for (const trip of addressTrips) {
-                    if (!name.addresses) {
-                        name.addresses = [];
-                    }
-
-                    if (!name.addresses.includes(trip.endAddress)) {
-                        name.addresses.push(trip.endAddress);
-                    }
-                    
-                    let note = {} as INote;
-
-                    if (!name.notes) {
-                        name.notes = [];
-                    }
+                    uniquePush(name.addresses, trip.endAddress as string);
 
                     if (trip.note) {
-                        note.date = trip.date;
-                        note.text = trip.note;
-                        note.name = trip.name;
-                        note.address = trip.endAddress;
-
+                        const note = {
+                            date: trip.date,
+                            text: trip.note,
+                            name: trip.name,
+                            address: trip.endAddress
+                        } as INote;
                         name.notes.push(note);
-                    }                
-                      await this._nameService.update([name]);
-                };
-            };
+                    }
+                }
+
+                await this._nameService.update([name]);
+            }
             
             this._logger.info('Name data linked successfully');
         } catch (error) {
@@ -186,35 +173,31 @@ export class DataLinkingService {    constructor(
             let addresses = await this._addressService.list();
             let trips = await this._tripService.list();
 
-            for (let address of addresses) {
-                let nameTrips = trips.filter((x: ITrip) => x.endAddress === address.address && x.name);
+            const tripsByAddress = groupBy(trips.filter((x: ITrip) => !!x.endAddress && !!x.name), x => x.endAddress as string);
 
-                for (let trip of nameTrips) {
-                    if (!address.names) {
-                        address.names = [];
-                    }
+            for (const address of addresses) {
+                const nameTrips = tripsByAddress.get(address.address) || [];
+                if (!nameTrips.length) continue;
 
-                    if (!address.names.includes(trip.name)) {
-                        address.names.push(trip.name);
-                    }
+                address.names = address.names || [];
+                address.notes = address.notes || [];
 
-                    let note = {} as INote;
+                for (const trip of nameTrips) {
+                    uniquePush(address.names, trip.name as string);
 
-                    if (!address.notes) {
-                        address.notes = [];
-                    }
-                    
                     if (trip.note) {
-                        note.date = trip.date;
-                        note.text = trip.note;
-                        note.name = trip.name;
-                        note.address = trip.endAddress;
-
+                        const note = {
+                            date: trip.date,
+                            text: trip.note,
+                            name: trip.name,
+                            address: trip.endAddress
+                        } as INote;
                         address.notes.push(note);
-                    }                
-                    
-                    await this._addressService.append([address])
-                };            };
+                    }
+                }
+
+                await this._addressService.append([address]);
+            }
             
             this._logger.info('Address data linked successfully');
         } catch (error) {
@@ -230,56 +213,53 @@ export class DataLinkingService {    constructor(
             let trips = await this._tripService.list();
             let places = await this._placeService.list();
 
-            for (let place of places) {
+            // Group trips by place for efficient per-place processing
+            const tripsByPlace = groupBy(trips.filter((x: ITrip) => !!x.place), x => x.place as string);
+
+            for (const place of places) {
+                const placeTrips = tripsByPlace.get(place.place) || [];
+                if (!placeTrips.length) continue;
+
                 // Addresses
-                let tripPlaceAddresses = trips.filter((x: ITrip) => x.place === place.place && x.startAddress);
+                place.addresses = place.addresses || [];
+                const addrMap = new Map((place.addresses || []).map(a => [a.address, a]));
 
-                for (const tripPlaceAddress of tripPlaceAddresses) {
-                    if (!place.addresses) {
-                        place.addresses = [];
-                    }
-
-                    let placeAddress = place.addresses.find((x: IAddress) => x.address === tripPlaceAddress.startAddress);
-
-                    if (placeAddress) {
-                        placeAddress.lastTrip = tripPlaceAddress.date;
-                        placeAddress.trips++;
-                    }
-                    else {
-                        let address: IAddress = {} as IAddress;
-                        address.address = tripPlaceAddress.startAddress;
-                        address.trips = 1;
-                        address.lastTrip = tripPlaceAddress.date;
+                for (const tripPlaceAddress of placeTrips.filter(t => t.startAddress)) {
+                    const addrKey = tripPlaceAddress.startAddress as string;
+                    const existing = addrMap.get(addrKey);
+                    if (existing) {
+                        existing.lastTrip = tripPlaceAddress.date;
+                        existing.trips = (existing.trips || 0) + 1;
+                    } else {
+                        const address: IAddress = {
+                            address: addrKey,
+                            trips: 1,
+                            lastTrip: tripPlaceAddress.date
+                        } as IAddress;
                         place.addresses.push(address);
+                        addrMap.set(addrKey, address);
                     }
-                };
-
-                if (place.addresses) {
-                    sort(place.addresses, 'address');
                 }
 
+                if (place.addresses) sort(place.addresses, 'address');
+
                 // Types
-                let tripPlaceTypes = trips.filter((x: ITrip) => x.place === place.place && x.type);
+                place.types = place.types || [];
+                const typeMap = new Map((place.types || []).map(t => [t.type, t]));
 
-                for (const tripPlaceType of tripPlaceTypes) {
-                    if (!place.types) {
-                        place.types = [];
-                    }
-                    
-                    let placeType = place.types.find((x: IType) => x.type === tripPlaceType.type);
-
-                    if (placeType) {
-                        placeType.trips++;
-                    }
+                for (const tripPlaceType of placeTrips.filter(t => t.type)) {
+                    const typeKey = tripPlaceType.type as string;
+                    const existing = typeMap.get(typeKey);
+                    if (existing) existing.trips = (existing.trips || 0) + 1;
                     else {
-                        let type: IType = {} as IType;
-                        type.type = tripPlaceType.type;
-                        type.trips = 1;
-                        place.types.push(type);    
+                        const type: IType = { type: typeKey, trips: 1 } as IType;
+                        place.types.push(type);
+                        typeMap.set(typeKey, type);
                     }
-                };
+                }
 
-                await this._placeService.update([place]);            };
+                await this._placeService.update([place]);
+            }
             
             this._logger.info('Place data linked successfully');
         } catch (error) {

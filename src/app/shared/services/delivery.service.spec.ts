@@ -32,13 +32,13 @@ describe('DeliveryService', () => {
     });
   });
 
-  describe('getRemoteDeliveries', () => {
+  describe('list', () => {
     it('returns all deliveries from database', async () => {
       const delivery1: IDelivery = { address: '123 Main', name: 'John' } as IDelivery;
       const delivery2: IDelivery = { address: '456 Elm', name: 'Jane' } as IDelivery;
       await spreadsheetDB.deliveries.bulkAdd([delivery1, delivery2]);
 
-      const result = await service.getRemoteDeliveries();
+      const result = await service.list();
 
       expect(result.length).toBe(2);
       expect(result[0].address).toBe('123 Main');
@@ -46,7 +46,7 @@ describe('DeliveryService', () => {
     });
 
     it('returns empty array when no deliveries exist', async () => {
-      const result = await service.getRemoteDeliveries();
+      const result = await service.list();
       
       expect(result).toEqual([]);
     });
@@ -61,7 +61,8 @@ describe('DeliveryService', () => {
         { address: '456 Elm', name: 'Jane' } as IDelivery
       ];
       
-      await service.loadDeliveries(newDeliveries);
+
+      await service.load(newDeliveries);
       
       const result = await spreadsheetDB.deliveries.toArray();
       expect(result.length).toBe(2);
@@ -79,14 +80,14 @@ describe('DeliveryService', () => {
       ];
       await spreadsheetDB.deliveries.bulkAdd(deliveries);
 
-      const result = await service.queryRemoteDeliveries('name', 'John');
+      const result = await service.query('name', 'John');
 
       expect(result.length).toBe(2);
       expect(result.every(d => d.name === 'John')).toBeTrue();
     });
 
     it('returns empty array when no matches found', async () => {
-      const result = await service.queryRemoteDeliveries('name', 'Nonexistent');
+      const result = await service.query('name', 'Nonexistent');
       
       expect(result).toEqual([]);
     });

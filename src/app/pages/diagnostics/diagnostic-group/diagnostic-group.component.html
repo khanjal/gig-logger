@@ -1,0 +1,127 @@
+<div class="bg-surface-2 rounded-lg border border-soft overflow-hidden">
+  <div class="bg-surface-3 px-4 py-2 border-b border-soft flex items-center justify-between">
+    <span class="font-semibold text-sm text-primary">Group {{ groupIndex + 1 }}</span>
+    <div class="flex items-center gap-2">
+      <span class="text-xs badge-count">{{ group.length }} items</span>
+      <button *ngIf="canMerge" 
+              mat-mini-fab color="primary" 
+              [disabled]="!selectedValue"
+              (click)="onMergeClick()"
+              matTooltip="Merge duplicates">
+        <mat-icon>merge</mat-icon>
+      </button>
+      <button *ngIf="canDelete" 
+              mat-mini-fab color="warn" 
+              [disabled]="!selectedShiftToDelete || hasMarkedForDelete(group)"
+              (click)="onDeleteClick()"
+              matTooltip="Delete selected shift">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-radio-group [(ngModel)]="selectedValue" (ngModelChange)="onValueChange($event)" class="divide-y divide-border">
+    <div *ngFor="let problemItem of group" 
+         class="p-3 hover:bg-surface-3 transition-colors flex items-center gap-2 item-row" 
+         [class.opacity-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) || problemItem.markedForDelete" 
+         [class.bg-green-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0)"
+         [ngClass]="{ 'dark:bg-green-900/20': ((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) }"
+         [class.bg-error-500/10]="problemItem.markedForDelete">
+      <mat-radio-button *ngIf="canMerge" 
+                        [value]="problemItem"></mat-radio-button>
+      <input *ngIf="canDelete" type="radio" 
+             [name]="'shift-group-' + groupIndex" 
+             [(ngModel)]="selectedShiftToDelete"
+             (ngModelChange)="onShiftChange($event)"
+             [value]="problemItem.rowId" 
+             [disabled]="problemItem.markedForDelete"
+             class="w-4 h-4 radio-input">
+      <div class="flex-1 item-content">
+        <!-- Shift Item -->
+        <div *ngIf="itemType === 'shift'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.rowId }}</span>
+            <span class="font-semibold item-date" [class.line-through]="problemItem.markedForDelete">{{ problemItem.date }}</span>
+            <span class="item-key text-sm">({{ problemItem.key }})</span>
+            <span *ngIf="problemItem.markedForDelete" class="px-2 py-0.5 bg-error-500/20 rounded text-xs badge-delete">MARKED FOR DELETE</span>
+          </div>
+          <div class="flex items-center justify-between gap-2 mt-1">
+            <div class="flex flex-wrap items-center gap-2 text-sm">
+              <span *ngIf="problemItem.totalTrips !== undefined" class="item-meta">{{ problemItem.totalTrips }} trips</span>
+              <span *ngIf="problemItem.start" class="item-time">{{ problemItem.start }} - {{ problemItem.finish }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trip Item -->
+        <div *ngIf="itemType === 'trip'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.rowId }}</span>
+            <span class="font-semibold item-name">{{ problemItem.name || 'No name' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.address || 'No address' }}</span>
+            <span *ngIf="problemItem.service" class="item-meta ml-2">• {{ problemItem.service }}</span>
+          </div>
+        </div>
+
+        <!-- Place Item -->
+        <div *ngIf="itemType === 'place'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="font-semibold item-name">{{ problemItem.place || 'No place name' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.trips }} trips</span>
+            <span *ngIf="problemItem.address" class="item-meta ml-2">• {{ problemItem.address }}</span>
+          </div>
+        </div>
+
+        <!-- Name Item -->
+        <div *ngIf="itemType === 'name'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="font-semibold item-name">{{ problemItem.name || 'No name' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.trips }} trips</span>
+          </div>
+        </div>
+
+        <!-- Address Item -->
+        <div *ngIf="itemType === 'address'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="font-semibold item-name">{{ problemItem.address || 'No address' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.trips }} trips</span>
+          </div>
+        </div>
+
+        <!-- Service Item -->
+        <div *ngIf="itemType === 'service'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="font-semibold item-name">{{ problemItem.service || 'No service' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.trips }} trips</span>
+            <span class="item-meta ml-2">• {{ problemItem.shifts }} shifts</span>
+          </div>
+        </div>
+
+        <!-- Region Item -->
+        <div *ngIf="itemType === 'region'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="font-semibold item-name">{{ problemItem.region || 'No region' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.trips }} trips</span>
+            <span class="item-meta ml-2">• {{ problemItem.shifts }} shifts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-radio-group>
+</div>

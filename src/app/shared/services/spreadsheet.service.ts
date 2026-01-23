@@ -81,7 +81,7 @@ export class SpreadsheetService {
     }
 
     public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet | null>{
-        let data = await this._gigLoggerService.getSheetData(spreadsheet.id);
+        let data: any = await this._gigLoggerService.getSheetData(spreadsheet.id);
         if (!data) {
             return null;
         }
@@ -111,6 +111,11 @@ export class SpreadsheetService {
 
         if (data.properties.name) {
             sheet.name = data.properties.name;
+        }
+
+        // Persist source if provided by the API (tagged as `_source`)
+        if ((data as any)._source) {
+            sheet.source = (data as any)._source;
         }
 
         await this.update(sheet);

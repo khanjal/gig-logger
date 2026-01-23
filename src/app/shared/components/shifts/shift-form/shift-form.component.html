@@ -1,6 +1,6 @@
-<div class="bg-white rounded-xl shadow-lg p-4 md:p-8 w-full max-w-2xl mx-auto">
+<div class="bg-surface rounded-xl shadow-lg p-4 md:p-8 w-full max-w-2xl mx-auto">
   <div class="mb-1 border-b pb-2">
-    <h1 class="text-2xl font-bold text-blue-700">{{rowId ? `Edit Shift - #${rowId}` : 'Add Shift'}}</h1>
+    <h1 class="text-2xl font-bold text-primary">{{rowId ? `Edit Shift - #${rowId}` : 'Add Shift'}}</h1>
   </div>
 
   <form [formGroup]="shiftForm">
@@ -77,30 +77,30 @@
     </div>
     <!-- Trip Totals only in edit mode -->
     <div *ngIf="rowId" class="mb-3">
-      <div class="font-semibold text-blue-700 mb-1">Trip Totals</div>
-      <div class="grid grid-cols-2 gap-2 bg-blue-50 rounded p-3 mb-2">
+      <div class="font-semibold text-primary mb-1">Trip Totals</div>
+      <div class="grid grid-cols-2 gap-2 bg-primary-500/10 rounded p-3 mb-2">
         <div>
-          <span class="font-semibold text-blue-700">Count:</span>
+          <span class="font-semibold text-primary">Count:</span>
           <span class="ml-2">{{ computedTotals.totalTrips }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Pay:</span>
+          <span class="font-semibold text-primary">Pay:</span>
           <span class="ml-2">{{ computedTotals.totalPay | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Tips:</span>
+          <span class="font-semibold text-primary">Tips:</span>
           <span class="ml-2">{{ computedTotals.totalTips | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Bonus:</span>
+          <span class="font-semibold text-primary">Bonus:</span>
           <span class="ml-2">{{ computedTotals.totalBonus | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Cash:</span>
+          <span class="font-semibold text-primary">Cash:</span>
           <span class="ml-2">{{ computedTotals.totalCash | currency }}</span>
         </div>
         <div>
-          <span class="font-semibold text-blue-700">Distance:</span>
+          <span class="font-semibold text-primary">Distance:</span>
           <span class="ml-2">{{ computedTotals.totalDistance | number:'1.2-2' }} mi</span>
         </div>
       </div>
@@ -128,10 +128,10 @@
         </button>
       </div>
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="!shiftForm.valid">
+        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
           <mat-icon>add</mat-icon> Store
         </button>
-        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="!shiftForm.valid">
+        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
           <mat-icon>save</mat-icon> Update
         </button>
       </div>

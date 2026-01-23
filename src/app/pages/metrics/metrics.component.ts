@@ -2,6 +2,7 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
+import { ThemeService } from '@services/theme.service';
 import { Subscription as DexieSubscription } from 'dexie';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +14,7 @@ import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-he
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
+import { Subscription } from 'rxjs';
 
 // Chart.js registration
 Chart.register(...registerables);
@@ -59,6 +61,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   shifts: any[] = [];
   private dexieSubscriptions: DexieSubscription[] = [];
+  private themeSubscription?: Subscription;
 
   // Chart Data
   tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: '#f472b6', borderColor: '#be185d', borderWidth: 2, datalabels: { color: '#be185d', font: { weight: 'bold', size: 14 } } }] };
@@ -73,7 +76,12 @@ export class MetricsComponent implements OnInit, OnDestroy {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true },
+      legend: { 
+        display: true,
+        labels: {
+          color: this.getTextColor()
+        }
+      },
       datalabels: {
         display: (ctx) => {
           const chart = ctx.chart;
@@ -91,7 +99,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
           }
           return true;
         },
-        color: '#222',
+        color: (ctx) => this.getTextColor(),
         font: { weight: 'bold', size: 14 },
         formatter: (value, ctx) => Math.round(value),
       },
@@ -102,8 +110,8 @@ export class MetricsComponent implements OnInit, OnDestroy {
       }
     },
     scales: {
-      x: { stacked: true, grid: { display: false }, ticks: { color: '#222' } },
-      y: { stacked: true, grid: { color: '#eee' }, ticks: { color: '#222' } }
+      x: { stacked: true, grid: { display: false }, ticks: { color: (ctx) => this.getTextColor() } },
+      y: { stacked: true, grid: { color: (ctx) => this.getGridColor() }, ticks: { color: (ctx) => this.getTextColor() } }
     }
   };
 
@@ -111,14 +119,19 @@ export class MetricsComponent implements OnInit, OnDestroy {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true },
+      legend: { 
+        display: true,
+        labels: {
+          color: this.getTextColor()
+        }
+      },
       datalabels: {
         display: (ctx) => {
           const chart = ctx.chart;
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
         },
-        color: '#222',
+        color: (ctx) => this.getTextColor(),
         font: { weight: 'bold', size: 14 },
         formatter: (value, ctx) => Math.round(value),
       },
@@ -129,15 +142,20 @@ export class MetricsComponent implements OnInit, OnDestroy {
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: '#222' } },
-      y: { grid: { color: '#eee' }, ticks: { color: '#222' } }
+      x: { grid: { display: false }, ticks: { color: (ctx) => this.getTextColor() } },
+      y: { grid: { color: (ctx) => this.getGridColor() }, ticks: { color: (ctx) => this.getTextColor() } }
     }
   };
 
   pieOptions: ChartOptions = {
     responsive: true,
     plugins: {
-      legend: { display: true },
+      legend: { 
+        display: true,
+        labels: {
+          color: this.getTextColor()
+        }
+      },
       datalabels: {
         color: '#fff',
         font: { weight: 'bold', size: 16 },
@@ -152,7 +170,33 @@ export class MetricsComponent implements OnInit, OnDestroy {
   // Date Range
   range = new FormGroup({ start: new FormControl(), end: new FormControl() });
 
-  constructor(private shiftService: ShiftService) {}
+  constructor(private shiftService: ShiftService, private themeService: ThemeService) {}
+
+  private getTextColor(): string {
+    return this.themeService.activeTheme === 'dark' ? '#e5e7eb' : '#222';
+  }
+
+  private getGridColor(): string {
+    return this.themeService.activeTheme === 'dark' ? '#374151' : '#eee';
+  }
+
+  private updateChartColors(): void {
+    // Update legend colors
+    if (this.barOptions.plugins?.legend?.labels) {
+      this.barOptions.plugins.legend.labels.color = this.getTextColor();
+    }
+    if (this.lineOptions.plugins?.legend?.labels) {
+      this.lineOptions.plugins.legend.labels.color = this.getTextColor();
+    }
+    if (this.pieOptions.plugins?.legend?.labels) {
+      this.pieOptions.plugins.legend.labels.color = this.getTextColor();
+    }
+    
+    // Trigger chart refresh by reassigning options
+    this.barOptions = { ...this.barOptions };
+    this.lineOptions = { ...this.lineOptions };
+    this.pieOptions = { ...this.pieOptions };
+  }
 
   // Helper to get YMD string from a shift
   private getShiftYMD(s: any): string {
@@ -373,9 +417,15 @@ export class MetricsComponent implements OnInit, OnDestroy {
         this.filterByDate();
       })
     );
+    
+    // Subscribe to theme changes to update chart colors
+    this.themeSubscription = this.themeService.activeTheme$.subscribe(() => {
+      this.updateChartColors();
+    });
   }
 
   ngOnDestroy() {
     this.dexieSubscriptions.forEach(sub => sub.unsubscribe());
+    this.themeSubscription?.unsubscribe();
   }
 }

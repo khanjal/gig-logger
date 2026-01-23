@@ -1,19 +1,33 @@
 @use 'color-vars' as *;
 
-// Only keep message type styles used by [ngClass]
-.info {
-    color: #00ff88;
-    font-weight: 500;
+.modal-container {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
 }
 
-.warning {
-    color: #00d4ff;
-    font-weight: 500;
+button[disabled] {
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
+    background: var(--gray-400) !important;
+    color: var(--gray-700) !important;
+    
+    &:hover {
+        background: var(--gray-400) !important;
+    }
 }
 
-.error {
-    color: #ff8c42;
-    font-weight: 600;
-    text-shadow: 0 0 2px rgba(255, 140, 66, 0.3);
+:host-context(html.theme-dark) {
+    .modal-container {
+        background: var(--color-surface);
+    }
+    
+    button[disabled] {
+        background: var(--gray-600) !important;
+        color: var(--gray-300) !important;
+        
+        &:hover {
+            background: var(--gray-600) !important;
+        }
+    }
 }
 

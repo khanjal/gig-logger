@@ -3,21 +3,21 @@
 
 /* Shift border classes - match trips quick view */
 .shift-border-saved {
-  border: 2px solid $border-dark; // gray-300
+  border: 2px solid var(--color-border-dark);
 }
 .shift-border-add {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $success-color; // green
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--success-500);
 }
 .shift-border-update {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $primary-color; // blue
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--primary-600);
 }
 .shift-border-delete {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $error-color; // red
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--error-500);
 }
 .shift-border-other {
-  border: 2px solid $border-dark; // gray-300
-  border-left: 8px solid $warning-color; // orange/yellow
+  border: 2px solid var(--color-border-dark);
+  border-left: 8px solid var(--warning-500);
 }

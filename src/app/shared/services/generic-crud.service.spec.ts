@@ -1,4 +1,4 @@
-import { GenericCrudService } from './generic-crud.service';
+import { GenericCrudService } from '@services/generic-crud.service';
 
 interface TestEntity {
   id?: number;

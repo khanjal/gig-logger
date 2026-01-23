@@ -295,8 +295,6 @@ export class ExpensesComponent implements OnInit {
 
   async saveSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
         panelClass: 'custom-modalbox',
         data: inputValue
     });

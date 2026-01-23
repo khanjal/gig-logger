@@ -37,7 +37,7 @@ describe('TripFormComponent', () => {
     const placeSpy = jasmine.createSpyObj('PlaceService', ['find', 'list']);
     const addressSpy = jasmine.createSpyObj('AddressService', ['find']);
     const nameSpy = jasmine.createSpyObj('NameService', ['find']);
-    const deliverySpy = jasmine.createSpyObj('DeliveryService', ['queryRemoteDeliveries']);
+    const deliverySpy = jasmine.createSpyObj('DeliveryService', ['query']);
     const gigSpy = jasmine.createSpyObj('GigWorkflowService', ['calculateShiftTotals', 'updateAncillaryInfo']);
     const timerSpy = jasmine.createSpyObj('TimerService', ['delay']);
     const dialogSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
@@ -71,7 +71,7 @@ describe('TripFormComponent', () => {
     deliveryService = TestBed.inject(DeliveryService) as jasmine.SpyObj<DeliveryService>;
     timerService = TestBed.inject(TimerService) as jasmine.SpyObj<TimerService>;
     dialogRef = TestBed.inject(MatDialogRef) as jasmine.SpyObj<MatDialogRef<TripFormComponent>>;
-    deliveryService.queryRemoteDeliveries.and.returnValue(Promise.resolve([]));
+    deliveryService.query.and.returnValue(Promise.resolve([]));
     addressService.find.and.returnValue(Promise.resolve(undefined));
     nameService.find.and.returnValue(Promise.resolve(undefined));
 

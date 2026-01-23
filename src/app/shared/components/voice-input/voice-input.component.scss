@@ -45,7 +45,9 @@ button {
   }
 
   // Border for both listening and heard states
-  border: 2px solid #d3d3d3; // Default gray border for "heard" state
+  & {
+    border: 2px solid #d3d3d3; // Default gray border for "heard" state
+  }
 
   &.recognizing {
     border: 2px solid #1976d2; // Blue border when actively listening

@@ -7,7 +7,7 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -35,6 +35,7 @@ import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
 
 // Application-specific imports - Pipes
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -49,7 +50,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -128,7 +129,8 @@ export class SearchInputComponent implements OnDestroy {
     private _serviceService: ServiceService,
     private _typeService: TypeService,
     private _serverGooglePlacesService: ServerGooglePlacesService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private _permissionService: PermissionService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -655,6 +657,10 @@ export class SearchInputComponent implements OnDestroy {
 
   public isGoogleSearchType(): boolean {
     return this.searchType === 'Address' || this.searchType === 'Place';
+  }
+
+  public isLocationAllowed(): boolean {
+    return this._permissionService.getLocationState() !== 'denied';
   }
   // #endregion
 }

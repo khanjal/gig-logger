@@ -34,7 +34,9 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
   @Input() showActions: boolean = true;
+  @Input() inlineMode: boolean = false;
   @Input() index: number = 0;
+  @Input() stripeEven?: boolean;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
   @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
@@ -102,6 +104,22 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
 
   private setExpansionState() {
     this.isExpanded = (!this.trip.dropoffTime && !this.trip.exclude);
+  }
+
+  /**
+   * Determine stripe parity: external override → loop index → rowId fallback
+   */
+  get isEvenStripe(): boolean {
+    if (this.stripeEven !== undefined) {
+      return this.stripeEven;
+    }
+
+    if (this.index !== undefined && this.index !== null) {
+      return this.index % 2 === 0;
+    }
+
+    const rowId = this.trip?.rowId ?? 0;
+    return rowId % 2 === 0;
   }
 
   toggleExpansion() {
@@ -207,8 +225,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   async editTrip() {
     // Emit edit event for parent components to handle (e.g., closing dialogs)
     this.editClicked.emit(this.trip);
-    
-    // Navigate to trips page with edit mode and trip rowId
-    this._router.navigate(['/trips/edit', this.trip.rowId]);
+    // Only navigate when not embedded inline
+    if (!this.inlineMode) {
+      this._router.navigate(['/trips/edit', this.trip.rowId]);
+    }
   }
 }

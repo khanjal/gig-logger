@@ -2,16 +2,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { VoiceInputComponent } from './voice-input.component';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
 
 describe('VoiceInputComponent', () => {
   let component: VoiceInputComponent;
   let fixture: ComponentFixture<VoiceInputComponent>;
   let dropdownSpy: jasmine.SpyObj<DropdownDataService>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
+  let permissionSpy: jasmine.SpyObj<PermissionService>;
 
   beforeEach(async () => {
     dropdownSpy = jasmine.createSpyObj('DropdownDataService', ['getAllDropdownData', 'findBestMatch']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['error', 'info', 'debug']);
+    permissionSpy = jasmine.createSpyObj('PermissionService', ['isSpeechRecognitionSupported', 'hasMicrophonePermission', 'getMicrophoneState']);
 
     dropdownSpy.getAllDropdownData.and.returnValue(Promise.resolve({
       services: ['DoorDash', 'Uber Eats'],
@@ -21,12 +24,17 @@ describe('VoiceInputComponent', () => {
       regions: [],
       names: []
     }));
+    
+    permissionSpy.isSpeechRecognitionSupported.and.returnValue(true);
+    permissionSpy.hasMicrophonePermission.and.returnValue(Promise.resolve(true));
+    permissionSpy.getMicrophoneState.and.returnValue('granted');
 
     await TestBed.configureTestingModule({
       imports: [VoiceInputComponent],
       providers: [
         { provide: DropdownDataService, useValue: dropdownSpy },
-        { provide: LoggerService, useValue: loggerSpy }
+        { provide: LoggerService, useValue: loggerSpy },
+        { provide: PermissionService, useValue: permissionSpy }
       ]
     }).compileComponents();
 
@@ -74,6 +82,7 @@ describe('VoiceInputComponent', () => {
   describe('isSpeechRecognitionSupported', () => {
     it('returns true when webkitSpeechRecognition exists', () => {
       (window as any).webkitSpeechRecognition = function() {};
+      permissionSpy.getMicrophoneState.and.returnValue('granted');
 
       expect(component.isSpeechRecognitionSupported()).toBeTrue();
 
@@ -84,35 +93,46 @@ describe('VoiceInputComponent', () => {
       const original = (window as any).webkitSpeechRecognition;
       delete (window as any).webkitSpeechRecognition;
       delete (window as any).SpeechRecognition;
+      permissionSpy.isSpeechRecognitionSupported.and.returnValue(false);
 
       expect(component.isSpeechRecognitionSupported()).toBeFalse();
 
       if (original) (window as any).webkitSpeechRecognition = original;
     });
+
+    it('returns false when microphone is denied', () => {
+      (window as any).webkitSpeechRecognition = function() {};
+      permissionSpy.isSpeechRecognitionSupported.and.returnValue(true);
+      permissionSpy.getMicrophoneState.and.returnValue('denied');
+
+      expect(component.isSpeechRecognitionSupported()).toBeFalse();
+
+      delete (window as any).webkitSpeechRecognition;
+    });
   });
 
   describe('onMicClick', () => {
-    it('shows alert when speech recognition not supported', () => {
+    it('shows alert when speech recognition not supported', async () => {
       spyOn(window, 'alert');
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(false);
 
-      component.onMicClick();
+      await component.onMicClick();
 
       expect(window.alert).toHaveBeenCalled();
     });
 
-    it('initializes recognition on first click', () => {
+    it('initializes recognition on first click', async () => {
       component.recognition = null;
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
       spyOn(component as any, 'initializeSpeechRecognition');
       spyOn(component as any, 'startListening');
 
-      component.onMicClick();
+      await component.onMicClick();
 
       expect((component as any).initializeSpeechRecognition).toHaveBeenCalled();
     });
 
-    it('starts listening when not recognizing', () => {
+    it('starts listening when not recognizing', async () => {
       component.recognition = { 
         start: jasmine.createSpy('start'),
         abort: jasmine.createSpy('abort')
@@ -121,12 +141,12 @@ describe('VoiceInputComponent', () => {
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
       spyOn(component as any, 'startListening').and.callThrough();
 
-      component.onMicClick();
+      await component.onMicClick();
 
       expect((component as any).startListening).toHaveBeenCalled();
     });
 
-    it('stops listening when already recognizing', () => {
+    it('stops listening when already recognizing', async () => {
       component.recognition = { 
         stop: jasmine.createSpy('stop'),
         abort: jasmine.createSpy('abort')
@@ -135,7 +155,7 @@ describe('VoiceInputComponent', () => {
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
       spyOn(component as any, 'stopListening').and.callThrough();
 
-      component.onMicClick();
+      await component.onMicClick();
 
       expect((component as any).stopListening).toHaveBeenCalled();
     });

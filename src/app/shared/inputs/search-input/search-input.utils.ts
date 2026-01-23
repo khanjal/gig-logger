@@ -1,4 +1,8 @@
 import { ISearchItem } from '@interfaces/search-item.interface';
+import { LoggerService } from '@services/logger.service';
+
+// Module-level logger for utility functions (no DI available here)
+const logger = new LoggerService();
 
 export function createSearchItem(item: any, nameProperty: string): ISearchItem {
   if (!item || typeof item !== 'object') {
@@ -7,7 +11,7 @@ export function createSearchItem(item: any, nameProperty: string): ISearchItem {
   
   const name = item[nameProperty];
   if (typeof name !== 'string') {
-    console.warn(`[WARN]: Invalid name property '${nameProperty}' in item:`, item);
+    logger.warn(`Invalid name property '${nameProperty}' in item:`, item as any);
     return {
       id: item.id,
       name: String(name || ''),
@@ -53,7 +57,7 @@ export async function searchJson(searchType: string, value: string): Promise<ISe
         trips: 0
       }));
   } catch (error) {
-    console.warn(`[WARN]: Error loading ${searchType}.json:`, error);
+    logger.warn(`Error loading ${searchType}.json:`, error as any);
     return [];
   }
 }

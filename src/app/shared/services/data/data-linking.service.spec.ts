@@ -65,7 +65,7 @@ describe('DataLinkingService', () => {
     serviceSpy = jasmine.createSpyObj('ServiceService', ['deleteUnsaved', 'find', 'add']);
     tripSpy = jasmine.createSpyObj('TripService', ['list', 'getPreviousDays']);
     typeSpy = jasmine.createSpyObj('TypeService', ['deleteUnsaved', 'find', 'add']);
-    deliverySpy = jasmine.createSpyObj('DeliveryService', ['getRemoteDeliveries', 'loadDeliveries']);
+    deliverySpy = jasmine.createSpyObj('DeliveryService', ['list', 'load']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug', 'warn']);
 
     TestBed.configureTestingModule({
@@ -108,14 +108,14 @@ describe('DataLinkingService', () => {
         units: [],
         notes: []
       } as IDelivery];
-      deliverySpy.getRemoteDeliveries.and.returnValue(Promise.resolve(existing));
+      deliverySpy.list.and.returnValue(Promise.resolve(existing));
 
       const trips = [makeTrip()];
 
       await service.linkDeliveries(trips);
 
-      expect(deliverySpy.loadDeliveries).toHaveBeenCalled();
-      const updated = deliverySpy.loadDeliveries.calls.mostRecent().args[0][0];
+      expect(deliverySpy.load).toHaveBeenCalled();
+      const updated = deliverySpy.load.calls.mostRecent().args[0][0];
       expect(updated.pay).toBeGreaterThan(0);
       expect(updated.visits).toBe(1);
       expect(updated.trips.length).toBe(1);
@@ -123,13 +123,13 @@ describe('DataLinkingService', () => {
     });
 
     it('creates new delivery when none exists', async () => {
-      deliverySpy.getRemoteDeliveries.and.returnValue(Promise.resolve([]));
+      deliverySpy.list.and.returnValue(Promise.resolve([]));
       const trips = [makeTrip()];
 
       await service.linkDeliveries(trips);
 
-      expect(deliverySpy.loadDeliveries).toHaveBeenCalled();
-      const deliveriesArg = deliverySpy.loadDeliveries.calls.mostRecent().args[0];
+      expect(deliverySpy.load).toHaveBeenCalled();
+      const deliveriesArg = deliverySpy.load.calls.mostRecent().args[0];
       expect(deliveriesArg.length).toBe(1);
       expect(deliveriesArg[0].address).toBe('456 B St');
     });

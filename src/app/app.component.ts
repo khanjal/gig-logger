@@ -59,7 +59,15 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isLoading = false;
   }
 
+  private _reloadWindow: () => void = () => window.location.reload();
+
+  // Exposed to tests so we can avoid spying on the non-configurable
+  // `window.location.reload` in constrained environments.
+  setReloadFn(fn: () => void) {
+    this._reloadWindow = fn;
+  }
+
   reload() {
-    window.location.reload();
+    this._reloadWindow();
   }
 }

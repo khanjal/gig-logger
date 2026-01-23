@@ -2,15 +2,15 @@
     <!-- Loading overlay for transitions and page loads -->
     @if (isLoading) {
         <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div class="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-lg">
-                <mat-icon class="animate-spin text-blue-500 text-4xl mb-2">refresh</mat-icon>
+            <div class="flex flex-col items-center justify-center p-8 bg-surface rounded-lg shadow-lg">
+                <mat-icon class="animate-spin text-blue-600 dark:text-blue-400 text-4xl mb-2">refresh</mat-icon>
                 <p class="text-lg font-semibold">Loading...</p>
             </div>
         </div>
     }
     
     <div class="relative transition-all duration-300 w-full">
-        <app-current-average class="absolute top-0 right-0 z-10 m-4" [class.hidden]="isEditMode"></app-current-average>
+        <app-current-average class="absolute top-0 right-0 z-10 m-4 lg:pr-10" [class.hidden]="isEditMode"></app-current-average>
         <trip-form 
             (parentReload)="load()" 
             (editModeExit)="exitEditMode($event)" 
@@ -21,16 +21,16 @@
 
     @if (unsavedData && !pollingEnabled && !isEditMode) {
         <div class="flex justify-center my-4 w-full">
-            <button mat-fab extended class="flex items-center gap-2 px-6 py-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
+            <button mat-fab extended class="flex items-center gap-2 px-6 py-3 rounded-full bg-pink-500 hover:bg-pink-600 dark:bg-pink-600 dark:hover:bg-pink-700 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
         </div>
     }
 
     @if ((!unsavedData || pollingEnabled) && !isEditMode) {
         <div class="flex flex-col items-center my-4 w-full">
-            <div *ngIf="shouldShowUpdateMessage()" class="mb-2 mt-0 text-xs text-yellow-700 bg-yellow-100 border border-yellow-300 rounded px-3 py-1 text-center max-w-xs">
+            <div *ngIf="shouldShowUpdateMessage()" class="mb-2 mt-0 text-xs text-yellow-700 dark:text-yellow-300 bg-warning-500/20 border border-warning-500/30 rounded px-3 py-1 text-center max-w-xs">
                 <span class="font-bold">Reminder:</span> Update before doing any trips today to get the latest stats from your spreadsheet.
             </div>
-            <button mat-fab extended color="primary" class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
+            <button mat-fab extended color="primary" class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
         </div>
     }
 
@@ -55,8 +55,8 @@
                 <!-- Info icon for first trip (rowId === 2) -->
                 <ng-container *ngIf="trip.rowId === 2">
                     <div class="flex items-center mt-1 mb-2">
-                        <mat-icon matTooltip="ID 1 is reserved for the spreadsheet header. Your first trip starts at row 2." class="text-blue-400 text-base ml-2 cursor-pointer align-middle">info</mat-icon>
-                        <span class="text-xs text-gray-500 ml-1">ID 1 is the header in your spreadsheet.</span>
+                        <mat-icon matTooltip="ID 1 is reserved for the spreadsheet header. Your first trip starts at row 2." class="text-blue-600 dark:text-blue-400 text-base ml-2 cursor-pointer align-middle">info</mat-icon>
+                        <span class="text-xs text-secondary ml-1">ID 1 is the header in your spreadsheet.</span>
                     </div>
                 </ng-container>
             </div>
@@ -64,12 +64,12 @@
     }    <br/>
     @if (yesterdaysTrips.length > 0 && !isEditMode) {
         <div class="my-4">
-            <h2 id="yesterdaysTrips" class="flex items-center cursor-pointer bg-gray-100 rounded-lg px-4 py-2 transition hover:bg-gray-200 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
+            <h2 id="yesterdaysTrips" class="flex items-center cursor-pointer bg-surface-2 rounded-lg px-4 py-2 transition hover:bg-surface-3 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
                 <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips">
                     {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
                 <span>Yesterday's Trips ({{yesterdaysTrips.length}})</span>
-                <span class="ml-auto text-base text-gray-600 font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
+                <span class="ml-auto text-base text-secondary font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
             </h2>
             
             @if (showYesterdayTrips) {

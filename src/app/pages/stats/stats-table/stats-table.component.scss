@@ -15,7 +15,7 @@
     left: 0;
     z-index: 10;
     background: inherit;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-light);
   }
 }
 
@@ -27,7 +27,7 @@
   min-height: 200px;
   padding: 2rem;
   text-align: center;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   
   .empty-state-content {
     max-width: 300px;
@@ -36,7 +36,7 @@
       font-size: 48px;
       width: 48px;
       height: 48px;
-      color: $border-light;
+      color: var(--color-border);
       margin-bottom: 1rem;
     }
     
@@ -44,7 +44,7 @@
       margin: 0 0 0.5rem 0;
       font-size: 1.25rem;
       font-weight: 500;
-      color: $text-primary;
+      color: var(--color-text-primary);
     }
     
     p {

@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
 import { CommonModule } from '@angular/common';
 
 type PermissionState = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'checking';
@@ -43,56 +44,18 @@ export class AppPermissionsComponent implements OnInit {
     canRevoke: false
   };
 
-  constructor(private logger: LoggerService) {}
+  constructor(private logger: LoggerService, private _permissionService: PermissionService) {}
 
   async ngOnInit() {
-    await this.checkLocationPermission();
-    await this.checkMicrophonePermission();
+    // Initialize local states from PermissionService and subscribe to changes
+    this.updateLocationPermissionState(this._permissionService.getLocationState());
+    this.updateMicrophonePermissionState(this._permissionService.getMicrophoneState());
+
+    this._permissionService.getLocationState$().subscribe(state => this.updateLocationPermissionState(state));
+    this._permissionService.getMicrophoneState$().subscribe(state => this.updateMicrophonePermissionState(state));
   }
 
-  async checkLocationPermission() {
-    if (!('permissions' in navigator)) {
-      this.locationPermission.state = 'unsupported';
-      return;
-    }
-
-    try {
-      const result = await navigator.permissions.query({ name: 'geolocation' });
-      this.updateLocationPermissionState(result.state as PermissionState);
-      
-      result.onchange = () => {
-        this.updateLocationPermissionState(result.state as PermissionState);
-      };
-    } catch (error) {
-      this.locationPermission.state = 'unsupported';
-    }
-  }
-
-  async checkMicrophonePermission() {
-    if (!('permissions' in navigator)) {
-      this.microphonePermission.state = 'unsupported';
-      return;
-    }
-
-    try {
-      // Try to query microphone permission
-      const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-      this.updateMicrophonePermissionState(result.state as PermissionState);
-      
-      result.onchange = () => {
-        this.updateMicrophonePermissionState(result.state as PermissionState);
-      };
-    } catch (error) {
-      // If query fails, check if we have media devices API
-      if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
-        // We can't query the permission, but we can try to request it
-        this.microphonePermission.state = 'prompt';
-        this.microphonePermission.canRequest = true;
-      } else {
-        this.microphonePermission.state = 'unsupported';
-      }
-    }
-  }
+  // PermissionService handles querying and watching permission state.
 
   private updateLocationPermissionState(state: PermissionState) {
     this.locationPermission.state = state;
@@ -108,16 +71,8 @@ export class AppPermissionsComponent implements OnInit {
 
   async requestLocation() {
     try {
-      await navigator.geolocation.getCurrentPosition(
-        () => {
-          this.locationPermission.state = 'granted';
-          this.locationPermission.canRequest = false;
-        },
-        () => {
-          this.locationPermission.state = 'denied';
-          this.locationPermission.canRequest = false;
-        }
-      );
+      const state = await this._permissionService.requestLocation();
+      this.updateLocationPermissionState(state);
     } catch (error) {
       this.logger.error('Error requesting location:', error);
     }
@@ -125,14 +80,9 @@ export class AppPermissionsComponent implements OnInit {
 
   async requestMicrophone() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Stop the stream immediately after getting permission
-      stream.getTracks().forEach(track => track.stop());
-      this.microphonePermission.state = 'granted';
-      this.microphonePermission.canRequest = false;
+      const state = await this._permissionService.requestMicrophone();
+      this.updateMicrophonePermissionState(state);
     } catch (error) {
-      this.microphonePermission.state = 'denied';
-      this.microphonePermission.canRequest = false;
       this.logger.error('Error requesting microphone:', error);
     }
   }

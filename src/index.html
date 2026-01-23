@@ -18,6 +18,31 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <script>
+    // Early theme bootstrap to avoid flash of incorrect theme
+    (function() {
+      var storageKey = 'rg-theme-preference';
+      try {
+        var saved = localStorage.getItem(storageKey) || 'system';
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var resolved = saved === 'dark' || (saved === 'system' && prefersDark) ? 'dark' : 'light';
+        var html = document.documentElement;
+        html.classList.remove('theme-light', 'theme-dark');
+        html.classList.add(resolved === 'dark' ? 'theme-dark' : 'theme-light');
+        html.setAttribute('data-theme', resolved);
+        html.setAttribute('data-theme-preference', saved);
+        html.style.colorScheme = resolved;
+
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) {
+          meta.setAttribute('content', resolved === 'dark' ? '#0b1221' : '#1976d2');
+        }
+      } catch (err) {
+        console.warn('[WARN]: Theme bootstrap failed', err);
+      }
+    })();
+  </script>
+
+  <script>
     if (global === undefined) {
       var global = window;
     }
