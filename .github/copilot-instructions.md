@@ -428,6 +428,21 @@ When a GitHub issue link (e.g., `https://github.com/khanjal/gig-logger/issues/34
   - Check issue status: `gh issue view <issue-number>`
 - This automates issue tracking without manual GitHub website updates
 
+### GitHub Project Board Integration
+**Project**: RaptorGig Board (auto-detected by name)
+
+When creating new GitHub issues:
+1. **Automatically add to project board** using the workflow in `.github/workflows/add-to-project.yml`
+2. **Move issues between columns**: `./scripts/move-project-item.ps1 -Repo "khanjal/gig-logger" -IssueNumbers 360 -ColumnName "Done"`
+3. **List available columns**: `./scripts/list-project-fields.ps1 -ProjectName "RaptorGig Board"`
+
+Available columns: New, Backlog, Ready, In progress, In review, Done
+
+**Note**: 
+- Scripts automatically find the "RaptorGig Board" project by name
+- Column names support partial matching (e.g., "Done" matches "✅ Done")
+- Use `-ProjectName` parameter to override default project name
+
 ## Critical Dependencies
 - **@angular/material**: UI component library
 - **dexie**: IndexedDB wrapper for local storage
