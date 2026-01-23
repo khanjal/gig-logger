@@ -2,7 +2,6 @@ import { enableProdMode, importProvidersFrom, APP_INITIALIZER } from '@angular/c
 import { bootstrapApplication } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -31,7 +30,6 @@ bootstrapApplication(AppComponent, {
       CommonModule,
       RouterModule,
       AppRoutingModule,
-      MatDialogModule,
       BrowserAnimationsModule,      
       ServiceWorkerModule.register('ngsw-worker.js', {
         enabled: environment.production,

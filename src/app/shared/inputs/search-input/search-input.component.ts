@@ -7,7 +7,7 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -49,7 +49,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe],
+  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
