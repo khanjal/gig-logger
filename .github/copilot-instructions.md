@@ -95,6 +95,7 @@ npm test -- --watch=false --code-coverage --browsers=ChromeHeadless  # With cove
 - **Pipe Tests**: Simple input/output assertions, no TestBed needed for pure pipes
 - **Guard Tests**: Mock Router and AuthService, verify navigation behavior
 - **Quick Wins Strategy**: Target simple files first (pipes, helpers, basic services) to build momentum
+- **Unit Test Rule**: Every new component, service, pipe, guard, or helper must ship with a matching `.spec.ts` covering happy path and edge cases.
 
 ### Test File Patterns
 ```typescript
@@ -148,6 +149,226 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 - Use **Angular Material components** styled with custom SCSS variables
 - **Color system**: Reference `color-vars.scss` for consistent theming
 - **Spacing**: Use Tailwind's extended spacing scale (includes custom 0.5, 18, 88)
+
+## Dark/Light Theme System
+
+### Theme Architecture
+- **Theme Toggle**: Users can switch between light, dark, and system preference modes
+- **CSS Variables**: Core theme colors defined in `src/styles.scss` with `:root` (light) and `html.theme-dark` (dark) blocks
+- **Tailwind Dark Mode**: Uses `darkMode: 'class'` strategy with `html.theme-dark` selector
+- **Theme Service**: `ThemeService` manages theme state, persistence, and system preference detection
+
+### Color Standards & Best Practices
+
+**REQUIRED: Always implement both light and dark mode variants for all UI elements**
+
+#### 1. Text Colors
+Use Tailwind's gray scale with proper dark mode variants:
+```html
+<!-- Standard text -->
+<p class="text-gray-800 dark:text-gray-200">Primary content</p>
+<p class="text-gray-600 dark:text-gray-300">Secondary content</p>
+<p class="text-gray-500 dark:text-gray-400">Tertiary content</p>
+
+<!-- Semantic color text -->
+<span class="text-blue-700 dark:text-blue-300">Blue accent</span>
+<span class="text-green-700 dark:text-green-400">Success</span>
+<span class="text-red-700 dark:text-red-400">Error</span>
+<span class="text-orange-700 dark:text-orange-400">Warning</span>
+```
+
+**Rule**: Light mode uses darker shades (600-800), dark mode uses lighter shades (200-400)
+
+#### 2. Background Colors
+```html
+<!-- Card/surface backgrounds -->
+<div class="bg-gray-50 dark:bg-gray-900">Surface</div>
+<div class="bg-white dark:bg-gray-800">Container</div>
+
+<!-- Accent backgrounds -->
+<div class="bg-blue-50 dark:bg-blue-950">Info card</div>
+<div class="bg-green-50 dark:bg-green-950">Success card</div>
+<div class="bg-red-50 dark:bg-red-950">Error card</div>
+<div class="bg-orange-50 dark:bg-orange-950">Warning card</div>
+
+<!-- Translucent backgrounds (when opacity is needed) -->
+<div class="bg-blue-100 dark:bg-blue-900/30">Badge</div>
+<div class="bg-purple-100 dark:bg-purple-900/30">Tag</div>
+```
+
+**Rule**: Light mode uses -50/-100 shades, dark mode uses -950 shades or -900/opacity for translucency
+
+#### 3. Border Colors
+```html
+<!-- Subtle borders -->
+<div class="border border-gray-200 dark:border-gray-700">Card</div>
+<div class="divide-y divide-gray-200 dark:divide-gray-700">List</div>
+
+<!-- Accent borders -->
+<div class="border-blue-200 dark:border-blue-800">Info border</div>
+```
+
+**Rule**: Light mode uses -200 shades, dark mode uses -700/-800 shades
+
+#### 4. CSS Variables (for complex SCSS components)
+When Tailwind classes are insufficient (e.g., Material components), use CSS variables:
+```scss
+.my-component {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+```
+
+Available CSS variables (defined in `src/styles.scss`):
+- `--color-surface`, `--color-surface-2`, `--color-surface-3`: Background layers
+- `--color-text-primary`, `--color-text-secondary`, `--color-text-tertiary`: Text hierarchy
+- `--color-border`, `--color-border-light`: Borders and dividers
+- `--color-error`, `--color-warning`, `--color-success`, `--color-info`: Semantic colors
+
+#### 5. Semantic Utility Classes
+For automatic theme-aware styling, use these semantic classes (defined in styles.scss):
+```html
+<p class="text-primary">Auto-themed primary text</p>
+<p class="text-secondary">Auto-themed secondary text</p>
+<div class="bg-surface">Auto-themed surface</div>
+<div class="bg-surface-2">Auto-themed elevated surface</div>
+<div class="border-soft">Auto-themed border</div>
+```
+
+### Common Mistakes to Avoid
+❌ **DON'T**: Use hardcoded colors without dark variants
+```html
+<p class="text-gray-600">This will be too dark in dark mode</p>
+<div class="bg-blue-50">This will be too light in dark mode</div>
+```
+
+✅ **DO**: Always include dark mode variants
+```html
+<p class="text-gray-600 dark:text-gray-300">Proper contrast in both modes</p>
+<div class="bg-blue-50 dark:bg-blue-950">Proper background in both modes</div>
+```
+
+### Material Expansion Panel Dark Mode Challenge
+
+**CRITICAL**: Angular Material expansion panels use shadow DOM encapsulation that blocks both Tailwind's `dark:` utility classes and standard CSS from penetrating into panel content.
+
+#### The Problem
+When content is inside `<mat-expansion-panel>`, Tailwind dark mode classes like `dark:text-gray-300` **will not work** even with `::ng-deep`:
+
+```html
+<!-- ❌ This WILL NOT work inside mat-expansion-panel -->
+<div class="text-gray-600 dark:text-gray-300">
+  This text stays dark gray in dark mode
+</div>
+```
+
+#### The Solution: Extract to Child Components
+Create separate standalone components for panel content and use `:host-context(html.theme-dark)` in component SCSS:
+
+```typescript
+// diagnostic-item.component.ts
+@Component({
+  selector: 'app-diagnostic-item',
+  standalone: true,
+  templateUrl: './diagnostic-item.component.html',
+  styleUrl: './diagnostic-item.component.scss'
+})
+export class DiagnosticItemComponent {
+  @Input() item: any;
+  @Input() itemType: string;
+}
+```
+
+```html
+<!-- diagnostic-item.component.html -->
+<div class="item-content">
+  <span class="item-name">{{ item.name }}</span>
+  <span class="item-meta">{{ item.trips }} trips</span>
+</div>
+```
+
+```scss
+// diagnostic-item.component.scss
+.item-name {
+  color: rgb(31 41 55); // text-gray-800
+}
+
+.item-meta {
+  color: rgb(75 85 99); // text-gray-600
+}
+
+:host-context(html.theme-dark) {
+  .item-name {
+    color: rgb(229 231 235); // text-gray-200
+  }
+
+  .item-meta {
+    color: rgb(209 213 219); // text-gray-300
+  }
+}
+```
+
+```html
+<!-- Parent component using expansion panel -->
+<mat-expansion-panel>
+  <mat-expansion-panel-header>...</mat-expansion-panel-header>
+  <div>
+    <app-diagnostic-item [item]="item" [itemType]="type"></app-diagnostic-item>
+  </div>
+</mat-expansion-panel>
+```
+
+#### Why This Works
+- Child components have their own style encapsulation that bypasses Material's shadow DOM
+- `:host-context(html.theme-dark)` can detect theme changes from the parent HTML element
+- SCSS with direct RGB values (not Tailwind classes) ensures styles apply correctly
+
+#### Parent Panel SCSS Fallback
+For text directly in the panel (not in child components), use aggressive `::ng-deep` selectors:
+
+```scss
+:host-context(html.theme-dark) {
+  ::ng-deep .mat-expansion-panel-body {
+    // Override specific Tailwind classes
+    .text-gray-600,
+    div.text-gray-600,
+    p.text-gray-600 {
+      color: rgb(229 231 235) !important; // text-gray-200
+    }
+  }
+}
+```
+
+#### Real-World Example
+The diagnostics page (`diagnostics.component.ts`) uses this pattern:
+- `diagnostic-group.component` - handles grouped duplicate items
+- `diagnostic-item.component` - handles individual diagnostic items
+- Both use `:host-context(html.theme-dark)` with SCSS class-based styling
+- Parent `diagnostics.component.scss` uses `::ng-deep` for direct panel text
+
+**Best Practice**: When adding new content to Material expansion panels, dialogs, or bottom sheets, always create child components for complex content that needs dark mode styling.
+
+❌ **DON'T**: Override CSS variables in component SCSS without dark mode consideration
+```scss
+.my-component {
+  color: #333; // Hardcoded - bad!
+}
+```
+
+✅ **DO**: Use CSS variables or Tailwind classes
+```scss
+.my-component {
+  color: var(--color-text-primary); // Theme-aware - good!
+}
+```
+
+### Testing Dark Mode
+- **Always test visual changes in both light and dark modes**
+- Use browser DevTools to toggle `html.theme-dark` class
+- Check contrast ratios for accessibility (WCAG AA minimum)
+- Verify readability of all text elements
+- Ensure backgrounds have appropriate opacity/darkness
 
 ## Common Development Workflows
 

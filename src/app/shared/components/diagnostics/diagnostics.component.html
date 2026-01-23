@@ -1,4 +1,4 @@
-<div class="diagnostics-container p-4 bg-gray-50 rounded-lg shadow">
+<div class="diagnostics-container p-4 bg-surface-2 rounded-lg shadow">
   <div class="diagnostics-actions mb-4 flex justify-end">
     <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading" class="flex items-center gap-2">
       <mat-icon>refresh</mat-icon>
@@ -12,21 +12,21 @@
           {{ getSeverityIcon(item.severity) }}
         </mat-icon>
         <div class="flex-1">
-          <div class="font-semibold text-lg">{{ item.name }}</div>
-          <div class="text-gray-500 text-sm">{{ item.description }}</div>
+          <div class="font-semibold text-lg text-primary">{{ item.name }}</div>
+          <div class="text-gray-500 dark:text-gray-400 text-sm">{{ item.description }}</div>
         </div>
-        <div class="text-xs bg-gray-200 rounded px-2 py-1">{{ item.count }}</div>
+        <div class="text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded px-2 py-1">{{ item.count }}</div>
       </div>
       <div *ngIf="item.items && item.items.length > 0" class="mt-2">
-        <div class="font-medium mb-2">
+        <div class="font-medium mb-2 text-primary">
           Details ({{ item.items.length }} items{{ item.groups ? ' in ' + item.groups.length + ' groups' : '' }}):
         </div>
         <ng-container *ngIf="item.groups && item.groups.length > 0; else showIndividualItems">
           <div *ngFor="let group of item.groups; let groupIndex = index" class="mb-4">
-            <div class="font-bold text-blue-700 mb-1">
+            <div class="font-bold text-blue-700 dark:text-blue-300 mb-1">
               Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):
             </div>
-            <ul class="pl-4 border-l-2 border-blue-200">
+            <ul class="pl-4 border-l-2 border-blue-200 dark:border-blue-800">
               <li *ngFor="let problemItem of group" class="py-1">
                 <ng-container [ngSwitch]="item.itemType">
                   <ng-container *ngSwitchCase="'shift'">

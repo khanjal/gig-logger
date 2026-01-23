@@ -28,19 +28,19 @@ mat-form-field {
   max-width: 100% !important;
   
   .mat-mdc-form-field-flex {
-    background: $surface-color;
+    background: var(--color-surface);
     border-radius: 0.75rem;
-    border: 1px solid $border-color;
+    border: 1px solid var(--color-border);
     transition: all 0.2s ease-in-out;
     
     &:hover {
-      border-color: $primary-300;
-      box-shadow: 0 2px 8px $shadow-light;
+      border-color: var(--primary-300);
+      box-shadow: var(--shadow-light);
     }
     
     &.mdc-text-field--focused {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      border-color: var(--primary-600);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
     }
   }
   
@@ -55,15 +55,15 @@ mat-form-field {
   
   input {
     font-size: 1rem;
-    color: $text-primary;
+    color: var(--color-text-primary);
     
     &::placeholder {
-      color: $text-tertiary;
+      color: var(--color-text-tertiary);
     }
   }
   
   .mat-mdc-form-field-label {
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     font-weight: 500;
   }
 }
@@ -133,10 +133,10 @@ mat-form-field {
   }
   
   .current-time-btn {
-    color: $success-color;
+    color: var(--success-500);
     
     &:hover:not(:disabled) {
-      box-shadow: 0 2px 8px rgba($success-color, 0.2);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--success-500) 20%, transparent);
       transform: translateY(-1px);
     }
     
@@ -151,7 +151,7 @@ mat-form-field {
   }
   
   .clear-time-btn {
-    color: $danger-color;
+    color: var(--error-500);
     
     &:hover:not(:disabled) {
       transform: translateY(-1px);
@@ -172,7 +172,7 @@ mat-form-field {
 .time-picker-dialog {
   .mat-mdc-dialog-container {
     border-radius: 1rem;
-    box-shadow: 0 8px 32px $shadow-heavy;
+    box-shadow: var(--shadow-heavy);
   }
   
   .mat-mdc-dialog-content {
@@ -203,25 +203,25 @@ mat-form-field {
   .quick-time-btn {
     min-height: 44px;
     padding: 0.75rem;
-    background: $surface-color;
-    border: 1px solid $border-color;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 0.5rem;
-    color: $text-primary;
+    color: var(--color-text-primary);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     
     &:hover {
-      background: $primary-50;
-      border-color: $primary-color;
-      color: $primary-color;
+      background: color-mix(in srgb, var(--primary-500) 10%, transparent);
+      border-color: var(--primary-600);
+      color: var(--primary-600);
     }
     
     &.selected {
-      background: linear-gradient(135deg, $primary-color 0%, $primary-700 100%);
+      background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
       color: white;
-      border-color: $primary-color;
+      border-color: var(--primary-600);
     }
     
     @media (min-width: 768px) {
@@ -238,13 +238,13 @@ mat-form-field {
   gap: 0.5rem;
   margin-top: 1rem;
   padding: 0.75rem;
-  background: $surface-secondary;
+  background: var(--color-surface-tertiary);
   border-radius: 0.5rem;
-  border: 1px solid $border-light;
+  border: 1px solid var(--color-border-light);
   
   .format-label {
     font-size: 0.875rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     font-weight: 500;
   }
   
@@ -256,18 +256,18 @@ mat-form-field {
 // Error States
 .time-input-error {
   .time-input-field mat-form-field .mat-mdc-form-field-flex {
-    border-color: $danger-color;
-    background: rgba($danger-color, 0.05);
+    border-color: var(--error-500);
+    background: color-mix(in srgb, var(--error-500) 5%, transparent);
   }
 }
 
 // Focus States for Accessibility
 .time-actions button:focus {
-  outline: 2px solid $primary-color;
+  outline: 2px solid var(--primary-600);
   outline-offset: 2px;
 }
 
 .quick-time-btn:focus {
-  outline: 2px solid $primary-color;
+  outline: 2px solid var(--primary-600);
   outline-offset: 2px;
 }

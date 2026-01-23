@@ -29,7 +29,7 @@
   justify-content: space-between;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid $border-light;
+  border-bottom: 2px solid var(--color-border);
   
   @media (max-width: 768px) {
     margin-bottom: 1rem;
@@ -47,7 +47,7 @@
   .title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: $text-primary;
+    color: var(--color-text-primary);
     
     @media (max-width: 768px) {
       font-size: 1.3rem;
@@ -85,14 +85,14 @@
     width: 100%;
     min-height: 48px;
     padding: 12px 16px;
-    border: 2px solid $border-color;
+    border: 2px solid var(--color-border);
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
     &:focus {
-      border-color: $accent-color;
-      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      border-color: var(--accent-600);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-600) 10%, transparent);
       outline: none;
     }
     
@@ -115,7 +115,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: $text-primary;
+    color: var(--color-text-primary);
     font-size: 0.95rem;
     
     @media (max-width: 768px) {
@@ -134,10 +134,10 @@
 .address-suggestions {
   max-height: 300px;
   overflow-y: auto;
-  border: 1px solid $border-color;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: white;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-light);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
@@ -155,11 +155,11 @@
   .suggestion-item {
     padding: 12px 16px;
     cursor: pointer;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--color-border);
     transition: background-color 0.2s ease;
     
     &:hover {
-      background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, color-mix(in srgb, var(--secondary-500) 10%, transparent) 100%);
     }
     
     &:last-child {
@@ -178,13 +178,13 @@
     
     .primary-text {
       font-weight: 500;
-      color: $text-primary;
+      color: var(--color-text-primary);
       margin-bottom: 0.25rem;
     }
     
     .secondary-text {
       font-size: 0.85rem;
-      color: $text-secondary;
+      color: var(--color-text-secondary);
       
       @media (max-width: 768px) {
         font-size: 0.8rem;
@@ -203,7 +203,7 @@
   gap: 1rem;
   justify-content: flex-end;
   padding-top: 1rem;
-  border-top: 1px solid $border-light;
+  border-top: 1px solid var(--color-border);
   
   @media (max-width: 768px) {
     gap: 0.75rem;
@@ -236,14 +236,14 @@
 
 // Save button styling
 .save-button {
-  background: linear-gradient(135deg, $success-color 0%, $success-600 100%);
+  background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
   color: white;
   border: none;
   
   &:hover {
-    background: linear-gradient(135deg, $success-600 0%, $success-700 100%);
+    background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--success-500) 30%, transparent);
   }
   
   &:active {
@@ -253,14 +253,14 @@
 
 // Cancel button styling
 .cancel-button {
-  background: linear-gradient(135deg, $background-light 0%, $border-color 100%);
-  color: $text-primary;
-  border: 1px solid $border-color;
+  background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, var(--color-border) 100%);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
   
   &:hover {
-    background: linear-gradient(135deg, $border-light 0%, $background-light 100%);
+    background: linear-gradient(135deg, var(--color-border) 0%, var(--color-surface-tertiary) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
   }
   
   &:active {
@@ -288,7 +288,7 @@
 .no-suggestions {
   padding: 2rem;
   text-align: center;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   font-style: italic;
   
   @media (max-width: 768px) {

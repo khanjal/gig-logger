@@ -7,7 +7,8 @@
     margin-bottom: 1rem;
     border-radius: 0.5rem !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
     
     &:before {
       display: none;
@@ -22,6 +23,8 @@
     padding: 0.75rem 0.5rem;
     min-height: 48px !important;
     height: auto !important;
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
     
     @media (min-width: 768px) {
       padding: 1rem 1.5rem;
@@ -41,6 +44,7 @@
 
   .mat-expansion-panel-body {
     padding: 0 !important;
+    background-color: var(--color-surface);
   }
 
   mat-panel-title {
@@ -51,6 +55,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: var(--color-text-primary);
     
     @media (min-width: 768px) {
       font-size: 1rem;
@@ -83,6 +88,7 @@
     justify-content: flex-end;
     margin-left: 0;
     flex-shrink: 0;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -93,5 +99,73 @@
     flex-direction: row !important;
     align-items: center !important;
     gap: 0.5rem !important;
+  }
+}
+
+// Dark mode support
+:host-context(html.theme-dark) {
+  ::ng-deep .diagnostics-accordion {
+    .mat-expansion-panel {
+      background-color: var(--color-surface) !important;
+      border-color: var(--color-border) !important;
+      color: var(--color-text-primary) !important;
+    }
+
+    .mat-expansion-panel-header {
+      background-color: var(--color-surface) !important;
+      color: var(--color-text-primary) !important;
+      
+      &:hover {
+        background: rgba(59, 130, 246, 0.1) !important;
+      }
+    }
+
+    .mat-expansion-panel-body {
+      background-color: var(--color-surface) !important;
+      color: var(--color-text-primary) !important;
+    }
+    
+    .mat-expansion-panel-content {
+      background-color: var(--color-surface) !important;
+    }
+    
+    mat-panel-title,
+    mat-panel-description {
+      color: var(--color-text-primary) !important;
+      
+      // Only override the description text span, not the badge
+      span.text-gray-600 {
+        color: rgb(209 213 219) !important; // text-gray-300
+      }
+    }
+  }
+  
+  // Force light text colors on panel content elements
+  ::ng-deep .mat-expansion-panel-body {
+    color: var(--color-text-primary) !important;
+    
+    // Panel description and group info text - all variations
+    .text-gray-600,
+    div.text-gray-600,
+    p.text-gray-600 {
+      color: rgb(229 231 235) !important; // text-gray-200
+    }
+    
+    // Specific override for the duplicate groups text
+    div.text-sm.text-gray-600 {
+      color: rgb(229 231 235) !important; // text-gray-200
+    }
+    
+    select,
+    input[type="text"],
+    input[type="radio"] {
+      background-color: var(--color-surface-2);
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
+    }
+    
+    .mat-radio-button {
+      color: var(--color-text-primary);
+    }
   }
 }

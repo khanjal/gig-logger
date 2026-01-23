@@ -22,4 +22,15 @@
     font-weight: 500;
     margin-top: 0;
   }
+
+  :host-context(html.theme-dark) {
+    .sheet-form {
+      // Use CSS variables to ensure proper dark background/text
+      color: var(--color-text-primary);
+    }
+
+    .creating-sheet-text {
+      color: var(--color-text-secondary);
+    }
+  }
 }

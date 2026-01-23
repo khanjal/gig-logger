@@ -465,7 +465,7 @@ export class TripFormComponent implements OnInit {
     let address = this.tripForm.value.endAddress;
     if (!address) { this.selectedAddressDeliveries = []; return; }
     this.selectedAddress = await this._addressService.find('address', address);
-    this.selectedAddressDeliveries = await this._deliveryService.queryRemoteDeliveries("address", address);
+    this.selectedAddressDeliveries = await this._deliveryService.filter("address", address);
     sort(this.selectedAddressDeliveries, 'name');
   }
 
@@ -473,7 +473,7 @@ export class TripFormComponent implements OnInit {
     let name = this.tripForm.value.name;
     if (!name) { this.selectedNameDeliveries = []; return; }
     this.selectedName = await this._nameService.find('name', name);
-    this.selectedNameDeliveries = await this._deliveryService.queryRemoteDeliveries("name", name);
+    this.selectedNameDeliveries = await this._deliveryService.filter("name", name);
     sort(this.selectedNameDeliveries, 'address');
   }
 

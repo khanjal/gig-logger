@@ -1,4 +1,4 @@
-<mat-card class="mb-6"> 
+<mat-card class="auth-status-card mb-6 bg-surface text-gray-800 dark:text-gray-200"> 
   <mat-card-header>
     <mat-card-title>
       <mat-icon [ngClass]="{
@@ -9,69 +9,69 @@
       Authentication Status
     </mat-card-title>
   </mat-card-header>
-    <mat-card-content>
+    <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
     <!-- User ID Status -->
     <div class="status-row">
-      <span class="status-label">User ID:</span>
+      <span class="status-label text-gray-700 dark:text-gray-200">User ID:</span>
       <mat-chip 
         [ngClass]="{
           'chip-success': userId,
           'chip-error': !userId
         }"
         selected>
-        {{ userId || 'Missing' }}
+        <span class="chip-text">{{ userId || 'Missing' }}</span>
       </mat-chip>
     </div>
 
     <!-- localStorage Status -->
     <div class="status-row">
-      <span class="status-label">Local Storage:</span>
+      <span class="status-label text-gray-700 dark:text-gray-200">Local Storage:</span>
       <mat-chip 
         [ngClass]="{
           'chip-success': localStorageAuth,
           'chip-error': !localStorageAuth
         }"
         selected>
-        {{ localStorageAuth ? 'TRUE' : 'FALSE' }}
+        <span class="chip-text">{{ localStorageAuth ? 'TRUE' : 'FALSE' }}</span>
       </mat-chip>
     </div>
 
     <!-- Access Token Status -->
     <div class="status-row">
-      <span class="status-label">Access Token:</span>
+      <span class="status-label text-gray-700 dark:text-gray-200">Access Token:</span>
       <mat-chip 
         [ngClass]="{
           'chip-success': hasAccessToken,
           'chip-error': !hasAccessToken
         }"
         selected>
-        {{ hasAccessToken ? 'Present' : 'Missing' }}
+        <span class="chip-text">{{ hasAccessToken ? 'Present' : 'Missing' }}</span>
       </mat-chip>
     </div>
 
     <!-- Token Preview -->
     <div class="status-row" *ngIf="hasAccessToken">
-      <span class="status-label">Token Preview:</span>
+      <span class="status-label text-gray-700 dark:text-gray-200">Token Preview:</span>
       <code class="token-preview">{{ accessTokenPreview }}</code>
     </div>
 
     <!-- Overall Status -->
     <div class="status-row">
-      <span class="status-label">Overall Status:</span>
+      <span class="status-label text-gray-700 dark:text-gray-200">Overall Status:</span>
       <mat-chip 
         [ngClass]="{
           'chip-success': isAuthenticated,
           'chip-error': !isAuthenticated
         }"
         selected>
-        {{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}
+        <span class="chip-text">{{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}</span>
       </mat-chip>
     </div>
 
     <!-- Last Updated -->
     <div class="status-row">
-      <span class="status-label">Last Updated:</span>
-      <span class="timestamp">{{ lastUpdated | date:'medium' }}</span>
+      <span class="status-label text-gray-700 dark:text-gray-200">Last Updated:</span>
+      <span class="timestamp text-gray-700 dark:text-gray-300">{{ lastUpdated | date:'medium' }}</span>
     </div>
   </mat-card-content>
 </mat-card>

@@ -20,13 +20,13 @@
     <p class="transcript-text">{{ transcript || 'Speak now...' }}</p>
     <p *ngIf="recognizing && suggestionPhrase" class="suggestion-text">Try: "{{ suggestionPhrase }}"</p>
     <div *ngIf="!recognizing && transcript">
-      <div *ngIf="hasParsedData" class="parsed-result bg-gray-100 rounded p-2 mt-2 text-xs text-gray-700">
+      <div *ngIf="hasParsedData" class="bg-surface-2 rounded p-2 mt-2 text-xs text-primary">
         <span class="font-semibold">Assigned fields:</span>
         <ng-container *ngFor="let entry of parsedResultEntries">
           <span class="block"><span class="font-medium">{{ entry.key }}</span> = <span class="font-mono">{{ entry.value }}</span></span>
         </ng-container>
       </div>
-      <div *ngIf="parsedResult && !hasParsedData" class="parsed-result bg-gray-100 rounded p-2 mt-2 text-xs text-gray-700">
+      <div *ngIf="parsedResult && !hasParsedData" class="bg-surface-2 rounded p-2 mt-2 text-xs text-primary">
         <span class="font-semibold">No data found.</span>
       </div>
     </div>

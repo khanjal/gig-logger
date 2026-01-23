@@ -5,12 +5,127 @@
 @use 'app/shared/styles/forms';
 @use 'app/shared/styles/components';
 @use 'app/shared/styles/tables';
+@use 'app/shared/styles/mat-select-panels';
 @use 'app/pages/setup/sheet-link/custom-modalbox';
+@use 'app/shared/styles/menu-overrides';
 
 /* Tailwind CSS imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Shared component utilities mapped to theme tokens */
+@layer components {
+  .bg-surface { background-color: var(--color-surface); }
+  .bg-surface-2 { background-color: var(--color-surface-secondary); }
+  .bg-surface-3 { background-color: var(--color-surface-tertiary); }
+  .bg-overlay { background-color: var(--color-overlay); }
+
+  .text-primary { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .text-tertiary { color: var(--color-text-tertiary); }
+  .text-inverse { color: var(--color-text-inverse); }
+  .text-muted { color: var(--color-text-secondary); }
+
+  .border-soft { border: 1px solid var(--color-border-light); }
+  .border-strong { border: 1px solid var(--color-border); }
+  .ring-focus { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+  .shadow-soft { box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium); }
+  .shadow-strong { box-shadow: 0 4px 6px var(--shadow-light), 0 2px 4px var(--shadow-medium); }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: var(--color-surface-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  h1 {
+    color: var(--color-text-primary);
+  }
+}
+
+/* Theme CSS variables for runtime light/dark switching */
+:root {
+  --color-bg: #{$background-color};
+  --color-bg-secondary: #{$background-secondary};
+  --color-surface: #{$surface-color};
+  --color-surface-secondary: #{$surface-secondary};
+  --color-surface-tertiary: #{$surface-tertiary};
+  --color-overlay: #{$background-overlay};
+
+  --color-text-primary: #{$text-primary};
+  --color-text-secondary: #{$text-secondary};
+  --color-text-tertiary: #{$text-tertiary};
+  --color-text-inverse: #{$text-inverse};
+  --color-text-disabled: #{$text-disabled};
+
+  --color-border: #{$border-color};
+  --color-border-light: #{$border-light};
+  --color-border-dark: #{$border-dark};
+  --color-border-focus: #{$border-focus};
+
+  --shadow-light: #{$shadow-light};
+  --shadow-medium: #{$shadow-medium};
+  --shadow-heavy: #{$shadow-heavy};
+
+  --primary-50: #{$primary-50};
+  --primary-100: #{$primary-100};
+  --primary-200: #{$primary-200};
+  --primary-300: #{$primary-300};
+  --primary-400: #{$primary-400};
+  --primary-500: #{$primary-light};
+  --primary-600: #{$primary-600};
+  --primary-700: #{$primary-700};
+  --primary-800: #{$primary-800};
+  --primary-900: #{$primary-900};
+
+  --success-500: #{$success-color};
+  --warning-500: #{$warning-color};
+  --error-500: #{$error-color};
+
+  color-scheme: light;
+}
+
+html.theme-light {
+  color-scheme: light;
+}
+
+html.theme-dark {
+  --color-bg: #{map-get($gray, 900)};
+  --color-bg-secondary: #{map-get($gray, 800)};
+  --color-surface: #{map-get($gray, 800)};
+  --color-surface-secondary: #{map-get($gray, 700)};
+  --color-surface-tertiary: #{map-get($gray, 600)};
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  --color-text-primary: #e5e7eb;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  --color-text-inverse: #e5e7eb;
+  --color-text-disabled: #475569;
+
+  --color-border: #{map-get($gray, 600)};
+  --color-border-light: #{map-get($gray, 600)};
+  --color-border-dark: #{map-get($gray, 500)};
+  --color-border-focus: #{$primary-color};
+
+  --shadow-light: rgba(0, 0, 0, 0.35);
+  --shadow-medium: rgba(0, 0, 0, 0.45);
+  --shadow-heavy: rgba(0, 0, 0, 0.6);
+
+  // Override primary colors for better visibility in dark mode
+  --primary-600: #60a5fa; // Lighter blue for links
+  --primary-700: #93c5fd; // Even lighter for hover
+  
+  color-scheme: dark;
+}
 
 /* Reset and Base Styles */
 *,
@@ -24,6 +139,9 @@ html {
   font-size: 16px; /* Base font size for rem calculations */
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 body {
@@ -33,11 +151,12 @@ body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.875rem; /* 14px - mobile optimized */
   line-height: 1.5;
-  color: $text-primary;
-  background-color: $background-color;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Typography Scale - Mobile First */
@@ -45,7 +164,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 0 0.75rem 0;
   font-weight: 600;
   line-height: 1.3;
-  color: $text-primary;
+  color: var(--color-text-primary);
 }
 
 h1 { font-size: 1.5rem; }   /* 24px */
@@ -102,33 +221,307 @@ h6 { font-size: 0.75rem; }  /* 12px */
     margin-top: -0.625rem;
     margin-left: -0.625rem;
     border-radius: 50%;
-    border: 2px solid $border-color;
-    border-top-color: $primary-color;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--primary-600);
     animation: spinner 0.8s linear infinite;
   }
 }
 
 /* Material Design Component Overrides */
+
+/* Material Form Field Dark Mode Support */
+html.theme-dark {
+  .mat-mdc-form-field {
+    // Input text color
+    .mat-mdc-input-element,
+    .mat-mdc-select-value,
+    input,
+    textarea {
+      color: var(--color-text-primary) !important;
+      caret-color: var(--color-text-primary);
+    }
+    
+    // Label color
+    .mat-mdc-floating-label,
+    .mdc-floating-label {
+      color: var(--color-text-secondary) !important;
+    }
+    
+    // Focused label
+    &.mat-focused .mat-mdc-floating-label,
+    &.mat-focused .mdc-floating-label {
+      color: var(--primary-500) !important;
+    }
+    
+    // Outline border
+    .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(203, 213, 225, 0.3) !important; // gray-300 with 30% opacity - very light
+      }
+    }
+    
+    // Focused outline
+    &.mat-focused .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--primary-500) !important;
+      }
+    }
+    
+    // Hover outline
+    &:hover:not(.mat-focused) .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(203, 213, 225, 0.5) !important; // gray-300 with 50% opacity
+      }
+    }
+    
+    // Invalid field styling
+    &.mat-form-field-invalid:not(.mat-focused) .mat-mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #ef4444 !important;
+      }
+    }
+    
+    &.mat-form-field-invalid .mat-mdc-floating-label {
+      color: #ef4444 !important;
+    }
+    
+    // Placeholder
+    .mat-mdc-input-element::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--color-text-tertiary) !important;
+    }
+    
+    // Disabled state
+    &.mat-form-field-disabled {
+      .mat-mdc-input-element,
+      input,
+      textarea {
+        color: var(--color-text-disabled) !important;
+      }
+    }
+    
+    // Select arrow color
+    .mat-mdc-select-arrow {
+      color: var(--color-text-secondary) !important;
+    }
+  }
+  
+  // Material Select dropdown
+  .mat-mdc-select-panel {
+    background-color: var(--color-surface-secondary) !important;
+    
+    .mat-mdc-option {
+      color: var(--color-text-primary) !important;
+      
+      &:hover,
+      &.mat-mdc-option-active {
+        background-color: var(--color-surface-tertiary) !important;
+      }
+      
+      &.mat-selected:not(.mat-mdc-option-multiple) {
+        background-color: rgba(59, 130, 246, 0.1) !important;
+        color: var(--color-text-primary) !important;
+      }
+    }
+  }
+
+  /* Keep default dark theme select panel background */
+  .cdk-overlay-container .mat-mdc-select-panel {
+    background-color: var(--color-surface-secondary) !important;
+  }
+
+  // Material Autocomplete panel (overlay) dark mode
+  .mat-mdc-autocomplete-panel,
+  .mat-autocomplete-panel,
+  .search-autocomplete-panel {
+    background-color: var(--color-surface-secondary) !important;
+
+    .mat-mdc-option,
+    .mat-option {
+      color: var(--color-text-primary) !important;
+
+      &:hover,
+      &.mat-mdc-option-active,
+      &.mat-option-active,
+      &.mdc-list-item--active {
+        background-color: var(--color-surface-tertiary) !important;
+      }
+
+      &.mat-selected,
+      &.mdc-list-item--selected {
+        background-color: rgba(59, 130, 246, 0.08) !important;
+        color: var(--color-text-primary) !important;
+      }
+    }
+  }
+  
+  // Material Datepicker
+  .mat-datepicker-content {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+    
+    .mat-calendar {
+      background-color: var(--color-surface) !important;
+      
+      .mat-calendar-header {
+        color: var(--color-text-primary) !important;
+      }
+      
+      .mat-calendar-body-label,
+      .mat-calendar-body-cell-content {
+        color: var(--color-text-primary) !important;
+      }
+      
+      .mat-calendar-body-cell:hover .mat-calendar-body-cell-content {
+        background-color: var(--color-surface-tertiary) !important;
+      }
+      
+      .mat-calendar-body-selected {
+        background-color: var(--primary-600) !important;
+        color: white !important;
+      }
+    }
+  }
+  
+  // Datepicker toggle button icon
+  .mat-datepicker-toggle button {
+    color: var(--color-text-secondary) !important;
+    
+    &:hover {
+      color: var(--color-text-primary) !important;
+    }
+  }
+  
+  // Additional Material overrides for form fields
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(203, 213, 225, 0.3) !important;
+    }
+    
+    &:not(.mdc-text-field--focused):hover {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(203, 213, 225, 0.5) !important;
+      }
+    }
+  }
+}
+
+// Global Material overrides for dark theme (outside html.theme-dark for higher specificity)
+html.theme-dark {
+  .mat-mdc-option.mat-mdc-option-active,
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+    background-color: rgba(59, 130, 246, 0.08) !important;
+  }
+}
+
 .custom-modalbox {
   max-width: calc(100vw - 2rem) !important;
-  width: 100% !important;
   
   .mat-mdc-dialog-container .mdc-dialog__surface {
     padding: .25rem;
     border-radius: 1rem;
     max-height: calc(100vh - 4rem);
     overflow-y: auto;
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
   }
 }
 
-@media (min-width: 768px) {
-  .custom-modalbox {
-    max-width: 600px !important;
-    width: 90% !important;
-    
-    .mat-mdc-dialog-container .mdc-dialog__surface {
-      padding: 1.5rem;
+/* Responsive dialog surface: limit height and allow full-screen on small viewports */
+.custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  max-height: calc(100vh - 96px) !important;
+  overflow: auto !important;
+  width: auto !important;
+  max-width: 680px !important;
+  margin: 24px auto !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.35) !important;
+}
+
+@media (max-width: 640px) {
+  /* Use inset dialog on mobile rather than full-bleed so users see it's a modal */
+  .custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+    width: calc(100vw - 48px) !important;
+    max-width: calc(100vw - 48px) !important;
+    max-height: calc(100vh - 56px) !important;
+    border-radius: 12px !important;
+    margin: 12px auto !important;
+    padding-left: max(env(safe-area-inset-left, 24px), 24px) !important;
+    padding-right: max(env(safe-area-inset-right, 24px), 24px) !important;
+    padding-bottom: env(safe-area-inset-bottom, 12px) !important;
+    padding-top: env(safe-area-inset-top, 12px) !important;
+  }
+
+
+  /* Extra inset for very narrow phones (e.g. S24 and similar) */
+  @media (max-width: 420px) {
+    .custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+      width: calc(100vw - 64px) !important; /* 32px each side */
+      max-width: calc(100vw - 64px) !important;
+      max-height: calc(100vh - 64px) !important;
+      padding-left: max(env(safe-area-inset-left, 32px), 32px) !important;
+      padding-right: max(env(safe-area-inset-right, 32px), 32px) !important;
+      border-radius: 10px !important;
+      margin: 12px auto !important;
     }
+
+    
+  }
+}
+
+/* Make dialog surface a column so content can scroll and actions can stick */
+.custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important; /* forms usually handle inner padding */
+}
+
+/* Ensure the dialog container centers the surface and has no extra padding that could shift it */
+.custom-modalbox.responsive-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Common selectors used in dialogs: ensure content scrolls and actions stick */
+.custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface .dialog-content {
+  overflow: auto !important;
+  flex: 1 1 auto !important;
+  padding: 1rem !important;
+}
+
+.custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface .dialog-actions {
+  flex: 0 0 auto !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  background: var(--color-surface) !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: 0.75rem !important;
+  display: flex !important;
+  gap: 0.75rem !important;
+  justify-content: flex-end !important;
+}
+
+@media (max-width: 640px) {
+  .custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface .dialog-actions {
+    padding: 0.5rem 0.75rem !important;
+  }
+  .custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface .dialog-content {
+    padding: 0.75rem !important;
   }
 }
 
@@ -169,17 +562,17 @@ div.mat-expansion-panel-body {
 
 .mat-expansion-indicator,
 .mat-expansion-indicator:after {
-  color: $primary-color !important;
+  color: var(--primary-600) !important;
 }
 
 /* Material Card Overrides */
 mat-card {
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px $shadow-light, 0 1px 2px $shadow-medium;
+  box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium);
   overflow: hidden;
   
   &:hover {
-    box-shadow: 0 4px 6px $shadow-light, 0 2px 4px $shadow-medium;
+    box-shadow: 0 4px 6px var(--shadow-light), 0 2px 4px var(--shadow-medium);
   }
 }
 
@@ -209,24 +602,55 @@ mat-card {
 
 /* Link Styles - Enhanced */
 a {
-  color: $primary-color;
+  color: #2563eb; // blue-600 for light mode
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease-in-out;
   
   &:hover {
-    color: $primary-dark;
+    color: #1d4ed8; // blue-700 for light mode
     text-decoration: underline;
   }
   
   &:visited {
-    color: $primary-color;
+    color: #2563eb; // blue-600 for light mode
   }
   
   &:focus {
-    outline: 2px solid $border-focus;
+    outline: 2px solid var(--color-border-focus);
     outline-offset: 2px;
     border-radius: 0.25rem;
+  }
+}
+
+html.theme-dark {
+  a {
+    color: #60a5fa; // blue-400 for dark mode
+    
+    &:hover {
+      color: #93c5fd; // blue-300 for dark mode
+    }
+    
+    &:visited {
+      color: #60a5fa; // blue-400 for dark mode
+    }
+  }
+}
+
+/* Link color utility class - use instead of hardcoded text-blue-600 */
+.link-color {
+  color: #2563eb; // blue-600 for light mode
+  
+  &:hover {
+    color: #1d4ed8; // blue-700 for light mode
+  }
+}
+
+html.theme-dark .link-color {
+  color: #60a5fa; // blue-400 for dark mode
+  
+  &:hover {
+    color: #93c5fd; // blue-300 for dark mode
   }
 }
 
@@ -465,5 +889,24 @@ a {
 .mat-datepicker-popup {
   &.mat-datepicker-content {
     transform-origin: center !important;
+  }
+}
+
+/* Force brighter weekday header labels in dark theme for datepickers (overlay) */
+html.theme-dark {
+  .cdk-overlay-container .mat-calendar .mat-calendar-table-header th,
+  .cdk-overlay-container .mat-calendar-table-header th,
+  .mat-calendar-table-header th,
+  .mat-calendar .mat-calendar-table-header th {
+    color: var(--color-text-secondary) !important;
+    opacity: 1 !important;
+  }
+
+  /* Ensure weekday abbreviations and day numbers are readable */
+  .cdk-overlay-container .mat-calendar .mat-calendar-body-label,
+  .mat-calendar .mat-calendar-body-label,
+  .cdk-overlay-container .mat-calendar .mat-calendar-body-cell-content,
+  .mat-calendar .mat-calendar-body-cell-content {
+    color: var(--color-text-primary) !important;
   }
 }

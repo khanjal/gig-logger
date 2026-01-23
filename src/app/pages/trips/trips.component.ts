@@ -14,6 +14,7 @@ import { ITrip } from '@interfaces/trip.interface';
 
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
+import { UiPreferencesService } from '@services/ui-preferences.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
@@ -81,13 +82,12 @@ export class TripComponent implements OnInit, OnDestroy {
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
+      private _uiPreferences: UiPreferencesService,
       private logger: LoggerService,
       private _route: ActivatedRoute,
       private _router: Router
     ) { }
   ngOnDestroy(): void {
-    this._pollingService.stopPolling();
-    
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
     this.destroy$.complete();
@@ -108,9 +108,12 @@ export class TripComponent implements OnInit, OnDestroy {
         }
       });
 
-    // Load polling preference from localStorage
-    const savedPollingState = localStorage.getItem('pollingEnabled');
-    this.pollingEnabled = savedPollingState ? JSON.parse(savedPollingState) : false;
+    // Sync polling preference via UiPreferencesService
+    this._uiPreferences.pollingEnabled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(enabled => {
+        this.pollingEnabled = enabled;
+      });
 
     // Only load if not in edit mode
     if (!this.isEditMode) {
@@ -188,8 +191,6 @@ export class TripComponent implements OnInit, OnDestroy {
 
   async loadSheetDialog(inputValue: string) {
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
         panelClass: 'custom-modalbox',
         data: inputValue
     });
@@ -204,8 +205,6 @@ export class TripComponent implements OnInit, OnDestroy {
   async saveSheetDialog(inputValue: string) {
     this.saving = true;
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
-        height: '400px',
-        width: '500px',
         panelClass: 'custom-modalbox',
         data: inputValue
     });
@@ -290,17 +289,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
   
   async changePolling() {
-    this.pollingEnabled = !this.pollingEnabled;
-
-    // Save polling preference to localStorage
-    localStorage.setItem('pollingEnabled', JSON.stringify(this.pollingEnabled));
-
-    // Start or stop polling based on new state
-    if (this.pollingEnabled && !this.isEditMode) {
-      await this.startPolling();
-    } else {
-      this.stopPolling();
-    }
+    await this._uiPreferences.togglePolling();
   }
 
   async startPolling() {

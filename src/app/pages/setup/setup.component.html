@@ -1,27 +1,22 @@
-<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12 max-w-3xl mx-auto">
-    <h1 class="text-3xl font-bold">Setup</h1>
+<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12 max-w-3xl mx-auto text-gray-800 dark:text-gray-200">
+  <h1 class="text-3xl font-bold">Setup</h1>
 
   <div class="mb-6">
     <app-login></app-login>
   </div>
 
   <ng-container *ngIf="isAuthenticated">
-    <!-- <div class="mb-6">
-      <h2 class="text-2xl font-semibold flex items-center gap-2">Add Spreadsheet <a href="https://docs.google.com/spreadsheets/" target="_blank"><span class="span-icon"><mat-icon>open_in_new</mat-icon></span></a></h2>
-      <sheet-add-form (parentReload)="reload()"></sheet-add-form>
-    </div> -->
-
     <div class="mb-6" *ngIf="!spreadsheets?.length">
-      <h2 class="text-2xl font-semibold">Set Up Your Spreadsheet</h2>
+      <h2 class="text-2xl font-semibold text-primary dark:text-primary">Set Up Your Spreadsheet</h2>
       <app-sheet-link (parentReload)="reload()"></app-sheet-link>
       <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
     </div>
 
-    <mat-card class="mb-6" *ngIf="spreadsheets?.length">
+    <mat-card class="mb-6 bg-surface text-gray-800 dark:text-gray-200 surface-card" *ngIf="spreadsheets?.length">
       <mat-card-header>
-        <h2 class="text-2xl font-semibold">Current Spreadsheets</h2>
+        <h2 class="text-2xl font-semibold text-primary dark:text-primary">Current Spreadsheets</h2>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
         <div *ngFor="let spreadsheet of spreadsheets" class="mb-4">
           <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
           <div class="flex flex-row justify-between items-center gap-2 mt-2">
@@ -40,18 +35,22 @@
     </mat-card>
   </ng-container>
 
-  <app-permissions></app-permissions>
+  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft">
+    <app-permissions></app-permissions>
+  </div>
 
-  <mat-card class="mb-6">
-    <mat-card-header><h2 class="text-2xl font-semibold">Application Insights</h2></mat-card-header>
-    <mat-card-content>
-      <div class="mb-2 text-gray-700">Version: <strong>{{ version }}</strong></div>
+  <mat-card class="mb-6 bg-surface text-gray-800 dark:text-gray-200 surface-card">
+    <mat-card-header><h2 class="text-2xl font-semibold text-primary">Application Insights</h2></mat-card-header>
+    <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
+      <div class="mb-2 text-primary dark:text-primary">Version: <strong>{{ version }}</strong></div>
       <app-sheet-quota></app-sheet-quota>
       <app-service-worker-status></app-service-worker-status>
     </mat-card-content>
   </mat-card>
 
-  <app-auth-status></app-auth-status>
+  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft">
+    <app-auth-status></app-auth-status>
+  </div>
 
   <div class="mb-6">
     <div class="flex flex-row justify-between items-center gap-2">

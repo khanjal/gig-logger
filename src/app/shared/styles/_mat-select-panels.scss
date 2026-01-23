@@ -1,0 +1,60 @@
+// Material Select Panel Custom Styles
+// Centralized styling for mat-select dropdowns with custom panel classes
+
+/* Shift Select Panel (used in trip-form) */
+.shift-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background-color: rgb(219 234 254) !important; /* blue-100 */
+  color: rgb(29 78 216) !important; /* blue-700 */
+  
+  .mdc-list-item__primary-text {
+    color: rgb(29 78 216) !important;
+    font-weight: 600;
+  }
+  
+  &:hover {
+    background-color: rgb(191 219 254) !important; /* blue-200 */
+  }
+}
+
+/* Diagnostics Select Panel (used in diagnostics page) */
+.diagnostics-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background-color: rgb(219 234 254) !important; /* blue-100 */
+  color: rgb(29 78 216) !important; /* blue-700 */
+  
+  .mdc-list-item__primary-text {
+    color: rgb(29 78 216) !important;
+    font-weight: 600;
+  }
+  
+  &:hover {
+    background-color: rgb(191 219 254) !important; /* blue-200 */
+  }
+}
+
+/* Dark Mode Overrides */
+html.theme-dark {
+  .shift-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple),
+  .diagnostics-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    color: rgb(255 255 255) !important; /* white */
+    
+    .mdc-list-item__primary-text {
+      color: rgb(255 255 255) !important;
+      font-weight: 600 !important;
+    }
+    
+    &:hover {
+      background-color: rgb(96 165 250) !important; /* blue-400 */
+    }
+  }
+  
+  /* Placeholder and value text colors in dark mode */
+  .mat-mdc-select-placeholder {
+    color: var(--color-text-secondary) !important;
+  }
+  
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text {
+    color: var(--color-text-primary) !important;
+  }
+}
