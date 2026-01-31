@@ -37,10 +37,10 @@ $items: ".cdk-overlay-container .mat-menu-panel .mat-menu-item, .cdk-overlay-con
 
 /* color map and helpers for menu icon utilities */
 $menu-colors: (
-  blue: var(--primary-600),
-  green: var(--success-500),
-  red: var(--error-500),
-  purple: #a78bfa
+  "blue": var(--primary-600),
+  "green": var(--success-500),
+  "red": var(--error-500),
+  "purple": #a78bfa
 );
 
 @mixin icon-color($name, $val) {

@@ -8,6 +8,7 @@
 @use 'app/shared/styles/mat-select-panels';
 @use 'app/pages/setup/sheet-link/custom-modalbox';
 @use 'app/shared/styles/menu-overrides';
+@use 'sass:map';
 
 /* Tailwind CSS imports */
 @tailwind base;
@@ -98,11 +99,11 @@ html.theme-light {
 }
 
 html.theme-dark {
-  --color-bg: #{map-get($gray, 900)};
-  --color-bg-secondary: #{map-get($gray, 800)};
-  --color-surface: #{map-get($gray, 800)};
-  --color-surface-secondary: #{map-get($gray, 700)};
-  --color-surface-tertiary: #{map-get($gray, 600)};
+  --color-bg: #{map.get($gray, 900)};
+  --color-bg-secondary: #{map.get($gray, 800)};
+  --color-surface: #{map.get($gray, 800)};
+  --color-surface-secondary: #{map.get($gray, 700)};
+  --color-surface-tertiary: #{map.get($gray, 600)};
   --color-overlay: rgba(0, 0, 0, 0.7);
 
   --color-text-primary: #e5e7eb;
@@ -111,9 +112,9 @@ html.theme-dark {
   --color-text-inverse: #e5e7eb;
   --color-text-disabled: #475569;
 
-  --color-border: #{map-get($gray, 600)};
-  --color-border-light: #{map-get($gray, 600)};
-  --color-border-dark: #{map-get($gray, 500)};
+  --color-border: #{map.get($gray, 600)};
+  --color-border-light: #{map.get($gray, 600)};
+  --color-border-dark: #{map.get($gray, 500)};
   --color-border-focus: #{$primary-color};
 
   --shadow-light: rgba(0, 0, 0, 0.35);
