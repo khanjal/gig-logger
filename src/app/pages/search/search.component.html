@@ -1,9 +1,10 @@
-<div class="search-page bg-surface-2 pb-20">
+<div class="page-container container search-page bg-surface-2 pb-20">
   <!-- Search Input with Autocomplete and Filter Button (Overlay) -->
   <div 
-  class="fixed left-0 right-0 z-20 pt-4 bg-surface shadow-md transition-all duration-300"
+  class="fixed z-20 pt-4 bg-surface shadow-md transition-all duration-300"
+  style="left: 50%; transform: translateX(-50%); width: 768px; max-width: calc(100% - 2rem);"
   [ngStyle]="{ 'top': '56px' }">
-    <div class="max-w-7xl mx-auto px-4 py-3">
+    <div class="px-4 py-3">
       <div class="flex gap-2">
         <div class="flex-1">
           <mat-form-field appearance="outline" class="w-full">
