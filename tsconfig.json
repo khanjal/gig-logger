@@ -53,9 +53,7 @@
       "@utils/*": ["./src/app/shared/utils/*"],
       "@test-harness": ["./src/test-harness"],
     },
-    "types": [
-      "node"
-    ],
+    "types": [],
     "typeRoots": [
       "node_modules/@types"
     ],
