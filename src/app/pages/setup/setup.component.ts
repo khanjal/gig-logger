@@ -42,23 +42,23 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     styleUrls: ['./setup.component.scss'],
     standalone: true,
     imports: [
-    CommonModule,
-    NgIf,
-    NgFor,
-    MatCard,
-    MatCardContent,
-    MatCardHeader,
-    MatFabButton,
-    MatIcon,
-    LoginComponent,
-    ServiceWorkerStatusComponent,
-    SheetLinkComponent,
-    SheetDemoComponent,
-    SheetQuickViewComponent,
-    SheetQuotaComponent,
-    AuthStatusComponent,
-    AppPermissionsComponent
-]
+      CommonModule,
+      NgIf,
+      NgFor,
+      MatCard,
+      MatCardContent,
+      MatCardHeader,
+      MatFabButton,
+      MatIcon,
+      LoginComponent,
+      ServiceWorkerStatusComponent,
+      SheetLinkComponent,
+      SheetDemoComponent,
+      SheetQuickViewComponent,
+      SheetQuotaComponent,
+      AuthStatusComponent,
+      AppPermissionsComponent
+  ]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
