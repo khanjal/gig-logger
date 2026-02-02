@@ -1,6 +1,5 @@
 import { of, throwError } from 'rxjs';
 import { ApiService } from './api.service';
-import * as userUtil from '@utils/user-id.util';
 
 describe('ApiService (focused tests)', () => {
   let httpSpy: any;
