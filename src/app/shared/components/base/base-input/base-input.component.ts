@@ -20,6 +20,27 @@ import { MatIcon } from '@angular/material/icon';
   ]
 })
 export class BaseInputComponent implements ControlValueAccessor {
+/**
+ * BaseInputComponent
+ *
+ * Reusable form input that implements `ControlValueAccessor` so it works with
+ * both template-driven (`[(ngModel)]`) and reactive (`formControlName`) forms.
+ *
+ * Inputs:
+ * - `label`, `placeholder`, `hint`, `error` : display text
+ * - `type` : HTML input type (text, number, email, password, etc.)
+ * - `icon`, `iconPosition` : optional Material icon and placement
+ * - `disabled`, `required` : boolean flags (use property binding: `[disabled]="true"`)
+ *
+ * Example (Reactive form):
+ * <mat-form-field appearance="outline">
+ *   <mat-label>Amount</mat-label>
+ *   <app-base-input formControlName="amount" [type]="'number'" [hint]="'USD'"></app-base-input>
+ * </mat-form-field>
+ *
+ * Example (NgModel):
+ * <app-base-input [(ngModel)]="value" label="Name"></app-base-input>
+ */
   @ViewChild('inputElement') inputElement?: MatInput;
 
   /** Input label */

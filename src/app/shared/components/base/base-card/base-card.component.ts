@@ -10,6 +10,21 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './base-card.component.scss'
 })
 export class BaseCardComponent {
+/**
+ * BaseCardComponent
+ *
+ * Lightweight card container used for consistent surfaces across the app.
+ *
+ * Inputs:
+ * - `title`, `subtitle`, `titleIcon` : header content
+ * - `variant` : visual style ('default' | 'elevated' | 'outlined')
+ * - `padding` : controls internal padding ('sm' | 'md' | 'lg')
+ *
+ * Example:
+ * <app-base-card title="Location" [titleIcon]="'location_on'" variant="elevated" padding="md">
+ *   <!-- content -->
+ * </app-base-card>
+ */
   /** Card title */
   @Input() title?: string;
 

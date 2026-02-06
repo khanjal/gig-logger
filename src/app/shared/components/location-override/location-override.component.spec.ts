@@ -2,12 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MockLocationComponent } from './mock-location.component';
-import { MockLocationService } from '../../services/mock-location.service';
+import { LocationOverrideComponent } from './location-override.component';
+import { MockLocationService } from '@services/mock-location.service';
 
-describe('MockLocationComponent', () => {
-  let component: MockLocationComponent;
-  let fixture: ComponentFixture<MockLocationComponent>;
+describe('LocationOverrideComponent', () => {
+  let component: LocationOverrideComponent;
+  let fixture: ComponentFixture<LocationOverrideComponent>;
   let mockLocationServiceSpy: jasmine.SpyObj<MockLocationService>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
 
@@ -39,7 +39,7 @@ describe('MockLocationComponent', () => {
     const snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
-      imports: [MockLocationComponent, FormsModule],
+      imports: [LocationOverrideComponent, FormsModule],
       providers: [
         { provide: MockLocationService, useValue: mockLocationSpy },
         { provide: MatSnackBar, useValue: snackBar }
@@ -47,7 +47,7 @@ describe('MockLocationComponent', () => {
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MockLocationComponent);
+    fixture = TestBed.createComponent(LocationOverrideComponent);
     component = fixture.componentInstance;
     mockLocationServiceSpy = TestBed.inject(MockLocationService) as jasmine.SpyObj<MockLocationService>;
     snackBarSpy = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
@@ -65,7 +65,7 @@ describe('MockLocationComponent', () => {
     expect(component.radius).toBe(25);
   });
 
-  it('should enable mock location when toggled on', () => {
+  it('should enable override when toggled on', () => {
     component.enabled = true;
     mockLocationServiceSpy.isValidLatitude.and.returnValue(true);
     mockLocationServiceSpy.isValidLongitude.and.returnValue(true);
@@ -73,16 +73,16 @@ describe('MockLocationComponent', () => {
     component.onToggleChange();
     
     expect(mockLocationServiceSpy.enable).toHaveBeenCalled();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Mock location enabled', 'Dismiss', { duration: 3000 });
+    expect(snackBarSpy.open).toHaveBeenCalledWith('Location override enabled', 'Dismiss', { duration: 3000 });
   });
 
-  it('should disable mock location when toggled off', () => {
+  it('should disable override when toggled off', () => {
     component.enabled = false;
     
     component.onToggleChange();
     
     expect(mockLocationServiceSpy.disable).toHaveBeenCalled();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Mock location disabled - using real location', 'Dismiss', { duration: 3000 });
+    expect(snackBarSpy.open).toHaveBeenCalledWith('Location override disabled - using real location', 'Dismiss', { duration: 3000 });
   });
 
   it('should set coordinates from preset', () => {

@@ -1,13 +1,15 @@
 <app-base-card 
   #mockLocationCard 
   id="mock-location-card"
-  title="Mock Location (Testing)"
+  title="Location Override"
   [titleIcon]="'location_on'"
   variant="default"
   padding="md"
 >
     <p class="text-gray-600 dark:text-gray-300 mb-4">
-      Override your real location for testing Google Places autocomplete in different regions.
+      Override your effective location when you need the app to behave as if you're in a different area —
+      useful when you can't or don't want to grant browser location permission, are working in an area different
+      from your real GPS (e.g., testing), or when a VPN is affecting results.
     </p>
 
     <div class="space-y-5">
@@ -17,15 +19,15 @@
           [(ngModel)]="enabled" 
           (change)="onToggleChange()"
           color="primary"
-          aria-label="Toggle mock location"
+          aria-label="Toggle location override"
           class="w-full"
         >
-          <span class="mock-toggle-label font-medium mr-1">Use mock location</span>
+          <span class="mock-toggle-label font-medium mr-1 text-gray-800 dark:text-gray-200">Enable override</span>
         </mat-slide-toggle>
         
         <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-orange-700 dark:text-orange-200 bg-orange-50 dark:bg-orange-950 px-3 py-2 rounded">
           <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
-          <span class="mock-warning-text text-orange-700 dark:text-orange-200 mr-1">Mock mode active - Google Places will use the location below instead of your real position</span>
+          <span class="mock-warning-text text-orange-700 dark:text-orange-200 mr-1">Override active - the app will use this location for Google Places and other location-sensitive features</span>
         </div>
       </div>
 
@@ -36,10 +38,13 @@
             <mat-icon class="!text-base !w-5 !h-5">my_location</mat-icon>
             Your Real Location
           </h3>
-          <app-base-button 
-            variant="icon"
+          <app-base-button
+            [fab]="true"
+            fabStyle="mini"
             [icon]="'refresh'"
+            [loading]="gettingLocation"
             [disabled]="gettingLocation"
+            aria-label="Refresh current location"
             (clicked)="getCurrentRealLocation()"
           ></app-base-button>
         </div>
@@ -63,7 +68,7 @@
             (clicked)="useCurrentLocation()"
             class="mt-3"
           >
-            Use This Location as Mock
+            Use This Location as Override
           </app-base-button>
         </div>
         <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-gray-500 dark:text-gray-400">
@@ -133,7 +138,7 @@
         <div class="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
           <h3 class="text-sm font-semibold text-green-800 dark:text-green-300 mb-2 flex items-center gap-2">
             <mat-icon class="!text-base !w-5 !h-5">check_circle</mat-icon>
-            Active Mock Location
+            Active Override Location
           </h3>
           <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
             <div><strong>Name:</strong> {{ locationName || 'Unnamed' }}</div>

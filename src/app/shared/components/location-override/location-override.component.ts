@@ -11,7 +11,7 @@ import { MockLocationService, PresetLocation } from '@services/mock-location.ser
 import { BaseButtonComponent, BaseCardComponent, BaseInputComponent } from '@components/base';
 
 @Component({
-  selector: 'app-mock-location',
+  selector: 'app-location-override',
   standalone: true,
   imports: [
     CommonModule,
@@ -19,19 +19,18 @@ import { BaseButtonComponent, BaseCardComponent, BaseInputComponent } from '@com
     BaseCardComponent,
     BaseButtonComponent,
     BaseInputComponent,
-    MatFormField,
-    MatLabel,
     MatSlideToggle,
     MatIcon,
+    MatFormField,
     MatSelect,
+    MatLabel,
     MatOption,
     MatOptgroup
   ],
-  templateUrl: './mock-location.component.html',
-  styleUrl: './mock-location.component.scss'
+  templateUrl: './location-override.component.html',
+  styleUrl: './location-override.component.scss'
 })
-
-export class MockLocationComponent implements OnInit {
+export class LocationOverrideComponent implements OnInit {
   @ViewChild('mockLocationCard') mockLocationCard?: ElementRef<HTMLElement>;
   enabled = false;
   latitude = 40.7128;
@@ -76,10 +75,10 @@ export class MockLocationComponent implements OnInit {
     if (this.enabled) {
       this.mockLocationService.enable();
       this.saveSettings();
-      this.snackBar.open('Mock location enabled', 'Dismiss', { duration: 3000 });
+      this.snackBar.open('Location override enabled', 'Dismiss', { duration: 3000 });
     } else {
       this.mockLocationService.disable();
-      this.snackBar.open('Mock location disabled - using real location', 'Dismiss', { duration: 3000 });
+      this.snackBar.open('Location override disabled - using real location', 'Dismiss', { duration: 3000 });
     }
   }
 

@@ -15,6 +15,26 @@ export type FabStyle = 'regular' | 'mini';
   templateUrl: './base-button.component.html',
   styleUrl: './base-button.component.scss'
 })
+/**
+ * BaseButtonComponent
+ *
+ * Reusable button used across the app. Supports styling variants, sizes,
+ * icon placement, FAB (floating action button) modes including `mini` and
+ * `extended`, loading state, and full-width behavior.
+ *
+ * Important: boolean inputs must be passed with property binding
+ * (e.g. `[fab]="true"`) to avoid string/boolean coercion issues in templates.
+ *
+ * Examples:
+ * - Mini FAB toggle:
+ *   <app-base-button [fab]="true" fabStyle="mini" [variant]="'secondary'" [icon]="'drive_eta'" (clicked)="toggle()"></app-base-button>
+ * - Extended FAB with label:
+ *   <app-base-button [fab]="true" [extended]="true" [icon]="'add'">New</app-base-button>
+ * - Icon button with loading spinner:
+ *   <app-base-button variant="icon" [loading]="isLoading"></app-base-button>
+ *
+ * Emits `clicked` when activated (unless `disabled` or `loading`).
+ */
 export class BaseButtonComponent {
   /** Button variant style */
   @Input() variant: ButtonVariant = 'primary';
@@ -29,6 +49,9 @@ export class BaseButtonComponent {
   @Input() iconPosition: 'left' | 'right' = 'left';
 
   /** Render as a floating action button (circular) */
+  /**
+   * Render as a floating action button (circular). Use `[fab]="true"`.
+   */
   @Input() fab: boolean = false;
 
   /** Fab style: regular or mini */

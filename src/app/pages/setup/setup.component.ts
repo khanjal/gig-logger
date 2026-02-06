@@ -17,8 +17,8 @@ import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
-import { AppPermissionsComponent } from '@components/app-permissions/app-permissions.component';
-import { MockLocationComponent } from '@components/mock-location/mock-location.component';
+import { PermissionsComponent } from '@components/permissions/permissions.component';
+import { LocationOverrideComponent } from '@components/location-override/location-override.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -53,8 +53,8 @@ import { BaseButtonComponent, BaseCardComponent } from '@components/base';
       SheetQuickViewComponent,
       SheetQuotaComponent,
       AuthStatusComponent,
-      AppPermissionsComponent,
-      MockLocationComponent,
+      PermissionsComponent,
+      LocationOverrideComponent,
       BaseButtonComponent,
       BaseCardComponent
   ]
