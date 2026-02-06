@@ -7,6 +7,10 @@ export class GenericCrudService<T> implements ICrudService<T> {
     public async add(item: T): Promise<void> {
         await this.table.add(item);
     }
+    
+    public async clear() {
+        await this.table.clear();
+    }
 
     public async delete(id: number) {
         await this.table.delete(id);

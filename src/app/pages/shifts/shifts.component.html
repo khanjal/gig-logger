@@ -1,18 +1,23 @@
-<div class="container mx-auto p-4 max-w-4xl">
-    <div class="flex flex-wrap gap-3 items-center justify-between">
-        <h1 class="text-2xl font-bold text-blue-700 flex-1">Shifts</h1>
+<div class="page-container container">
+    <div class="fixed left-0 right-0 z-20 bg-[var(--color-bg)] transition-all duration-300" style="top:56px;">
+      <div class="max-w-4xl mx-auto px-4">
+      <div class="flex flex-wrap gap-3 items-center justify-between">
+        <h1 class="text-2xl font-bold flex-1 pt-4">Shifts</h1>
         <div class="flex gap-2">
-            <button *ngIf="unsavedData && !(showAddForm || editId)" mat-mini-fab color="accent" class="save-button !w-10 !h-10" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()" title="Save Changes">
-                <mat-icon>save</mat-icon>
-            </button>
-            <button *ngIf="!showAddForm && !editId" mat-mini-fab color="primary" class="add-button !w-10 !h-10" (click)="showAddForm = true" [disabled]="showAddForm" title="Add Shift">
-                <mat-icon>add</mat-icon>
-            </button>
-            <button *ngIf="showAddForm && !editId" mat-mini-fab color="warn" class="hide-button !w-10 !h-10" (click)="hideAddForm()" title="Close Form">
-                <mat-icon>close</mat-icon>
-            </button>
+          <button *ngIf="unsavedData && !(showAddForm || editId)" mat-mini-fab color="accent" class="save-button !w-10 !h-10" [class.spinner]="saving" [disabled]="saving" (click)="confirmSaveDialog()" title="Save Changes">
+            <mat-icon>save</mat-icon>
+          </button>
+          <button *ngIf="!showAddForm && !editId" mat-mini-fab color="primary" class="add-button !w-10 !h-10" (click)="showAddForm = true" [disabled]="showAddForm" title="Add Shift">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button *ngIf="showAddForm && !editId" mat-mini-fab color="warn" class="hide-button !w-10 !h-10" (click)="hideAddForm()" title="Close Form">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
+      </div>
+      </div>
     </div>
+    <div class="h-14"></div>
 
     <div *ngIf="showAddForm || editId">
         <shift-form 
@@ -27,8 +32,8 @@
           <div
             [id]="shift.rowId"
             [ngClass]="{
-              'mat-card': true,
-              'mat-card-disabled': shift.action == actionEnum.Delete
+              'shift-card': true,
+              'shift-card-disabled': shift.action == actionEnum.Delete
             }"
             [class.mt-4]="isFirst"
           >

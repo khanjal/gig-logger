@@ -1,32 +1,32 @@
-<div class="trips-container w-full p-2 bg-white rounded-lg border border-gray-200 shadow">
+<div class="trips-container w-full p-2 bg-surface-3 rounded-lg border border-soft shadow">
     <div class="flex items-center gap-4 min-h-[2.5rem] py-2">
         <div class="flex items-center justify-center w-10 h-10">
-            <mat-icon class="text-blue-400 text-2xl">route</mat-icon>
+            <mat-icon class="text-blue-600 dark:text-blue-400 text-2xl">route</mat-icon>
         </div>
-        <h4 class="flex-1 text-lg font-semibold text-blue-900 text-center">Trips ({{ trips.length }})</h4>
-        <button class="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition" (click)="viewTrips(trips)">
+        <h4 class="flex-1 text-lg font-semibold text-primary text-center">Trips ({{ trips.length }})</h4>
+        <button class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-full p-2 transition" (click)="viewTrips(trips)">
             <mat-icon>view_agenda</mat-icon>
         </button>
     </div>
-    <div class="overflow-x-auto relative rounded-lg border border-gray-200 bg-white" *ngIf="trips && trips.length > 0">
-        <table class="min-w-full text-sm">
-            <thead class="bg-blue-100">
+    <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface" *ngIf="trips && trips.length > 0">
+        <table class="table-theme min-w-full text-sm">
+            <thead>
                 <tr>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Place</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Pickup</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Dropoff</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Total</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Name</th>
-                    <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Address</th>
+                    <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Place</th>
+                    <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Pickup</th>
+                    <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Dropoff</th>
+                    <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Total</th>
+                    <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Name</th>
+                    <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Address</th>
                 </tr>
             </thead>
             <tbody>
                 @for (trip of trips; track trip.id || $index; let i = $index) {
-                    <tr [ngClass]="trip.exclude ? 'bg-gray-200 line-through' : (i % 2 === 0 ? 'bg-blue-50' : 'bg-white')">
+                    <tr [ngClass]="{ 'line-through text-tertiary': trip.exclude }">
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.place | truncate:15}}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.pickupTime | noseconds:prefers24Hour}}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.dropoffTime | noseconds:prefers24Hour}}</td>
-                        <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400': (trip.tip + trip.cash) === 0, 'text-green-600 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
+                        <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-tertiary': (trip.tip + trip.cash) === 0, 'text-green-600 dark:text-green-400 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.name | truncate:10}}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.endAddress | truncate:75}}</td>
                     </tr>
@@ -34,10 +34,10 @@
             </tbody>
         </table>
     </div>
-    <div class="table-scroll-indicator w-full text-center py-3 text-sm font-medium text-blue-600 bg-blue-50 border-t-2 border-blue-200 rounded-b-lg mt-[-0.5rem]" *ngIf="trips && trips.length > 0">
+    <div class="table-scroll-indicator w-full text-center py-3 text-sm font-medium text-blue-600 dark:text-blue-400 bg-primary-500/10 border-t-2 border-blue-200 dark:border-blue-800 rounded-b-lg mt-[-0.5rem]" *ngIf="trips && trips.length > 0">
         ← Scroll horizontally for more columns →
     </div>
-    <div class="no-trips-message flex flex-col items-center justify-center py-8 text-gray-500" *ngIf="!trips || trips.length === 0">
+    <div class="no-trips-message flex flex-col items-center justify-center py-8 text-tertiary" *ngIf="!trips || trips.length === 0">
         <mat-icon class="no-trips-icon text-4xl mb-2">info_outline</mat-icon>
         <h3 class="text-lg font-semibold mb-1">No trips to display</h3>
         <p>There are currently no trips available.</p>

@@ -1,6 +1,6 @@
-<div class="bg-white rounded-xl shadow-lg p-4 md:p-8 w-full max-w-2xl mx-auto">
+<div class="bg-surface rounded-xl shadow-lg p-4 w-full max-w-2xl mx-auto">
   <div class="mb-1 border-b pb-2">
-    <h1 class="text-2xl font-bold text-blue-700">{{title}}</h1>
+    <h1 class="text-2xl font-bold text-primary">{{title}}</h1>
   </div>
 
   <form [formGroup]="tripForm">
@@ -9,7 +9,7 @@
       <div class="flex flex-col mb-3">
         <mat-form-field class="w-full" appearance="outline">
           <mat-label>Shift/Batch/Group</mat-label>
-          <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)'>
+          <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)' panelClass="shift-select-panel">
             <mat-option value="">New</mat-option>
             <mat-option *ngFor="let shift of shifts" [value]="shift">{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }} ({{ shift.totalTrips }} &#64; {{ shift.grandTotal | currency }})</mat-option>
           </mat-select>
@@ -69,7 +69,7 @@
         <button 
           mat-mini-fab
           type="button"
-          class="toggle-button"
+          class="toggle-button mb-1"
           [class.toggle-button--active]="showAdvancedPay"
           [color]="showAdvancedPay ? 'accent' : 'primary'" 
           aria-label="Toggle Advanced Pay" 
@@ -89,7 +89,7 @@
         <button 
           mat-mini-fab
           type="button"
-          class="toggle-button"
+          class="toggle-button mb-1"
           [class.toggle-button--active]="showOdometer"
           [color]="showOdometer ? 'accent' : 'primary'" 
           aria-label="Toggle Odometer" 
@@ -137,7 +137,7 @@
         <button
           mat-mini-fab
           type="button"
-          class="toggle-button"
+          class="toggle-button mb-1"
           [class.toggle-button--active]="showPickupAddress"
           [color]="showPickupAddress ? 'accent' : 'primary'" 
           aria-label="Show Pickup Address" 
@@ -189,7 +189,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
-            <div class="text-gray-500 font-medium" *ngIf="!delivery.address">
+            <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
             </div>
             <button 
@@ -231,7 +231,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
-            <div class="text-gray-500 font-medium" *ngIf="!delivery.name">
+            <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
             </div>
             <button 
@@ -277,7 +277,7 @@
         <button 
           mat-mini-fab
           type="button"
-          class="toggle-button"
+          class="toggle-button mb-1"
           [color]="showOrder ? 'accent' : 'primary'" 
           aria-label="Toggle Address/Order" 
           (click)="toggleOrder()">
@@ -295,7 +295,7 @@
         </mat-form-field>
       </div>
       <div *ngIf="showOrder">
-        <mat-slide-toggle name="exclude" formControlName="exclude">
+        <mat-slide-toggle name="exclude" formControlName="exclude" color="primary">
           Exclude from calculations
         </mat-slide-toggle>
       </div>
@@ -314,10 +314,10 @@
       <button *ngIf="data?.id" mat-fab extended color="warn" (click)="close()">
         <mat-icon>cancel</mat-icon> Cancel
       </button>
-      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="!tripForm.valid" [class.button-disabled]="!tripForm.valid">
+      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="tripForm.invalid" [class.button-disabled]="tripForm.invalid">
         <mat-icon>add</mat-icon> Store
       </button>
-      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="!tripForm.valid">
+      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="tripForm.invalid" [class.button-disabled]="tripForm.invalid">
         <mat-icon>save</mat-icon> Update
       </button>
     </div>

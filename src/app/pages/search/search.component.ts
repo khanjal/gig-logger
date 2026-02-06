@@ -13,7 +13,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CurrencyPipe } from '@angular/common';
-import { ViewportScroller } from '@angular/common';
 
 import { SearchService } from '@services/search.service';
 import { LoggerService } from '@services/logger.service';
@@ -82,7 +81,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   constructor(
     private searchService: SearchService,
-    private viewportScroller: ViewportScroller,
     private currencyPipe: CurrencyPipe,
     private logger: LoggerService
   ) { }

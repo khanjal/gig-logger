@@ -9,6 +9,8 @@
   border-radius: 16px;
   height: auto;
   min-height: auto;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   
   @media (max-width: 768px) {
     padding: 1rem;
@@ -29,7 +31,7 @@
 .dialog-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: $text-primary;
+  color: var(--color-text-primary);
   margin-bottom: 1rem;
   text-align: center;
   
@@ -47,7 +49,7 @@
 // Enhanced dialog content
 .dialog-content {
   font-size: 1rem;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   line-height: 1.5;
   margin-bottom: 1.5rem;
   text-align: center;
@@ -75,77 +77,12 @@
   @media (max-width: 480px) {
     gap: 0.5rem;
   }
-  
-  button {
-    min-height: 44px;
-    min-width: 100px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    @media (max-width: 480px) {
-      min-width: 90px;
-      font-size: 0.9rem;
-    }
-  }
-}
-
-// Confirm button styling
-.confirm-button {
-  background: linear-gradient(135deg, $success-color 0%, $success-600 100%) !important;
-  color: white !important;
-  border: none !important;
-  
-  &:hover {
-    background: linear-gradient(135deg, $success-600 0%, $success-700 100%) !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-// Cancel button styling
-.cancel-button {
-  background: linear-gradient(135deg, $background-light 0%, $border-color 100%);
-  color: $text-primary;
-  border: 1px solid $border-color;
-  
-  &:hover {
-    background: linear-gradient(135deg, $border-light 0%, $background-light 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-// Danger/Delete button styling
-.danger-button {
-  background: linear-gradient(135deg, $danger-color 0%, $danger-600 100%);
-  color: white;
-  border: none;
-  
-  &:hover {
-    background: linear-gradient(135deg, $danger-600 0%, $danger-700 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
 }
 
 // Warning icon styling
 .warning-icon {
   font-size: 3rem;
-  color: $warn-color;
+  color: var(--warning-500);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
@@ -162,7 +99,7 @@
 // Success icon styling
 .success-icon {
   font-size: 3rem;
-  color: $success-color;
+  color: var(--success-500);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
@@ -179,7 +116,7 @@
 // Confirm dialog info icon styling - large display icon
 .confirm-info-icon {
   font-size: 3rem;
-  color: $info-color;
+  color: var(--info-500);
   margin-bottom: 1rem;
   
   @media (max-width: 768px) {
@@ -194,3 +131,30 @@
 
 // Use global modal backdrop styling
 @include modals.setup-modal-backdrop('medium');
+
+// Style the Material dialog container to match theme and prevent white corners
+::ng-deep .mat-mdc-dialog-container {
+  background: var(--color-surface) !important;
+  border-radius: 16px;
+  
+  .mdc-dialog__surface {
+    background: var(--color-surface) !important;
+    border-radius: 16px;
+  }
+  
+  @media (max-width: 768px) {
+    border-radius: 12px;
+    
+    .mdc-dialog__surface {
+      border-radius: 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    border-radius: 8px;
+    
+    .mdc-dialog__surface {
+      border-radius: 8px;
+    }
+  }
+}

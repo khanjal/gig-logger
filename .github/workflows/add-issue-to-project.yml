@@ -1,0 +1,30 @@
+name: Add new issues to Project
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  repository-projects: write
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run add-issue-to-project script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECT_V2_ID: ${{ secrets.PROJECT_V2_ID }}
+          PROJECT_V2_NAME: ${{ secrets.PROJECT_V2_NAME }}
+          PROJECT_COLUMN_NAME: ${{ secrets.PROJECT_COLUMN_NAME }}
+        run: |
+          node .github/scripts/add-issue-to-project.js

@@ -5,9 +5,26 @@ button[mat-fab][disabled]:hover,
 button.mat-fab[disabled]:hover {
   opacity: 0.5 !important;
   pointer-events: none !important;
-  background: #ccc !important;
-  color: #888 !important;
+  background: var(--color-border) !important;
+  color: var(--color-text-tertiary) !important;
   box-shadow: none !important;
   cursor: not-allowed !important;
-  border: 1px solid #bbb !important;
+  border: 1px solid var(--color-border-dark) !important;
+}
+
+.surface-card {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+
+  mat-card-header {
+    background: var(--color-surface-2);
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-soft);
+    padding: 0.75rem 1rem;
+  }
+
+  mat-card-content {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+  }
 }

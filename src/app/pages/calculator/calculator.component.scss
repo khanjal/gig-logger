@@ -31,8 +31,8 @@
   .title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: $text-primary;
-    background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+    color: var(--color-text-primary);
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--accent-600) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -49,7 +49,7 @@
   
   .subtitle {
     font-size: 1.1rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     font-weight: 400;
     
     @media (max-width: 768px) {
@@ -64,11 +64,11 @@
 
 // Enhanced calculator card
 .calculator-card {
-  background: linear-gradient(135deg, $background-card 0%, $surface-secondary 100%);
+  background: linear-gradient(135deg, var(--color-surface-card) 0%, var(--color-surface-tertiary) 100%);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid $border-light;
+  box-shadow: var(--shadow-heavy);
+  border: 1px solid var(--color-border-light);
   margin-bottom: 2rem;
   
   @media (max-width: 768px) {
@@ -99,7 +99,7 @@
   .section-title {
     font-size: 1.3rem;
     font-weight: 600;
-    color: $text-primary;
+    color: var(--color-text-primary);
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
@@ -117,7 +117,7 @@
     
     .section-icon {
       font-size: 1.5rem;
-      color: $accent-color;
+      color: var(--accent-600);
       
       @media (max-width: 768px) {
         font-size: 1.3rem;
@@ -154,7 +154,7 @@
   
   .input-label {
     font-weight: 500;
-    color: $text-primary;
+    color: var(--color-text-primary);
     font-size: 0.95rem;
     
     @media (max-width: 768px) {
@@ -168,21 +168,21 @@
   
   .input-field {
     padding: 12px 16px;
-    border: 2px solid $border-color;
+    border: 2px solid var(--color-border);
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: white;
+    background: var(--color-surface);
     min-height: 44px;
     
     &:focus {
-      border-color: $accent-color;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      border-color: var(--accent-600);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-600) 10%, transparent);
       outline: none;
     }
     
     &:hover {
-      border-color: $border-dark;
+      border-color: var(--color-border-dark);
     }
     
     @media (max-width: 768px) {
@@ -202,7 +202,7 @@
   
   .input-helper {
     font-size: 0.8rem;
-    color: $text-secondary;
+    color: var(--color-text-secondary);
     margin-top: 0.25rem;
     
     @media (max-width: 768px) {
@@ -219,7 +219,7 @@
 .calculate-button {
   width: 100%;
   min-height: 56px;
-  background: linear-gradient(135deg, $accent-color 0%, $success-color 100%);
+  background: linear-gradient(135deg, var(--accent-600) 0%, var(--success-500) 100%);
   color: white;
   border: none;
   border-radius: 16px;
@@ -227,11 +227,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-600) 30%, transparent);
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent-600) 40%, transparent);
   }
   
   &:active {
@@ -274,8 +274,8 @@
 
 // Enhanced result cards
 .result-card {
-  background: linear-gradient(135deg, $success-50 0%, $success-100 100%);
-  border: 2px solid $success-200;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--success-500) 10%, transparent) 0%, color-mix(in srgb, var(--success-500) 20%, transparent) 100%);
+  border: 2px solid color-mix(in srgb, var(--success-500) 30%, transparent);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -294,7 +294,7 @@
   
   .result-label {
     font-size: 1rem;
-    color: $success-700;
+    color: var(--success-700);
     font-weight: 500;
     margin-bottom: 0.5rem;
     
@@ -312,7 +312,7 @@
   .result-value {
     font-size: 2rem;
     font-weight: 700;
-    color: $success-800;
+    color: var(--success-800);
     
     @media (max-width: 768px) {
       font-size: 1.75rem;
@@ -325,7 +325,7 @@
   
   .result-description {
     font-size: 0.9rem;
-    color: $success-600;
+    color: var(--success-600);
     margin-top: 0.5rem;
     
     @media (max-width: 768px) {
@@ -360,8 +360,8 @@
 }
 
 .breakdown-item {
-  background: linear-gradient(135deg, $info-50 0%, $info-100 100%);
-  border: 1px solid $info-200;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--info-500) 10%, transparent) 0%, color-mix(in srgb, var(--info-500) 20%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--info-500) 30%, transparent);
   border-radius: 12px;
   padding: 1rem;
   text-align: center;
@@ -378,7 +378,7 @@
   
   .breakdown-label {
     font-size: 0.85rem;
-    color: $info-700;
+    color: var(--info-700);
     font-weight: 500;
     margin-bottom: 0.25rem;
     text-transform: uppercase;
@@ -396,7 +396,7 @@
   .breakdown-value {
     font-size: 1.2rem;
     font-weight: 600;
-    color: $info-800;
+    color: var(--info-800);
     
     @media (max-width: 768px) {
       font-size: 1.1rem;
@@ -412,9 +412,9 @@
 .reset-button {
   width: 100%;
   min-height: 44px;
-  background: linear-gradient(135deg, $background-light 0%, $border-color 100%);
-  color: $text-primary;
-  border: 1px solid $border-color;
+  background: linear-gradient(135deg, var(--color-surface-tertiary) 0%, var(--color-border) 100%);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 500;
@@ -423,9 +423,9 @@
   margin-top: 1rem;
   
   &:hover {
-    background: linear-gradient(135deg, $border-light 0%, $background-light 100%);
+    background: linear-gradient(135deg, var(--color-border) 0%, var(--color-surface-tertiary) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-light);
   }
   
   &:active {

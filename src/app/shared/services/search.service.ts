@@ -345,6 +345,9 @@ export class SearchService {
 
         // Add this trip to the result
         existingResult.trips.push(trip);
+
+        if (trip.exclude) return;
+
         existingResult.totalTrips++;
         existingResult.totalEarnings += trip.total || 0;
 

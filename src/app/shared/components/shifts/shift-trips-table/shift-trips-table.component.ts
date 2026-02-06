@@ -60,7 +60,7 @@ export class ShiftTripsTableComponent {
   async viewTrips(trips: ITrip[]) {
     this.dialog.open(TripsModalComponent, {
       data: { title: 'Shift trips', trips },
-      height: '600px',
+      height: '550px',
       width: '600px',
       panelClass: 'custom-modalbox'
     });

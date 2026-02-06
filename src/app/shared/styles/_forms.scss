@@ -9,7 +9,7 @@
     margin: 0;
     font-size: 1.5rem;
     font-weight: 500;
-    color: var(--primary-color);
+    color: var(--primary-600);
     
     @media (max-width: 768px) {
       font-size: 1.25rem;
@@ -102,9 +102,9 @@
 .selected-content {
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: linear-gradient(135deg, $primary-50 0%, $secondary-50 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-600) 10%, var(--color-surface)) 0%, color-mix(in srgb, var(--primary-600) 6%, var(--color-surface)) 100%);
   border-radius: 12px;
-  border: 1px solid $border-light;
+  border: 1px solid var(--color-border-light);
   
   @media (max-width: 768px) {
     margin-bottom: 1rem;
@@ -124,7 +124,7 @@
   margin: 1rem 0;
   
   mat-expansion-panel {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px var(--shadow-light);
   }
 }
 
@@ -140,7 +140,7 @@
   margin-bottom: 1rem;
   padding: 0.75rem;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.02);
+  background: color-mix(in srgb, var(--color-overlay) 8%, transparent);
   
   &:last-child {
     margin-bottom: 0;
@@ -150,7 +150,7 @@
 .form-item-title {
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* Material Design Form Field Enhancements */
@@ -185,7 +185,7 @@
 .form-virtual-scroll {
   height: 200px;
   border-radius: 8px;
-  border: 1px solid $border-color;
+  border: 1px solid var(--color-border);
   
   @media (max-width: 768px) {
     height: 150px;
@@ -207,7 +207,7 @@
     font-weight: 600;
     padding-bottom: 0.75rem;
     font-size: 1.1rem;
-    color: $primary-color;
+    color: var(--primary-600);
     
     @media (max-width: 768px) {
       font-size: 1rem;
@@ -233,7 +233,7 @@
 .form-tab-italic {
   font-style: italic;
   margin-left: 0.5rem;
-  color: $text-secondary;
+  color: var(--color-text-secondary);
   
   @media (max-width: 768px) {
     margin-left: 0.25rem;
@@ -243,7 +243,7 @@
 
 /* Form Utility Classes */
 .form-highlight {
-  color: $accent-color !important;
+  color: var(--success-500) !important;
   font-weight: 500;
 }
 

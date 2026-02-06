@@ -36,6 +36,7 @@ export class ShiftsQuickViewComponent {
   ActionEnum = ActionEnum;
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
+  @Input() inlineMode: boolean = false;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output() edit = new EventEmitter<IShift>();
 
@@ -108,7 +109,10 @@ export class ShiftsQuickViewComponent {
   }
 
   async editShift() {
-    // Navigate to shift page with edit mode and shift rowId
-    this._router.navigate(['/shifts/edit', this.shift.rowId]);
+    // Emit edit event and navigate only when not embedded inline
+    this.edit.emit(this.shift);
+    if (!this.inlineMode) {
+      this._router.navigate(['/shifts/edit', this.shift.rowId]);
+    }
   }
 }

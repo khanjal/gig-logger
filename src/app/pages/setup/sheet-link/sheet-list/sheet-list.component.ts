@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,6 +29,7 @@ import { TruncatePipe } from "@pipes/truncate.pipe";
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,

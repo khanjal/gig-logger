@@ -1,8 +1,8 @@
 <div class="table-container w-full p-2">
     @if (link) {
         <h2 class="flex items-center gap-2 text-xl font-bold mb-2">
-            <span class="title-content">{{ title }}</span>
-            <a [href]="'https://docs.google.com/spreadsheets/d/' + link" target="_blank" class="link-icon text-blue-600 hover:underline">
+            <span class="title-content text-blue-600 dark:text-blue-400">{{ title }}</span>
+            <a [href]="'https://docs.google.com/spreadsheets/d/' + link" target="_blank" class="link-icon text-blue-600 dark:text-blue-400 hover:underline">
                 <mat-icon>open_in_new</mat-icon>
             </a>
         </h2>
@@ -16,22 +16,22 @@
                 <span class="trip-info">{{ tripGroup.date | date:'E, MMM d' }} ({{tripGroup.trips.length}})</span>
                 <span class="amount-info">{{ tripGroup?.amount ?? 0 | currency }} / {{ tripGroup.average | currency }}</span>
             </h3>
-            <div class="overflow-x-auto relative rounded-lg border border-gray-200 bg-white">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-blue-100">
+            <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface">
+                <table class="table-theme min-w-full text-sm">
+                    <thead>
                         <tr>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Service</th>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Place</th>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Pickup</th>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Dropoff</th>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Total</th>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Name</th>
-                            <th class="px-3 py-2 text-left font-semibold text-blue-900 whitespace-nowrap">Address</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Service</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Place</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Pickup</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Dropoff</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Total</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Name</th>
+                            <th class="px-3 py-2 text-left font-semibold whitespace-nowrap">Address</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngFor="let trip of tripGroup.trips; let j = index">
-                            <tr [ngClass]="trip.exclude ? 'bg-gray-200 line-through' : (j % 2 === 0 ? 'bg-blue-50' : 'bg-white')">
+                        <ng-container *ngFor="let trip of tripGroup.trips">
+                            <tr [ngClass]="{ 'line-through text-tertiary': trip.exclude }">
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.service}}-{{ trip.number ? trip.number : 0}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.place | truncate:15}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">
@@ -40,7 +40,7 @@
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <span [ngClass]="{'time-24hr': prefers24Hour, 'time-12hr': !prefers24Hour}">{{ trip.dropoffTime | noseconds:prefers24Hour }}</span>
                                 </td>
-                                <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400': (trip.tip + trip.cash) === 0, 'text-green-600 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap" [ngClass]="{'text-gray-400 dark:text-gray-500': (trip.tip + trip.cash) === 0, 'text-green-600 dark:text-green-400 font-bold': (trip.tip + trip.cash) >= 5}">{{trip.total | currency}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.name | truncate:10}}</td>
                                 <td class="px-3 py-2 whitespace-nowrap">{{trip.endAddress | truncate:75}}</td>
                             </tr>
@@ -50,7 +50,7 @@
             </div>
         </div>
     } @else {
-        <div class="no-trips-message flex flex-col items-center justify-center py-8 text-gray-500">
+        <div class="no-trips-message flex flex-col items-center justify-center py-8 text-tertiary">
             <mat-icon class="no-trips-icon text-4xl mb-2">info_outline</mat-icon>
             <h3 class="text-lg font-semibold mb-1">No trips to display</h3>
             <p>There are currently no trips available for the selected period.</p>

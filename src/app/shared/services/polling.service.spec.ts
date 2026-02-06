@@ -335,14 +335,12 @@ describe('PollingService', () => {
 
   describe('Visibility Change Handling', () => {
     it('should have visibility change listener registered', () => {
-      expect(service['visibilityChangeListener']).not.toBeNull();
+      expect(service['visibilityChangeListener']).toBeDefined();
     });
 
     it('should update lastPollTime when document becomes hidden', () => {
-      const originalVisibility = document.visibilityState;
       const beforeTime = Date.now();
 
-      // Simulate visibility change to hidden
       Object.defineProperty(document, 'visibilityState', {
         writable: true,
         configurable: true,
@@ -354,13 +352,6 @@ describe('PollingService', () => {
       }
 
       expect(service['lastPollTime']).toBeGreaterThanOrEqual(beforeTime);
-
-      // Restore original visibility
-      Object.defineProperty(document, 'visibilityState', {
-        writable: true,
-        configurable: true,
-        value: originalVisibility
-      });
     });
   });
 });

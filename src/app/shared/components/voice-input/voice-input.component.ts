@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { NumberHelper } from '@helpers/number.helper';
@@ -55,7 +56,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
   constructor(
     private _dropdownDataService: DropdownDataService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private _permissionService: PermissionService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -110,9 +112,16 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  onMicClick(): void {
+  async onMicClick(): Promise<void> {
     if (!this.isSpeechRecognitionSupported()) {
       alert('Speech recognition is not supported in this browser. Please try Chrome, Edge, or Safari.');
+      return;
+    }
+
+    // Verify microphone permission if possible; if explicitly denied, don't proceed
+    const micAllowed = await this.hasMicrophonePermission();
+    if (!micAllowed) {
+      alert('Microphone access is denied. Please enable microphone permissions in your browser.');
       return;
     }
 
@@ -127,8 +136,15 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Synchronous check used by template bindings (must be synchronous)
   public isSpeechRecognitionSupported(): boolean {
-    return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+    return this._permissionService.isSpeechRecognitionSupported() && 
+           this._permissionService.getMicrophoneState() !== 'denied';
+  }
+
+  // Async permission check for microphone access used when attempting to start listening
+  private async hasMicrophonePermission(): Promise<boolean> {
+    return this._permissionService.hasMicrophonePermission();
   }
 
   private initializeSpeechRecognition(): void {

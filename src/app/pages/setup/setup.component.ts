@@ -42,23 +42,23 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
     styleUrls: ['./setup.component.scss'],
     standalone: true,
     imports: [
-    CommonModule,
-    NgIf,
-    NgFor,
-    MatCard,
-    MatCardContent,
-    MatCardHeader,
-    MatFabButton,
-    MatIcon,
-    LoginComponent,
-    ServiceWorkerStatusComponent,
-    SheetLinkComponent,
-    SheetDemoComponent,
-    SheetQuickViewComponent,
-    SheetQuotaComponent,
-    AuthStatusComponent,
-    AppPermissionsComponent
-]
+      CommonModule,
+      NgIf,
+      NgFor,
+      MatCard,
+      MatCardContent,
+      MatCardHeader,
+      MatFabButton,
+      MatIcon,
+      LoginComponent,
+      ServiceWorkerStatusComponent,
+      SheetLinkComponent,
+      SheetDemoComponent,
+      SheetQuickViewComponent,
+      SheetQuotaComponent,
+      AuthStatusComponent,
+      AppPermissionsComponent
+  ]
 })
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
@@ -224,8 +224,6 @@ export class SetupComponent {
 
   async loadSheetDialog(inputValue: string) {
         let dialogRef = this.dialog.open(DataSyncModalComponent, {
-            height: '400px',
-            width: '500px',
             panelClass: 'custom-modalbox',
             data: inputValue
         });
@@ -266,7 +264,7 @@ export class SetupComponent {
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
-    dialogData.trueColor = "warning";
+    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -312,7 +310,7 @@ export class SetupComponent {
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;
-    dialogData.trueColor = "warning";
+    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

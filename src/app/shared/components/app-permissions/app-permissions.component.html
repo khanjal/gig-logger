@@ -1,4 +1,4 @@
-<mat-card class="permissions-card">
+<mat-card class="permissions-card bg-surface text-gray-800 dark:text-gray-200">
   <mat-card-header>
     <mat-card-title class="flex items-center gap-3">
       <mat-icon>settings</mat-icon>
@@ -6,7 +6,7 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p class="text-gray-600 mb-4">
+    <p class="text-gray-600 dark:text-gray-200 mb-4">
       Manage permissions for place search and voice input features.
     </p>
 
@@ -102,7 +102,7 @@
       microphonePermission.state === 'denied' || microphonePermission.state === 'granted'
     ) {
       <div class="permissions-footer">
-        <button mat-stroked-button class="flex items-center gap-3" (click)="openBrowserSettings()">
+        <button mat-fab [extended]="true" color="primary" class="flex items-center gap-3" (click)="openBrowserSettings()">
           <mat-icon>settings</mat-icon>
           Browser Settings
         </button>
@@ -110,7 +110,7 @@
     }
     <div class="permissions-footer">
       <mat-icon class="footer-icon">lock</mat-icon>
-      <p class="text-sm text-gray-500">
+          <p class="text-sm text-gray-500 dark:text-gray-200">
         Your privacy matters. These permissions are only used for the features described and never shared.
       </p>
     </div>

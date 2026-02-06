@@ -1,26 +1,26 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { MatButton } from '@angular/material/button';
 import { NgIf } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { MatFabButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-confirm-dialog',
     templateUrl: './confirm-dialog.component.html',
     styleUrls: ['./confirm-dialog.component.scss'],
     standalone: true,
-    imports: [MatButton, NgIf, MatIcon]
+    imports: [NgIf, MatIcon, MatFabButton]
 })
 export class ConfirmDialogComponent {
   title!: string;
   message!: string;
   trueIcon: string | undefined;
   trueText! :string;
-  trueColor: string = "primary";
+  trueColor: string;
   falseIcon: string | undefined;
   falseText! :string;
-  falseColor: string = "";
+  falseColor: string;
 
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IConfirmDialog) {
@@ -28,9 +28,11 @@ export class ConfirmDialogComponent {
     this.title = data.title;
     this.message = data.message;
     this.trueText = data.trueText;
+    this.trueIcon = data.trueIcon;
     this.trueColor = data.trueColor ?? "primary";
     this.falseText = data.falseText;
-    this.falseColor = data.falseColor;
+    this.falseIcon = data.falseIcon;
+    this.falseColor = data.falseColor ?? "accent";
   }
 
   onConfirm(): void {
