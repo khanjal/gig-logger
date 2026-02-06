@@ -19,6 +19,17 @@
 	border-color: #cbd5e1; /* gray-300 */
 }
 
+:host-context(html.theme-dark) .shift-card {
+	background-color: rgba(31, 41, 55, 0.9); /* gray-800 with opacity */
+	border-color: #374151; /* gray-700 */
+	box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+:host-context(html.theme-dark) .shift-card:hover {
+	box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+	border-color: #4b5563; /* gray-600 */
+}
+
 /* Trip item styling */
 .trip-item {
 	border-radius: 8px;
@@ -38,6 +49,17 @@
 	border-color: #cbd5e1;
 }
 
+:host-context(html.theme-dark) .trip-item {
+	background: #1f2937; /* gray-800 */
+	border-color: #374151; /* gray-700 */
+}
+
+:host-context(html.theme-dark) .trip-item:hover {
+	background: #111827; /* gray-900 */
+	box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	border-color: #4b5563; /* gray-600 */
+}
+
 /* Service accent borders */
 .svc-uber { border-left: 4px solid #3b82f6; }
 .svc-lyft { border-left: 4px solid #a78bfa; }
@@ -55,6 +77,14 @@
 .trip-item.svc-grubhub { background: linear-gradient(90deg, #fffbeb, #ffffff); }
 .trip-item.svc-spark { background: linear-gradient(90deg, #ecfeff, #ffffff); }
 .trip-item.svc-generic { background: linear-gradient(90deg, #f8fafc, #ffffff); }
+
+:host-context(html.theme-dark) .trip-item.svc-uber { background: linear-gradient(90deg, #1e3a8a, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-lyft { background: linear-gradient(90deg, #581c87, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-doordash { background: linear-gradient(90deg, #7f1d1d, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-instacart { background: linear-gradient(90deg, #14532d, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-grubhub { background: linear-gradient(90deg, #78350f, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-spark { background: linear-gradient(90deg, #164e63, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-generic { background: linear-gradient(90deg, #374151, #1f2937); }
 
 .trip-item:hover { filter: brightness(1.02); }
 

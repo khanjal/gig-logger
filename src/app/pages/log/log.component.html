@@ -1,6 +1,6 @@
 <div class="mx-auto p-4 w-full max-w-4xl space-y-3">
   <div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold">Log</h1>
+    <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Log</h1>
     <button mat-raised-button color="primary" (click)="createShift()">
       <mat-icon>playlist_add</mat-icon>
       New Shift
@@ -8,7 +8,7 @@
   </div>
 
   <!-- Add Shift Form -->
-  <div *ngIf="showAddShiftForm" class="rounded-lg border p-3 space-y-3">
+  <div *ngIf="showAddShiftForm" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 space-y-3">
     <log-shift-quick-form
       [nextNumber]="nextShiftNumber"
       (recomputeNumber)="handleQuickShiftRecompute($event)"
@@ -25,7 +25,7 @@
     <div *ngFor="let s of shifts" class="shift-card space-y-3" [ngClass]="getServiceClass(s.service)">
       <!-- Group Header -->
       <div class="flex items-center justify-between">
-        <div class="font-medium">Shift</div>
+        <div class="font-medium text-gray-800 dark:text-gray-200">Shift</div>
         <button mat-mini-fab color="primary" (click)="addTrip(s.id)" aria-label="Add Trip">
           <mat-icon>add</mat-icon>
         </button>
@@ -66,11 +66,11 @@
 
       <!-- Trips in this shift -->
       <div class="space-y-2" *ngIf="s.items.length">
-        <div class="text-sm font-medium">Trips</div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Trips</div>
         <div *ngFor="let t of s.items" class="trip-item" [ngClass]="getServiceClass(t.service)">
-          <div>Service: {{ t.service }}</div>
-          <div>Start: {{ t.pickupTime }} End: {{ t.dropoffTime }}</div>
-          <div>Total: {{ t.total }}</div>
+          <div class="text-gray-700 dark:text-gray-300">Service: {{ t.service }}</div>
+          <div class="text-gray-600 dark:text-gray-400">Start: {{ t.pickupTime }} End: {{ t.dropoffTime }}</div>
+          <div class="text-gray-700 dark:text-gray-300">Total: {{ t.total }}</div>
         </div>
       </div>
 
