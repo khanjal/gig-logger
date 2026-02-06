@@ -1,19 +1,16 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { NgIf, PercentPipe, CurrencyPipe } from '@angular/common';
-import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { CommonModule, PercentPipe, CurrencyPipe } from '@angular/common';
 import { inject } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
+import { BaseButtonComponent, BaseInputComponent } from '@components/base';
 
 @Component({
     selector: 'app-uber-calculator',
     templateUrl: './uber-calculator.component.html',
     styleUrls: ['./uber-calculator.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatButton, MatIcon, PercentPipe, CurrencyPipe]
+    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseButtonComponent, BaseInputComponent, PercentPipe, CurrencyPipe]
 })
 export class UberCalculatorComponent {
   private logger = inject(LoggerService);

@@ -41,12 +41,12 @@
   <!-- Fixed bottom buttons -->
   <div class="button-container bg-surface border-t border-[var(--color-border-light)]">
     <div class="flex justify-between items-center p-3">
-      <button mat-fab extended color="warn" (click)="cancel()">
-        <mat-icon>refresh</mat-icon> Cancel
-      </button>  
-      <button mat-fab extended color="primary" (click)="confirmSelection()" [disabled]="!selectedSheet">
-        <mat-icon>add</mat-icon> Select
-      </button>
+      <app-base-button variant="danger" [icon]="'refresh'" (clicked)="cancel()">
+        Cancel
+      </app-base-button>  
+      <app-base-button variant="primary" [icon]="'add'" [disabled]="!selectedSheet" (clicked)="confirmSelection()">
+        Select
+      </app-base-button>
     </div>
   </div>
 </div>
