@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
@@ -7,6 +7,8 @@ import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatOptgroup } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MockLocationService, PresetLocation } from '@services/mock-location.service';
 
@@ -26,17 +28,23 @@ import { MockLocationService, PresetLocation } from '@services/mock-location.ser
     MatInput,
     MatSlideToggle,
     MatIcon,
-    MatButton
+    MatButton,
+    MatSelect,
+    MatOption,
+    MatOptgroup
   ],
   templateUrl: './mock-location.component.html',
   styleUrl: './mock-location.component.scss'
 })
+
 export class MockLocationComponent implements OnInit {
+  @ViewChild('mockLocationCard') mockLocationCard?: ElementRef<HTMLElement>;
   enabled = false;
   latitude = 40.7128;
   longitude = -74.0060;
   radius = 25;
   locationName = '';
+  selectedPreset: PresetLocation | null = null;
   currentRealLocation: { lat: number; lng: number } | null = null;
   gettingLocation = false;
 
@@ -50,6 +58,14 @@ export class MockLocationComponent implements OnInit {
     this.getCurrentRealLocation();
   }
 
+  get usPresets(): PresetLocation[] {
+    return this.getSortedPresets('US');
+  }
+
+  get canadaPresets(): PresetLocation[] {
+    return this.getSortedPresets('CA');
+  }
+
   loadSettings(): void {
     const settings = this.mockLocationService.getMockLocation();
     this.enabled = settings.enabled;
@@ -57,6 +73,9 @@ export class MockLocationComponent implements OnInit {
     this.longitude = settings.longitude;
     this.radius = settings.radius;
     this.locationName = settings.name || '';
+    this.selectedPreset = this.mockLocationService.presetLocations.find(
+      (preset) => preset.latitude === settings.latitude && preset.longitude === settings.longitude
+    ) ?? null;
   }
 
   onToggleChange(): void {
@@ -70,7 +89,13 @@ export class MockLocationComponent implements OnInit {
     }
   }
 
-  onPresetSelect(preset: PresetLocation): void {
+  onPresetSelect(preset: PresetLocation | null): void {
+    if (!preset) {
+      this.selectedPreset = null;
+      return;
+    }
+
+    this.selectedPreset = preset;
     this.latitude = preset.latitude;
     this.longitude = preset.longitude;
     this.locationName = preset.name;
@@ -115,6 +140,7 @@ export class MockLocationComponent implements OnInit {
     this.mockLocationService.reset();
     this.loadSettings();
     this.snackBar.open('Reset to default settings', 'Dismiss', { duration: 2000 });
+    this.scrollToCard();
   }
 
   async getCurrentRealLocation(): Promise<void> {
@@ -163,5 +189,21 @@ export class MockLocationComponent implements OnInit {
 
   formatCoordinate(value: number): string {
     return value.toFixed(6);
+  }
+
+  private scrollToCard(): void {
+    const cardElement = this.mockLocationCard?.nativeElement;
+    if (!cardElement) {
+      return;
+    }
+
+    cardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  private getSortedPresets(country: 'US' | 'CA'): PresetLocation[] {
+    return this.mockLocationService.presetLocations
+      .filter((preset) => preset.country === country)
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 }

@@ -1,4 +1,4 @@
-<mat-card class="mock-location-card bg-surface text-gray-800 dark:text-gray-200">
+<mat-card #mockLocationCard class="mock-location-card bg-surface text-gray-800 dark:text-gray-200">
   <mat-card-header>
     <mat-card-title class="flex items-center gap-3">
       <mat-icon>location_on</mat-icon>
@@ -10,164 +10,163 @@
       Override your real location for testing Google Places autocomplete in different regions.
     </p>
 
-    <!-- Enable Toggle -->
-    <div class="mb-6">
-      <mat-slide-toggle 
-        [(ngModel)]="enabled" 
-        (change)="onToggleChange()"
-        color="primary"
-        class="w-full"
-      >
-        <span class="font-medium">{{ enabled ? 'Mock Location Enabled' : 'Use Real Location' }}</span>
-      </mat-slide-toggle>
-      
-      <div *ngIf="enabled" class="mt-2 flex items-start gap-2 text-sm text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950 px-3 py-2 rounded">
-        <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
-        <span>Mock mode active - Google Places will use the location below instead of your real position</span>
-      </div>
-    </div>
-
-    <!-- Current Real Location Display -->
-    <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
-          <mat-icon class="!text-base !w-5 !h-5">my_location</mat-icon>
-          Your Real Location
-        </h3>
-        <button 
-          mat-icon-button 
-          (click)="getCurrentRealLocation()" 
-          [disabled]="gettingLocation"
-          class="text-blue-700 dark:text-blue-400"
+    <div class="space-y-5">
+      <!-- Enable Toggle -->
+      <div>
+        <mat-slide-toggle 
+          [(ngModel)]="enabled" 
+          (change)="onToggleChange()"
+          color="primary"
+          class="w-full"
         >
-          <mat-icon [class.spinner]="gettingLocation">refresh</mat-icon>
-        </button>
+          <span class="mock-toggle-label font-medium mr-1">{{ enabled ? 'Mock Location Enabled' : 'Use Real Location' }}</span>
+        </mat-slide-toggle>
+        
+        <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-orange-700 dark:text-orange-200 bg-orange-50 dark:bg-orange-950 px-3 py-2 rounded">
+          <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
+          <span class="mock-warning-text text-orange-700 dark:text-orange-200 mr-1">Mock mode active - Google Places will use the location below instead of your real position</span>
+        </div>
       </div>
-      <div *ngIf="currentRealLocation" class="text-sm text-gray-700 dark:text-gray-300">
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <span class="text-gray-500 dark:text-gray-400">Latitude:</span>
-            <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lat) }}</span>
+
+      <!-- Current Real Location Display -->
+      <div class="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
+            <mat-icon class="!text-base !w-5 !h-5">my_location</mat-icon>
+            Your Real Location
+          </h3>
+          <button 
+            mat-icon-button 
+            (click)="getCurrentRealLocation()" 
+            [disabled]="gettingLocation"
+            class="text-blue-700 dark:text-blue-400"
+          >
+            <mat-icon [class.spinner]="gettingLocation">refresh</mat-icon>
+          </button>
+        </div>
+        <div *ngIf="currentRealLocation" class="text-sm text-gray-700 dark:text-gray-300">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-gray-500 dark:text-gray-400">Latitude:</span>
+              <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lat) }}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 dark:text-gray-400">Longitude:</span>
+              <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lng) }}</span>
+            </div>
           </div>
-          <div>
-            <span class="text-gray-500 dark:text-gray-400">Longitude:</span>
-            <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lng) }}</span>
+          <button 
+            mat-stroked-button 
+            color="primary" 
+            class="mt-3 w-full current-location-button flex items-center justify-center gap-2"
+            (click)="useCurrentLocation()"
+            *ngIf="enabled"
+          >
+            <mat-icon class="mr-1">gps_fixed</mat-icon>
+            Use This Location as Mock
+          </button>
+        </div>
+        <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-gray-500 dark:text-gray-400">
+          Location unavailable - click refresh to try again
+        </div>
+      </div>
+
+      <div *ngIf="enabled" class="space-y-5">
+        <!-- Preset Locations -->
+        <div>
+          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Quick Select City</label>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            Choose a popular US/Canada city to auto-fill the coordinates.
+          </p>
+          <mat-form-field class="w-full" appearance="outline">
+            <mat-label>Popular cities</mat-label>
+            <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelect($event.value)">
+              <mat-option [value]="null">Custom coordinates</mat-option>
+              <mat-optgroup label="United States">
+                <mat-option *ngFor="let preset of usPresets" [value]="preset">
+                  {{ preset.name }}
+                </mat-option>
+              </mat-optgroup>
+              <mat-optgroup label="Canada">
+                <mat-option *ngFor="let preset of canadaPresets" [value]="preset">
+                  {{ preset.name }}
+                </mat-option>
+              </mat-optgroup>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Manual Coordinates -->
+        <div>
+          <h3 class="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Custom Coordinates</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <mat-form-field class="w-full" appearance="outline">
+              <mat-label>Latitude</mat-label>
+              <input 
+                matInput 
+                type="number" 
+                [(ngModel)]="latitude"
+                (ngModelChange)="onCoordinatesChange()"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <mat-hint>Range: -90 to 90</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="w-full mb-5" appearance="outline">
+              <mat-label>Longitude</mat-label>
+              <input 
+                matInput 
+                type="number" 
+                [(ngModel)]="longitude"
+                (ngModelChange)="onCoordinatesChange()"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+              <mat-hint>Range: -180 to 180</mat-hint>
+            </mat-form-field>
           </div>
         </div>
-        <button 
-          mat-stroked-button 
-          color="primary" 
-          class="mt-3 w-full"
-          (click)="useCurrentLocation()"
-          *ngIf="enabled"
-        >
-          <mat-icon>gps_fixed</mat-icon>
-          Use This Location as Mock
-        </button>
-      </div>
-      <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-gray-500 dark:text-gray-400">
-        Location unavailable - click refresh to try again
-      </div>
-    </div>
 
-    <div *ngIf="enabled">
-      <!-- Preset Locations -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Quick Select Location</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <button 
-            *ngFor="let preset of mockLocationService.presetLocations"
-            mat-stroked-button
-            (click)="onPresetSelect(preset)"
-            class="text-xs sm:text-sm"
-          >
-            {{ preset.name }}
+        <!-- Search Radius -->
+        <div>
+          <mat-form-field class="w-full" appearance="outline">
+            <mat-label>Search Radius (miles)</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              [(ngModel)]="radius"
+              (ngModelChange)="onRadiusChange()"
+              min="1"
+              max="50"
+            />
+            <mat-hint>Range: 1 to 50 miles</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Current Mock Location Summary -->
+        <div class="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+          <h3 class="text-sm font-semibold text-green-800 dark:text-green-300 mb-2 flex items-center gap-2">
+            <mat-icon class="!text-base !w-5 !h-5">check_circle</mat-icon>
+            Active Mock Location
+          </h3>
+          <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+            <div><strong>Name:</strong> {{ locationName || 'Unnamed' }}</div>
+            <div><strong>Coordinates:</strong> {{ formatCoordinate(latitude) }}, {{ formatCoordinate(longitude) }}</div>
+            <div><strong>Search Radius:</strong> {{ radius }} miles</div>
+          </div>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="flex justify-end">
+          <button mat-stroked-button (click)="resetToDefaults()" class="reset-button">
+            <mat-icon>restart_alt</mat-icon>
+            Reset to Defaults
           </button>
         </div>
       </div>
-
-      <!-- Manual Coordinates -->
-      <div class="mb-4">
-        <h3 class="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Custom Coordinates</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <mat-form-field class="w-full" appearance="outline">
-            <mat-label>Latitude</mat-label>
-            <input 
-              matInput 
-              type="number" 
-              [(ngModel)]="latitude"
-              (ngModelChange)="onCoordinatesChange()"
-              step="0.0001"
-              min="-90"
-              max="90"
-            />
-            <mat-hint>Range: -90 to 90</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field class="w-full" appearance="outline">
-            <mat-label>Longitude</mat-label>
-            <input 
-              matInput 
-              type="number" 
-              [(ngModel)]="longitude"
-              (ngModelChange)="onCoordinatesChange()"
-              step="0.0001"
-              min="-180"
-              max="180"
-            />
-            <mat-hint>Range: -180 to 180</mat-hint>
-          </mat-form-field>
-        </div>
-
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>Location Name (Optional)</mat-label>
-          <input 
-            matInput 
-            type="text" 
-            [(ngModel)]="locationName"
-            (ngModelChange)="saveSettings()"
-            placeholder="e.g., Test Location"
-          />
-        </mat-form-field>
-      </div>
-
-      <!-- Search Radius -->
-      <div class="mb-4">
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>Search Radius (miles)</mat-label>
-          <input 
-            matInput 
-            type="number" 
-            [(ngModel)]="radius"
-            (ngModelChange)="onRadiusChange()"
-            min="1"
-            max="50"
-          />
-          <mat-hint>Range: 1 to 50 miles</mat-hint>
-        </mat-form-field>
-      </div>
-
-      <!-- Current Mock Location Summary -->
-      <div class="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800 mb-4">
-        <h3 class="text-sm font-semibold text-green-800 dark:text-green-300 mb-2 flex items-center gap-2">
-          <mat-icon class="!text-base !w-5 !h-5">check_circle</mat-icon>
-          Active Mock Location
-        </h3>
-        <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-          <div><strong>Name:</strong> {{ locationName || 'Unnamed' }}</div>
-          <div><strong>Coordinates:</strong> {{ formatCoordinate(latitude) }}, {{ formatCoordinate(longitude) }}</div>
-          <div><strong>Search Radius:</strong> {{ radius }} miles</div>
-        </div>
-      </div>
-
-      <!-- Reset Button -->
-      <div class="flex justify-end">
-        <button mat-stroked-button (click)="resetToDefaults()">
-          <mat-icon>restart_alt</mat-icon>
-          Reset to Defaults
-        </button>
-      </div>
     </div>
-
   </mat-card-content>
 </mat-card>
