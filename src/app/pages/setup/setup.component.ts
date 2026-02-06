@@ -5,7 +5,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 // Angular Material
 import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFabButton } from '@angular/material/button';
+import { MatFabButton, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -20,6 +20,7 @@ import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
 import { AppPermissionsComponent } from '@components/app-permissions/app-permissions.component';
+import { MockLocationComponent } from '@components/mock-location/mock-location.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -49,6 +50,7 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       MatCardContent,
       MatCardHeader,
       MatFabButton,
+      MatButton,
       MatIcon,
       LoginComponent,
       ServiceWorkerStatusComponent,
@@ -57,7 +59,8 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       SheetQuickViewComponent,
       SheetQuotaComponent,
       AuthStatusComponent,
-      AppPermissionsComponent
+      AppPermissionsComponent,
+      MockLocationComponent
   ]
 })
 export class SetupComponent {
@@ -70,6 +73,7 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
+  showAdvanced: boolean = false;
 
   version: string = '';
 

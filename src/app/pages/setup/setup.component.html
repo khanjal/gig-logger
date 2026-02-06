@@ -33,13 +33,31 @@
         </div>
       </mat-card-content>
     </mat-card>
+
+    <!-- Advanced Settings Toggle -->
+    <div class="mb-6" *ngIf="spreadsheets?.length">
+      <button 
+        mat-stroked-button 
+        (click)="showAdvanced = !showAdvanced" 
+        class="w-full flex items-center justify-between bg-surface-2 text-gray-700 dark:text-gray-300 hover:bg-surface-3 transition-colors"
+      >
+        <span class="flex items-center gap-2">
+          <mat-icon>{{ showAdvanced ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <span class="font-medium">{{ showAdvanced ? 'Hide' : 'Show' }} Advanced Settings</span>
+        </span>
+      </button>
+    </div>
   </ng-container>
 
-  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft">
+  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
     <app-permissions></app-permissions>
   </div>
 
-  <mat-card class="mb-6 bg-surface text-gray-800 dark:text-gray-200 surface-card">
+  <div class="mb-6" *ngIf="showAdvanced">
+    <app-mock-location></app-mock-location>
+  </div>
+
+  <mat-card class="mb-6 bg-surface text-gray-800 dark:text-gray-200 surface-card" *ngIf="showAdvanced">
     <mat-card-header><h2 class="text-2xl font-semibold text-primary">Application Insights</h2></mat-card-header>
     <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
       <div class="mb-2 text-primary dark:text-primary">Version: <strong>{{ version }}</strong></div>
@@ -48,11 +66,11 @@
     </mat-card-content>
   </mat-card>
 
-  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft">
+  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
     <app-auth-status></app-auth-status>
   </div>
 
-  <div class="mb-6">
+  <div class="mb-6" *ngIf="showAdvanced">
     <div class="flex flex-row justify-between items-center gap-2">
       <button mat-fab [extended]="true" color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length" class="flex items-center gap-2"><mat-icon>refresh</mat-icon> Refresh Data</button>
       <button mat-fab [extended]="true" color="warn" class="button-right flex items-center gap-2" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAllDialog()"><mat-icon>delete</mat-icon> Delete Data</button>

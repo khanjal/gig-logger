@@ -2,20 +2,25 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ServerGooglePlacesService, AutocompleteResult, PlaceDetails } from './server-google-places.service';
 import { LoggerService } from './logger.service';
+import { MockLocationService } from './mock-location.service';
 
 describe('ServerGooglePlacesService', () => {
   let service: ServerGooglePlacesService;
   let httpMock: HttpTestingController;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
+  let mockLocationServiceSpy: jasmine.SpyObj<MockLocationService>;
 
   beforeEach(() => {
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'warn', 'debug']);
+    mockLocationServiceSpy = jasmine.createSpyObj('MockLocationService', ['getLocation']);
+    mockLocationServiceSpy.getLocation.and.returnValue(null); // Default: mock disabled
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         ServerGooglePlacesService,
-        { provide: LoggerService, useValue: loggerSpy }
+        { provide: LoggerService, useValue: loggerSpy },
+        { provide: MockLocationService, useValue: mockLocationServiceSpy }
       ]
     });
 
