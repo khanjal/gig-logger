@@ -1,16 +1,25 @@
 <form class="sheet-form" [formGroup]="sheetForm">
-    <mat-form-field class="field-full-width" appearance="outline">
-        <mat-label>Sheet ID</mat-label>
-        <input matInput type="text" name="sheetId" placeholder="https://docs.google.com/spreadsheets/d/{id}/ - Link or ID" formControlName="sheetId" value="" required>
-    </mat-form-field>
-    <mat-form-field class="field-half-width" appearance="outline" *ngIf="false">
-        <mat-label>Sheet Name</mat-label>
-        <input matInput type="text" name="sheetName" placeholder="Enter Name or Leave Empty" formControlName="sheetName" value="">
-    </mat-form-field>
+    <app-base-input 
+      class="field-full-width"
+      label="Sheet ID"
+      type="text"
+      placeholder="https://docs.google.com/spreadsheets/d/{id}/ - Link or ID"
+      formControlName="sheetId"
+      [required]="true"
+      hint="Paste Google Sheets link or ID">
+    </app-base-input>
+    <app-base-input 
+      class="field-half-width"
+      label="Sheet Name"
+      type="text"
+      placeholder="Enter Name or Leave Empty"
+      formControlName="sheetName"
+      *ngIf="false">
+    </app-base-input>
 </form>
 
 <div class="row-flex">
-    <button mat-fab extended color="primary" (click)="addSheet()" [class.spinner]="saving" [disabled]="!sheetForm.valid || saving"><mat-icon>add</mat-icon> Add</button>
-    <button mat-fab extended color="accent" (click)="addDemo()" [class.spinner]="saving" [disabled]="saving" *ngIf="false"><mat-icon>adjust</mat-icon> Demo</button>
-    <button mat-fab extended color="warn" (click)="sheetForm.reset()"><mat-icon>refresh</mat-icon> Reset</button>
+    <app-base-button variant="primary" [icon]="'add'" [disabled]="!sheetForm.valid || saving" [loading]="saving" (clicked)="addSheet()">Add</app-base-button>
+    <app-base-button variant="secondary" [icon]="'adjust'" [disabled]="saving" [loading]="saving" (clicked)="addDemo()" *ngIf="false">Demo</app-base-button>
+    <app-base-button variant="danger" [icon]="'refresh'" (clicked)="sheetForm.reset()">Reset</app-base-button>
 </div>

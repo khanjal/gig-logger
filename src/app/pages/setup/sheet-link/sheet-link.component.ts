@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { MatFabButton } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,14 +8,14 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
+import { BaseButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-sheet-link',
   standalone: true,
     imports: [
     CommonModule,
-    MatFabButton,
-    MatIconModule
+    BaseButtonComponent
     ],
   templateUrl: './sheet-link.component.html',
   styleUrl: './sheet-link.component.scss'

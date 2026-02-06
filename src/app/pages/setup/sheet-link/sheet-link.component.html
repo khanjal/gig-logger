@@ -1,4 +1,4 @@
 <div class="section bg-surface text-gray-800 dark:text-gray-200 flex justify-between items-center p-3 rounded-md">
-    <button mat-fab extended color="primary" (click)="openCreateSheetDialog()" class="bg-primary/80 dark:bg-primary-600 text-white"><mat-icon>add</mat-icon> Create New</button>
-    <button mat-fab extended color="accent" (click)="openListSheetsDialog()" class="ml-3 bg-accent/80 dark:bg-accent-600 text-white"><mat-icon>list</mat-icon> Link Sheet</button>
+    <app-base-button variant="primary" [icon]="'add'" (clicked)="openCreateSheetDialog()">Create New</app-base-button>
+    <app-base-button variant="secondary" [icon]="'list'" (clicked)="openListSheetsDialog()" class="ml-3">Link Sheet</app-base-button>
 </div>

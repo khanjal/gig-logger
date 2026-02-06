@@ -3,9 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
-import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFabButton, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -36,6 +34,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
+import { BaseButtonComponent, BaseCardComponent } from '@components/base';
 
 @Component({
     selector: 'app-setup',
@@ -46,11 +45,6 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       CommonModule,
       NgIf,
       NgFor,
-      MatCard,
-      MatCardContent,
-      MatCardHeader,
-      MatFabButton,
-      MatButton,
       MatIcon,
       LoginComponent,
       ServiceWorkerStatusComponent,
@@ -60,7 +54,9 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       SheetQuotaComponent,
       AuthStatusComponent,
       AppPermissionsComponent,
-      MockLocationComponent
+      MockLocationComponent,
+      BaseButtonComponent,
+      BaseCardComponent
   ]
 })
 export class SetupComponent {
