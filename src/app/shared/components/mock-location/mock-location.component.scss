@@ -39,20 +39,6 @@ mat-form-field {
     margin-top: 0.25rem;
   }
 }
-
-.spinner {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 :host-context(html.theme-dark) {
   .mock-location-card {
     background: var(--color-surface);
