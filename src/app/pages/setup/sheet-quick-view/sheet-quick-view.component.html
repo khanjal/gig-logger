@@ -7,7 +7,7 @@
         </mat-card-header>
         <mat-card-content>
             <div><span class="font-bold">Size</span>: {{ size }}</div>
-            <div><span class="font-bold">Source</span>: {{ spreadsheet.source }}</div>
+            <div><span class="font-bold">Source</span>: {{ spreadsheet.source | sheetSourceLabel }}</div>
         </mat-card-content>
     </div>
 </mat-card>
