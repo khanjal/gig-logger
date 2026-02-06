@@ -192,12 +192,12 @@ export class MockLocationComponent implements OnInit {
   }
 
   private scrollToCard(): void {
-    const cardElement = this.mockLocationCard?.nativeElement;
-    if (!cardElement) {
-      return;
-    }
-
-    cardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      const cardElement = document.getElementById('mock-location-card');
+      if (cardElement) {
+        cardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   }
 
   private getSortedPresets(country: 'US' | 'CA'): PresetLocation[] {
