@@ -17,9 +17,10 @@
           [(ngModel)]="enabled" 
           (change)="onToggleChange()"
           color="primary"
+          aria-label="Toggle mock location"
           class="w-full"
         >
-          <span class="mock-toggle-label font-medium mr-1">{{ enabled ? 'Mock Location Enabled' : 'Use Real Location' }}</span>
+          <span class="mock-toggle-label font-medium mr-1">Use mock location?</span>
         </mat-slide-toggle>
         
         <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-orange-700 dark:text-orange-200 bg-orange-50 dark:bg-orange-950 px-3 py-2 rounded">

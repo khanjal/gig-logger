@@ -188,7 +188,7 @@ export class MockLocationComponent implements OnInit {
   }
 
   formatCoordinate(value: number): string {
-    return value.toFixed(6);
+    return value.toFixed(3);
   }
 
   private scrollToCard(): void {
