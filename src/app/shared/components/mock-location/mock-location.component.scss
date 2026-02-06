@@ -1,29 +1,7 @@
-.mock-location-card {
-  margin-bottom: 1.5rem;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-
-  mat-card-title {
-    mat-icon {
-      color: var(--primary-500);
-    }
-  }
-}
-
-.reset-button {
-  --mdc-outlined-button-outline-color: var(--color-border);
-  --mdc-outlined-button-label-text-color: var(--color-text-primary);
-}
-
-.reset-button ::ng-deep .mdc-button__label,
-.reset-button mat-icon {
-  color: var(--color-text-primary);
-}
-
-.current-location-button ::ng-deep .mdc-button__label,
-.current-location-button mat-icon {
-  color: var(--color-text-primary);
-}
+// =============================================================================
+// MOCK LOCATION COMPONENT STYLES
+// =============================================================================
+// Minimal component-specific styling - most theming handled by base components
 
 .mock-warning,
 .mock-warning-text {
@@ -34,16 +12,18 @@
   color: var(--color-text-primary);
 }
 
+// Material form field styling for dropdown (using Material select component)
 mat-form-field {
   ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     margin-top: 0.25rem;
   }
 }
+
+// =============================================================================
+// DARK MODE
+// =============================================================================
+
 :host-context(html.theme-dark) {
-  .mock-location-card {
-    background: var(--color-surface);
-  }
-  
   mat-form-field {
     ::ng-deep .mat-mdc-text-field-wrapper {
       background: var(--color-surface-2);
@@ -66,21 +46,6 @@ mat-form-field {
     ::ng-deep .mat-mdc-input-element {
       color: var(--color-text-primary);
     }
-  }
-
-  .reset-button {
-    --mdc-outlined-button-outline-color: var(--color-border);
-    --mdc-outlined-button-label-text-color: var(--color-text-primary);
-  }
-
-  .reset-button ::ng-deep .mdc-button__label,
-  .reset-button mat-icon {
-    color: var(--color-text-primary);
-  }
-
-  .current-location-button ::ng-deep .mdc-button__label,
-  .current-location-button mat-icon {
-    color: var(--color-text-primary);
   }
 
   .mock-warning,

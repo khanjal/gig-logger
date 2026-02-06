@@ -1,0 +1,262 @@
+@use 'sass:map';
+
+// =============================================================================
+// BASE BUTTON COMPONENT STYLES
+// =============================================================================
+
+.app-base-button {
+  position: relative;
+  border: none;
+  border-radius: 0.375rem; // 6px
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  // =========================================================================
+  // VARIANTS
+  // =========================================================================
+
+  // Primary variant - solid filled
+  &.btn-primary {
+    background-color: var(--primary-500);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: var(--primary-600);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--primary-700);
+      transform: scale(0.98);
+    }
+  }
+
+  // Secondary variant - filled with surface color
+  &.btn-secondary {
+    background-color: var(--color-surface-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-light);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-tertiary);
+      border-color: var(--color-border);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Outlined variant - transparent with border
+  &.btn-outlined {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border: 1.5px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-tertiary);
+      border-color: var(--primary-500);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Danger variant - red/destructive
+  &.btn-danger {
+    background-color: var(--error-500);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #dc2626;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+    }
+
+    &:active:not(:disabled) {
+      background-color: #991b1b;
+      transform: scale(0.98);
+    }
+  }
+
+  // Icon-only variant - minimal styling
+  &.btn-icon {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-tertiary);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    mat-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  // =========================================================================
+  // SIZES
+  // =========================================================================
+
+  &.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem; // 14px
+    min-height: 32px;
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      line-height: 16px;
+    }
+  }
+
+  &.btn-md {
+    padding: 0.5rem 1rem;
+    font-size: 1rem; // 16px
+    min-height: 40px;
+
+    mat-icon {
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+      line-height: 20px;
+    }
+  }
+
+  &.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem; // 18px
+    min-height: 48px;
+
+    mat-icon {
+      width: 24px;
+      height: 24px;
+      font-size: 24px;
+      line-height: 24px;
+    }
+  }
+
+  // =========================================================================
+  // SPECIAL STATES
+  // =========================================================================
+
+  &.btn-disabled {
+    cursor: not-allowed;
+  }
+
+  &.btn-loading {
+    color: transparent;
+
+    .btn-text {
+      display: none;
+    }
+  }
+
+  &.btn-full-width {
+    width: 100%;
+  }
+
+  // =========================================================================
+  // CONTENT LAYOUT
+  // =========================================================================
+
+  .btn-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &.has-icon {
+      gap: 0.5rem;
+    }
+  }
+
+  .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .btn-text {
+    display: inline;
+  }
+
+  // =========================================================================
+  // SPINNER ANIMATION
+  // =========================================================================
+
+  .btn-spinner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+
+    .spinner {
+      animation: spin 1s linear infinite;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =============================================================================
+// DARK MODE
+// =============================================================================
+
+:host-context(html.theme-dark) {
+  .app-base-button {
+    &.btn-secondary {
+      color: var(--color-text-primary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-tertiary);
+      }
+    }
+
+    &.btn-outlined {
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
+
+      &:hover:not(:disabled) {
+        border-color: var(--primary-500);
+      }
+    }
+  }
+}

@@ -86,7 +86,7 @@ describe('MockLocationComponent', () => {
   });
 
   it('should set coordinates from preset', () => {
-    const preset = { name: 'Los Angeles, CA', latitude: 34.0522, longitude: -118.2437 };
+    const preset = { name: 'Los Angeles, CA', latitude: 34.0522, longitude: -118.2437, country: 'US' as const };
     mockLocationServiceSpy.isValidLatitude.and.returnValue(true);
     mockLocationServiceSpy.isValidLongitude.and.returnValue(true);
     

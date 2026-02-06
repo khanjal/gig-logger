@@ -1,0 +1,27 @@
+<button 
+  [ngClass]="buttonClasses" 
+  [disabled]="disabled || loading"
+  (click)="onButtonClick()"
+  type="button"
+>
+  <div class="btn-content" [class.has-icon]="icon">
+    <mat-icon *ngIf="icon && iconPosition === 'left'" class="btn-icon">
+      {{ icon }}
+    </mat-icon>
+    
+    <span *ngIf="!loading" class="btn-text">
+      <ng-content></ng-content>
+    </span>
+    
+    <mat-icon *ngIf="loading" class="btn-spinner">
+      <svg class="spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.25" />
+        <path d="M 12 2 A 10 10 0 0 1 22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+      </svg>
+    </mat-icon>
+    
+    <mat-icon *ngIf="icon && iconPosition === 'right'" class="btn-icon">
+      {{ icon }}
+    </mat-icon>
+  </div>
+</button>

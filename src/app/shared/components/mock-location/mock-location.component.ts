@@ -1,16 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatFormField, MatLabel, MatHint } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatOptgroup } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MockLocationService, PresetLocation } from '@services/mock-location.service';
+import { BaseButtonComponent, BaseCardComponent, BaseInputComponent } from '@components/base';
 
 @Component({
   selector: 'app-mock-location',
@@ -18,17 +16,13 @@ import { MockLocationService, PresetLocation } from '@services/mock-location.ser
   imports: [
     CommonModule,
     FormsModule,
-    MatCard,
-    MatCardContent,
-    MatCardHeader,
-    MatCardTitle,
+    BaseCardComponent,
+    BaseButtonComponent,
+    BaseInputComponent,
     MatFormField,
     MatLabel,
-    MatHint,
-    MatInput,
     MatSlideToggle,
     MatIcon,
-    MatButton,
     MatSelect,
     MatOption,
     MatOptgroup

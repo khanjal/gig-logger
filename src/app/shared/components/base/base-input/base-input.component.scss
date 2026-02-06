@@ -1,0 +1,108 @@
+// =============================================================================
+// BASE INPUT COMPONENT STYLES
+// =============================================================================
+
+.app-base-input {
+  width: 100%;
+
+  .input-field {
+    width: 100%;
+
+    // Override Material form field colors
+    ::ng-deep {
+      .mat-mdc-form-field {
+        width: 100%;
+      }
+
+      .mat-mdc-text-field-wrapper {
+        padding-bottom: 0.75rem;
+      }
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--color-border-light);
+      }
+
+      .mat-mdc-form-field-form-control {
+        color: var(--color-text-primary);
+
+        &::placeholder {
+          color: var(--color-text-tertiary);
+        }
+      }
+
+      .mat-mdc-form-field-label {
+        color: var(--color-text-secondary) !important;
+      }
+
+      .mat-mdc-form-field-hint {
+        color: var(--color-text-tertiary);
+        font-size: 0.75rem;
+      }
+
+      // Focus state
+      .mdc-text-field--focused {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--primary-500);
+        }
+      }
+
+      // Error state
+      &.has-error {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--error-500) !important;
+        }
+
+        .mat-mdc-form-field-label {
+          color: var(--error-500) !important;
+        }
+
+        .mat-mdc-form-field-error {
+          color: var(--error-500);
+          font-size: 0.75rem;
+        }
+      }
+
+      // Disabled state
+      .mdc-text-field--disabled {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--color-border-light);
+        }
+
+        .mat-mdc-form-field-form-control {
+          color: var(--color-text-disabled);
+        }
+      }
+    }
+
+    // Icon styling
+    .input-icon {
+      color: var(--color-text-secondary);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+    }
+  }
+}
+
+// =============================================================================
+// REQUIRED INDICATOR
+// =============================================================================
+
+.required-indicator {
+  color: var(--error-500);
+  margin-left: 0.25rem;
+}
+
+// =============================================================================
+// DARK MODE
+// =============================================================================
+// The component uses CSS variables which handle light/dark mode automatically

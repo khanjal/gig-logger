@@ -1,0 +1,31 @@
+<div class="app-base-input">
+  <mat-form-field class="input-field" appearance="outline" [class.has-error]="error">
+    <mat-label *ngIf="label">
+      {{ label }}
+      <span *ngIf="required" class="required-indicator">*</span>
+    </mat-label>
+
+    <mat-icon *ngIf="icon && iconPosition === 'left'" matPrefix class="input-icon">
+      {{ icon }}
+    </mat-icon>
+
+    <input 
+      #inputElement
+      matInput 
+      [type]="type"
+      [value]="value"
+      [disabled]="disabled"
+      [required]="required"
+      [placeholder]="placeholder || ''"
+      (input)="onValueChange($event.target.value)"
+      (blur)="onBlur()"
+    />
+
+    <mat-icon *ngIf="icon && iconPosition === 'right'" matSuffix class="input-icon">
+      {{ icon }}
+    </mat-icon>
+
+    <mat-hint *ngIf="hint && !error">{{ hint }}</mat-hint>
+    <mat-error *ngIf="error">{{ error }}</mat-error>
+  </mat-form-field>
+</div>
