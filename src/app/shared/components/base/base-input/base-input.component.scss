@@ -15,7 +15,8 @@
       }
 
       .mat-mdc-text-field-wrapper {
-        padding-bottom: 0.75rem;
+        padding-bottom: 0;
+        height: 56px;
       }
 
       .mdc-notched-outline__leading,
@@ -26,28 +27,31 @@
 
       .mat-mdc-form-field-form-control {
         color: var(--color-text-primary);
+        height: 56px;
+        display: flex;
+        align-items: center;
 
         &::placeholder {
           color: var(--color-text-tertiary);
         }
       }
 
-      .mat-mdc-form-field-label {
-        color: var(--color-text-secondary) !important;
+      .mat-mdc-form-field-infix {
+        /* Exact 56px height (Material standard) with centered contents */
+        display: flex;
+        align-items: center;
+        height: 56px;
+        padding-top: 0;
+        padding-bottom: 0;
       }
 
-      .mat-mdc-form-field-hint {
-        color: var(--color-text-tertiary);
-        font-size: 0.75rem;
-      }
-
-      // Focus state
-      .mdc-text-field--focused {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--primary-500);
-        }
+      .mdc-text-field__input {
+        /* Remove padding/margin and let flexbox center the text */
+        padding: 0 !important;
+        margin: 0;
+        height: auto;
+        line-height: 1.5;
+        font-size: 1rem;
       }
 
       // Error state
