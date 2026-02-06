@@ -1,0 +1,19 @@
+<div class="space-y-3">
+  <app-search-input [fieldName]="'Service'" [searchType]="'Service'" (valueChanged)="onServiceChange($event)"></app-search-input>
+  <mat-form-field appearance="fill">
+    <mat-label>Start Time</mat-label>
+    <input matInput type="time" [(ngModel)]="pickupTime">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>End Time</mat-label>
+    <input matInput type="time" [(ngModel)]="dropoffTime">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Total</mat-label>
+    <input matInput type="number" [(ngModel)]="total">
+  </mat-form-field>
+  <div class="flex justify-end gap-2">
+    <button mat-stroked-button type="button">Cancel</button>
+    <button mat-raised-button color="primary" type="button" (click)="onSubmit()">Add Trip</button>
+  </div>
+</div>

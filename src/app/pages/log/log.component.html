@@ -1,0 +1,83 @@
+<div class="mx-auto p-4 w-full max-w-4xl space-y-3">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Log</h1>
+    <button mat-raised-button color="primary" (click)="createShift()">
+      <mat-icon>playlist_add</mat-icon>
+      New Shift
+    </button>
+  </div>
+
+  <!-- Add Shift Form -->
+  <div *ngIf="showAddShiftForm" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 space-y-3">
+    <log-shift-quick-form
+      [nextNumber]="nextShiftNumber"
+      (recomputeNumber)="handleQuickShiftRecompute($event)"
+      (submitShift)="handleQuickShiftSubmit($event)"
+      (cancel)="showAddShiftForm = false"
+    ></log-shift-quick-form>
+  </div>
+
+  <!-- Shifts List (Grouped) -->
+  <div class="space-y-4 overflow-auto" style="max-height: 70vh;" (scroll)="onScroll($event)">
+    <!-- Quick view summary -->
+    <log-quick-view [shifts]="shifts" (addTrip)="addTrip($event)" (editShift)="handleQuickEdit($event)"></log-quick-view>
+
+    <div *ngFor="let s of shifts" class="shift-card space-y-3" [ngClass]="getServiceClass(s.service)">
+      <!-- Group Header -->
+      <div class="flex items-center justify-between">
+        <div class="font-medium text-gray-800 dark:text-gray-200">Shift</div>
+        <button mat-mini-fab color="primary" (click)="addTrip(s.id)" aria-label="Add Trip">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <!-- Shift Basics -->
+      <div class="grid grid-cols-1 gap-3">
+        <mat-form-field appearance="fill">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" [(ngModel)]="s.date" [disabled]="!s.editing">
+        </mat-form-field>
+
+        <!-- Use reusable search inputs for service and region -->
+        <app-search-input
+          [fieldName]="'Service'"
+          [searchType]="'Service'"
+          [isRequired]="true"
+          (valueChanged)="s.service = $event"
+        ></app-search-input>
+
+        <app-search-input
+          [fieldName]="'Region'"
+          [searchType]="'Region'"
+          [isRequired]="true"
+          (valueChanged)="s.region = $event"
+        ></app-search-input>
+
+        <mat-form-field appearance="fill" class="opacity-60">
+          <mat-label>Shift #</mat-label>
+          <input matInput [disabled]="true" [(ngModel)]="s.number" placeholder="Auto">
+        </mat-form-field>
+      </div>
+
+      <!-- Edit Toggle -->
+      <div class="flex justify-end">
+        <button mat-stroked-button (click)="toggleEdit((s.id ?? '').toString())">{{ s.editing ? 'Done' : 'Edit' }}</button>
+      </div>
+
+      <!-- Trips in this shift -->
+      <div class="space-y-2" *ngIf="s.items.length">
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Trips</div>
+        <div *ngFor="let t of s.items" class="trip-item" [ngClass]="getServiceClass(t.service)">
+          <div class="text-gray-700 dark:text-gray-300">Service: {{ t.service }}</div>
+          <div class="text-gray-600 dark:text-gray-400">Start: {{ t.pickupTime }} End: {{ t.dropoffTime }}</div>
+          <div class="text-gray-700 dark:text-gray-300">Total: {{ t.total }}</div>
+        </div>
+      </div>
+
+      <!-- Trip Quick Form (per shift) -->
+      <div *ngIf="showTripFormFor === (s.id ?? '').toString()" class="space-y-3">
+        <log-trip-quick-form [shiftId]="s.id" (submitTrip)="handleQuickTripSubmit($event)"></log-trip-quick-form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+/* Spacing utility mimic */
+.p-3 { padding: 0.75rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+
+/* Shift card styling */
+.shift-card {
+	border-radius: 12px; /* rounded-xl */
+	background-color: rgba(255,255,255,0.9);
+	backdrop-filter: blur(4px);
+	border: 1px solid #e2e8f0; /* gray-200 */
+	box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+	padding: 0.75rem;
+	transition: box-shadow .15s ease, border-color .15s ease;
+	position: relative;
+}
+.shift-card:hover {
+	box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+	border-color: #cbd5e1; /* gray-300 */
+}
+
+:host-context(html.theme-dark) .shift-card {
+	background-color: rgba(31, 41, 55, 0.9); /* gray-800 with opacity */
+	border-color: #374151; /* gray-700 */
+	box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+:host-context(html.theme-dark) .shift-card:hover {
+	box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+	border-color: #4b5563; /* gray-600 */
+}
+
+/* Trip item styling */
+.trip-item {
+	border-radius: 8px;
+	border: 1px solid #e2e8f0; /* gray-200 */
+	background: #f8fafc; /* gray-50 */
+	padding: 0.5rem 0.625rem; /* p-2 approx */
+	font-size: .875rem; /* text-sm */
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	transition: background-color .15s ease, box-shadow .15s ease, border-color .15s ease;
+	position: relative;
+}
+.trip-item:hover {
+	background: #ffffff;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+	border-color: #cbd5e1;
+}
+
+:host-context(html.theme-dark) .trip-item {
+	background: #1f2937; /* gray-800 */
+	border-color: #374151; /* gray-700 */
+}
+
+:host-context(html.theme-dark) .trip-item:hover {
+	background: #111827; /* gray-900 */
+	box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	border-color: #4b5563; /* gray-600 */
+}
+
+/* Service accent borders */
+.svc-uber { border-left: 4px solid #3b82f6; }
+.svc-lyft { border-left: 4px solid #a78bfa; }
+.svc-doordash { border-left: 4px solid #ef4444; }
+.svc-instacart { border-left: 4px solid #22c55e; }
+.svc-grubhub { border-left: 4px solid #f59e0b; }
+.svc-spark { border-left: 4px solid #06b6d4; }
+.svc-generic { border-left: 4px solid #cbd5e1; }
+
+/* Subtle gradient backgrounds for trip items by service */
+.trip-item.svc-uber { background: linear-gradient(90deg, #eff6ff, #ffffff); }
+.trip-item.svc-lyft { background: linear-gradient(90deg, #faf5ff, #ffffff); }
+.trip-item.svc-doordash { background: linear-gradient(90deg, #fef2f2, #ffffff); }
+.trip-item.svc-instacart { background: linear-gradient(90deg, #f0fdf4, #ffffff); }
+.trip-item.svc-grubhub { background: linear-gradient(90deg, #fffbeb, #ffffff); }
+.trip-item.svc-spark { background: linear-gradient(90deg, #ecfeff, #ffffff); }
+.trip-item.svc-generic { background: linear-gradient(90deg, #f8fafc, #ffffff); }
+
+:host-context(html.theme-dark) .trip-item.svc-uber { background: linear-gradient(90deg, #1e3a8a, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-lyft { background: linear-gradient(90deg, #581c87, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-doordash { background: linear-gradient(90deg, #7f1d1d, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-instacart { background: linear-gradient(90deg, #14532d, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-grubhub { background: linear-gradient(90deg, #78350f, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-spark { background: linear-gradient(90deg, #164e63, #1f2937); }
+:host-context(html.theme-dark) .trip-item.svc-generic { background: linear-gradient(90deg, #374151, #1f2937); }
+
+.trip-item:hover { filter: brightness(1.02); }
+
+/* Mini-fab buttons inside header: reduce initial shadow */
+.shift-card .flex button[mat-mini-fab] {
+	box-shadow: none;
+	transition: box-shadow .15s ease;
+}
+.shift-card .flex button[mat-mini-fab]:hover {
+	box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+
+
+// Make scroll area subtle separation
+.space-y-4 {
+	position: relative;
+}
