@@ -4,6 +4,7 @@ import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { LoggerService } from '@services/logger.service';
+import { ThemePreference, ThemeService } from '@services/theme.service';
 import { RouterLink, RouterOutlet, NavigationEnd, Router } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
@@ -53,6 +54,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
 
+  // Theme state
+  themePreference: ThemePreference = 'system';
+  resolvedTheme: 'light' | 'dark' = 'light';
+  toolbarGradient = 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)'; // Consistent dark blue for both light and dark modes
+
   constructor(
     private _commonService: CommonService,
     private _spreadsheetService: SpreadsheetService,
@@ -60,7 +66,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private shiftService: ShiftService,
     private tripService: TripService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private themeService: ThemeService
   ) { 
     // Subscribe to header updates with automatic cleanup on destroy
     this._commonService.onHeaderLinkUpdate
@@ -84,6 +91,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     interval(this.unsavedPollInterval)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.updateUnsavedCounts());
+
+    // Theme updates
+    this.themeService.preferenceChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(preference => {
+        this.themePreference = preference;
+      });
+
+    this.themeService.activeTheme$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(active => {
+        this.resolvedTheme = active;
+      });
   }
 
   async ngOnInit(): Promise<void> {
@@ -140,7 +160,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private async loadHeaderData(): Promise<void> {
     // Only load data if authenticated
     if (this.isAuthenticated) {
-      this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+      const sheets = (await this._spreadsheetService.querySpreadsheets("default", "true")) || [];
+      this.defaultSheet = sheets[0];
     }
   }
   
@@ -152,8 +173,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.unsavedShiftsCount = 0;
       return;
     }
-    this.unsavedTripsCount = (await this.tripService.getUnsaved()).length;
-    this.unsavedShiftsCount = (await this.shiftService.getUnsavedShifts()).length;
+    const trips = (await this.tripService.getUnsaved()) || [];
+    const shifts = (await this.shiftService.getUnsavedShifts()) || [];
+    this.unsavedTripsCount = trips.length;
+    this.unsavedShiftsCount = shifts.length;
   }
   
   /**
@@ -192,5 +215,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  public cycleTheme(): void {
+    const order: ThemePreference[] = ['light', 'dark', 'system'];
+    const currentIndex = order.indexOf(this.themePreference);
+    const next = order[(currentIndex + 1) % order.length];
+    this.themeService.setTheme(next);
+  }
+
+  public get themeLabel(): string {
+    switch (this.themePreference) {
+      case 'dark':
+        return 'Dark';
+      case 'light':
+        return 'Light';
+      default:
+        return 'System';
+    }
+  }
+
+  public get themeIcon(): string {
+    if (this.themePreference === 'system') {
+      return 'brightness_auto';
+    }
+    return this.resolvedTheme === 'dark' ? 'dark_mode' : 'light_mode';
   }
 }

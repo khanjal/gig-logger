@@ -1,6 +1,9 @@
 .permissions-card {
   margin-bottom: 1.5rem;
 
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+
   mat-card-title {
     mat-icon {
       margin-right: 0.5rem;
@@ -38,12 +41,12 @@
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0 0 0.25rem 0;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .permission-description {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
@@ -68,8 +71,30 @@
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  background: rgba(0, 0, 0, 0.03);
+  background: color-mix(in srgb, var(--color-surface) 92%, white);
   width: fit-content;
+}
+
+// Light mode state accents
+.status-badge.text-green-600 {
+  background: color-mix(in srgb, var(--success-500) 12%, white);
+  color: var(--success-800);
+}
+
+.status-badge.text-red-600 {
+  background: color-mix(in srgb, var(--error-500) 12%, white);
+  color: var(--error-800);
+}
+
+.status-badge.text-yellow-600 {
+  background: color-mix(in srgb, var(--warning-500) 12%, white);
+  color: var(--warning-800);
+}
+
+.status-badge.text-gray-500,
+.status-badge.text-gray-400 {
+  background: color-mix(in srgb, var(--color-surface) 88%, white);
+  color: var(--gray-700);
 }
 
 .status-icon {
@@ -102,16 +127,16 @@
   gap: 0.75rem;
   margin-top: 0.75rem;
   padding: 0.75rem;
-  background: #e3f2fd;
-  border-left: 4px solid #2196f3;
+  background: color-mix(in srgb, var(--info-500) 10%, transparent);
+  border-left: 4px solid var(--info-600);
   border-radius: 0.25rem;
 
   &.warning {
-    background: #fff3e0;
-    border-left-color: #ff9800;
+    background: color-mix(in srgb, var(--warning-500) 10%, transparent);
+    border-left-color: var(--warning-500);
 
     .help-icon {
-      color: #ff9800;
+      color: var(--warning-500);
     }
   }
 
@@ -119,14 +144,14 @@
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
-    color: #2196f3;
+    color: var(--info-600);
     flex-shrink: 0;
   }
 
   p {
     margin: 0;
     font-size: 0.875rem;
-    color: #555;
+    color: var(--color-text-primary);
     line-height: 1.5;
   }
 }
@@ -137,11 +162,22 @@
   gap: 0.75rem;
   padding-top: 1rem;
 
+  button.mat-stroked-button {
+    border-color: var(--color-border-light);
+    color: var(--color-text-primary);
+    background: color-mix(in srgb, var(--color-surface) 90%, white);
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-surface) 75%, white);
+      border-color: var(--color-border);
+    }
+  }
+
   .footer-icon {
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
-    color: #9e9e9e;
+    color: var(--gray-400);
     flex-shrink: 0;
     margin-top: 0.125rem;
   }
@@ -149,5 +185,73 @@
   p {
     margin: 0;
     line-height: 1.5;
+  }
+}
+
+:host-context(html.theme-dark) {
+  .permissions-card {
+    background: var(--color-surface);
+  }
+
+  .status-badge {
+    background: color-mix(in srgb, var(--color-surface-2) 35%, transparent);
+  }
+
+  .status-badge.text-green-600 {
+    background: color-mix(in srgb, var(--success-500) 18%, transparent);
+    color: var(--success-200);
+  }
+
+  .status-badge.text-red-600 {
+    background: color-mix(in srgb, var(--error-500) 18%, transparent);
+    color: var(--error-200);
+  }
+
+  .status-badge.text-yellow-600 {
+    background: color-mix(in srgb, var(--warning-500) 18%, transparent);
+    color: var(--warning-200);
+  }
+
+  .status-badge.text-gray-500,
+  .status-badge.text-gray-400 {
+    background: color-mix(in srgb, var(--color-surface-2) 45%, transparent);
+    color: var(--gray-200);
+  }
+
+  .permission-help {
+    background: color-mix(in srgb, var(--info-400) 10%, transparent);
+    border-left-color: var(--info-400);
+
+    &.warning {
+      background: color-mix(in srgb, var(--warning-400) 12%, transparent);
+      border-left-color: var(--warning-400);
+
+      .help-icon {
+        color: var(--warning-300);
+      }
+    }
+
+    .help-icon {
+      color: var(--info-300);
+    }
+
+    p {
+      color: var(--color-text-primary);
+    }
+  }
+
+  .permissions-footer .footer-icon {
+    color: var(--gray-300);
+  }
+
+  .permissions-footer button.mat-stroked-button {
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+      border-color: var(--color-border-light);
+    }
   }
 }

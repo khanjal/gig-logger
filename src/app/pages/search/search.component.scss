@@ -17,15 +17,15 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: rgba(59, 130, 246, 0.1);
+      background-color: color-mix(in srgb, var(--primary-500) 10%, transparent);
     }
 
     .filter-badge {
       position: absolute;
       top: 4px;
       right: 4px;
-      background-color: #2563eb;
-      color: white;
+      background-color: var(--primary-600);
+      color: var(--color-text-inverse);
       border-radius: 50%;
       width: 18px;
       height: 18px;
@@ -36,6 +36,15 @@
       justify-content: center;
       line-height: 1;
     }
+  }
+
+  // Dark mode text tweaks for All/None buttons
+  :host-context(html.theme-dark) .all-btn {
+    color: rgb(191 219 254) !important; // blue-200
+  }
+
+  :host-context(html.theme-dark) .none-btn {
+    color: rgb(226 232 240) !important; // slate-200
   }
 
   // Expand/Collapse toggle button
@@ -49,11 +58,11 @@
     justify-content: center;
 
     &:hover {
-      background-color: rgba(156, 163, 175, 0.1);
+      background-color: color-mix(in srgb, var(--color-text-secondary) 10%, transparent);
     }
 
     mat-icon {
-      color: #4b5563;
+      color: var(--color-text-secondary);
     }
 
     ::ng-deep {
@@ -78,20 +87,70 @@
   // Category filter alignment fixes
   .filter-checkbox {
     margin-right: 8px;
-    
-    ::ng-deep {
-      .mdc-checkbox {
-        padding: 0;
-        margin: 0;
-        display: flex;
-        align-items: center;
+  }
+
+  :host ::ng-deep .search-autocomplete-panel {
+    background: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: var(--shadow-light);
+
+    .mat-mdc-option {
+      color: var(--color-text-primary) !important;
+
+      &.mdc-list-item--selected,
+      &.mdc-list-item--activated {
+        background: var(--color-surface-tertiary) !important;
       }
-      
-      .mdc-checkbox__background {
-        top: 0;
-        left: 0;
+
+      &:hover {
+        background: var(--color-surface-3) !important;
+      }
+
+      .mdc-list-item__primary-text {
+        color: var(--color-text-primary) !important;
       }
     }
+  }
+
+  ::ng-deep {
+    .mdc-checkbox {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .mdc-checkbox__background {
+      top: 0;
+      left: 0;
+      border-color: var(--color-border) !important;
+      background: transparent;
+    }
+
+    .mdc-form-field {
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+      border-color: var(--color-border) !important;
+    }
+
+    .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+    .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+      border-color: var(--primary-500) !important;
+      background-color: var(--primary-500) !important;
+    }
+  }
+
+  :host-context(html.theme-dark) ::ng-deep .mdc-checkbox__background,
+  :host-context(html.theme-dark) ::ng-deep .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+    border-color: var(--color-border) !important;
+  }
+
+  .exact-options {
+    min-height: 48px;
   }
 
   .filter-icon {
@@ -149,31 +208,31 @@
 
   // Border color utilities for category colors
   .border-blue-600 {
-    border-left-color: #2563eb;
+    border-left-color: var(--primary-600);
   }
 
   .border-green-600 {
-    border-left-color: #16a34a;
+    border-left-color: var(--success-600);
   }
 
   .border-purple-600 {
-    border-left-color: #9333ea;
+    border-left-color: var(--accent-600);
   }
 
   .border-orange-600 {
-    border-left-color: #ea580c;
+    border-left-color: var(--warning-600);
   }
 
   .border-teal-600 {
-    border-left-color: #0d9488;
+    border-left-color: var(--info-600);
   }
 
   .border-pink-600 {
-    border-left-color: #db2777;
+    border-left-color: var(--accent-500);
   }
 
   .border-gray-600 {
-    border-left-color: #4b5563;
+    border-left-color: var(--color-border-dark);
   }
 
   // Common spacing utilities
@@ -183,9 +242,9 @@
 
   // Common card styles
   .card {
-    background-color: white;
+    background-color: var(--color-surface);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-light);
     overflow: hidden;
   }
 
@@ -194,7 +253,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: #f9fafb;
+      background-color: var(--color-surface-tertiary);
     }
   }
 

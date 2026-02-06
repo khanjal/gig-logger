@@ -1,0 +1,67 @@
+/* Menu overlay overrides - centralized and DRY
+   Uses small helpers to keep selectors concise while preserving specificity. */
+
+$panels: ".cdk-overlay-container .mat-menu-panel, .cdk-overlay-container .mat-mdc-menu-panel";
+$items: ".cdk-overlay-container .mat-menu-panel .mat-menu-item, .cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list-item";
+
+#{$panels} {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+  border: 1px solid var(--color-border-light) !important;
+}
+
+.cdk-overlay-container .mat-menu-panel .mat-menu-content,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-mdc-list { padding: 6px 0 !important; }
+
+#{$items} {
+  color: var(--color-text-primary) !important;
+  min-height: 40px;
+  padding: 8px 16px !important;
+}
+
+/* text/content fallback (excludes icons) */
+#{$panels} { color: var(--color-text-primary) !important; }
+#{$panels} *:not(.mat-icon) { color: var(--color-text-primary) !important; }
+
+/* default icon style (unless overridden by .menu-* utilities) */
+.cdk-overlay-container .mat-menu-panel .mat-icon:not(.menu-blue):not(.menu-green):not(.menu-red):not(.menu-purple),
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon:not(.menu-blue):not(.menu-green):not(.menu-red):not(.menu-purple) {
+  color: var(--color-text-secondary) !important;
+  margin-right: 8px;
+}
+
+/* hover/focus */
+#{$items}:hover, #{$items}.cdk-focused { background-color: var(--color-surface-tertiary) !important; }
+
+/* color map and helpers for menu icon utilities */
+$menu-colors: (
+  "blue": var(--primary-600),
+  "green": var(--success-500),
+  "red": var(--error-500),
+  "purple": #a78bfa
+);
+
+@mixin icon-color($name, $val) {
+  .cdk-overlay-container .mat-menu-panel .mat-icon.menu-#{$name},
+  .cdk-overlay-container .mat-mdc-menu-panel .mat-icon.menu-#{$name},
+  .cdk-overlay-container .mat-menu-panel .menu-#{$name},
+  .cdk-overlay-container .mat-mdc-menu-panel .menu-#{$name} {
+    color: #{$val} !important;
+  }
+}
+
+@each $k, $v in $menu-colors {
+  @include icon-color($k, $v);
+}
+
+/* ensure SVG icons follow currentColor */
+.cdk-overlay-container .mat-menu-panel .mat-icon svg path,
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon svg path { fill: currentColor !important; }
+
+/* dark mode tweaks */
+html.theme-dark {
+  #{$panels} { background-color: var(--color-surface-secondary) !important; border: 1px solid var(--color-border) !important; }
+  @each $k, $v in $menu-colors { @include icon-color($k, $v); }
+}

@@ -1,93 +1,82 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { of, throwError } from 'rxjs';
 import { ApiService } from './api.service';
-import { SecureCookieStorageService } from './secure-cookie-storage.service';
-import { LoggerService } from './logger.service';
-import { environment } from 'src/environments/environment';
 
-class MockSecureCookieStorageService {
-  private store = new Map<string, string>();
-  getItem(key: string): string | null {
-    return this.store.get(key) ?? null;
-  }
-  setItem(key: string, value: string): void {
-    this.store.set(key, value);
-  }
-  removeItem(key: string): void {
-    this.store.delete(key);
-  }
-}
-
-class MockLoggerService {
-  debug = jasmine.createSpy('debug');
-  info = jasmine.createSpy('info');
-  warn = jasmine.createSpy('warn');
-  error = jasmine.createSpy('error');
-}
-
-describe('ApiService', () => {
+describe('ApiService (focused tests)', () => {
+  let httpSpy: any;
+  let secureCookieSpy: any;
+  let loggerSpy: any;
   let service: ApiService;
-  let httpMock: HttpTestingController;
-  let cookie: MockSecureCookieStorageService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        ApiService,
-        { provide: SecureCookieStorageService, useClass: MockSecureCookieStorageService },
-        { provide: LoggerService, useClass: MockLoggerService },
-      ],
-    });
+    httpSpy = jasmine.createSpyObj('HttpClient', ['get', 'post', 'put']);
+    secureCookieSpy = jasmine.createSpyObj('SecureCookieStorageService', ['getItem']);
+    loggerSpy = jasmine.createSpyObj('LoggerService', ['error', 'debug', 'info', 'warn']);
 
-    service = TestBed.inject(ApiService);
-    httpMock = TestBed.inject(HttpTestingController);
-    cookie = TestBed.inject(SecureCookieStorageService) as any;
     localStorage.setItem('userId', 'user-123');
-    cookie.setItem('ACCESS_TOKEN', 'token-abc');
+
+    service = new ApiService(httpSpy, secureCookieSpy, loggerSpy);
   });
 
   afterEach(() => {
-    httpMock.verify();
-    localStorage.clear();
+    localStorage.removeItem('userId');
   });
 
-  it('includes auth and sheet headers when fetching sheet data', async () => {
-    const promise = service.getSheetData('sheet-1');
+  it('clearRefreshToken returns response when http succeeds', async () => {
+    const resp = { ok: true };
+    httpSpy.post.and.returnValue(of(resp));
 
-    const req = httpMock.expectOne(`${environment.gigLoggerApi}/sheets/all`);
-    expect(req.request.headers.get('Authorization')).toBe('Bearer token-abc');
-    expect(req.request.headers.get('Sheet-Id')).toBe('sheet-1');
-    expect(req.request.headers.get('UserId')).toBe('user-123');
+    const result = await service.clearRefreshToken();
 
-    req.flush({ sheetEntity: { id: 'sheet-1', data: [] } });
-    const result = await promise as any;
-    expect(result.id).toBe('sheet-1');
-    expect(result.data).toEqual([]);
+    expect(result).toBe(resp);
+    expect(loggerSpy.debug).toHaveBeenCalled();
   });
 
-  xit('fetches data from S3 link when response is stored externally', async () => {
-    const promise = service.getSheetData('sheet-1');
+  it('listFiles sends Authorization and UserId headers when available', async () => {
+    // provide access token from storage
+    secureCookieSpy.getItem.and.callFake((key: string) => {
+      if (key === 'ACCESS_TOKEN') return 'tok-abc';
+      return null;
+    });
 
-    const reqApi = httpMock.expectOne(`${environment.gigLoggerApi}/sheets/all`);
-    reqApi.flush({ isStoredInS3: true, s3Link: 'https://s3.test/data.json' });
+    let capturedOptions: any = null;
+    httpSpy.get.and.callFake((url: string, options: any) => {
+      capturedOptions = options;
+      return of([{ name: 'file1' }]);
+    });
 
-    // Find the S3 request, which may be queued after API flush
-    const pending = httpMock.match(() => true);
-    const reqS3 = pending.find(r => (r.request?.url || '').includes('s3.test'));
-    expect(reqS3).toBeDefined();
-    reqS3!.flush({ sheetEntity: { id: 'sheet-1', data: ['from-s3'] } });
+    const files = await service.listFiles();
 
-    const result = await promise as any;
-    expect(result.id).toBe('sheet-1');
-    expect(result.data).toEqual(['from-s3']);
+    expect(files.length).toBe(1);
+    // HttpHeaders exposes .get
+    expect(capturedOptions.headers.get('Authorization')).toBe('Bearer tok-abc');
+    expect(capturedOptions.headers.get('UserId')).toBe('user-123');
   });
 
-  it('returns empty array on listFiles error', async () => {
-    const promise = service.listFiles();
-    const req = httpMock.expectOne(`${environment.gigLoggerApi}/files/list`);
-    req.flush('err', { status: 500, statusText: 'Server Error' });
-    const result = await promise;
-    expect(result).toEqual([]);
+  it('getSheetData follows S3 flow when response indicates isStoredInS3', async () => {
+    // First call returns a payload indicating S3 link
+    httpSpy.get.and.callFake((url: string, options?: any) => {
+      if (url && url.indexOf('/sheets/all') !== -1) {
+        return of({ isStoredInS3: true, s3Link: 'http://s3/link' });
+      }
+      if (url === 'http://s3/link') {
+        return of({ sheetData: 42 });
+      }
+      return of(null);
+    });
+
+    const result = await service.getSheetData('sheet-id');
+    expect(result as any).toEqual(jasmine.objectContaining({ sheetData: 42 }));
+    // service tags S3 responses with _source = 's3'
+    expect((result as any)._source).toBe('s3');
+    expect(loggerSpy.debug).toHaveBeenCalled();
+  });
+
+  it('saveSheetData returns error message array when http.put fails', async () => {
+    const sheet = { properties: { id: 's1', name: 'MySheet' } } as any;
+    httpSpy.put.and.returnValue(throwError({ message: 'network fail' }));
+
+    const res = await service.saveSheetData(sheet);
+    expect(Array.isArray(res)).toBeTrue();
+    expect(res[0].message).toContain('network fail');
   });
 });

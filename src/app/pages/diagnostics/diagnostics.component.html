@@ -1,6 +1,6 @@
-<div class="container flex flex-col min-h-screen p-4 md:p-8 lg:p-12 max-w-5xl mx-auto">
+<div class="page-container container flex flex-col min-h-screen md:p-8 lg:p-12">
   <div class="flex flex-wrap gap-4 mb-6 items-center justify-between">
-    <h1 class="text-2xl font-bold text-blue-700 flex-1">Data Diagnostics</h1>
+    <h1 class="text-2xl font-bold flex-1">Data Diagnostics</h1>
     <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading" class="!min-w-[140px]">
       <mat-icon>{{ isLoading ? 'hourglass_empty' : 'refresh' }}</mat-icon>
       {{ isLoading ? 'Running...' : 'Run Check' }}
@@ -9,44 +9,51 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-3 gap-4 mb-6" *ngIf="dataDiagnostics.length > 0">
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-red-700 mb-1 lg:mb-0 leading-none">
+    <div class="bg-red-50 dark:bg-red-950 border-l-4 border-error-500 p-4 rounded-lg">
+      <div class="flex items-center gap-1 text-2xl font-bold text-red-700 dark:text-red-400 mb-1 lg:mb-0 leading-none">
         <mat-icon class="text-red-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
         <span>{{ getCountBySeverity('error') }}</span>
-        <span class="hidden lg:inline text-sm text-red-600 font-normal ml-1">Errors</span>
+        <span class="hidden lg:inline text-sm text-red-600 dark:text-red-400 font-normal ml-1">Errors</span>
       </div>
-      <div class="text-sm text-red-600 text-center lg:hidden">Errors</div>
+      <div class="text-sm text-red-600 dark:text-red-400 text-center lg:hidden">Errors</div>
     </div>
-    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-orange-700 mb-1 lg:mb-0 leading-none">
+    <div class="bg-orange-50 dark:bg-orange-950 border-l-4 border-warning-500 p-4 rounded-lg">
+      <div class="flex items-center gap-1 text-2xl font-bold text-orange-700 dark:text-orange-400 mb-1 lg:mb-0 leading-none">
         <mat-icon class="text-orange-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">warning</mat-icon>
         <span>{{ getCountBySeverity('warning') }}</span>
-        <span class="hidden lg:inline text-sm text-orange-600 font-normal ml-1">Warnings</span>
+        <span class="hidden lg:inline text-sm text-orange-600 dark:text-orange-400 font-normal ml-1">Warnings</span>
       </div>
-      <div class="text-sm text-orange-600 text-center lg:hidden">Warnings</div>
+      <div class="text-sm text-orange-600 dark:text-orange-400 text-center lg:hidden">Warnings</div>
     </div>
-    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-blue-700 mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-blue-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">info</mat-icon>
+    <div class="bg-blue-50 dark:bg-blue-950 border-l-4 border-blue-500 p-4 rounded-lg">
+      <div class="flex items-center gap-1 text-2xl font-bold text-blue-700 dark:text-blue-300 mb-1 lg:mb-0 leading-none">
+        <mat-icon class="text-blue-700 dark:text-blue-300 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">info</mat-icon>
         <span>{{ getCountBySeverity('info') }}</span>
-        <span class="hidden lg:inline text-sm text-blue-600 font-normal ml-1">Info</span>
+        <span class="hidden lg:inline text-sm text-blue-600 dark:text-blue-400 font-normal ml-1">Info</span>
       </div>
-      <div class="text-sm text-blue-600 text-center lg:hidden">Info</div>
+      <div class="text-sm text-blue-600 dark:text-blue-400 text-center lg:hidden">Info</div>
     </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <mat-icon class="text-blue-500 dark:text-blue-400 !text-[64px] !w-16 !h-16 mx-auto mb-4 animate-spin">refresh</mat-icon>
+    <h2 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Running Diagnostics...</h2>
+    <p class="text-gray-600 dark:text-gray-400">Analyzing your data for potential issues.</p>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && dataDiagnostics.length === 0" class="text-center py-12">
-    <mat-icon class="text-gray-300 !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
-    <h2 class="text-xl font-semibold text-gray-600 mb-2">No Diagnostics Run Yet</h2>
-    <p class="text-gray-500">Click "Run Check" to analyze your data for potential issues.</p>
+    <mat-icon class="text-gray-300 dark:text-gray-600 !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
+    <h2 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">No Diagnostics Run Yet</h2>
+    <p class="text-gray-500 dark:text-gray-400">Click "Run Check" to analyze your data for potential issues.</p>
   </div>
 
   <!-- All Clear State -->
-  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-green-50 rounded-lg border border-green-200">
+  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-500/10 rounded-lg border border-success-200 dark:border-success-700">
     <mat-icon class="text-green-500 !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
-    <h2 class="text-xl font-semibold text-green-700 mb-2">All Clear!</h2>
-    <p class="text-green-600">No issues found in your data. Everything looks good!</p>
+    <h2 class="text-xl font-semibold text-green-700 dark:text-green-400 mb-2">All Clear!</h2>
+    <p class="text-green-600 dark:text-green-400">No issues found in your data. Everything looks good!</p>
   </div>
 
   <!-- Diagnostic Items as Expansion Panels -->
@@ -62,14 +69,21 @@
           <span>{{ item.name }}</span>
         </mat-panel-title>
         <mat-panel-description>
-          <span class="hidden md:inline text-gray-600 text-sm mr-2">{{ item.description }}</span>
-          <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
-                [class.bg-red-100]="item.severity === 'error' && item.count > 0"
+          <span class="hidden md:inline text-gray-600 dark:text-gray-300 text-sm mr-2">{{ item.description }}</span>
+                <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
+                [class.bg-error-500/20]="item.severity === 'error' && item.count > 0"
                 [class.text-red-700]="item.severity === 'error' && item.count > 0"
                 [class.bg-orange-100]="item.severity === 'warning' && item.count > 0"
                 [class.text-orange-700]="item.severity === 'warning' && item.count > 0"
                 [class.bg-gray-100]="item.count === 0"
-                [class.text-gray-600]="item.count === 0">
+                [class.text-gray-600]="item.count === 0"
+                [ngClass]="{
+                  'dark:text-red-400': item.severity === 'error' && item.count > 0,
+                  'dark:bg-orange-900/30': item.severity === 'warning' && item.count > 0,
+                  'dark:text-orange-400': item.severity === 'warning' && item.count > 0,
+                  'dark:bg-gray-800': item.count === 0,
+                  'dark:text-gray-400': item.count === 0
+                }">
             {{ item.count }}
           </span>
         </mat-panel-description>
@@ -77,7 +91,7 @@
 
       <!-- Panel Content -->
       <div class="mt-4 px-4 pb-4">
-        <p class="text-sm text-gray-600 mb-4 md:hidden">{{ item.description }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 md:hidden">{{ item.description }}</p>
         
         <!-- Bulk Fix Button for Missing Durations -->
         <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
@@ -88,6 +102,17 @@
           <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
+          </div>
+        </div>
+        <!-- Bulk Create Shifts for Orphaned Trips -->
+        <div *ngIf="item.name === 'Orphaned Trips' && item.count > 0" class="mb-4">
+          <button *ngIf="!isBulkFixing" mat-raised-button color="primary" (click)="createShiftsFromTrips(item.items || [])" class="!min-w-[160px]">
+            <mat-icon>playlist_add</mat-icon>
+            Create Shifts
+          </button>
+          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Creating...</span>
           </div>
         </div>
         <div *ngIf="item.name === 'Trips Missing Duration' && item.count > 0" class="mb-4">
@@ -103,62 +128,38 @@
         
         <!-- Grouped Items (Duplicates) -->
         <div *ngIf="item.groups && item.groups.length > 0" class="space-y-4">
-          <div class="text-sm text-gray-600 mb-3 font-medium">
+          <div class="text-sm text-gray-600 dark:text-gray-200 mb-3 font-medium">
             Found {{ item.items?.length }} items in {{ item.groups.length }} duplicate groups
           </div>
           
-          <div *ngFor="let group of item.groups; let groupIndex = index" class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
-              <span class="font-semibold text-sm text-gray-700">Group {{ groupIndex + 1 }}</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xs bg-gray-200 px-2 py-1 rounded">{{ group.length }} items</span>
-                <button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region'" 
-                        mat-mini-fab color="primary" 
-                        [disabled]="!selectedValue[groupIndex]"
-                        (click)="mergeDuplicates(group, selectedValue[groupIndex], item.itemType)"
-                        matTooltip="Merge duplicates">
-                  <mat-icon>merge</mat-icon>
-                </button>
-                <button *ngIf="item.itemType === 'shift'" 
-                        mat-mini-fab color="warn" 
-                        [disabled]="!selectedShiftToDelete[groupIndex] || hasMarkedForDelete(group)"
-                        (click)="markShiftForDelete(group, selectedShiftToDelete[groupIndex], groupIndex)"
-                        matTooltip="Delete selected shift">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </div>
-            <mat-radio-group [(ngModel)]="selectedValue[groupIndex]" class="divide-y divide-gray-200">
-              <div *ngFor="let problemItem of group" class="p-3 hover:bg-gray-100 transition-colors flex items-center gap-2" 
-                   [class.opacity-50]="((item.itemType === 'service' || item.itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address') && problemItem.trips === 0) || problemItem.markedForDelete" 
-                   [class.bg-green-50]="((item.itemType === 'service' || item.itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address') && problemItem.trips === 0)" 
-                   [class.bg-red-50]="problemItem.markedForDelete">
-                <mat-radio-button *ngIf="item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address' || item.itemType === 'service' || item.itemType === 'region'" 
-                                  [value]="problemItem"></mat-radio-button>
-                <input *ngIf="item.itemType === 'shift'" type="radio" 
-                       [name]="'shift-group-' + groupIndex" 
-                       [(ngModel)]="selectedShiftToDelete[groupIndex]" 
-                       [value]="problemItem.rowId" 
-                       [disabled]="problemItem.markedForDelete"
-                       class="w-4 h-4">
-                <div class="flex-1">
-                  <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType}"></ng-container>
-                </div>
-              </div>
-            </mat-radio-group>
-          </div>
+          <app-diagnostic-group
+            *ngFor="let group of item.groups; let groupIndex = index"
+            [group]="group"
+            [groupIndex]="groupIndex"
+            [itemType]="item.itemType!"
+            [(selectedValue)]="selectedValue[groupIndex]"
+            [(selectedShiftToDelete)]="selectedShiftToDelete[groupIndex]"
+            (merge)="mergeDuplicates($event.group, $event.value, $event.itemType)"
+            (deleteShift)="markShiftForDelete($event.group, $event.shiftId, $event.groupIndex)">
+          </app-diagnostic-group>
         </div>
 
         <!-- Individual Items (Non-duplicates) -->
         <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
-          <div *ngFor="let problemItem of item.items" class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:bg-gray-100 transition-colors" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-green-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed">
-            <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-green-600 text-sm mb-2">
+          <div *ngFor="let problemItem of item.items" class="bg-surface-2 rounded-lg border border-soft p-3 hover:bg-surface-3 transition-colors" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-success-500/20]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed">
+            <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm mb-2">
               <mat-icon class="!text-base">check_circle</mat-icon>
               <span>{{ item.name === 'Orphaned Trips' ? 'Fixed - Shift created' : 'Fixed successfully' }}</span>
             </div>
             <div class="flex items-center justify-between gap-2">
               <div class="flex-1">
-                <ng-container *ngTemplateOutlet="itemDisplay; context: {item: problemItem, type: item.itemType, diagnosticName: item.name, component: this}"></ng-container>
+                <app-diagnostic-item
+                  [item]="problemItem"
+                  [itemType]="item.itemType!"
+                  [diagnosticName]="item.name"
+                  (fixShiftDuration)="fixShiftDuration($event)"
+                  (fixTripDuration)="fixTripDuration($event)">
+                </app-diagnostic-item>
               </div>
               <button *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed" 
                       mat-icon-button color="primary" 
@@ -167,22 +168,22 @@
                 <mat-icon>add</mat-icon>
               </button>
             </div>
-            <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-gray-200">
-              <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 text-sm mb-2">
+            <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-soft">
+              <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm mb-2">
                 <mat-icon class="!text-base">check_circle</mat-icon>
                 <span>Address applied successfully</span>
               </div>
               <div class="flex items-center gap-2">
-                <select *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0" 
-                        [(ngModel)]="selectedAddress[problemItem.rowId]" 
-                        class="border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-0 max-w-full">
-                  <option [value]="undefined">Select address...</option>
-                  <option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</option>
-                </select>
+                <mat-form-field *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0" appearance="outline" class="flex-1 min-w-0">
+                  <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
+                    <mat-option [value]="undefined">Select address...</mat-option>
+                    <mat-option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
                 <input *ngIf="!problemItem.availableAddresses || problemItem.availableAddresses.length === 0"
                        [(ngModel)]="selectedAddress[problemItem.rowId]"
                        placeholder="Enter address..."
-                       class="border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-0">
+                       class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                 <button mat-icon-button color="primary" 
                         [disabled]="!selectedAddress[problemItem.rowId]"
                         (click)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
@@ -197,119 +198,5 @@
     </mat-expansion-panel>
   </mat-accordion>
 </div>
-
-<!-- Reusable Item Display Template -->
-<ng-template #itemDisplay let-item="item" let-type="type" let-diagnosticName="diagnosticName" let-component="component">
-  <div class="flex flex-col gap-1">
-    <!-- Shift Item -->
-    <div *ngIf="type === 'shift'">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-        <span class="font-semibold text-gray-800" [class.line-through]="item.markedForDelete">{{ item.date }}</span>
-        <span class="text-gray-600 text-sm">({{ item.key }})</span>
-        <span *ngIf="item.markedForDelete" class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">MARKED FOR DELETE</span>
-      </div>
-      <div class="flex items-center justify-between gap-2 mt-1">
-        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-          <span *ngIf="item.totalTrips !== undefined">{{ item.totalTrips }} trips</span>
-          <span *ngIf="item.start" class="text-gray-500">{{ item.start }} - {{ item.finish }}</span>
-        </div>
-        <button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed" 
-                mat-icon-button color="primary" 
-                (click)="component.fixShiftDuration(item)"
-                matTooltip="Fix duration">
-          <mat-icon>build</mat-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- Trip Item -->
-    <div *ngIf="type === 'trip'">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-        <span class="font-semibold text-gray-800">{{ item.date }}</span>
-        <span class="text-gray-600 text-sm">({{ item.key }})</span>
-      </div>
-      <div class="flex items-center justify-between gap-2 mt-1">
-        <div class="flex flex-wrap items-center gap-2 text-sm">
-          <span *ngIf="item.place" class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">{{ item.place }}</span>
-          <span *ngIf="item.name" class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs">{{ item.name }}</span>
-          <span *ngIf="item.exclude" class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">EXCLUDED</span>
-        </div>
-        <button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed" 
-                mat-icon-button color="primary" 
-                (click)="component.fixTripDuration(item)"
-                matTooltip="Fix duration">
-          <mat-icon>build</mat-icon>
-        </button>
-      </div>
-      <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm text-gray-600 mt-1">
-        <span *ngIf="item.pickupTime">{{ item.pickupTime }}</span>
-        <span *ngIf="item.pickupTime && item.dropoffTime">-</span>
-        <span *ngIf="item.dropoffTime">{{ item.dropoffTime }}</span>
-        <span *ngIf="item.duration" class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{{ item.duration | durationFormat }}</span>
-      </div>
-    </div>
-
-    <!-- Address Item -->
-    <div *ngIf="type === 'address'" class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-      <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0">{{ item.address }}</span>
-      <span *ngIf="item.trips !== undefined" class="text-sm text-gray-600">{{ item.trips }} trips</span>
-      <span *ngIf="item.names && item.names.length > 0" class="text-sm text-gray-500">Names: {{ item.names.join(', ') }}</span>
-    </div>
-
-    <!-- Place Item -->
-    <div *ngIf="type === 'place'">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-        <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0">{{ item.place }}</span>
-      </div>
-      <div class="flex flex-wrap items-center gap-2 mt-1 text-sm text-gray-600">
-        <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
-        <span *ngIf="item.addresses && item.addresses.length > 0">{{ item.addresses.length }} addresses</span>
-      </div>
-    </div>
-
-    <!-- Name Item -->
-    <div *ngIf="type === 'name'">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-        <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0">{{ item.name }}</span>
-      </div>
-      <div class="flex flex-col gap-1 mt-1 text-sm text-gray-600">
-        <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
-        <div *ngIf="item.addresses && item.addresses.length > 0">
-          <span class="font-medium">Addresses:</span>
-          <div *ngFor="let address of item.addresses" class="text-gray-500">• {{ address }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Service Item -->
-    <div *ngIf="type === 'service'">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-cyan-100 text-cyan-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-        <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0 && item.shifts === 0">{{ item.service }}</span>
-      </div>
-      <div class="flex flex-wrap items-center gap-2 mt-1 text-sm text-gray-600">
-        <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
-        <span *ngIf="item.shifts !== undefined">{{ item.shifts }} shifts</span>
-      </div>
-    </div>
-
-    <!-- Region Item -->
-    <div *ngIf="type === 'region'">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 bg-lime-100 text-lime-700 rounded text-xs font-mono">ID: {{ item.rowId }}</span>
-        <span class="font-semibold text-gray-800" [class.line-through]="item.trips === 0 && item.shifts === 0">{{ item.region }}</span>
-      </div>
-      <div class="flex flex-wrap items-center gap-2 mt-1 text-sm text-gray-600">
-        <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
-        <span *ngIf="item.shifts !== undefined">{{ item.shifts }} shifts</span>
-      </div>
-    </div>
-  </div>
-</ng-template>
 
 <app-back-to-top></app-back-to-top>

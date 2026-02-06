@@ -1,0 +1,56 @@
+<div class="flex flex-col gap-4 text-[var(--color-text-primary)]" (click)="$event.stopPropagation()">
+  <div class="flex flex-wrap items-center gap-3 justify-between w-full">
+    <div class="flex items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
+      <mat-icon class="text-base">autorenew</mat-icon>
+      Auto-save
+    </div>
+    <mat-slide-toggle
+      color="primary"
+      [checked]="autoSaveEnabled"
+      [disabled]="status === 'syncing'"
+      (change)="onAutoSaveToggle($event)">
+      <span class="text-sm text-[var(--color-text-primary)]">{{ autoSaveEnabled ? 'On' : 'Off' }}</span>
+    </mat-slide-toggle>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 justify-between w-full">
+    <div class="flex items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
+      <mat-icon class="text-base">palette</mat-icon>
+      Theme
+    </div>
+    <button
+      type="button"
+      mat-stroked-button
+      class="theme-cycle-btn flex items-center gap-2 px-3 py-2 text-sm font-semibold"
+      (click)="onThemeCycle($event)">
+      <mat-icon class="text-base">sync</mat-icon>
+      <span>{{ themePreference | titlecase }} mode</span>
+    </button>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      *ngIf="hasUnsavedChanges"
+      mat-raised-button
+      color="primary"
+      class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
+      [disabled]="status === 'syncing'"
+      matTooltip="Save pending changes"
+      (click)="onSaveClick($event)">
+      <mat-icon class="text-base">save</mat-icon>
+      Save
+    </button>
+
+    <button
+      *ngIf="!hasUnsavedChanges"
+      mat-raised-button
+      color="accent"
+      class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
+      [disabled]="status === 'syncing'"
+      matTooltip="Refresh from spreadsheet"
+      (click)="onRefreshClick($event)">
+      <mat-icon class="text-base">cloud_download</mat-icon>
+      Update
+    </button>
+  </div>
+</div>

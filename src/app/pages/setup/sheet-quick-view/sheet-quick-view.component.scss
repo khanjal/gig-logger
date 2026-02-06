@@ -1,9 +1,39 @@
+mat-card {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+}
+
 a {
     text-decoration: none;
+    color: var(--color-text-primary);
+    
+    &:hover {
+        color: var(--primary-600);
+        text-decoration: underline;
+    }
 }
 
 mat-card-header {
     font-size: large;
     line-height: 1.5rem;
     vertical-align: top;
+    color: var(--color-text-primary);
+}
+
+mat-card-content {
+    color: var(--color-text-secondary);
+}
+
+mat-progress-bar {
+    margin-top: 0.5rem;
+}
+
+:host-context(html.theme-dark) {
+    a {
+        color: var(--color-text-primary);
+        
+        &:hover {
+            color: var(--primary-300);
+        }
+    }
 }

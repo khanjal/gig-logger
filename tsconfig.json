@@ -53,12 +53,7 @@
       "@utils/*": ["./src/app/shared/utils/*"],
       "@test-harness": ["./src/test-harness"],
     },
-    //"types": [
-    //  "google.maps",
-    //  "jest",
-    //  "mocha",
-    //  "node"
-    //],
+    "types": [],
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -69,4 +64,11 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   }
+  ,
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/test.ts",
+    "src/test-*.ts",
+    "src/test-harness.ts"
+  ]
 }

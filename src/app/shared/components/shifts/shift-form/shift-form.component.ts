@@ -25,6 +25,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'shift-form',
   templateUrl: './shift-form.component.html',
+  styleUrls: ['./shift-form.component.scss'],
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatIcon,

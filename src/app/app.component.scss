@@ -9,7 +9,7 @@
   
   p {
     margin-top: 16px;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--color-text-secondary);
     font-size: 14px;
   }
 }
@@ -24,12 +24,12 @@
   padding: 20px;
   
   h2 {
-    color: #f44336;
+    color: var(--error-500);
     margin-bottom: 16px;
   }
   
   p {
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--color-text-secondary);
     margin-bottom: 24px;
     max-width: 400px;
   }
