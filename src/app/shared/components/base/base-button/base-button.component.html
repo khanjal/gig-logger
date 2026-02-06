@@ -4,12 +4,12 @@
   (click)="onButtonClick()"
   type="button"
 >
-  <div class="btn-content" [class.has-icon]="icon">
+  <div class="btn-content" [class.has-icon]="icon" [class.extended]="extended">
     <mat-icon *ngIf="icon && iconPosition === 'left'" class="btn-icon">
       {{ icon }}
     </mat-icon>
     
-    <span *ngIf="!loading" class="btn-text">
+    <span *ngIf="!loading && (!fab || extended)" class="btn-text">
       <ng-content></ng-content>
     </span>
     

@@ -5,6 +5,9 @@ import { MatIcon } from '@angular/material/icon';
 export type ButtonVariant = 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
+// Fab styles
+export type FabStyle = 'regular' | 'mini';
+
 @Component({
   selector: 'app-base-button',
   standalone: true,
@@ -24,6 +27,15 @@ export class BaseButtonComponent {
 
   /** Icon position (left/right) */
   @Input() iconPosition: 'left' | 'right' = 'left';
+
+  /** Render as a floating action button (circular) */
+  @Input() fab: boolean = false;
+
+  /** Fab style: regular or mini */
+  @Input() fabStyle: FabStyle = 'regular';
+
+  /** Extended fab shows label next to icon */
+  @Input() extended: boolean = false;
 
   /** Disabled state */
   @Input() disabled = false;
@@ -48,6 +60,9 @@ export class BaseButtonComponent {
       'app-base-button',
       `btn-${this.variant}`,
       `btn-${this.size}`,
+      this.fab ? 'btn-fab' : '',
+      this.fab && this.fabStyle === 'mini' ? 'btn-mini' : '',
+      this.extended ? 'btn-extended' : '',
       this.disabled ? 'btn-disabled' : '',
       this.loading ? 'btn-loading' : '',
       this.fullWidth ? 'btn-full-width' : ''
