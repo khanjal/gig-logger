@@ -20,7 +20,8 @@ export type FabStyle = 'regular' | 'mini';
  *
  * Reusable button used across the app. Supports styling variants, sizes,
  * icon placement, FAB (floating action button) modes including `mini` and
- * `extended`, loading state, and full-width behavior.
+ * `extended`, loading state, full-width behavior, and no-background mode
+ * for minimal icon buttons in input fields.
  *
  * Important: boolean inputs must be passed with property binding
  * (e.g. `[fab]="true"`) to avoid string/boolean coercion issues in templates.
@@ -32,6 +33,8 @@ export type FabStyle = 'regular' | 'mini';
  *   <app-base-button [fab]="true" [extended]="true" [icon]="'add'">New</app-base-button>
  * - Icon button with loading spinner:
  *   <app-base-button variant="icon" [loading]="isLoading"></app-base-button>
+ * - No background icon button (for input fields):
+ *   <app-base-button [fab]="true" fabStyle="mini" [noBackground]="true" matSuffix (clicked)="clear()" [icon]="'clear'" [iconColor]="'var(--error-500)'"></app-base-button>
  *
  * Emits `clicked` when activated (unless `disabled` or `loading`).
  */
@@ -47,6 +50,9 @@ export class BaseButtonComponent {
 
   /** Icon position (left/right) */
   @Input() iconPosition: 'left' | 'right' = 'left';
+
+  /** Icon color (CSS color value or CSS variable) */
+  @Input() iconColor?: string;
 
   /** Render as a floating action button (circular) */
   /**
@@ -69,6 +75,9 @@ export class BaseButtonComponent {
   /** Full width button */
   @Input() fullWidth = false;
 
+  /** No background - transparent button with minimal hover effect */
+  @Input() noBackground = false;
+
   /** Click event emitter */
   @Output() clicked = new EventEmitter<void>();
 
@@ -88,7 +97,8 @@ export class BaseButtonComponent {
       this.extended ? 'btn-extended' : '',
       this.disabled ? 'btn-disabled' : '',
       this.loading ? 'btn-loading' : '',
-      this.fullWidth ? 'btn-full-width' : ''
+      this.fullWidth ? 'btn-full-width' : '',
+      this.noBackground ? 'btn-no-background' : ''
     ];
     return classes.filter(c => c).join(' ');
   }

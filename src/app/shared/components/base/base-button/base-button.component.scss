@@ -246,6 +246,23 @@
     width: 100%;
   }
 
+  // No background - transparent with minimal hover
+  &.btn-no-background {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.04) !important;
+      box-shadow: none !important;
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.08) !important;
+      transform: scale(0.95);
+    }
+  }
+
   // NOTE: visual tweaks for toggle buttons are applied via classes on the consuming templates.
 
   // =========================================================================
@@ -320,6 +337,16 @@
 
       &:hover:not(:disabled) {
         border-color: var(--primary-500);
+      }
+    }
+
+    &.btn-no-background {
+      &:hover:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.12) !important;
       }
     }
   }

@@ -72,32 +72,29 @@
             </mat-autocomplete>
 
             <!-- Google search icon - shows when text is entered but no selection made -->
-            <app-base-button [fab]="true" fabStyle="mini" matSuffix class="standard-button" 
+            <app-base-button [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'search'" matSuffix class="standard-button" 
                     *ngIf="isGoogleSearchType() && isLocationAllowed() && value && !hasSelection && !isGoogleSearching"
                     color="primary"
                     aria-label="Trigger Google Autocomplete Search"
                     title="Search with Google Autocomplete"
                     (clicked)="triggerGoogleSearch()">
-                <mat-icon>search</mat-icon>
             </app-base-button>
 
             <!-- Google Maps icon - shows when text is entered and a selection has been made -->
-            <app-base-button [fab]="true" fabStyle="mini" matSuffix class="standard-button"
+            <app-base-button [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'map'" matSuffix class="standard-button"
                     *ngIf="isGoogleSearchType() && value && (hasSelection || !isLocationAllowed())"
                     color="primary"
                     aria-label="Open Google Maps"
                     title="Open Google Maps with this search"
                     (clicked)="openGoogleMaps()">
-                <mat-icon>map</mat-icon>
             </app-base-button>
 
             <!-- Clear button - shows when any text is entered -->
-            <app-base-button [fab]="true" fabStyle="mini" matSuffix class="standard-button" 
+            <app-base-button [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'clear'" [iconColor]="'var(--error-500)'" matSuffix class="standard-button" 
                     *ngIf="value" 
                     color="accent" 
                     aria-label="Clear Field" 
                     (clicked)="onClear()">
-                <mat-icon>clear</mat-icon>
             </app-base-button>
         </mat-form-field>
 </form>

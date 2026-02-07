@@ -5,7 +5,7 @@
   type="button"
 >
   <div class="btn-content" [class.has-icon]="icon" [class.extended]="extended">
-    <mat-icon *ngIf="icon && iconPosition === 'left'" class="btn-icon">
+    <mat-icon *ngIf="icon && iconPosition === 'left'" class="btn-icon" [style.color]="iconColor">
       {{ icon }}
     </mat-icon>
     
@@ -20,7 +20,7 @@
       </svg>
     </mat-icon>
     
-    <mat-icon *ngIf="icon && iconPosition === 'right'" class="btn-icon">
+    <mat-icon *ngIf="icon && iconPosition === 'right'" class="btn-icon" [style.color]="iconColor">
       {{ icon }}
     </mat-icon>
   </div>

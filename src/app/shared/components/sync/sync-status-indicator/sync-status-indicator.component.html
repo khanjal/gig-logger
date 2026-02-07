@@ -76,10 +76,12 @@
         <app-base-button 
           [fab]="true" 
           fabStyle="mini"
+          [noBackground]="true"
+          [icon]="'clear_all'"
+          [iconColor]="'var(--error-500)'"
           (clicked)="clearMessages()"
           class="clear-button flex h-8 w-8 items-center justify-center"
           matTooltip="Clear log">
-          <mat-icon>clear_all</mat-icon>
         </app-base-button>
       </div>
 
