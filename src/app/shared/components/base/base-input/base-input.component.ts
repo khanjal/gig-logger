@@ -111,13 +111,6 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     }
   }
 
-  // Provide a typed FormControl getter for template binding. We cast because
-  // NgControl.control is AbstractControl | null; Material's [formControl]
-  // expects a FormControl. Tests may use template-driven mode where this is null.
-  get controlAsFormControl(): FormControl | null {
-    return this.ngControl?.control as FormControl ?? null;
-  }
-
   writeValue(value: any): void {
     this.value = value;
   }
