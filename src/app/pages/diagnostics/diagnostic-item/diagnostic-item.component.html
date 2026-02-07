@@ -13,12 +13,12 @@
         <span *ngIf="item.start" class="item-time">{{ item.start }} - {{ item.finish }}</span>
       </div>
       <app-base-button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed" 
-              [fab]="true" 
-              fabStyle="mini"
-              color="primary" 
-              (clicked)="onFixShiftDuration()"
-              matTooltip="Fix duration">
-        <mat-icon>build</mat-icon>
+        [fab]="true" 
+        fabStyle="mini"
+        color="primary" 
+        (clicked)="onFixShiftDuration()"
+        matTooltip="Fix duration"
+        [icon]="'build'">
       </app-base-button>
     </div>
   </div>
@@ -37,12 +37,12 @@
         <span *ngIf="item.exclude" class="px-2 py-0.5 bg-error-500/20 rounded text-xs badge-delete">EXCLUDED</span>
       </div>
       <app-base-button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed" 
-              [fab]="true" 
-              fabStyle="mini"
-              color="primary" 
-              (clicked)="onFixTripDuration()"
-              matTooltip="Fix duration">
-        <mat-icon>build</mat-icon>
+        [fab]="true" 
+        fabStyle="mini"
+        color="primary" 
+        (clicked)="onFixTripDuration()"
+        matTooltip="Fix duration"
+        [icon]="'build'">
       </app-base-button>
     </div>
     <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm mt-1">
