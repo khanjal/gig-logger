@@ -17,14 +17,15 @@
               placeholder="Enter a search term..."
               autocomplete="off">
             <mat-icon matPrefix>search</mat-icon>
-            <button 
-              mat-icon-button 
+            <app-base-button 
+              [fab]="true" 
+              fabStyle="mini"
               matSuffix 
               *ngIf="searchTerm"
-              (click)="clearSearch()"
+              (clicked)="clearSearch()"
               aria-label="Clear search">
               <mat-icon>close</mat-icon>
-            </button>
+            </app-base-button>
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)" panelClass="search-autocomplete-panel">
               <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
                 {{ option }}
@@ -35,18 +36,19 @@
         
         <!-- Filter Toggle Button -->
         <div class="flex items-end pb-1">
-          <button 
-            mat-icon-button
+          <app-base-button 
+            [fab]="true" 
+            fabStyle="mini"
             [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
             matTooltipPosition="below"
-            (click)="toggleFilters()"
+            (clicked)="toggleFilters()"
             [class.bg-primary-500/10]="showFilters"
             class="filter-toggle-btn">
             <mat-icon [class.text-blue-600]="showFilters" [ngClass]="{ 'dark:text-blue-400': showFilters }">
               {{ showFilters ? 'filter_list_off' : 'filter_list' }}
             </mat-icon>
             <span class="filter-badge">{{ getEnabledCount() }}</span>
-          </button>
+          </app-base-button>
         </div>
       </div>
 
@@ -61,14 +63,20 @@
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-primary">Filter Categories</h3>
             <div class="flex gap-2">
-              <button mat-button color="primary" (click)="selectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900 all-btn">
+              <app-base-button 
+                color="primary" 
+                (clicked)="selectAllCategories()" 
+                class="text-xs font-semibold px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900 all-btn">
                 <mat-icon class="text-sm">check_box</mat-icon>
                 &nbsp;All
-              </button>
-              <button mat-button color="primary" (click)="deselectAllCategories()" class="text-xs font-semibold px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-blue-50 hover:bg-slate-200 dark:hover:bg-slate-700 none-btn">
+              </app-base-button>
+              <app-base-button 
+                color="primary" 
+                (clicked)="deselectAllCategories()" 
+                class="text-xs font-semibold px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-blue-50 hover:bg-slate-200 dark:hover:bg-slate-700 none-btn">
                 <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
                 &nbsp;None
-              </button>
+              </app-base-button>
             </div>
           </div>
           
@@ -133,14 +141,15 @@
           </span>
         </div>
         <div *ngIf="groupedResults.length > 0">
-          <button 
-            mat-icon-button 
-            (click)="toggleAllGroups()"
+          <app-base-button 
+            [fab]="true" 
+            fabStyle="mini"
+            (clicked)="toggleAllGroups()"
             [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
             matTooltipPosition="below"
             class="expand-toggle-btn">
             <mat-icon>{{ areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
-          </button>
+          </app-base-button>
         </div>
       </div>
     </div>

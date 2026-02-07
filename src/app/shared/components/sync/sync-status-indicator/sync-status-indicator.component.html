@@ -73,13 +73,14 @@
           </mat-icon>
           Activity Log ({{ messages.length }})
         </span>
-        <button 
-          mat-icon-button 
-          (click)="clearMessages(); $event.stopPropagation()"
+        <app-base-button 
+          [fab]="true" 
+          fabStyle="mini"
+          (clicked)="clearMessages()"
           class="clear-button flex h-8 w-8 items-center justify-center"
           matTooltip="Clear log">
           <mat-icon>clear_all</mat-icon>
-        </button>
+        </app-base-button>
       </div>
 
       <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1" *ngIf="showDetailedView">

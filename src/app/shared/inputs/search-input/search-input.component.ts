@@ -6,13 +6,15 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 // Angular Material imports
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatOptionSelectionChange } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+// Application-specific imports - Components
+import { BaseButtonComponent } from '@components/base';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -51,7 +53,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule],
+  imports: [CommonModule, FocusScrollDirective, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule, BaseButtonComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [

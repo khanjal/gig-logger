@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -19,6 +18,7 @@ import { LoggerService } from '@services/logger.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
+import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
 import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith } from 'rxjs';
 
 @Component({
@@ -30,7 +30,6 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatButtonModule,
     MatChipsModule,
     MatCardModule,
     MatProgressSpinnerModule,
@@ -40,7 +39,8 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     MatTooltipModule,
     CurrencyPipe,
     TripsQuickViewComponent,
-    BackToTopComponent
+    BackToTopComponent,
+    BaseButtonComponent
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],

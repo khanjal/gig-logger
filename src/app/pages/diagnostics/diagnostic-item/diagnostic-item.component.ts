@@ -1,16 +1,16 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import { BaseButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-diagnostic-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatTooltipModule, DurationFormatPipe],
+  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseButtonComponent],
   templateUrl: './diagnostic-item.component.html',
   styleUrl: './diagnostic-item.component.scss'
 })

@@ -183,12 +183,14 @@
                   (fixTripDuration)="fixTripDuration($event)">
                 </app-diagnostic-item>
               </div>
-              <button *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed" 
-                      mat-icon-button color="primary" 
-                      (click)="createShiftFromTrip(problemItem)"
+              <app-base-button *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed" 
+                      [fab]="true" 
+                      fabStyle="mini"
+                      color="primary" 
+                      (clicked)="createShiftFromTrip(problemItem)"
                       matTooltip="Create shift from trip">
                 <mat-icon>add</mat-icon>
-              </button>
+              </app-base-button>
             </div>
             <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-soft">
               <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm mb-2">
@@ -206,12 +208,14 @@
                        [(ngModel)]="selectedAddress[problemItem.rowId]"
                        placeholder="Enter address..."
                        class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                <button mat-icon-button color="primary" 
+                <app-base-button [fab]="true" 
+                        fabStyle="mini"
+                        color="primary" 
                         [disabled]="!selectedAddress[problemItem.rowId]"
-                        (click)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
+                        (clicked)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
                         matTooltip="Apply address">
                   <mat-icon>check</mat-icon>
-                </button>
+                </app-base-button>
               </div>
             </div>
           </div>
