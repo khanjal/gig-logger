@@ -1,5 +1,5 @@
 <div class="app-base-input">
-  <mat-form-field class="input-field" appearance="outline" [class.has-error]="error">
+  <mat-form-field class="input-field" appearance="outline" [class.mat-form-field-invalid]="errorState">
     <mat-label *ngIf="label">
       {{ label }}
     </mat-label>
@@ -16,8 +16,10 @@
       [disabled]="disabled"
       [required]="isRequired"
       [placeholder]="placeholder || ''"
+      [attr.aria-invalid]="errorState"
       (input)="onValueChange(inputElement.value)"
       (blur)="onBlur()"
+      (focus)="onFocus()"
     />
 
     <mat-icon *ngIf="icon && iconPosition === 'right'" matSuffix class="input-icon">
@@ -25,9 +27,7 @@
     </mat-icon>
 
     <mat-hint *ngIf="hint && !hasError()">{{ hint }}</mat-hint>
-    <mat-error *ngIf="error">{{ error }}</mat-error>
-    <mat-error *ngIf="!error && hasError('required')">This field is required</mat-error>
-    <mat-error *ngIf="!error && hasError('email')">Please enter a valid email</mat-error>
-    <mat-error *ngIf="!error && hasError('min')">Value is too low</mat-error>
+    <mat-error *ngIf="hasError()">{{ error || getErrorMessage() }}</mat-error>
+    <mat-error></mat-error>
   </mat-form-field>
 </div>

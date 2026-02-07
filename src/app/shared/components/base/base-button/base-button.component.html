@@ -2,7 +2,7 @@
   [ngClass]="buttonClasses" 
   [disabled]="disabled || loading"
   (click)="onButtonClick()"
-  type="button"
+  [attr.type]="type"
 >
   <div class="btn-content" [class.has-icon]="icon" [class.extended]="extended">
     <mat-icon *ngIf="icon && iconPosition === 'left'" class="btn-icon" [style.color]="iconColor">

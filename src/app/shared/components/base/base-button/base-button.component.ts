@@ -72,6 +72,9 @@ export class BaseButtonComponent {
   /** Loading state - shows spinner and disables button */
   @Input() loading = false;
 
+  /** Native button type ('button' | 'submit' | 'reset') forwarded to native element */
+  @Input() type: 'button' | 'submit' | 'reset' = 'button';
+
   /** Full width button */
   @Input() fullWidth = false;
 
