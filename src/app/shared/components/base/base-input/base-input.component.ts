@@ -5,6 +5,7 @@ import { MatFormField, MatLabel, MatHint, MatError, MatFormFieldControl } from '
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { Subject, Subscription } from 'rxjs';
+import { subscribeControlStatus, firstErrorMessage, controlHasError } from './base-input.helpers';
 
 @Component({
   selector: 'app-base-input',
@@ -103,11 +104,7 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
       // subscribe to status changes so the form-field updates when validity changes
-      try {
-        this._statusSub = (this.ngControl.control as FormControl)?.statusChanges?.subscribe(() => this.stateChanges.next());
-      } catch {
-        // noop
-      }
+      this._statusSub = subscribeControlStatus(this.ngControl.control as FormControl, this.stateChanges);
     }
   }
 
@@ -161,18 +158,8 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
   hasError(errorCode?: string): boolean {
     const control = this.ngControl?.control;
     const submitted = !!this.parentForm?.submitted;
-
-    if (control) {
-      const touched = control.touched;
-      if (errorCode) return !!(control.hasError(errorCode) && (touched || submitted));
-      return !!(control.invalid && (touched || submitted));
-    }
-
-    // Fallback: when no reactive control, consider required + touched + empty (or form submit)
-    if (errorCode === 'required') {
-      return !!(this.required && (this._touched || submitted) && this.empty);
-    }
-    return !!(this.required && (this._touched || submitted) && this.empty);
+    const touched = !!control?.touched;
+    return controlHasError(control, errorCode, this.required, touched || this._touched, submitted, this.empty);
   }
 
   // MatFormFieldControl methods
@@ -212,20 +199,7 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
 
   /** Return a short validation message based on the control's first error */
   getErrorMessage(): string | null {
-    const control = this.ngControl?.control;
-    if (control && control.errors) {
-      if (control.errors['required']) return 'This field is required';
-      if (control.errors['min']) return 'Value is too small';
-      if (control.errors['max']) return 'Value is too large';
-      if (control.errors['minlength']) return 'Too short';
-      if (control.errors['maxlength']) return 'Too long';
-      // fallback to JSON string for unknown errors (useful in tests)
-      try { return Object.keys(control.errors)[0]; } catch { return 'Invalid'; }
-    }
-
-    // Fallback for non-reactive usage
-    if (this.required && this._touched && this.empty) return 'This field is required';
-    return null;
+    return firstErrorMessage(this.ngControl?.control, this.required, !!this._touched, !!this.parentForm?.submitted, this.empty);
   }
 
   get isRequired(): boolean {
