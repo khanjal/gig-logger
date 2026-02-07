@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -23,7 +22,6 @@ import { BaseButtonComponent } from '@components/base';
     CommonModule,
     MatIconModule,
     MatTooltipModule,
-    MatBadgeModule,
     OverlayModule,
     QuickControlsComponent,
     BaseButtonComponent
@@ -111,8 +109,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.themePreference = preference;
   }
 
-  toggleMenu(event: MouseEvent): void {
-    event.stopPropagation();
+  toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 

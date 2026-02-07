@@ -172,9 +172,10 @@
   // Extended FAB shows label next to icon
   &.btn-extended {
     border-radius: 28px;
-    padding: 0 16px;
+    padding: 0 20px;
     height: 48px;
-    min-width: 48px;
+    min-width: auto;
+    width: auto;
     display: inline-flex;
     gap: 8px;
 

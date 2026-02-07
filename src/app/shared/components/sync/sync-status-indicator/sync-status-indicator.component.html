@@ -102,25 +102,29 @@
 
   <ng-container *ngIf="mode === 'button'; else panelMode">
     <!-- Main status button with menu trigger -->
-    <button 
-      mat-icon-button 
+    <div 
+      class="relative"
       cdkOverlayOrigin
       #syncOverlayOrigin="cdkOverlayOrigin"
       [matTooltip]="getTooltipText()"
-      matTooltipPosition="below"
-      class="sync-button relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]"
-      [class.spinning]="syncState?.status === 'syncing'"
-      (click)="toggleMenu($event)">
-      <mat-icon [class.spinning-icon]="syncState?.status === 'syncing'">
-        {{ getStatusIcon() }}
-      </mat-icon>
+      matTooltipPosition="below">
+      <app-base-button
+        [fab]="true"
+        fabStyle="regular"
+        [noBackground]="true"
+        [icon]="getStatusIcon()"
+        [iconColor]="'currentColor'"
+        (clicked)="toggleMenu()"
+        class="sync-button text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]"
+        [class.spinning]="syncState?.status === 'syncing'">
+      </app-base-button>
       <!-- Progress badge for syncing state -->
       <span 
         *ngIf="syncState?.status === 'syncing' && (syncState?.totalItems || 0) > 0"
         class="progress-badge">
         {{ syncState?.itemsSynced }}/{{ syncState?.totalItems }}
       </span>
-    </button>
+    </div>
 
     <!-- Dropdown popover with detailed sync information -->
     <ng-template

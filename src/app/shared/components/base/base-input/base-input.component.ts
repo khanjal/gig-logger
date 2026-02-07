@@ -1,6 +1,6 @@
-import { Component, Input, forwardRef, ViewChild } from '@angular/core';
+import { Component, Input, forwardRef, ViewChild, Optional, Self } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
@@ -10,14 +10,7 @@ import { MatIcon } from '@angular/material/icon';
   standalone: true,
   imports: [CommonModule, FormsModule, MatFormField, MatLabel, MatHint, MatError, MatInput, MatIcon],
   templateUrl: './base-input.component.html',
-  styleUrl: './base-input.component.scss',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => BaseInputComponent),
-      multi: true
-    }
-  ]
+  styleUrl: './base-input.component.scss'
 })
 export class BaseInputComponent implements ControlValueAccessor {
 /**
@@ -77,6 +70,12 @@ export class BaseInputComponent implements ControlValueAccessor {
   onChange: (value: any) => void = () => {};
   onTouched: () => void = () => {};
 
+  constructor(@Optional() @Self() public ngControl: NgControl) {
+    if (this.ngControl) {
+      this.ngControl.valueAccessor = this;
+    }
+  }
+
   writeValue(value: any): void {
     this.value = value;
   }
@@ -94,11 +93,57 @@ export class BaseInputComponent implements ControlValueAccessor {
   }
 
   onValueChange(newValue: any): void {
-    this.value = newValue;
-    this.onChange(newValue);
+    // Convert to number for number inputs
+    if (this.type === 'number') {
+      if (newValue === '' || newValue === null) {
+        this.value = null;
+      } else {
+        const numValue = parseFloat(newValue);
+        this.value = isNaN(numValue) ? null : numValue;
+      }
+    } else {
+      this.value = newValue;
+    }
+    this.onChange(this.value);
   }
 
   onBlur(): void {
     this.onTouched();
+    // Explicitly mark the control as touched to trigger validation display
+    if (this.ngControl && this.ngControl.control) {
+      this.ngControl.control.markAsTouched();
+    }
+  }
+
+  hasError(errorCode?: string): boolean {
+    if (!this.ngControl || !this.ngControl.control) return false;
+    const control = this.ngControl.control;
+    if (!control.touched) return false;
+    if (errorCode) {
+      return control.hasError(errorCode);
+    }
+    return control.invalid;
+  }
+
+  get isRequired(): boolean {
+    // Return the @Input required value if explicitly set
+    if (this.required) return true;
+    
+    // Otherwise, check if the control has a required validator
+    try {
+      const control = this.ngControl?.control;
+      if (!control) return false;
+      
+      // Test if the control has a required validator by checking for required error
+      // when the control is empty
+      if (control.validator) {
+        const errors = control.validator(control);
+        return !!(errors && errors['required']);
+      }
+    } catch {
+      // Silently fail and return false
+    }
+    
+    return false;
   }
 }

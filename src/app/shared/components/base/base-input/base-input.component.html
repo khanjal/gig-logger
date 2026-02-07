@@ -2,7 +2,6 @@
   <mat-form-field class="input-field" appearance="outline" [class.has-error]="error">
     <mat-label *ngIf="label">
       {{ label }}
-      <span *ngIf="required" class="required-indicator">*</span>
     </mat-label>
 
     <mat-icon *ngIf="icon && iconPosition === 'left'" matPrefix class="input-icon">
@@ -15,9 +14,9 @@
       [type]="type"
       [value]="value"
       [disabled]="disabled"
-      [required]="required"
+      [required]="isRequired"
       [placeholder]="placeholder || ''"
-      (input)="onValueChange($event.target.value)"
+      (input)="onValueChange(inputElement.value)"
       (blur)="onBlur()"
     />
 
@@ -25,7 +24,10 @@
       {{ icon }}
     </mat-icon>
 
-    <mat-hint *ngIf="hint && !error">{{ hint }}</mat-hint>
+    <mat-hint *ngIf="hint && !hasError()">{{ hint }}</mat-hint>
     <mat-error *ngIf="error">{{ error }}</mat-error>
+    <mat-error *ngIf="!error && hasError('required')">This field is required</mat-error>
+    <mat-error *ngIf="!error && hasError('email')">Please enter a valid email</mat-error>
+    <mat-error *ngIf="!error && hasError('min')">Value is too low</mat-error>
   </mat-form-field>
 </div>
