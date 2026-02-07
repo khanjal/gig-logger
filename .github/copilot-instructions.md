@@ -41,6 +41,81 @@ src/app/
 - Example component structure follows `trips.component.ts` pattern
 - **Parent-child communication**: Some components use event emitters and input properties for data flow
 
+### Reusable UI Components
+
+#### BaseButton Component (`app-base-button`)
+The `BaseButtonComponent` is the standard button component used throughout the app. It provides consistent styling, variants, and behavior.
+
+**Location**: `src/app/shared/components/base/base-button/`
+
+**Usage Guidelines**:
+- **ALWAYS use the `icon` parameter** for icon buttons - NEVER embed `<mat-icon>` tags within `<app-base-button>`
+- Use `iconColor` parameter to customize icon colors (accepts CSS color values or CSS variables)
+- Use `noBackground="true"` for minimal icon-only buttons in input fields and navigation areas
+- Boolean inputs must use property binding: `[fab]="true"` not `fab="true"`
+
+**Common Patterns**:
+```html
+<!-- ❌ WRONG - Don't embed mat-icon -->
+<app-base-button [fab]="true" fabStyle="mini">
+  <mat-icon>close</mat-icon>
+</app-base-button>
+
+<!-- ✅ CORRECT - Use icon parameter -->
+<app-base-button [fab]="true" fabStyle="mini" [icon]="'close'">
+</app-base-button>
+
+<!-- Clear button with red icon (common in input fields) -->
+<app-base-button 
+  [fab]="true" 
+  fabStyle="mini" 
+  [noBackground]="true" 
+  [icon]="'clear'" 
+  [iconColor]="'var(--error-500)'"
+  matSuffix
+  (clicked)="onClear()">
+</app-base-button>
+
+<!-- Standard action button -->
+<app-base-button 
+  variant="primary" 
+  [icon]="'save'" 
+  (clicked)="save()">
+  Save Changes
+</app-base-button>
+
+<!-- Toggle button (e.g., trip form) -->
+<app-base-button 
+  [fab]="true" 
+  fabStyle="mini" 
+  [variant]="isActive ? 'primary' : 'secondary'" 
+  [icon]="'drive_eta'" 
+  (clicked)="toggle()">
+</app-base-button>
+
+<!-- Loading state -->
+<app-base-button 
+  variant="primary" 
+  [loading]="isSaving" 
+  (clicked)="submit()">
+  Submit
+</app-base-button>
+```
+
+**Available Options**:
+- `variant`: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon'
+- `size`: 'sm' | 'md' | 'lg'
+- `icon`: Material icon name (string)
+- `iconColor`: CSS color value or variable (e.g., 'var(--error-500)', '#ff0000')
+- `iconPosition`: 'left' | 'right'
+- `fab`: boolean - renders as floating action button (circular)
+- `fabStyle`: 'regular' | 'mini'
+- `extended`: boolean - shows label next to icon for FABs
+- `noBackground`: boolean - transparent button with minimal hover (for input fields)
+- `disabled`: boolean
+- `loading`: boolean - shows spinner and disables interaction
+- `fullWidth`: boolean
+
 ### Service Patterns
 - **Injectable services** with `providedIn: 'root'`
 - **Reactive data** using Dexie's `liveQuery()` for local storage
