@@ -419,6 +419,11 @@ export class ServerGooglePlacesService {
    * Check if we can reliably get user location for Google Places API
    */
   async canGetUserLocation(): Promise<boolean> {
+    // If mock location is enabled, treat location as available.
+    if (this.mockLocationService.isEnabled() && this.mockLocationService.getLocation()) {
+      return true;
+    }
+
     // Check if we have cached location first
     if (this.cachedLocation && 'timestamp' in this.cachedLocation) {
       const now = Date.now();
