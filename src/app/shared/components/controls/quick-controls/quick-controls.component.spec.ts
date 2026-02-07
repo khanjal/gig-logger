@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { QuickControlsComponent } from './quick-controls.component';
+import { BaseButtonComponent } from '@components/base';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 describe('QuickControlsComponent', () => {
@@ -16,14 +17,20 @@ describe('QuickControlsComponent', () => {
     component = fixture.componentInstance;
   });
 
+  const getBaseButton = (text: string) => {
+    const buttons = fixture.debugElement.queryAll(By.directive(BaseButtonComponent));
+    return buttons.find((button) => button.nativeElement.textContent?.trim().includes(text)) ?? null;
+  };
+
   it('shows and emits save when unsaved changes exist', () => {
     const saveSpy = spyOn(component.save, 'emit');
     component.hasUnsavedChanges = true;
     component.status = 'idle';
     fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.css('button[mat-raised-button][color="primary"]'));
-    button.triggerEventHandler('click', new MouseEvent('click'));
+    const button = getBaseButton('Save');
+    expect(button).not.toBeNull();
+    button?.triggerEventHandler('clicked', null);
 
     expect(saveSpy).toHaveBeenCalled();
   });
@@ -33,7 +40,7 @@ describe('QuickControlsComponent', () => {
     component.status = 'idle';
     fixture.detectChanges();
 
-    const saveButton = fixture.debugElement.query(By.css('button[mat-raised-button][color="primary"]'));
+    const saveButton = getBaseButton('Save');
     expect(saveButton).toBeNull();
   });
 
@@ -43,8 +50,9 @@ describe('QuickControlsComponent', () => {
     component.status = 'syncing';
     fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.css('button[mat-raised-button][color="primary"]'));
-    button.triggerEventHandler('click', new MouseEvent('click'));
+    const button = getBaseButton('Save');
+    expect(button).not.toBeNull();
+    button?.triggerEventHandler('clicked', null);
 
     expect(saveSpy).not.toHaveBeenCalled();
   });
@@ -55,8 +63,9 @@ describe('QuickControlsComponent', () => {
     component.status = 'idle';
     fixture.detectChanges();
 
-    const refreshButton = fixture.debugElement.query(By.css('button[color="accent"]'));
-    refreshButton.triggerEventHandler('click', new MouseEvent('click'));
+    const refreshButton = getBaseButton('Update');
+    expect(refreshButton).not.toBeNull();
+    refreshButton?.triggerEventHandler('clicked', null);
 
     expect(refreshSpy).toHaveBeenCalled();
   });
@@ -74,21 +83,22 @@ describe('QuickControlsComponent', () => {
     const themeSpy = spyOn(component.themeChange, 'emit');
     fixture.detectChanges();
 
-    const cycleButton = fixture.debugElement.query(By.css('button[mat-stroked-button]'));
+    const cycleButton = getBaseButton('mode');
+    expect(cycleButton).not.toBeNull();
 
     // system -> light
-    cycleButton.triggerEventHandler('click', new MouseEvent('click'));
+    cycleButton?.triggerEventHandler('clicked', null);
     // simulate input change
     component.themePreference = 'light';
     fixture.detectChanges();
 
     // light -> dark
-    cycleButton.triggerEventHandler('click', new MouseEvent('click'));
+    cycleButton?.triggerEventHandler('clicked', null);
     component.themePreference = 'dark';
     fixture.detectChanges();
 
     // dark -> system
-    cycleButton.triggerEventHandler('click', new MouseEvent('click'));
+    cycleButton?.triggerEventHandler('clicked', null);
 
     expect(themeSpy.calls.allArgs()).toEqual([['light'], ['dark'], ['system']]);
   });

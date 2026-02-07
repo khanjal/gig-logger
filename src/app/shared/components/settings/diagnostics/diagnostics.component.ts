@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
@@ -15,6 +14,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IName } from '@interfaces/name.interface';
+import { BaseButtonComponent } from '@components/base';
 
 interface DiagnosticItem {
   name: string;
@@ -29,7 +29,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseButtonComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })

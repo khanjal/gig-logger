@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
+import { BaseButtonComponent } from '@components/base';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
@@ -38,7 +38,7 @@ import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.compo
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatExpansionModule, MatRadioModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DiagnosticGroupComponent, DiagnosticItemComponent],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseButtonComponent, MatExpansionModule, MatRadioModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DiagnosticGroupComponent, DiagnosticItemComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })

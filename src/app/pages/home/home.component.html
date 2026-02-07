@@ -15,13 +15,12 @@
                         <p>A new version of the app is ready. Update now for the latest features and improvements.</p>
                     </div>
                     <div class="update-actions">
-                        <button mat-raised-button color="primary" (click)="updateApp()">
-                            <mat-icon>update</mat-icon>
+                        <app-base-button variant="primary" [icon]="'update'" iconPosition="left" (clicked)="updateApp()">
                             Update Now
-                        </button>
-                        <button mat-button (click)="dismissUpdate()">
+                        </app-base-button>
+                        <app-base-button variant="outlined" (clicked)="dismissUpdate()">
                             Later
-                        </button>
+                        </app-base-button>
                     </div>
                 </div>
             </div>
@@ -171,10 +170,15 @@
 
             <!-- Install Button (for supported browsers) -->
             <div class="install-button-container" *ngIf="showInstallButton">
-                <button mat-raised-button color="primary" class="install-button" (click)="installApp()">
-                    <mat-icon>download</mat-icon>
-                    Install App
-                </button>
+                    <app-base-button 
+                        variant="primary" 
+                        [icon]="'download'" 
+                        iconPosition="left"
+                        class="install-button" 
+                        (clicked)="installApp()"
+                    >
+                        Install App
+                    </app-base-button>
                 <p class="install-note">Click to install directly to your device</p>
             </div>
         </div>

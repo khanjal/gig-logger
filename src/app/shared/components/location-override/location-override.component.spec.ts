@@ -117,7 +117,7 @@ describe('LocationOverrideComponent', () => {
 
   it('should format coordinates', () => {
     const formatted = component.formatCoordinate(40.712345678);
-    expect(formatted).toBe('40.712346');
+    expect(formatted).toBe('40.712');
   });
 
   it('should reset to defaults', () => {

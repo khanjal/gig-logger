@@ -12,8 +12,10 @@ describe('ServerGooglePlacesService', () => {
 
   beforeEach(() => {
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'warn', 'debug']);
-    mockLocationServiceSpy = jasmine.createSpyObj('MockLocationService', ['getLocation']);
+    mockLocationServiceSpy = jasmine.createSpyObj('MockLocationService', ['getLocation', 'isEnabled', 'getRadius']);
     mockLocationServiceSpy.getLocation.and.returnValue(null); // Default: mock disabled
+    mockLocationServiceSpy.isEnabled.and.returnValue(false);
+    mockLocationServiceSpy.getRadius.and.returnValue(25);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],

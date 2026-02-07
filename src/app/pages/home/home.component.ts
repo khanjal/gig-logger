@@ -1,19 +1,19 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
+import { BaseButtonComponent } from '@components/base';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon, MatButtonModule]
+    imports: [CommonModule, MatIcon, BaseButtonComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);
