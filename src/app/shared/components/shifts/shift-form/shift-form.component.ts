@@ -9,9 +9,8 @@ import { MatIcon } from '@angular/material/icon';
 import { ShiftService } from '@services/sheets/shift.service';
 import { LoggerService } from '@services/logger.service';
 import { ActionEnum } from '@enums/action.enum';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { ITrip } from '@interfaces/trip.interface';
+import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
@@ -29,7 +28,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatIcon,
-    MatDatepickerModule, MatDatepicker, MatDatepickerToggle, TimeInputComponent,
+    BaseDatepickerComponent, TimeInputComponent,
     MatInputModule, MatNativeDateModule, SearchInputComponent, MatSlideToggleModule,
     MatButtonModule
   ]
