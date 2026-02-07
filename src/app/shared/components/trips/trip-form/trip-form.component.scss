@@ -111,3 +111,20 @@
     color: var(--color-text-primary) !important;
   }
 }
+
+// Hide the visible outline junction line in form fields (Material outline artifact)
+::ng-deep mat-form-field {
+  .mdc-notched-outline__leading {
+    display: none !important;
+  }
+  
+  .mdc-notched-outline__notch {
+    margin-left: 0 !important;
+  }
+  
+  // Adjust the floating label (placeholder) position to account for hidden outline
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    margin-left: 12px !important;
+  }
+}
