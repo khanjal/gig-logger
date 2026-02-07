@@ -1,6 +1,6 @@
 import { Component, Input, forwardRef, ViewChild, Optional, Self, HostBinding, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormControl, FormGroupDirective } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormControl, FormGroupDirective } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatFormFieldControl } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
