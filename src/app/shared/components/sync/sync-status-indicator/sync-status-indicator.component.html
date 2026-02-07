@@ -115,7 +115,7 @@
         [icon]="getStatusIcon()"
         [iconColor]="'currentColor'"
         (clicked)="toggleMenu()"
-        class="sync-button text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]"
+        class="sync-button text-inverse hover:bg-white/10 transition"
         [class.spinning]="syncState?.status === 'syncing'">
       </app-base-button>
       <!-- Progress badge for syncing state -->

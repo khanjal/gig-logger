@@ -16,22 +16,26 @@
             [fab]="true" 
             fabStyle="mini"
             type="button"
+            [noBackground]="true"
+            icon="access_time"
+            [iconColor]="'var(--primary-500)'"
             (clicked)="setCurrentTime()"
             [disabled]="disabled"
             matTooltip="Set current time"
             class="current-time-btn">
-            <mat-icon>access_time</mat-icon>
         </app-base-button>
         <app-base-button 
             *ngIf="value"
             [fab]="true" 
             fabStyle="mini"
             type="button"
+            [noBackground]="true"
+            icon="clear"
+            [iconColor]="'var(--error-500)'"
             (clicked)="clearTime()"
             [disabled]="disabled"
             matTooltip="Clear time"
             class="clear-time-btn">
-            <mat-icon>clear</mat-icon>
         </app-base-button>
     </div>
 </mat-form-field>

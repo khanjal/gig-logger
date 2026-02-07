@@ -5,6 +5,7 @@ import { MatFormField, MatLabel, MatHint, MatError, MatFormFieldControl } from '
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { Subject, Subscription } from 'rxjs';
+
 import { subscribeControlStatus, firstErrorMessage, controlHasError } from './base-input.helpers';
 
 @Component({
@@ -18,114 +19,68 @@ import { subscribeControlStatus, firstErrorMessage, controlHasError } from './ba
   ]
 })
 export class BaseInputComponent implements ControlValueAccessor, MatFormFieldControl<any>, OnDestroy {
-/**
- * BaseInputComponent
- *
- * Reusable form input that implements `ControlValueAccessor` so it works with
- * both template-driven (`[(ngModel)]`) and reactive (`formControlName`) forms.
- *
- * Inputs:
- * - `label`, `placeholder`, `hint`, `error` : display text
- * - `type` : HTML input type (text, number, email, password, etc.)
- * - `icon`, `iconPosition` : optional Material icon and placement
- * - `disabled`, `required` : boolean flags (use property binding: `[disabled]="true"`)
- *
- * Example (Reactive form):
- * <mat-form-field appearance="outline">
- *   <mat-label>Amount</mat-label>
- *   <app-base-input formControlName="amount" [type]="'number'" [hint]="'USD'"></app-base-input>
- * </mat-form-field>
- *
- * Example (NgModel):
- * <app-base-input [(ngModel)]="value" label="Name"></app-base-input>
- */
-  @ViewChild('inputElement') inputElement?: MatInput;
-  /** MatFormFieldControl state changes */
-  stateChanges = new Subject<void>();
-  /** Unique id for the control */
-  @HostBinding() id = `app-base-input-${BaseInputComponent.nextId++}`;
+  // --- static / id ---
   static nextId = 0;
-  /** Control type used by form-field */
+  @HostBinding() id = `app-base-input-${BaseInputComponent.nextId++}`;
+
+  // --- ViewChild / state ---
+  @ViewChild('inputElement') inputElement?: MatInput;
+  stateChanges = new Subject<void>();
+
+  // --- public descriptor used by MatFormField ---
   controlType = 'app-base-input';
+
+  // --- focus/disabled state ---
   private _focused = false;
   get focused(): boolean { return this._focused; }
-  /** Whether the control is disabled */
-  @Input() get disabled(): boolean {
-    return this._disabled;
-  }
+
+  private _disabled = false;
+  @Input() get disabled(): boolean { return this._disabled; }
   set disabled(v: boolean) {
     this._disabled = v;
     this.stateChanges.next();
   }
-  private _disabled = false;
 
-  /** Input label */
+  // --- visual inputs ---
   @Input() label?: string;
-
-  /** Input type (text, email, password, number, etc.) */
   @Input() type: string = 'text';
-
-  /** Input placeholder */
   @Input() placeholder: string = '';
-
-  /** Helper/hint text */
   @Input() hint?: string;
-
-  /** Error message */
   @Input() error?: string;
-
-  /** Icon to display (Material icon name) */
   @Input() icon?: string;
-
-  /** Icon position (left/right) */
   @Input() iconPosition: 'left' | 'right' = 'right';
-
-
-  /** Required field indicator */
   @Input() required = false;
 
-  /** Value */
+  // --- value / touched tracking ---
   private _value: any;
   get value(): any { return this._value; }
-  set value(val: any) {
-    this._value = val;
-    this.stateChanges.next();
-  }
-  // Local touched tracking for non-reactive usage fallback
+  set value(val: any) { this._value = val; this.stateChanges.next(); }
   private _touched = false;
 
-  // ValueAccessor implementation
+  // --- ControlValueAccessor callbacks ---
   onChange: (value: any) => void = () => {};
   onTouched: () => void = () => {};
 
   private _statusSub?: Subscription;
 
+  /**
+   * Reusable form input implementing ControlValueAccessor + MatFormFieldControl.
+   * Works with template-driven and reactive forms.
+   */
   constructor(@Optional() @Self() public ngControl: NgControl, @Optional() private parentForm?: FormGroupDirective) {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
-      // subscribe to status changes so the form-field updates when validity changes
       this._statusSub = subscribeControlStatus(this.ngControl.control as FormControl, this.stateChanges);
     }
   }
 
-  writeValue(value: any): void {
-    this.value = value;
-  }
-
-  registerOnChange(fn: (value: any) => void): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-  }
+  // --- ControlValueAccessor ---
+  writeValue(value: any): void { this.value = value; }
+  registerOnChange(fn: (value: any) => void): void { this.onChange = fn; }
+  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
 
   onValueChange(newValue: any): void {
-    // Convert to number for number inputs
     if (this.type === 'number') {
       if (newValue === '' || newValue === null) {
         this.value = null;
@@ -141,7 +96,6 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
 
   onBlur(): void {
     this.onTouched();
-    // Explicitly mark the control as touched to trigger validation display
     if (this.ngControl && this.ngControl.control) {
       this.ngControl.control.markAsTouched();
     }
@@ -150,11 +104,9 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     this.stateChanges.next();
   }
 
-  onFocus(): void {
-    this._focused = true;
-    this.stateChanges.next();
-  }
+  onFocus(): void { this._focused = true; this.stateChanges.next(); }
 
+  // --- validation helpers / public API ---
   hasError(errorCode?: string): boolean {
     const control = this.ngControl?.control;
     const submitted = !!this.parentForm?.submitted;
@@ -162,18 +114,30 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     return controlHasError(control, errorCode, this.required, touched || this._touched, submitted, this.empty);
   }
 
-  // MatFormFieldControl methods
-  get empty(): boolean {
-    return this.value === null || this.value === undefined || this.value === '';
+  getErrorMessage(): string | null {
+    return firstErrorMessage(this.ngControl?.control, this.required, !!this._touched, !!this.parentForm?.submitted, this.empty);
   }
 
-  get shouldLabelFloat(): boolean {
-    return !this.empty;
+  get isRequired(): boolean {
+    if (this.required) return true;
+    try {
+      const control = this.ngControl?.control;
+      if (!control) return false;
+      if (control.validator) {
+        const errors = control.validator(control);
+        return !!(errors && errors['required']);
+      }
+    } catch {
+      // ignore
+    }
+    return false;
   }
 
-  setDescribedByIds(ids: string[]): void {
-    // noop for now
-  }
+  // --- MatFormFieldControl implementation ---
+  get empty(): boolean { return this.value === null || this.value === undefined || this.value === ''; }
+  get shouldLabelFloat(): boolean { return !this.empty; }
+
+  setDescribedByIds(ids: string[]): void { /* noop */ }
 
   onContainerClick(event: MouseEvent): void {
     try { (this.inputElement as any)?.focus(); } catch {}
@@ -187,40 +151,9 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
       const touched = control.touched;
       return !!(invalid && (touched || submitted));
     }
-
-    // Fallback: if no reactive control, consider required + touched + empty
     return !!(this.required && (this._touched || submitted) && this.empty);
   }
 
-  ngOnDestroy(): void {
-    this._statusSub?.unsubscribe();
-    this.stateChanges.complete();
-  }
-
-  /** Return a short validation message based on the control's first error */
-  getErrorMessage(): string | null {
-    return firstErrorMessage(this.ngControl?.control, this.required, !!this._touched, !!this.parentForm?.submitted, this.empty);
-  }
-
-  get isRequired(): boolean {
-    // Return the @Input required value if explicitly set
-    if (this.required) return true;
-    
-    // Otherwise, check if the control has a required validator
-    try {
-      const control = this.ngControl?.control;
-      if (!control) return false;
-      
-      // Test if the control has a required validator by checking for required error
-      // when the control is empty
-      if (control.validator) {
-        const errors = control.validator(control);
-        return !!(errors && errors['required']);
-      }
-    } catch {
-      // Silently fail and return false
-    }
-    
-    return false;
-  }
+  // --- lifecycle ---
+  ngOnDestroy(): void { this._statusSub?.unsubscribe(); this.stateChanges.complete(); }
 }
