@@ -28,12 +28,12 @@
           
           <div class="permission-actions">
             @if (locationPermission.canRequest) {
-            <app-base-button 
+            <app-base-rect-button 
               variant="primary"
               [icon]="'check'"
               (clicked)="requestLocation()">
               Enable
-            </app-base-button>
+            </app-base-rect-button>
             }
           </div>
         </div>
@@ -72,12 +72,12 @@
           
           <div class="permission-actions">
             @if (microphonePermission.canRequest) {
-              <app-base-button 
+              <app-base-rect-button 
                 variant="primary"
                 [icon]="'check'"
                 (clicked)="requestMicrophone()">
                 Enable
-              </app-base-button>
+              </app-base-rect-button>
             }
           </div>
         </div>
@@ -103,12 +103,12 @@
       microphonePermission.state === 'denied' || microphonePermission.state === 'granted'
     ) {
       <div class="permissions-footer">
-      <app-base-button 
+      <app-base-rect-button 
         variant="primary"
         [icon]="'settings'"
         (clicked)="openBrowserSettings()">
         Browser Settings
-      </app-base-button>
+      </app-base-rect-button>
       </div>
     }
     <div class="permissions-footer">

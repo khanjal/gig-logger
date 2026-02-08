@@ -6,12 +6,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
-import { BaseButtonComponent, BaseInputComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 
 @Component({
   selector: 'app-sheet-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatProgressSpinnerModule, BaseButtonComponent, BaseInputComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatProgressSpinnerModule, BaseRectButtonComponent, BaseInputComponent],
   templateUrl: './sheet-create.component.html',
   styleUrl: './sheet-create.component.scss'
 })

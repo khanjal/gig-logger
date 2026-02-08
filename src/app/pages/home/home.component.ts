@@ -6,14 +6,14 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon, BaseButtonComponent]
+    imports: [CommonModule, MatIcon, BaseRectButtonComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);

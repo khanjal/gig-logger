@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';
-import { BaseButtonComponent, BaseCardComponent } from '@components/base';
+import { BaseRectButtonComponent, BaseCardComponent } from '@components/base';
 
 const MODULES: any[] = [
   CommonModule,
   FormsModule,
   ReactiveFormsModule,
-  BaseButtonComponent,
+  BaseRectButtonComponent,
   BaseCardComponent,
 ];
 

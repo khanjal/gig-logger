@@ -34,7 +34,8 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
-import { BaseButtonComponent, BaseCardComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseCardComponent } from '@components/base/base-card/base-card.component';
 
 @Component({
     selector: 'app-setup',
@@ -55,7 +56,7 @@ import { BaseButtonComponent, BaseCardComponent } from '@components/base';
       AuthStatusComponent,
       PermissionsComponent,
       LocationOverrideComponent,
-      BaseButtonComponent,
+      BaseRectButtonComponent,
       BaseCardComponent
   ]
 })

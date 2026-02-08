@@ -12,7 +12,7 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
 import { TruncatePipe } from "@pipes/truncate.pipe";
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
   selector: 'app-sheet-list',
@@ -27,7 +27,7 @@ import { BaseButtonComponent } from '@components/base';
     MatInputModule,
     MatProgressSpinnerModule,
     TruncatePipe,
-    BaseButtonComponent
+    BaseRectButtonComponent
 ],
   templateUrl: './sheet-list.component.html',
   styleUrl: './sheet-list.component.scss'

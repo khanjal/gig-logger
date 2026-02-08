@@ -8,17 +8,17 @@
     <app-google-address [(address)]="address"></app-google-address>
 
     <div class="row-flex">
-        <app-base-button 
+        <app-base-rect-button 
           variant="secondary"
           [icon]="falseIcon"
           (clicked)="onDismiss()">
           {{falseText}}
-        </app-base-button>
-        <app-base-button 
+        </app-base-rect-button>
+        <app-base-rect-button 
           variant="primary"
           [icon]="trueIcon"
           (clicked)="onConfirm()">
           {{trueText}}
-        </app-base-button>
+        </app-base-rect-button>
     </div>
 </div>

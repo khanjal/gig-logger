@@ -3,7 +3,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { CommonModule } from '@angular/common';
-import { BaseButtonComponent, BaseCardComponent } from '@components/base';
+import { BaseCardComponent, BaseRectButtonComponent } from '@components/base';
 import { MatIcon } from '@angular/material/icon';
 
 type PermissionState = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'checking';
@@ -22,7 +22,7 @@ interface PermissionStatus {
   templateUrl: './permissions.component.html',
   styleUrls: ['./permissions.component.scss'],
   standalone: true,
-  imports: [CommonModule, BaseCardComponent, BaseButtonComponent, MatIcon, MatDividerModule]
+  imports: [CommonModule, BaseCardComponent, BaseRectButtonComponent, MatIcon, MatDividerModule]
 })
 export class PermissionsComponent implements OnInit {
   locationPermission: PermissionStatus = {

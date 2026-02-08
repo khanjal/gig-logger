@@ -15,12 +15,12 @@
                         <p>A new version of the app is ready. Update now for the latest features and improvements.</p>
                     </div>
                     <div class="update-actions">
-                        <app-base-button variant="primary" [icon]="'update'" iconPosition="left" (clicked)="updateApp()">
+                        <app-base-rect-button variant="primary" [icon]="'update'" iconPosition="left" (clicked)="updateApp()">
                             Update Now
-                        </app-base-button>
-                        <app-base-button variant="outlined" (clicked)="dismissUpdate()">
+                        </app-base-rect-button>
+                        <app-base-rect-button variant="outlined" (clicked)="dismissUpdate()">
                             Later
-                        </app-base-button>
+                        </app-base-rect-button>
                     </div>
                 </div>
             </div>
@@ -170,7 +170,7 @@
 
             <!-- Install Button (for supported browsers) -->
             <div class="install-button-container" *ngIf="showInstallButton">
-                    <app-base-button 
+                    <app-base-rect-button 
                         variant="primary" 
                         [icon]="'download'" 
                         iconPosition="left"
@@ -178,7 +178,7 @@
                         (clicked)="installApp()"
                     >
                         Install App
-                    </app-base-button>
+                    </app-base-rect-button>
                 <p class="install-note">Click to install directly to your device</p>
             </div>
         </div>

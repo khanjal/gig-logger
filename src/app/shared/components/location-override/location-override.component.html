@@ -38,15 +38,14 @@
             <mat-icon class="!text-base !w-5 !h-5">my_location</mat-icon>
             Your Real Location
           </h3>
-          <app-base-button
-            [fab]="true"
+          <app-base-fab-button
             fabStyle="mini"
             [icon]="'refresh'"
             [loading]="gettingLocation"
             [disabled]="gettingLocation"
             aria-label="Refresh current location"
             (clicked)="getCurrentRealLocation()"
-          ></app-base-button>
+          ></app-base-fab-button>
         </div>
         <div *ngIf="currentRealLocation" class="text-sm text-gray-700 dark:text-gray-300">
           <div class="grid grid-cols-2 gap-2">
@@ -59,7 +58,7 @@
               <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lng) }}</span>
             </div>
           </div>
-          <app-base-button 
+          <app-base-rect-button 
             *ngIf="enabled"
             variant="outlined"
             [icon]="'gps_fixed'"
@@ -69,7 +68,7 @@
             class="mt-3"
           >
             Use This Location as Override
-          </app-base-button>
+          </app-base-rect-button>
         </div>
         <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-gray-500 dark:text-gray-400">
           Location unavailable - click refresh to try again
@@ -149,14 +148,14 @@
 
         <!-- Reset Button -->
         <div class="flex justify-end">
-          <app-base-button 
+          <app-base-rect-button 
             variant="outlined"
             [icon]="'restart_alt'"
             iconPosition="left"
             (clicked)="resetToDefaults()"
           >
             Reset to Defaults
-          </app-base-button>
+          </app-base-rect-button>
         </div>
       </div>
     </div>

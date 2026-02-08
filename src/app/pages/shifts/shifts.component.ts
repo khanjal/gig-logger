@@ -12,14 +12,14 @@ import { NgClass, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 
 @Component({
     selector: 'app-shifts',
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent, BaseButtonComponent]
+    imports: [NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent]
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;

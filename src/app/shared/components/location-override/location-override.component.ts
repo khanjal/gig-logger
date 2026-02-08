@@ -8,7 +8,7 @@ import { MatSelect, MatOption } from '@angular/material/select';
 import { MatOptgroup } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MockLocationService, PresetLocation } from '@services/mock-location.service';
-import { BaseButtonComponent, BaseCardComponent, BaseInputComponent } from '@components/base';
+import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-location-override',
@@ -17,7 +17,8 @@ import { BaseButtonComponent, BaseCardComponent, BaseInputComponent } from '@com
     CommonModule,
     FormsModule,
     BaseCardComponent,
-    BaseButtonComponent,
+    BaseFabButtonComponent,
+    BaseRectButtonComponent,
     BaseInputComponent,
     MatSlideToggle,
     MatIcon,

@@ -16,8 +16,8 @@
       <div class="creating-sheet-text">Creating sheet...</div>
   </div>
 
-  <div *ngIf="!saving" class="row-flex pt-2" style="justify-content: space-between;">
-      <app-base-button variant="danger" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto">Cancel</app-base-button>
-      <app-base-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid || saving" [loading]="saving" (clicked)="createSheet()" class="ml-auto">Create</app-base-button>
-  </div>
+    <div *ngIf="!saving" class="row-flex pt-2" style="justify-content: space-between;">
+      <app-base-rect-button variant="danger" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto">Cancel</app-base-rect-button>
+      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid || saving" [loading]="saving" (clicked)="createSheet()" class="ml-auto">Create</app-base-rect-button>
+    </div>
 </div>

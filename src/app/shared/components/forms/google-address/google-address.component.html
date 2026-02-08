@@ -11,8 +11,9 @@
               (focus)="onInputFocus()"
               (blur)="onInputBlur()"
               #address />
-          <app-base-button type="button" [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'clear'" [iconColor]="'var(--error-500)'" *ngIf="address.value" color="primary" matSuffix aria-label="Clear Address" (clicked)="addressForm.controls.address.setValue('')">
-          </app-base-button>
+          <button type="button" *ngIf="address.value" matSuffix aria-label="Clear Address" appBaseButton [appBaseButtonFab]="true" appBaseButtonFabStyle="mini" (appBaseButtonClicked)="addressForm.controls.address.setValue('')" class="h-8 w-8 flex items-center justify-center">
+            <mat-icon class="text-[var(--error-500)]">clear</mat-icon>
+          </button>
       </mat-form-field>
   </form>
   
