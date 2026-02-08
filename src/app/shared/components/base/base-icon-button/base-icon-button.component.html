@@ -1,12 +1,11 @@
-<button
-  appBaseButton
-  [appBaseButtonVariant]="'icon'"
-  [appBaseButtonLoading]="loading"
-  [appBaseButtonDisabled]="disabled"
-  [appBaseButtonClass]="class"
-  (appBaseButtonClicked)="handleClick()"
+<app-base-button
+  variant="icon"
+  [icon]="icon"
+  [iconColor]="iconColor"
+  [loading]="loading"
+  [disabled]="disabled"
+
   [type]="type"
-  class="inline-flex items-center"
->
-  <mat-icon *ngIf="icon" [ngStyle]="{ 'color': iconColor }">{{ icon }}</mat-icon>
-</button>
+  [ngClass]="class"
+  (clicked)="handleClick()">
+</app-base-button>

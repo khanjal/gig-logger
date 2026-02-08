@@ -1,17 +1,3 @@
-<button
-  appBaseButton
-  [appBaseButtonVariant]="variant"
-  [appBaseButtonFab]="fab"
-  [appBaseButtonFabStyle]="fabStyle"
-  [appBaseButtonLoading]="loading"
-  [appBaseButtonDisabled]="disabled"
-  [appBaseButtonClass]="(noBackground ? 'btn-no-background' : '') + ' btn-' + size"
-  (appBaseButtonClicked)="clicked.emit()"
-  type="button"
-  class="inline-flex items-center"
-  [attr.title]="title"
-  [attr.aria-label]="ariaLabel"
->
-  <mat-icon *ngIf="icon" [ngStyle]="{ 'color': iconColor }">{{ icon }}</mat-icon>
+<app-base-button [noBackground]="noBackground" [fab]="fab" [fabStyle]="fabStyle" [icon]="icon" [iconColor]="iconColor" [size]="size" [disabled]="disabled" [loading]="loading" [attr.title]="title" [attr.aria-label]="ariaLabel" (clicked)="clicked.emit()">
   <ng-content></ng-content>
-</button>
+</app-base-button>

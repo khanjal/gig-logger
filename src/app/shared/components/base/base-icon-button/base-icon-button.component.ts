@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
-import { BaseButtonDirective } from '@directives/base-button.directive';
+import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
 
 @Component({
   selector: 'app-base-icon-button',
   standalone: true,
-  imports: [CommonModule, MatIcon, BaseButtonDirective],
+  imports: [CommonModule, BaseButtonComponent],
   templateUrl: './base-icon-button.component.html'
 })
 export class BaseIconButtonComponent {

@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
-import { BaseButtonDirective } from '@directives/base-button.directive';
+import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
 
 @Component({
   selector: 'app-base-fab-button',
   standalone: true,
-  imports: [CommonModule, MatIcon, BaseButtonDirective],
+  imports: [CommonModule, BaseButtonComponent],
   templateUrl: './base-fab-button.component.html'
 })
+
 export class BaseFabButtonComponent {
   @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
   @Input() fabStyle: 'regular' | 'mini' = 'regular';

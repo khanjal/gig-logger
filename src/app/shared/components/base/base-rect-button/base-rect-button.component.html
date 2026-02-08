@@ -1,13 +1,3 @@
-<button
-  appBaseButton
-  [appBaseButtonVariant]="variant"
-  [appBaseButtonLoading]="loading"
-  [appBaseButtonDisabled]="disabled"
-  [appBaseButtonClass]="(fullWidth ? ' btn-full-width' : '')"
-  (appBaseButtonClicked)="clicked.emit()"
-  type="button"
-  class="inline-flex items-center gap-2"
->
-  <mat-icon *ngIf="icon" [ngStyle]="{ 'color': iconColor }">{{ icon }}</mat-icon>
+<app-base-button [variant]="variant" [icon]="icon" [iconColor]="iconColor" [iconPosition]="'left'" [disabled]="disabled" [loading]="loading" [fullWidth]="fullWidth" (clicked)="clicked.emit()">
   <ng-content></ng-content>
-</button>
+</app-base-button>
