@@ -108,13 +108,13 @@
       #syncOverlayOrigin="cdkOverlayOrigin"
       [matTooltip]="getTooltipText()"
       matTooltipPosition="below">
-      <app-base-fab-button
+      <app-base-icon-button
         [icon]="getStatusIcon()"
         [iconColor]="'currentColor'"
         (clicked)="toggleMenu()"
         class="sync-button text-inverse hover:bg-white/10 transition"
         [class.spinning]="syncState?.status === 'syncing'">
-      </app-base-fab-button>
+      </app-base-icon-button>
       <!-- Progress badge for syncing state -->
       <span 
         *ngIf="syncState?.status === 'syncing' && (syncState?.totalItems || 0) > 0"
