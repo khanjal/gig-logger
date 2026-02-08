@@ -7,7 +7,7 @@ import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
-import { BaseButtonDirective } from '../../../directives/base-button.directive';
+import { BaseButtonDirective } from '@directives/base-button.directive';
 
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
