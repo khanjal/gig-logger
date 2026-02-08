@@ -300,9 +300,11 @@
       </app-base-button>
     </div>
     <!-- Menu Button -->
-    <button mat-icon-button 
-            class="w-10 h-10 bg-surface-2 text-primary border border-soft rounded-lg hover:bg-surface-3 transition" 
-            [matMenuTriggerFor]="menu" 
+    <button mat-icon-button
+            appBaseButton
+            appBaseButtonVariant="icon"
+            appBaseButtonClass="w-10 h-10 bg-surface-2 text-primary border border-soft rounded-lg hover:bg-surface-3 transition"
+            [matMenuTriggerFor]="menu"
             title="More options">
       <mat-icon>more_vert</mat-icon>
     </button>
