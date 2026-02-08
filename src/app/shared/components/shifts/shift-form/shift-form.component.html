@@ -119,20 +119,48 @@
     </div>
     <div class="flex flex-row items-center justify-between gap-2 mt-6">
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="warn" type="button" (click)="formReset()">
-          <mat-icon>refresh</mat-icon> Reset
-        </button>
-        <button *ngIf="rowId" mat-fab extended color="warn" type="button" (click)="close()">
-          <mat-icon>cancel</mat-icon> Cancel
-        </button>
+        <app-base-button *ngIf="!rowId"
+          [fab]="true"
+          [extended]="true"
+          variant="danger"
+          type="button"
+          (clicked)="formReset()"
+          [icon]="'refresh'">
+          Reset
+        </app-base-button>
+
+        <app-base-button *ngIf="rowId"
+          [fab]="true"
+          [extended]="true"
+          variant="danger"
+          type="button"
+          (clicked)="close()"
+          [icon]="'cancel'">
+          Cancel
+        </app-base-button>
       </div>
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
-          <mat-icon>add</mat-icon> Store
-        </button>
-        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
-          <mat-icon>save</mat-icon> Update
-        </button>
+        <app-base-button *ngIf="!rowId"
+          [fab]="true"
+          [extended]="true"
+          variant="primary"
+          type="button"
+          (clicked)="addShift()"
+          [disabled]="shiftForm.invalid"
+          [icon]="'add'">
+          Store
+        </app-base-button>
+
+        <app-base-button *ngIf="rowId"
+          [fab]="true"
+          [extended]="true"
+          variant="primary"
+          type="button"
+          (clicked)="editShift()"
+          [disabled]="shiftForm.invalid"
+          [icon]="'save'">
+          Update
+        </app-base-button>
       </div>
     </div>
   </form>

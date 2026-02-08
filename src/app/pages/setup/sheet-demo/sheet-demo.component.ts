@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { MatFabButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -14,9 +14,9 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
   standalone: true,
   imports: [
     CommonModule,
-    MatFabButton,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule, 
+    BaseButtonComponent
   ],
   templateUrl: './sheet-demo.component.html',
   styleUrl: './sheet-demo.component.scss'

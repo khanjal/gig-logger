@@ -8,12 +8,12 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { ActionEnum } from '@enums/action.enum';
-import { updateAction } from '@utils/action.utils';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { UnitHelper } from '@helpers/unit.helper';
+import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
 
 @Component({
     selector: 'app-shifts-quick-view',
@@ -30,6 +30,7 @@ import { UnitHelper } from '@helpers/unit.helper';
         DatePipe,
         NoSecondsPipe,
         DurationFormatPipe,
+        BaseButtonComponent,
     ],
 })
 export class ShiftsQuickViewComponent {
