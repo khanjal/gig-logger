@@ -19,7 +19,7 @@
 </form>
 
 <div class="row-flex">
-    <app-base-button variant="primary" [icon]="'add'" [disabled]="!sheetForm.valid || saving" [loading]="saving" (clicked)="addSheet()">Add</app-base-button>
-    <app-base-button variant="secondary" [icon]="'adjust'" [disabled]="saving" [loading]="saving" (clicked)="addDemo()" *ngIf="false">Demo</app-base-button>
-    <app-base-button variant="danger" [icon]="'refresh'" (clicked)="sheetForm.reset()">Reset</app-base-button>
+    <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetForm.valid || saving" [loading]="saving" (clicked)="addSheet()">Add</app-base-rect-button>
+    <app-base-rect-button variant="secondary" [icon]="'adjust'" [disabled]="saving" [loading]="saving" (clicked)="addDemo()" *ngIf="false">Demo</app-base-rect-button>
+    <app-base-rect-button variant="danger" [icon]="'refresh'" (clicked)="sheetForm.reset()">Reset</app-base-rect-button>
 </div>

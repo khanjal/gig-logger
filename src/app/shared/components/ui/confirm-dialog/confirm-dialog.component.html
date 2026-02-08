@@ -7,17 +7,17 @@
         <p [innerHTML]="message"></p>
     </div>
     <div mat-dialog-actions class="dialog-actions">
-        <app-base-button 
+        <app-base-rect-button 
           [variant]="falseColor === 'warn' ? 'danger' : 'secondary'"
           [icon]="falseIcon"
           (clicked)="onDismiss()">
           {{falseText}}
-        </app-base-button>
-        <app-base-button 
+        </app-base-rect-button>
+        <app-base-rect-button 
           [variant]="trueColor === 'primary' ? 'primary' : 'secondary'"
           [icon]="trueIcon"
           (clicked)="onConfirm()">
           {{trueText}}
-        </app-base-button>
+        </app-base-rect-button>
     </div>
 </div>

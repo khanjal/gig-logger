@@ -66,12 +66,12 @@
     <!-- Payment Information -->
     <div>
       <div class="flex items-center gap-1 justify-between w-full mb-3">
-        <app-base-button [fab]="true" fabStyle="mini" [variant]="showAdvancedPay ? 'secondary' : 'primary'" [icon]="'account_balance'" (clicked)="toggleAdvancedPay()" class="toggle-button mb-1" [class.toggle-button--active]="showAdvancedPay"></app-base-button>
+        <app-base-toggle-button [active]="showAdvancedPay" [icon]="'account_balance'" (clicked)="toggleAdvancedPay()" class="toggle-button mb-1" [class.toggle-button--active]="showAdvancedPay"></app-base-toggle-button>
         <div class="flex flex-1 justify-center gap-1 min-w-0 max-w-full">
           <app-base-input class="flex-1 min-w-0 ml-2" label="Pay" type="number" placeholder="4.75" formControlName="pay"></app-base-input>
           <app-base-input class="flex-1 min-w-0 mr-2" label="Distance" type="number" placeholder="8.04" formControlName="distance"></app-base-input>
         </div>
-        <app-base-button [fab]="true" fabStyle="mini" [variant]="showOdometer ? 'secondary' : 'primary'" [icon]="'drive_eta'" (clicked)="toggleOdometer()" class="toggle-button mb-1" [class.toggle-button--active]="showOdometer"></app-base-button>
+        <app-base-toggle-button [active]="showOdometer" [icon]="'drive_eta'" (clicked)="toggleOdometer()" class="toggle-button mb-1" [class.toggle-button--active]="showOdometer"></app-base-toggle-button>
       </div>
       <div class="flex gap-1 mb-3" *ngIf="showAdvancedPay">
         <app-base-input class="flex-1 min-w-[90px]" label="Tip" type="number" placeholder="3.5" formControlName="tip"></app-base-input>
@@ -95,7 +95,7 @@
           (valueChanged)="showNameAddresses()"
           (auxiliaryData)="setDropoffAddress($event)">
         </app-search-input>
-        <app-base-button [fab]="true" fabStyle="mini" [variant]="showPickupAddress ? 'secondary' : 'primary'" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-button>
+        <app-base-toggle-button [active]="showPickupAddress" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-toggle-button>
       </div>
       <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="mb-3">
         <mat-accordion>
@@ -106,7 +106,7 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="flex flex-col gap-1">
-              <app-base-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-button>
+              <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
             </div>
           </mat-expansion-panel>
         </mat-accordion>
@@ -135,7 +135,7 @@
             <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
             </div>
-            <app-base-button *ngIf="delivery.address" variant="outlined" class="address-button" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-button>
+            <app-base-rect-button *ngIf="delivery.address" variant="outlined" class="address-button" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
         </mat-expansion-panel>
@@ -169,7 +169,7 @@
             <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
             </div>
-            <app-base-button *ngIf="delivery.name" variant="outlined" class="name-button" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-button>
+            <app-base-rect-button *ngIf="delivery.name" variant="outlined" class="name-button" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
         </mat-expansion-panel>
@@ -198,7 +198,7 @@
     <div>
       <div class="flex items-center gap-1 mb-3">
         <app-base-input class="w-full mr-2" label="Note" type="text" formControlName="note"></app-base-input>
-        <app-base-button [fab]="true" fabStyle="mini" [variant]="showOrder ? 'secondary' : 'primary'" [icon]="'business'" (clicked)="toggleOrder()" class="toggle-button mb-1" [class.toggle-button--active]="showOrder"></app-base-button>
+        <app-base-toggle-button [active]="showOrder" [icon]="'business'" (clicked)="toggleOrder()" class="toggle-button mb-1" [class.toggle-button--active]="showOrder"></app-base-toggle-button>
       </div>
       <div class="flex gap-1 mb-3" *ngIf="showOrder">
         <app-base-input class="flex-1 min-w-[90px]" label="Apt/Unit/Room" type="text" placeholder="104" formControlName="endUnit"></app-base-input>
@@ -218,10 +218,10 @@
   <!-- Form Actions -->
   <div class="flex flex-col gap-4 mt-6">
     <div class="flex w-full items-center justify-between gap-4">
-      <app-base-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()">Reset</app-base-button>
-      <app-base-button *ngIf="data?.id" variant="danger" [icon]="'cancel'" (clicked)="close()">Cancel</app-base-button>
-      <app-base-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid">Store</app-base-button>
-      <app-base-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid">Update</app-base-button>
+      <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()">Reset</app-base-rect-button>
+      <app-base-rect-button *ngIf="data?.id" variant="danger" [icon]="'cancel'" (clicked)="close()">Cancel</app-base-rect-button>
+      <app-base-rect-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid">Store</app-base-rect-button>
+      <app-base-rect-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid">Update</app-base-rect-button>
     </div>
   </div>
 </div>

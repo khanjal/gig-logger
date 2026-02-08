@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -12,11 +12,11 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 @Component({
   selector: 'app-sheet-demo',
   standalone: true,
-  imports: [
+    imports: [
     CommonModule,
     MatIconModule,
     MatProgressSpinnerModule, 
-    BaseButtonComponent
+    BaseFabButtonComponent
   ],
   templateUrl: './sheet-demo.component.html',
   styleUrl: './sheet-demo.component.scss'

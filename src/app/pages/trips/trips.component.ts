@@ -35,14 +35,14 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 
 @Component({
     selector: 'app-trip',
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseButtonComponent]
+    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseFabButtonComponent]
 })
 
 export class TripComponent implements OnInit, OnDestroy {

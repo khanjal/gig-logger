@@ -11,31 +11,31 @@
     <ngx-mat-timepicker #timePicker (timeSet)="onTimeChange($event)"></ngx-mat-timepicker>
     
     <div matSuffix class="time-actions">
-        <app-base-button 
+        <app-base-field-button 
             *ngIf="!value"
             [fab]="true" 
             fabStyle="mini"
             type="button"
             [noBackground]="true"
-            icon="access_time"
+            [icon]="'access_time'"
             [iconColor]="'var(--primary-500)'"
             (clicked)="setCurrentTime()"
             [disabled]="disabled"
             matTooltip="Set current time"
             class="current-time-btn">
-        </app-base-button>
-        <app-base-button 
+        </app-base-field-button>
+        <app-base-field-button 
             *ngIf="value"
             [fab]="true" 
             fabStyle="mini"
             type="button"
             [noBackground]="true"
-            icon="clear"
+            [icon]="'clear'"
             [iconColor]="'var(--error-500)'"
             (clicked)="clearTime()"
             [disabled]="disabled"
             matTooltip="Clear time"
             class="clear-time-btn">
-        </app-base-button>
+        </app-base-field-button>
     </div>
 </mat-form-field>

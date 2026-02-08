@@ -8,14 +8,14 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
   selector: 'app-sheet-link',
   standalone: true,
     imports: [
     CommonModule,
-    BaseButtonComponent
+    BaseRectButtonComponent
     ],
   templateUrl: './sheet-link.component.html',
   styleUrl: './sheet-link.component.scss'

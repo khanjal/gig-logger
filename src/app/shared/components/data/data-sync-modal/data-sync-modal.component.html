@@ -23,10 +23,10 @@
         <!-- Button pinned at the bottom -->
         <div class="flex gap-2 mt-auto">
             @if (syncState.canContinue) {
-                <app-base-button variant="secondary" [fullWidth]="true" (clicked)="continueLoad()">Continue</app-base-button>
-                <app-base-button variant="primary" [fullWidth]="true" (clicked)="retryLoad()">Retry</app-base-button>
+                <app-base-rect-button variant="secondary" [fullWidth]="true" (clicked)="continueLoad()">Continue</app-base-rect-button>
+                <app-base-rect-button variant="primary" [fullWidth]="true" (clicked)="retryLoad()">Retry</app-base-rect-button>
             }
-            <app-base-button variant="danger" [fullWidth]="true" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</app-base-button>
+            <app-base-rect-button variant="danger" [fullWidth]="true" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</app-base-rect-button>
         </div>
     </div>
 </div>

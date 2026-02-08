@@ -4,12 +4,12 @@ import { LoggerService } from '@services/logger.service';
 import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
 import { Inject } from '@angular/core';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
   selector: 'app-service-worker-status',
   standalone: true,
-  imports: [CommonModule, BaseButtonComponent],
+  imports: [CommonModule, BaseRectButtonComponent],
   templateUrl: './service-worker-status.component.html',
 })
 export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {

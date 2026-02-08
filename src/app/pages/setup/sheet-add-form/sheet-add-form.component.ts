@@ -4,14 +4,15 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { environment } from "src/environments/environment";
 import { CommonModule } from '@angular/common';
-import { BaseButtonComponent, BaseInputComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 
 @Component({
     selector: 'sheet-add-form',
     templateUrl: './sheet-add-form.component.html',
     styleUrls: ['./sheet-add-form.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseButtonComponent, BaseInputComponent]
+    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseRectButtonComponent, BaseInputComponent]
 })
 export class SheetAddFormComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();

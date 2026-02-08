@@ -73,7 +73,7 @@
           </mat-icon>
           Activity Log ({{ messages.length }})
         </span>
-        <app-base-button 
+        <app-base-field-button 
           [fab]="true" 
           fabStyle="mini"
           [noBackground]="true"
@@ -82,7 +82,7 @@
           (clicked)="clearMessages()"
           class="clear-button flex h-8 w-8 items-center justify-center"
           matTooltip="Clear log">
-        </app-base-button>
+        </app-base-field-button>
       </div>
 
       <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1" *ngIf="showDetailedView">

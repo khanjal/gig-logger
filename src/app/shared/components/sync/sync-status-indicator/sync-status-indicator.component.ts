@@ -12,8 +12,9 @@ import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
-import { ThemePreference, ThemeService } from '@services/theme.service';
+import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
 import { BaseButtonComponent } from '@components/base';
+import { ThemePreference, ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -24,6 +25,7 @@ import { BaseButtonComponent } from '@components/base';
     MatTooltipModule,
     OverlayModule,
     QuickControlsComponent,
+    BaseFieldButtonComponent,
     BaseButtonComponent
   ],
   templateUrl: './sync-status-indicator.component.html',

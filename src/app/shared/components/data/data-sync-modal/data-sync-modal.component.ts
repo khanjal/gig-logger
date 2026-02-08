@@ -22,7 +22,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { LoggerService } from '@services/logger.service';
 import { NgFor, NgClass } from '@angular/common';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 // Define types for better type safety
 type SyncType = 'save' | 'load';
@@ -53,7 +53,7 @@ interface DataSyncConfig {
     templateUrl: './data-sync-modal.component.html',
     styleUrls: ['./data-sync-modal.component.scss'],
     standalone: true,
-    imports: [NgFor, NgClass, BaseButtonComponent]
+    imports: [NgFor, NgClass, BaseRectButtonComponent]
 })
 export class DataSyncModalComponent implements OnInit, OnDestroy {
     @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;

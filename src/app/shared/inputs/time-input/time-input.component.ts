@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { BaseButtonComponent } from '@components/base';
+import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
 
 @Component({
   selector: 'app-time-input',
@@ -18,7 +18,7 @@ import { BaseButtonComponent } from '@components/base';
     MatIconModule,
     MatTooltipModule,
     NgxMatTimepickerModule,
-    BaseButtonComponent
+    BaseFieldButtonComponent
   ],
   templateUrl: './time-input.component.html',
   styleUrls: ['./time-input.component.scss'],

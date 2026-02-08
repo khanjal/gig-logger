@@ -13,16 +13,16 @@
 </div>
 <div class="flex flex-row items-center gap-4">
   <div class="flex-1">
-    <app-base-button *ngIf="showInstallButton" variant="secondary" [icon]="'get_app'" [fullWidth]="true" (clicked)="installApp()">
+    <app-base-rect-button *ngIf="showInstallButton" variant="secondary" [icon]="'get_app'" [fullWidth]="true" (clicked)="installApp()">
       Install App
-    </app-base-button>
+    </app-base-rect-button>
   </div>
   <div class="flex-1 flex justify-end gap-2">
-    <app-base-button *ngIf="isUpdateAvailable" variant="primary" [icon]="'update'" (clicked)="updateApp()">
+    <app-base-rect-button *ngIf="isUpdateAvailable" variant="primary" [icon]="'update'" (clicked)="updateApp()">
       Update App
-    </app-base-button>
-    <app-base-button *ngIf="!isUpdateAvailable" variant="primary" [icon]="'refresh'" [disabled]="!isOnline" [title]="!isOnline ? 'Cache reset requires internet connectivity' : 'Reset cached data'" (clicked)="forceCacheUpdate()">
+    </app-base-rect-button>
+    <app-base-rect-button *ngIf="!isUpdateAvailable" variant="primary" [icon]="'refresh'" [disabled]="!isOnline" [title]="!isOnline ? 'Cache reset requires internet connectivity' : 'Reset cached data'" (clicked)="forceCacheUpdate()">
       Reset Cache
-    </app-base-button>
+    </app-base-rect-button>
   </div>
 </div>

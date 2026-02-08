@@ -2,14 +2,14 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { CommonModule } from '@angular/common';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
     selector: 'app-confirm-dialog',
     templateUrl: './confirm-dialog.component.html',
     styleUrls: ['./confirm-dialog.component.scss'],
     standalone: true,
-    imports: [CommonModule, BaseButtonComponent]
+    imports: [CommonModule, BaseRectButtonComponent]
 })
 export class ConfirmDialogComponent {
   title!: string;

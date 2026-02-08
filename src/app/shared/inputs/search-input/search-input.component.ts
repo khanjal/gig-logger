@@ -14,7 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Application-specific imports - Components
-import { BaseButtonComponent } from '@components/base';
+import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -53,7 +53,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule, BaseButtonComponent],
+  imports: [CommonModule, FocusScrollDirective, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule, BaseFieldButtonComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
