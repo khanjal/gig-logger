@@ -13,24 +13,16 @@
 </div>
 <div class="flex flex-row items-center gap-4">
   <div class="flex-1">
-    <button *ngIf="showInstallButton" mat-fab extended color="accent" (click)="installApp()" class="flex items-center gap-2">
-      <mat-icon>get_app</mat-icon> Install App
-    </button>
+    <app-base-rect-button *ngIf="showInstallButton" variant="secondary" [icon]="'get_app'" [fullWidth]="true" (clicked)="installApp()">
+      Install App
+    </app-base-rect-button>
   </div>
   <div class="flex-1 flex justify-end gap-2">
-    <button *ngIf="isUpdateAvailable" mat-fab extended color="primary" (click)="updateApp()" class="flex items-center gap-2">
-      <mat-icon>update</mat-icon> Update App
-    </button>
-    <button *ngIf="!isUpdateAvailable" 
-      mat-fab 
-      extended 
-      color="primary" 
-      (click)="forceCacheUpdate()"
-      [disabled]="!isOnline"
-      [title]="!isOnline ? 'Cache reset requires internet connectivity' : 'Reset cached data'"
-      class="flex items-center gap-2"
-    >
-      <mat-icon>refresh</mat-icon> Reset Cache
-    </button>
+    <app-base-rect-button *ngIf="isUpdateAvailable" variant="primary" [icon]="'update'" (clicked)="updateApp()">
+      Update App
+    </app-base-rect-button>
+    <app-base-rect-button *ngIf="!isUpdateAvailable" variant="primary" [icon]="'refresh'" [disabled]="!isOnline" [title]="!isOnline ? 'Cache reset requires internet connectivity' : 'Reset cached data'" (clicked)="forceCacheUpdate()">
+      Reset Cache
+    </app-base-rect-button>
   </div>
 </div>

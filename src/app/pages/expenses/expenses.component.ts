@@ -10,10 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
+import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
+import { BaseFabButtonComponent } from '@components/base';
+import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatMenuModule } from '@angular/material/menu';
 import { ExpensesService } from '@services/sheets/expenses.service';
@@ -36,14 +36,14 @@ import { updateAction } from '@utils/action.utils';
     MatInputModule,
     MatSelectModule,
     MatOptionModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatDatepickerToggle,
     MatIconModule,
     OrderByPipe,
     MatAutocompleteModule,
     GroupByMonthPipe,
-    MatMenuModule
+    MatMenuModule,
+    BaseDatepickerComponent,
+    BaseFabButtonComponent,
+    BaseInputComponent
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
@@ -87,7 +87,7 @@ export class ExpensesComponent implements OnInit {
     this.maxRowId = await this.expensesService.getMaxRowId() || 1;
     const nextRowId = this.maxRowId + 1;
     this.expenseForm = this.fb.group({
-      rowId: [nextRowId],
+      rowId: [{ value: nextRowId, disabled: true }],
       date: [this.getToday(), Validators.required],
       name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],

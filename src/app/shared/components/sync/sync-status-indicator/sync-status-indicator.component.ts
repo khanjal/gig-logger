@@ -1,9 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -14,6 +12,7 @@ import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
+import { BaseFieldButtonComponent, BaseFabButtonComponent } from '@components/base';
 import { ThemePreference, ThemeService } from '@services/theme.service';
 
 @Component({
@@ -22,11 +21,11 @@ import { ThemePreference, ThemeService } from '@services/theme.service';
   imports: [
     CommonModule,
     MatIconModule,
-    MatButtonModule,
     MatTooltipModule,
-    MatBadgeModule,
     OverlayModule,
-    QuickControlsComponent
+    QuickControlsComponent,
+    BaseFieldButtonComponent,
+    BaseFabButtonComponent
   ],
   templateUrl: './sync-status-indicator.component.html',
   styleUrls: ['./sync-status-indicator.component.scss']
@@ -111,8 +110,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.themePreference = preference;
   }
 
-  toggleMenu(event: MouseEvent): void {
-    event.stopPropagation();
+  toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 

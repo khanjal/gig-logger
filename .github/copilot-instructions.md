@@ -41,6 +41,74 @@ src/app/
 - Example component structure follows `trips.component.ts` pattern
 - **Parent-child communication**: Some components use event emitters and input properties for data flow
 
+### Reusable UI Components
+
+#### Button Components (use specific variants — NOT `app-base-button`)
+We migrated away from a single generic `app-base-button` component. Always use the specialized button components instead:
+
+- `app-base-fab` — Floating action button (circular)
+- `app-base-rect` — Rectangular/standard action button
+- `app-base-icon` — Minimal icon-only button (input suffixes, nav)
+- `app-base-extended-fab` — FAB with label (if needed)
+
+**Usage rules**:
+- NEVER embed `<mat-icon>` inside a base button. Use the `icon` input.
+- Boolean inputs must use property binding: `[fab]="true"` (if applicable).
+- Use `iconColor` to set icon color (CSS value or CSS variable).
+- Use `noBackground="true"` or `[noBackground]="true"` on icon-only buttons in forms/navigation.
+
+Examples:
+
+```html
+<!-- Icon-only mini FAB (correct) -->
+<app-base-fab
+  fabStyle="mini"
+  [noBackground]="true"
+  [icon]="'clear'"
+  [iconColor]="'var(--error-500)'"
+  matSuffix
+  (clicked)="onClear()">
+</app-base-fab>
+
+<!-- Standard rectangular action -->
+<app-base-rect
+  variant="primary"
+  [icon]="'save'"
+  (clicked)="save()">
+  Save Changes
+</app-base-rect>
+
+<!-- Toggle mini FAB with dynamic variant -->
+<app-base-fab
+  fabStyle="mini"
+  [variant]="isActive ? 'primary' : 'secondary'"
+  [icon]="'drive_eta'"
+  (clicked)="toggle()">
+</app-base-fab>
+
+<!-- FAB with loading state -->
+<app-base-fab
+  variant="primary"
+  [loading]="isSaving"
+  (clicked)="submit()"
+  extended>
+  Submit
+</app-base-fab>
+```
+
+Available options (map to specific components as appropriate):
+- `variant`: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon'
+- `size`: 'sm' | 'md' | 'lg' (rect buttons)
+- `icon`: Material icon name (string)
+- `iconColor`: CSS color or variable
+- `iconPosition`: 'left' | 'right' (rect buttons)
+- `fabStyle`: 'regular' | 'mini' (FABs)
+- `extended`: boolean (FAB with label)
+- `noBackground`: boolean (icon-only)
+- `disabled`, `loading`, `fullWidth`
+
+Migration note: Replace all remaining `<app-base-button>` usages with the appropriate specialized component (`app-base-fab`, `app-base-rect`, `app-base-icon`, etc.) and follow the examples above.
+
 ### Service Patterns
 - **Injectable services** with `providedIn: 'root'`
 - **Reactive data** using Dexie's `liveQuery()` for local storage

@@ -1,19 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { BaseRectButtonComponent, BaseCardComponent } from '@components/base';
 
 const MODULES: any[] = [
   CommonModule,
-  MatButtonModule,
-  MatIconModule,
-  MatFormFieldModule,
   FormsModule,
   ReactiveFormsModule,
+  BaseRectButtonComponent,
+  BaseCardComponent,
 ];
 
 @Component({

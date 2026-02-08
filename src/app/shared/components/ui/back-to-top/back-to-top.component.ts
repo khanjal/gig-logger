@@ -1,23 +1,19 @@
 import { Component, HostListener, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFabButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-back-to-top',
   standalone: true,
-  imports: [CommonModule, MatFabButton, MatIcon],
+  imports: [CommonModule, BaseFabButtonComponent],
   template: `
-    <button 
-      mat-fab 
-      color="primary" 
+    <app-base-fab-button
+      [icon]="'arrow_upward'"
       class="!fixed !bottom-6 !right-6 !z-[1000]"
       [style.display]="showButton ? 'flex' : 'none'"
-      (click)="scrollToTop()"
+      (clicked)="scrollToTop()"
       aria-label="Back to Top"
-    >
-      <mat-icon>arrow_upward</mat-icon>
-    </button>
+    ></app-base-fab-button>
   `
 })
 export class BackToTopComponent {

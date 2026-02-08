@@ -1,8 +1,20 @@
-// Disabled mat-fab button styles
+// Disabled mat-fab / base-button disabled styles
 button[mat-fab][disabled],
 button.mat-fab[disabled],
 button[mat-fab][disabled]:hover,
-button.mat-fab[disabled]:hover {
+button.mat-fab[disabled]:hover,
+/* attribute directive on native buttons */
+button[appBaseButton][disabled],
+/* element or component usage (support wrappers) */
+app-base-button[disabled],
+app-base-fab-button[disabled],
+app-base-rect-button[disabled],
+app-base-icon-button[disabled],
+app-base-field-button[disabled],
+/* attribute directive on any element */
+[appBaseButton][disabled],
+/* class applied by directive */
+.app-base-button.btn-disabled {
   opacity: 0.5 !important;
   pointer-events: none !important;
   background: var(--color-border) !important;

@@ -1,8 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { BaseFabButtonComponent } from '@components/base';
 import { ITrip } from '@interfaces/trip.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 
@@ -16,7 +16,7 @@ export interface ITripsModalData {
   templateUrl: './trips-modal.component.html',
   styleUrls: ['./trips-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, TripsQuickViewComponent]
+  imports: [CommonModule, MatIconModule, BaseFabButtonComponent, TripsQuickViewComponent]
 })
 export class TripsModalComponent {
   constructor(

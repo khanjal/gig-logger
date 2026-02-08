@@ -7,7 +7,7 @@ namespace GigRaptorService.Services;
 
 public interface IGooglePlacesService
 {
-    Task<List<AutocompleteResult>> GetAutocompleteAsync(string query, string userId, string searchType = "address", string country = "US", double? userLat = null, double? userLng = null);
+    Task<List<AutocompleteResult>> GetAutocompleteAsync(string query, string userId, string searchType = "address", string country = "US", double? userLat = null, double? userLng = null, double? radiusMeters = null);
     Task<PlaceDetails?> GetPlaceDetailsAsync(string placeId, string userId);
 }
 
@@ -32,7 +32,7 @@ public class GooglePlacesService : IGooglePlacesService
         _apiKey = _configuration["GooglePlaces:ApiKey"] ?? throw new InvalidOperationException("Google Places API key not configured");
     }
 
-    public async Task<List<AutocompleteResult>> GetAutocompleteAsync(string query, string userId, string searchType = "address", string country = "US", double? userLat = null, double? userLng = null)
+    public async Task<List<AutocompleteResult>> GetAutocompleteAsync(string query, string userId, string searchType = "address", string country = "US", double? userLat = null, double? userLng = null, double? radiusMeters = null)
     {
         // Only check DynamoDB rate limits if feature flag is enabled
         if (FeatureFlags.IsRateLimitingEnabled(_configuration) && !await _rateLimiter.IsRequestAllowedAsync(userId))
@@ -45,29 +45,33 @@ public class GooglePlacesService : IGooglePlacesService
             // Using the new Places API Text Search for autocomplete-like functionality
             var url = "https://places.googleapis.com/v1/places:searchText";
 
+            // Default radius: 25 miles = 40234 meters
+            const double DEFAULT_RADIUS_METERS = 40234.0;
+            double radius = radiusMeters ?? DEFAULT_RADIUS_METERS;
+
             // Determine location bias based on provided user location or default to US center
-            object locationBias;
+            LocationBias locationBias;
             if (userLat.HasValue && userLng.HasValue)
             {
                 // Use user's location if provided
-                locationBias = new 
+                locationBias = new LocationBias
                 {
-                    circle = new
+                    Circle = new Circle
                     {
-                        center = new { latitude = userLat.Value, longitude = userLng.Value },
-                        radius = 50000.0 // 50km radius around user's location
+                        Center = new LatLngLiteral { Latitude = userLat.Value, Longitude = userLng.Value },
+                        Radius = radius
                     }
                 };
             }
             else
             {
                 // Default to US geographic center
-                locationBias = new 
+                locationBias = new LocationBias
                 {
-                    circle = new
+                    Circle = new Circle
                     {
-                        center = new { latitude = 39.8283, longitude = -98.5795 }, // Geographic center of US
-                        radius = 50000.0 // 50km radius (maximum allowed by API)
+                        Center = new LatLngLiteral { Latitude = 39.8283, Longitude = -98.5795 }, // Geographic center of US
+                        Radius = radius
                     }
                 };
             }
@@ -218,75 +222,4 @@ public class GooglePlacesService : IGooglePlacesService
             throw new Exception($"Unexpected error calling Google Places API: {ex.Message}", ex);
         }
     }
-}
-
-// New Places API (v1) Response Models
-
-internal class PlacesSearchTextResponse
-{
-    [JsonPropertyName("places")]
-    public List<PlaceResult>? Places { get; set; }
-}
-
-internal class PlaceResult
-{
-    [JsonPropertyName("id")]
-    public string? Id { get; set; }
-    
-    [JsonPropertyName("displayName")]
-    public LocalizedText? DisplayName { get; set; }
-    
-    [JsonPropertyName("formattedAddress")]
-    public string? FormattedAddress { get; set; }
-    
-    [JsonPropertyName("types")]
-    public List<string>? Types { get; set; }
-}
-
-internal class PlaceDetailsResult
-{
-    [JsonPropertyName("id")]
-    public string? Id { get; set; }
-    
-    [JsonPropertyName("displayName")]
-    public LocalizedText? DisplayName { get; set; }
-    
-    [JsonPropertyName("formattedAddress")]
-    public string? FormattedAddress { get; set; }
-    
-    [JsonPropertyName("addressComponents")]
-    public List<AddressComponent>? AddressComponents { get; set; }
-    
-    [JsonPropertyName("location")]
-    public LatLngLiteral? Location { get; set; }
-}
-
-internal class LocalizedText
-{
-    [JsonPropertyName("text")]
-    public string? Text { get; set; }
-    
-    [JsonPropertyName("languageCode")]
-    public string? LanguageCode { get; set; }
-}
-
-internal class AddressComponent
-{
-    [JsonPropertyName("longText")]
-    public string? LongText { get; set; }
-    
-    [JsonPropertyName("shortText")]
-    public string? ShortText { get; set; }
-    
-    [JsonPropertyName("types")]
-    public List<string>? Types { get; set; }
-}
-
-internal class LatLngLiteral
-{
-    [JsonPropertyName("latitude")]
-    public double Latitude { get; set; }
-    
-    [JsonPropertyName("longitude")]
-    public double Longitude { get; set; }
 }

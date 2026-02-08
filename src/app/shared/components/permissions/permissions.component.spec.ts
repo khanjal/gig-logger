@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AppPermissionsComponent } from './app-permissions.component';
+import { PermissionsComponent } from './permissions.component';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { BehaviorSubject } from 'rxjs';
 
-describe('AppPermissionsComponent', () => {
-  let component: AppPermissionsComponent;
-  let fixture: ComponentFixture<AppPermissionsComponent>;
+describe('PermissionsComponent', () => {
+  let component: PermissionsComponent;
+  let fixture: ComponentFixture<PermissionsComponent>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let permissionServiceSpy: jasmine.SpyObj<PermissionService>;
   let locationState$: BehaviorSubject<any>;
@@ -28,14 +28,14 @@ describe('AppPermissionsComponent', () => {
     permissionServiceSpy.getMicrophoneState.and.returnValue('checking');
 
     await TestBed.configureTestingModule({
-      imports: [AppPermissionsComponent],
+      imports: [PermissionsComponent],
       providers: [
         { provide: LoggerService, useValue: loggerSpy },
         { provide: PermissionService, useValue: permissionServiceSpy }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppPermissionsComponent);
+    fixture = TestBed.createComponent(PermissionsComponent);
     component = fixture.componentInstance;
   });
 

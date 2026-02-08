@@ -91,6 +91,16 @@
   --primary-800: #{$primary-800};
   --primary-900: #{$primary-900};
 
+  /* Secondary color tokens (purple) - used across components */
+  --secondary-50: #{$secondary-50};
+  --secondary-100: #{$secondary-100};
+  --secondary-200: #{$secondary-200};
+  --secondary-500: #{$secondary-light};
+  --secondary-600: #{$secondary-color};
+  --secondary-700: #{$secondary-dark};
+  --secondary-800: #{$secondary-800};
+  --secondary-900: #{$secondary-900};
+
   --success-500: #{$success-color};
   --warning-500: #{$warning-color};
   --error-500: #{$error-color};
@@ -128,6 +138,10 @@ html.theme-dark {
   // Override primary colors for better visibility in dark mode
   --primary-600: #60a5fa; // Lighter blue for links
   --primary-700: #93c5fd; // Even lighter for hover
+  /* Dark-mode secondary overrides for better visibility */
+  --secondary-500: #9f7aea; // slightly lighter purple for dark backgrounds
+  --secondary-600: #8b5cf6;
+  --secondary-700: #b794f4;
   
   color-scheme: dark;
 }
