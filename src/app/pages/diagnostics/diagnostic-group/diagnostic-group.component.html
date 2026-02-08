@@ -3,25 +3,23 @@
     <span class="font-semibold text-sm text-primary">Group {{ groupIndex + 1 }}</span>
     <div class="flex items-center gap-2">
       <span class="text-xs badge-count">{{ group.length }} items</span>
-      <app-base-button *ngIf="canMerge"
-        [fab]="true"
+      <app-base-fab-button *ngIf="canMerge"
         fabStyle="mini"
         variant="primary"
         [disabled]="!selectedValue"
         (clicked)="onMergeClick()"
         matTooltip="Merge duplicates"
         [icon]="'merge'">
-      </app-base-button>
+      </app-base-fab-button>
 
-      <app-base-button *ngIf="canDelete"
-        [fab]="true"
+      <app-base-fab-button *ngIf="canDelete"
         fabStyle="mini"
         variant="danger"
         [disabled]="!selectedShiftToDelete || hasMarkedForDelete(group)"
         (clicked)="onDeleteClick()"
         matTooltip="Delete selected shift"
         [icon]="'delete'">
-      </app-base-button>
+      </app-base-fab-button>
     </div>
   </div>
   <mat-radio-group [(ngModel)]="selectedValue" (ngModelChange)="onValueChange($event)" class="divide-y divide-border">

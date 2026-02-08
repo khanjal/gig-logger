@@ -3,14 +3,14 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CommonModule, PercentPipe, CurrencyPipe } from '@angular/common';
 import { inject } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
-import { BaseButtonComponent, BaseInputComponent } from '@components/base';
+import { BaseRectButtonComponent, BaseInputComponent } from '@components/base';
 
 @Component({
     selector: 'app-uber-calculator',
     templateUrl: './uber-calculator.component.html',
     styleUrls: ['./uber-calculator.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseButtonComponent, BaseInputComponent, PercentPipe, CurrencyPipe]
+    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseRectButtonComponent, BaseInputComponent, PercentPipe, CurrencyPipe]
 })
 export class UberCalculatorComponent {
   private logger = inject(LoggerService);

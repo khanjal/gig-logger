@@ -119,29 +119,26 @@
     </div>
     <div class="flex flex-row items-center justify-between gap-2 mt-6">
       <div class="flex gap-2">
-        <app-base-button *ngIf="!rowId"
-          [fab]="true"
+        <app-base-fab-button *ngIf="!rowId"
           [extended]="true"
           variant="danger"
           type="button"
           (clicked)="formReset()"
           [icon]="'refresh'">
           Reset
-        </app-base-button>
+        </app-base-fab-button>
 
-        <app-base-button *ngIf="rowId"
-          [fab]="true"
+        <app-base-fab-button *ngIf="rowId"
           [extended]="true"
           variant="danger"
           type="button"
           (clicked)="close()"
           [icon]="'cancel'">
           Cancel
-        </app-base-button>
+        </app-base-fab-button>
       </div>
       <div class="flex gap-2">
-        <app-base-button *ngIf="!rowId"
-          [fab]="true"
+        <app-base-fab-button *ngIf="!rowId"
           [extended]="true"
           variant="primary"
           type="button"
@@ -149,10 +146,9 @@
           [disabled]="shiftForm.invalid"
           [icon]="'add'">
           Store
-        </app-base-button>
+        </app-base-fab-button>
 
-        <app-base-button *ngIf="rowId"
-          [fab]="true"
+        <app-base-fab-button *ngIf="rowId"
           [extended]="true"
           variant="primary"
           type="button"
@@ -160,7 +156,7 @@
           [disabled]="shiftForm.invalid"
           [icon]="'save'">
           Update
-        </app-base-button>
+        </app-base-fab-button>
       </div>
     </div>
   </form>

@@ -13,7 +13,7 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
 import { UnitHelper } from '@helpers/unit.helper';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseRectButtonComponent } from '@components/base';
 
 @Component({
     selector: 'app-shifts-quick-view',
@@ -30,7 +30,7 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
         DatePipe,
         NoSecondsPipe,
         DurationFormatPipe,
-        BaseButtonComponent,
+        BaseRectButtonComponent,
     ],
 })
 export class ShiftsQuickViewComponent {

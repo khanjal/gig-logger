@@ -5,8 +5,12 @@ button[mat-fab][disabled]:hover,
 button.mat-fab[disabled]:hover,
 /* attribute directive on native buttons */
 button[appBaseButton][disabled],
-/* element or component usage */
+/* element or component usage (support wrappers) */
 app-base-button[disabled],
+app-base-fab-button[disabled],
+app-base-rect-button[disabled],
+app-base-icon-button[disabled],
+app-base-field-button[disabled],
 /* attribute directive on any element */
 [appBaseButton][disabled],
 /* class applied by directive */

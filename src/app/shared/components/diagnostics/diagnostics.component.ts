@@ -8,7 +8,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -28,7 +28,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatListModule, MatIconModule, BaseButtonComponent],
+  imports: [CommonModule, MatListModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })

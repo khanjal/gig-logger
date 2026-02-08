@@ -1,6 +1,6 @@
 <div class="diagnostics-container">
   <div class="diagnostics-actions">
-      <app-base-button 
+      <app-base-rect-button 
         variant="primary" 
         [icon]="'refresh'" 
         iconPosition="left"
@@ -8,7 +8,7 @@
         [disabled]="isLoading"
       >
         {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
-      </app-base-button>
+      </app-base-rect-button>
   </div>
   <div class="diagnostics-list">
     <div *ngFor="let item of dataDiagnostics" class="diagnostic-item-container">

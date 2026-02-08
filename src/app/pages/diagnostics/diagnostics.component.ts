@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent, BaseFabButtonComponent } from '@components/base';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
@@ -27,7 +27,6 @@ import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
-import { PollingService } from '@services/polling.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
@@ -38,10 +37,11 @@ import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.compo
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseButtonComponent, MatExpansionModule, MatRadioModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DiagnosticGroupComponent, DiagnosticItemComponent],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseRectButtonComponent, BaseFabButtonComponent, MatExpansionModule, MatRadioModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, MatProgressSpinnerModule, FormsModule, BackToTopComponent, DiagnosticGroupComponent, DiagnosticItemComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
+
 export class DiagnosticsComponent implements OnInit {
   dataDiagnostics: IDiagnosticItem[] = [];
   isLoading = false;
@@ -61,7 +61,6 @@ export class DiagnosticsComponent implements OnInit {
     private _logger: LoggerService,
     private _gigCalculator: GigCalculatorService,
     private _gigWorkflow: GigWorkflowService,
-    private _pollingService: PollingService,
     private _uiPreferences: UiPreferencesService
   ) { }
 

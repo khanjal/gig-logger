@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseFabButtonComponent } from '@components/base';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatMenuModule } from '@angular/material/menu';
@@ -42,7 +42,7 @@ import { updateAction } from '@utils/action.utils';
     GroupByMonthPipe,
     MatMenuModule,
     BaseDatepickerComponent,
-    BaseButtonComponent,
+    BaseFabButtonComponent,
     BaseInputComponent
   ],
   templateUrl: './expenses.component.html',

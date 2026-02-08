@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule, MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { ThemePreference } from '@services/theme.service';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-quick-controls',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatSlideToggleModule, BaseButtonComponent],
+  imports: [CommonModule, MatIconModule, MatSlideToggleModule, BaseRectButtonComponent],
   templateUrl: './quick-controls.component.html',
   styleUrl: './quick-controls.component.scss'
 })

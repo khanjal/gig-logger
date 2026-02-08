@@ -6,12 +6,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DiagnosticEntityType } from '@interfaces/diagnostic.interface';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-diagnostic-group',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatRadioModule, MatButtonModule, MatIconModule, MatTooltipModule, BaseButtonComponent],
+  imports: [CommonModule, FormsModule, MatRadioModule, MatButtonModule, MatIconModule, MatTooltipModule, BaseFabButtonComponent],
   templateUrl: './diagnostic-group.component.html',
   styleUrl: './diagnostic-group.component.scss'
 })

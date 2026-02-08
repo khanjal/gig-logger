@@ -1,14 +1,15 @@
-<app-base-button
-  [fab]="true"
-  [fabStyle]="fabStyle"
-  [extended]="extended"
-  [variant]="variant"
-  [icon]="icon"
-  [iconColor]="iconColor"
-  [loading]="loading"
-  [disabled]="disabled"
+<button
+  appBaseButton
+  [appBaseButtonFab]="true"
+  [appBaseButtonFabStyle]="fabStyle"
+  [appBaseButtonVariant]="variant"
+  [appBaseButtonLoading]="loading"
+  [appBaseButtonDisabled]="disabled"
+  [appBaseButtonClass]="class"
+  (appBaseButtonClicked)="handleClick()"
   [type]="type"
-  [ngClass]="class"
-  (clicked)="handleClick()">
+  class="inline-flex items-center gap-2"
+>
+  <mat-icon *ngIf="icon" [ngStyle]="{ 'color': iconColor }">{{ icon }}</mat-icon>
   <ng-content></ng-content>
-</app-base-button>
+</button>

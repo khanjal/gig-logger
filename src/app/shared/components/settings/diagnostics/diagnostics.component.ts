@@ -14,7 +14,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IName } from '@interfaces/name.interface';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base';
 
 interface DiagnosticItem {
   name: string;
@@ -29,7 +29,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseButtonComponent],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })

@@ -18,7 +18,7 @@
       <mat-icon class="text-base">palette</mat-icon>
       Theme
     </div>
-    <app-base-button
+    <app-base-rect-button
       variant="outlined"
       [icon]="'sync'"
       iconPosition="left"
@@ -26,11 +26,11 @@
       class="theme-cycle-btn"
     >
       {{ themePreference | titlecase }} mode
-    </app-base-button>
+    </app-base-rect-button>
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
-    <app-base-button
+    <app-base-rect-button
       *ngIf="hasUnsavedChanges"
       variant="primary"
       [icon]="'save'"
@@ -40,9 +40,9 @@
         (clicked)="onSaveClick()"
     >
       Save
-    </app-base-button>
+    </app-base-rect-button>
 
-    <app-base-button
+    <app-base-rect-button
       *ngIf="!hasUnsavedChanges"
       variant="primary"
       [icon]="'cloud_download'"
@@ -52,6 +52,6 @@
         (clicked)="onRefreshClick()"
     >
       Update
-    </app-base-button>
+    </app-base-rect-button>
   </div>
 </div>

@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { MatIcon } from '@angular/material/icon';
+import { BaseButtonDirective } from '@directives/base-button.directive';
 
 @Component({
   selector: 'app-base-field-button',
   standalone: true,
-  imports: [CommonModule, BaseButtonComponent],
+  imports: [CommonModule, MatIcon, BaseButtonDirective],
   templateUrl: './base-field-button.component.html'
 })
 export class BaseFieldButtonComponent {
@@ -21,4 +22,13 @@ export class BaseFieldButtonComponent {
   @Input('aria-label') ariaLabel?: string;
   @Input() title?: string;
   @Output() clicked = new EventEmitter<void>();
+
+  get variant(): 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' {
+    if (!this.color) return 'icon';
+    if (this.color === 'accent') return 'secondary';
+    if (this.color === 'primary') return 'primary';
+    if (this.color === 'outlined') return 'outlined';
+    if (this.color === 'danger') return 'danger';
+    return 'icon';
+  }
 }

@@ -5,12 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DiagnosticEntityType } from '@interfaces/diagnostic.interface';
-import { BaseButtonComponent } from '@components/base';
+import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-diagnostic-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseButtonComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseFabButtonComponent],
   templateUrl: './diagnostic-item.component.html',
   styleUrl: './diagnostic-item.component.scss'
 })

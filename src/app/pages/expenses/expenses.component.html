@@ -2,10 +2,9 @@
 <div class="page-container container">
   <div class="flex flex-wrap gap-3 items-center justify-between">
     <h1 class="text-2xl font-bold flex-1">Expenses</h1>
-    <div class="flex gap-2">
-      <app-base-button 
+      <div class="flex gap-2">
+      <app-base-fab-button 
         *ngIf="unsavedData && !(showAddForm || editingExpenseId)" 
-        [fab]="true" 
         fabStyle="mini" 
         variant="primary"
         [icon]="'save'" 
@@ -13,25 +12,23 @@
         [loading]="saving"
         (clicked)="confirmSaveDialog()" 
         title="Save Changes">
-      </app-base-button>
-      <app-base-button 
+      </app-base-fab-button>
+      <app-base-fab-button 
         *ngIf="!showAddForm && !editingExpenseId" 
-        [fab]="true" 
         fabStyle="mini" 
         variant="primary"
         [icon]="'add'" 
         (clicked)="showAddForm = true; resetForm()" 
         title="Add Expense">
-      </app-base-button>
-      <app-base-button 
+      </app-base-fab-button>
+      <app-base-fab-button 
         *ngIf="showAddForm && !editingExpenseId" 
-        [fab]="true" 
         fabStyle="mini" 
         variant="danger"
         [icon]="'close'" 
         (clicked)="hideAddForm()" 
         title="Close Form">
-      </app-base-button>
+      </app-base-fab-button>
     </div>
   </div>
 
@@ -82,39 +79,36 @@
       </app-base-input>
     </div>
       <div class="col-span-1 md:col-span-4 flex flex-row items-center justify-between gap-2 mt-6">
-        <div class="flex gap-2">
-          <app-base-button 
+          <div class="flex gap-2">
+          <app-base-fab-button 
             *ngIf="editingExpenseId" 
-            [fab]="true" 
             [extended]="true"
             variant="danger" 
             [icon]="'cancel'"
             type="button" 
             (clicked)="cancelEdit()">
             Cancel
-          </app-base-button>
+          </app-base-fab-button>
         </div>
         <div class="flex gap-2">
-          <app-base-button 
+          <app-base-fab-button 
             *ngIf="!editingExpenseId" 
-            [fab]="true" 
             [extended]="true"
             variant="primary" 
             [icon]="'add'"
             type="submit" 
             [disabled]="expenseForm.invalid">
             Store
-          </app-base-button>
-          <app-base-button 
+          </app-base-fab-button>
+          <app-base-fab-button 
             *ngIf="editingExpenseId" 
-            [fab]="true" 
             [extended]="true"
             variant="primary" 
             [icon]="'save'"
             type="submit" 
             [disabled]="expenseForm.invalid">
             Update
-          </app-base-button>
+          </app-base-fab-button>
         </div>
       </div>
     </form>

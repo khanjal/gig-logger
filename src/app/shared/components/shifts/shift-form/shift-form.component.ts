@@ -19,7 +19,7 @@ import { DateHelper } from '@helpers/date.helper';
 import { NumberHelper } from '@helpers/number.helper';
 import { TripService } from '@services/sheets/trip.service';
 import { Router } from '@angular/router';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'shift-form',
@@ -30,7 +30,7 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
     CommonModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput,
     BaseDatepickerComponent, TimeInputComponent,
     MatInputModule, MatNativeDateModule, SearchInputComponent, MatSlideToggleModule,
-    MatButtonModule, BaseButtonComponent
+    MatButtonModule, BaseFabButtonComponent
   ]
 })
 export class ShiftFormComponent implements OnInit {

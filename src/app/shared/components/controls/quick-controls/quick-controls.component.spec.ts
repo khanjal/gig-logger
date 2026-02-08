@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { QuickControlsComponent } from './quick-controls.component';
-import { BaseButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 describe('QuickControlsComponent', () => {
@@ -18,7 +18,7 @@ describe('QuickControlsComponent', () => {
   });
 
   const getBaseButton = (text: string) => {
-    const buttons = fixture.debugElement.queryAll(By.directive(BaseButtonComponent));
+    const buttons = fixture.debugElement.queryAll(By.directive(BaseRectButtonComponent));
     return buttons.find((button) => button.nativeElement.textContent?.trim().includes(text)) ?? null;
   };
 
