@@ -8,11 +8,11 @@
 <div *ngIf="hasError && !isLoading" class="error-container">
   <h2>Something went wrong</h2>
   <p>The application failed to load properly. Please try refreshing the page.</p>
-  <app-base-rect
+  <app-base-rect-button
     variant="outlined"
     (clicked)="reload()">
     Reload Page
-  </app-base-rect>
+  </app-base-rect-button>
 </div>
 
 <!-- Main app content -->

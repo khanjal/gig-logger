@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HeaderComponent } from './shared/header/header.component';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, CommonModule, MatProgressSpinner, BaseButtonComponent],
+  imports: [HeaderComponent, CommonModule, MatProgressSpinner, BaseRectButtonComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
