@@ -26,15 +26,26 @@ export type FabStyle = 'regular' | 'mini';
  * Important: boolean inputs must be passed with property binding
  * (e.g. `[fab]="true"`) to avoid string/boolean coercion issues in templates.
  *
- * Examples:
+ * Examples (use specialized base components):
  * - Mini FAB toggle:
- *   <app-base-button [fab]="true" fabStyle="mini" [variant]="'secondary'" [icon]="'drive_eta'" (clicked)="toggle()"></app-base-button>
+ *   <app-base-fab
+ *     fabStyle="mini"
+ *     [variant]="'secondary'"
+ *     [icon]="'drive_eta'"
+ *     (clicked)="toggle()">
+ *   </app-base-fab>
  * - Extended FAB with label:
- *   <app-base-button [fab]="true" [extended]="true" [icon]="'add'">New</app-base-button>
- * - Icon button with loading spinner:
- *   <app-base-button variant="icon" [loading]="isLoading"></app-base-button>
+ *   <app-base-extended-fab [icon]="'add'">New</app-base-extended-fab>
+ * - Icon-only button with loading spinner:
+ *   <app-base-icon variant="icon" [loading]="isLoading"></app-base-icon>
  * - No background icon button (for input fields):
- *   <app-base-button [fab]="true" fabStyle="mini" [noBackground]="true" matSuffix (clicked)="clear()" [icon]="'clear'" [iconColor]="'var(--error-500)'"></app-base-button>
+ *   <app-base-fab
+ *     fabStyle="mini"
+ *     [noBackground]="true"
+ *     matSuffix
+ *     (clicked)="clear()"
+ *     [icon]="'clear'"
+ *     [iconColor]="'var(--error-500)'"></app-base-fab>
  *
  * Emits `clicked` when activated (unless `disabled` or `loading`).
  */

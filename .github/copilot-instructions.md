@@ -43,78 +43,71 @@ src/app/
 
 ### Reusable UI Components
 
-#### BaseButton Component (`app-base-button`)
-The `BaseButtonComponent` is the standard button component used throughout the app. It provides consistent styling, variants, and behavior.
+#### Button Components (use specific variants — NOT `app-base-button`)
+We migrated away from a single generic `app-base-button` component. Always use the specialized button components instead:
 
-**Location**: `src/app/shared/components/base/base-button/`
+- `app-base-fab` — Floating action button (circular)
+- `app-base-rect` — Rectangular/standard action button
+- `app-base-icon` — Minimal icon-only button (input suffixes, nav)
+- `app-base-extended-fab` — FAB with label (if needed)
 
-**Usage Guidelines**:
-- **ALWAYS use the `icon` parameter** for icon buttons - NEVER embed `<mat-icon>` tags within `<app-base-button>`
-- Use `iconColor` parameter to customize icon colors (accepts CSS color values or CSS variables)
-- Use `noBackground="true"` for minimal icon-only buttons in input fields and navigation areas
-- Boolean inputs must use property binding: `[fab]="true"` not `fab="true"`
+**Usage rules**:
+- NEVER embed `<mat-icon>` inside a base button. Use the `icon` input.
+- Boolean inputs must use property binding: `[fab]="true"` (if applicable).
+- Use `iconColor` to set icon color (CSS value or CSS variable).
+- Use `noBackground="true"` or `[noBackground]="true"` on icon-only buttons in forms/navigation.
 
-**Common Patterns**:
+Examples:
+
 ```html
-<!-- ❌ WRONG - Don't embed mat-icon -->
-<app-base-button [fab]="true" fabStyle="mini">
-  <mat-icon>close</mat-icon>
-</app-base-button>
-
-<!-- ✅ CORRECT - Use icon parameter -->
-<app-base-button [fab]="true" fabStyle="mini" [icon]="'close'">
-</app-base-button>
-
-<!-- Clear button with red icon (common in input fields) -->
-<app-base-button 
-  [fab]="true" 
-  fabStyle="mini" 
-  [noBackground]="true" 
-  [icon]="'clear'" 
+<!-- Icon-only mini FAB (correct) -->
+<app-base-fab
+  fabStyle="mini"
+  [noBackground]="true"
+  [icon]="'clear'"
   [iconColor]="'var(--error-500)'"
   matSuffix
   (clicked)="onClear()">
-</app-base-button>
+</app-base-fab>
 
-<!-- Standard action button -->
-<app-base-button 
-  variant="primary" 
-  [icon]="'save'" 
+<!-- Standard rectangular action -->
+<app-base-rect
+  variant="primary"
+  [icon]="'save'"
   (clicked)="save()">
   Save Changes
-</app-base-button>
+</app-base-rect>
 
-<!-- Toggle button (e.g., trip form) -->
-<app-base-button 
-  [fab]="true" 
-  fabStyle="mini" 
-  [variant]="isActive ? 'primary' : 'secondary'" 
-  [icon]="'drive_eta'" 
+<!-- Toggle mini FAB with dynamic variant -->
+<app-base-fab
+  fabStyle="mini"
+  [variant]="isActive ? 'primary' : 'secondary'"
+  [icon]="'drive_eta'"
   (clicked)="toggle()">
-</app-base-button>
+</app-base-fab>
 
-<!-- Loading state -->
-<app-base-button 
-  variant="primary" 
-  [loading]="isSaving" 
-  (clicked)="submit()">
+<!-- FAB with loading state -->
+<app-base-fab
+  variant="primary"
+  [loading]="isSaving"
+  (clicked)="submit()"
+  extended>
   Submit
-</app-base-button>
+</app-base-fab>
 ```
 
-**Available Options**:
+Available options (map to specific components as appropriate):
 - `variant`: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon'
-- `size`: 'sm' | 'md' | 'lg'
+- `size`: 'sm' | 'md' | 'lg' (rect buttons)
 - `icon`: Material icon name (string)
-- `iconColor`: CSS color value or variable (e.g., 'var(--error-500)', '#ff0000')
-- `iconPosition`: 'left' | 'right'
-- `fab`: boolean - renders as floating action button (circular)
-- `fabStyle`: 'regular' | 'mini'
-- `extended`: boolean - shows label next to icon for FABs
-- `noBackground`: boolean - transparent button with minimal hover (for input fields)
-- `disabled`: boolean
-- `loading`: boolean - shows spinner and disables interaction
-- `fullWidth`: boolean
+- `iconColor`: CSS color or variable
+- `iconPosition`: 'left' | 'right' (rect buttons)
+- `fabStyle`: 'regular' | 'mini' (FABs)
+- `extended`: boolean (FAB with label)
+- `noBackground`: boolean (icon-only)
+- `disabled`, `loading`, `fullWidth`
+
+Migration note: Replace all remaining `<app-base-button>` usages with the appropriate specialized component (`app-base-fab`, `app-base-rect`, `app-base-icon`, etc.) and follow the examples above.
 
 ### Service Patterns
 - **Injectable services** with `providedIn: 'root'`
