@@ -109,7 +109,7 @@
       matTooltipPosition="below">
       <app-base-icon-button
         [icon]="getStatusIcon()"
-        [iconColor]="'currentColor'"
+        [iconColor]="'var(--color-text-inverse)'"
         (clicked)="toggleMenu()"
         class="sync-button"
         [class.spinning]="syncState?.status === 'syncing'"

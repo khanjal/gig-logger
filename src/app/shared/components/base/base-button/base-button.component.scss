@@ -361,6 +361,18 @@
   }
 }
 
+/* Center icon when button has an icon but no visible text (all themes) */
+.app-base-button.btn-icon-only {
+  .btn-content {
+    justify-content: center;
+    gap: 0;
+  }
+
+  .btn-text {
+    display: none !important;
+  }
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -375,14 +387,7 @@
   that hide their text on small screens to center the icon horizontally.
   This targets small viewports (below the `sm` Tailwind breakpoint).
 */
-@media (max-width: 639px) {
-  :host-context(.icon-only-sm) .app-base-button {
-    .btn-content {
-      justify-content: center;
-      gap: 0; // remove spacing so single icon is perfectly centered
-    }
-  }
-}
+// removed: old icon-only-sm helper; component now auto-detects hidden text and adds `btn-icon-only`.
 
 // =============================================================================
 // DARK MODE

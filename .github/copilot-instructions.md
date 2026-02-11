@@ -96,6 +96,29 @@ Examples:
 </app-base-fab>
 ```
 
+### Icon-only Rect Buttons
+When you need a rectangular button that shows only an icon (no visible label), follow these rules so the icon is centered and accessibility is preserved:
+
+- **Use the `icon` input** on the specialized component — do not project a `<mat-icon>` yourself.
+- The `BaseButtonComponent` automatically detects when an icon exists and there is no projected text and will add a `btn-icon-only` host class so styles can center the icon.
+- For small-screen templates where text is hidden with utility classes (e.g., `<span class="hidden sm:inline">`), add the helper class `icon-only-sm` to the `app-base-rect` element to force small-viewport centering.
+
+Example:
+
+```html
+<app-base-rect
+  class="icon-only-sm"      <!-- optional: helps small-screen centering -->
+  variant="secondary"
+  size="sm"
+  [icon]="'file_upload'"
+  title="Set Pickup Time"
+  (clicked)="setPickupTime()">
+  <span class="hidden sm:inline">Pickup</span>
+</app-base-rect>
+```
+
+Prefer this pattern over adding long Tailwind blobs to the button — if you need a different visual, add a variant in the base button component instead of overriding styles in each template.
+
 Available options (map to specific components as appropriate):
 - `variant`: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon'
 - `size`: 'sm' | 'md' | 'lg' (rect buttons)

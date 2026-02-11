@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewChecked } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewChecked, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
@@ -95,22 +95,39 @@ export class BaseButtonComponent {
   /** Click event emitter */
   @Output() clicked = new EventEmitter<void>();
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  private resizeHandler = () => this.updateIconOnlyClass();
+
+  constructor(private el: ElementRef, private renderer: Renderer2) {
+    window.addEventListener('resize', this.resizeHandler);
+  }
 
   ngAfterViewChecked(): void {
     this.updateIconOnlyClass();
   }
 
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.resizeHandler);
+  }
+
   private updateIconOnlyClass(): void {
     const host: HTMLElement = this.el.nativeElement as HTMLElement;
-    const contentEl = host.querySelector('.btn-text');
-    const hasText = !!(contentEl && contentEl.textContent && contentEl.textContent.trim().length > 0);
+    const contentEl = host.querySelector('.btn-text') as HTMLElement | null;
     const hasIcon = !!this.icon;
 
-    if (hasIcon && !hasText) {
-      this.renderer.addClass(host, 'btn-icon-only');
-    } else {
-      this.renderer.removeClass(host, 'btn-icon-only');
+    let hasVisibleText = false;
+    if (contentEl) {
+      const text = contentEl.textContent?.trim() ?? '';
+      const style = window.getComputedStyle(contentEl);
+      hasVisibleText = !!text && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && contentEl.offsetWidth > 0 && contentEl.offsetHeight > 0;
+    }
+
+    const innerBtn = host.querySelector('button') as HTMLElement | null;
+    if (innerBtn) {
+      if (hasIcon && !hasVisibleText) {
+        this.renderer.addClass(innerBtn, 'btn-icon-only');
+      } else {
+        this.renderer.removeClass(innerBtn, 'btn-icon-only');
+      }
     }
   }
 

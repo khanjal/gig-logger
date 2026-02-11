@@ -273,38 +273,35 @@
       'stripe-header-odd': !isEvenStripe
     }">
     <!-- Edit Button -->
-        <app-base-rect-button
-          class="icon-only-sm"
-          variant="primary"
-          size="sm"
-          (clicked)="editTrip()"
-          [icon]="'edit'"
-          title="Edit Trip">
+            <app-base-rect-button
+              variant="primary"
+              size="sm"
+              (clicked)="editTrip()"
+              [icon]="'edit'"
+              title="Edit Trip">
       <span class="hidden sm:inline">Edit</span>
     </app-base-rect-button>
     <!-- Center Action Buttons -->
     <div class="flex gap-2">
-        <app-base-rect-button
-          class="icon-only-sm"
-          variant="secondary"
-          size="sm"
-          (clicked)="setPickupTime()"
-          *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-          [icon]="'file_upload'"
-          title="Set Pickup Time">
-        <span class="hidden sm:inline">Pickup</span>
-      </app-base-rect-button>
-        <app-base-rect-button
-          class="icon-only-sm"
-          variant="secondary"
-          size="sm"
-          (clicked)="setDropoffTime()"
-          *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-          [icon]="'file_download'"
-          title="Set Dropoff Time">
+      <app-base-rect-button
+        variant="secondary"
+        size="sm"
+        (clicked)="setPickupTime()"
+        *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+        [icon]="'file_upload'"
+        title="Set Pickup Time">
+      <span class="hidden sm:inline">Pickup</span>
+    </app-base-rect-button>
+    <app-base-rect-button
+        variant="secondary"
+        size="sm"
+        (clicked)="setDropoffTime()"
+        *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+        [icon]="'file_download'"
+        title="Set Dropoff Time">
         <span class="hidden sm:inline">Dropoff</span>
-      </app-base-rect-button>
-    </div>
+    </app-base-rect-button>
+  </div>
     <!-- Menu Button -->
     <button mat-icon-button
             appBaseButton
