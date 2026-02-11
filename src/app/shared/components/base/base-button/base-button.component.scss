@@ -28,6 +28,11 @@
     outline-offset: 2px;
   }
 
+  // Icon buttons with no background should not show focus outline
+  &.btn-icon.btn-no-background:focus-visible {
+    outline: none;
+  }
+
   // =========================================================================
   // VARIANTS
   // =========================================================================
@@ -184,45 +189,30 @@
     }
   }
 
-// Ensure micro FAB wins over generic size classes (prevents vertical stretching)
-.app-base-button.btn-fab.btn-micro {
-  min-width: 28px !important;
-  min-height: 28px !important;
-  width: 28px !important;
-  height: 28px !important;
+  // Micro FAB high-specificity rule for overriding size classes
+  &.btn-fab.btn-micro {
+    min-width: 28px !important;
+    min-height: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
 
-  padding: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-sizing: border-box !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
 
-  .btn-icon mat-icon {
-    width: 16px !important;
-    height: 16px !important;
-    font-size: 16px !important;
-    line-height: 16px !important;
+    .btn-icon mat-icon {
+      width: 16px !important;
+      height: 16px !important;
+      font-size: 16px !important;
+      line-height: 16px !important;
+    }
+
+    .btn-content {
+      gap: 0 !important;
+    }
   }
-
-  .btn-content {
-    gap: 0 !important;
-  }
-}
-
-// Ensure mat-icon inside base buttons is always visible and sized correctly
-.app-base-button .btn-icon,
-.app-base-button mat-icon.btn-icon,
-.app-base-button mat-icon {
-  color: inherit !important;
-  display: inline-block !important;
-  vertical-align: middle !important;
-}
-
-.app-base-button mat-icon {
-  font-size: 1rem !important;
-  width: auto !important;
-  height: auto !important;
-}
 
   // Extended FAB shows label next to icon
   &.btn-extended {
@@ -307,6 +297,7 @@
     background-color: transparent !important;
     box-shadow: none !important;
     border: none !important;
+    outline: none !important;
 
     &:hover:not(:disabled) {
       background-color: transparent !important;
@@ -318,6 +309,10 @@
       background-color: transparent !important;
       transform: scale(0.95);
       opacity: 0.6;
+    }
+
+    &:focus-visible {
+      outline: none !important;
     }
   }
 
@@ -395,16 +390,6 @@
 
       &:hover:not(:disabled) {
         border-color: var(--primary-500);
-      }
-    }
-
-    &.btn-no-background {
-      &:hover:not(:disabled) {
-        background-color: transparent !important;
-      }
-
-      &:active:not(:disabled) {
-        background-color: transparent !important;
       }
     }
   }
