@@ -72,7 +72,7 @@
             </mat-autocomplete>
 
             <!-- Google search icon - shows when text is entered but no selection made -->
-                <app-base-field-button [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'search'" matSuffix class="standard-button" 
+                <app-base-field-button [fab]="true" fabStyle="mini" [icon]="'search'" matSuffix class="standard-button" 
                     *ngIf="isGoogleSearchType() && isLocationAllowed() && value && !hasSelection && !isGoogleSearching"
                     color="primary"
                     aria-label="Trigger Google Autocomplete Search"
@@ -81,7 +81,7 @@
                 </app-base-field-button>
 
             <!-- Google Maps icon - shows when text is entered and a selection has been made -->
-                <app-base-field-button [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'map'" matSuffix class="standard-button"
+                <app-base-field-button [fab]="true" fabStyle="mini" [icon]="'map'" matSuffix class="standard-button"
                     *ngIf="isGoogleSearchType() && value && (hasSelection || !isLocationAllowed())"
                     color="primary"
                     aria-label="Open Google Maps"
@@ -90,7 +90,7 @@
                 </app-base-field-button>
 
             <!-- Clear button - shows when any text is entered -->
-                <app-base-field-button [fab]="true" fabStyle="mini" [noBackground]="true" [icon]="'clear'" [iconColor]="'var(--error-500)'" matSuffix class="standard-button" 
+                <app-base-field-button [fab]="true" fabStyle="mini" [icon]="'clear'" [iconColor]="'var(--error-500)'" matSuffix class="standard-button" 
                     *ngIf="value" 
                     color="accent" 
                     aria-label="Clear Field" 

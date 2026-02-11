@@ -14,7 +14,6 @@ export class BaseFieldButtonComponent {
   @Input() size: 'sm' | 'md' | 'lg' = 'sm';
   @Input() disabled = false;
   @Input() loading = false;
-  @Input() noBackground: boolean = true;
   @Input() fab: boolean = false;
   @Input() fabStyle: 'regular' | 'mini' = 'regular';
   @Input() color?: string;

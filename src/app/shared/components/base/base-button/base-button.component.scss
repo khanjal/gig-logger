@@ -309,13 +309,15 @@
     border: none !important;
 
     &:hover:not(:disabled) {
-      background-color: rgba(0, 0, 0, 0.04) !important;
+      background-color: transparent !important;
       box-shadow: none !important;
+      opacity: 0.8;
     }
 
     &:active:not(:disabled) {
-      background-color: rgba(0, 0, 0, 0.08) !important;
+      background-color: transparent !important;
       transform: scale(0.95);
+      opacity: 0.6;
     }
   }
 
@@ -398,11 +400,11 @@
 
     &.btn-no-background {
       &:hover:not(:disabled) {
-        background-color: rgba(255, 255, 255, 0.08) !important;
+        background-color: transparent !important;
       }
 
       &:active:not(:disabled) {
-        background-color: rgba(255, 255, 255, 0.12) !important;
+        background-color: transparent !important;
       }
     }
   }

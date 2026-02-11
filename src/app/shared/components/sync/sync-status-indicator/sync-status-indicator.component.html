@@ -76,7 +76,6 @@
         <app-base-field-button 
           [fab]="true" 
           fabStyle="mini"
-          [noBackground]="true"
           [icon]="'clear_all'"
           [iconColor]="'var(--error-500)'"
           (clicked)="clearMessages()"
@@ -111,6 +110,7 @@
       <app-base-icon-button
         [icon]="getStatusIcon()"
         [iconColor]="'currentColor'"
+        [contentEditable]="true"
         (clicked)="toggleMenu()"
         class="sync-button text-inverse hover:bg-white/10 transition"
         [class.spinning]="syncState?.status === 'syncing'">
