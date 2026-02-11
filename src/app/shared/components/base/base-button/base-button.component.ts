@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
@@ -94,6 +94,25 @@ export class BaseButtonComponent {
 
   /** Click event emitter */
   @Output() clicked = new EventEmitter<void>();
+
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
+
+  ngAfterViewChecked(): void {
+    this.updateIconOnlyClass();
+  }
+
+  private updateIconOnlyClass(): void {
+    const host: HTMLElement = this.el.nativeElement as HTMLElement;
+    const contentEl = host.querySelector('.btn-text');
+    const hasText = !!(contentEl && contentEl.textContent && contentEl.textContent.trim().length > 0);
+    const hasIcon = !!this.icon;
+
+    if (hasIcon && !hasText) {
+      this.renderer.addClass(host, 'btn-icon-only');
+    } else {
+      this.renderer.removeClass(host, 'btn-icon-only');
+    }
+  }
 
   onButtonClick(): void {
     if (!this.disabled && !this.loading) {

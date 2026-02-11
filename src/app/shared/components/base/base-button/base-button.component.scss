@@ -370,6 +370,20 @@
   }
 }
 
+/*
+  When a parent component signals `icon-only-sm` we want rect buttons
+  that hide their text on small screens to center the icon horizontally.
+  This targets small viewports (below the `sm` Tailwind breakpoint).
+*/
+@media (max-width: 639px) {
+  :host-context(.icon-only-sm) .app-base-button {
+    .btn-content {
+      justify-content: center;
+      gap: 0; // remove spacing so single icon is perfectly centered
+    }
+  }
+}
+
 // =============================================================================
 // DARK MODE
 // =============================================================================
@@ -383,6 +397,18 @@
         background-color: var(--color-surface-tertiary);
       }
     }
+
+      // Center icon when button has an icon but no visible text
+      .app-base-button.btn-icon-only {
+        .btn-content {
+          justify-content: center;
+          gap: 0;
+        }
+
+        .btn-text {
+          display: none !important;
+        }
+      }
 
     &.btn-outlined {
       color: var(--color-text-primary);

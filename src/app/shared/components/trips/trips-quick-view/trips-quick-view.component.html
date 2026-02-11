@@ -273,17 +273,19 @@
       'stripe-header-odd': !isEvenStripe
     }">
     <!-- Edit Button -->
-    <app-base-rect-button
-            variant="primary"
-            size="sm"
-            (clicked)="editTrip()"
-            [icon]="'edit'"
-            title="Edit Trip">
+        <app-base-rect-button
+          class="icon-only-sm"
+          variant="primary"
+          size="sm"
+          (clicked)="editTrip()"
+          [icon]="'edit'"
+          title="Edit Trip">
       <span class="hidden sm:inline">Edit</span>
     </app-base-rect-button>
     <!-- Center Action Buttons -->
     <div class="flex gap-2">
-      <app-base-rect-button
+        <app-base-rect-button
+          class="icon-only-sm"
           variant="secondary"
           size="sm"
           (clicked)="setPickupTime()"
@@ -292,7 +294,8 @@
           title="Set Pickup Time">
         <span class="hidden sm:inline">Pickup</span>
       </app-base-rect-button>
-      <app-base-rect-button
+        <app-base-rect-button
+          class="icon-only-sm"
           variant="secondary"
           size="sm"
           (clicked)="setDropoffTime()"
