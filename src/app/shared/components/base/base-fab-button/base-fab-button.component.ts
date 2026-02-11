@@ -11,12 +11,13 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
 
 export class BaseFabButtonComponent {
   @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
-  @Input() fabStyle: 'regular' | 'mini' = 'regular';
+  @Input() fabStyle: 'regular' | 'mini' | 'micro' = 'regular';
   @Input() extended = false;
   @Input() icon?: string;
   @Input() iconColor?: string;
   @Input() loading = false;
   @Input() disabled = false;
+  @Input() noBackground = false;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() class = '';
 

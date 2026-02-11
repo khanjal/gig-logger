@@ -18,7 +18,7 @@ import { LoggerService } from '@services/logger.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
-import { BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
+import { BaseFabButtonComponent, BaseRectButtonComponent, BaseFieldButtonComponent } from '@components/base';
 import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith } from 'rxjs';
 
 @Component({
@@ -41,7 +41,8 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith
     TripsQuickViewComponent,
     BackToTopComponent,
     BaseFabButtonComponent,
-    BaseRectButtonComponent
+    BaseRectButtonComponent,
+    BaseFieldButtonComponent
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],

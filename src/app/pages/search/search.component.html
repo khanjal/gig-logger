@@ -17,13 +17,16 @@
               placeholder="Enter a search term..."
               autocomplete="off">
             <mat-icon matPrefix>search</mat-icon>
-            <app-base-fab-button
+            <app-base-field-button
               matSuffix
+              [fab]="true"
+              fabStyle="mini"
               *ngIf="searchTerm"
               (clicked)="clearSearch()"
-              aria-label="Clear search">
-              <mat-icon>close</mat-icon>
-            </app-base-fab-button>
+              aria-label="Clear search"
+              [icon]="'close'"
+              [iconColor]="'var(--error-500)'">
+            </app-base-field-button>
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)" panelClass="search-autocomplete-panel">
               <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
                 {{ option }}
@@ -33,18 +36,18 @@
         </div>
         
         <!-- Filter Toggle Button -->
-        <div class="flex items-end pb-1">
-          <app-base-fab-button
-            [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
-            matTooltipPosition="below"
-            (clicked)="toggleFilters()"
-            [class.bg-primary-500/10]="showFilters"
-            class="filter-toggle-btn">
-            <mat-icon [class.text-blue-600]="showFilters" [ngClass]="{ 'dark:text-blue-400': showFilters }">
-              {{ showFilters ? 'filter_list_off' : 'filter_list' }}
-            </mat-icon>
+        <div class="flex items-end pb-10">
+          <div class="filter-toggle-btn">
+            <app-base-fab-button
+              [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
+              matTooltipPosition="below"
+              (clicked)="toggleFilters()"
+              variant="primary"
+              [class.bg-primary-500/10]="showFilters"
+              [icon]="'filter_list'">
+            </app-base-fab-button>
             <span class="filter-badge">{{ getEnabledCount() }}</span>
-          </app-base-fab-button>
+          </div>
         </div>
       </div>
 
@@ -138,11 +141,13 @@
         </div>
         <div *ngIf="groupedResults.length > 0">
           <app-base-fab-button
+            fabStyle="mini"
+            variant="secondary"
             (clicked)="toggleAllGroups()"
             [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
             matTooltipPosition="below"
+            [icon]="areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
             class="expand-toggle-btn">
-            <mat-icon>{{ areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
           </app-base-fab-button>
         </div>
       </div>

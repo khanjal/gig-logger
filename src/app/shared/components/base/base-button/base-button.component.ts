@@ -6,7 +6,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'outlined' | 'danger' | 'i
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 // Fab styles
-export type FabStyle = 'regular' | 'mini';
+export type FabStyle = 'regular' | 'mini' | 'micro';
 
 @Component({
   selector: 'app-base-button',
@@ -108,6 +108,7 @@ export class BaseButtonComponent {
       `btn-${this.size}`,
       this.fab ? 'btn-fab' : '',
       this.fab && this.fabStyle === 'mini' ? 'btn-mini' : '',
+      this.fab && this.fabStyle === 'micro' ? 'btn-micro' : '',
       this.extended ? 'btn-extended' : '',
       this.disabled ? 'btn-disabled' : '',
       this.loading ? 'btn-loading' : '',

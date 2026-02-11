@@ -169,6 +169,61 @@
     height: 40px;
   }
 
+  // Micro FAB (extra small - used for compact close buttons)
+  &.btn-micro {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+
+    .btn-icon {
+      mat-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+// Ensure micro FAB wins over generic size classes (prevents vertical stretching)
+.app-base-button.btn-fab.btn-micro {
+  min-width: 28px !important;
+  min-height: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+
+  .btn-icon mat-icon {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+  }
+
+  .btn-content {
+    gap: 0 !important;
+  }
+}
+
+// Ensure mat-icon inside base buttons is always visible and sized correctly
+.app-base-button .btn-icon,
+.app-base-button mat-icon.btn-icon,
+.app-base-button mat-icon {
+  color: inherit !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.app-base-button mat-icon {
+  font-size: 1rem !important;
+  width: auto !important;
+  height: auto !important;
+}
+
   // Extended FAB shows label next to icon
   &.btn-extended {
     border-radius: 28px;
