@@ -143,6 +143,7 @@
           <app-base-fab-button
             fabStyle="mini"
             variant="secondary"
+            [noBackground]="true"
             (clicked)="toggleAllGroups()"
             [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
             matTooltipPosition="below"
