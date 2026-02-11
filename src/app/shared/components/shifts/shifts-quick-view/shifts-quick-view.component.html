@@ -202,10 +202,11 @@
     }">
     <!-- Edit Button -->
     <app-base-rect-button
-      class="flex items-center gap-2 px-3 py-2 bg-primary-500/10 text-primary border border-blue-200 dark:border-blue-700 rounded-lg text-sm font-medium transition"
+      variant="primary"
+      size="sm"
+      [icon]="'edit'"
       (clicked)="editShift()"
       [disabled]="!canEditShift()"
-      [icon]="'edit'"
       [attr.aria-label]="'Edit shift'"
       [attr.title]="'Edit shift'">
       <span class="hidden sm:inline">Edit</span>
@@ -214,10 +215,10 @@
     <div class="flex gap-2"></div>
     <!-- Delete Button -->
     <app-base-rect-button
-      class="flex items-center gap-2 px-3 py-2 bg-error-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-700 rounded-lg text-sm font-medium transition"
-      [disabled]="!canDeleteShift()"
-      [icon]="'delete'"
       variant="danger"
+      size="sm"
+      [icon]="'delete'"
+      [disabled]="!canDeleteShift()"
       (clicked)="confirmDeleteShiftDialog(shift)">
       <span class="hidden sm:inline">Delete</span>
     </app-base-rect-button>
