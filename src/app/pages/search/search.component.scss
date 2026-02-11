@@ -22,13 +22,13 @@
 
     .filter-badge {
       position: absolute;
-      top: 2px;
-      right: 2px;
+      top: -6px;
+      right: -6px;
       background-color: var(--error-500);
       color: white;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 25px;
+      height: 25px;
       font-size: 11px;
       font-weight: 700;
       display: flex;
