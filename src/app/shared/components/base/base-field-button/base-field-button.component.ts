@@ -10,7 +10,7 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
 })
 export class BaseFieldButtonComponent {
   @Input() icon?: string;
-  @Input() iconColor?: string;
+  @Input() iconColor: string = 'var(--color-text-primary)';
   @Input() size: 'sm' | 'md' | 'lg' = 'sm';
   @Input() disabled = false;
   @Input() loading = false;
