@@ -13,6 +13,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
 import { BaseFabButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatMenuModule } from '@angular/material/menu';
@@ -43,6 +44,7 @@ import { updateAction } from '@utils/action.utils';
     MatMenuModule,
     BaseDatepickerComponent,
     BaseFabButtonComponent,
+    BaseRectButtonComponent,
     BaseInputComponent
   ],
   templateUrl: './expenses.component.html',
@@ -119,6 +121,10 @@ export class ExpensesComponent implements OnInit {
     }, {} as { [year: string]: IExpense[] });
 
     this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+    // If there are no expenses, open the add form by default so users can create one.
+    if ((this.expenses ?? []).length === 0) {
+      this.showAddForm = true;
+    }
   }
 
   async addExpense() {

@@ -48,6 +48,18 @@
     </div>
 
     <div *ngIf="!(showAddForm || editId)" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
+      <!-- Empty state: show message and add button when there are no shifts -->
+      <div *ngIf="(shifts?.length ?? 0) === 0" class="pt-12 text-center">
+        <p class="text-lg text-secondary mb-4">You have no shifts yet. Add your first shift to get started, or add a trip and a shift will be created for it automatically.</p>
+        <app-base-rect-button
+          variant="primary"
+          (clicked)="showAddForm = true"
+          [icon]="'add'">
+          Add Shift
+        </app-base-rect-button>
+      </div>
+
+      <!-- List of shifts -->
       @for (shift of shifts; track $index; let isFirst = $first) {
           <div
             [id]="shift.rowId"

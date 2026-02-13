@@ -115,6 +115,10 @@
   </div>
 
   <div *ngIf="!(showAddForm || editingExpenseId)" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
+    <div *ngIf="(expenses?.length ?? 0) === 0" class="pt-12 text-center">
+      <p class="text-lg text-secondary mb-4">You have no expenses yet. Add your first expense to get started.</p>
+      <app-base-rect-button variant="primary" (clicked)="showAddForm = true; resetForm()" [icon]="'add'">Add Expense</app-base-rect-button>
+    </div>
     <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold text-blue-800 dark:text-blue-300">{{ year.key }}</h2>
