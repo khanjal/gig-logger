@@ -19,10 +19,35 @@
         height: 56px;
       }
 
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: var(--color-border-light);
+      .mat-mdc-form-field-flex {
+        background: var(--color-surface);
+        border-radius: 0; /* match search inputs square corners */
+        transition: all 0.2s ease-in-out;
+      }
+
+      .mat-mdc-text-field-wrapper {
+        .mat-mdc-form-field-flex {
+          .mat-mdc-form-field-outline {
+            .mat-mdc-form-field-outline-start,
+            .mat-mdc-form-field-outline-gap,
+            .mat-mdc-form-field-outline-end {
+              border-width: 1px;
+              border-style: solid;
+              border-color: var(--color-border);
+            }
+          }
+
+          &.mdc-text-field--focused {
+            .mat-mdc-form-field-outline {
+              .mat-mdc-form-field-outline-start,
+              .mat-mdc-form-field-outline-gap,
+              .mat-mdc-form-field-outline-end {
+                border-color: var(--primary-600);
+                border-width: 2px;
+              }
+            }
+          }
+        }
       }
 
       .mat-mdc-form-field-form-control {
@@ -37,12 +62,10 @@
       }
 
       .mat-mdc-form-field-infix {
-        /* Exact 56px height (Material standard) with centered contents */
         display: flex;
         align-items: center;
         height: 56px;
-        padding-top: 0;
-        padding-bottom: 0;
+        padding: 0 1rem;
       }
 
       .mdc-text-field__input {
@@ -54,12 +77,15 @@
         font-size: 1rem;
       }
 
-      // Error state
+      // Error state — show a visible outline for errors
       &.has-error {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--error-500) !important;
+        .mat-mdc-form-field-outline {
+          .mat-mdc-form-field-outline-start,
+          .mat-mdc-form-field-outline-gap,
+          .mat-mdc-form-field-outline-end {
+            border-color: var(--error-500) !important;
+            border-width: 1px !important;
+          }
         }
 
         .mat-mdc-form-field-label {
@@ -72,12 +98,14 @@
         }
       }
 
-      // Disabled state
+      // Disabled state — dim text and keep outline subtle
       .mdc-text-field--disabled {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--color-border-light);
+        .mat-mdc-form-field-outline {
+          .mat-mdc-form-field-outline-start,
+          .mat-mdc-form-field-outline-gap,
+          .mat-mdc-form-field-outline-end {
+            border-color: var(--color-border-light);
+          }
         }
 
         .mat-mdc-form-field-form-control {
