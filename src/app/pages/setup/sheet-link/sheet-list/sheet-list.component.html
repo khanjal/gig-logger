@@ -41,7 +41,7 @@
   <!-- Fixed bottom buttons -->
   <div class="button-container bg-surface border-t border-[var(--color-border-light)]">
     <div class="flex justify-between items-center p-3">
-      <app-base-rect-button variant="danger" [icon]="'refresh'" (clicked)="cancel()">
+      <app-base-rect-button variant="secondary" [icon]="'refresh'" (clicked)="cancel()">
         Cancel
       </app-base-rect-button>  
       <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!selectedSheet" (clicked)="confirmSelection()">
