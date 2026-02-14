@@ -101,7 +101,7 @@
         <app-base-accordion>
           <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
             <div class="flex flex-col gap-1">
-              <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
+              <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
             </div>
           </app-base-accordion-item>
         </app-base-accordion>
@@ -130,7 +130,7 @@
             <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
             </div>
-            <app-base-rect-button *ngIf="delivery.address" variant="outlined" class="address-button" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-rect-button>
+            <app-base-rect-button *ngIf="delivery.address" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
         </mat-expansion-panel>
@@ -164,7 +164,7 @@
             <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
             </div>
-            <app-base-rect-button *ngIf="delivery.name" variant="outlined" class="name-button" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-rect-button>
+            <app-base-rect-button *ngIf="delivery.name" variant="outlined" class="name-button" [fullWidth]="true" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
         </mat-expansion-panel>
