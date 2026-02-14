@@ -26,7 +26,7 @@
             <span>{{ getStateText(locationPermission.state) }}</span>
           </div>
           
-          <div class="permission-actions">
+          <div class="permission-actions flex justify-end">
             @if (locationPermission.canRequest) {
             <app-base-rect-button 
               variant="primary"
@@ -70,7 +70,7 @@
             <span>{{ getStateText(microphonePermission.state) }}</span>
           </div>
           
-          <div class="permission-actions">
+          <div class="permission-actions flex justify-end">
             @if (microphonePermission.canRequest) {
               <app-base-rect-button 
                 variant="primary"
@@ -102,7 +102,7 @@
       locationPermission.state === 'denied' || locationPermission.state === 'granted' ||
       microphonePermission.state === 'denied' || microphonePermission.state === 'granted'
     ) {
-      <div class="permissions-footer">
+      <div class="permissions-footer flex justify-end">
       <app-base-rect-button 
         variant="primary"
         [icon]="'settings'"
