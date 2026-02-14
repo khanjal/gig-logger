@@ -8,4 +8,4 @@ export { BaseRectButtonComponent } from './base-rect-button/base-rect-button.com
 export { BaseFieldButtonComponent } from './base-field-button/base-field-button.component';
 export { BaseIconButtonComponent } from './base-icon-button/base-icon-button.component';
 export { BaseToggleButtonComponent } from './base-toggle-button/base-toggle-button.component';
-export { BaseButtonDirective } from '../../directives/base-button.directive';
+export { BaseButtonDirective } from '@directives/base-button.directive';
