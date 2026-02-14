@@ -311,7 +311,6 @@ export class SetupComponent {
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;
-    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
