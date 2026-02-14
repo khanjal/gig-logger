@@ -1,9 +1,9 @@
-.@use '../../../styles/color-vars.scss' as vars;
+@use '../../../styles/color-vars.scss' as vars;
 
 :host {
-  /* Local accordion tokens (component-scoped, but theme-aware via Sass variables) */
-  --accordion-bg: #{vars.$secondary-50};
-  --accordion-bg-dark: #{vars.$secondary-800};
+  /* Local accordion tokens (component-scoped) - use runtime surface variables so header and body match */
+  --accordion-bg: var(--color-surface-secondary);
+  --accordion-bg-dark: var(--color-surface-secondary);
   --accordion-title-size: 1rem;
 }
 

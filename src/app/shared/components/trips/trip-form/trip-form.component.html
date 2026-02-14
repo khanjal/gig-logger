@@ -119,13 +119,8 @@
 
     <!-- Address List/Notes -->
     <div *ngIf="selectedNameDeliveries?.length" class="mb-3">
-      <mat-accordion>
-        <mat-expansion-panel class="seamless-panel" [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Addresses for Name
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+      <app-base-accordion>
+        <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && data.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
@@ -133,8 +128,8 @@
             <app-base-rect-button *ngIf="delivery.address" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+        </app-base-accordion-item>
+      </app-base-accordion>
     </div>
 
     <!-- Destination Address -->
@@ -153,13 +148,8 @@
 
     <!-- Name List/Notes -->
     <div *ngIf="selectedAddressDeliveries?.length" class="mb-3">
-      <mat-accordion>
-        <mat-expansion-panel class="seamless-panel" [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous Names for Destination
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+      <app-base-accordion>
+        <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && data.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
@@ -167,8 +157,8 @@
             <app-base-rect-button *ngIf="delivery.name" variant="outlined" class="name-button" [fullWidth]="true" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+        </app-base-accordion-item>
+      </app-base-accordion>
     </div>
 
     <!-- Time Inputs -->
