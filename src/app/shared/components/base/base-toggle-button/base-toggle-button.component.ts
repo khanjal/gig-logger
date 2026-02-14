@@ -12,6 +12,7 @@ export class BaseToggleButtonComponent {
   @Input() active = false;
   @Input() icon?: string;
   @Input() iconColor?: string;
+  @Input() variant?: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon';
   @Input() disabled = false;
   @Input() loading = false;
   @Output() clicked = new EventEmitter<void>();

@@ -98,18 +98,13 @@
         <app-base-toggle-button [active]="showPickupAddress" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-toggle-button>
       </div>
       <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="mb-3">
-        <mat-accordion>
-          <mat-expansion-panel class="seamless-panel" [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                {{ selectedPlaceAddresses.length }} Previous Addresses for Place
-              </mat-panel-title>
-            </mat-expansion-panel-header>
+        <app-base-accordion>
+          <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
             <div class="flex flex-col gap-1">
               <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
             </div>
-          </mat-expansion-panel>
-        </mat-accordion>
+          </app-base-accordion-item>
+        </app-base-accordion>
       </div>
       <div class="flex flex-col gap-1" [ngClass]="(selectedNameDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
         <app-search-input 

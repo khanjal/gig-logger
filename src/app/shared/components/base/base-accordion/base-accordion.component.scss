@@ -1,0 +1,19 @@
+.@use '../../../styles/color-vars.scss' as vars;
+
+:host {
+  /* Local accordion tokens (component-scoped, but theme-aware via Sass variables) */
+  --accordion-bg: #{vars.$secondary-50};
+  --accordion-bg-dark: #{vars.$secondary-800};
+  --accordion-title-size: 1rem;
+}
+
+.accordion {
+  width: 100%;
+  border-radius: 8px;
+}
+
+:host-context(html.theme-dark) {
+  .accordion {
+    color: var(--color-text-primary);
+  }
+}
