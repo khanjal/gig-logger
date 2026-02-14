@@ -132,6 +132,15 @@ Available options (map to specific components as appropriate):
 
 Migration note: Replace all remaining `<app-base-button>` usages with the appropriate specialized component (`app-base-fab`, `app-base-rect`, `app-base-icon`, etc.) and follow the examples above.
 
+**Button Layout & Color Rules**
+- **Single Button, Right:** Align a lone action button to the right of the row. Use a wrapper like `class="flex justify-end"` so single-row actions sit on the right edge.
+- **Two Buttons, Opposite Sides:** For two actions, place them at opposite edges using `class="flex justify-between items-center"` (primary action typically on the right).
+- **Three or More, Even Spacing:** Use `class="flex justify-between"` (or `gap-x-*` with `flex`) to distribute three+ buttons evenly across the row.
+- **Default Color Rules:** Most buttons that perform actions should use `variant="primary"`.
+- **Cancel / Close:** Use `variant="secondary"` for buttons that dismiss modals or cancel flows.
+- **Undo / Remove / Dangerous Actions:** Use `variant="danger"` for destructive or undoable actions.
+- **Implementation Notes:** Prefer `app-base-rect-button` with the `variant` input. Use `fullWidth` for stacked lists or narrow contexts (e.g., address lists inside accordions). Avoid making all buttons full-width by default; reserve full-width for mobile-first or list items.
+
 ### Service Patterns
 - **Injectable services** with `providedIn: 'root'`
 - **Reactive data** using Dexie's `liveQuery()` for local storage
