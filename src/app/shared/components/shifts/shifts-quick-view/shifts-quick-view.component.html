@@ -55,7 +55,7 @@
     <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2">
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon class="text-blue-600 dark:text-blue-400 text-base">event</mat-icon>
-        <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:'EEE, MMM d, yy' }} }</span>
+        <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:"EEE, MMM d, ''yy" }} }</span>
       </span>
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon class="text-blue-600 dark:text-blue-400 text-base">schedule</mat-icon>

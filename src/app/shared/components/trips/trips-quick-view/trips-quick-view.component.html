@@ -78,7 +78,7 @@
     <!-- Date/Place/Distance Row (always visible if present) -->
     <div class="mt-1 text-xs text-secondary truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
       <!-- Date (left) -->
-      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-secondary border border-soft flex-shrink-0">{{ trip.date | date:'EEE, MMM d' }}</span>
+      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-secondary border border-soft flex-shrink-0">{{ parsedTripDate ? (parsedTripDate | date:dateFormat) : (trip.date | date:dateFormat) }}</span>
       <!-- Place -> Name (center, inline until overflow) -->
       <div class="flex-1 flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden">
         <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>

@@ -52,6 +52,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
+  // Parsed date and computed format for display
+  parsedTripDate: Date | null = null;
+  dateFormat: string = 'EEE, MMM d';
   
   // Distance unit properties
   get distanceUnit(): string {
@@ -101,12 +104,32 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.setExpansionState();
     this.prefers24Hour = DateHelper.prefers24Hour();
+    this.updateDateFormat();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // Re-evaluate expansion state when trip data changes
     if (changes['trip'] && changes['trip'].currentValue) {
       this.setExpansionState();
+      this.updateDateFormat();
+    }
+  }
+
+  private updateDateFormat() {
+    if (!this.trip || !this.trip.date) {
+      this.parsedTripDate = null;
+      return;
+    }
+
+    // Trip dates are stored as YYYY-MM-DD; parse locally to avoid timezone shifts
+    try {
+      this.parsedTripDate = DateHelper.parseLocalDate(this.trip.date);
+      const tripYear = this.parsedTripDate.getFullYear();
+      const now = new Date();
+      this.dateFormat = tripYear === now.getFullYear() ? "EEE, MMM d" : "EEE, MMM d, ''yy";
+    } catch (e) {
+      this.parsedTripDate = null;
+      this.dateFormat = 'EEE, MMM d';
     }
   }
 
