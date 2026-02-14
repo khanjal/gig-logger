@@ -97,7 +97,7 @@
         </app-search-input>
         <app-base-toggle-button [active]="showPickupAddress" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-toggle-button>
       </div>
-      <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="mb-3">
+      <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="my-5">
         <app-base-accordion>
           <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
             <div class="flex flex-col gap-1">
@@ -118,7 +118,7 @@
     </div>
 
     <!-- Address List/Notes -->
-    <div *ngIf="selectedNameDeliveries?.length" class="mb-3">
+    <div *ngIf="selectedNameDeliveries?.length" class="my-5">
       <app-base-accordion>
         <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && data.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
@@ -147,7 +147,7 @@
     </div>
 
     <!-- Name List/Notes -->
-    <div *ngIf="selectedAddressDeliveries?.length" class="mb-3">
+    <div *ngIf="selectedAddressDeliveries?.length" class="my-5">
       <app-base-accordion>
         <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && data.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">

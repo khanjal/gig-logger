@@ -11,6 +11,15 @@
   font-size: 1rem; /* slightly larger to match other panel titles */
 }
 
+.accordion-header .chev {
+  color: var(--primary-600);
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.accordion-header:hover .chev {
+  color: var(--primary-700);
+}
+
 .accordion-body {
   padding: 0.75rem 1rem;
   background: var(--accordion-bg, var(--color-surface-secondary));
@@ -26,5 +35,8 @@
   .accordion-body {
     background: var(--accordion-bg-dark, var(--color-surface-secondary));
     box-shadow: none;
+  }
+  .accordion-header .chev {
+    color: var(--primary-500);
   }
 }
