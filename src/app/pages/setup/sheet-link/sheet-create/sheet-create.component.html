@@ -1,5 +1,5 @@
 <div class="section bg-surface text-gray-800 dark:text-gray-200 rounded-md">
-  <form class="sheet-form" [formGroup]="sheetCreate" *ngIf="!saving">
+  <form class="sheet-form mt-5" [formGroup]="sheetCreate" *ngIf="!saving">
       <app-base-input 
         class="field-full-width"
         label="Sheet Name"
@@ -16,8 +16,8 @@
       <div class="creating-sheet-text">Creating sheet...</div>
   </div>
 
-    <div *ngIf="!saving" class="row-flex pt-2" style="justify-content: space-between;">
-      <app-base-rect-button variant="danger" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto">Cancel</app-base-rect-button>
+    <div *ngIf="!saving" class="row-flex px-5" style="justify-content: space-between;">
+      <app-base-rect-button variant="secondary" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto">Cancel</app-base-rect-button>
       <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid || saving" [loading]="saving" (clicked)="createSheet()" class="ml-auto">Create</app-base-rect-button>
     </div>
 </div>

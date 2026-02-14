@@ -31,7 +31,7 @@ export class ConfirmDialogComponent {
     this.trueColor = data.trueColor ?? "primary";
     this.falseText = data.falseText;
     this.falseIcon = data.falseIcon;
-    this.falseColor = data.falseColor ?? "warn";
+    this.falseColor = data.falseColor ?? "accent";
   }
 
   onConfirm(): void {
