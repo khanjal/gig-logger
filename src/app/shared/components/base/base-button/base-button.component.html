@@ -9,7 +9,7 @@
       {{ icon }}
     </mat-icon>
     
-    <span *ngIf="!loading && (!fab || extended)" class="btn-text">
+    <span *ngIf="(!loading) && (!fab || extended)" class="btn-text">
       <ng-content></ng-content>
     </span>
     
