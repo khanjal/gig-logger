@@ -265,7 +265,7 @@ export class SetupComponent {
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
-    dialogData.trueColor = "warn";
+    dialogData.trueColor = "danger";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

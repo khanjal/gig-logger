@@ -72,7 +72,7 @@ export class ShiftsQuickViewComponent {
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
-    dialogData.trueColor = "warn";
+    dialogData.trueColor = "danger";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

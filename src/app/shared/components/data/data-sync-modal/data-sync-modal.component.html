@@ -21,12 +21,16 @@
             </ng-container>
         </div>
         <!-- Button pinned at the bottom -->
-        <div class="flex gap-2 mt-auto">
-            @if (syncState.canContinue) {
-                <app-base-rect-button variant="secondary" [fullWidth]="true" (clicked)="continueLoad()">Continue</app-base-rect-button>
-                <app-base-rect-button variant="primary" [fullWidth]="true" (clicked)="retryLoad()">Retry</app-base-rect-button>
-            }
-            <app-base-rect-button variant="danger" [fullWidth]="true" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</app-base-rect-button>
+        <div class="flex gap-2 mt-auto items-center w-full">
+            <div class="flex gap-2">
+                @if (syncState.canContinue) {
+                    <app-base-rect-button variant="secondary" (clicked)="continueLoad()">Continue</app-base-rect-button>
+                    <app-base-rect-button variant="primary" (clicked)="retryLoad()">Retry</app-base-rect-button>
+                }
+            </div>
+            <div class="ml-auto">
+                <app-base-rect-button variant="danger" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</app-base-rect-button>
+            </div>
         </div>
     </div>
 </div>
