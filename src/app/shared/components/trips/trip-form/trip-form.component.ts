@@ -36,6 +36,11 @@ import { sort } from '@helpers/sort.helper';
 import { DateHelper } from '@helpers/date.helper';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { NumberHelper } from '@helpers/number.helper';
+import { TripHelper } from '@helpers/trip.helper';
+import { getValueOrFallback } from '@helpers/array.helper';
+
+// Application-specific imports - Types
+import { TripFormValue } from '@form-types/trip-form.types';
 
 // Application-specific imports - Enums
 import { ActionEnum } from '@enums/action.enum';
@@ -68,28 +73,51 @@ export class TripFormComponent implements OnInit {
   @Input() isInEditMode: boolean = false;
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
-  tripForm = new FormGroup({
-    shift: new FormControl(null),
-    service: new FormControl(''),
-    region: new FormControl(''),
-    place: new FormControl(''),
-    type: new FormControl(''),
-    name: new FormControl(''),
-    distance: new FormControl(),
-    startOdometer: new FormControl(),
-    endOdometer: new FormControl(),
-    pay: new FormControl(),
-    tip: new FormControl(),
-    bonus: new FormControl(),
-    cash: new FormControl(),
-    startAddress: new FormControl(''),
-    endAddress: new FormControl(''),
-    endUnit: new FormControl(''),
-    pickupTime: new FormControl(''),
-    dropoffTime: new FormControl(''),
-    orderNumber: new FormControl(''),
-    note: new FormControl(''),
-    exclude: new FormControl('')
+  // Typed FormGroup for better compile-time safety
+  tripForm: FormGroup<{
+    shift: FormControl<IShift | 'new' | null>;
+    service: FormControl<string | null>;
+    region: FormControl<string | null>;
+    place: FormControl<string | null>;
+    type: FormControl<string | null>;
+    name: FormControl<string | null>;
+    distance: FormControl<number | null | string>;
+    startOdometer: FormControl<number | null | string>;
+    endOdometer: FormControl<number | null | string>;
+    pay: FormControl<number | null | string>;
+    tip: FormControl<number | null | string>;
+    bonus: FormControl<number | null | string>;
+    cash: FormControl<number | null | string>;
+    startAddress: FormControl<string | null>;
+    endAddress: FormControl<string | null>;
+    endUnit: FormControl<string | null>;
+    pickupTime: FormControl<string | null>;
+    dropoffTime: FormControl<string | null>;
+    orderNumber: FormControl<string | null>;
+    note: FormControl<string | null>;
+    exclude: FormControl<string | null>;
+  }> = new FormGroup({
+    shift: new FormControl<IShift | 'new' | null>(null),
+    service: new FormControl<string | null>(null),
+    region: new FormControl<string | null>(null),
+    place: new FormControl<string | null>(null),
+    type: new FormControl<string | null>(null),
+    name: new FormControl<string | null>(null),
+    distance: new FormControl<number | null | string>(null),
+    startOdometer: new FormControl<number | null | string>(null),
+    endOdometer: new FormControl<number | null | string>(null),
+    pay: new FormControl<number | null | string>(null),
+    tip: new FormControl<number | null | string>(null),
+    bonus: new FormControl<number | null | string>(null),
+    cash: new FormControl<number | null | string>(null),
+    startAddress: new FormControl<string | null>(null),
+    endAddress: new FormControl<string | null>(null),
+    endUnit: new FormControl<string | null>(null),
+    pickupTime: new FormControl<string | null>(null),
+    dropoffTime: new FormControl<string | null>(null),
+    orderNumber: new FormControl<string | null>(null),
+    note: new FormControl<string | null>(null),
+    exclude: new FormControl<string | null>(null),
   });
 
   isNewShift: boolean = true;
@@ -117,6 +145,7 @@ export class TripFormComponent implements OnInit {
   selectedShift: IShift | undefined;
 
   title: string = "Add Trip";
+
   constructor(
       @Optional() public dialogRef: MatDialogRef<TripFormComponent>,
       @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
@@ -177,97 +206,30 @@ export class TripFormComponent implements OnInit {
     return shift;
   }
 
-  private async createTrip(shift: IShift): Promise<ITrip> {
-    let trip: ITrip = this.data ?? {} as ITrip;
-
-    trip.key = shift.key;
-    trip.date = shift.date;
-    trip.service = shift.service;
-    trip.number = shift.number ?? 0;
-
-    trip.region = this.tripForm.value.region ?? "";
-    trip.startAddress = this.tripForm.value.startAddress ?? "";
-    trip.endAddress = this.tripForm.value.endAddress ?? "";
-    trip.endUnit = this.tripForm.value.endUnit ?? "";
-    trip.distance = NumberHelper.toNullableNumber(this.tripForm.value.distance);
-
-    // Store converted values to avoid redundant calls
-    const pay = NumberHelper.toNullableNumber(this.tripForm.value.pay);
-    const tip = NumberHelper.toNullableNumber(this.tripForm.value.tip);
-    const bonus = NumberHelper.toNullableNumber(this.tripForm.value.bonus);
-    trip.pay = pay;
-    trip.tip = tip;
-    trip.bonus = bonus;
-    trip.cash = NumberHelper.toNullableNumber(this.tripForm.value.cash);
-    // total is a calculated field, but ensure nulls are handled
-    trip.total = (
-      NumberHelper.toNumber(pay) +
-      NumberHelper.toNumber(tip) +
-      NumberHelper.toNumber(bonus)
-    );
-
-    trip.startOdometer = this.tripForm.value.startOdometer;
-    trip.endOdometer = this.tripForm.value.endOdometer;
-    
-    trip.name = this.tripForm.value.name ?? "";
-    trip.place = this.tripForm.value.place ?? "";
-    trip.type = this.tripForm.value.type ?? "";
-    trip.note = this.tripForm.value.note ?? "";
-    trip.orderNumber = this.tripForm.value.orderNumber?.toLocaleUpperCase() ?? "";
-    trip.exclude = this.tripForm.value.exclude ? true : false;
-    trip.saved = false;
-    
-    // Set form properties depending on edit/add
-    if (this.data?.id) {
-      updateAction(trip, ActionEnum.Update);
-      trip.pickupTime = this.tripForm.value.pickupTime ?? "";
-      trip.dropoffTime = this.tripForm.value.dropoffTime ?? "";
-    }
-    else {
-      trip.rowId = await this._tripService.getMaxRowId() + 1;
-      updateAction(trip, ActionEnum.Add);
-      trip.pickupTime = DateHelper.getTimeString(new Date);
-    }
-
-    let duration = DateHelper.getDurationSeconds(trip.pickupTime, trip.dropoffTime);
-    if (duration)
-      trip.duration = DateHelper.getDurationString(duration);
-
-    if (trip.total && duration) {
-      trip.amountPerTime = trip.total / DateHelper.getHoursFromSeconds(duration);
-    }
-
-    if (trip.total && trip.distance) {
-      trip.amountPerDistance = trip.total / trip.distance;
-    }
-
-    return trip;
-  }
-
   private async loadForm() {
     if (!this.data) return;
   
-    // Set basic form values
+    // Set basic form values (convert 0 → empty string for better UX on numeric inputs)
     this.setFormValues({
-      service: this.data.service ?? '',
-      region: this.data.region ?? '',
-      type: this.data.type ?? '',
-      pay: this.data.pay === 0 ? '' : this.data.pay ?? '',
-      tip: this.data.tip ?? '',
-      bonus: this.data.bonus ?? '',
-      cash: this.data.cash ?? '',
-      startOdometer: this.data.startOdometer ?? '',
-      endOdometer: this.data.endOdometer ?? '',
-      place: this.data.place ?? '',
-      distance: this.data.distance ?? '',
-      name: this.data.name ?? '',
-      startAddress: this.data.startAddress ?? '',
-      endAddress: this.data.endAddress ?? '',
-      pickupTime: DateHelper.removeSeconds(this.data.pickupTime) ?? '',
-      dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime) ?? '',
-      note: this.data.note ?? '',
-      endUnit: this.data.endUnit ?? '',
-      orderNumber: this.data.orderNumber ?? '',
+      service: this.data.service,
+      region: this.data.region,
+      type: this.data.type,
+      pay: this.data.pay === 0 ? '' : this.data.pay,
+      tip: this.data.tip === 0 ? '' : this.data.tip,
+      bonus: this.data.bonus === 0 ? '' : this.data.bonus,
+      cash: this.data.cash === 0 ? '' : this.data.cash,
+      startOdometer: this.data.startOdometer === 0 ? '' : this.data.startOdometer,
+      endOdometer: this.data.endOdometer === 0 ? '' : this.data.endOdometer,
+      place: this.data.place,
+      distance: this.data.distance === 0 ? '' : this.data.distance,
+      name: this.data.name,
+      startAddress: this.data.startAddress,
+      endAddress: this.data.endAddress,
+      pickupTime: DateHelper.removeSeconds(this.data.pickupTime),
+      dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime),
+      note: this.data.note,
+      endUnit: this.data.endUnit,
+      orderNumber: this.data.orderNumber,
       exclude: this.data.exclude ? 'true' : ''
     });
   
@@ -285,10 +247,11 @@ export class TripFormComponent implements OnInit {
     await this.showAddressNames();
   }
 
-  private setFormValues(values: { [key: string]: any }): void {
+  private setFormValues(values: Partial<TripFormValue>): void {
     Object.keys(values).forEach(key => {
-      if (this.tripForm.controls[key as keyof typeof this.tripForm.controls]) {
-        (this.tripForm.controls[key as keyof typeof this.tripForm.controls] as FormControl).setValue(values[key]);
+      const controlKey = key as keyof typeof this.tripForm.controls;
+      if (this.tripForm.controls[controlKey]) {
+        (this.tripForm.controls[controlKey] as FormControl<any>).setValue((values as any)[key]);
       }
     });
   }
@@ -326,13 +289,26 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    await this.onShiftSelected(this.tripForm.value.shift);
+    const formShift = this.tripForm.value.shift;
+    await this.onShiftSelected(formShift === 'new' ? null : (formShift as IShift | null | undefined));
   }
 
   public async addTrip() {
     try {
+      // Ensure pickupTime defaults to now when adding a new trip if not provided
+      if (!this.tripForm.controls.pickupTime.value) {
+        this.tripForm.controls.pickupTime.setValue(DateHelper.getTimeString());
+      }
+
       const shift = await this.createShift();
-      const trip = await this.createTrip(shift);
+      const maxRowId = await this._tripService.getMaxRowId();
+      const trip = await TripHelper.createFromFormValue(
+        this.tripForm.value as TripFormValue,
+        shift,
+        undefined,
+        maxRowId
+      );
+      
       await this._tripService.add(trip);
 
       await this._gigLoggerService.calculateShiftTotals([shift]);
@@ -359,7 +335,11 @@ export class TripFormComponent implements OnInit {
       }
 
       const shift = await this.createShift();
-      const trip = await this.createTrip(shift);
+      const trip = await TripHelper.createFromFormValue(
+        this.tripForm.value as TripFormValue,
+        shift,
+        this.data
+      );
 
       updateAction(shift, ActionEnum.Update);
       this._shiftService.update([shift]);
@@ -427,19 +407,12 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    if (shift.service) {
-      this.tripForm.controls.service.setValue(shift.service);
-    } else {
-      const recentService = shifts.filter(x => x.service)[0];
-      this.tripForm.controls.service.setValue(recentService.service);
-    }
-
-    if (shift.region) {
-      this.tripForm.controls.region.setValue(shift.region);
-    } else {
-      const recentRegion = shifts.filter(x => x.region)[0];
-      this.tripForm.controls.region.setValue(recentRegion?.region);
-    }
+    // Use helper to get value from shift or fallback to recent shift with that value
+    const service = getValueOrFallback(shift, shifts, 'service');
+    const region = getValueOrFallback(shift, shifts, 'region');
+    
+    this.tripForm.controls.service.setValue(service);
+    this.tripForm.controls.region.setValue(region);
 
     this.tripForm.controls.service.updateValueAndValidity();
   }
@@ -516,49 +489,39 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
+    // Use helper to get values with fallback
     if (!this.tripForm.controls.startAddress.value) {
-      if (recentTrip.startAddress) {
-        this.tripForm.controls.startAddress.setValue(recentTrip.startAddress);
-      } else {
-        const recentAddress = recentTrips.filter((x: ITrip) => x.startAddress)[0];
-        this.tripForm.controls.startAddress.setValue(recentAddress?.startAddress ?? '');
-      }
+      const startAddress = getValueOrFallback(recentTrip, recentTrips, 'startAddress');
+      this.tripForm.controls.startAddress.setValue(startAddress);
     }
 
-    if (recentTrip.type) {
-      this.tripForm.controls.type.setValue(recentTrip.type);
-    } else {
-      const recentType = recentTrips.filter((x: ITrip) => x.type)[0];
-      this.tripForm.controls.type.setValue(recentType?.type ?? '');
-    }
+    const type = getValueOrFallback(recentTrip, recentTrips, 'type');
+    this.tripForm.controls.type.setValue(type);
 
     if (!this.showPickupAddress) {
       this.togglePickupAddress();
     }
   }
 
-  toggleAdvancedPay() {
-    this.showAdvancedPay = !this.showAdvancedPay;
+  private toggleSection(section: 'showAdvancedPay' | 'showOdometer' | 'showOrder' | 'showPickupAddress', showMsg: string, hideMsg: string) {
+    this[section] = !this[section];
+    this._snackBar.open(this[section] ? showMsg : hideMsg);
+  }
 
-    this.showAdvancedPay ? this._snackBar.open("Showing Additional Payment Fields") : this._snackBar.open("Hiding Additional Payment Fields");
+  toggleAdvancedPay() {
+    this.toggleSection('showAdvancedPay', 'Showing Additional Payment Fields', 'Hiding Additional Payment Fields');
   }
 
   toggleOdometer() {
-    this.showOdometer = !this.showOdometer;
-
-    this.showOdometer ? this._snackBar.open("Showing Odometer Fields") : this._snackBar.open("Hiding Odometer Fields");
+    this.toggleSection('showOdometer', 'Showing Odometer Fields', 'Hiding Odometer Fields');
   }
 
   toggleOrder() {
-    this.showOrder = !this.showOrder;
-
-    this.showOrder ? this._snackBar.open("Showing Order Fields") : this._snackBar.open("Hiding Order Fields");
+    this.toggleSection('showOrder', 'Showing Order Fields', 'Hiding Order Fields');
   }
 
   togglePickupAddress() {
-    this.showPickupAddress = !this.showPickupAddress;
-
-    this.showPickupAddress ? this._snackBar.open("Showing Pickup Address") : this._snackBar.open("Hiding Pickup Address");
+    this.toggleSection('showPickupAddress', 'Showing Pickup Address', 'Hiding Pickup Address');
   }
   
   compareShifts(o1: IShift, o2: IShift): boolean {
@@ -590,29 +553,33 @@ export class TripFormComponent implements OnInit {
   // --- Voice input result handler ---
   async onVoiceResult(result: any) {
     if (!result) return;
-    if (result.service) this.tripForm.controls.service.setValue(result.service);
 
-    if (result.pay) this.tripForm.controls.pay.setValue(result.pay);
-    if (result.tip) this.tripForm.controls.tip.setValue(result.tip);
-    if (result.distance) this.tripForm.controls.distance.setValue(result.distance);
-    if (result.type) this.tripForm.controls.type.setValue(result.type);
-    if (result.place) {
-      this.tripForm.controls.place.setValue(result.place);
-      // Ensure type and address are updated when place is set
-      this.selectPlace();
+    // Mapping of voice fields to form controls and their handlers
+    const fieldMap: Array<{key: string, handler: (val: any) => void | Promise<void>}> = [
+      { key: 'service', handler: (v) => this.tripForm.controls.service.setValue(v) },
+      { key: 'pay', handler: (v) => this.tripForm.controls.pay.setValue(v) },
+      { key: 'tip', handler: (v) => this.tripForm.controls.tip.setValue(v) },
+      { key: 'distance', handler: (v) => this.tripForm.controls.distance.setValue(v) },
+      { key: 'type', handler: (v) => this.tripForm.controls.type.setValue(v) },
+      { key: 'place', handler: async (v) => { this.tripForm.controls.place.setValue(v); await this.selectPlace(); }},
+      { key: 'name', handler: (v) => this.setName(v) },
+      { key: 'bonus', handler: (v) => this.tripForm.controls.bonus.setValue(v) },
+      { key: 'cash', handler: (v) => this.tripForm.controls.cash.setValue(v) },
+      { key: 'pickupAddress', handler: (v) => this.setPickupAddress(v) },
+      { key: 'dropoffAddress', handler: (v) => this.setDestinationAddress(v) },
+      { key: 'startOdometer', handler: (v) => this.tripForm.controls.startOdometer.setValue(v) },
+      { key: 'endOdometer', handler: (v) => this.tripForm.controls.endOdometer.setValue(v) },
+      { key: 'unitNumber', handler: (v) => this.tripForm.controls.endUnit.setValue(v) },
+      { key: 'orderNumber', handler: (v) => this.tripForm.controls.orderNumber.setValue(v) },
+    ];
+
+    // Apply all fields from result that exist in the map
+    for (const { key, handler } of fieldMap) {
+      if (result[key] !== undefined) {
+        await handler(result[key]);
+      }
     }
-    if (result.name) this.setName(result.name);
-    if (result.bonus) this.tripForm.controls.bonus.setValue(result.bonus);
-    if (result.cash) this.tripForm.controls.cash.setValue(result.cash);
 
-    if (result.pickupAddress) this.setPickupAddress(result.pickupAddress);
-    if (result.dropoffAddress) this.setDestinationAddress(result.dropoffAddress);
-
-    if (result.startOdometer) this.tripForm.controls.startOdometer.setValue(result.startOdometer);
-    if (result.endOdometer) this.tripForm.controls.endOdometer.setValue(result.endOdometer);
-    if (result.unitNumber) this.tripForm.controls.endUnit.setValue(result.unitNumber);
-    if (result.orderNumber) this.tripForm.controls.orderNumber.setValue(result.orderNumber);
-    // Add more fields as needed
     this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
   }
 }
