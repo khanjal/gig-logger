@@ -1,8 +1,8 @@
 import { TripHelper } from './trip.helper';
-import { ITrip } from '@interfaces/trip.interface';
-import { IShift } from '@interfaces/shift.interface';
-import { TripFormValue } from '@form-types/trip-form.types';
-import { ActionEnum } from '@enums/action.enum';
+import { ITrip } from '../interfaces/trip.interface';
+import { IShift } from '../interfaces/shift.interface';
+import { TripFormValue } from '../types/trip-form.types';
+import { ActionEnum } from '../enums/action.enum';
 
 describe('TripHelper', () => {
   describe('createFromFormValue', () => {
