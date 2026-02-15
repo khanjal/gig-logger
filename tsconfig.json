@@ -50,6 +50,7 @@
       "@models/*": ["./src/app/shared/models/*"],
       "@pipes/*": ["./src/app/shared/pipes/*"],
       "@services/*": ["./src/app/shared/services/*"],
+      "@form-types/*": ["./src/app/shared/types/*"],
       "@utils/*": ["./src/app/shared/utils/*"],
       "@test-harness": ["./src/test-harness"],
     },
