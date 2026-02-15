@@ -6,11 +6,12 @@
   </div>
 
   <ng-container *ngIf="isAuthenticated">
-    <div class="mb-6" *ngIf="!spreadsheets?.length">
-      <h2 class="text-2xl font-semibold text-primary dark:text-primary">Set Up Your Spreadsheet</h2>
-      <app-sheet-link (parentReload)="reload()"></app-sheet-link>
-      <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
-    </div>
+    <app-base-card title="Set Up Your Spreadsheet" variant="default" padding="md" class="mb-6" *ngIf="!spreadsheets?.length">
+      <div class="flex flex-col gap-4">
+        <app-sheet-link (parentReload)="reload()"></app-sheet-link>
+        <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
+      </div>
+    </app-base-card>
 
     <app-base-card title="Current Spreadsheets" variant="default" padding="md" class="mb-6" *ngIf="spreadsheets?.length">
       <div *ngFor="let spreadsheet of spreadsheets" class="mb-4">
@@ -34,7 +35,7 @@
     </app-base-card>
 
     <!-- Advanced Settings Toggle -->
-    <div class="mb-6" *ngIf="spreadsheets?.length">
+    <div class="mb-6">
       <app-base-rect-button 
         [variant]="showAdvanced ? 'primary' : 'secondary'"
         [icon]="showAdvanced ? 'expand_less' : 'expand_more'"
