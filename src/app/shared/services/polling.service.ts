@@ -10,6 +10,7 @@ import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
+import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { BehaviorSubject } from 'rxjs';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
@@ -265,8 +266,10 @@ export class PollingService implements OnDestroy {
       const sheetData = {} as ISheet;
       const defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
       sheetData.properties = { id: defaultSheet.id, name: "" };
-      sheetData.trips = await this._tripService.getUnsaved();
-      sheetData.shifts = await this._shiftService.getUnsavedShifts();
+      
+      // Apply serialization to convert 0 → null for input fields
+      sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
+      sheetData.shifts = SheetSerializerHelper.serializeShifts(await this._shiftService.getUnsavedShifts());
       sheetData.expenses = await this._expensesService.getUnsaved();
 
       // Start background sync with status updates

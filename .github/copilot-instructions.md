@@ -147,9 +147,41 @@ Migration note: Replace all remaining `<app-base-button>` usages with the approp
 - **API communication** through centralized `ApiService` with typed endpoints
 - **Error handling** with `LoggerService` and `MatSnackBar` for user feedback
 
+### Code Documentation Standards
+
+**Helper Functions & Utilities**:
+- Use JSDoc-style comments for all exported/public functions
+- Include `@param` for each parameter with description
+- Include `@returns` describing the return value
+- Add `@example` for complex functions showing typical usage
+- Explain edge cases (e.g., "Returns 0 for empty arrays")
+
+Example:
+```typescript
+/**
+ * Gets a value from an item or falls back to the first item in an array that has that property.
+ * Useful for forms that need to default to the most recent non-empty value.
+ * @param item The primary item to get the value from
+ * @param fallbackArray Array to search if primary item doesn't have the value
+ * @param propertyName The property name to retrieve
+ * @returns The value or undefined
+ * 
+ * @example
+ * const shift = shifts[0];
+ * const service = getValueOrFallback(shift, shifts, 'service');
+ * // Returns shift.service if truthy, otherwise finds first shift with service property
+ */
+export function getValueOrFallback<T>(item: T | undefined, fallbackArray: T[], propertyName: keyof T): any {
+```
+
+**Services & Components**:
+- Document complex business logic with inline comments
+- Explain *why* decisions were made, not just *what* the code does
+- Add comments for non-obvious workarounds or browser-specific fixes
+
 ### Form Input Nullability
-- **Input fields should allow null**: When designing form-backed models and interfaces, prefer nullable numeric/string fields for values that are user inputs (e.g., `pay`, `tip`, `distance`, `startOdometer`, `endOdometer`, `cash`). This prevents empty inputs from being serialized as `0` or `''` and written into Google Sheets. Store `null` for empty inputs and only convert to numbers when a user actually provides a value.
-- **Calculated fields need not be nullable**: Calculated or derived fields (e.g., `total`, `amountPerTime`, `amountPerDistance`) can remain non-nullable or handled separately since they are not direct user inputs and will be computed from existing values.
+- **Form models allow null, domain models use numbers**: Form-specific types (e.g., `TripFormValue`) allow `null` for user inputs to represent "not provided" state. Domain models (`ITrip`, `IAmount`) use non-nullable numbers for calculations. The boundary conversion (form → domain) converts `null`/empty to `0` using `NumberHelper.toNumber()`. This keeps calculations simple while preventing unnecessary zeros in the UI.
+- **Sheet serialization**: Backend/mapper logic should omit fields with value `0` when writing to Google Sheets to avoid clutter. Domain models work with `0` internally, but sheets see empty cells for unprovided values.
 
 ### Authentication & Authorization
 - Google OAuth2 via `AuthGoogleService` and `AuthService`

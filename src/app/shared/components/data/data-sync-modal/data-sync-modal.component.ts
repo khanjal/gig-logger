@@ -8,6 +8,7 @@ import { map, Subscription, timer } from 'rxjs';
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
+import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 
 // Application-specific imports - Interfaces
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
@@ -159,8 +160,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             }
         }
         
-        sheetData.shifts = unsavedShifts;
-        sheetData.trips = await this._tripService.getUnsaved();
+        // Apply serialization to convert 0 → null for input fields
+        sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
+        sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
         sheetData.expenses = await this._expensesService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");

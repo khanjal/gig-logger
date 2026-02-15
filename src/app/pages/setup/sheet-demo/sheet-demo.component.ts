@@ -21,6 +21,7 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
   templateUrl: './sheet-demo.component.html',
   styleUrl: './sheet-demo.component.scss'
 })
+
 export class SheetDemoComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
