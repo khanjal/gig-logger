@@ -117,8 +117,15 @@ export class BaseButtonComponent {
     let hasVisibleText = false;
     if (contentEl) {
       const text = contentEl.textContent?.trim() ?? '';
-      const style = window.getComputedStyle(contentEl);
-      hasVisibleText = !!text && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && contentEl.offsetWidth > 0 && contentEl.offsetHeight > 0;
+      if (!text) {
+        hasVisibleText = false;
+      } else if (this.loading) {
+        hasVisibleText = false;
+      } else if (this.fab && !this.extended) {
+        hasVisibleText = false;
+      } else {
+        hasVisibleText = true;
+      }
     }
 
     const innerBtn = host.querySelector('button') as HTMLElement | null;
