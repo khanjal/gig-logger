@@ -12,7 +12,7 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 @Component({
   selector: 'app-sheet-demo',
   standalone: true,
-    imports: [
+  imports: [
     CommonModule,
     MatIconModule,
     MatProgressSpinnerModule, 
