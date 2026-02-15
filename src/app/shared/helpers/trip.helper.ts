@@ -85,11 +85,12 @@ export class TripHelper {
         trip.saved = false;
 
         // Handle add/update logic
-        if (existingTrip?.id) {
+        if (existingTrip && existingTrip.id !== undefined && existingTrip.id !== null) {
             // Update existing trip
             updateAction(trip, ActionEnum.Update);
             trip.pickupTime = formValue.pickupTime ?? '';
             trip.dropoffTime = formValue.dropoffTime ?? '';
+            trip.rowId = existingTrip.rowId;
         } else {
             // Create new trip
             if (maxRowId === undefined) {
@@ -97,7 +98,9 @@ export class TripHelper {
             }
             trip.rowId = maxRowId + 1;
             updateAction(trip, ActionEnum.Add);
-            trip.pickupTime = DateHelper.getTimeString(new Date());
+            // Use form times if provided, otherwise empty string (form handles defaults)
+            trip.pickupTime = formValue.pickupTime ?? '';
+            trip.dropoffTime = formValue.dropoffTime ?? '';
         }
 
         // Calculate derived time-based fields
