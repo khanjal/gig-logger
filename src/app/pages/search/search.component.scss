@@ -22,19 +22,21 @@
 
     .filter-badge {
       position: absolute;
-      top: 4px;
-      right: 4px;
-      background-color: var(--primary-600);
-      color: var(--color-text-inverse);
+      top: -6px;
+      right: -6px;
+      background-color: var(--error-500);
+      color: white;
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      font-size: 10px;
-      font-weight: 600;
+      width: 25px;
+      height: 25px;
+      font-size: 11px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       line-height: 1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      border: 2px solid white;
     }
   }
 

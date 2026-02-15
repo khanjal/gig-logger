@@ -181,6 +181,9 @@
   
   .content-area {
     padding: 12px;
+    /* restore large bottom padding on mobile so the last list item isn't hidden
+       behind the fixed action bar; include safe-area inset for phones with home indicator */
+    padding-bottom: calc(140px + env(safe-area-inset-bottom));
   }
   
   .sheets-grid {

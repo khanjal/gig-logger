@@ -3,6 +3,7 @@ import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { TripService } from '@services/sheets/trip.service';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { NoSecondsPipe as NoSecondsPipe } from '@pipes/no-seconds.pipe';
@@ -11,17 +12,19 @@ import { LoggerService } from '@services/logger.service';
 import { DateHelper } from '@helpers/date.helper';
 
 @Component({
-    selector: 'app-shift-trips-table',
-    templateUrl: './shift-trips-table.component.html',
-    styleUrl: './shift-trips-table.component.scss',
-    standalone: true,    imports: [
-        NgIf,
-        NgClass,
-        MatIcon,
-        CurrencyPipe,
-        NoSecondsPipe,
-        TruncatePipe,
-    ],
+  selector: 'app-shift-trips-table',
+  templateUrl: './shift-trips-table.component.html',
+  standalone: true,
+  imports: [
+    NgIf,
+    NgClass,
+    MatIcon,
+    BaseFabButtonComponent,
+    CurrencyPipe,
+    NoSecondsPipe,
+    TruncatePipe,
+  ],
+  styleUrls: ['./shift-trips-table.component.scss'],
 })
 
 export class ShiftTripsTableComponent {

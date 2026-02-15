@@ -6,6 +6,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseButtonDirective } from '@directives/base-button.directive';
 
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -28,7 +30,13 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective]
+    // directive
+    // Use path to directive
+    // standalone directives must be added to imports to be usable in template
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: imported for template
+    // Import below
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
@@ -44,6 +52,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
+  // Parsed date and computed format for display
+  parsedTripDate: Date | null = null;
+  dateFormat: string = 'EEE, MMM d';
   
   // Distance unit properties
   get distanceUnit(): string {
@@ -93,12 +104,32 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.setExpansionState();
     this.prefers24Hour = DateHelper.prefers24Hour();
+    this.updateDateFormat();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // Re-evaluate expansion state when trip data changes
     if (changes['trip'] && changes['trip'].currentValue) {
       this.setExpansionState();
+      this.updateDateFormat();
+    }
+  }
+
+  private updateDateFormat() {
+    if (!this.trip || !this.trip.date) {
+      this.parsedTripDate = null;
+      return;
+    }
+
+    // Trip dates are stored as YYYY-MM-DD; parse locally to avoid timezone shifts
+    try {
+      this.parsedTripDate = DateHelper.parseLocalDate(this.trip.date);
+      const tripYear = this.parsedTripDate.getFullYear();
+      const now = new Date();
+      this.dateFormat = tripYear === now.getFullYear() ? "EEE, MMM d" : "EEE, MMM d, ''yy";
+    } catch (e) {
+      this.parsedTripDate = null;
+      this.dateFormat = 'EEE, MMM d';
     }
   }
 

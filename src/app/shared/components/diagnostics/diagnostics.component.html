@@ -1,9 +1,8 @@
 <div class="diagnostics-container p-4 bg-surface-2 rounded-lg shadow">
   <div class="diagnostics-actions mb-4 flex justify-end">
-    <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading" class="flex items-center gap-2">
-      <mat-icon>refresh</mat-icon>
-      <span>{{ isLoading ? 'Running...' : 'Run Diagnostics' }}</span>
-    </button>
+    <app-base-rect-button variant="primary" [icon]="'refresh'" [loading]="isLoading" (clicked)="runDiagnostics()">
+      {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
+    </app-base-rect-button>
   </div>
   <div class="diagnostics-list space-y-6">
     <div *ngFor="let item of dataDiagnostics" class="mb-6">

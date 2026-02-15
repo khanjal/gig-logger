@@ -30,20 +30,21 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
 import { environment } from 'src/environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
     selector: 'app-trip',
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatFabButton, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule]
+    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseRectButtonComponent]
 })
+
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
@@ -278,10 +279,13 @@ export class TripComponent implements OnInit, OnDestroy {
     }
 
     this.reloading = true;
-
-    await this.load(!isParentReload); // Don't show spinner if it's a parent reload
-
-    this.reloading = false;
+    try {
+      await this.load(!isParentReload); // Don't show spinner if it's a parent reload
+    } catch (err) {
+      this.logger.error('Error during reload:', err);
+    } finally {
+      this.reloading = false;
+    }
 
     if (anchor) {
       this._viewportScroller.scrollToAnchor(anchor);

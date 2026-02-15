@@ -3,8 +3,8 @@ export interface IConfirmDialog {
     message: string;
     trueText: string;
     trueIcon?: string;
-    trueColor?: "primary" | "accent" | "warn";
+    trueColor?: "primary" | "accent" | "danger";
     falseText: string;
     falseIcon?: string;
-    falseColor?: "primary" | "accent" | "warn";
+    falseColor?: "primary" | "accent" | "danger";
 }

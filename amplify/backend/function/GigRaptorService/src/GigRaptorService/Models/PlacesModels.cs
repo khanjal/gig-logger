@@ -21,6 +21,9 @@ public class PlacesAutocompleteRequest
     
     [JsonPropertyName("userLongitude")]
     public double? UserLongitude { get; set; }
+    
+    [JsonPropertyName("radiusMeters")]
+    public double? RadiusMeters { get; set; }
 }
 
 public class PlaceDetailsRequest

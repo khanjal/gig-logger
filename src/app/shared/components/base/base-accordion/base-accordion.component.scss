@@ -1,0 +1,19 @@
+@use '../../../styles/color-vars.scss' as vars;
+
+:host {
+  /* Local accordion tokens (component-scoped) - use runtime surface variables so header and body match */
+  --accordion-bg: var(--color-surface-secondary);
+  --accordion-bg-dark: var(--color-surface-secondary);
+  --accordion-title-size: 1rem;
+}
+
+.accordion {
+  width: 100%;
+  border-radius: 8px;
+}
+
+:host-context(html.theme-dark) {
+  .accordion {
+    color: var(--color-text-primary);
+  }
+}

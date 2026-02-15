@@ -1,15 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule, MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { ThemePreference } from '@services/theme.service';
+import { BaseRectButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-quick-controls',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatTooltipModule, MatSlideToggleModule],
+  imports: [CommonModule, MatIconModule, MatSlideToggleModule, BaseRectButtonComponent],
   templateUrl: './quick-controls.component.html',
   styleUrl: './quick-controls.component.scss'
 })
@@ -25,22 +24,19 @@ export class QuickControlsComponent {
 
   private themeCycle: ThemePreference[] = ['light', 'dark', 'system'];
 
-  onThemeCycle(event: MouseEvent): void {
-    event.stopPropagation();
+  onThemeCycle(): void {
     const currentIndex = this.themeCycle.indexOf(this.themePreference);
     const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % this.themeCycle.length;
     const nextTheme = this.themeCycle[nextIndex];
     this.themeChange.emit(nextTheme);
   }
 
-  onSaveClick(event: MouseEvent): void {
-    event.stopPropagation();
+  onSaveClick(): void {
     if (this.status === 'syncing') return;
     this.save.emit();
   }
 
-  onRefreshClick(event: MouseEvent): void {
-    event.stopPropagation();
+  onRefreshClick(): void {
     if (this.status === 'syncing') return;
     this.refresh.emit();
   }

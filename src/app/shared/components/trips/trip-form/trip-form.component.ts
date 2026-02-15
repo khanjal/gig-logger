@@ -45,11 +45,12 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
-import { MatFabButton, MatButton, MatMiniFabButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatInput } from '@angular/material/input';
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { TripsTableBasicComponent } from '../trips-table-basic/trips-table-basic.component';
+import { BaseInputComponent } from '@components/base/base-input/base-input.component';
+import { BaseToggleButtonComponent } from '@components/base/base-toggle-button/base-toggle-button.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseAccordionComponent } from '@components/base/base-accordion/base-accordion.component';
+import { BaseAccordionItemComponent } from '@components/base/base-accordion/base-accordion-item.component';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
@@ -59,7 +60,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, MatFabButton, MatMiniFabButton, MatIcon, MatInput, NgIf, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, TripsTableBasicComponent, MatButton, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -248,25 +249,25 @@ export class TripFormComponent implements OnInit {
   
     // Set basic form values
     this.setFormValues({
-      service: this.data.service,
-      region: this.data.region,
-      type: this.data.type,
-      pay: this.data.pay === 0 ? '' : this.data.pay,
-      tip: this.data.tip,
-      bonus: this.data.bonus,
-      cash: this.data.cash,
-      startOdometer: this.data.startOdometer,
-      endOdometer: this.data.endOdometer,
-      place: this.data.place,
-      distance: this.data.distance,
-      name: this.data.name,
-      startAddress: this.data.startAddress,
-      endAddress: this.data.endAddress,
-      pickupTime: DateHelper.removeSeconds(this.data.pickupTime),
-      dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime),
-      note: this.data.note,
-      endUnit: this.data.endUnit,
-      orderNumber: this.data.orderNumber,
+      service: this.data.service ?? '',
+      region: this.data.region ?? '',
+      type: this.data.type ?? '',
+      pay: this.data.pay === 0 ? '' : this.data.pay ?? '',
+      tip: this.data.tip ?? '',
+      bonus: this.data.bonus ?? '',
+      cash: this.data.cash ?? '',
+      startOdometer: this.data.startOdometer ?? '',
+      endOdometer: this.data.endOdometer ?? '',
+      place: this.data.place ?? '',
+      distance: this.data.distance ?? '',
+      name: this.data.name ?? '',
+      startAddress: this.data.startAddress ?? '',
+      endAddress: this.data.endAddress ?? '',
+      pickupTime: DateHelper.removeSeconds(this.data.pickupTime) ?? '',
+      dropoffTime: DateHelper.removeSeconds(this.data.dropoffTime) ?? '',
+      note: this.data.note ?? '',
+      endUnit: this.data.endUnit ?? '',
+      orderNumber: this.data.orderNumber ?? '',
       exclude: this.data.exclude ? 'true' : ''
     });
   

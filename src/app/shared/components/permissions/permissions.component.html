@@ -1,16 +1,13 @@
-<mat-card class="permissions-card bg-surface text-gray-800 dark:text-gray-200">
-  <mat-card-header>
-    <mat-card-title class="flex items-center gap-3">
-      <mat-icon>settings</mat-icon>
-      <span>App Permissions</span>
-    </mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <p class="text-gray-600 dark:text-gray-200 mb-4">
-      Manage permissions for place search and voice input features.
-    </p>
+<app-base-card 
+  title="App Permissions"
+  [titleIcon]="'settings'"
+  variant="default"
+  padding="md">
+  <p class="text-gray-600 dark:text-gray-200 mb-4">
+    Manage permissions for place search and voice input features.
+  </p>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 gap-3">
       <!-- Location Permission -->
       <div class="permission-item">
         <div class="permission-header">
@@ -29,12 +26,14 @@
             <span>{{ getStateText(locationPermission.state) }}</span>
           </div>
           
-          <div class="permission-actions">
+          <div class="permission-actions flex justify-end">
             @if (locationPermission.canRequest) {
-              <button mat-raised-button color="primary" (click)="requestLocation()">
-                <mat-icon>check</mat-icon>
-                Enable
-              </button>
+            <app-base-rect-button 
+              variant="primary"
+              [icon]="'check'"
+              (clicked)="requestLocation()">
+              Enable
+            </app-base-rect-button>
             }
           </div>
         </div>
@@ -71,12 +70,14 @@
             <span>{{ getStateText(microphonePermission.state) }}</span>
           </div>
           
-          <div class="permission-actions">
+          <div class="permission-actions flex justify-end">
             @if (microphonePermission.canRequest) {
-              <button mat-raised-button color="primary" (click)="requestMicrophone()">
-                <mat-icon>check</mat-icon>
+              <app-base-rect-button 
+                variant="primary"
+                [icon]="'check'"
+                (clicked)="requestMicrophone()">
                 Enable
-              </button>
+              </app-base-rect-button>
             }
           </div>
         </div>
@@ -101,11 +102,13 @@
       locationPermission.state === 'denied' || locationPermission.state === 'granted' ||
       microphonePermission.state === 'denied' || microphonePermission.state === 'granted'
     ) {
-      <div class="permissions-footer">
-        <button mat-fab [extended]="true" color="primary" class="flex items-center gap-3" (click)="openBrowserSettings()">
-          <mat-icon>settings</mat-icon>
-          Browser Settings
-        </button>
+      <div class="permissions-footer flex justify-end">
+      <app-base-rect-button 
+        variant="primary"
+        [icon]="'settings'"
+        (clicked)="openBrowserSettings()">
+        Browser Settings
+      </app-base-rect-button>
       </div>
     }
     <div class="permissions-footer">
@@ -114,5 +117,4 @@
         Your privacy matters. These permissions are only used for the features described and never shared.
       </p>
     </div>
-  </mat-card-content>
-</mat-card>
+  </app-base-card>

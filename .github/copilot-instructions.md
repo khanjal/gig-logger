@@ -41,6 +41,106 @@ src/app/
 - Example component structure follows `trips.component.ts` pattern
 - **Parent-child communication**: Some components use event emitters and input properties for data flow
 
+### Reusable UI Components
+
+#### Button Components (use specific variants — NOT `app-base-button`)
+We migrated away from a single generic `app-base-button` component. Always use the specialized button components instead:
+
+- `app-base-fab` — Floating action button (circular)
+- `app-base-rect` — Rectangular/standard action button
+- `app-base-icon` — Minimal icon-only button (input suffixes, nav)
+- `app-base-extended-fab` — FAB with label (if needed)
+
+**Usage rules**:
+- NEVER embed `<mat-icon>` inside a base button. Use the `icon` input.
+- Boolean inputs must use property binding: `[fab]="true"` (if applicable).
+- Use `iconColor` to set icon color (CSS value or CSS variable).
+- Use `noBackground="true"` or `[noBackground]="true"` on icon-only buttons in forms/navigation.
+
+Examples:
+
+```html
+<!-- Icon-only mini FAB (correct) -->
+<app-base-fab
+  fabStyle="mini"
+  [noBackground]="true"
+  [icon]="'clear'"
+  [iconColor]="'var(--error-500)'"
+  matSuffix
+  (clicked)="onClear()">
+</app-base-fab>
+
+<!-- Standard rectangular action -->
+<app-base-rect
+  variant="primary"
+  [icon]="'save'"
+  (clicked)="save()">
+  Save Changes
+</app-base-rect>
+
+<!-- Toggle mini FAB with dynamic variant -->
+<app-base-fab
+  fabStyle="mini"
+  [variant]="isActive ? 'primary' : 'secondary'"
+  [icon]="'drive_eta'"
+  (clicked)="toggle()">
+</app-base-fab>
+
+<!-- FAB with loading state -->
+<app-base-fab
+  variant="primary"
+  [loading]="isSaving"
+  (clicked)="submit()"
+  extended>
+  Submit
+</app-base-fab>
+```
+
+### Icon-only Rect Buttons
+When you need a rectangular button that shows only an icon (no visible label), follow these rules so the icon is centered and accessibility is preserved:
+
+- **Use the `icon` input** on the specialized component — do not project a `<mat-icon>` yourself.
+- The `BaseButtonComponent` automatically detects when an icon exists and there is no projected text and will add a `btn-icon-only` host class so styles can center the icon.
+- For small-screen templates where text is hidden with utility classes (e.g., `<span class="hidden sm:inline">`), add the helper class `icon-only-sm` to the `app-base-rect` element to force small-viewport centering.
+
+Example:
+
+```html
+<app-base-rect
+  class="icon-only-sm"      <!-- optional: helps small-screen centering -->
+  variant="secondary"
+  size="sm"
+  [icon]="'file_upload'"
+  title="Set Pickup Time"
+  (clicked)="setPickupTime()">
+  <span class="hidden sm:inline">Pickup</span>
+</app-base-rect>
+```
+
+Prefer this pattern over adding long Tailwind blobs to the button — if you need a different visual, add a variant in the base button component instead of overriding styles in each template.
+
+Available options (map to specific components as appropriate):
+- `variant`: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon'
+- `size`: 'sm' | 'md' | 'lg' (rect buttons)
+- `icon`: Material icon name (string)
+- `iconColor`: CSS color or variable
+- `iconPosition`: 'left' | 'right' (rect buttons)
+- `fabStyle`: 'regular' | 'mini' (FABs)
+- `extended`: boolean (FAB with label)
+- `noBackground`: boolean (icon-only)
+- `disabled`, `loading`, `fullWidth`
+
+Migration note: Replace all remaining `<app-base-button>` usages with the appropriate specialized component (`app-base-fab`, `app-base-rect`, `app-base-icon`, etc.) and follow the examples above.
+
+**Button Layout & Color Rules**
+- **Single Button, Right:** Align a lone action button to the right of the row. Use a wrapper like `class="flex justify-end"` so single-row actions sit on the right edge.
+- **Two Buttons, Opposite Sides:** For two actions, place them at opposite edges using `class="flex justify-between items-center"` (primary action typically on the right).
+- **Three or More, Even Spacing:** Use `class="flex justify-between"` (or `gap-x-*` with `flex`) to distribute three+ buttons evenly across the row.
+- **Default Color Rules:** Most buttons that perform actions should use `variant="primary"`.
+- **Cancel / Close:** Use `variant="secondary"` for buttons that dismiss modals or cancel flows.
+- **Undo / Remove / Dangerous Actions:** Use `variant="danger"` for destructive or undoable actions.
+- **Implementation Notes:** Prefer `app-base-rect-button` with the `variant` input. Use `fullWidth` for stacked lists or narrow contexts (e.g., address lists inside accordions). Avoid making all buttons full-width by default; reserve full-width for mobile-first or list items.
+
 ### Service Patterns
 - **Injectable services** with `providedIn: 'root'`
 - **Reactive data** using Dexie's `liveQuery()` for local storage
