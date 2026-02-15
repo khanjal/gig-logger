@@ -147,6 +147,10 @@ Migration note: Replace all remaining `<app-base-button>` usages with the approp
 - **API communication** through centralized `ApiService` with typed endpoints
 - **Error handling** with `LoggerService` and `MatSnackBar` for user feedback
 
+### Form Input Nullability
+- **Input fields should allow null**: When designing form-backed models and interfaces, prefer nullable numeric/string fields for values that are user inputs (e.g., `pay`, `tip`, `distance`, `startOdometer`, `endOdometer`, `cash`). This prevents empty inputs from being serialized as `0` or `''` and written into Google Sheets. Store `null` for empty inputs and only convert to numbers when a user actually provides a value.
+- **Calculated fields need not be nullable**: Calculated or derived fields (e.g., `total`, `amountPerTime`, `amountPerDistance`) can remain non-nullable or handled separately since they are not direct user inputs and will be computed from existing values.
+
 ### Authentication & Authorization
 - Google OAuth2 via `AuthGoogleService` and `AuthService`
 - JWT tokens stored in sessionStorage with automatic refresh on expiry
