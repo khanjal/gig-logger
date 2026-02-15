@@ -3,8 +3,6 @@ import { ITrip } from '@interfaces/trip.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { TripFormValue } from '@form-types/trip-form.types';
 import { ActionEnum } from '@enums/action.enum';
-import { DateHelper } from './date.helper';
-import { NumberHelper } from './number.helper';
 
 describe('TripHelper', () => {
   describe('createFromFormValue', () => {

@@ -54,7 +54,7 @@
       "@utils/*": ["./src/app/shared/utils/*"],
       "@test-harness": ["./src/test-harness"],
     },
-    "types": [],
+    "types": ["jasmine", "node"],
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -65,11 +65,4 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   }
-  ,
-  "exclude": [
-    "src/**/*.spec.ts",
-    "src/test.ts",
-    "src/test-*.ts",
-    "src/test-harness.ts"
-  ]
 }
