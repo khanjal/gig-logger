@@ -100,10 +100,10 @@
           </mat-form-field>
         </div>
 
-        <!-- Manual Coordinates -->
+        <!-- Manual Coordinates + Search Radius (three equal columns) -->
         <div>
           <h3 class="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Custom Coordinates</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-3 gap-4">
             <app-base-input
               [(ngModel)]="latitude"
               (ngModelChange)="onCoordinatesChange()"
@@ -119,18 +119,15 @@
               [type]="'number'"
               [hint]="'Range: -180 to 180'"
             ></app-base-input>
-          </div>
-        </div>
 
-        <!-- Search Radius -->
-        <div>
-          <app-base-input
-            [(ngModel)]="radius"
-            (ngModelChange)="onRadiusChange()"
-            [label]="'Search Radius (miles)'"
-            [type]="'number'"
-            [hint]="'Range: 1 to 50 miles'"
-          ></app-base-input>
+            <app-base-input
+              [(ngModel)]="radius"
+              (ngModelChange)="onRadiusChange()"
+              [label]="'Radius Miles'"
+              [type]="'number'"
+              [hint]="'Range: 1 to 50 miles'"
+            ></app-base-input>
+          </div>
         </div>
 
         <!-- Current Mock Location Summary -->
