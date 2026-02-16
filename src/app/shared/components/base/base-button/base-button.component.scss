@@ -281,10 +281,30 @@
   }
 
   &.btn-loading {
-    color: transparent;
-
     .btn-text {
       display: none;
+    }
+
+    /* Hide the regular icon while keeping the spinner visible. The
+       spinner uses `currentColor` inside an SVG, so we avoid forcing the
+       host color to transparent here. */
+    .btn-icon mat-icon {
+      visibility: hidden;
+    }
+
+    /* Ensure the spinner itself is visible and inherits the button's
+       color (so it matches the normal icon color for the variant). */
+    .btn-spinner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      color: inherit;
+
+      .spinner {
+        animation: spin 1s linear infinite;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 
