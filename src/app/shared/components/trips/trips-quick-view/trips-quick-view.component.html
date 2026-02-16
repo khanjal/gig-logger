@@ -273,13 +273,13 @@
       'stripe-header-odd': !isEvenStripe
     }">
     <!-- Edit Button -->
-            <app-base-rect-button
-              variant="primary"
-              size="sm"
-              (clicked)="editTrip()"
-              [icon]="'edit'"
-              title="Edit Trip">
-      <span class="hidden sm:inline">Edit</span>
+    <app-base-rect-button
+        variant="primary"
+        size="sm"
+        (clicked)="editTrip()"
+        [icon]="'edit'"
+        title="Edit Trip"
+        [label]="'Edit'">
     </app-base-rect-button>
     <!-- Center Action Buttons -->
     <div class="flex gap-2">
@@ -289,17 +289,17 @@
         (clicked)="setPickupTime()"
         *ngIf="!trip.pickupTime && !trip.dropoffTime && !trip.exclude"
         [icon]="'file_upload'"
-        title="Set Pickup Time">
-      <span class="hidden sm:inline">Pickup</span>
+        title="Set Pickup Time"
+        [label]="'Pickup'">
     </app-base-rect-button>
     <app-base-rect-button
-        variant="secondary"
-        size="sm"
-        (clicked)="setDropoffTime()"
-        *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
-        [icon]="'file_download'"
-        title="Set Dropoff Time">
-        <span class="hidden sm:inline">Dropoff</span>
+      variant="secondary"
+      size="sm"
+      (clicked)="setDropoffTime()"
+      *ngIf="trip.pickupTime && !trip.dropoffTime && !trip.exclude"
+      [icon]="'file_download'"
+      title="Set Dropoff Time"
+      [label]="'Dropoff'">
     </app-base-rect-button>
   </div>
     <!-- Menu Button -->

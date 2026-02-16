@@ -10,7 +10,8 @@
     </mat-icon>
     
     <span *ngIf="(!loading) && (!fab || extended)" class="btn-text">
-      <ng-content></ng-content>
+      <ng-container *ngIf="label; else projected">{{ label }}</ng-container>
+      <ng-template #projected><ng-content></ng-content></ng-template>
     </span>
     
     <mat-icon *ngIf="loading" class="btn-spinner">

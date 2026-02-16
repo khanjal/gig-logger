@@ -92,6 +92,12 @@ export class BaseButtonComponent {
   /** No background - transparent button with minimal hover effect */
   @Input() noBackground = false;
 
+  /** Optional label string. When provided the label will be rendered
+   *  inside a `.btn-text` span so consumers don't need to project a
+   *  `.btn-text` element themselves.
+   */
+  @Input() label?: string;
+
   /** Click event emitter */
   @Output() clicked = new EventEmitter<void>();
 

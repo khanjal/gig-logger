@@ -24,12 +24,12 @@
         <div class="flex gap-2 mt-auto items-center w-full">
             <div class="flex gap-2">
                 @if (syncState.canContinue) {
-                    <app-base-rect-button variant="secondary" (clicked)="continueLoad()">Continue</app-base-rect-button>
-                    <app-base-rect-button variant="primary" (clicked)="retryLoad()">Retry</app-base-rect-button>
+                    <app-base-rect-button variant="secondary" (clicked)="continueLoad()" [label]="'Continue'"></app-base-rect-button>
+                    <app-base-rect-button variant="primary" (clicked)="retryLoad()" [label]="'Retry'"></app-base-rect-button>
                 }
             </div>
             <div class="ml-auto">
-                <app-base-rect-button variant="danger" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()">{{ syncState.isAutoClose ? "Cancel" : "Close" }}</app-base-rect-button>
+                 <app-base-rect-button variant="danger" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()" [label]="syncState.isAutoClose ? 'Cancel' : 'Close'"></app-base-rect-button>
             </div>
         </div>
     </div>

@@ -11,6 +11,7 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
 export class BaseRectButtonComponent {
   @Input() icon?: string;
   @Input() iconColor?: string;
+  @Input() label?: string;
   @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
   @Input() disabled = false;
   @Input() loading = false;

@@ -17,7 +17,7 @@
   </div>
 
     <div *ngIf="!saving" class="row-flex px-5" style="justify-content: space-between;">
-      <app-base-rect-button variant="secondary" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto">Cancel</app-base-rect-button>
-      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid || saving" [loading]="saving" (clicked)="createSheet()" class="ml-auto">Create</app-base-rect-button>
+      <app-base-rect-button variant="secondary" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto" [label]="'Cancel'"></app-base-rect-button>
+      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid || saving" [loading]="saving" (clicked)="createSheet()" class="ml-auto" [label]="'Create'"></app-base-rect-button>
     </div>
 </div>

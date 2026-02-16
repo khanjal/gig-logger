@@ -102,4 +102,41 @@ describe('BaseButtonComponent', () => {
       expect(component.clicked.emit).not.toHaveBeenCalled();
     });
   });
+
+  describe('Label rendering and icon-only detection', () => {
+    it('renders label when provided via input', () => {
+      component.label = 'My Label';
+      fixture.detectChanges();
+      const el: HTMLElement = fixture.nativeElement;
+      const text = el.querySelector('.btn-text') as HTMLElement;
+      expect(text).toBeTruthy();
+      expect(text.textContent?.trim()).toBe('My Label');
+    });
+
+    it('does not add btn-icon-only when icon and visible label present', () => {
+      component.icon = 'edit';
+      component.label = 'Visible';
+      fixture.detectChanges();
+      const contentEl = fixture.nativeElement.querySelector('.btn-text') as HTMLElement;
+      // Simulate visible rendering by providing a non-empty client rects
+      (contentEl as any).getClientRects = () => [{ width: 10 }];
+      // call update directly to avoid timing issues
+      (component as any).updateIconOnlyClass();
+      const btn = fixture.nativeElement.querySelector('button') as HTMLElement;
+      expect(btn.classList.contains('btn-icon-only')).toBeFalse();
+    });
+
+    it('adds btn-icon-only when icon present but no visible text', () => {
+      component.icon = 'edit';
+      component.label = undefined;
+      fixture.detectChanges();
+      // Ensure no projected text exists
+      const contentEl = fixture.nativeElement.querySelector('.btn-text') as HTMLElement;
+      // Simulate hidden by returning empty rects
+      (contentEl as any).getClientRects = () => [];
+      (component as any).updateIconOnlyClass();
+      const btn = fixture.nativeElement.querySelector('button') as HTMLElement;
+      expect(btn.classList.contains('btn-icon-only')).toBeTrue();
+    });
+  });
 });

@@ -203,10 +203,10 @@
   <!-- Form Actions -->
   <div class="flex flex-col gap-4 mt-6">
     <div class="flex w-full items-center justify-between gap-4">
-      <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()">Reset</app-base-rect-button>
-      <app-base-rect-button *ngIf="data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()">Cancel</app-base-rect-button>
-      <app-base-rect-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid">Store</app-base-rect-button>
-      <app-base-rect-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid">Update</app-base-rect-button>
+      <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()" [label]="'Reset'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid" [label]="'Store'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid" [label]="'Update'"></app-base-rect-button>
     </div>
   </div>
 </div>
