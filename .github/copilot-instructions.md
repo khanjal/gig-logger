@@ -147,6 +147,63 @@ Migration note: Replace all remaining `<app-base-button>` usages with the approp
 - **API communication** through centralized `ApiService` with typed endpoints
 - **Error handling** with `LoggerService` and `MatSnackBar` for user feedback
 
+### Interface Organization
+
+**Public interfaces must be in separate files in `shared/interfaces/`, not embedded in services or components.**
+
+- **Naming convention**: Use `I` prefix for all interfaces (e.g., `ITrip`, `IVoiceParseResult`, `IShift`)
+- **File location**: All public/exported interfaces go in `src/app/shared/interfaces/`
+- **One interface per file**: Name the file after the interface (e.g., `voice-parse-result.interface.ts` for `IVoiceParseResult`)
+- **Import using path alias**: Reference as `@interfaces/interface-name`
+- **Exception**: Private implementation interfaces that are NOT exported can remain in service/component files
+
+**Why this matters**:
+- Promotes reusability across services and components
+- Improves testability by allowing mock implementations
+- Clear separation of concerns between data contracts and implementation
+- Enables type sharing without circular dependencies
+
+Example of **correct** interface organization:
+```typescript
+// ✅ CORRECT: voice-parse-result.interface.ts (separate file in shared/interfaces/)
+export interface IVoiceParseResult {
+  service?: string;
+  type?: string;
+  pay?: number;
+  // ... other properties
+}
+
+// ✅ CORRECT: voice-pattern-processor.service.ts (imports from separate file)
+import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+
+export class VoicePatternProcessorService {
+  parseTranscript(transcript: string): IVoiceParseResult {
+    // ... implementation
+  }
+  
+  // ✅ CORRECT: Private interface not exported - can stay in service file
+  private interface PatternMatch {
+    pattern: VoicePattern;
+    match: RegExpMatchArray;
+  }
+}
+```
+
+Example of **incorrect** interface organization:
+```typescript
+// ❌ WRONG: Public interface defined in service file
+export interface IVoiceParseResult {  // Should be in separate file!
+  service?: string;
+  // ...
+}
+
+export class VoicePatternProcessorService {
+  parseTranscript(transcript: string): IVoiceParseResult {
+    // ... implementation
+  }
+}
+```
+
 ### Code Documentation Standards
 
 **Helper Functions & Utilities**:
