@@ -1,32 +1,25 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { SyncStatus, SyncOperation, ISyncState, ISyncMessage } from '@interfaces/sync-status.interface';
 
-export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
-export type SyncOperation = 'save' | 'load' | 'auto-save';
+/**
+ * @deprecated Use ISyncState from @interfaces/sync-status.interface instead
+ */
+export type SyncState = ISyncState;
 
-export interface SyncState {
-  status: SyncStatus;
-  operation: SyncOperation | null;
-  message: string;
-  progress: number; // 0-100
-  itemsSynced: number;
-  totalItems: number;
-  timestamp: Date;
-  error?: string;
-  nextSyncIn?: number; // seconds until next sync
-}
+/**
+ * @deprecated Use ISyncMessage from @interfaces/sync-status.interface instead
+ */
+export type SyncMessage = ISyncMessage;
 
-export interface SyncMessage {
-  text: string;
-  type: 'info' | 'warning' | 'error';
-  timestamp: Date;
-}
+// Re-export types for backward compatibility
+export { SyncStatus, SyncOperation };
 
 @Injectable({
   providedIn: 'root'
 })
 export class SyncStatusService implements OnDestroy {
-  private readonly DEFAULT_STATE: SyncState = {
+  private readonly DEFAULT_STATE: ISyncState = {
     status: 'idle',
     operation: null,
     message: '',

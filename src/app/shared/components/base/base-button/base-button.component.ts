@@ -1,12 +1,9 @@
 import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewChecked, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { ButtonVariant, ButtonSize, FabStyle } from '@interfaces/button.interface';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon';
-export type ButtonSize = 'sm' | 'md' | 'lg';
-
-// Fab styles
-export type FabStyle = 'regular' | 'mini' | 'micro';
+export { ButtonVariant, ButtonSize, FabStyle };
 
 @Component({
   selector: 'app-base-button',
