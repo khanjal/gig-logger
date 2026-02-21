@@ -2,55 +2,47 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { LoggerService } from './logger.service';
+import { MockLocationService } from './mock-location.service';
 import { getCurrentUserId } from '@utils/user-id.util';
 import { firstValueFrom } from 'rxjs';
+import { 
+  IAutocompleteResult, 
+  IPlaceDetails, 
+  IAddressComponent, 
+  IUserApiUsage, 
+  IPlacesAutocompleteRequest, 
+  IPlaceDetailsRequest 
+} from '@interfaces/google-places.interface';
 
-export interface AutocompleteResult {
-  place: string;
-  address: string;
-  placeDetails?: PlaceDetails;
-}
+/**
+ * @deprecated Use IAutocompleteResult from @interfaces/google-places.interface instead
+ */
+export type AutocompleteResult = IAutocompleteResult;
 
-export interface PlaceDetails {
-  placeId?: string;
-  name?: string;
-  formattedAddress?: string;
-  addressComponents?: GoogleAddressComponent[];
-  geometry?: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
+/**
+ * @deprecated Use IPlaceDetails from @interfaces/google-places.interface instead
+ */
+export type PlaceDetails = IPlaceDetails;
 
-export interface GoogleAddressComponent {
-  longText: string;
-  shortText: string;
-  types: string[];
-}
+/**
+ * @deprecated Use IAddressComponent from @interfaces/google-places.interface instead
+ */
+export type GoogleAddressComponent = IAddressComponent;
 
-export interface UserApiUsage {
-  userId: string;
-  monthlyQuota: number;
-  currentUsage: number;
-  tier: string;
-  lastRequestTime: string;
-}
+/**
+ * @deprecated Use IUserApiUsage from @interfaces/google-places.interface instead
+ */
+export type UserApiUsage = IUserApiUsage;
 
-export interface PlacesAutocompleteRequest {
-  query: string;
-  searchType: string;
-  userId: string;
-  country: string;
-  userLatitude?: number;
-  userLongitude?: number;
-}
+/**
+ * @deprecated Use IPlacesAutocompleteRequest from @interfaces/google-places.interface instead
+ */
+export type PlacesAutocompleteRequest = IPlacesAutocompleteRequest;
 
-export interface PlaceDetailsRequest {
-  placeId: string;
-  userId: string;
-}
+/**
+ * @deprecated Use IPlaceDetailsRequest from @interfaces/google-places.interface instead
+ */
+export type PlaceDetailsRequest = IPlaceDetailsRequest;
 
 @Injectable({
   providedIn: 'root'
@@ -66,7 +58,11 @@ export class ServerGooglePlacesService {
   private autocompleteCacheDuration = 2 * 60 * 1000; // 2 minutes
   private placeDetailsCacheDuration = 5 * 60 * 1000; // 5 minutes
 
-  constructor(private http: HttpClient, private logger: LoggerService) {}
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService,
+    private mockLocationService: MockLocationService
+  ) {}
 
   /**
    * Get autocomplete suggestions from server-side Google Places API
@@ -77,12 +73,13 @@ export class ServerGooglePlacesService {
     searchType: string = 'address',
     country: string = 'US',
     userLat?: number,
-    userLng?: number
+    userLng?: number,
+    radiusMeters?: number
   ): Promise<AutocompleteResult[]> {
     if (!query || query.trim().length === 0) {
       return [];
     }
-    const cacheKey = `${query.trim().toLowerCase()}|${searchType}|${country}|${userLat ?? ''}|${userLng ?? ''}`;
+    const cacheKey = `${query.trim().toLowerCase()}|${searchType}|${country}|${userLat ?? ''}|${userLng ?? ''}|${radiusMeters ?? ''}`;
     const now = Date.now();
     const cached = this.autocompleteCache.get(cacheKey);
     if (cached && now - cached.timestamp < this.autocompleteCacheDuration) {
@@ -90,13 +87,21 @@ export class ServerGooglePlacesService {
       return cached.results;
     }
     try {
+      // Convert radius from miles to meters if from mock location, otherwise use parameter or undefined for backend default
+      const MILES_TO_METERS = 1609.34;
+      let radius = radiusMeters;
+      if (!radius && this.mockLocationService.isEnabled()) {
+        radius = this.mockLocationService.getRadius() * MILES_TO_METERS;
+      }
+      
       const request: PlacesAutocompleteRequest = {
         query: query.trim(),
         searchType,
         userId: getCurrentUserId(),
         country,
         userLatitude: userLat,
-        userLongitude: userLng
+        userLongitude: userLng,
+        radiusMeters: radius
       };
       const response = await firstValueFrom(this.http.post<AutocompleteResult[]>(
         `${this.baseUrl}/places/autocomplete`, 
@@ -256,8 +261,17 @@ export class ServerGooglePlacesService {
 
   /**
    * Get user's current location for location bias (with enhanced caching)
+   * Now supports mock location override for testing
    */
   async getUserLocation(): Promise<{ lat: number; lng: number } | null> {
+    // Check if mock location is enabled
+    const mockLocation = this.mockLocationService.getLocation();
+    if (mockLocation) {
+      this.logger.info('Using mock location for Google Places', mockLocation);
+      return mockLocation;
+    }
+
+    // Use cached real location if available and fresh
     if (this.cachedLocation) {
       const now = Date.now();
       if (now - this.cachedLocation.timestamp < this.locationCacheDuration) {
@@ -267,6 +281,7 @@ export class ServerGooglePlacesService {
       }
     }
 
+    // Get real geolocation
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
         this.logger.warn('Geolocation is not supported by this browser');
@@ -394,6 +409,11 @@ export class ServerGooglePlacesService {
    * Check if we can reliably get user location for Google Places API
    */
   async canGetUserLocation(): Promise<boolean> {
+    // If mock location is enabled, treat location as available.
+    if (this.mockLocationService.isEnabled() && this.mockLocationService.getLocation()) {
+      return true;
+    }
+
     // Check if we have cached location first
     if (this.cachedLocation && 'timestamp' in this.cachedLocation) {
       const now = Date.now();

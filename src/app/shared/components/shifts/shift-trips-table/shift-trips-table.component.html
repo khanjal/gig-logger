@@ -4,9 +4,13 @@
             <mat-icon class="text-blue-600 dark:text-blue-400 text-2xl">route</mat-icon>
         </div>
         <h4 class="flex-1 text-lg font-semibold text-primary text-center">Trips ({{ trips.length }})</h4>
-        <button class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-full p-2 transition" (click)="viewTrips(trips)">
-            <mat-icon>view_agenda</mat-icon>
-        </button>
+        <app-base-fab-button
+            class="flex-shrink-0"
+            variant="primary"
+            fabStyle="mini"
+            [icon]="'view_agenda'"
+            (clicked)="viewTrips(trips)">
+        </app-base-fab-button>
     </div>
     <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface" *ngIf="trips && trips.length > 0">
         <table class="table-theme min-w-full text-sm">

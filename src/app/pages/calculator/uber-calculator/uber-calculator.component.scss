@@ -75,7 +75,7 @@ h3 {
     }
 }
 
-// Enhanced form fields
+// Form field layout
 .field-width {
     width: 100%;
     margin: 0 0 1rem 0;
@@ -91,51 +91,6 @@ h3 {
     
     @media (min-width: 768px) {
         margin-bottom: 1.5rem;
-    }
-    
-    // Enhanced input styling
-    .mat-mdc-form-field {
-        width: 100%;
-    }
-    
-    .mat-mdc-text-field-wrapper {
-        border-radius: $field-border-radius;
-    background: linear-gradient(145deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 95%, white) 100%);
-    }
-    
-    .mat-mdc-form-field-infix {
-        min-height: $touch-target-size;
-        padding: 12px 0;
-        
-        @media (min-width: 768px) {
-            padding: 14px 0;
-        }
-    }
-    
-    input {
-        font-size: 1rem;
-        color: var(--color-text-primary);
-        
-        @media (min-width: 768px) {
-            font-size: 1.1rem;
-        }
-        
-        &::placeholder {
-            color: var(--color-text-secondary);
-            opacity: 0.7;
-        }
-    }
-    
-    .mat-mdc-form-field-label {
-        color: var(--color-text-secondary);
-        font-weight: 500;
-    }
-    
-    // Focus states
-    &.mat-focused {
-        .mat-mdc-text-field-wrapper {
-            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-600) 20%, transparent);
-        }
     }
 }
 
@@ -166,7 +121,7 @@ span {
     }
 }
 
-// Enhanced button styling
+// Button layout
 .row-flex {
     display: flex;
     gap: 1rem;
@@ -177,66 +132,6 @@ span {
     @media (min-width: 768px) {
         margin-top: 2.5rem;
         gap: 1.5rem;
-    }
-    
-    button {
-        min-height: $touch-target-size;
-        border-radius: $button-border-radius;
-        font-weight: 600;
-        font-size: 1rem;
-        padding: 0 1.5rem;
-        transition: all 0.2s ease;
-        flex: 1;
-        max-width: 200px;
-        
-        @media (min-width: 480px) {
-            flex: none;
-            min-width: 140px;
-        }
-        
-        @media (min-width: 768px) {
-            font-size: 1.1rem;
-            padding: 0 2rem;
-            min-width: 160px;
-        }
-        
-        &[color="primary"] {
-            background: linear-gradient(145deg, var(--primary-600) 0%, var(--primary-700) 100%);
-            border: 2px solid var(--primary-600);
-            color: white;
-            
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-600) 40%, transparent);
-                background: linear-gradient(145deg, var(--primary-500) 0%, var(--primary-600) 100%);
-            }
-        }
-        
-        &[color="warn"] {
-            background: linear-gradient(145deg, var(--warn-500) 0%, var(--warn-600) 100%);
-            border: 2px solid var(--warn-500);
-            color: white;
-            
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px color-mix(in srgb, var(--warn-500) 40%, transparent);
-                background: linear-gradient(145deg, var(--warn-400) 0%, var(--warn-500) 100%);
-            }
-        }
-        
-        &:active {
-            transform: translateY(0);
-        }
-        
-        &:focus {
-            outline: 2px solid var(--accent-600);
-            outline-offset: 2px;
-        }
-        
-        mat-icon {
-            margin-right: 0.5rem;
-            font-size: 1.2rem;
-        }
     }
 }
 

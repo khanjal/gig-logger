@@ -1,0 +1,42 @@
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-secondary);
+  border: none;
+  text-align: left;
+  color: var(--color-text-primary);
+  font-size: 1rem; /* slightly larger to match other panel titles */
+}
+
+.accordion-header .chev {
+  color: var(--primary-600);
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.accordion-header:hover .chev {
+  color: var(--primary-700);
+}
+
+.accordion-body {
+  padding: 0.75rem 1rem;
+  background: var(--accordion-bg, var(--color-surface-secondary));
+  border-radius: 0 0 8px 8px;
+  margin: 0;
+  box-shadow: none;
+}
+
+:host-context(html.theme-dark) {
+  .accordion-header {
+    color: var(--color-text-primary);
+  }
+  .accordion-body {
+    background: var(--accordion-bg-dark, var(--color-surface-secondary));
+    box-shadow: none;
+  }
+  .accordion-header .chev {
+    color: var(--primary-500);
+  }
+}

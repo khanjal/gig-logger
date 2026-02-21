@@ -6,13 +6,15 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 // Angular Material imports
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatOptionSelectionChange } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+// Application-specific imports - Components
+import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
 
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
@@ -36,6 +38,7 @@ import { TypeService } from '@services/sheets/type.service';
 import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
+import { MockLocationService } from '@services/mock-location.service';
 
 // Application-specific imports - Pipes
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -50,7 +53,7 @@ import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValid
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule],
+  imports: [CommonModule, FocusScrollDirective, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule, BaseFieldButtonComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -130,7 +133,8 @@ export class SearchInputComponent implements OnDestroy {
     private _typeService: TypeService,
     private _serverGooglePlacesService: ServerGooglePlacesService,
     private logger: LoggerService,
-    private _permissionService: PermissionService
+    private _permissionService: PermissionService,
+    private _mockLocationService: MockLocationService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -660,7 +664,11 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   public isLocationAllowed(): boolean {
-    return this._permissionService.getLocationState() !== 'denied';
+    if (this._permissionService.getLocationState() !== 'denied') {
+      return true;
+    }
+
+    return !!this._mockLocationService.getLocation();
   }
   // #endregion
 }

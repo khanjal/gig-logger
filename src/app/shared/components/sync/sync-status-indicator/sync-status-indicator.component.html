@@ -73,13 +73,15 @@
           </mat-icon>
           Activity Log ({{ messages.length }})
         </span>
-        <button 
-          mat-icon-button 
-          (click)="clearMessages(); $event.stopPropagation()"
+        <app-base-field-button 
+          [fab]="true" 
+          fabStyle="mini"
+          [icon]="'clear_all'"
+          [iconColor]="'var(--error-500)'"
+          (clicked)="clearMessages()"
           class="clear-button flex h-8 w-8 items-center justify-center"
           matTooltip="Clear log">
-          <mat-icon>clear_all</mat-icon>
-        </button>
+        </app-base-field-button>
       </div>
 
       <div class="messages-list max-h-60 overflow-y-auto px-2 py-2 space-y-1" *ngIf="showDetailedView">
@@ -99,25 +101,28 @@
 
   <ng-container *ngIf="mode === 'button'; else panelMode">
     <!-- Main status button with menu trigger -->
-    <button 
-      mat-icon-button 
+    <div 
+      class="relative"
       cdkOverlayOrigin
       #syncOverlayOrigin="cdkOverlayOrigin"
       [matTooltip]="getTooltipText()"
-      matTooltipPosition="below"
-      class="sync-button relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)]"
-      [class.spinning]="syncState?.status === 'syncing'"
-      (click)="toggleMenu($event)">
-      <mat-icon [class.spinning-icon]="syncState?.status === 'syncing'">
-        {{ getStatusIcon() }}
-      </mat-icon>
+      matTooltipPosition="below">
+      <app-base-icon-button
+        [icon]="getStatusIcon()"
+        [iconColor]="'var(--color-text-inverse)'"
+        (clicked)="toggleMenu()"
+        class="sync-button"
+        [class.spinning]="syncState?.status === 'syncing'"
+        [matTooltip]="getTooltipText()"
+        matTooltipPosition="below">
+      </app-base-icon-button>
       <!-- Progress badge for syncing state -->
       <span 
         *ngIf="syncState?.status === 'syncing' && (syncState?.totalItems || 0) > 0"
         class="progress-badge">
         {{ syncState?.itemsSynced }}/{{ syncState?.totalItems }}
       </span>
-    </button>
+    </div>
 
     <!-- Dropdown popover with detailed sync information -->
     <ng-template

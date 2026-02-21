@@ -5,8 +5,8 @@ import { LoggerService } from '@services/logger.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgIf, CommonModule } from '@angular/common';
-import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { BaseButtonDirective } from '@directives/base-button.directive';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -14,7 +14,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     templateUrl: './google-address.component.html',
     styleUrls: ['./google-address.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatIconButton, MatSuffix, MatIcon, CommonModule]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatSuffix, MatIcon, CommonModule, BaseButtonDirective]
 })
 export class GoogleAddressComponent implements OnInit, OnDestroy {
   @Input() address!: string;

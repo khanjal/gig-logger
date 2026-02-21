@@ -1,0 +1,447 @@
+@use 'sass:map';
+
+// =============================================================================
+// BASE BUTTON COMPONENT STYLES
+// =============================================================================
+
+.app-base-button {
+  position: relative;
+  border: none;
+  border-radius: 0.375rem; // 6px
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  // Icon buttons with no background should not show focus outline
+  &.btn-icon.btn-no-background:focus-visible {
+    outline: none;
+  }
+
+  // =========================================================================
+  // VARIANTS
+  // =========================================================================
+
+  // Primary variant - solid filled
+  &.btn-primary {
+    background-color: var(--primary-500);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: var(--primary-600);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--primary-700);
+      transform: scale(0.98);
+    }
+  }
+
+  // Secondary variant - filled with surface color
+  &.btn-secondary {
+    background-color: var(--color-surface-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-light);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-tertiary);
+      border-color: var(--color-border);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Outlined variant - transparent with border
+  &.btn-outlined {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border: 1.5px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-tertiary);
+      border-color: var(--primary-500);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Danger variant - red/destructive
+  &.btn-danger {
+    background-color: var(--error-500);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #dc2626;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+    }
+
+    &:active:not(:disabled) {
+      background-color: #991b1b;
+      transform: scale(0.98);
+    }
+  }
+
+  // Icon-only variant - minimal styling
+  &.btn-icon {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-tertiary);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    mat-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  // Floating action button (FAB)
+  &.btn-fab {
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    min-width: 56px;
+    min-height: 56px;
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-text {
+      display: none;
+    }
+
+    .btn-content {
+      gap: 0; // center icon for FABs
+    }
+
+    .btn-icon {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      mat-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  // Mini FAB
+  &.btn-mini {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  // Micro FAB (extra small - used for compact close buttons)
+  &.btn-micro {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+
+    .btn-icon {
+      mat-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  // Micro FAB high-specificity rule for overriding size classes
+  &.btn-fab.btn-micro {
+    min-width: 28px !important;
+    min-height: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+
+    .btn-icon mat-icon {
+      width: 16px !important;
+      height: 16px !important;
+      font-size: 16px !important;
+      line-height: 16px !important;
+    }
+
+    .btn-content {
+      gap: 0 !important;
+    }
+  }
+
+  // Extended FAB shows label next to icon
+  &.btn-extended {
+    border-radius: 28px;
+    padding: 0 20px;
+    height: 48px;
+    min-width: auto;
+    width: auto;
+    display: inline-flex;
+    gap: 8px;
+
+    .btn-text {
+      display: inline;
+    }
+  }
+
+  // =========================================================================
+  // SIZES
+  // =========================================================================
+
+  &.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem; // 14px
+    min-height: 32px;
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      line-height: 16px;
+    }
+  }
+
+  &.btn-md {
+    padding: 0.5rem 1rem;
+    font-size: 1rem; // 16px
+    min-height: 40px;
+
+    mat-icon {
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+      line-height: 20px;
+    }
+  }
+
+  &.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem; // 18px
+    min-height: 48px;
+
+    mat-icon {
+      width: 24px;
+      height: 24px;
+      font-size: 24px;
+      line-height: 24px;
+    }
+  }
+
+  // =========================================================================
+  // SPECIAL STATES
+  // =========================================================================
+
+  &.btn-disabled {
+    cursor: not-allowed;
+  }
+
+  &.btn-loading {
+    .btn-text {
+      display: none;
+    }
+
+    /* Hide the regular icon while keeping the spinner visible. The
+       spinner uses `currentColor` inside an SVG, so we avoid forcing the
+       host color to transparent here. */
+    .btn-icon mat-icon {
+      visibility: hidden;
+    }
+
+    /* Ensure the spinner itself is visible and inherits the button's
+       color (so it matches the normal icon color for the variant). */
+    .btn-spinner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      color: inherit;
+
+      .spinner {
+        animation: spin 1s linear infinite;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  &.btn-full-width {
+    width: 100%;
+  }
+
+  // No background - transparent with minimal hover
+  &.btn-no-background {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+
+    &:hover:not(:disabled) {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      opacity: 0.8;
+    }
+
+    &:active:not(:disabled) {
+      background-color: transparent !important;
+      transform: scale(0.95);
+      opacity: 0.6;
+    }
+
+    &:focus-visible {
+      outline: none !important;
+    }
+  }
+
+  // NOTE: visual tweaks for toggle buttons are applied via classes on the consuming templates.
+
+  // =========================================================================
+  // CONTENT LAYOUT
+  // =========================================================================
+
+  .btn-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &.has-icon {
+      gap: 0.5rem;
+    }
+  }
+
+  .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .btn-text {
+    display: inline;
+  }
+
+  // =========================================================================
+  // SPINNER ANIMATION
+  // =========================================================================
+
+  .btn-spinner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+
+    .spinner {
+      animation: spin 1s linear infinite;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+/* Center icon when button has an icon but no visible text (all themes) */
+.app-base-button.btn-icon-only {
+  .btn-content {
+    justify-content: center;
+    gap: 0;
+  }
+
+  .btn-text {
+    display: none !important;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+  When a parent component signals `icon-only-sm` we want rect buttons
+  that hide their text on small screens to center the icon horizontally.
+  This targets small viewports (below the `sm` Tailwind breakpoint).
+*/
+// removed: old icon-only-sm helper; component now auto-detects hidden text and adds `btn-icon-only`.
+
+// =============================================================================
+// DARK MODE
+// =============================================================================
+
+:host-context(html.theme-dark) {
+  .app-base-button {
+    &.btn-secondary {
+      color: var(--color-text-primary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-tertiary);
+      }
+    }
+
+      // Center icon when button has an icon but no visible text
+      .app-base-button.btn-icon-only {
+        .btn-content {
+          justify-content: center;
+          gap: 0;
+        }
+
+        .btn-text {
+          display: none !important;
+        }
+      }
+
+    &.btn-outlined {
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
+
+      &:hover:not(:disabled) {
+        border-color: var(--primary-500);
+      }
+    }
+  }
+}

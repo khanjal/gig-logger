@@ -7,7 +7,17 @@
         <p [innerHTML]="message"></p>
     </div>
     <div mat-dialog-actions class="dialog-actions">
-        <button mat-fab extended (click)="onDismiss()" [color]="falseColor"><mat-icon *ngIf="falseIcon">{{falseIcon}}</mat-icon> {{falseText}}</button>
-        <button mat-fab extended (click)="onConfirm()" [color]="trueColor"><mat-icon *ngIf="trueIcon">{{trueIcon}}</mat-icon> {{trueText}}</button>
+        <app-base-rect-button 
+          [variant]="falseColor === 'primary' ? 'primary' : (falseColor === 'danger' ? 'danger' : 'secondary')"
+          [icon]="falseIcon"
+          (clicked)="onDismiss()">
+          {{falseText}}
+        </app-base-rect-button>
+        <app-base-rect-button 
+          [variant]="trueColor === 'primary' ? 'primary' : (trueColor === 'danger' ? 'danger' : 'secondary')"
+          [icon]="trueIcon"
+          (clicked)="onConfirm()">
+          {{trueText}}
+        </app-base-rect-button>
     </div>
 </div>

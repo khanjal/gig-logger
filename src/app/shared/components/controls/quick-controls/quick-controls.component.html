@@ -18,39 +18,40 @@
       <mat-icon class="text-base">palette</mat-icon>
       Theme
     </div>
-    <button
-      type="button"
-      mat-stroked-button
-      class="theme-cycle-btn flex items-center gap-2 px-3 py-2 text-sm font-semibold"
-      (click)="onThemeCycle($event)">
-      <mat-icon class="text-base">sync</mat-icon>
-      <span>{{ themePreference | titlecase }} mode</span>
-    </button>
+    <app-base-rect-button
+      variant="outlined"
+      [icon]="'sync'"
+      iconPosition="left"
+        (clicked)="onThemeCycle()"
+      class="theme-cycle-btn"
+    >
+      {{ themePreference | titlecase }} mode
+    </app-base-rect-button>
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
-    <button
+    <app-base-rect-button
       *ngIf="hasUnsavedChanges"
-      mat-raised-button
-      color="primary"
-      class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
+      variant="primary"
+      [icon]="'save'"
+      iconPosition="left"
+      [fullWidth]="true"
       [disabled]="status === 'syncing'"
-      matTooltip="Save pending changes"
-      (click)="onSaveClick($event)">
-      <mat-icon class="text-base">save</mat-icon>
+        (clicked)="onSaveClick()"
+    >
       Save
-    </button>
+    </app-base-rect-button>
 
-    <button
+    <app-base-rect-button
       *ngIf="!hasUnsavedChanges"
-      mat-raised-button
-      color="accent"
-      class="flex items-center gap-2 px-3 py-2 text-sm font-semibold w-full sm:w-auto"
+      variant="primary"
+      [icon]="'cloud_download'"
+      iconPosition="left"
+      [fullWidth]="true"
       [disabled]="status === 'syncing'"
-      matTooltip="Refresh from spreadsheet"
-      (click)="onRefreshClick($event)">
-      <mat-icon class="text-base">cloud_download</mat-icon>
+        (clicked)="onRefreshClick()"
+    >
       Update
-    </button>
+    </app-base-rect-button>
   </div>
 </div>

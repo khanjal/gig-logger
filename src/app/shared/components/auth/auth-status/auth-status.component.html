@@ -1,15 +1,5 @@
-<mat-card class="auth-status-card mb-6 bg-surface text-gray-800 dark:text-gray-200"> 
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon [ngClass]="{
-        'text-success': isAuthenticated && hasAccessToken && localStorageAuth,
-        'text-warning': (localStorageAuth || hasAccessToken) && !isAuthenticated,
-        'text-error': !localStorageAuth && !hasAccessToken && !isAuthenticated
-      }">{{ getStatusIcon() }}</mat-icon>
-      Authentication Status
-    </mat-card-title>
-  </mat-card-header>
-    <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
+<app-base-card variant="elevated" padding="md" [titleIcon]="getStatusIcon()" title="Authentication Status" class="auth-status-card mb-6">
+  <div class="p-0">
     <!-- User ID Status -->
     <div class="status-row">
       <span class="status-label text-gray-700 dark:text-gray-200">User ID:</span>
@@ -73,5 +63,5 @@
       <span class="status-label text-gray-700 dark:text-gray-200">Last Updated:</span>
       <span class="timestamp text-gray-700 dark:text-gray-300">{{ lastUpdated | date:'medium' }}</span>
     </div>
-  </mat-card-content>
-</mat-card>
+  </div>
+</app-base-card>

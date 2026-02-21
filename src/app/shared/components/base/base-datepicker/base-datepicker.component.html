@@ -1,0 +1,25 @@
+<div [class]="widthClass">
+  <mat-form-field class="w-full" appearance="outline" [class.has-error]="error">
+    <mat-label *ngIf="label">
+      {{ label }}
+      <span *ngIf="required" class="required-indicator">*</span>
+    </mat-label>
+
+    <input 
+      matInput 
+      [matDatepicker]="picker" 
+      [value]="value"
+      [disabled]="disabled"
+      [required]="required"
+      [placeholder]="placeholder || ''"
+      (dateChange)="onDateChange($event)"
+      (blur)="onBlur()"
+    />
+
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+
+    <mat-hint *ngIf="hint && !error">{{ hint }}</mat-hint>
+    <mat-error *ngIf="error">{{ error }}</mat-error>
+  </mat-form-field>
+</div>
