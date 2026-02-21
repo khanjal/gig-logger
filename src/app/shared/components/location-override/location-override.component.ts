@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatHint } from '@angular/material/form-field';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
 import { MatSelect, MatOption } from '@angular/material/select';
@@ -25,6 +25,7 @@ import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRect
     MatFormField,
     MatSelect,
     MatLabel,
+    MatHint,
     MatOption,
     MatOptgroup
   ],

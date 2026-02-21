@@ -120,13 +120,16 @@
               [hint]="'Range: -180 to 180'"
             ></app-base-input>
 
-            <app-base-input
-              [(ngModel)]="radius"
-              (ngModelChange)="onRadiusChange()"
-              [label]="'Radius Miles'"
-              [type]="'number'"
-              [hint]="'Range: 1 to 50 miles'"
-            ></app-base-input>
+              <mat-form-field class="w-full" appearance="outline">
+                <mat-label>Search Radius (miles)</mat-label>
+                <mat-select [(ngModel)]="radius" (selectionChange)="onRadiusChange()">
+                  <mat-option [value]="5">5 miles</mat-option>
+                  <mat-option [value]="15">15 miles</mat-option>
+                  <mat-option [value]="30">30 miles</mat-option>
+                  <mat-option [value]="31">Max (31 miles)</mat-option>
+                </mat-select>
+                <mat-hint>Underlying value is miles; Google max ≈31 miles (50,000 m)</mat-hint>
+              </mat-form-field>
           </div>
         </div>
 
