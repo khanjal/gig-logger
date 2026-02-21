@@ -66,60 +66,21 @@
     <!-- Payment Information -->
     <div>
       <div class="flex items-center gap-1 justify-between w-full mb-3">
-        <button 
-          mat-mini-fab
-          type="button"
-          class="toggle-button mb-1"
-          [class.toggle-button--active]="showAdvancedPay"
-          [color]="showAdvancedPay ? 'accent' : 'primary'" 
-          aria-label="Toggle Advanced Pay" 
-          (click)="toggleAdvancedPay()">
-          <mat-icon>account_balance</mat-icon>
-        </button>
+        <app-base-toggle-button [active]="showAdvancedPay" [icon]="'account_balance'" (clicked)="toggleAdvancedPay()" class="toggle-button mb-1" [class.toggle-button--active]="showAdvancedPay"></app-base-toggle-button>
         <div class="flex flex-1 justify-center gap-1 min-w-0 max-w-full">
-          <mat-form-field class="flex-1 min-w-0 ml-2" appearance="outline">
-            <mat-label>Pay</mat-label>
-            <input matInput type="number" name="pay" placeholder="4.75" formControlName="pay" (wheel)="$event.preventDefault()">
-          </mat-form-field>
-          <mat-form-field class="flex-1 min-w-0 mr-2" appearance="outline">
-            <mat-label>Distance</mat-label>
-            <input matInput type="number" name="distance" placeholder="8.04" formControlName="distance" (wheel)="$event.preventDefault()">
-          </mat-form-field>
+          <app-base-input class="flex-1 min-w-0 ml-2" label="Pay" type="number" placeholder="4.75" formControlName="pay"></app-base-input>
+          <app-base-input class="flex-1 min-w-0 mr-2" label="Distance" type="number" placeholder="8.04" formControlName="distance"></app-base-input>
         </div>
-        <button 
-          mat-mini-fab
-          type="button"
-          class="toggle-button mb-1"
-          [class.toggle-button--active]="showOdometer"
-          [color]="showOdometer ? 'accent' : 'primary'" 
-          aria-label="Toggle Odometer" 
-          (click)="toggleOdometer()">
-          <mat-icon>drive_eta</mat-icon>
-        </button>
+        <app-base-toggle-button [active]="showOdometer" [icon]="'drive_eta'" (clicked)="toggleOdometer()" class="toggle-button mb-1" [class.toggle-button--active]="showOdometer"></app-base-toggle-button>
       </div>
       <div class="flex gap-1 mb-3" *ngIf="showAdvancedPay">
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>Tip</mat-label>
-          <input matInput type="number" name="tip" placeholder="3.5" formControlName="tip" (wheel)="$event.preventDefault()">
-        </mat-form-field>
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>Bonus</mat-label>
-          <input matInput type="number" name="bonus" placeholder="2" formControlName="bonus" (wheel)="$event.preventDefault()">
-        </mat-form-field>
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>Cash</mat-label>
-          <input matInput type="number" name="cash" placeholder="5" formControlName="cash" (wheel)="$event.preventDefault()">
-        </mat-form-field>
+        <app-base-input class="flex-1 min-w-[90px]" label="Tip" type="number" placeholder="3.5" formControlName="tip"></app-base-input>
+        <app-base-input class="flex-1 min-w-[90px]" label="Bonus" type="number" placeholder="2" formControlName="bonus"></app-base-input>
+        <app-base-input class="flex-1 min-w-[90px]" label="Cash" type="number" placeholder="5" formControlName="cash"></app-base-input>
       </div>
       <div class="flex gap-1 mb-3" *ngIf="showOdometer">
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>Start Odometer</mat-label>
-          <input matInput type="number" name="startOdometer" placeholder="10,000" formControlName="startOdometer" (wheel)="$event.preventDefault()">
-        </mat-form-field>
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>End Odometer</mat-label>
-          <input matInput type="number" name="endOdometer" placeholder="10,005" formControlName="endOdometer" (wheel)="$event.preventDefault()">
-        </mat-form-field>
+        <app-base-input class="flex-1 min-w-[90px]" label="Start Odometer" type="number" placeholder="10,000" formControlName="startOdometer"></app-base-input>
+        <app-base-input class="flex-1 min-w-[90px]" label="End Odometer" type="number" placeholder="10,005" formControlName="endOdometer"></app-base-input>
       </div>
     </div>
 
@@ -134,39 +95,16 @@
           (valueChanged)="showNameAddresses()"
           (auxiliaryData)="setDropoffAddress($event)">
         </app-search-input>
-        <button
-          mat-mini-fab
-          type="button"
-          class="toggle-button mb-1"
-          [class.toggle-button--active]="showPickupAddress"
-          [color]="showPickupAddress ? 'accent' : 'primary'" 
-          aria-label="Show Pickup Address" 
-          (click)="togglePickupAddress()">
-          <mat-icon>contact_mail</mat-icon>
-        </button>
+        <app-base-toggle-button [active]="showPickupAddress" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-toggle-button>
       </div>
-      <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="mb-3">
-        <mat-accordion>
-          <mat-expansion-panel class="seamless-panel" [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                {{ selectedPlaceAddresses.length }} Previous Addresses for Place
-              </mat-panel-title>
-            </mat-expansion-panel-header>
+      <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="my-5">
+        <app-base-accordion>
+          <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
             <div class="flex flex-col gap-1">
-              <button 
-                *ngFor="let address of selectedPlaceAddresses"
-                type="button"
-                mat-stroked-button 
-                color="primary" 
-                class="address-button"
-                [class.address-button--selected]="address.address === tripForm.value.startAddress"
-                (click)="setPickupAddress(address.address)">
-                {{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})
-              </button>
+              <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
             </div>
-          </mat-expansion-panel>
-        </mat-accordion>
+          </app-base-accordion-item>
+        </app-base-accordion>
       </div>
       <div class="flex flex-col gap-1" [ngClass]="(selectedNameDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
         <app-search-input 
@@ -180,31 +118,18 @@
     </div>
 
     <!-- Address List/Notes -->
-    <div *ngIf="selectedNameDeliveries?.length" class="mb-3">
-      <mat-accordion>
-        <mat-expansion-panel class="seamless-panel" [expanded]="selectedNameDeliveries && !(selectedNameDeliveries.length > 5 && data.id)">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{ selectedNameDeliveries ? selectedNameDeliveries.length : 0  }} Previous Addresses for Name
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+    <div *ngIf="selectedNameDeliveries?.length" class="my-5">
+      <app-base-accordion>
+        <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && data.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
             </div>
-            <button 
-              mat-stroked-button 
-              color="primary" 
-              class="address-button" 
-              [class.address-button--selected]="delivery.address === tripForm.value.endAddress" 
-              (click)="setDestinationAddress(delivery.address)" 
-              *ngIf="delivery.address">
-              {{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})
-            </button>
+            <app-base-rect-button *ngIf="delivery.address" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setDestinationAddress(delivery.address)" [class.address-button--selected]="delivery.address === tripForm.value.endAddress">{{ delivery.address | shortaddress:'':1 | truncate:45 }} ({{ delivery?.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+        </app-base-accordion-item>
+      </app-base-accordion>
     </div>
 
     <!-- Destination Address -->
@@ -222,31 +147,18 @@
     </div>
 
     <!-- Name List/Notes -->
-    <div *ngIf="selectedAddressDeliveries?.length" class="mb-3">
-      <mat-accordion>
-        <mat-expansion-panel class="seamless-panel" [expanded]="selectedAddressDeliveries && !(selectedAddressDeliveries.length > 5 && data.id)">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{ selectedAddressDeliveries ? selectedAddressDeliveries.length : 0  }} Previous Names for Destination
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+    <div *ngIf="selectedAddressDeliveries?.length" class="my-5">
+      <app-base-accordion>
+        <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && data.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
             </div>
-            <button 
-              mat-stroked-button 
-              color="primary" 
-              class="name-button" 
-              [class.name-button--selected]="delivery.name === tripForm.value.name" 
-              (click)="setName(delivery.name)" 
-              *ngIf="delivery.name">
-              {{ delivery.name | truncate:45 }} ({{ delivery.visits }})
-            </button>
+            <app-base-rect-button *ngIf="delivery.name" variant="outlined" class="name-button" [fullWidth]="true" (clicked)="setName(delivery.name)" [class.name-button--selected]="delivery.name === tripForm.value.name">{{ delivery.name | truncate:45 }} ({{ delivery.visits }})</app-base-rect-button>
             <app-trips-table-basic class="trips-table" [trips]="delivery.trips"></app-trips-table-basic>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+        </app-base-accordion-item>
+      </app-base-accordion>
     </div>
 
     <!-- Time Inputs -->
@@ -270,29 +182,12 @@
     <!-- Note and Order -->
     <div>
       <div class="flex items-center gap-1 mb-3">
-        <mat-form-field class="w-full mr-2" appearance="outline">
-          <mat-label>Note</mat-label>
-          <input matInput type="text" name="note" placeholder="" formControlName="note">
-        </mat-form-field>
-        <button 
-          mat-mini-fab
-          type="button"
-          class="toggle-button mb-1"
-          [color]="showOrder ? 'accent' : 'primary'" 
-          aria-label="Toggle Address/Order" 
-          (click)="toggleOrder()">
-          <mat-icon>business</mat-icon>
-        </button>
+        <app-base-input class="w-full mr-2" label="Note" type="text" formControlName="note"></app-base-input>
+        <app-base-toggle-button [active]="showOrder" [icon]="'business'" (clicked)="toggleOrder()" class="toggle-button mb-1" [class.toggle-button--active]="showOrder"></app-base-toggle-button>
       </div>
       <div class="flex gap-1 mb-3" *ngIf="showOrder">
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>Apt/Unit/Room</mat-label>
-          <input matInput type="text" name="endUnit" placeholder="104" formControlName="endUnit">
-        </mat-form-field>
-        <mat-form-field class="flex-1 min-w-[90px]" appearance="outline">
-          <mat-label>Order Number</mat-label>
-          <input matInput type="text" name="orderNumber" placeholder="FC229" formControlName="orderNumber">
-        </mat-form-field>
+        <app-base-input class="flex-1 min-w-[90px]" label="Apt/Unit/Room" type="text" placeholder="104" formControlName="endUnit"></app-base-input>
+        <app-base-input class="flex-1 min-w-[90px]" label="Order Number" type="text" placeholder="FC229" formControlName="orderNumber"></app-base-input>
       </div>
       <div *ngIf="showOrder">
         <mat-slide-toggle name="exclude" formControlName="exclude" color="primary">
@@ -308,18 +203,10 @@
   <!-- Form Actions -->
   <div class="flex flex-col gap-4 mt-6">
     <div class="flex w-full items-center justify-between gap-4">
-      <button *ngIf="!data?.id" mat-fab extended color="warn" (click)="formReset()">
-        <mat-icon>refresh</mat-icon> Reset
-      </button>
-      <button *ngIf="data?.id" mat-fab extended color="warn" (click)="close()">
-        <mat-icon>cancel</mat-icon> Cancel
-      </button>
-      <button *ngIf="!data?.id" mat-fab extended color="primary" (click)="addTrip()" [disabled]="tripForm.invalid" [class.button-disabled]="tripForm.invalid">
-        <mat-icon>add</mat-icon> Store
-      </button>
-      <button *ngIf="data?.id" mat-fab extended color="primary" (click)="editTrip()" [disabled]="tripForm.invalid" [class.button-disabled]="tripForm.invalid">
-        <mat-icon>save</mat-icon> Update
-      </button>
+      <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()" [label]="'Reset'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid" [label]="'Store'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid" [label]="'Update'"></app-base-rect-button>
     </div>
   </div>
 </div>

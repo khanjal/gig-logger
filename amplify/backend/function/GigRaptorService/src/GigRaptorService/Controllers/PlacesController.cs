@@ -50,7 +50,8 @@ public class PlacesController : ControllerBase
                 request.SearchType, 
                 request.Country,
                 request.UserLatitude,
-                request.UserLongitude);
+                request.UserLongitude,
+                request.RadiusMeters);
 
             _logger.LogInformation("📍 Places search completed, query: '{Query}', results: {ResultCount}", request.Query, results.Count);
             

@@ -1,0 +1,33 @@
+<div class="app-base-input">
+  <mat-form-field class="input-field" appearance="outline" [class.mat-form-field-invalid]="errorState">
+    <mat-label *ngIf="label">
+      {{ label }}
+    </mat-label>
+
+    <mat-icon *ngIf="icon && iconPosition === 'left'" matPrefix class="input-icon">
+      {{ icon }}
+    </mat-icon>
+
+    <input 
+      #inputElement
+      matInput 
+      [type]="type"
+      [value]="value"
+      [disabled]="disabled"
+      [required]="isRequired"
+      [placeholder]="placeholder || ''"
+      [attr.aria-invalid]="errorState"
+      (input)="onValueChange(inputElement.value)"
+      (blur)="onBlur()"
+      (focus)="onFocus()"
+    />
+
+    <mat-icon *ngIf="icon && iconPosition === 'right'" matSuffix class="input-icon">
+      {{ icon }}
+    </mat-icon>
+
+    <mat-hint *ngIf="hint && !hasError()">{{ hint }}</mat-hint>
+    <mat-error *ngIf="hasError()">{{ error || getErrorMessage() }}</mat-error>
+    <mat-error></mat-error>
+  </mat-form-field>
+</div>

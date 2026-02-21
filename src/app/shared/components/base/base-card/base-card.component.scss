@@ -1,0 +1,126 @@
+// =============================================================================
+// BASE CARD COMPONENT STYLES
+// =============================================================================
+
+.app-base-card {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: 0.5rem; // 8px
+  transition: all 0.2s ease-in-out;
+
+  // =========================================================================
+  // VARIANTS
+  // =========================================================================
+
+  &.card-default {
+    border: 1px solid var(--color-border-light);
+  }
+
+  &.card-elevated {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 
+                0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  &.card-outlined {
+    border: 1.5px solid var(--color-border);
+  }
+
+  // =========================================================================
+  // PADDING SIZES
+  // =========================================================================
+
+  &.card-padding-sm {
+    padding: 0.75rem;
+
+    .card-header {
+      margin-bottom: 0.5rem;
+    }
+
+    .card-subtitle {
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  &.card-padding-md {
+    padding: 1rem;
+
+    .card-header {
+      margin-bottom: 0.75rem;
+    }
+
+    .card-subtitle {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &.card-padding-lg {
+    padding: 1.5rem;
+
+    .card-header {
+      margin-bottom: 1rem;
+    }
+
+    .card-subtitle {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  // =========================================================================
+  // HEADER STYLES
+  // =========================================================================
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.125rem; // 18px
+    font-weight: 600;
+    color: var(--color-text-primary);
+    line-height: 1.4;
+  }
+
+  .card-title-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--primary-500);
+  }
+
+  // =========================================================================
+  // SUBTITLE STYLES
+  // =========================================================================
+
+  .card-subtitle {
+    margin: 0;
+    font-size: 0.875rem; // 14px
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  // =========================================================================
+  // CONTENT STYLES
+  // =========================================================================
+
+  .card-content {
+    color: var(--color-text-primary);
+  }
+}
+
+// =============================================================================
+// DARK MODE (handled via CSS variables - no additional changes needed)
+// =============================================================================
+// The component uses CSS variables which are automatically updated
+// when the theme changes, so no additional :host-context rules needed

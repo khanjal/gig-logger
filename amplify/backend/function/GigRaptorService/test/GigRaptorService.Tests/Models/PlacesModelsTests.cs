@@ -18,6 +18,7 @@ public class PlacesModelsTests
         Assert.Equal("US", request.Country);
         Assert.Null(request.UserLatitude);
         Assert.Null(request.UserLongitude);
+        Assert.Null(request.RadiusMeters);
     }
 
     [Fact]
@@ -31,7 +32,8 @@ public class PlacesModelsTests
             UserId = "user-123",
             Country = "CA",
             UserLatitude = 40.7128,
-            UserLongitude = -74.0060
+            UserLongitude = -74.0060,
+            RadiusMeters = 48280.0 // 30 miles in meters
         };
 
         // Assert
@@ -41,6 +43,7 @@ public class PlacesModelsTests
         Assert.Equal("CA", request.Country);
         Assert.Equal(40.7128, request.UserLatitude);
         Assert.Equal(-74.0060, request.UserLongitude);
+        Assert.Equal(48280.0, request.RadiusMeters);
     }
 
     [Fact]

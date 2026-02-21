@@ -181,6 +181,7 @@
   
   .content-area {
     padding: 12px;
+    padding-bottom: calc(140px + env(safe-area-inset-bottom));
   }
   
   .sheets-grid {

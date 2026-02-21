@@ -4,9 +4,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { getCurrentUserId } from '@utils/user-id.util';
 
 // Angular Material
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
 import { MatChip } from '@angular/material/chips';
+import { BaseCardComponent } from '@components/base';
 
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';
@@ -18,16 +17,13 @@ import { AUTH_CONSTANTS } from '@constants/auth.constants';
   standalone: true,
   imports: [
     CommonModule,
-    MatCard,
-    MatCardContent,
-    MatCardHeader,
-    MatCardTitle,
-    MatIcon,
+    BaseCardComponent,
     MatChip
   ],
   templateUrl: './auth-status.component.html',
   styleUrl: './auth-status.component.scss'
 })
+
 export class AuthStatusComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   

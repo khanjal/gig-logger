@@ -8,6 +8,7 @@ import { map, Subscription, timer } from 'rxjs';
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
+import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 
 // Application-specific imports - Interfaces
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
@@ -22,7 +23,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { LoggerService } from '@services/logger.service';
 import { NgFor, NgClass } from '@angular/common';
-import { MatFabButton } from '@angular/material/button';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 // Define types for better type safety
 type SyncType = 'save' | 'load';
@@ -53,7 +54,7 @@ interface DataSyncConfig {
     templateUrl: './data-sync-modal.component.html',
     styleUrls: ['./data-sync-modal.component.scss'],
     standalone: true,
-    imports: [NgFor, NgClass, MatFabButton]
+    imports: [NgFor, NgClass, BaseRectButtonComponent]
 })
 export class DataSyncModalComponent implements OnInit, OnDestroy {
     @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;
@@ -159,8 +160,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             }
         }
         
-        sheetData.shifts = unsavedShifts;
-        sheetData.trips = await this._tripService.getUnsaved();
+        // Apply serialization to convert 0 → null for input fields
+        sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
+        sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
         sheetData.expenses = await this._expensesService.getUnsaved();
 
         this.appendToTerminal("Saving changes...");

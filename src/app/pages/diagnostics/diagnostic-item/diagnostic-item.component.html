@@ -12,12 +12,13 @@
         <span *ngIf="item.totalTrips !== undefined">{{ item.totalTrips }} trips</span>
         <span *ngIf="item.start" class="item-time">{{ item.start }} - {{ item.finish }}</span>
       </div>
-      <button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed" 
-              mat-icon-button color="primary" 
-              (click)="onFixShiftDuration()"
-              matTooltip="Fix duration">
-        <mat-icon>build</mat-icon>
-      </button>
+      <app-base-fab-button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed"
+        fabStyle="mini"
+        variant="primary"
+        (clicked)="onFixShiftDuration()"
+        matTooltip="Fix duration"
+        [icon]="'build'">
+      </app-base-fab-button>
     </div>
   </div>
 
@@ -34,12 +35,13 @@
         <span *ngIf="item.name" class="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 rounded text-xs badge-indigo">{{ item.name }}</span>
         <span *ngIf="item.exclude" class="px-2 py-0.5 bg-error-500/20 rounded text-xs badge-delete">EXCLUDED</span>
       </div>
-      <button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed" 
-              mat-icon-button color="primary" 
-              (click)="onFixTripDuration()"
-              matTooltip="Fix duration">
-        <mat-icon>build</mat-icon>
-      </button>
+      <app-base-fab-button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed"
+        fabStyle="mini"
+        variant="primary"
+        (clicked)="onFixTripDuration()"
+        matTooltip="Fix duration"
+        [icon]="'build'">
+      </app-base-fab-button>
     </div>
     <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm mt-1">
       <span *ngIf="item.pickupTime" class="item-time">{{ item.pickupTime }}</span>
