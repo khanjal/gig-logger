@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
+import { IMockLocation, IPresetLocation } from '@interfaces/mock-location.interface';
 
-export interface MockLocation {
-  enabled: boolean;
-  latitude: number;
-  longitude: number;
-  radius: number; // in miles
-  name?: string;
-}
+/**
+ * @deprecated Use IMockLocation from @interfaces/mock-location.interface instead
+ */
+export type MockLocation = IMockLocation;
 
-export interface PresetLocation {
-  name: string;
-  latitude: number;
-  longitude: number;
-  country: 'US' | 'CA';
-}
+/**
+ * @deprecated Use IPresetLocation from @interfaces/mock-location.interface instead
+ */
+export type PresetLocation = IPresetLocation;
 
 @Injectable({
   providedIn: 'root'

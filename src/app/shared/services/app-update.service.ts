@@ -31,13 +31,12 @@ import { Injectable, inject } from '@angular/core';
 import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
 import { LoggerService } from './logger.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 
-export interface AppUpdateStatus {
-  isUpdateAvailable: boolean;
-  isEnabled: boolean;
-  currentVersion?: string;
-  latestVersion?: string;
-}
+/**
+ * @deprecated Use IAppUpdateStatus from @interfaces/app-update-status.interface instead
+ */
+export type AppUpdateStatus = IAppUpdateStatus;
 
 @Injectable({
   providedIn: 'root'

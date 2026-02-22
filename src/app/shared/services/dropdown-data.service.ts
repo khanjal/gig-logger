@@ -10,16 +10,14 @@ import { IType } from '@interfaces/type.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IRegion } from '@interfaces/region.interface';
+import { DropdownType, IDropdownData } from '@interfaces/dropdown-data.interface';
 
-export type DropdownType = 'Service' | 'Type' | 'Place' | 'Address' | 'Region';
+export { DropdownType };
 
-export interface DropdownData {
-  services: string[];
-  types: string[];
-  places: string[];
-  addresses: string[];
-  regions: string[];
-}
+/**
+ * @deprecated Use IDropdownData from @interfaces/dropdown-data.interface instead
+ */
+export type DropdownData = IDropdownData;
 
 @Injectable({
   providedIn: 'root'

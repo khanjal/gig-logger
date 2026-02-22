@@ -5,54 +5,44 @@ import { LoggerService } from './logger.service';
 import { MockLocationService } from './mock-location.service';
 import { getCurrentUserId } from '@utils/user-id.util';
 import { firstValueFrom } from 'rxjs';
+import { 
+  IAutocompleteResult, 
+  IPlaceDetails, 
+  IAddressComponent, 
+  IUserApiUsage, 
+  IPlacesAutocompleteRequest, 
+  IPlaceDetailsRequest 
+} from '@interfaces/google-places.interface';
 
-export interface AutocompleteResult {
-  place: string;
-  address: string;
-  placeDetails?: PlaceDetails;
-}
+/**
+ * @deprecated Use IAutocompleteResult from @interfaces/google-places.interface instead
+ */
+export type AutocompleteResult = IAutocompleteResult;
 
-export interface PlaceDetails {
-  placeId?: string;
-  name?: string;
-  formattedAddress?: string;
-  addressComponents?: GoogleAddressComponent[];
-  geometry?: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
+/**
+ * @deprecated Use IPlaceDetails from @interfaces/google-places.interface instead
+ */
+export type PlaceDetails = IPlaceDetails;
 
-export interface GoogleAddressComponent {
-  longText: string;
-  shortText: string;
-  types: string[];
-}
+/**
+ * @deprecated Use IAddressComponent from @interfaces/google-places.interface instead
+ */
+export type GoogleAddressComponent = IAddressComponent;
 
-export interface UserApiUsage {
-  userId: string;
-  monthlyQuota: number;
-  currentUsage: number;
-  tier: string;
-  lastRequestTime: string;
-}
+/**
+ * @deprecated Use IUserApiUsage from @interfaces/google-places.interface instead
+ */
+export type UserApiUsage = IUserApiUsage;
 
-export interface PlacesAutocompleteRequest {
-  query: string;
-  searchType: string;
-  userId: string;
-  country: string;
-  userLatitude?: number;
-  userLongitude?: number;
-  radiusMeters?: number;
-}
+/**
+ * @deprecated Use IPlacesAutocompleteRequest from @interfaces/google-places.interface instead
+ */
+export type PlacesAutocompleteRequest = IPlacesAutocompleteRequest;
 
-export interface PlaceDetailsRequest {
-  placeId: string;
-  userId: string;
-}
+/**
+ * @deprecated Use IPlaceDetailsRequest from @interfaces/google-places.interface instead
+ */
+export type PlaceDetailsRequest = IPlaceDetailsRequest;
 
 @Injectable({
   providedIn: 'root'

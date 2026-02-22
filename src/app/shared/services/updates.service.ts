@@ -1,18 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
 
-export interface UpdateDetail {
-  title: string;
-  changes?: string[];
-  pagesAffected?: string[];
-}
+/**
+ * @deprecated Use IUpdateDetail from @interfaces/update.interface instead
+ */
+export type UpdateDetail = IUpdateDetail;
 
-export interface UpdateEntry {
-  date: string;
-  dateLabel: string;
-  isWeekly?: boolean;
-  updates: UpdateDetail[];
-}
+/**
+ * @deprecated Use IUpdateEntry from @interfaces/update.interface instead
+ */
+export type UpdateEntry = IUpdateEntry;
 
 @Injectable({
   providedIn: 'root'
