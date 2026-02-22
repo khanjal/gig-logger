@@ -11,6 +11,7 @@ const path = require('path');
 const LAMBDA_FUNCTION_NAME = 'raptor-gig-service';
 const AWS_REGION = 'us-east-1';
 const LAMBDA_RUNTIME = 'dotnet8';
+const LAMBDA_ARCHITECTURE = 'arm64';
 
 // Inline logger for consistent format (matches LoggerService)
 const logger = {
@@ -66,7 +67,8 @@ async function updateLambda() {
       'lambda', 
       'deploy-function', 
       '--function-name', LAMBDA_FUNCTION_NAME,
-      '--function-runtime', LAMBDA_RUNTIME
+      '--function-runtime', LAMBDA_RUNTIME,
+      '--function-architecture', LAMBDA_ARCHITECTURE
     ], {
       cwd: LAMBDA_PROJECT_PATH
     });
