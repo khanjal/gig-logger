@@ -60,6 +60,10 @@
       <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Place:</span>
       <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ currentTrip?.place }}</span>
     </div>
+    <div *ngIf="currentTrip?.dropoffAddress" class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Destination:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs text-right">{{ currentTrip?.dropoffAddress }}</span>
+    </div>
     <div *ngIf="currentTrip?.basePay != null" class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
       <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Base Pay:</span>
       <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">${{ currentTrip?.basePay?.toFixed(2) }}</span>
@@ -73,7 +77,7 @@
       <span class="font-semibold text-green-600 dark:text-green-400 text-xs">${{ currentTrip?.pay?.toFixed(2) }}</span>
     </div>
     <div *ngIf="currentTrip?.dropoffTime" class="flex justify-between py-2">
-      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Delivered:</span>
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">{{ parsed?.classification?.type === 'offer' ? 'Pickup:' : 'Delivered:' }}</span>
       <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ currentTrip?.dropoffTime }}</span>
     </div>
 

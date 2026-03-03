@@ -18,26 +18,44 @@ export class ScreenshotClassificationHelper {
    */
   static classifyScreenshot(text: string, tripCount: number): IScreenshotClassification {
     const normalized = text.toLowerCase();
-    
-    // Service detection
-    let service: 'doordash' | 'uber' | 'grubhub' | 'unknown' = 'unknown';
-    if (/doordash|dash\s*pay|dasher|earn\s*per\s*offer/.test(normalized)) {
-      service = 'doordash';
-    } else if (/uber|uber\s*eats/.test(normalized)) {
-      service = 'uber';
-    } else if (/grubhub/.test(normalized)) {
-      service = 'grubhub';
-    }
-    
-    const isStackedOrder = tripCount > 1;
-    
-    // Type detection
+
     let type: 'completion' | 'earnings-summary' | 'trip-details' | 'offer' | 'unknown' = 'unknown';
-    if (/deliveries completed|completed/i.test(text)) {
+    const isOffer = /\baccept\b|\bdecline\b|\bguaranteed\b/i.test(text);
+    const isCompletion = /deliver(?:y|ies)\s+completed|\bcompleted\b/i.test(text);
+
+    if (isOffer) {
+      type = 'offer';
+    } else if (isCompletion) {
       type = 'completion';
     }
-    
-    return { type, service, isStackedOrder };
+
+    let service: 'doordash' | 'uber' | 'grubhub' | 'unknown' = 'unknown';
+
+    if (type === 'offer') {
+      const hasDoorDashOfferSignals = /restaurant\s*pickup|customer\s*dropoff|\bguaranteed\b|\bdeliver\s*by\b|\baccept\b/i.test(text);
+      const hasStrongDoorDashSignals = /dasher|dash\s*pay|earn\s*per\s*offer|doordash/i.test(text);
+      const hasStrongUberSignals = /uber\s*eats|delivery\s*request/i.test(text);
+
+      if (hasDoorDashOfferSignals || hasStrongDoorDashSignals) {
+        service = 'doordash';
+      } else if (hasStrongUberSignals) {
+        service = 'uber';
+      }
+    } else {
+      if (/doordash|dash\s*pay|dasher|earn\s*per\s*offer/.test(normalized)) {
+        service = 'doordash';
+      } else if (/uber|uber\s*eats/.test(normalized)) {
+        service = 'uber';
+      } else if (/grubhub/.test(normalized)) {
+        service = 'grubhub';
+      }
+    }
+
+    return {
+      type,
+      service,
+      isStackedOrder: tripCount > 1
+    };
   }
 
   /**
@@ -132,5 +150,48 @@ export class ScreenshotClassificationHelper {
     }
     
     return amounts;
+  }
+
+  /**
+   * Extracts the destination/dropoff address from offer screenshots.
+   * Looks for standalone street-address patterns.
+   */
+  static extractDropoffAddress(text: string): string | null {
+    const lines = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    for (const line of lines) {
+      if (/^\d{2,6}\s+[A-Za-z0-9.'-]+(?:\s+[A-Za-z0-9.'-]+){0,5}\s+(Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Way|Boulevard|Blvd)\b/i.test(line)) {
+        return line;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Extracts the guaranteed offer amount from offer screenshots.
+   */
+  static extractGuaranteedAmount(text: string): number | null {
+    const lines = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    for (const line of lines) {
+      if (/guaranteed/i.test(line)) {
+        const match = line.match(/\$\s*([0-9]+(?:\.[0-9]{1,2})?)/);
+        if (match) {
+          const value = parseFloat(match[1]);
+          if (!Number.isNaN(value) && value > 0) {
+            return value;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 }

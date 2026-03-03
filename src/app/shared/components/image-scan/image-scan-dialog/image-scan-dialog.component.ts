@@ -5,7 +5,6 @@ import { BaseAccordionComponent } from '@components/base/base-accordion/base-acc
 import { BaseAccordionItemComponent } from '@components/base/base-accordion/base-accordion-item.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { ScreenshotClassificationHelper } from '@helpers/screenshot-classification.helper';
-import { IScreenshotClassification } from '@interfaces/screenshot-classification.interface';
 
 @Component({
   selector: 'image-scan-dialog',
@@ -96,7 +95,28 @@ export class ImageScanDialogComponent {
     }
 
     // Classify screenshot type
-    output.classification = ScreenshotClassificationHelper.classifyScreenshot(text, detectedTripCount);
+    const classification = ScreenshotClassificationHelper.classifyScreenshot(text, detectedTripCount);
+    output.classification = classification;
+
+    if (classification.service === 'doordash') {
+      output.service = 'DoorDash';
+    } else if (classification.service === 'uber') {
+      output.service = 'Uber';
+    } else if (classification.service === 'grubhub') {
+      output.service = 'Grubhub';
+    }
+
+    if (classification.type === 'offer') {
+      const guaranteedAmount = ScreenshotClassificationHelper.extractGuaranteedAmount(text);
+      if (guaranteedAmount !== null) {
+        output.amount = guaranteedAmount;
+      }
+
+      const dropoffAddress = ScreenshotClassificationHelper.extractDropoffAddress(text);
+      if (dropoffAddress) {
+        output.dropoffAddress = dropoffAddress;
+      }
+    }
 
     // Extract base pay for stacked order splitting
     const basePay = ScreenshotClassificationHelper.extractBasePay(text);
@@ -115,27 +135,14 @@ export class ImageScanDialogComponent {
       output.place = places[0];
     }
 
-    const normalized = text.toLowerCase();
-
-    const hasDoorDashSignal = /doordash|dash\s*pay|dasher|earn\s*per\s*offer/.test(normalized);
-    const hasUberSignal = /uber|uber\s*eats/.test(normalized);
-    const hasGrubhubSignal = /grubhub/.test(normalized);
-
-    if (hasDoorDashSignal) {
-      output.service = 'DoorDash';
-    } else if (hasUberSignal) {
-      output.service = 'Uber';
-    } else if (hasGrubhubSignal) {
-      output.service = 'Grubhub';
-    }
-
     output.extractedTrips = this.buildExtractedTrips({
       tripCount: output.tripCount,
       places: output.places,
       completedTime: output.completedTime,
       fallbackAmount: output.amount,
       basePay: output.basePay,
-      tipAmounts: this.extractTipAmounts(text)
+      tipAmounts: this.extractTipAmounts(text),
+      dropoffAddress: output.dropoffAddress
     });
 
     return output;
@@ -429,7 +436,8 @@ export class ImageScanDialogComponent {
     fallbackAmount?: number;
     basePay?: number;
     tipAmounts?: number[];
-  }): Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string }> {
+    dropoffAddress?: string;
+  }): Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string }> {
     const places = input.places ?? [];
     const tipAmounts = input.tipAmounts ?? [];
     
@@ -450,7 +458,7 @@ export class ImageScanDialogComponent {
       basePayAmounts = [input.basePay];
     }
 
-    const trips: Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string }> = [];
+    const trips: Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string }> = [];
     for (let index = 0; index < count; index++) {
       const basePay = basePayAmounts[index] ?? 0;
       const tip = tipAmounts[index] ?? 0;
@@ -461,7 +469,8 @@ export class ImageScanDialogComponent {
         pay: totalPay > 0 ? totalPay : (count === 1 ? input.fallbackAmount : undefined),
         basePay: basePay > 0 ? basePay : undefined,
         tip: tip > 0 ? tip : undefined,
-        dropoffTime: input.completedTime
+        dropoffTime: input.completedTime,
+        dropoffAddress: input.dropoffAddress
       });
     }
 
