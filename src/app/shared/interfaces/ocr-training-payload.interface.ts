@@ -6,19 +6,19 @@ export interface IOcrTrainingPayload {
   parserVersion: string;
   generatedAt: string;
   screenshotType: string;
-  service?: string;
+  service: string | null;
   ocrText: string;
   detected: Record<string, unknown>;
   corrected: {
-    date?: string;
-    service?: string;
+    date: string | null;
+    service: string | null;
     trips: Array<{
-      place?: string;
-      pay?: number;
-      tip?: number;
-      dropoffTime?: string;
-      dropoffAddress?: string;
+      place: string | null;
+      pay: number | null;
+      tip: number | null;
+      dropoffTime: string | null;
+      dropoffAddress: string | null;
     }>;
   };
-  notes?: string;
+  notes: string | null;
 }

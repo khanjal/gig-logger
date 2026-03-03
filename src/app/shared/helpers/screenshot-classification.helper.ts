@@ -194,4 +194,68 @@ export class ScreenshotClassificationHelper {
 
     return null;
   }
+
+  /**
+   * Extracts the restaurant name from offer screenshots by looking for
+   * text after "Restaurant pickup" label.
+   */
+  static extractOfferRestaurantName(text: string): string | null {
+    const lines = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    // Find the "Restaurant pickup" or similar label
+    let restaurantNameIndex = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (/restaurant\s*pickup/i.test(lines[i])) {
+        restaurantNameIndex = i + 1;
+        break;
+      }
+    }
+
+    // If not found, search for common restaurant indicators followed by a name
+    if (restaurantNameIndex === -1) {
+      for (let i = 0; i < lines.length; i++) {
+        if (/^(?:Restaurant|Pickup|From):\s*(.+)$/i.test(lines[i])) {
+          const match = lines[i].match(/^(?:Restaurant|Pickup|From):\s*(.+)$/i);
+          if (match && match[1]?.trim()) {
+            return match[1].trim();
+          }
+        }
+      }
+      return null;
+    }
+
+    // Extract the restaurant name - it should be the next non-empty line after the label
+    // Filter out lines that are clearly not restaurant names (common blocklist)
+    const blockedKeywords = ['customer', 'delivery', 'guaranteed', 'accept', 'decline', 'address', 'road', 'street', 'way'];
+    
+    while (restaurantNameIndex < lines.length) {
+      const candidate = lines[restaurantNameIndex].trim();
+      
+      // Skip empty lines and lines that are too short
+      if (!candidate || candidate.length < 2) {
+        restaurantNameIndex++;
+        continue;
+      }
+
+      // Skip lines that contain blocked keywords
+      if (blockedKeywords.some(keyword => new RegExp(`\\b${keyword}\\b`, 'i').test(candidate))) {
+        restaurantNameIndex++;
+        continue;
+      }
+
+      // Skip lines that are just numbers, money, or addresses
+      if (/^\d+$|^\$|^\d+\s+\w+\s+(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Lane|Ln)/i.test(candidate)) {
+        restaurantNameIndex++;
+        continue;
+      }
+
+      // This is likely the restaurant name
+      return candidate;
+    }
+
+    return null;
+  }
 }

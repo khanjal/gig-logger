@@ -1,5 +1,12 @@
 <div class="flex flex-col gap-4 p-2">
-  <h2 class="m-0 text-xl font-medium text-gray-800 dark:text-gray-200">Scan Screenshot</h2>
+  <div class="flex items-center justify-between">
+    <h2 class="m-0 text-xl font-medium text-gray-800 dark:text-gray-200">Scan Screenshot</h2>
+    <app-base-icon-button
+      [icon]="'close'"
+      [iconColor]="'var(--error-500)'"
+      (clicked)="close()">
+    </app-base-icon-button>
+  </div>
 
   <app-base-accordion class="w-full">
     <app-base-accordion-item title="Screenshot Preview" [expanded]="false">

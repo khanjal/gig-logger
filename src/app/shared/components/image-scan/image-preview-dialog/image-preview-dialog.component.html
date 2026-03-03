@@ -1,16 +1,13 @@
-<div class="flex flex-col gap-3 p-2">
-  <div class="flex justify-end">
-    <app-base-rect-button
-      variant="secondary"
-      [label]="'Close'"
-      (clicked)="close()">
-    </app-base-rect-button>
-  </div>
+<div class="relative w-full h-full flex items-center justify-center bg-gray-900">
+  <img
+    [src]="data.imageUrl"
+    alt="OCR screenshot preview"
+    class="max-w-full max-h-full w-full h-full object-contain" />
 
-  <div class="flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2 max-h-[85vh] overflow-auto">
-    <img
-      [src]="data.imageUrl"
-      alt="OCR screenshot preview"
-      class="max-w-full h-auto object-contain rounded" />
-  </div>
+  <app-base-icon-button
+    class="absolute top-4 right-4 z-10 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
+    [icon]="'close'"
+    [iconColor]="'white'"
+    (clicked)="close()">
+  </app-base-icon-button>
 </div>

@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { BaseAccordionComponent } from '@components/base/base-accordion/base-accordion.component';
 import { BaseAccordionItemComponent } from '@components/base/base-accordion/base-accordion-item.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseIconButtonComponent } from '@components/base/base-icon-button/base-icon-button.component';
 import { ImageScanTrainingDialogComponent } from '@components/image-scan/image-scan-training-dialog/image-scan-training-dialog.component';
 import { ScreenshotClassificationHelper } from '@helpers/screenshot-classification.helper';
 
@@ -12,7 +13,7 @@ import { ScreenshotClassificationHelper } from '@helpers/screenshot-classificati
   templateUrl: './image-scan-dialog.component.html',
   styleUrls: ['./image-scan-dialog.component.scss'],
   standalone: true,
-  imports: [CommonModule, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, BaseRectButtonComponent, BaseIconButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class ImageScanDialogComponent {
   text: string | null = null;
@@ -118,6 +119,13 @@ export class ImageScanDialogComponent {
       if (dropoffAddress) {
         output.dropoffAddress = dropoffAddress;
       }
+
+      // For offer screens, extract restaurant name specifically
+      const restaurantName = ScreenshotClassificationHelper.extractOfferRestaurantName(text);
+      if (restaurantName) {
+        output.places = [restaurantName];
+        output.place = restaurantName;
+      }
     }
 
     // Extract base pay for stacked order splitting
@@ -131,10 +139,14 @@ export class ImageScanDialogComponent {
       output.completedTime = completedTime;
     }
 
-    const places = this.extractPlaces(text);
-    if (places.length > 0) {
-      output.places = places;
-      output.place = places[0];
+    // For offer screens, places are already extracted above
+    // For completion screens, use general place extraction
+    if (classification.type !== 'offer' || !output.place) {
+      const places = this.extractPlaces(text);
+      if (places.length > 0) {
+        output.places = places;
+        output.place = places[0];
+      }
     }
 
     output.extractedTrips = this.buildExtractedTrips({
@@ -235,6 +247,17 @@ export class ImageScanDialogComponent {
       if (firstLineMatch) {
         return firstLineMatch[1].replace(/\s+/g, ' ').trim();
       }
+
+      // Try to match abbreviated time format like "458" → "4:58"
+      const abbreviatedTimeMatch = lines[0].match(/^(\d{3})([A-Z@]?)/);
+      if (abbreviatedTimeMatch) {
+        const digits = abbreviatedTimeMatch[1];
+        if (digits.length === 3) {
+          const hours = digits[0];
+          const minutes = digits.slice(1);
+          return `${hours}:${minutes}`;
+        }
+      }
     }
 
     const topLines = lines.slice(0, 4).join(' ');
@@ -265,14 +288,14 @@ export class ImageScanDialogComponent {
       /earn\s*per\s*offer/i,
       /you\s+won['']t\s+get\s+offers/i,
       /dash\s+paused/i,
+      /total\b.*higher\s+than/i,
+      /higher\s+than.*shown\s+on/i,
       /^total\b/i,
       /^uber$/i,
       /^\-\>$/,
       /^\$?\d+(?:\.\d{2})?$/,
       /^looking\s+for/i,
-      /^acceptance/i,
-      /^higher\s+than/i,
-      /^shown\s+on/i
+      /^acceptance/i
     ];
 
     const isBlocked = (line: string) => blockedPatterns.some(pattern => pattern.test(line));
@@ -306,10 +329,14 @@ export class ImageScanDialogComponent {
       }
 
       // Only keep lines that have a dollar amount on the same line or have possessive form
+      // Also filter out short garbage text - real places should be longer or match business keywords
+      const looksLikeBusiness = /shop|store|restaurant|cafe|bar|grill|market|general|dollar|subway|pizza|deli|kitchen/i.test(candidate);
+      const longEnough = candidate.length >= 5;
+      const hasProperNoun = /[A-Z][a-z]/.test(candidate);
       const shouldKeep =
-        candidate.length >= 3 &&
         !isBlocked(candidate) &&
-        (hasMoney(original) || /[A-Za-z]+'s\b/.test(candidate));
+        (hasMoney(original) || /[A-Za-z]+'s\b/.test(candidate)) &&
+        (looksLikeBusiness || (longEnough && hasProperNoun));
 
       if (shouldKeep) {
         places.push(candidate);

@@ -25,6 +25,15 @@
     </app-base-input>
   </div>
 
+  <mat-form-field class="w-full" appearance="outline">
+    <mat-label>Screen Type</mat-label>
+    <mat-select [(ngModel)]="screenType">
+      <mat-option *ngFor="let type of screenTypes" [value]="type">
+        {{ type }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <div class="flex items-center justify-between">
     <h3 class="m-0 text-sm font-semibold text-gray-800 dark:text-gray-200">Trips</h3>
     <app-base-rect-button

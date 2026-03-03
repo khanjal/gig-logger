@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseIconButtonComponent } from '@components/base/base-icon-button/base-icon-button.component';
 
 @Component({
   selector: 'app-image-preview-dialog',
   standalone: true,
   templateUrl: './image-preview-dialog.component.html',
   styleUrls: ['./image-preview-dialog.component.scss'],
-  imports: [CommonModule, BaseRectButtonComponent]
+  imports: [CommonModule, BaseIconButtonComponent]
 })
 export class ImagePreviewDialogComponent {
   constructor(

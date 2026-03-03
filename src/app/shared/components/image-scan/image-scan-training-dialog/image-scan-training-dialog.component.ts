@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
 import { BaseAccordionComponent } from '@components/base/base-accordion/base-accordion.component';
 import { BaseAccordionItemComponent } from '@components/base/base-accordion/base-accordion-item.component';
 import { BaseInputComponent } from '@components/base';
@@ -11,11 +14,11 @@ import { SearchInputComponent } from '@inputs/search-input/search-input.componen
 import { IOcrTrainingPayload } from '@interfaces/ocr-training-payload.interface';
 
 interface TrainingTripEdit {
-  place?: string;
-  pay?: number;
-  tip?: number;
-  dropoffTime?: string;
-  dropoffAddress?: string;
+  place?: string | null;
+  pay?: number | null;
+  tip?: number | null;
+  dropoffTime?: string | null;
+  dropoffAddress?: string | null;
 }
 
 @Component({
@@ -23,13 +26,16 @@ interface TrainingTripEdit {
   standalone: true,
   templateUrl: './image-scan-training-dialog.component.html',
   styleUrls: ['./image-scan-training-dialog.component.scss'],
-  imports: [CommonModule, FormsModule, BaseInputComponent, SearchInputComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule, MatOptionModule, BaseInputComponent, SearchInputComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class ImageScanTrainingDialogComponent {
   date = '';
   service = '';
+  screenType = '';
   notes = '';
   trips: TrainingTripEdit[] = [];
+
+  readonly screenTypes = ['offer', 'completion', 'earnings-summary', 'trip-details', 'unknown'];
 
   constructor(
     private dialog: MatDialog,
@@ -43,6 +49,7 @@ export class ImageScanTrainingDialogComponent {
   ) {
     this.date = this.data?.parsed?.date ?? '';
     this.service = this.data?.parsed?.service ?? '';
+    this.screenType = this.data?.parsed?.classification?.type ?? 'unknown';
     this.trips = this.cloneTrips(this.data?.parsed?.extractedTrips);
 
     if (!this.trips.length) {
@@ -73,8 +80,10 @@ export class ImageScanTrainingDialogComponent {
 
     this.dialog.open(ImagePreviewDialogComponent, {
       panelClass: 'custom-modalbox',
-      width: 'min(1200px, 98vw)',
-      maxHeight: '95vh',
+      width: '98vw',
+      height: '98vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
       data: {
         imageUrl: this.data.imageUrl
       }
@@ -85,22 +94,22 @@ export class ImageScanTrainingDialogComponent {
     const payload: IOcrTrainingPayload = {
       parserVersion: 'ocr-v1',
       generatedAt: new Date().toISOString(),
-      screenshotType: this.data?.parsed?.classification?.type ?? 'unknown',
-      service: this.service || undefined,
+      screenshotType: this.screenType || 'unknown',
+      service: this.service || null,
       ocrText: this.data?.text ?? '',
       detected: this.data?.parsed ?? {},
       corrected: {
-        date: this.date || undefined,
-        service: this.service || undefined,
+        date: this.date || null,
+        service: this.service || null,
         trips: this.trips.map(trip => ({
-          place: trip.place?.trim() || undefined,
+          place: trip.place?.trim() || null,
           pay: this.toNumberOrUndefined(trip.pay),
           tip: this.toNumberOrUndefined(trip.tip),
-          dropoffTime: trip.dropoffTime?.trim() || undefined,
-          dropoffAddress: trip.dropoffAddress?.trim() || undefined
+          dropoffTime: trip.dropoffTime?.trim() || null,
+          dropoffAddress: trip.dropoffAddress?.trim() || null
         }))
       },
-      notes: this.notes?.trim() || undefined
+      notes: this.notes?.trim() || null
     };
 
     const serialized = JSON.stringify(payload, null, 2);
@@ -130,13 +139,13 @@ export class ImageScanTrainingDialogComponent {
     }));
   }
 
-  private toNumberOrUndefined(value: unknown): number | undefined {
+  private toNumberOrUndefined(value: unknown): number | null {
     if (value === null || value === undefined || value === '') {
-      return undefined;
+      return null;
     }
 
     const numberValue = Number(value);
-    return Number.isFinite(numberValue) ? numberValue : undefined;
+    return Number.isFinite(numberValue) ? numberValue : null;
   }
 
   private copyWithFallback(value: string): void {
