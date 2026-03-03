@@ -1,0 +1,105 @@
+<div class="flex flex-col gap-4 p-2">
+  <h2 class="m-0 text-xl font-medium text-gray-800 dark:text-gray-200">Scan Screenshot</h2>
+
+  <app-base-accordion class="w-full">
+    <app-base-accordion-item title="Screenshot Preview" [expanded]="false">
+      <div class="flex justify-center items-center bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-3 max-h-60 overflow-hidden">
+        <img [src]="data.url" alt="preview" class="max-w-full max-h-56 object-contain rounded" />
+      </div>
+    </app-base-accordion-item>
+  </app-base-accordion>
+
+  <div class="flex gap-2">
+    <app-base-rect-button
+      class="flex-1"
+      variant="primary"
+      [icon]="'document_scanner'"
+      [label]="working ? 'Processing…' : 'Scan Image'"
+      [loading]="working"
+      [disabled]="working"
+      (clicked)="performOcr()">
+    </app-base-rect-button>
+    <app-base-rect-button
+      class="min-w-28"
+      variant="secondary"
+      [label]="'Cancel'"
+      (clicked)="close()">
+    </app-base-rect-button>
+  </div>
+
+  <div *ngIf="text" class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+    <app-base-accordion class="w-full">
+      <app-base-accordion-item
+        title="Detected Text"
+        [expanded]="false"
+        [actionIcon]="'content_copy'"
+        [actionIconColor]="'var(--primary-600)'"
+        (actionClicked)="copyDetectedText()">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2 max-h-30 overflow-y-auto font-mono text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words leading-relaxed">{{ text }}</div>
+      </app-base-accordion-item>
+    </app-base-accordion>
+  </div>
+
+  <div *ngIf="parsed?.extractedTrips?.length && !working" class="bg-gray-100 dark:bg-gray-800 border border-green-500 dark:border-green-600 rounded-lg p-3">
+    <h4 class="m-0 mb-3 text-sm font-semibold text-green-600 dark:text-green-400">Extracted Trips</h4>
+
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Trip</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ currentTripIndex + 1 }} of {{ parsed.extractedTrips.length }}</span>
+    </div>
+
+    <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Service:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ parsed.service ?? '—' }}</span>
+    </div>
+    <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Date:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ parsed.date ?? '—' }}</span>
+    </div>
+    <div *ngIf="currentTrip?.place" class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Place:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ currentTrip?.place }}</span>
+    </div>
+    <div *ngIf="currentTrip?.basePay != null" class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Base Pay:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">${{ currentTrip?.basePay?.toFixed(2) }}</span>
+    </div>
+    <div *ngIf="currentTrip?.tip != null" class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Tip:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">${{ currentTrip?.tip?.toFixed(2) }}</span>
+    </div>
+    <div *ngIf="currentTrip?.pay != null" class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Total:</span>
+      <span class="font-semibold text-green-600 dark:text-green-400 text-xs">${{ currentTrip?.pay?.toFixed(2) }}</span>
+    </div>
+    <div *ngIf="currentTrip?.dropoffTime" class="flex justify-between py-2">
+      <span class="font-medium text-gray-600 dark:text-gray-400 text-xs">Delivered:</span>
+      <span class="font-semibold text-gray-800 dark:text-gray-200 text-xs">{{ currentTrip?.dropoffTime }}</span>
+    </div>
+
+    <div *ngIf="parsed.extractedTrips.length > 1" class="flex justify-between mt-2.5 gap-2">
+      <app-base-rect-button
+        variant="outlined"
+        [label]="'Prev'"
+        [disabled]="currentTripIndex === 0"
+        (clicked)="goToPreviousTrip()">
+      </app-base-rect-button>
+      <app-base-rect-button
+        variant="outlined"
+        [label]="'Next'"
+        [disabled]="currentTripIndex >= parsed.extractedTrips.length - 1"
+        (clicked)="goToNextTrip()">
+      </app-base-rect-button>
+    </div>
+
+    <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+      <app-base-rect-button
+        variant="primary"
+        [fullWidth]="true"
+        [label]="'Use Trip Data'"
+        (clicked)="confirm()">
+      </app-base-rect-button>
+    </div>
+  </div>
+
+</div>

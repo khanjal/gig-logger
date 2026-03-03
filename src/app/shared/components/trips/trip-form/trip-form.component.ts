@@ -2,6 +2,7 @@
 import { ViewportScroller, NgFor, NgIf, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
+import { ImageScanComponent } from '@components/image-scan/image-scan.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Angular material imports
@@ -65,7 +66,7 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, ImageScanComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -143,6 +144,12 @@ export class TripFormComponent implements OnInit {
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
   selectedShift: IShift | undefined;
+  private scannedTripCount: number = 1;
+  private scannedPlaces: string[] = [];
+
+  get scannedTripCountLabel(): string {
+    return this.scannedTripCount > 1 ? `Will create ${this.scannedTripCount} trips` : '';
+  }
 
   title: string = "Add Trip";
 
@@ -160,6 +167,40 @@ export class TripFormComponent implements OnInit {
       private _tripService: TripService,
       private _viewportScroller: ViewportScroller
     ) {}
+
+  public async onImageScan(result: any) {
+    if (!result) return;
+    // Apply extracted fields to the form where appropriate
+    if (result.amount != null) {
+      this.tripForm.controls.pay.setValue(result.amount);
+    }
+    if (result.service) {
+      this.tripForm.controls.service.setValue(result.service);
+    }
+    if (result.completedTime) {
+      this.tripForm.controls.dropoffTime.setValue(result.completedTime);
+    }
+
+    const extractedTrips = Array.isArray(result.extractedTrips) ? result.extractedTrips : [];
+    this.scannedTripCount = Math.max(1, Number(result.tripCount || extractedTrips.length || 1));
+
+    this.scannedPlaces = Array.isArray(result.places)
+      ? result.places.filter((place: string) => !!place && place.trim().length > 0)
+      : extractedTrips
+          .map((trip: any) => trip?.place)
+          .filter((place: string | undefined) => !!place && place.trim().length > 0);
+
+    if (this.scannedPlaces.length > 0) {
+      this.tripForm.controls.place.setValue(this.scannedPlaces[0]);
+      await this.selectPlace();
+    } else if (result.place) {
+      this.tripForm.controls.place.setValue(result.place);
+      await this.selectPlace();
+    }
+
+    // Focus view to the form area so user can review
+    this._viewportScroller.scrollToAnchor('addTrip');
+  }
 
   async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
@@ -302,19 +343,27 @@ export class TripFormComponent implements OnInit {
 
       const shift = await this.createShift();
       const maxRowId = await this._tripService.getMaxRowId();
-      const trip = await TripHelper.createFromFormValue(
-        this.tripForm.value as TripFormValue,
-        shift,
-        undefined,
-        maxRowId
-      );
-      
-      await this._tripService.add(trip);
+      const tripCountToCreate = Math.max(1, this.scannedTripCount);
+      for (let index = 0; index < tripCountToCreate; index++) {
+        const placeForTrip = this.scannedPlaces[index] ?? this.tripForm.value.place;
+        const formValueForTrip: TripFormValue = {
+          ...(this.tripForm.value as TripFormValue),
+          place: placeForTrip
+        };
+        const trip = await TripHelper.createFromFormValue(
+          formValueForTrip,
+          shift,
+          undefined,
+          maxRowId + index
+        );
+        await this._tripService.add(trip);
+      }
 
       await this._gigLoggerService.calculateShiftTotals([shift]);
       await this._gigLoggerService.updateAncillaryInfo();
 
-      this._snackBar.open('Trip Stored to Device');
+      const tripLabel = tripCountToCreate > 1 ? `${tripCountToCreate} Trips Stored to Device` : 'Trip Stored to Device';
+      this._snackBar.open(tripLabel);
 
       await this.formReset();
       this.parentReload.emit();
@@ -372,6 +421,8 @@ export class TripFormComponent implements OnInit {
 
     this.data = {} as ITrip;
     this.tripForm.reset();
+    this.scannedTripCount = 1;
+    this.scannedPlaces = [];
 
     // Reset all selections
     await this.setDestinationAddress("");

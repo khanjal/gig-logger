@@ -199,9 +199,14 @@
 
   <!-- Floating voice input (accessible from anywhere on the form) -->
   <voice-input (voiceResult)="onVoiceResult($event)" #voice></voice-input>
+  <!-- Floating image scan button -->
+  <image-scan (scanResult)="onImageScan($event)"></image-scan>
 
   <!-- Form Actions -->
   <div class="flex flex-col gap-4 mt-6">
+    <div *ngIf="scannedTripCountLabel" class="text-sm text-blue-700 dark:text-blue-300 font-medium">
+      {{ scannedTripCountLabel }}
+    </div>
     <div class="flex w-full items-center justify-between gap-4">
       <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()" [label]="'Reset'"></app-base-rect-button>
       <app-base-rect-button *ngIf="data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>

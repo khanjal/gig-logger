@@ -1,0 +1,81 @@
+:host {
+  position: relative;
+  display: block;
+}
+
+// Floating camera button
+// Mobile: appears above voice button
+// Desktop: appears to the left of voice button (between voice and back-to-top)
+button[mat-fab] {
+  position: fixed;
+  bottom: calc(1.5rem + 56px + 1rem); // 24px + 56px + 16px = 96px (above voice on mobile)
+  right: 1.5rem; // 24px - same as voice button
+  z-index: 1000; // above voice (999) but below back-to-top (1001) on mobile
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // Desktop: position between voice and back-to-top
+  @media (min-width: 768px) {
+    bottom: 1.5rem; // align with voice and back-to-top
+    right: calc(1.5rem + 112px + 2rem); // 24px + 56px (voice width) + 16px (voice gap) + 56px (image width) + 16px (image gap) = 168px
+    z-index: 999; // same level as voice on desktop
+  }
+}
+
+.image-scan-dialog img.preview {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.text-small {
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+// Dark theme support for dialog content
+:host-context(html.theme-dark) {
+  .detected-text-box {
+    background-color: #1f2937;
+    border-color: #374151;
+
+    h4 {
+      color: #e5e7eb;
+    }
+  }
+
+  .text-content {
+    background-color: #111827;
+    border-color: #374151;
+    color: #9ca3af;
+  }
+
+  .results-box {
+    background-color: #1f2937;
+    border-color: #059669;
+
+    h4 {
+      color: #6ee7b7;
+    }
+  }
+
+  .result-field {
+    border-bottom-color: #374151;
+  }
+
+  .field-label {
+    color: #9ca3af;
+  }
+
+  .field-value {
+    color: #e5e7eb;
+  }
+
+  .confirm-button-row {
+    border-top-color: #374151;
+  }
+}

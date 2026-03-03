@@ -1,3 +1,9 @@
+.accordion-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .accordion-header {
   display: flex;
   align-items: center;
@@ -9,6 +15,14 @@
   text-align: left;
   color: var(--color-text-primary);
   font-size: 1rem; /* slightly larger to match other panel titles */
+}
+
+.accordion-header-row.has-action .accordion-header {
+  width: calc(100% - 2.5rem);
+}
+
+.accordion-action {
+  flex-shrink: 0;
 }
 
 .accordion-header .chev {
