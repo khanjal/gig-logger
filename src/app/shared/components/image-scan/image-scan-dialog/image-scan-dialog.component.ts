@@ -193,7 +193,7 @@ export class ImageScanDialogComponent {
 
     this.dialog.open(ImageScanTrainingDialogComponent, {
       panelClass: 'custom-modalbox',
-      width: 'min(960px, 96vw)',
+      width: '720px',
       maxHeight: '90vh',
       data: {
         text: this.text,

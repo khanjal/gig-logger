@@ -56,15 +56,23 @@
         </app-base-rect-button>
       </div>
 
-      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <div class="sm:col-span-2">
+      <div class="grid grid-cols-4 gap-2">
+        <div class="col-span-3">
           <app-base-input
             [(ngModel)]="trip.place"
             [label]="'Place'">
           </app-base-input>
         </div>
 
-        <div class="sm:col-span-2 flex gap-1">
+        <div class="col-span-1">
+          <app-base-input
+            [(ngModel)]="trip.dropoffTime"
+            [label]="'Time'"
+            [placeholder]="'8:30 PM'">
+          </app-base-input>
+        </div>
+
+        <div class="col-span-4 flex gap-1">
           <app-base-input
             class="flex-1 min-w-[90px]"
             [(ngModel)]="trip.pay"
@@ -81,16 +89,7 @@
 
         </div>
 
-        <div class="sm:col-span-2">
-          <app-base-input
-            class="w-full"
-            [(ngModel)]="trip.dropoffTime"
-            [label]="'Time'"
-            [placeholder]="'8:30 PM'">
-          </app-base-input>
-        </div>
-
-        <div class="sm:col-span-2">
+        <div class="col-span-4">
           <app-base-input
             [(ngModel)]="trip.dropoffAddress"
             [label]="'Destination'">

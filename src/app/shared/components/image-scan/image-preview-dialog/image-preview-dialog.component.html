@@ -1,13 +1,17 @@
-<div class="relative w-full h-full flex items-center justify-center bg-gray-900">
-  <img
-    [src]="data.imageUrl"
-    alt="OCR screenshot preview"
-    class="max-w-full max-h-full w-full h-full object-contain" />
+<div class="flex flex-col gap-4 h-full w-full bg-gray-900 p-2">
+  <div class="flex items-center justify-between">
+    <h2 class="m-0 text-xl font-medium text-white">Screenshot Preview</h2>
+    <app-base-icon-button
+      [icon]="'close'"
+      [iconColor]="'var(--error-500)'"
+      (clicked)="close()">
+    </app-base-icon-button>
+  </div>
 
-  <app-base-icon-button
-    class="absolute top-4 right-4 z-10 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
-    [icon]="'close'"
-    [iconColor]="'white'"
-    (clicked)="close()">
-  </app-base-icon-button>
+  <div class="flex-1 flex items-center justify-center overflow-hidden rounded-lg">
+    <img
+      [src]="data.imageUrl"
+      alt="OCR screenshot preview"
+      class="max-w-full max-h-full w-full h-full object-contain" />
+  </div>
 </div>

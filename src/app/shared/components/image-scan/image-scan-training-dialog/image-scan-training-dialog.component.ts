@@ -80,8 +80,8 @@ export class ImageScanTrainingDialogComponent {
 
     this.dialog.open(ImagePreviewDialogComponent, {
       panelClass: 'custom-modalbox',
-      width: '98vw',
-      height: '98vh',
+      width: '720px',
+      height: '90vh',
       maxWidth: '100vw',
       maxHeight: '100vh',
       data: {
