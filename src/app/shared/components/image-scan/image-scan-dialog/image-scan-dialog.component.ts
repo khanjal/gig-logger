@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BaseAccordionComponent } from '@components/base/base-accordion/base-accordion.component';
 import { BaseAccordionItemComponent } from '@components/base/base-accordion/base-accordion-item.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { ImageScanTrainingDialogComponent } from '@components/image-scan/image-scan-training-dialog/image-scan-training-dialog.component';
 import { ScreenshotClassificationHelper } from '@helpers/screenshot-classification.helper';
 
 @Component({
@@ -20,6 +21,7 @@ export class ImageScanDialogComponent {
   currentTripIndex = 0;
 
   constructor(
+    private dialog: MatDialog,
     public dialogRef: MatDialogRef<ImageScanDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -170,6 +172,23 @@ export class ImageScanDialogComponent {
     if (this.parsed?.extractedTrips?.length && this.currentTripIndex < this.parsed.extractedTrips.length - 1) {
       this.currentTripIndex += 1;
     }
+  }
+
+  openCorrectionDialog() {
+    if (!this.text || !this.parsed) {
+      return;
+    }
+
+    this.dialog.open(ImageScanTrainingDialogComponent, {
+      panelClass: 'custom-modalbox',
+      width: 'min(960px, 96vw)',
+      maxHeight: '90vh',
+      data: {
+        text: this.text,
+        parsed: this.parsed,
+        imageUrl: this.data?.url
+      }
+    });
   }
 
   async copyDetectedText() {

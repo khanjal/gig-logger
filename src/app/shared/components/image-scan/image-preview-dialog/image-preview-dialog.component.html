@@ -1,0 +1,16 @@
+<div class="flex flex-col gap-3 p-2">
+  <div class="flex justify-end">
+    <app-base-rect-button
+      variant="secondary"
+      [label]="'Close'"
+      (clicked)="close()">
+    </app-base-rect-button>
+  </div>
+
+  <div class="flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2 max-h-[85vh] overflow-auto">
+    <img
+      [src]="data.imageUrl"
+      alt="OCR screenshot preview"
+      class="max-w-full h-auto object-contain rounded" />
+  </div>
+</div>

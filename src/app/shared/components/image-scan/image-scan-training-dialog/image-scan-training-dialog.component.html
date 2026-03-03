@@ -1,0 +1,110 @@
+<div class="flex flex-col gap-4 p-2">
+  <div class="flex items-center justify-between gap-2">
+    <h2 class="m-0 text-xl font-medium text-gray-800 dark:text-gray-200">Correct OCR Result</h2>
+    <app-base-rect-button
+      *ngIf="data.imageUrl"
+      variant="outlined"
+      [label]="'View Image'"
+      [icon]="'image'"
+      (clicked)="openLargeImage()">
+    </app-base-rect-button>
+  </div>
+
+  <div class="grid grid-cols-2 gap-2">
+    <app-search-input
+      class="w-full"
+      [(ngModel)]="service"
+      [fieldName]="'Service'"
+      [searchType]="'Service'">
+    </app-search-input>
+
+    <app-base-input
+      [(ngModel)]="date"
+      [label]="'Date'"
+      [placeholder]="'MM/DD/YYYY'">
+    </app-base-input>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <h3 class="m-0 text-sm font-semibold text-gray-800 dark:text-gray-200">Trips</h3>
+    <app-base-rect-button
+      variant="outlined"
+      [label]="'Add Trip'"
+      [icon]="'add'"
+      (clicked)="addTrip()">
+    </app-base-rect-button>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <div *ngFor="let trip of trips; let index = index" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3">
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Trip {{ index + 1 }}</span>
+        <app-base-rect-button
+          variant="danger"
+          [label]="'Remove'"
+          [disabled]="trips.length <= 1"
+          (clicked)="removeTrip(index)">
+        </app-base-rect-button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <app-base-input
+            [(ngModel)]="trip.place"
+            [label]="'Place'">
+          </app-base-input>
+        </div>
+
+        <div class="sm:col-span-2 flex gap-1">
+          <app-base-input
+            class="flex-1 min-w-[90px]"
+            [(ngModel)]="trip.pay"
+            [label]="'Pay'"
+            [type]="'number'">
+          </app-base-input>
+
+          <app-base-input
+            class="flex-1 min-w-[90px]"
+            [(ngModel)]="trip.tip"
+            [label]="'Tip'"
+            [type]="'number'">
+          </app-base-input>
+
+        </div>
+
+        <div class="sm:col-span-2">
+          <app-base-input
+            class="w-full"
+            [(ngModel)]="trip.dropoffTime"
+            [label]="'Time'"
+            [placeholder]="'8:30 PM'">
+          </app-base-input>
+        </div>
+
+        <div class="sm:col-span-2">
+          <app-base-input
+            [(ngModel)]="trip.dropoffAddress"
+            [label]="'Destination'">
+          </app-base-input>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-base-input
+    [(ngModel)]="notes"
+    [label]="'Notes (optional)'"
+    [placeholder]="'What was wrong with the extraction?'">
+  </app-base-input>
+
+  <app-base-accordion class="w-full">
+    <app-base-accordion-item title="OCR Text" [expanded]="false">
+      <div class="max-h-36 overflow-y-auto whitespace-pre-wrap rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 font-mono text-xs text-gray-600 dark:text-gray-400">{{ data.text }}</div>
+    </app-base-accordion-item>
+  </app-base-accordion>
+
+  <div class="flex gap-2">
+    <app-base-rect-button class="flex-1" variant="primary" [label]="'Copy Training Payload'" [icon]="'content_copy'" (clicked)="copyTrainingPayload()"></app-base-rect-button>
+    <app-base-rect-button class="min-w-28" variant="secondary" [fullWidth]="true" [label]="'Close'" (clicked)="cancel()"></app-base-rect-button>
+  </div>
+</div>
