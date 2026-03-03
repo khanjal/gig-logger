@@ -12,14 +12,9 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 import { ImagePreviewDialogComponent } from '@components/image-scan/image-preview-dialog/image-preview-dialog.component';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { IOcrTrainingPayload } from '@interfaces/ocr-training-payload.interface';
+import { ITrip } from '@interfaces/trip.interface';
 
-interface TrainingTripEdit {
-  place?: string | null;
-  pay?: number | null;
-  tip?: number | null;
-  dropoffTime?: string | null;
-  dropoffAddress?: string | null;
-}
+type TrainingTripEdit = Partial<ITrip>;
 
 @Component({
   selector: 'app-image-scan-training-dialog',
@@ -102,11 +97,12 @@ export class ImageScanTrainingDialogComponent {
         date: this.date || null,
         service: this.service || null,
         trips: this.trips.map(trip => ({
-          place: trip.place?.trim() || null,
+          place: (trip.place as string | undefined)?.trim() || null,
           pay: this.toNumberOrUndefined(trip.pay),
           tip: this.toNumberOrUndefined(trip.tip),
-          dropoffTime: trip.dropoffTime?.trim() || null,
-          dropoffAddress: trip.dropoffAddress?.trim() || null
+          distance: this.toNumberOrUndefined((trip as any).distance ?? (trip as any).dropoffDistance),
+          dropoffTime: (trip.dropoffTime as string | undefined)?.trim() || null,
+          dropoffAddress: ((trip as any).endAddress as string | undefined)?.trim() || null
         }))
       },
       notes: this.notes?.trim() || null
@@ -132,10 +128,11 @@ export class ImageScanTrainingDialogComponent {
 
     return source.map(trip => ({
       place: trip?.place,
-      pay: this.toNumberOrUndefined(trip?.pay),
-      tip: this.toNumberOrUndefined(trip?.tip),
+      pay: (this.toNumberOrUndefined(trip?.pay) ?? undefined) as number | undefined,
+      tip: (this.toNumberOrUndefined(trip?.tip) ?? undefined) as number | undefined,
+      distance: (this.toNumberOrUndefined(trip?.dropoffDistance ?? trip?.distance) ?? undefined) as number | undefined,
       dropoffTime: trip?.dropoffTime,
-      dropoffAddress: trip?.dropoffAddress
+      endAddress: (trip as any)?.dropoffAddress ?? (trip as any)?.endAddress
     }));
   }
 

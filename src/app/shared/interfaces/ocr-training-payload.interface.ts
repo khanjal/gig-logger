@@ -16,6 +16,7 @@ export interface IOcrTrainingPayload {
       place: string | null;
       pay: number | null;
       tip: number | null;
+      distance?: number | null;
       dropoffTime: string | null;
       dropoffAddress: string | null;
     }>;

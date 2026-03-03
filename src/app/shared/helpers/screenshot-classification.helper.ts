@@ -252,8 +252,12 @@ export class ScreenshotClassificationHelper {
         continue;
       }
 
+      // Clean up leading special characters (pipes, brackets, bullets, etc.)
+      // Examples: "| Subway" → "Subway", "[Pizza Hut" → "Pizza Hut"
+      const cleaned = candidate.replace(/^[\|\[\]•◦○●★☆]+\s*/g, '').trim();
+
       // This is likely the restaurant name
-      return candidate;
+      return cleaned || candidate;
     }
 
     return null;

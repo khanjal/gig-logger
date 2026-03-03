@@ -7,6 +7,8 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 import { BaseIconButtonComponent } from '@components/base/base-icon-button/base-icon-button.component';
 import { ImageScanTrainingDialogComponent } from '@components/image-scan/image-scan-training-dialog/image-scan-training-dialog.component';
 import { ScreenshotClassificationHelper } from '@helpers/screenshot-classification.helper';
+import { ServiceService } from '@services/sheets/service.service';
+import { PlaceService } from '@services/sheets/place.service';
 
 @Component({
   selector: 'image-scan-dialog',
@@ -20,12 +22,193 @@ export class ImageScanDialogComponent {
   working = false;
   parsed: any = null;
   currentTripIndex = 0;
+  
+  private knownServices: string[] = [];
+  private knownPlaces: string[] = [];
 
   constructor(
     private dialog: MatDialog,
+    private serviceService: ServiceService,
+    private placeService: PlaceService,
     public dialogRef: MatDialogRef<ImageScanDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) {
+    this.loadDataLists();
+  }
+
+  private async loadDataLists() {
+    try {
+      const services = await this.serviceService.list();
+      this.knownServices = services.map((s: any) => s.service).filter(Boolean);
+      
+      const places = await this.placeService.list();
+      this.knownPlaces = places.map((p: any) => p.place).filter(Boolean);
+    } catch (error) {
+      console.warn('Failed to load service/place data for fuzzy matching', error);
+    }
+  }
+
+  /**
+   * Fuzzy match a value against a list of known values using Levenshtein distance.
+   * Returns the closest match if similarity is >= 80%, otherwise returns original value.
+   * @param value The value to match
+   * @param knownValues Array of known valid values
+   * @param minSimilarity Minimum similarity threshold (0-1). Default: 0.8
+   * @returns Best match or original value
+   */
+  private fuzzyMatch(value: string | null | undefined, knownValues: string[], minSimilarity: number = 0.8): string | null {
+    if (!value || !knownValues.length) {
+      return value ?? null;
+    }
+
+    const valueLower = value.toLowerCase().trim();
+    let bestMatch = value;
+    let bestSimilarity = 0;
+
+    for (const known of knownValues) {
+      const knownLower = known.toLowerCase().trim();
+      const similarity = this.calculateSimilarity(valueLower, knownLower);
+      
+      if (similarity > bestSimilarity) {
+        bestSimilarity = similarity;
+        bestMatch = known;
+      }
+    }
+
+    return bestSimilarity >= minSimilarity ? bestMatch : value;
+  }
+
+  /**
+   * Calculate similarity between two strings using Levenshtein distance.
+   * Returns a value between 0 and 1, where 1 is an exact match.
+   */
+  private calculateSimilarity(str1: string, str2: string): number {
+    const shorter = str1.length <= str2.length ? str1 : str2;
+    const longer = str1.length > str2.length ? str1 : str2;
+
+    // Quick win: exact match
+    if (shorter === longer) {
+      return 1;
+    }
+
+    // Substring match (one contains the other)
+    if (longer.includes(shorter)) {
+      return shorter.length / longer.length;
+    }
+
+    const maxDistance = longer.length;
+    const distance = this.levenshteinDistance(shorter, longer);
+
+    return 1 - distance / maxDistance;
+  }
+
+  /**
+   * Calculate Levenshtein distance between two strings.
+   */
+  private levenshteinDistance(str1: string, str2: string): number {
+    const matrix: number[][] = [];
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1, // substitution
+            matrix[i][j - 1] + 1,     // insertion
+            matrix[i - 1][j] + 1      // deletion
+          );
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  }
+
+  /**
+   * Persist a detected service name as an unsaved service for later review.
+   */
+  private async persistUnknownService(name: string): Promise<void> {
+    if (!name || !name.trim()) {
+      return;
+    }
+
+    const normalized = name.trim();
+    try {
+      const existing = await this.serviceService.find('service', normalized);
+      if (existing) {
+        // already present
+        if (!this.knownServices.some(k => k.toLowerCase() === normalized.toLowerCase())) {
+          this.knownServices.push(existing.service);
+        }
+        return;
+      }
+
+      const newService: any = {
+        service: normalized,
+        pay: 0,
+        tip: 0,
+        bonus: 0,
+        cash: 0,
+        total: 0,
+        trips: 0,
+        rowId: 0,
+        saved: false
+      };
+
+      await this.serviceService.append([newService]);
+      this.knownServices.push(normalized);
+    } catch (error) {
+      console.warn('Failed to persist unknown service', name, error);
+    }
+  }
+
+  /**
+   * Persist a detected place name as an unsaved place for later review.
+   */
+  private async persistUnknownPlace(name: string): Promise<void> {
+    if (!name || !name.trim()) {
+      return;
+    }
+
+    const normalized = name.trim();
+    try {
+      const existing = await this.placeService.find('place', normalized);
+      if (existing) {
+        if (!this.knownPlaces.some(k => k.toLowerCase() === normalized.toLowerCase())) {
+          this.knownPlaces.push(existing.place);
+        }
+        return;
+      }
+
+      const newPlace: any = {
+        place: normalized,
+        addresses: [],
+        types: [],
+        pay: 0,
+        tip: 0,
+        bonus: 0,
+        cash: 0,
+        total: 0,
+        trips: 0,
+        rowId: 0,
+        saved: false
+      };
+
+      await this.placeService.append([newPlace]);
+      this.knownPlaces.push(normalized);
+    } catch (error) {
+      console.warn('Failed to persist unknown place', name, error);
+    }
+  }
 
   close() {
     this.dialogRef.close(null);
@@ -109,6 +292,25 @@ export class ImageScanDialogComponent {
       output.service = 'Grubhub';
     }
 
+    // Apply fuzzy matching to service name and persist unknowns for review
+    if (output.service) {
+      const originalService = output.service;
+      if (this.knownServices.length > 0) {
+        const matched = this.fuzzyMatch(originalService, this.knownServices);
+        output.service = matched ?? originalService;
+
+        // If no good match found (returned same as original) and it's new, persist for review
+        const isKnown = this.knownServices.some(k => k.toLowerCase() === (originalService || '').toLowerCase());
+        if ((!matched || matched === originalService) && !isKnown) {
+          // fire-and-forget persistence
+          this.persistUnknownService(originalService).catch(() => {});
+        }
+      } else {
+        // No known list loaded yet - still persist the detected service as potential new
+        this.persistUnknownService(originalService).catch(() => {});
+      }
+    }
+
     if (classification.type === 'offer') {
       const guaranteedAmount = ScreenshotClassificationHelper.extractGuaranteedAmount(text);
       if (guaranteedAmount !== null) {
@@ -139,6 +341,15 @@ export class ImageScanDialogComponent {
       output.completedTime = completedTime;
     }
 
+    // Extract distance (e.g., "11.4 mi" or "11.4 miles")
+    const distanceMatch = text.match(/(\d{1,3}(?:\.\d+)?)\s*(?:mi|miles)\b/i);
+    if (distanceMatch) {
+      const d = parseFloat(distanceMatch[1]);
+      if (!Number.isNaN(d)) {
+        output.distance = d;
+      }
+    }
+
     // For offer screens, places are already extracted above
     // For completion screens, use general place extraction
     if (classification.type !== 'offer' || !output.place) {
@@ -149,6 +360,41 @@ export class ImageScanDialogComponent {
       }
     }
 
+    // Apply fuzzy matching to places and persist new ones for review
+    if (output.places && Array.isArray(output.places)) {
+      const originals = [...output.places];
+      if (this.knownPlaces.length > 0) {
+        const matched = originals.map((p: any) => this.fuzzyMatch(p, this.knownPlaces));
+        output.places = matched.map((m, idx) => m ?? originals[idx]);
+
+        // Persist any originals that didn't match and are not already known
+        originals.forEach((orig: any, idx: number) => {
+          const result = matched[idx] ?? originals[idx];
+          const isKnown = this.knownPlaces.some(k => k.toLowerCase() === (orig || '').toLowerCase());
+          if ((!result || result === orig) && !isKnown) {
+            this.persistUnknownPlace(orig).catch(() => {});
+          }
+        });
+      } else {
+        // No known list yet, persist detected places as potential new
+        originals.forEach((orig: any) => this.persistUnknownPlace(orig).catch(() => {}));
+      }
+    }
+    if (output.place) {
+      const originalPlace = output.place;
+      if (this.knownPlaces.length > 0) {
+        const matchedPlace = this.fuzzyMatch(originalPlace, this.knownPlaces);
+        output.place = matchedPlace ?? originalPlace;
+
+        const isKnownPlace = this.knownPlaces.some(k => k.toLowerCase() === (originalPlace || '').toLowerCase());
+        if ((!matchedPlace || matchedPlace === originalPlace) && !isKnownPlace) {
+          this.persistUnknownPlace(originalPlace).catch(() => {});
+        }
+      } else {
+        this.persistUnknownPlace(originalPlace).catch(() => {});
+      }
+    }
+
     output.extractedTrips = this.buildExtractedTrips({
       tripCount: output.tripCount,
       places: output.places,
@@ -156,7 +402,8 @@ export class ImageScanDialogComponent {
       fallbackAmount: output.amount,
       basePay: output.basePay,
       tipAmounts: this.extractTipAmounts(text),
-      dropoffAddress: output.dropoffAddress
+      dropoffAddress: output.dropoffAddress,
+      dropoffDistance: output.distance
     });
 
     return output;
@@ -314,6 +561,9 @@ export class ImageScanDialogComponent {
 
       // Remove location suffixes in parentheses (e.g., "(Wilmington Rd)", "(9928)")
       candidate = candidate.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+
+      // Remove leading special characters (pipes, brackets, etc.)
+      candidate = candidate.replace(/^[\|\[\]•◦○●★☆]+\s*/i, '').trim();
 
       const nextLine = lines[index + 1]?.replace(/[<>©®]/g, '').trim() ?? '';
       const canAppendNext =
@@ -483,7 +733,8 @@ export class ImageScanDialogComponent {
     basePay?: number;
     tipAmounts?: number[];
     dropoffAddress?: string;
-  }): Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string }> {
+    dropoffDistance?: number;
+  }): Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string; dropoffDistance?: number }> {
     const places = input.places ?? [];
     const tipAmounts = input.tipAmounts ?? [];
     
@@ -504,7 +755,7 @@ export class ImageScanDialogComponent {
       basePayAmounts = [input.basePay];
     }
 
-    const trips: Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string }> = [];
+    const trips: Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string; dropoffDistance?: number }> = [];
     for (let index = 0; index < count; index++) {
       const basePay = basePayAmounts[index] ?? 0;
       const tip = tipAmounts[index] ?? 0;
@@ -516,7 +767,8 @@ export class ImageScanDialogComponent {
         basePay: basePay > 0 ? basePay : undefined,
         tip: tip > 0 ? tip : undefined,
         dropoffTime: input.completedTime,
-        dropoffAddress: input.dropoffAddress
+        dropoffAddress: input.dropoffAddress,
+        dropoffDistance: input.dropoffDistance
       });
     }
 

@@ -87,11 +87,19 @@
             [type]="'number'">
           </app-base-input>
 
+          <app-base-input
+            class="flex-1 min-w-[90px]"
+            [(ngModel)]="trip.distance"
+            [label]="'Dist'"
+            [placeholder]="'mi'"
+            [type]="'number'">
+          </app-base-input>
+
         </div>
 
         <div class="col-span-4">
           <app-base-input
-            [(ngModel)]="trip.dropoffAddress"
+            [(ngModel)]="trip.endAddress"
             [label]="'Destination'">
           </app-base-input>
         </div>
