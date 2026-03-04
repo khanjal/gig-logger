@@ -8,6 +8,25 @@ import { TripFormValue } from '@form-types/trip-form.types';
 
 export class TripHelper {
     /**
+     * Calculates trip total from pay, tip, and bonus.
+     * @param pay The pay amount
+     * @param tip The tip amount
+     * @param bonus The bonus amount
+     * @returns The calculated total (pay + tip + bonus)
+     */
+    static calculateTotal(pay: number, tip: number, bonus: number): number {
+        return (Number(pay) || 0) + (Number(tip) || 0) + (Number(bonus) || 0);
+    }
+
+    /**
+     * Recalculates and updates the total field on a trip entity.
+     * @param trip The trip to update
+     */
+    static updateTotal(trip: ITrip): void {
+        trip.total = TripHelper.calculateTotal(trip.pay, trip.tip, trip.bonus);
+    }
+
+    /**
      * Creates an ITrip entity from form values and shift information.
      * Handles form-to-domain conversion: form allows null, domain uses 0.
      * Calculates derived fields (duration, amountPerTime, amountPerDistance).
@@ -69,7 +88,7 @@ export class TripHelper {
         trip.cash = NumberHelper.toNumber(formValue.cash);
 
         // Total is a calculated field: pay + tip + bonus
-        trip.total = pay + tip + bonus;
+        trip.total = TripHelper.calculateTotal(pay, tip, bonus);
 
         // Set odometer readings
         trip.startOdometer = NumberHelper.toNumber(formValue.startOdometer);

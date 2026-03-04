@@ -1,0 +1,16 @@
+<div class="container">
+  <h3>Split Trip</h3>
+  <p>Choose what to copy to the new split trip.</p>
+
+  <mat-radio-group [(ngModel)]="selection">
+    <mat-radio-button value="both">Both (same place & customer)</mat-radio-button>
+    <mat-radio-button value="place">Same Place</mat-radio-button>
+    <mat-radio-button value="customer">Same Customer</mat-radio-button>
+    <mat-radio-button value="neither">Neither</mat-radio-button>
+  </mat-radio-group>
+
+  <div class="actions">
+    <button mat-button (click)="cancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="confirm()">Split</button>
+  </div>
+</div>

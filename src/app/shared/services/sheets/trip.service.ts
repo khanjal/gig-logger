@@ -3,6 +3,7 @@ import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { ITrip } from '@interfaces/trip.interface';
 import { DateHelper } from '@helpers/date.helper';
+import { TripHelper } from '@helpers/trip.helper';
 import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';
@@ -95,6 +96,8 @@ export class TripService extends SyncableCrudService<ITrip> {
         // Assign split values
         newTrip.pay = secondPay;
         newTrip.distance = secondDistance;
+        // Recalculate total for new trip (total = pay + tip + bonus)
+        TripHelper.updateTotal(newTrip);
                 // Copy/clear place and customer based on user selection
                 if (copyOption === 'both') {
                     // keep both place and name
@@ -110,6 +113,8 @@ export class TripService extends SyncableCrudService<ITrip> {
         // Update original trip values
         trip.pay = firstPay;
         trip.distance = firstDistance;
+        // Recalculate total for original trip (total = pay + tip + bonus)
+        TripHelper.updateTotal(trip);
 
         // Mark actions
         updateAction(newTrip, ActionEnum.Add);
