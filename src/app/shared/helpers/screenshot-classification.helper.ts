@@ -1,4 +1,5 @@
 import { IScreenshotClassification } from '@interfaces/screenshot-classification.interface';
+import { ScreenshotLayouts, IScreenshotLayout } from './screenshot-layouts';
 
 /**
  * Helper class for screenshot classification and parsing logic.
@@ -20,10 +21,13 @@ export class ScreenshotClassificationHelper {
     const normalized = text.toLowerCase();
 
     let type: 'completion' | 'earnings-summary' | 'trip-details' | 'offer' | 'unknown' = 'unknown';
+    const isEarningsSummary = /doordash\s*pay|doordash\s*tips|start\s*time|end\s*time|active\s*time|dash\s*time|offers?\b|deliveries?\b/i.test(text);
     const isOffer = /\baccept\b|\bdecline\b|\bguaranteed\b/i.test(text);
     const isCompletion = /deliver(?:y|ies)\s+completed|\bcompleted\b/i.test(text);
 
-    if (isOffer) {
+    if (isEarningsSummary) {
+      type = 'earnings-summary';
+    } else if (isOffer) {
       type = 'offer';
     } else if (isCompletion) {
       type = 'completion';
@@ -56,6 +60,35 @@ export class ScreenshotClassificationHelper {
       service,
       isStackedOrder: tripCount > 1
     };
+  }
+
+  /**
+   * Detects a known screenshot layout from a small set of layout signatures.
+   * Returns the best-matching layout id and score (0-1) when any signatures match.
+   */
+  static detectLayout(text: string): { layoutId?: string; name?: string; score: number } {
+    if (!text) {
+      return { score: 0 };
+    }
+
+    const normalized = text;
+    let best: { layoutId?: string; name?: string; score: number } = { score: 0 };
+
+    for (const layout of ScreenshotLayouts) {
+      let matches = 0;
+      for (const sig of layout.signatures) {
+        if (sig.test(normalized)) {
+          matches++;
+        }
+      }
+
+      const score = layout.signatures.length ? matches / layout.signatures.length : 0;
+      if (score > best.score) {
+        best = { layoutId: layout.id, name: layout.name, score };
+      }
+    }
+
+    return best;
   }
 
   /**

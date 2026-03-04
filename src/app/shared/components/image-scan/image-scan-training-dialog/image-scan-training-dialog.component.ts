@@ -13,6 +13,7 @@ import { ImagePreviewDialogComponent } from '@components/image-scan/image-previe
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
 import { IOcrTrainingPayload } from '@interfaces/ocr-training-payload.interface';
 import { ITrip } from '@interfaces/trip.interface';
+import { ScreenshotLayouts } from '@helpers/screenshot-layouts';
 
 type TrainingTripEdit = Partial<ITrip>;
 
@@ -31,6 +32,8 @@ export class ImageScanTrainingDialogComponent {
   trips: TrainingTripEdit[] = [];
 
   readonly screenTypes = ['offer', 'completion', 'earnings-summary', 'trip-details', 'unknown'];
+  layouts = ScreenshotLayouts;
+  selectedLayoutId: string | null = null;
 
   constructor(
     private dialog: MatDialog,
@@ -45,10 +48,11 @@ export class ImageScanTrainingDialogComponent {
     this.date = this.data?.parsed?.date ?? '';
     this.service = this.data?.parsed?.service ?? '';
     this.screenType = this.data?.parsed?.classification?.type ?? 'unknown';
+    this.selectedLayoutId = this.data?.parsed?.layout?.layoutId ?? null;
     this.trips = this.cloneTrips(this.data?.parsed?.extractedTrips);
 
     if (!this.trips.length) {
-      this.trips = [{}];
+      this.trips = [{ place: '', pay: undefined, tip: undefined, distance: undefined, dropoffTime: '', endAddress: '' } as any];
     }
   }
 
@@ -92,6 +96,9 @@ export class ImageScanTrainingDialogComponent {
       screenshotType: this.screenType || 'unknown',
       service: this.service || null,
       ocrText: this.data?.text ?? '',
+      layout: this.selectedLayoutId
+        ? { id: this.selectedLayoutId, name: this.layouts.find(l => l.id === this.selectedLayoutId)?.name ?? undefined, score: this.data?.parsed?.layout?.score ?? null }
+        : (this.data?.parsed?.layout ? (this.data.parsed.layout as any) : null),
       detected: this.data?.parsed ?? {},
       corrected: {
         date: this.date || null,
@@ -127,12 +134,12 @@ export class ImageScanTrainingDialogComponent {
     }
 
     return source.map(trip => ({
-      place: trip?.place,
+      place: trip?.place ?? '',
       pay: (this.toNumberOrUndefined(trip?.pay) ?? undefined) as number | undefined,
       tip: (this.toNumberOrUndefined(trip?.tip) ?? undefined) as number | undefined,
       distance: (this.toNumberOrUndefined(trip?.dropoffDistance ?? trip?.distance) ?? undefined) as number | undefined,
-      dropoffTime: trip?.dropoffTime,
-      endAddress: (trip as any)?.dropoffAddress ?? (trip as any)?.endAddress
+      dropoffTime: trip?.dropoffTime ?? '',
+      endAddress: (trip as any)?.dropoffAddress ?? (trip as any)?.endAddress ?? ''
     }));
   }
 

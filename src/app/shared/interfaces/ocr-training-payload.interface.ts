@@ -8,6 +8,11 @@ export interface IOcrTrainingPayload {
   screenshotType: string;
   service: string | null;
   ocrText: string;
+  layout?: {
+    id?: string;
+    name?: string;
+    score?: number | null;
+  } | null;
   detected: Record<string, unknown>;
   corrected: {
     date: string | null;

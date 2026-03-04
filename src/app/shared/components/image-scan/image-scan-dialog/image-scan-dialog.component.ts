@@ -7,6 +7,7 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 import { BaseIconButtonComponent } from '@components/base/base-icon-button/base-icon-button.component';
 import { ImageScanTrainingDialogComponent } from '@components/image-scan/image-scan-training-dialog/image-scan-training-dialog.component';
 import { ScreenshotClassificationHelper } from '@helpers/screenshot-classification.helper';
+import { getLayoutHandler } from '@helpers/screenshot-layout-handlers';
 import { ServiceService } from '@services/sheets/service.service';
 import { PlaceService } from '@services/sheets/place.service';
 
@@ -257,6 +258,7 @@ export class ImageScanDialogComponent {
   extractFields(text: string) {
     const output: any = {};
 
+    // last amount seen
     const amountRegex = /\$?\s*([0-9]+(?:\.[0-9]{1,2})?)/g;
     let amountMatch: RegExpExecArray | null;
     let lastAmount: string | null = null;
@@ -267,23 +269,65 @@ export class ImageScanDialogComponent {
       output.amount = parseFloat(lastAmount);
     }
 
+    // date
     const dateRegex = /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/;
     const dateMatch = text.match(dateRegex);
-    if (dateMatch) {
-      output.date = dateMatch[1];
-    } else {
-      output.date = this.getTodayDateString();
-    }
+    output.date = dateMatch ? dateMatch[1] : this.getTodayDateString();
 
     const detectedTripCount = this.extractTripCount(text);
     if (detectedTripCount > 1) {
       output.tripCount = detectedTripCount;
     }
 
-    // Classify screenshot type
+    // classification & layout
     const classification = ScreenshotClassificationHelper.classifyScreenshot(text, detectedTripCount);
     output.classification = classification;
 
+    try {
+      const layout = ScreenshotClassificationHelper.detectLayout(text || '');
+      if (layout && layout.score > 0) {
+        output.layout = layout;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // allow layout handlers to short-circuit
+    try {
+      const layoutId = output.layout?.layoutId as string | undefined;
+      if (layoutId) {
+        const handler = getLayoutHandler(layoutId);
+        if (handler) {
+          const handled = handler.extract(text, output);
+          if (handled) {
+            // ensure we persist any unknown places/services discovered by handler's extraction
+            if (output.service) {
+              const originalService = output.service;
+              const matched = this.knownServices.length ? this.fuzzyMatch(originalService, this.knownServices) : null;
+              if ((!matched || matched === originalService) && !this.knownServices.some(k => k.toLowerCase() === (originalService || '').toLowerCase())) {
+                this.persistUnknownService(originalService).catch(() => {});
+              }
+            }
+
+            if (output.places && Array.isArray(output.places)) {
+              for (const p of output.places) {
+                const originalPlace = p;
+                const matchedPlace = this.knownPlaces.length ? this.fuzzyMatch(originalPlace, this.knownPlaces) : null;
+                if ((!matchedPlace || matchedPlace === originalPlace) && !this.knownPlaces.some(k => k.toLowerCase() === (originalPlace || '').toLowerCase())) {
+                  this.persistUnknownPlace(originalPlace).catch(() => {});
+                }
+              }
+            }
+
+            return output;
+          }
+        }
+      }
+    } catch (e) {
+      // fall back to heuristics below
+    }
+
+    // service mapping
     if (classification.service === 'doordash') {
       output.service = 'DoorDash';
     } else if (classification.service === 'uber') {
@@ -292,37 +336,27 @@ export class ImageScanDialogComponent {
       output.service = 'Grubhub';
     }
 
-    // Apply fuzzy matching to service name and persist unknowns for review
+    // fuzzy match / persist unknown service
     if (output.service) {
       const originalService = output.service;
-      if (this.knownServices.length > 0) {
-        const matched = this.fuzzyMatch(originalService, this.knownServices);
-        output.service = matched ?? originalService;
-
-        // If no good match found (returned same as original) and it's new, persist for review
-        const isKnown = this.knownServices.some(k => k.toLowerCase() === (originalService || '').toLowerCase());
-        if ((!matched || matched === originalService) && !isKnown) {
-          // fire-and-forget persistence
-          this.persistUnknownService(originalService).catch(() => {});
-        }
-      } else {
-        // No known list loaded yet - still persist the detected service as potential new
+      const matched = this.knownServices.length ? this.fuzzyMatch(originalService, this.knownServices) : null;
+      output.service = matched ?? originalService;
+      const isKnown = this.knownServices.some(k => k.toLowerCase() === (originalService || '').toLowerCase());
+      if ((!matched || matched === originalService) && !isKnown) {
         this.persistUnknownService(originalService).catch(() => {});
       }
     }
 
+    // offer-specific extraction
     if (classification.type === 'offer') {
       const guaranteedAmount = ScreenshotClassificationHelper.extractGuaranteedAmount(text);
       if (guaranteedAmount !== null) {
         output.amount = guaranteedAmount;
       }
-
       const dropoffAddress = ScreenshotClassificationHelper.extractDropoffAddress(text);
       if (dropoffAddress) {
         output.dropoffAddress = dropoffAddress;
       }
-
-      // For offer screens, extract restaurant name specifically
       const restaurantName = ScreenshotClassificationHelper.extractOfferRestaurantName(text);
       if (restaurantName) {
         output.places = [restaurantName];
@@ -330,18 +364,15 @@ export class ImageScanDialogComponent {
       }
     }
 
-    // Extract base pay for stacked order splitting
+    // base pay, completed time, distance
     const basePay = ScreenshotClassificationHelper.extractBasePay(text);
     if (basePay !== null) {
       output.basePay = basePay;
     }
-
     const completedTime = this.extractTopTime(text);
     if (completedTime) {
       output.completedTime = completedTime;
     }
-
-    // Extract distance (e.g., "11.4 mi" or "11.4 miles")
     const distanceMatch = text.match(/(\d{1,3}(?:\.\d+)?)\s*(?:mi|miles)\b/i);
     if (distanceMatch) {
       const d = parseFloat(distanceMatch[1]);
@@ -350,49 +381,51 @@ export class ImageScanDialogComponent {
       }
     }
 
-    // For offer screens, places are already extracted above
-    // For completion screens, use general place extraction
-    if (classification.type !== 'offer' || !output.place) {
-      const places = this.extractPlaces(text);
-      if (places.length > 0) {
-        output.places = places;
-        output.place = places[0];
-      }
-    }
-
-    // Apply fuzzy matching to places and persist new ones for review
-    if (output.places && Array.isArray(output.places)) {
-      const originals = [...output.places];
-      if (this.knownPlaces.length > 0) {
-        const matched = originals.map((p: any) => this.fuzzyMatch(p, this.knownPlaces));
-        output.places = matched.map((m, idx) => m ?? originals[idx]);
-
-        // Persist any originals that didn't match and are not already known
-        originals.forEach((orig: any, idx: number) => {
-          const result = matched[idx] ?? originals[idx];
-          const isKnown = this.knownPlaces.some(k => k.toLowerCase() === (orig || '').toLowerCase());
-          if ((!result || result === orig) && !isKnown) {
-            this.persistUnknownPlace(orig).catch(() => {});
-          }
-        });
+    // earnings-summary: prefer explicit place+amount pairs, then multiline pairs, then places
+    if (classification.type === 'earnings-summary') {
+      const pairs = this.extractPlaceAmountPairs(text);
+      if (pairs.length > 0) {
+        output.places = pairs.map(p => p.place);
+        output.perOfferAmounts = pairs.map(p => p.amount);
+        output.place = output.places[0];
       } else {
-        // No known list yet, persist detected places as potential new
-        originals.forEach((orig: any) => this.persistUnknownPlace(orig).catch(() => {}));
+        const multi = this.extractPlaceMultiLinePairs(text);
+        if (multi.length > 0) {
+          output.places = multi.map(p => p.place);
+          output.perOfferAmounts = multi.map(p => p.amount);
+          output.place = output.places[0];
+        } else {
+          const places = this.extractPlaces(text);
+          if (places.length > 0) {
+            output.places = places;
+            output.place = places[0];
+          }
+        }
+      }
+    } else {
+      if (classification.type !== 'offer' || !output.place) {
+        const places = this.extractPlaces(text);
+        if (places.length > 0) {
+          output.places = places;
+          output.place = places[0];
+        }
       }
     }
-    if (output.place) {
-      const originalPlace = output.place;
-      if (this.knownPlaces.length > 0) {
-        const matchedPlace = this.fuzzyMatch(originalPlace, this.knownPlaces);
-        output.place = matchedPlace ?? originalPlace;
 
+    // persist unknown places (fuzzy match)
+    if (output.places && Array.isArray(output.places)) {
+      const normalizedPlaces: string[] = [];
+      for (const originalPlace of output.places) {
+        const matchedPlace = this.knownPlaces.length ? this.fuzzyMatch(originalPlace, this.knownPlaces) : null;
+        const finalPlace = matchedPlace ?? originalPlace;
+        normalizedPlaces.push(finalPlace);
         const isKnownPlace = this.knownPlaces.some(k => k.toLowerCase() === (originalPlace || '').toLowerCase());
         if ((!matchedPlace || matchedPlace === originalPlace) && !isKnownPlace) {
           this.persistUnknownPlace(originalPlace).catch(() => {});
         }
-      } else {
-        this.persistUnknownPlace(originalPlace).catch(() => {});
       }
+      output.places = normalizedPlaces;
+      output.place = output.place ?? output.places[0];
     }
 
     output.extractedTrips = this.buildExtractedTrips({
@@ -403,7 +436,9 @@ export class ImageScanDialogComponent {
       basePay: output.basePay,
       tipAmounts: this.extractTipAmounts(text),
       dropoffAddress: output.dropoffAddress,
-      dropoffDistance: output.distance
+      dropoffDistance: output.distance,
+      perOfferAmounts: output.perOfferAmounts,
+      isEarningsSummary: classification.type === 'earnings-summary'
     });
 
     return output;
@@ -531,6 +566,9 @@ export class ImageScanDialogComponent {
       /doordash\s*pay/i,
       /base\s*pay/i,
       /customer\s*tips/i,
+      /doordash\s*tips/i,
+      /start\s*time/i,
+      /end\s*time/i,
       /deliver(?:y|ies)\s+complet(?:e|ed)/i,
       /earn\s*per\s*offer/i,
       /you\s+won['']t\s+get\s+offers/i,
@@ -542,6 +580,8 @@ export class ImageScanDialogComponent {
       /^\-\>$/,
       /^\$?\d+(?:\.\d{2})?$/,
       /^looking\s+for/i,
+      /\boffers?\b/i,
+      /\bdeliveries?\b/i,
       /^acceptance/i
     ];
 
@@ -594,6 +634,210 @@ export class ImageScanDialogComponent {
     }
 
     return [...new Set(places)].slice(0, 6);
+  }
+
+  /**
+   * Extract lines that contain a place name and an explicit dollar amount on the same line.
+   * Returns array of { place, amount } in the order found.
+   */
+  private extractPlaceAmountPairs(text: string): Array<{ place: string; amount: number }> {
+    const lines = text
+      .split('\n')
+      .map(line => line.replace(/[<>©®]/g, '').trim())
+      .filter(Boolean);
+
+    const results: Array<{ place: string; amount: number }> = [];
+    // Block common header/summary labels that should not be considered places
+    const blockedLabelRegex = /doordash\s*pay|doordash\s*tips|customer\s*tips|earn\s*per\s*offer|start\s*time|end\s*time|base\s*pay|offers?\b|deliveries?\b|total\b/i;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      // Match: [Place name ...] $X.XX  (allow amount before or after parentheses)
+      const match = line.match(/^(.+?)\s*\(?\d*\)?\s*\$\s*([0-9]+(?:\.[0-9]{1,2})?)$/);
+      if (match) {
+        let candidate = match[1].trim();
+        candidate = candidate.replace(/^[\|\[\]•◦○●★☆]+\s*/i, '').trim();
+        // remove trailing parentheses content like (2327)
+        candidate = candidate.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+        const amount = parseFloat(match[2]);
+
+        // Skip header labels or garbage candidates
+        if (!candidate || candidate.length < 2) {
+          continue;
+        }
+        // Skip header labels like "Base Pay" which are not places
+        if (blockedLabelRegex.test(candidate)) {
+          continue;
+        }
+        if (/^base\s*pay$/i.test(candidate)) {
+          continue;
+        }
+        if (/[<>@\|]/.test(candidate)) {
+          continue;
+        }
+
+        if (candidate && !Number.isNaN(amount)) {
+          results.push({ place: candidate, amount });
+        }
+      } else {
+        // also support: Place (123) $8.25 with extra tokens
+        const altMatch = line.match(/^(.+?)\s*\$\s*([0-9]+(?:\.[0-9]{1,2})?)$/);
+        if (altMatch) {
+          let candidate = altMatch[1].trim();
+          candidate = candidate.replace(/^[\|\[\]•◦○●★☆]+\s*/i, '').trim();
+          candidate = candidate.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+          const amount = parseFloat(altMatch[2]);
+
+          if (!candidate || candidate.length < 2) {
+            continue;
+          }
+          if (blockedLabelRegex.test(candidate)) {
+            continue;
+          }
+          if (/[<>@\|]/.test(candidate)) {
+            continue;
+          }
+
+          if (candidate && !Number.isNaN(amount)) {
+            results.push({ place: candidate, amount });
+          }
+        }
+      }
+    }
+
+    // Dedupe by normalized place name while preserving order
+    const seen = new Set<string>();
+    const deduped: Array<{ place: string; amount: number }> = [];
+    for (const r of results) {
+      const key = r.place.toLowerCase().replace(/[^a-z0-9 ]+/g, '').trim();
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduped.push(r);
+      }
+    }
+
+    return deduped;
+  }
+
+  /**
+   * Extract place + amount pairs where the place is on one line and the amount on the following line.
+   * Handles patterns like:
+   * Bill's Sandwich Shop
+   * (Wilmington Rd) $7.00
+   */
+  private extractPlaceMultiLinePairs(text: string): Array<{ place: string; amount: number }> {
+    const lines = text
+      .split('\n')
+      .map(line => line.replace(/[<>©®]/g, '').trim())
+      .filter(Boolean);
+
+    const results: Array<{ place: string; amount: number }> = [];
+    const blockedLabelRegex = /doordash\s*pay|doordash\s*tips|customer\s*tips|earn\s*per\s*offer|start\s*time|end\s*time|base\s*pay|offers?\b|deliveries?\b|total\b/i;
+
+    for (let i = 0; i < lines.length - 1; i++) {
+      const line = lines[i];
+      const next = lines[i + 1];
+
+      if (blockedLabelRegex.test(line) || blockedLabelRegex.test(next)) {
+        continue;
+      }
+
+      // If current line looks like a place (has letters) and next line has an amount, combine
+      const hasLetters = /[a-zA-Z]/.test(line);
+      const amountMatch = next.match(/\$\s*([0-9]+(?:\.[0-9]{1,2})?)/);
+      if (hasLetters && amountMatch) {
+        let candidate = line.replace(/^[\|\[\]•◦○●★☆]+\s*/i, '').trim();
+        candidate = candidate.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+
+        // Skip obvious non-place lines
+        if (!candidate || candidate.length < 2) {
+          continue;
+        }
+
+        const amount = parseFloat(amountMatch[1]);
+        if (!Number.isNaN(amount)) {
+          results.push({ place: candidate, amount });
+          i += 1; // skip next line
+        }
+      }
+    }
+
+    // Deduplicate preserving order
+    const seen = new Set<string>();
+    const deduped: Array<{ place: string; amount: number }> = [];
+    for (const r of results) {
+      const key = r.place.toLowerCase().replace(/[^a-z0-9 ]+/g, '').trim();
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduped.push(r);
+      }
+    }
+
+    return deduped;
+  }
+
+  /**
+   * Apply layout-aware extraction rules. Returns true if the layout handler processed the output.
+   */
+  private applyLayoutExtraction(layoutId: string, text: string, output: any): boolean {
+    if (!layoutId) {
+      return false;
+    }
+
+    // DoorDash earnings summary: prefer explicit place+amount pairs and build trips from them
+    if (layoutId === 'doordash-earnings-summary') {
+      const pairs = this.extractPlaceAmountPairs(text);
+      if (pairs.length > 0) {
+        output.places = pairs.map(p => p.place);
+        output.perOfferAmounts = pairs.map(p => p.amount);
+        output.place = output.places[0];
+
+        const tipAmounts = this.extractTipAmounts(text);
+
+        output.extractedTrips = this.buildExtractedTrips({
+          tripCount: output.tripCount,
+          places: output.places,
+          completedTime: output.completedTime,
+          fallbackAmount: output.amount,
+          basePay: output.basePay,
+          tipAmounts,
+          dropoffAddress: output.dropoffAddress,
+          dropoffDistance: output.distance,
+          perOfferAmounts: output.perOfferAmounts,
+          isEarningsSummary: true
+        });
+
+        return true;
+      }
+
+      // If no explicit pairs, fall back to extracting places normally but still mark layout
+      const places = this.extractPlaces(text);
+      if (places.length > 0) {
+        output.places = places;
+        output.place = places[0];
+
+        output.extractedTrips = this.buildExtractedTrips({
+          tripCount: output.tripCount,
+          places: output.places,
+          completedTime: output.completedTime,
+          fallbackAmount: output.amount,
+          basePay: output.basePay,
+          tipAmounts: this.extractTipAmounts(text),
+          dropoffAddress: output.dropoffAddress,
+          dropoffDistance: output.distance,
+          perOfferAmounts: output.perOfferAmounts,
+          isEarningsSummary: true
+        });
+
+        return true;
+      }
+
+      return false;
+    }
+
+    // Future layout-specific handlers go here
+
+    return false;
   }
 
   private async preprocessImage(imageUrl: string): Promise<string> {
@@ -734,6 +978,8 @@ export class ImageScanDialogComponent {
     tipAmounts?: number[];
     dropoffAddress?: string;
     dropoffDistance?: number;
+    perOfferAmounts?: number[];
+    isEarningsSummary?: boolean;
   }): Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string; dropoffDistance?: number }> {
     const places = input.places ?? [];
     const tipAmounts = input.tipAmounts ?? [];
@@ -747,7 +993,7 @@ export class ImageScanDialogComponent {
       count = Math.max(places.length, tipAmounts.length, 1);
     }
 
-    // Split base pay for stacked orders
+    // Split base pay for stacked orders (fallback)
     let basePayAmounts: number[] = [];
     if (input.basePay && count > 1) {
       basePayAmounts = ScreenshotClassificationHelper.splitBasePay(input.basePay, count);
@@ -755,21 +1001,42 @@ export class ImageScanDialogComponent {
       basePayAmounts = [input.basePay];
     }
 
+    const perOffer = input.perOfferAmounts ?? [];
+
     const trips: Array<{ place?: string; pay?: number; basePay?: number; tip?: number; dropoffTime?: string; dropoffAddress?: string; dropoffDistance?: number }> = [];
     for (let index = 0; index < count; index++) {
-      const basePay = basePayAmounts[index] ?? 0;
-      const tip = tipAmounts[index] ?? 0;
-      const totalPay = basePay + tip;
-      
-      trips.push({
-        place: places[index] ?? places[0],
-        pay: totalPay > 0 ? totalPay : (count === 1 ? input.fallbackAmount : undefined),
-        basePay: basePay > 0 ? basePay : undefined,
-        tip: tip > 0 ? tip : undefined,
-        dropoffTime: input.completedTime,
-        dropoffAddress: input.dropoffAddress,
-        dropoffDistance: input.dropoffDistance
-      });
+      // Determine tip handling: only trust tipAmounts for per-offer tips when they align
+      if (perOffer.length >= count) {
+        // Prefer explicit per-offer amounts when available (earnings-summary)
+        const offerPay = perOffer[index];
+        const tipForOffer = (tipAmounts.length === perOffer.length && (tipAmounts[index] ?? 0) > 0)
+          ? tipAmounts[index]
+          : undefined;
+
+        trips.push({
+          place: places[index] ?? places[0],
+          pay: offerPay,
+          basePay: undefined,
+          tip: tipForOffer,
+          dropoffTime: input.isEarningsSummary ? undefined : input.completedTime,
+          dropoffAddress: input.dropoffAddress,
+          dropoffDistance: input.dropoffDistance
+        });
+      } else {
+        const tip = tipAmounts[index] ?? 0;
+        const basePay = basePayAmounts[index] ?? 0;
+        const totalPay = basePay + tip;
+
+        trips.push({
+          place: places[index] ?? places[0],
+          pay: totalPay > 0 ? totalPay : (count === 1 ? input.fallbackAmount : undefined),
+          basePay: basePay > 0 ? basePay : undefined,
+          tip: tip > 0 ? tip : undefined,
+          dropoffTime: input.isEarningsSummary ? undefined : input.completedTime,
+          dropoffAddress: input.dropoffAddress,
+          dropoffDistance: input.dropoffDistance
+        });
+      }
     }
 
     return trips;
