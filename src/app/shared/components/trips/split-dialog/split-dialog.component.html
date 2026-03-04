@@ -10,7 +10,11 @@
   </mat-radio-group>
 
   <div class="actions">
-    <button mat-button (click)="cancel()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="confirm()">Split</button>
+    <app-base-rect-button variant="secondary" [icon]="'cancel'" (clicked)="cancel()">
+      Cancel
+    </app-base-rect-button>
+    <app-base-rect-button variant="primary" [icon]="'call_split'" (clicked)="confirm()">
+      Split
+    </app-base-rect-button>
   </div>
 </div>
