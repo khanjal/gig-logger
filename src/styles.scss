@@ -929,3 +929,116 @@ html.theme-dark {
     color: var(--color-text-primary) !important;
   }
 }
+
+/* Global overlay/dialog fixes for Material components in dark mode */
+.theme-dark .cdk-overlay-container .mat-radio-button .mat-radio-label-content,
+.theme-dark .cdk-overlay-container .mat-radio-button .mat-radio-label,
+.theme-dark .cdk-overlay-container .mat-radio-button .mat-radio-label-wrapper,
+.theme-dark .cdk-overlay-container .mat-radio-button .mat-radio-label-content span {
+  color: var(--color-text-primary) !important;
+  opacity: 1 !important;
+}
+
+.theme-dark .cdk-overlay-container .mat-dialog-container,
+.theme-dark .cdk-overlay-container .mat-mdc-dialog-container {
+  background: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.theme-dark .cdk-overlay-container .mat-dialog-container .mat-dialog-actions button.mat-button,
+.theme-dark .cdk-overlay-container .mat-mdc-dialog-container .dialog-actions button[mat-button] {
+  color: var(--color-text-secondary) !important;
+  opacity: 1 !important;
+}
+
+.theme-dark .cdk-overlay-container .mat-dialog-container .mat-dialog-actions button.mat-flat-button,
+.theme-dark .cdk-overlay-container .mat-mdc-dialog-container .dialog-actions button[mat-flat-button],
+.theme-dark .cdk-overlay-container .mat-mdc-dialog-container .dialog-actions button[mat-raised-button] {
+  color: var(--color-on-primary) !important;
+}
+
+/* Ensure radio labels in overlay inherit visible color even when Material applies its defaults */
+.theme-dark .cdk-overlay-container ::ng-deep .mat-radio-button .mat-radio-label-content,
+.theme-dark .cdk-overlay-container ::ng-deep .mat-radio-button .mat-radio-label {
+  color: var(--color-text-primary) !important;
+}
+
+/* Split dialog container rounded corners and background */
+.split-trip-dialog .mat-mdc-dialog-container,
+.split-trip-dialog .mdc-dialog__surface {
+  border-radius: 12px !important;
+  overflow: hidden;
+  background: var(--color-surface, #ffffff) !important;
+}
+
+html.theme-dark .split-trip-dialog .mat-mdc-dialog-container,
+html.theme-dark .split-trip-dialog .mdc-dialog__surface {
+  background: var(--color-surface, #1e293b) !important;
+}
+
+/* Split dialog specific dark mode fixes - use panelClass for precise targeting */
+/* Legacy Material radio buttons */
+html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-label-content,
+html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-label,
+html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-label-wrapper,
+html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-label-content span,
+html.theme-dark .split-trip-dialog .mat-radio-label-content,
+html.theme-dark .split-trip-dialog .mat-radio-label {
+  color: #cbd5e1 !important;
+  opacity: 1 !important;
+}
+
+/* MDC Material radio buttons (Material 15+) */
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-label,
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button label,
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-form-field label,
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-radio__label,
+html.theme-dark .split-trip-dialog .mdc-radio .mdc-label,
+html.theme-dark .split-trip-dialog .mdc-form-field > label {
+  color: #cbd5e1 !important;
+  opacity: 1 !important;
+}
+
+/* Dialog buttons */
+html.theme-dark .split-trip-dialog button.mat-button,
+html.theme-dark .split-trip-dialog button[mat-button],
+html.theme-dark .split-trip-dialog .mat-mdc-button {
+  color: #94a3b8 !important;
+}
+
+/* Aggressive fallback: force ALL text in split dialog to be light in dark mode */
+html.theme-dark .cdk-overlay-pane.split-trip-dialog *,
+html.theme-dark .cdk-overlay-pane.split-trip-dialog h3,
+html.theme-dark .cdk-overlay-pane.split-trip-dialog p,
+html.theme-dark .cdk-overlay-pane.split-trip-dialog label,
+html.theme-dark .cdk-overlay-pane.split-trip-dialog span {
+  color: #cbd5e1 !important;
+}
+
+/* Re-override buttons to be slightly muted */
+html.theme-dark .cdk-overlay-pane.split-trip-dialog button.mat-button,
+html.theme-dark .cdk-overlay-pane.split-trip-dialog button[mat-button] {
+  color: #94a3b8 !important;
+}
+
+/* Keep primary button white text */
+html.theme-dark .cdk-overlay-pane.split-trip-dialog button.mat-flat-button,
+html.theme-dark .cdk-overlay-pane.split-trip-dialog button[mat-flat-button] {
+  color: #fff !important;
+}
+
+/* Fix radio button circles (the actual selector) in dark mode */
+html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-outer-circle,
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-radio__outer-circle {
+  border-color: #94a3b8 !important;
+}
+
+html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-inner-circle,
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-radio__inner-circle {
+  background-color: #60a5fa !important;
+}
+
+html.theme-dark .split-trip-dialog .mat-radio-button.mat-radio-checked .mat-radio-outer-circle,
+html.theme-dark .split-trip-dialog .mat-mdc-radio-button.mdc-radio--checked .mdc-radio__outer-circle {
+  border-color: #60a5fa !important;
+}

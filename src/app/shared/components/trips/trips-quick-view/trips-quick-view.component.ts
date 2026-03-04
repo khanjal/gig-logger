@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChange
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
+import { SplitDialogComponent } from '@components/trips/split-dialog/split-dialog.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -195,6 +197,19 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
    this._snackBar.open("Cloned Trip");
    // Scroll to today's trips section
    this.scrollToTrip.emit(undefined);
+  }
+
+  async splitTrip() {
+    const dialogRef = this.dialog.open(SplitDialogComponent, { 
+      width: '360px',
+      panelClass: 'split-trip-dialog'
+    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (!result) return;
+    await this._tripService.split(this.trip, result);
+    this.parentReload.emit();
+    this._snackBar.open('Trip Split');
+    this.scrollToTrip.emit(undefined);
   }
   
   async nextStopTrip() {
