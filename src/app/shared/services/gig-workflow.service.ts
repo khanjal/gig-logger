@@ -88,6 +88,10 @@ export class GigWorkflowService {
         return this._calculator.calculateShiftTotals(shifts);
     }
 
+    public async calculateShiftTotalsByKey(key: string) {
+        return this._calculator.calculateShiftTotalsByKey(key);
+    }
+
     public async calculateDailyTotal(dates: string[] = []) {
         return this._calculator.calculateDailyTotal(dates);
     }

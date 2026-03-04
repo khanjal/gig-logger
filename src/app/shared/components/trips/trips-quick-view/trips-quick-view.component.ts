@@ -207,13 +207,8 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     const result = await firstValueFrom(dialogRef.afterClosed());
     if (!result) return;
     await this._tripService.split(this.trip, result);
-    
-    // Recalculate trip totals after split
-    const shift = await this._shiftService.queryShiftByKey(this.trip.key);
-    if (shift) {
-      await this._gigLoggerService.calculateShiftTotals([shift]);
-    }
-    
+    await this._gigLoggerService.calculateShiftTotalsByKey(this.trip.key);
+
     this.parentReload.emit();
     this._snackBar.open('Trip Split');
     this.scrollToTrip.emit(undefined);
@@ -266,11 +261,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   
   async deleteTrip() {
     await this._tripService.deleteItem(this.trip);
-
-    const shift = await this._shiftService.queryShiftByKey(this.trip.key);
-    if (shift) {
-      await this._gigLoggerService.calculateShiftTotals([shift]);
-    }
+    await this._gigLoggerService.calculateShiftTotalsByKey(this.trip.key);
 
     this.parentReload.emit();
   }
