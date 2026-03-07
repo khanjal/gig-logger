@@ -64,7 +64,7 @@ export class TripService extends SyncableCrudService<ITrip> {
      * The original trip is updated to the first half (rounded down to nearest $0.25),
      * the new trip receives the remaining amount so totals match the original.
      */
-    public async split(trip: ITrip, copyOption: 'both' | 'place' | 'customer' | 'neither' = 'both') {
+    public async split(trip: ITrip, copyOption?: 'place' | 'customer' | 'neither') {
         if (!trip) return;
 
         // Work with numeric defaults
@@ -87,28 +87,44 @@ export class TripService extends SyncableCrudService<ITrip> {
         const firstDistance = Math.round(halfDistance * 10) / 10;
         const secondDistance = +(totalDistance - firstDistance).toFixed(3);
 
-                // Prepare new trip as a clone of the original
-                const newTrip: ITrip = { ...(trip as any) } as ITrip;
-        // Remove identifiers for the new record
-        delete (newTrip as any).id;
+        // Start with a minimal new trip - essential routing/context fields only
+        const newTrip: ITrip = {} as ITrip;
         newTrip.rowId = await this.getMaxRowId() + 1;
+
+        // Core fields that always carry over (define the route context)
+        newTrip.pickupTime = trip.pickupTime;
+        newTrip.date = trip.date;
+        newTrip.service = trip.service;
+        newTrip.region = trip.region;
+        newTrip.number = trip.number;
+        newTrip.key = trip.key;
 
         // Assign split values
         newTrip.pay = secondPay;
         newTrip.distance = secondDistance;
+
+        // Add optional fields based on copy preference
+        if (copyOption === 'place') {
+            // Keep pickup location info for same-location doubles
+            newTrip.place = trip.place;
+            newTrip.startAddress = trip.startAddress;
+        } else if (copyOption === 'customer') {
+            // Keep customer name for same-customer doubles
+            newTrip.name = trip.name;
+            newTrip.endAddress = trip.endAddress;
+            newTrip.endUnit = trip.endUnit;
+        } else if (!copyOption) {
+            // Default: keep both place and customer info
+            newTrip.place = trip.place;
+            newTrip.startAddress = trip.startAddress;
+            newTrip.endAddress = trip.endAddress;
+            newTrip.endUnit = trip.endUnit;
+            newTrip.name = trip.name;
+        }
+        // 'neither': everything stays cleared (already initialized above)
+
         // Recalculate total for new trip (total = pay + tip + bonus)
         TripHelper.updateTotal(newTrip);
-                // Copy/clear place and customer based on user selection
-                if (copyOption === 'both') {
-                    // keep both place and name
-                } else if (copyOption === 'place') {
-                    newTrip.name = '';
-                } else if (copyOption === 'customer') {
-                    newTrip.place = '';
-                } else if (copyOption === 'neither') {
-                    newTrip.place = '';
-                    newTrip.name = '';
-                }
 
         // Update original trip values
         trip.pay = firstPay;

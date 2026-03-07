@@ -76,7 +76,7 @@
         font-size: 1rem;
       }
 
-      // Error state — show a visible outline for errors
+      // Error state - show a visible outline for errors
       &.has-error {
         .mat-mdc-form-field-outline {
           .mat-mdc-form-field-outline-start,
@@ -97,7 +97,7 @@
         }
       }
 
-      // Disabled state — dim text and keep outline subtle
+      // Disabled state - dim text and keep outline subtle
       .mdc-text-field--disabled {
         .mat-mdc-form-field-outline {
           .mat-mdc-form-field-outline-start,

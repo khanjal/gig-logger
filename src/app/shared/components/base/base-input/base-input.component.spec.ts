@@ -2,19 +2,15 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BaseInputComponent } from './base-input.component';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, BaseInputComponent],
+  imports: [ReactiveFormsModule, BaseInputComponent],
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <mat-form-field>
-        <app-base-input formControlName="name" label="Name"></app-base-input>
-      </mat-form-field>
+      <app-base-input formControlName="name" label="Name"></app-base-input>
       <button type="submit">Submit</button>
     </form>
   `
@@ -46,10 +42,8 @@ describe('BaseInputComponent (integration)', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // Ensure the component picks up the status change in the test harness
     const dbg = fixture.debugElement.query(By.css('app-base-input'));
     const comp = dbg.componentInstance as BaseInputComponent;
-    comp.stateChanges.next();
     fixture.detectChanges();
 
     expect(comp.hasError()).toBeTrue();
@@ -70,8 +64,6 @@ describe('BaseInputComponent (integration)', () => {
     await fixture.whenStable();
     const dbg = fixture.debugElement.query(By.css('app-base-input'));
     const comp = dbg.componentInstance as BaseInputComponent;
-    // Force the MatFormFieldControl to re-evaluate state in the test
-    comp.stateChanges.next();
     fixture.detectChanges();
     expect(comp.hasError()).toBeTrue();
     expect(comp.getErrorMessage()).toContain('required');

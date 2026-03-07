@@ -1,44 +1,25 @@
-import { Component, Input, forwardRef, ViewChild, Optional, Self, HostBinding, OnDestroy } from '@angular/core';
+import { Component, Input, Optional, Self } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormControl, FormGroupDirective } from '@angular/forms';
-import { MatFormField, MatLabel, MatHint, MatError, MatFormFieldControl } from '@angular/material/form-field';
+import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormGroupDirective } from '@angular/forms';
+import { MatFormField, MatLabel, MatHint, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
-import { Subject, Subscription } from 'rxjs';
 
-import { subscribeControlStatus, firstErrorMessage, controlHasError } from './base-input.helpers';
+import { firstErrorMessage, controlHasError } from './base-input.helpers';
 
 @Component({
   selector: 'app-base-input',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatError, MatInput, MatIcon],
   templateUrl: './base-input.component.html',
-  styleUrl: './base-input.component.scss',
-  providers: [
-    { provide: MatFormFieldControl, useExisting: forwardRef(() => BaseInputComponent) }
-  ]
+  styleUrl: './base-input.component.scss'
 })
-export class BaseInputComponent implements ControlValueAccessor, MatFormFieldControl<any>, OnDestroy {
-  // --- static / id ---
-  static nextId = 0;
-  @HostBinding() id = `app-base-input-${BaseInputComponent.nextId++}`;
-
-  // --- ViewChild / state ---
-  @ViewChild('inputElement') inputElement?: MatInput;
-  stateChanges = new Subject<void>();
-
-  // --- public descriptor used by MatFormField ---
-  controlType = 'app-base-input';
-
-  // --- focus/disabled state ---
-  private _focused = false;
-  get focused(): boolean { return this._focused; }
+export class BaseInputComponent implements ControlValueAccessor {
 
   private _disabled = false;
   @Input() get disabled(): boolean { return this._disabled; }
   set disabled(v: boolean) {
     this._disabled = v;
-    this.stateChanges.next();
   }
 
   // --- visual inputs ---
@@ -52,37 +33,34 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
   @Input() required = false;
 
   // --- value / touched tracking ---
-  private _value: any;
-  get value(): any { return this._value; }
-  set value(val: any) { this._value = val; this.stateChanges.next(); }
+  private _value: string | number | null = null;
+  get value(): string | number | null { return this._value; }
+  set value(val: string | number | null) { this._value = val; }
   private _touched = false;
 
   // --- ControlValueAccessor callbacks ---
-  onChange: (value: any) => void = () => {};
+  onChange: (value: string | number | null) => void = () => {};
   onTouched: () => void = () => {};
 
-  private _statusSub?: Subscription;
-
   /**
-   * Reusable form input implementing ControlValueAccessor + MatFormFieldControl.
+   * Reusable form input implementing ControlValueAccessor.
    * Works with template-driven and reactive forms.
    */
   constructor(@Optional() @Self() public ngControl: NgControl, @Optional() private parentForm?: FormGroupDirective) {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
-      this._statusSub = subscribeControlStatus(this.ngControl.control as FormControl, this.stateChanges);
     }
   }
 
   // --- ControlValueAccessor ---
-  writeValue(value: any): void { this.value = value; }
-  registerOnChange(fn: (value: any) => void): void { this.onChange = fn; }
+  writeValue(value: string | number | null): void { this.value = value; }
+  registerOnChange(fn: (value: string | number | null) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
   setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
 
-  onValueChange(newValue: any): void {
+  onValueChange(newValue: string): void {
     if (this.type === 'number') {
-      if (newValue === '' || newValue === null) {
+      if (newValue === '') {
         this.value = null;
       } else {
         const numValue = parseFloat(newValue);
@@ -99,12 +77,8 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     if (this.ngControl && this.ngControl.control) {
       this.ngControl.control.markAsTouched();
     }
-    this._focused = false;
     this._touched = true;
-    this.stateChanges.next();
   }
-
-  onFocus(): void { this._focused = true; this.stateChanges.next(); }
 
   // --- validation helpers / public API ---
   hasError(errorCode?: string): boolean {
@@ -133,15 +107,8 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     return false;
   }
 
-  // --- MatFormFieldControl implementation ---
+  // --- derived state used by validation helpers ---
   get empty(): boolean { return this.value === null || this.value === undefined || this.value === ''; }
-  get shouldLabelFloat(): boolean { return !this.empty; }
-
-  setDescribedByIds(ids: string[]): void { /* noop */ }
-
-  onContainerClick(event: MouseEvent): void {
-    try { (this.inputElement as any)?.focus(); } catch {}
-  }
 
   get errorState(): boolean {
     const control = this.ngControl?.control;
@@ -153,7 +120,4 @@ export class BaseInputComponent implements ControlValueAccessor, MatFormFieldCon
     }
     return !!(this.required && (this._touched || submitted) && this.empty);
   }
-
-  // --- lifecycle ---
-  ngOnDestroy(): void { this._statusSub?.unsubscribe(); this.stateChanges.complete(); }
 }
