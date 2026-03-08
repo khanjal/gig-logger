@@ -22,6 +22,20 @@ class HostComponent {
   onSubmit() { this.submitted = true; }
 }
 
+@Component({
+  standalone: true,
+  imports: [ReactiveFormsModule, BaseInputComponent],
+  template: `
+    <form [formGroup]="form">
+      <app-base-input formControlName="amount" label="Amount" type="number"></app-base-input>
+    </form>
+  `
+})
+class NumberHostComponent {
+  form = this.fb.group({ amount: [null as number | string | null] });
+  constructor(private fb: FormBuilder) {}
+}
+
 describe('BaseInputComponent (integration)', () => {
   let fixture: ComponentFixture<HostComponent>;
 
@@ -67,6 +81,51 @@ describe('BaseInputComponent (integration)', () => {
     fixture.detectChanges();
     expect(comp.hasError()).toBeTrue();
     expect(comp.getErrorMessage()).toContain('required');
+  });
+});
+
+describe('BaseInputComponent (number input behavior)', () => {
+  let fixture: ComponentFixture<NumberHostComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NumberHostComponent, NoopAnimationsModule]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(NumberHostComponent);
+    fixture.detectChanges();
+  });
+
+  it('keeps raw decimal text while typing', () => {
+    const dbg = fixture.debugElement.query(By.css('app-base-input'));
+    const comp = dbg.componentInstance as BaseInputComponent;
+
+    comp.onValueChange('12.50');
+
+    expect(comp.value).toBe('12.50');
+    expect(fixture.componentInstance.form.get('amount')?.value).toBe('12.50');
+  });
+
+  it('normalizes numeric text to a number on blur', () => {
+    const dbg = fixture.debugElement.query(By.css('app-base-input'));
+    const comp = dbg.componentInstance as BaseInputComponent;
+
+    comp.onValueChange('12.50');
+    comp.onBlur();
+
+    expect(comp.value).toBe(12.5);
+    expect(fixture.componentInstance.form.get('amount')?.value).toBe(12.5);
+  });
+
+  it('does not reparse while deleting decimal characters', () => {
+    const dbg = fixture.debugElement.query(By.css('app-base-input'));
+    const comp = dbg.componentInstance as BaseInputComponent;
+
+    comp.onValueChange('12.50');
+    comp.onValueChange('1250');
+
+    expect(comp.value).toBe('1250');
+    expect(fixture.componentInstance.form.get('amount')?.value).toBe('1250');
   });
 });
 

@@ -63,8 +63,10 @@ export class BaseInputComponent implements ControlValueAccessor {
       if (newValue === '') {
         this.value = null;
       } else {
-        const numValue = parseFloat(newValue);
-        this.value = isNaN(numValue) ? null : numValue;
+        // Keep the raw input text while typing so caret position is preserved.
+        // Parsing on every keypress can rewrite the value (e.g. "12.50" -> 12.5)
+        // and cause the cursor to jump.
+        this.value = newValue;
       }
     } else {
       this.value = newValue;
@@ -73,6 +75,19 @@ export class BaseInputComponent implements ControlValueAccessor {
   }
 
   onBlur(): void {
+    if (this.type === 'number') {
+      const rawValue = typeof this.value === 'string' ? this.value.trim() : this.value;
+
+      if (rawValue === '') {
+        this.value = null;
+      } else if (typeof rawValue === 'string') {
+        const parsed = parseFloat(rawValue);
+        this.value = isNaN(parsed) ? null : parsed;
+      }
+
+      this.onChange(this.value);
+    }
+
     this.onTouched();
     if (this.ngControl && this.ngControl.control) {
       this.ngControl.control.markAsTouched();
