@@ -76,6 +76,29 @@
         font-size: 1rem;
       }
 
+      // Number fields: hide browser spinner controls so they don't overlap suffix icons.
+      input[type='number'] {
+        appearance: textfield;
+        -moz-appearance: textfield;
+        padding-right: 0.25rem !important;
+      }
+
+      input[type='number']::-webkit-outer-spin-button,
+      input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      // Ensure suffix actions remain visible with custom form-field overrides.
+      .mat-mdc-form-field-icon-suffix {
+        display: inline-flex !important;
+        align-items: center;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto;
+      }
+
+
       // Error state - show a visible outline for errors
       &.has-error {
         .mat-mdc-form-field-outline {
@@ -120,6 +143,16 @@
       width: 20px;
       height: 20px;
       line-height: 20px;
+    }
+
+    &.input-field--with-clear {
+      ::ng-deep .mdc-text-field__input {
+        padding-right: 0.75rem !important;
+      }
+    }
+
+    .standard-button {
+      margin-left: 0.125rem;
     }
   }
 }

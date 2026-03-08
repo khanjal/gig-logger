@@ -1,16 +1,17 @@
 import { Component, Input, Optional, Self } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormGroupDirective } from '@angular/forms';
-import { MatFormField, MatLabel, MatHint, MatError } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
+import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
 
 import { firstErrorMessage, controlHasError } from './base-input.helpers';
 
 @Component({
   selector: 'app-base-input',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatError, MatInput, MatIcon],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix, MatInput, MatIcon, BaseFieldButtonComponent],
   templateUrl: './base-input.component.html',
   styleUrl: './base-input.component.scss'
 })
@@ -31,6 +32,7 @@ export class BaseInputComponent implements ControlValueAccessor {
   @Input() icon?: string;
   @Input() iconPosition: 'left' | 'right' = 'right';
   @Input() required = false;
+  @Input() showClear = true;
 
   // --- value / touched tracking ---
   private _value: string | number | null = null;
@@ -93,6 +95,15 @@ export class BaseInputComponent implements ControlValueAccessor {
       this.ngControl.control.markAsTouched();
     }
     this._touched = true;
+  }
+
+  onClear(): void {
+    this.value = null;
+    this.onChange(this.value);
+  }
+
+  get showClearButton(): boolean {
+    return this.showClear && !this.empty && !this.disabled;
   }
 
   // --- validation helpers / public API ---

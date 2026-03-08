@@ -1,5 +1,5 @@
 <div class="app-base-input">
-  <mat-form-field class="input-field" appearance="outline" [class.has-error]="errorState">
+  <mat-form-field class="input-field" [class.input-field--with-clear]="showClear" appearance="outline" [class.has-error]="errorState">
     <mat-label *ngIf="label">
       {{ label }}
     </mat-label>
@@ -24,6 +24,19 @@
     <mat-icon *ngIf="icon && iconPosition === 'right'" matSuffix class="input-icon">
       {{ icon }}
     </mat-icon>
+
+    <app-base-field-button
+      *ngIf="showClearButton"
+      [fab]="true"
+      fabStyle="mini"
+      [icon]="'clear'"
+      [iconColor]="'var(--error-500)'"
+      matSuffix
+      class="standard-button"
+      color="accent"
+      aria-label="Clear Field"
+      (clicked)="onClear()">
+    </app-base-field-button>
 
     <mat-hint *ngIf="hint && !hasError()">{{ hint }}</mat-hint>
     <mat-error *ngIf="hasError()">{{ error || getErrorMessage() }}</mat-error>

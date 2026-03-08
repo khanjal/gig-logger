@@ -127,5 +127,28 @@ describe('BaseInputComponent (number input behavior)', () => {
     expect(comp.value).toBe('1250');
     expect(fixture.componentInstance.form.get('amount')?.value).toBe('1250');
   });
+
+  it('shows clear button for number input when value exists', () => {
+    const dbg = fixture.debugElement.query(By.css('app-base-input'));
+    const comp = dbg.componentInstance as BaseInputComponent;
+
+    comp.onValueChange('12.50');
+    fixture.detectChanges();
+
+    expect(comp.showClearButton).toBeTrue();
+    expect(dbg.query(By.css('app-base-field-button.standard-button'))).toBeTruthy();
+  });
+
+  it('clears number value when clear action is used', () => {
+    const dbg = fixture.debugElement.query(By.css('app-base-input'));
+    const comp = dbg.componentInstance as BaseInputComponent;
+
+    comp.onValueChange('12.50');
+    comp.onClear();
+
+    expect(comp.value).toBeNull();
+    expect(fixture.componentInstance.form.get('amount')?.value).toBeNull();
+    expect(comp.showClearButton).toBeFalse();
+  });
 });
 
