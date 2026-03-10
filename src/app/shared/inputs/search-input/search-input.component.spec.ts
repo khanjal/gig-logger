@@ -23,6 +23,36 @@ describe('SearchInputComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should track initialValue and hasSelection on writeValue', () => {
+    component.writeValue('123 Main St');
+    expect((component as any).initialValue).toBe('123 Main St');
+    expect(component.hasSelection).toBeTrue();
+
+    component.writeValue('');
+    expect((component as any).initialValue).toBe('');
+    expect(component.hasSelection).toBeFalse();
+  });
+
+  it('should only reset hasSelection if value changed from initial', () => {
+    component.writeValue('Initial Value');
+    expect(component.hasSelection).toBeTrue();
+
+    const event = { target: { value: 'Initial Value' } } as any;
+    component.onInputChange(event);
+    expect(component.hasSelection).toBeTrue();
+
+    const changedEvent = { target: { value: 'Changed Value' } } as any;
+    component.onInputChange(changedEvent);
+    expect(component.hasSelection).toBeFalse();
+  });
+
+  it('should update initialValue on selection', async () => {
+    const item = { name: 'Selected Place', placeId: undefined } as any;
+    await component.onInputSelect(item);
+    expect((component as any).initialValue).toBe('Selected Place');
+    expect(component.hasSelection).toBeTrue();
+  });
+
   it('getItemSize and getViewportHeight behavior', () => {
     const itemSize = component.getItemSize();
     expect(itemSize).toBeGreaterThan(0);

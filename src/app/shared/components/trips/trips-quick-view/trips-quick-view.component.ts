@@ -26,13 +26,14 @@ import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
+import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
 
 @Component({
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
     // directive
     // Use path to directive
     // standalone directives must be added to imports to be usable in template

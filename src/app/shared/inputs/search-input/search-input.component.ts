@@ -90,6 +90,7 @@ export class SearchInputComponent implements OnDestroy {
   hasSelection = false;
   isGoogleSearching = false;
   showNoGoogleResults = false;
+  private initialValue: string = '';
   // When true skip the next focus handler after a user selection (prevents refocus on mobile)
   private skipNextFocus: boolean = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
@@ -115,7 +116,13 @@ export class SearchInputComponent implements OnDestroy {
     }
   }
   writeValue(value: string): void {
-    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: false });
+    const normalizedValue = value || '';
+    this.searchForm.controls.searchInput.setValue(normalizedValue, { emitEvent: false });
+    this.initialValue = normalizedValue;
+    // If value is set externally, treat it as a selection
+    if (normalizedValue) {
+      this.hasSelection = true;
+    }
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -182,8 +189,10 @@ export class SearchInputComponent implements OnDestroy {
     this.setInputValue(value);
     this.valueChanged.emit(value);
     
-    // Reset selection state when input changes
-    this.hasSelection = false;
+    // Only reset selection state if value actually changed from initial
+    if (value !== this.initialValue) {
+      this.hasSelection = false;
+    }
     this.showNoGoogleResults = false;
     
     // Hide icon if input is cleared
@@ -238,6 +247,7 @@ export class SearchInputComponent implements OnDestroy {
     }
 
     this.setInputValue(finalAddress);
+    this.initialValue = finalAddress;
     this.hasSelection = true;
 
     // Clear suggestions and close dropdown so the selected item doesn't reappear
