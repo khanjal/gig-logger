@@ -31,6 +31,10 @@ describe('SearchInputComponent', () => {
     component.writeValue('');
     expect((component as any).initialValue).toBe('');
     expect(component.hasSelection).toBeFalse();
+
+    component.writeValue(null as any);
+    expect((component as any).initialValue).toBe('');
+    expect(component.hasSelection).toBeFalse();
   });
 
   it('should only reset hasSelection if value changed from initial', () => {

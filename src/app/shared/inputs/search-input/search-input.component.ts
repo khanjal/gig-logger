@@ -119,10 +119,8 @@ export class SearchInputComponent implements OnDestroy {
     const normalizedValue = value || '';
     this.searchForm.controls.searchInput.setValue(normalizedValue, { emitEvent: false });
     this.initialValue = normalizedValue;
-    // If value is set externally, treat it as a selection
-    if (normalizedValue) {
-      this.hasSelection = true;
-    }
+    // If value is set externally, treat it as a selection when non-empty
+    this.hasSelection = !!normalizedValue;
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
