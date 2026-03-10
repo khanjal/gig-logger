@@ -13,7 +13,7 @@ export type SyncState = ISyncState;
 export type SyncMessage = ISyncMessage;
 
 // Re-export types for backward compatibility
-export { SyncStatus, SyncOperation };
+export type { SyncStatus, SyncOperation };
 
 @Injectable({
   providedIn: 'root'

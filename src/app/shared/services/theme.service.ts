@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
 
-export { ThemePreference, ResolvedTheme };
+export type { ThemePreference, ResolvedTheme };
 
 export const THEME_STORAGE_KEY = 'rg-theme-preference';
 const LIGHT_THEME_COLOR = '#1976d2';

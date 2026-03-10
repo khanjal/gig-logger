@@ -9,6 +9,7 @@ import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
 import { ISheet } from '@interfaces/sheet.interface';
+import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { BehaviorSubject } from 'rxjs';
@@ -262,8 +263,8 @@ export class PollingService implements OnDestroy {
         }
       }
 
-      // Get actual unsaved data
-      const sheetData = {} as ISheet;
+      // Get actual unsaved data (use save payload wire-format)
+      const sheetData = {} as ISheetSavePayload;
       const defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
       sheetData.properties = { id: defaultSheet.id, name: "" };
       

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { ButtonVariant, ButtonSize, FabStyle } from '@interfaces/button.interface';
 
-export { ButtonVariant, ButtonSize, FabStyle };
+export type { ButtonVariant, ButtonSize, FabStyle };
 
 @Component({
   selector: 'app-base-button',

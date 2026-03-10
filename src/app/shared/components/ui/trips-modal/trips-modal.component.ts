@@ -7,7 +7,7 @@ import { ITrip } from '@interfaces/trip.interface';
 import { ITripsModalData } from '@interfaces/trips-modal-data.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 
-export { ITripsModalData };
+export type { ITripsModalData };
 
 @Component({
   selector: 'app-trips-modal',

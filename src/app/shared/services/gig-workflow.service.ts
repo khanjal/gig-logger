@@ -54,7 +54,7 @@ export class GigWorkflowService {
         return this._apiService.getSecondarySheetData(sheetId);
     }
 
-    public async saveSheetData(sheetData: ISheet): Promise<any> {
+    public async saveSheetData(sheetData: import('@interfaces/sheet-save-payload.interface').ISheetSavePayload): Promise<any> {
         return this._apiService.saveSheetData(sheetData);
     }
 

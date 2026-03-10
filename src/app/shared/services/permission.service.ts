@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PermissionState } from '@interfaces/permission.interface';
 
-export { PermissionState };
+export type { PermissionState };
 
 @Injectable({ providedIn: 'root' })
 export class PermissionService {

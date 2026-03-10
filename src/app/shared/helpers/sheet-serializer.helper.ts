@@ -1,5 +1,7 @@
 import { ITrip } from '@interfaces/trip.interface';
 import { IShift } from '@interfaces/shift.interface';
+import { ITripSheetRow } from '@interfaces/trip-sheet-row.interface';
+import { IShiftSheetRow } from '@interfaces/shift-sheet-row.interface';
 
 /**
  * Helper to prepare data for Google Sheets serialization.
@@ -11,7 +13,7 @@ export class SheetSerializerHelper {
      * Prepares a trip for sheet serialization by converting 0 → null for input fields.
      * Calculated fields (total, amountPerDistance, amountPerTime) are preserved.
      */
-    static serializeTrip(trip: ITrip): ITrip {
+    static serializeTrip(trip: ITrip): ITripSheetRow {
         return {
             ...trip,
             // Input fields: convert 0 → null
@@ -23,13 +25,13 @@ export class SheetSerializerHelper {
             startOdometer: trip.startOdometer === 0 ? null : trip.startOdometer,
             endOdometer: trip.endOdometer === 0 ? null : trip.endOdometer,
             // Calculated fields remain as-is (total, amountPerDistance, amountPerTime)
-        } as ITrip;
+        } as ITripSheetRow;
     }
 
     /**
      * Prepares a shift for sheet serialization by converting 0 → null for input fields.
      */
-    static serializeShift(shift: IShift): IShift {
+    static serializeShift(shift: IShift): IShiftSheetRow {
         return {
             ...shift,
             // Input fields: convert 0 → null
@@ -38,20 +40,20 @@ export class SheetSerializerHelper {
             bonus: shift.bonus === 0 ? null : shift.bonus,
             cash: shift.cash === 0 ? null : shift.cash,
             // Calculated fields remain as-is (total, totalPay, etc.)
-        } as IShift;
+        } as IShiftSheetRow;
     }
 
     /**
      * Serializes all trips in an array.
      */
-    static serializeTrips(trips: ITrip[]): ITrip[] {
+    static serializeTrips(trips: ITrip[]): ITripSheetRow[] {
         return trips.map(trip => this.serializeTrip(trip));
     }
 
     /**
      * Serializes all shifts in an array.
      */
-    static serializeShifts(shifts: IShift[]): IShift[] {
+    static serializeShifts(shifts: IShift[]): IShiftSheetRow[] {
         return shifts.map(shift => this.serializeShift(shift));
     }
 }

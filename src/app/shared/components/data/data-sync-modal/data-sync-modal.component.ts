@@ -13,6 +13,7 @@ import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 // Application-specific imports - Interfaces
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ISheet } from '@interfaces/sheet.interface';
+import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 
 // Application-specific imports - Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -147,7 +148,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     async saveData() {
-        let sheetData = {} as ISheet;
+        let sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
         // Pre-calculate totals for unsaved shifts before saving
@@ -160,7 +161,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             }
         }
         
-        // Apply serialization to convert 0 → null for input fields
+        // Apply serialization to convert 0 → null for input fields (wire-format)
         sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
         sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
         sheetData.expenses = await this._expensesService.getUnsaved();

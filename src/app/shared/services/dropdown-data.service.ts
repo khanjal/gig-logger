@@ -12,7 +12,7 @@ import { IAddress } from '@interfaces/address.interface';
 import { IRegion } from '@interfaces/region.interface';
 import { DropdownType, IDropdownData } from '@interfaces/dropdown-data.interface';
 
-export { DropdownType };
+export type { DropdownType };
 
 /**
  * @deprecated Use IDropdownData from @interfaces/dropdown-data.interface instead
