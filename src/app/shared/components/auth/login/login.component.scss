@@ -41,8 +41,8 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   
   // Remove Material Design button defaults
-  &.mat-mdc-raised-button:not(:disabled) {
-    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.30), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    &.mat-mdc-raised-button:not(:disabled) {
+    box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium);
   }
   
   @media (max-width: 768px) {
@@ -103,7 +103,7 @@
   
   &:focus {
     outline: none;
-    box-shadow: 0 1px 3px 1px rgba(60, 64, 67, 0.15), 0 0 0 2px rgba(26, 115, 232, 0.25);
+    box-shadow: 0 1px 3px 1px var(--shadow-medium), 0 0 0 2px color-mix(in srgb, var(--primary-600) 25%, transparent);
   }
   
   // Remove Material Design overrides
@@ -209,7 +209,7 @@
   
   &:focus {
     outline: none;
-    box-shadow: 0 1px 3px 1px rgba(217, 48, 37, 0.15), 0 0 0 2px rgba(217, 48, 37, 0.25);
+    box-shadow: 0 1px 3px 1px var(--shadow-medium), 0 0 0 2px color-mix(in srgb, var(--error-500) 25%, transparent);
   }
 
   // Remove Material Design overrides

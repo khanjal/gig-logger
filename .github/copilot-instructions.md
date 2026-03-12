@@ -355,6 +355,8 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 
 **REQUIRED: Always implement both light and dark mode variants for all UI elements**
 
+**REQUIRED: Use semantic tokens for colors.** All components, templates, and styles must reference named semantic tokens (CSS variables such as `--color-primary`, `--color-border`, or the semantic utility classes like `text-primary`, `bg-surface`) rather than raw hex, `rgb(a)`, `hsl(a)` values or Tailwind color utilities (for example `text-blue-600`, `bg-green-500/25`). This ensures consistent theming, easier dark/light variants, and prevents scattered hardcoded color values across the codebase.
+
 #### 1. Text Colors
 Use Tailwind's gray scale with proper dark mode variants:
 ```html

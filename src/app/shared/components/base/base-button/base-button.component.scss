@@ -91,12 +91,12 @@
     color: white;
 
     &:hover:not(:disabled) {
-      background-color: #dc2626;
-      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+      background-color: var(--error-600, #dc2626);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--error-600, #dc2626) 25%, transparent);
     }
 
     &:active:not(:disabled) {
-      background-color: #991b1b;
+      background-color: var(--error-700, #991b1b);
       transform: scale(0.98);
     }
   }
@@ -140,7 +140,7 @@
     box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 
     &:hover:not(:disabled) {
-      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 16px var(--shadow-medium, rgba(0,0,0,0.18));
     }
 
     &:active:not(:disabled) {

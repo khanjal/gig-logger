@@ -43,7 +43,7 @@
     &--active,
     &.active {
         transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 8px var(--shadow-medium);
     }
     
     @media (min-width: 769px) {
@@ -154,7 +154,7 @@
             
             &:hover {
                 transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 4px 12px var(--shadow-medium);
             }
             
             @media (max-width: 768px) {

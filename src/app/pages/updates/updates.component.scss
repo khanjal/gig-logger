@@ -171,11 +171,11 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.35rem 0.75rem;
-  background-color: rgb(59 130 246 / 0.1); // blue-500 with opacity
-  border: 1px solid rgb(59 130 246 / 0.3);
+  background-color: color-mix(in srgb, var(--primary-600, #2563eb) 10%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--primary-600, #2563eb) 30%, var(--color-surface));
   border-radius: 16px;
   font-size: 0.85rem;
-  color: rgb(37 99 235); // blue-600
+  color: var(--primary-600, #2563eb); // blue-600
   font-weight: 500;
 
   @media (max-width: 768px) {
@@ -187,7 +187,7 @@
     font-size: 0.9rem;
     width: 0.9rem;
     height: 0.9rem;
-    color: rgb(37 99 235); // blue-600
+      color: var(--primary-600, #2563eb); // blue-600
   }
 }
 
@@ -203,20 +203,20 @@
 // Dark mode adjustments
 :host-context(html.theme-dark) {
   .weekly-badge {
-    background-color: #1976d2;
+    background-color: var(--primary-600, #2563eb);
   }
 
   .updates-group {
     border-color: var(--color-border);
   }
 
-  .page-badge {
-    background-color: rgb(59 130 246 / 0.15); // blue-500 with more opacity for dark mode
-    border-color: rgb(59 130 246 / 0.4);
-    color: rgb(96 165 250); // blue-400 lighter for dark mode
+    .page-badge {
+    background-color: color-mix(in srgb, var(--primary-600, #2563eb) 15%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--primary-600, #2563eb) 40%, var(--color-surface));
+    color: var(--primary-400, #60a5fa); // blue-400 lighter for dark mode
 
     .page-icon {
-      color: rgb(96 165 250); // blue-400
+      color: var(--primary-400, #60a5fa); // blue-400
     }
   }
 }

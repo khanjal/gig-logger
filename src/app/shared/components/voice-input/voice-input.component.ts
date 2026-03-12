@@ -209,7 +209,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
   get micButtonColor(): string {
     // Always blue when inactive, always red when active, no hover color
-    return this.recognizing ? 'bg-red-600' : 'bg-blue-600';
+    // Use semantic token-based classes so styles are theme-aware
+    return this.recognizing ? 'bg-error' : 'bg-primary';
   }
 
   /**

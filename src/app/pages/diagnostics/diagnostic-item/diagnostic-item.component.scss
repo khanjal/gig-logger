@@ -4,120 +4,120 @@
 
 // Badge ID (blue)
 .badge-id {
-  color: rgb(29 78 216); // text-blue-700
+  color: var(--color-primary, #1d4ed8);
 }
 
 // Badge Success (green)
 .badge-success {
-  color: rgb(21 128 61); // text-green-700
+  color: var(--color-success, #15803d);
 }
 
 // Badge Warning (yellow)
 .badge-warning {
-  color: rgb(161 98 7); // text-yellow-700
+  color: var(--color-warning, #d97706);
 }
 
 // Badge Purple
 .badge-purple {
-  color: rgb(109 40 217); // text-purple-700
+  color: var(--color-accent, #7c3aed);
 }
 
 // Badge Indigo
 .badge-indigo {
-  color: rgb(67 56 202); // text-indigo-700
+  color: var(--color-accent-variant, #4f46e5);
 }
 
 // Badge Delete (red)
 .badge-delete {
-  color: rgb(185 28 28); // text-red-700
+  color: var(--color-error, #b91c1c);
 }
 
 // Item date
 .item-date {
-  color: rgb(31 41 55); // text-gray-800
+  color: var(--color-text-primary, #1f2937);
 }
 
 // Item key
 .item-key {
-  color: rgb(75 85 99); // text-gray-600
+  color: var(--color-text-secondary, #4b5563);
 }
 
 // Item meta
 .item-meta {
-  color: rgb(75 85 99); // text-gray-600
+  color: var(--color-text-secondary, #4b5563);
 }
 
 // Item meta light
 .item-meta-light {
-  color: rgb(107 114 128); // text-gray-500
+  color: var(--color-text-tertiary, #6b7280);
 }
 
 // Item meta header
 .item-meta-header {
-  color: rgb(55 65 81); // text-gray-700
+  color: var(--color-text-secondary, #374151);
 }
 
 // Item time
 .item-time {
-  color: rgb(75 85 99); // text-gray-600
+  color: var(--color-text-secondary, #4b5563);
 }
 
 // Item name
 .item-name {
-  color: rgb(31 41 55); // text-gray-800
+  color: var(--color-text-primary, #1f2937);
 }
 
 // Dark mode overrides
 :host-context(html.theme-dark) {
   .badge-id {
-    color: rgb(147 197 253); // text-blue-300
+    color: var(--color-primary, #93c5fd);
   }
 
   .badge-success {
-    color: rgb(134 239 172); // text-green-400
+    color: var(--color-success, #86efac);
   }
 
   .badge-warning {
-    color: rgb(250 204 21); // text-yellow-400
+    color: var(--color-warning, #facc15);
   }
 
   .badge-purple {
-    color: rgb(192 132 252); // text-purple-400
+    color: var(--color-accent, #c084fc);
   }
 
   .badge-indigo {
-    color: rgb(165 180 252); // text-indigo-400
+    color: var(--color-accent-variant, #a5b4fc);
   }
 
   .badge-delete {
-    color: rgb(248 113 113); // text-red-400
+    color: var(--color-error, #f87171);
   }
 
   .item-date {
-    color: rgb(229 231 235); // text-gray-200
+    color: var(--color-text-primary, #e5e7eb);
   }
 
   .item-key {
-    color: rgb(209 213 219); // text-gray-300
+    color: var(--color-text-tertiary, #d1d5db);
   }
 
   .item-meta {
-    color: rgb(209 213 219); // text-gray-300
+    color: var(--color-text-tertiary, #d1d5db);
   }
 
   .item-meta-light {
-    color: rgb(156 163 175); // text-gray-400
+    color: var(--color-text-disabled, #9ca3af);
   }
 
   .item-meta-header {
-    color: rgb(209 213 219); // text-gray-300
+    color: var(--color-text-tertiary, #d1d5db);
   }
 
   .item-time {
-    color: rgb(209 213 219); // text-gray-300
+    color: var(--color-text-tertiary, #d1d5db);
   }
 
   .item-name {
-    color: rgb(229 231 235); // text-gray-200
+    color: var(--color-text-primary, #e5e7eb);
   }
 }

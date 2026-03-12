@@ -22,6 +22,7 @@
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "check:colors": "rg \"#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})\\b|rgba?\\(|hsla?\\(|\\b(text|bg|border)-(gray|red|blue|green|yellow|purple|pink|indigo|orange)-[0-9]{2,3})\" src --glob '!node_modules' --glob '!coverage' || true",
     "update-lambda": "node scripts/update-lambda.js",
     "setup-metrics": "node scripts/setup-metrics.js"
   },

@@ -31,10 +31,15 @@ describe('MetricsComponent', () => {
   it('returns correct text and grid colors based on theme', () => {
     // Replace injected themeService with a simple mock object to control activeTheme
     (component as any).themeService = { activeTheme: 'dark' } as any;
+    // Make CSS variable values deterministic in the test environment
+    document.documentElement.style.setProperty('--color-text-primary', '#e5e7eb');
+    document.documentElement.style.setProperty('--color-border', '#374151');
     expect((component as any).getTextColor()).toBe('#e5e7eb');
     expect((component as any).getGridColor()).toBe('#374151');
 
     (component as any).themeService = { activeTheme: 'light' } as any;
+    document.documentElement.style.setProperty('--color-text-primary', '#222');
+    document.documentElement.style.setProperty('--color-border', '#eee');
     expect((component as any).getTextColor()).toBe('#222');
     expect((component as any).getGridColor()).toBe('#eee');
   });

@@ -120,14 +120,14 @@
 
 /* Primary-blue test palette (selected) */
 :host {
-  --stripe-even: #dbeafe; /* blue-100 (lighter) */
-  --stripe-odd: #bfdbfe;  /* blue-200 (lighter for light mode) */
+  --stripe-even: var(--primary-100); /* blue-100 (lighter) */
+  --stripe-odd: var(--primary-200);  /* blue-200 (lighter for light mode) */
 }
 
 /* Dark mode: low-opacity primary overlays */
 :host-context(html.theme-dark) {
-  --stripe-even: rgba(59,130,246,0.12); /* primary blue @12% */
-  --stripe-odd: rgba(99,102,241,0.18);  /* indigo overlay @18% for stronger contrast */
+  --stripe-even: color-mix(in srgb, var(--primary-500) 12%, transparent);
+  --stripe-odd: color-mix(in srgb, var(--secondary-600) 18%, transparent);
 }
 
 .stripe-even { background-color: var(--stripe-even) !important; }

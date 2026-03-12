@@ -2,10 +2,10 @@
   <!-- Shift Item -->
   <div *ngIf="itemType === 'shift'">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+      <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
       <span class="font-semibold item-date" [class.line-through]="item.markedForDelete">{{ item.date }}</span>
       <span class="item-key text-sm">({{ item.key }})</span>
-      <span *ngIf="item.markedForDelete" class="px-2 py-0.5 bg-error-500/20 rounded text-xs badge-delete">MARKED FOR DELETE</span>
+      <span *ngIf="item.markedForDelete" class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">MARKED FOR DELETE</span>
     </div>
     <div class="flex items-center justify-between gap-2 mt-1">
       <div class="flex flex-wrap items-center gap-2 text-sm item-meta">
@@ -25,15 +25,15 @@
   <!-- Trip Item -->
   <div *ngIf="itemType === 'trip'">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-success-500/20 rounded text-xs font-mono badge-success">ID: {{ item.rowId }}</span>
+      <span class="px-2 py-0.5 bg-success-soft rounded text-xs font-mono badge-success">ID: {{ item.rowId }}</span>
       <span class="font-semibold item-date">{{ item.date }}</span>
       <span class="item-key text-sm">({{ item.key }})</span>
     </div>
     <div class="flex items-center justify-between gap-2 mt-1">
       <div class="flex flex-wrap items-center gap-2 text-sm">
-        <span *ngIf="item.place" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 rounded text-xs badge-purple">{{ item.place }}</span>
-        <span *ngIf="item.name" class="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 rounded text-xs badge-indigo">{{ item.name }}</span>
-        <span *ngIf="item.exclude" class="px-2 py-0.5 bg-error-500/20 rounded text-xs badge-delete">EXCLUDED</span>
+        <span *ngIf="item.place" class="px-2 py-0.5 bg-accent-soft dark:bg-accent-900/30 rounded text-xs badge-purple">{{ item.place }}</span>
+        <span *ngIf="item.name" class="px-2 py-0.5 bg-accent-variant-soft dark:bg-accent-variant-900/30 rounded text-xs badge-indigo">{{ item.name }}</span>
+        <span *ngIf="item.exclude" class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">EXCLUDED</span>
       </div>
       <app-base-fab-button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed"
         fabStyle="mini"
@@ -47,13 +47,13 @@
       <span *ngIf="item.pickupTime" class="item-time">{{ item.pickupTime }}</span>
       <span *ngIf="item.pickupTime && item.dropoffTime" class="item-time">-</span>
       <span *ngIf="item.dropoffTime" class="item-time">{{ item.dropoffTime }}</span>
-      <span *ngIf="item.duration" class="px-2 py-0.5 bg-primary-500/20 rounded text-xs badge-id">{{ item.duration | durationFormat }}</span>
+      <span *ngIf="item.duration" class="px-2 py-0.5 bg-primary-soft rounded text-xs badge-id">{{ item.duration | durationFormat }}</span>
     </div>
   </div>
 
   <!-- Address Item -->
   <div *ngIf="itemType === 'address'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-warning-500/20 rounded text-xs font-mono badge-warning">ID: {{ item.rowId }}</span>
+    <span class="px-2 py-0.5 bg-warning-soft rounded text-xs font-mono badge-warning">ID: {{ item.rowId }}</span>
     <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.address }}</span>
     <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
     <span *ngIf="item.names && item.names.length > 0" class="text-sm item-meta-light">Names: {{ item.names.join(', ') }}</span>
@@ -62,7 +62,7 @@
   <!-- Place Item -->
   <div *ngIf="itemType === 'place'">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 rounded text-xs font-mono badge-purple">ID: {{ item.rowId }}</span>
+      <span class="px-2 py-0.5 bg-accent-soft dark:bg-accent-900/30 rounded text-xs font-mono badge-purple">ID: {{ item.rowId }}</span>
       <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.place }}</span>
     </div>
     <div class="flex flex-wrap items-center gap-2 mt-1 text-sm item-meta">
@@ -74,7 +74,7 @@
   <!-- Name Item -->
   <div *ngIf="itemType === 'name'">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 rounded text-xs font-mono badge-indigo">ID: {{ item.rowId }}</span>
+      <span class="px-2 py-0.5 bg-accent-variant-soft dark:bg-accent-variant-900/30 rounded text-xs font-mono badge-indigo">ID: {{ item.rowId }}</span>
       <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.name }}</span>
     </div>
     <div class="flex flex-col gap-1 mt-1 text-sm">
@@ -88,7 +88,7 @@
 
   <!-- Service Item -->
   <div *ngIf="itemType === 'service'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+    <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
     <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.service }}</span>
     <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
     <span *ngIf="item.shifts !== undefined" class="text-sm item-meta">{{ item.shifts }} shifts</span>
@@ -96,7 +96,7 @@
 
   <!-- Region Item -->
   <div *ngIf="itemType === 'region'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+    <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
     <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.region }}</span>
     <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
     <span *ngIf="item.shifts !== undefined" class="text-sm item-meta">{{ item.shifts }} shifts</span>

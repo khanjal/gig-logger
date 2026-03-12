@@ -9,24 +9,24 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 20px;
-            background: #f5f5f5;
-            color: #333;
+            background: var(--color-bg, #f5f5f5);
+            color: var(--color-text-primary, #333);
         }
         .container {
             max-width: 600px;
             margin: 50px auto;
-            background: white;
+            background: var(--color-surface, #ffffff);
             padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow-light, rgba(0,0,0,0.1));
             text-align: center;
         }
         h1 {
-            color: #f44336;
+            color: var(--error-500, #f44336);
             margin-bottom: 20px;
         }
         .error-details {
-            background: #f8f8f8;
+            background: var(--color-surface-tertiary, #f8f8f8);
             padding: 20px;
             border-radius: 4px;
             margin: 20px 0;
@@ -38,7 +38,7 @@
             margin-top: 30px;
         }
         button {
-            background: #2196F3;
+            background: var(--primary-600, #2196F3);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -48,13 +48,13 @@
             font-size: 14px;
         }
         button:hover {
-            background: #1976D2;
+            background: var(--primary-700, #1976D2);
         }
         .secondary {
-            background: #757575;
+            background: var(--color-border, #757575);
         }
         .secondary:hover {
-            background: #616161;
+            background: var(--color-border-dark, #616161);
         }
     </style>
 </head>
@@ -83,7 +83,7 @@
             </button>
         </div>
         
-        <p style="margin-top: 40px; font-size: 12px; color: #666;">
+        <p style="margin-top: 40px; font-size: 12px; color: var(--color-text-secondary, #666);">
             If this problem persists, please check your internet connection or contact support.
         </p>
     </div>

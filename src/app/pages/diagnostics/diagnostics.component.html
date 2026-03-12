@@ -15,51 +15,51 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-3 gap-4 mb-6" *ngIf="dataDiagnostics.length > 0">
-    <div class="bg-red-50 dark:bg-red-950 border-l-4 border-error-500 p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-red-700 dark:text-red-400 mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-red-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
+    <div class="bg-error-soft border-l-4 border-error p-4 rounded-lg">
+      <div class="flex items-center gap-1 text-2xl font-bold text-error mb-1 lg:mb-0 leading-none">
+        <mat-icon class="text-error !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
         <span>{{ getCountBySeverity('error') }}</span>
-        <span class="hidden lg:inline text-sm text-red-600 dark:text-red-400 font-normal ml-1">Errors</span>
+        <span class="hidden lg:inline text-sm text-error font-normal ml-1">Errors</span>
       </div>
-      <div class="text-sm text-red-600 dark:text-red-400 text-center lg:hidden">Errors</div>
+      <div class="text-sm text-error text-center lg:hidden">Errors</div>
     </div>
-    <div class="bg-orange-50 dark:bg-orange-950 border-l-4 border-warning-500 p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-orange-700 dark:text-orange-400 mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-orange-500 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">warning</mat-icon>
+    <div class="bg-warning-soft border-l-4 border-warning p-4 rounded-lg">
+      <div class="flex items-center gap-1 text-2xl font-bold text-warning mb-1 lg:mb-0 leading-none">
+        <mat-icon class="text-warning !text-2xl !w-8 !h-8 !leading-none relative top-0.5">warning</mat-icon>
         <span>{{ getCountBySeverity('warning') }}</span>
-        <span class="hidden lg:inline text-sm text-orange-600 dark:text-orange-400 font-normal ml-1">Warnings</span>
+        <span class="hidden lg:inline text-sm text-warning font-normal ml-1">Warnings</span>
       </div>
-      <div class="text-sm text-orange-600 dark:text-orange-400 text-center lg:hidden">Warnings</div>
+      <div class="text-sm text-warning text-center lg:hidden">Warnings</div>
     </div>
-    <div class="bg-blue-50 dark:bg-blue-950 border-l-4 border-blue-500 p-4 rounded-lg">
-      <div class="flex items-center gap-1 text-2xl font-bold text-blue-700 dark:text-blue-300 mb-1 lg:mb-0 leading-none">
-        <mat-icon class="text-blue-700 dark:text-blue-300 !text-2xl !w-8 !h-8 !leading-none relative top-0.5">info</mat-icon>
+    <div class="bg-info-soft border-l-4 border-primary p-4 rounded-lg">
+      <div class="flex items-center gap-1 text-2xl font-bold text-info mb-1 lg:mb-0 leading-none">
+        <mat-icon class="text-info !text-2xl !w-8 !h-8 !leading-none relative top-0.5">info</mat-icon>
         <span>{{ getCountBySeverity('info') }}</span>
-        <span class="hidden lg:inline text-sm text-blue-600 dark:text-blue-400 font-normal ml-1">Info</span>
+        <span class="hidden lg:inline text-sm text-info font-normal ml-1">Info</span>
       </div>
-      <div class="text-sm text-blue-600 dark:text-blue-400 text-center lg:hidden">Info</div>
+      <div class="text-sm text-info text-center lg:hidden">Info</div>
     </div>
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-12">
-    <mat-icon class="text-blue-500 dark:text-blue-400 !text-[64px] !w-16 !h-16 mx-auto mb-4 animate-spin">refresh</mat-icon>
-    <h2 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Running Diagnostics...</h2>
-    <p class="text-gray-600 dark:text-gray-400">Analyzing your data for potential issues.</p>
+    <div *ngIf="isLoading" class="text-center py-12">
+    <mat-icon class="text-info !text-[64px] !w-16 !h-16 mx-auto mb-4 animate-spin">refresh</mat-icon>
+    <h2 class="text-xl font-semibold text-primary mb-2">Running Diagnostics...</h2>
+    <p class="text-secondary">Analyzing your data for potential issues.</p>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && dataDiagnostics.length === 0" class="text-center py-12">
-    <mat-icon class="text-gray-300 dark:text-gray-600 !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
-    <h2 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">No Diagnostics Run Yet</h2>
-    <p class="text-gray-500 dark:text-gray-400">Click "Run Check" to analyze your data for potential issues.</p>
+    <mat-icon class="text-tertiary !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
+    <h2 class="text-xl font-semibold text-secondary mb-2">No Diagnostics Run Yet</h2>
+    <p class="text-tertiary">Click "Run Check" to analyze your data for potential issues.</p>
   </div>
 
   <!-- All Clear State -->
-  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-500/10 rounded-lg border border-success-200 dark:border-success-700">
-    <mat-icon class="text-green-500 !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
-    <h2 class="text-xl font-semibold text-green-700 dark:text-green-400 mb-2">All Clear!</h2>
-    <p class="text-green-600 dark:text-green-400">No issues found in your data. Everything looks good!</p>
+  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-soft rounded-lg border border-success">
+    <mat-icon class="text-success !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
+    <h2 class="text-xl font-semibold text-success mb-2">All Clear!</h2>
+    <p class="text-success">No issues found in your data. Everything looks good!</p>
   </div>
 
   <!-- Diagnostic Items as Expansion Panels -->
@@ -67,40 +67,40 @@
     <mat-expansion-panel *ngFor="let item of dataDiagnostics" [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <mat-icon [class.text-red-500]="item.severity === 'error'"
-                    [class.text-orange-500]="item.severity === 'warning'"
-                    [class.text-blue-500]="item.severity === 'info'">
+          <mat-icon [class.text-error]="item.severity === 'error'"
+                    [class.text-warning]="item.severity === 'warning'"
+                    [class.text-info]="item.severity === 'info'">
             {{ getSeverityIcon(item.severity) }}
           </mat-icon>
           <span>{{ item.name }}</span>
         </mat-panel-title>
         <mat-panel-description>
-          <span class="hidden md:inline text-gray-600 dark:text-gray-300 text-sm mr-2">{{ item.description }}</span>
+          <span class="hidden md:inline text-secondary dark:text-tertiary text-sm mr-2">{{ item.description }}</span>
                 <span class="px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold flex-shrink-0"
-                [class.bg-error-500/20]="item.severity === 'error' && item.count > 0"
-                [class.text-red-700]="item.severity === 'error' && item.count > 0"
-                [class.bg-orange-100]="item.severity === 'warning' && item.count > 0"
-                [class.text-orange-700]="item.severity === 'warning' && item.count > 0"
-                [class.bg-gray-100]="item.count === 0"
-                [class.text-gray-600]="item.count === 0"
-                [ngClass]="{
-                  'dark:text-red-400': item.severity === 'error' && item.count > 0,
-                  'dark:bg-orange-900/30': item.severity === 'warning' && item.count > 0,
-                  'dark:text-orange-400': item.severity === 'warning' && item.count > 0,
-                  'dark:bg-gray-800': item.count === 0,
-                  'dark:text-gray-400': item.count === 0
-                }">
-            {{ item.count }}
-          </span>
+                            [class.bg-error-soft]="item.severity === 'error' && item.count > 0"
+                            [class.text-error]="item.severity === 'error' && item.count > 0"
+                            [class.bg-warning-soft]="item.severity === 'warning' && item.count > 0"
+                            [class.text-warning]="item.severity === 'warning' && item.count > 0"
+                            [class.bg-surface-2]="item.count === 0"
+                            [class.text-secondary]="item.count === 0"
+                            [ngClass]="{
+                              'dark:text-error': item.severity === 'error' && item.count > 0,
+                              'dark:bg-warning-soft': item.severity === 'warning' && item.count > 0,
+                              'dark:text-warning': item.severity === 'warning' && item.count > 0,
+                              'dark:bg-surface-3': item.count === 0,
+                              'dark:text-secondary': item.count === 0
+                            }">
+                  {{ item.count }}
+                </span>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
       <!-- Panel Content -->
       <div class="mt-4 px-4 pb-4">
-        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 md:hidden">{{ item.description }}</p>
+        <p class="text-sm text-secondary mb-4 md:hidden">{{ item.description }}</p>
         
         <!-- Bulk Fix Button for Missing Durations -->
-        <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
+          <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
             <app-base-rect-button 
               *ngIf="!isBulkFixing" 
               variant="primary" 
@@ -110,7 +110,7 @@
             >
               Fix All ({{ item.count }})
             </app-base-rect-button>
-          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
+          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-info">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
           </div>
@@ -127,7 +127,7 @@
             >
               Create Shifts
             </app-base-rect-button>
-          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
+          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-info">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Creating...</span>
           </div>
@@ -142,7 +142,7 @@
             >
               Fix All ({{ item.count }})
             </app-base-rect-button>
-          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
+          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-info">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
           </div>
@@ -150,7 +150,7 @@
         
         <!-- Grouped Items (Duplicates) -->
         <div *ngIf="item.groups && item.groups.length > 0" class="space-y-4">
-          <div class="text-sm text-gray-600 dark:text-gray-200 mb-3 font-medium">
+          <div class="text-sm text-secondary mb-3 font-medium">
             Found {{ item.items?.length }} items in {{ item.groups.length }} duplicate groups
           </div>
           
@@ -168,8 +168,8 @@
 
         <!-- Individual Items (Non-duplicates) -->
         <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
-          <div *ngFor="let problemItem of item.items" class="bg-surface-2 rounded-lg border border-soft p-3 hover:bg-surface-3 transition-colors" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-success-500/20]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed">
-            <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm mb-2">
+          <div *ngFor="let problemItem of item.items" class="bg-surface-2 rounded-lg border border-soft p-3 hover:bg-surface-3 transition-colors" [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed" [class.bg-success-soft]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed">
+            <div *ngIf="problemItem.fixed" class="flex items-center gap-2 text-success text-sm mb-2">
               <mat-icon class="!text-base">check_circle</mat-icon>
               <span>{{ item.name === 'Orphaned Trips' ? 'Fixed - Shift created' : 'Fixed successfully' }}</span>
             </div>
@@ -191,8 +191,8 @@
                       matTooltip="Create shift from trip">
                     </app-base-fab-button>
             </div>
-            <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-soft">
-              <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm mb-2">
+              <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-soft">
+              <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-success text-sm mb-2">
                 <mat-icon class="!text-base">check_circle</mat-icon>
                 <span>Address applied successfully</span>
               </div>
@@ -203,10 +203,10 @@
                     <mat-option *ngFor="let addr of problemItem.availableAddresses" [value]="addr" [title]="addr">{{ addr }}</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <input *ngIf="!problemItem.availableAddresses || problemItem.availableAddresses.length === 0"
-                       [(ngModel)]="selectedAddress[problemItem.rowId]"
-                       placeholder="Enter address..."
-                       class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                  <input *ngIf="!problemItem.availableAddresses || problemItem.availableAddresses.length === 0"
+                    [(ngModel)]="selectedAddress[problemItem.rowId]"
+                    placeholder="Enter address..."
+                    class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-surface text-primary">
                   <app-base-fab-button
                     fabStyle="mini"
                     variant="primary"
