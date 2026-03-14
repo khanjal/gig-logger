@@ -53,24 +53,6 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
 
   @Output() voiceResult = new EventEmitter<IVoiceParseResult>();
 
-  /**
-   * Helper to match the first pattern and run a callback on match.
-   */
-  private matchFirstPattern<T>(
-    patterns: RegExp[], 
-    transcript: string, 
-    onMatch: (match: RegExpMatchArray) => T | undefined
-  ): T | undefined {
-    for (const pattern of patterns) {
-      const match = transcript.match(pattern);
-      if (match) {
-        const result = onMatch(match);
-        if (result !== undefined) return result;
-      }
-    }
-    return undefined;
-  }
-
   private getRandomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
   }

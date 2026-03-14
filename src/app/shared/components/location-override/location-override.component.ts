@@ -188,10 +188,7 @@ export class LocationOverrideComponent implements OnInit {
 
   private scrollToCard(): void {
     setTimeout(() => {
-      const cardElement = document.getElementById('mock-location-card');
-      if (cardElement) {
-        cardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      this.mockLocationCard?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }
 
