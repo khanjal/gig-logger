@@ -5,44 +5,13 @@ import { LoggerService } from './logger.service';
 import { MockLocationService } from './mock-location.service';
 import { getCurrentUserId } from '@utils/user-id.util';
 import { firstValueFrom } from 'rxjs';
-import { 
+import type {
   IAutocompleteResult, 
-  IPlaceDetails, 
-  IAddressComponent, 
+  IPlaceDetails,
   IUserApiUsage, 
   IPlacesAutocompleteRequest, 
   IPlaceDetailsRequest 
 } from '@interfaces/google-places.interface';
-
-/**
- * @deprecated Use IAutocompleteResult from @interfaces/google-places.interface instead
- */
-export type AutocompleteResult = IAutocompleteResult;
-
-/**
- * @deprecated Use IPlaceDetails from @interfaces/google-places.interface instead
- */
-export type PlaceDetails = IPlaceDetails;
-
-/**
- * @deprecated Use IAddressComponent from @interfaces/google-places.interface instead
- */
-export type GoogleAddressComponent = IAddressComponent;
-
-/**
- * @deprecated Use IUserApiUsage from @interfaces/google-places.interface instead
- */
-export type UserApiUsage = IUserApiUsage;
-
-/**
- * @deprecated Use IPlacesAutocompleteRequest from @interfaces/google-places.interface instead
- */
-export type PlacesAutocompleteRequest = IPlacesAutocompleteRequest;
-
-/**
- * @deprecated Use IPlaceDetailsRequest from @interfaces/google-places.interface instead
- */
-export type PlaceDetailsRequest = IPlaceDetailsRequest;
 
 @Injectable({
   providedIn: 'root'
@@ -53,8 +22,8 @@ export class ServerGooglePlacesService {
   private locationCacheDuration = 5 * 60 * 1000; // 5 minutes
 
   // In-memory caches for autocomplete and place details
-  private autocompleteCache = new Map<string, { results: AutocompleteResult[]; timestamp: number }>();
-  private placeDetailsCache = new Map<string, { details: PlaceDetails; timestamp: number }>();
+  private autocompleteCache = new Map<string, { results: IAutocompleteResult[]; timestamp: number }>();
+  private placeDetailsCache = new Map<string, { details: IPlaceDetails; timestamp: number }>();
   private autocompleteCacheDuration = 2 * 60 * 1000; // 2 minutes
   private placeDetailsCacheDuration = 5 * 60 * 1000; // 5 minutes
 
@@ -75,7 +44,7 @@ export class ServerGooglePlacesService {
     userLat?: number,
     userLng?: number,
     radiusMeters?: number
-  ): Promise<AutocompleteResult[]> {
+  ): Promise<IAutocompleteResult[]> {
     if (!query || query.trim().length === 0) {
       return [];
     }
@@ -94,7 +63,7 @@ export class ServerGooglePlacesService {
         radius = this.mockLocationService.getRadius() * MILES_TO_METERS;
       }
       
-      const request: PlacesAutocompleteRequest = {
+      const request: IPlacesAutocompleteRequest = {
         query: query.trim(),
         searchType,
         userId: getCurrentUserId(),
@@ -103,7 +72,7 @@ export class ServerGooglePlacesService {
         userLongitude: userLng,
         radiusMeters: radius
       };
-      const response = await firstValueFrom(this.http.post<AutocompleteResult[]>(
+      const response = await firstValueFrom(this.http.post<IAutocompleteResult[]>(
         `${this.baseUrl}/places/autocomplete`, 
         request,
         this.setOptions()
@@ -125,7 +94,7 @@ export class ServerGooglePlacesService {
    * Get detailed place information by place ID
    * Now uses in-memory cache to avoid redundant requests
    */
-  async getPlaceDetails(placeId: string): Promise<PlaceDetails | null> {
+  async getPlaceDetails(placeId: string): Promise<IPlaceDetails | null> {
     if (!placeId) {
       return null;
     }
@@ -136,11 +105,11 @@ export class ServerGooglePlacesService {
       return cached.details;
     }
     try {
-      const request: PlaceDetailsRequest = {
+      const request: IPlaceDetailsRequest = {
         placeId,
         userId: getCurrentUserId()
       };
-      const details = await firstValueFrom(this.http.post<PlaceDetails>(
+      const details = await firstValueFrom(this.http.post<IPlaceDetails>(
         `${this.baseUrl}/places/details`, 
         request,
         this.setOptions()
@@ -162,10 +131,10 @@ export class ServerGooglePlacesService {
   /**
    * Get current user's API usage statistics
    */
-  async getUserUsage(): Promise<UserApiUsage | null> {
+  async getUserUsage(): Promise<IUserApiUsage | null> {
     try {
       const userId = getCurrentUserId();
-      return await firstValueFrom(this.http.get<UserApiUsage>(
+      return await firstValueFrom(this.http.get<IUserApiUsage>(
         `${this.baseUrl}/places/usage/${userId}`,
         this.setOptions()
       )) || null;
@@ -228,7 +197,7 @@ export class ServerGooglePlacesService {
   /**
    * Parse address components from place details
    */
-  parseAddressComponents(placeDetails: PlaceDetails): {
+  parseAddressComponents(placeDetails: IPlaceDetails): {
     streetNumber?: string;
     route?: string;
     locality?: string;
@@ -330,7 +299,7 @@ export class ServerGooglePlacesService {
     country: string = 'US',
     useLocationBias: boolean = false,
     forceWithoutLocation: boolean = false
-  ): Promise<AutocompleteResult[]> {
+  ): Promise<IAutocompleteResult[]> {
     let userLocation = null;
     
     if (useLocationBias) {
@@ -362,7 +331,7 @@ export class ServerGooglePlacesService {
     query: string, 
     searchType: string = 'address',
     country: string = 'US'
-  ): Promise<AutocompleteResult[]> {
+  ): Promise<IAutocompleteResult[]> {
     // Only try to get location-based results
     try {
       const locationResults = await this.getAutocompleteWithLocation(
@@ -445,7 +414,7 @@ export class ServerGooglePlacesService {
     query: string, 
     searchType: string = 'address',
     country: string = 'US'
-  ): Promise<AutocompleteResult[]> {
+  ): Promise<IAutocompleteResult[]> {
     const canGetLocation = await this.canGetUserLocation();
     
     if (!canGetLocation) {

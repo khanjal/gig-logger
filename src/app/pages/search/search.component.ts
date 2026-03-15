@@ -14,12 +14,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CurrencyPipe } from '@angular/common';
 
 import { SearchService } from '@services/search.service';
+import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
+import type { DropdownType } from '@interfaces/dropdown-data.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseFabButtonComponent, BaseRectButtonComponent, BaseFieldButtonComponent } from '@components/base';
-import { Subject, debounceTime, distinctUntilChanged, Observable, map, startWith } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, Observable, from, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -70,11 +72,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   ]);
   
   // Autocomplete
-  autocompleteOptions: string[] = [];
   filteredAutocomplete$: Observable<string[]> | undefined;
   
   // For debouncing search input
   private searchSubject = new Subject<string>();
+  private autocompleteSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
   // Track expanded panels
@@ -83,6 +85,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   constructor(
     private searchService: SearchService,
+    private dropdownDataService: DropdownDataService,
     private currencyPipe: CurrencyPipe,
     private logger: LoggerService
   ) { }
@@ -98,11 +101,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.performSearch(term);
       });
 
-    // Load autocomplete options
-    await this.loadAutocompleteOptions();
-    
     // Setup autocomplete filtering
     this.setupAutocompleteFilter();
+    this.autocompleteSubject.next(this.searchTerm);
   }
 
   ngOnDestroy(): void {
@@ -113,35 +114,35 @@ export class SearchComponent implements OnInit, OnDestroy {
 
 
   /**
-   * Load all possible autocomplete options based on enabled filters
-   */
-  async loadAutocompleteOptions(): Promise<void> {
-    const options = await this.searchService.getAutocompleteOptions(this.getEnabledCategories());
-    this.autocompleteOptions = options;
-  }
-
-  /**
    * Setup autocomplete filtering based on search term
    */
   setupAutocompleteFilter(): void {
-    this.filteredAutocomplete$ = new Observable<string[]>(observer => {
-      observer.next(this.filterAutocomplete(this.searchTerm));
-    }).pipe(
-      startWith(''),
-      map(() => this.filterAutocomplete(this.searchTerm))
+    this.filteredAutocomplete$ = this.autocompleteSubject.pipe(
+      startWith(this.searchTerm),
+      switchMap((searchValue: string) => from(this.getFilteredAutocompleteOptions(searchValue)))
     );
   }
 
   /**
-   * Filter autocomplete options
+   * Filter autocomplete options using centralized dropdown service logic.
    */
-  private filterAutocomplete(value: string): string[] {
-    if (!value || value.trim().length === 0) {
-      return this.autocompleteOptions.slice(0, 50); // Limit to 50 for performance
+  private async getFilteredAutocompleteOptions(value: string): Promise<string[]> {
+    const enabledTypes = this.getEnabledCategories() as DropdownType[];
+    if (enabledTypes.length === 0) {
+      return [];
     }
-    const filterValue = value.toLowerCase();
-    return this.autocompleteOptions
-      .filter(option => option.toLowerCase().includes(filterValue))
+
+    const resultsByType = await Promise.all(
+      enabledTypes.map((type: DropdownType) => this.dropdownDataService.filterDropdown(type, value))
+    );
+
+    const uniqueOptions = new Set<string>();
+    resultsByType.forEach((options: string[]) => {
+      options.forEach((option: string) => uniqueOptions.add(option));
+    });
+
+    return Array.from(uniqueOptions)
+      .sort((a: string, b: string) => a.localeCompare(b))
       .slice(0, 50);
   }
 
@@ -152,7 +153,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   this.searchTerm = value;
   this.showFilters = false;
   this.searchSubject.next(value);
-  this.setupAutocompleteFilter();
+  this.autocompleteSubject.next(value);
   }
 
   /**
@@ -190,10 +191,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   async toggleCategory(category: SearchCategory): Promise<void> {
     const currentValue = this.categoryFilters.get(category) || false;
     this.categoryFilters.set(category, !currentValue);
-    
-    // Reload autocomplete options
-    await this.loadAutocompleteOptions();
-    this.setupAutocompleteFilter();
+
+    // Refresh autocomplete based on current filters
+    this.autocompleteSubject.next(this.searchTerm);
     
     // Re-run search if already searched
     if (this.searchTerm && this.searchTerm.trim().length > 0) {
@@ -226,8 +226,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.categoryFilters.forEach((_, category) => {
       this.categoryFilters.set(category, true);
     });
-    await this.loadAutocompleteOptions();
-    this.setupAutocompleteFilter();
+    this.autocompleteSubject.next(this.searchTerm);
     if (this.searchTerm && this.searchTerm.trim().length > 0) {
       this.performSearch(this.searchTerm);
     }
@@ -240,8 +239,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.categoryFilters.forEach((_, category) => {
       this.categoryFilters.set(category, false);
     });
-    await this.loadAutocompleteOptions();
-    this.setupAutocompleteFilter();
+    this.autocompleteSubject.next(this.searchTerm);
     if (this.searchTerm && this.searchTerm.trim().length > 0) {
       this.performSearch(this.searchTerm);
     }
@@ -313,8 +311,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.hasSearched = false;
     this.expandedGroups.clear();
     this.expandedResults.clear();
-    // Reset and reload autocomplete
-    this.setupAutocompleteFilter();
+    // Reset autocomplete suggestions
+    this.autocompleteSubject.next(this.searchTerm);
   }
 
   /**

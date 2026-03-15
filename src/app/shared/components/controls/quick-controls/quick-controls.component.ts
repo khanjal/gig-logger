@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule, MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { ThemePreference } from '@services/theme.service';
+import type { ThemePreference } from '@interfaces/theme.interface';
 import { BaseRectButtonComponent } from '@components/base';
 
 @Component({

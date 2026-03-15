@@ -147,6 +147,82 @@ Migration note: Replace all remaining `<app-base-button>` usages with the approp
 - **API communication** through centralized `ApiService` with typed endpoints
 - **Error handling** with `LoggerService` and `MatSnackBar` for user feedback
 
+### Constants & Magic Strings
+
+**Never use magic strings or magic numbers inline — extract them to a constants file.**
+
+- **Location**: `src/app/shared/constants/` — group by domain (e.g., `date.constants.ts`, `sheet.constants.ts`)
+- **Naming**: Use `SCREAMING_SNAKE_CASE` for constant objects and their keys (e.g., `DATE_FORMATS.SHORT_DATE`)
+- **Import using path alias**: Reference as `@constants/date.constants`
+- **Scope**: Any string or number literal used more than once, or that carries semantic meaning, belongs in a constants file
+
+Examples of values that must be constants:
+- Date format strings (`'EEE, MMM d'`, `'yyyy-MM-dd'`)
+- API endpoint fragments
+- Storage keys (localStorage, sessionStorage, IndexedDB)
+- Regex patterns reused across files
+- Numeric thresholds or limits
+
+```typescript
+// ❌ WRONG: magic string inline
+this.dateFormat = 'EEE, MMM d';
+
+// ✅ CORRECT: named constant
+import { DATE_FORMATS } from '@constants/date.constants';
+this.dateFormat = DATE_FORMATS.SHORT_DATE;
+```
+
+### Type-Only Imports & Exports
+
+**Use type-only syntax for type aliases and interfaces when there is no runtime usage.**
+
+- **Imports**: Prefer `import type { Foo } from '...'` when `Foo` is used only in type positions
+- **Grouping**: Keep runtime imports first, then add a separate type-only import block (preferably alphabetized within each block)
+- **Exports**: Prefer `export type { Foo }` for re-exporting types
+- **Why**: Prevents runtime import emission issues in strict TypeScript builds (e.g., `verbatimModuleSyntax`), and keeps runtime bundles clean
+
+```typescript
+// ❌ WRONG: runtime import for a type-only symbol
+import { DropdownType } from '@interfaces/dropdown-data.interface';
+
+// ✅ CORRECT: type-only import
+import type { DropdownType } from '@interfaces/dropdown-data.interface';
+
+// ✅ CORRECT: grouped runtime and type-only imports
+import { ApiService } from '@services/api.service';
+import { LoggerService } from '@services/logger.service';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/shift.interface';
+
+// ❌ WRONG: value re-export for type-only symbol
+export { DropdownType };
+
+// ✅ CORRECT: type-only re-export
+export type { DropdownType };
+```
+
+### No `@deprecated` — Fix It Instead
+
+**Never add `@deprecated` JSDoc comments as a way to defer work — fix the usage at the point of discovery.**
+
+When you find a type alias, re-export shim, or wrapper that has a `@deprecated` comment:
+1. **Remove the deprecated shim** from the service/component file.
+2. **Update all consumers** to import the canonical type directly from `@interfaces/`.
+3. **Use `import type`** for the canonical import (see Type-Only Imports section).
+
+This applies equally to convenience re-exports (`export type { Foo }`) that exist only so callers avoid importing from the interface file. Remove them and update callers to import from the source.
+
+```typescript
+// ❌ WRONG: leaving a deprecated shim in place
+/**
+ * @deprecated Use ISyncState from @interfaces/sync-status.interface instead
+ */
+export type SyncState = ISyncState;
+
+// ✅ CORRECT: remove the shim and update all consumers to import directly
+import type { ISyncState } from '@interfaces/sync-status.interface';
+```
+
 ### Interface Organization
 
 **Public interfaces must be in separate files in `shared/interfaces/`, not embedded in services or components.**

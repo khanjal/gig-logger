@@ -1,16 +1,19 @@
 import { TestBed } from '@angular/core/testing';
-import { DropdownDataService, DropdownType } from './dropdown-data.service';
+import { DropdownDataService } from './dropdown-data.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { AddressService } from '@services/sheets/address.service';
 import { RegionService } from '@services/sheets/region.service';
+import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IRegion } from '@interfaces/region.interface';
+import { IName } from '@interfaces/name.interface';
+import type { DropdownType } from '@interfaces/dropdown-data.interface';
 
 describe('DropdownDataService', () => {
   let service: DropdownDataService;
@@ -19,6 +22,7 @@ describe('DropdownDataService', () => {
   let placeService: jasmine.SpyObj<PlaceService>;
   let addressService: jasmine.SpyObj<AddressService>;
   let regionService: jasmine.SpyObj<RegionService>;
+  let nameService: jasmine.SpyObj<NameService>;
   let loggerService: jasmine.SpyObj<LoggerService>;
 
   const mockServices: IService[] = [
@@ -47,12 +51,18 @@ describe('DropdownDataService', () => {
     { rowId: 2, region: 'Suburbs' } as IRegion
   ];
 
+  const mockNames: IName[] = [
+    { id: 1, rowId: 1, saved: true, name: 'John', addresses: [], notes: [], trips: 2, pay: 0, tip: 0, bonus: 0, cash: 0, total: 0 } as IName,
+    { id: 2, rowId: 2, saved: true, name: 'Jane', addresses: [], notes: [], trips: 1, pay: 0, tip: 0, bonus: 0, cash: 0, total: 0 } as IName
+  ];
+
   beforeEach(() => {
     const serviceServiceSpy = jasmine.createSpyObj('ServiceService', ['list']);
     const typeServiceSpy = jasmine.createSpyObj('TypeService', ['list']);
     const placeServiceSpy = jasmine.createSpyObj('PlaceService', ['list']);
     const addressServiceSpy = jasmine.createSpyObj('AddressService', ['list']);
     const regionServiceSpy = jasmine.createSpyObj('RegionService', ['list']);
+    const nameServiceSpy = jasmine.createSpyObj('NameService', ['list']);
     const loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug']);
 
     // Mock fetch for canonical lists
@@ -70,6 +80,7 @@ describe('DropdownDataService', () => {
         { provide: PlaceService, useValue: placeServiceSpy },
         { provide: AddressService, useValue: addressServiceSpy },
         { provide: RegionService, useValue: regionServiceSpy },
+        { provide: NameService, useValue: nameServiceSpy },
         { provide: LoggerService, useValue: loggerServiceSpy }
       ]
     });
@@ -80,6 +91,7 @@ describe('DropdownDataService', () => {
     placeService = TestBed.inject(PlaceService) as jasmine.SpyObj<PlaceService>;
     addressService = TestBed.inject(AddressService) as jasmine.SpyObj<AddressService>;
     regionService = TestBed.inject(RegionService) as jasmine.SpyObj<RegionService>;
+    nameService = TestBed.inject(NameService) as jasmine.SpyObj<NameService>;
     loggerService = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
   });
 
@@ -94,6 +106,7 @@ describe('DropdownDataService', () => {
       placeService.list.and.returnValue(Promise.resolve(mockPlaces));
       addressService.list.and.returnValue(Promise.resolve(mockAddresses));
       regionService.list.and.returnValue(Promise.resolve(mockRegions));
+      nameService.list.and.returnValue(Promise.resolve(mockNames));
     });
 
     it('should fetch and return all dropdown data', async () => {
@@ -104,6 +117,7 @@ describe('DropdownDataService', () => {
       expect(data.places).toEqual(['McDonald\'s', 'Walmart']);
       expect(data.addresses).toEqual(['123 Main St', '456 Oak Ave']);
       expect(data.regions).toEqual(['Downtown', 'Suburbs']);
+      expect(data.names).toEqual(['John', 'Jane']);
     });
 
     it('should call all service list methods', async () => {
@@ -114,6 +128,7 @@ describe('DropdownDataService', () => {
       expect(placeService.list).toHaveBeenCalled();
       expect(addressService.list).toHaveBeenCalled();
       expect(regionService.list).toHaveBeenCalled();
+      expect(nameService.list).toHaveBeenCalled();
     });
 
     it('should cache the data after first fetch', async () => {
@@ -131,6 +146,7 @@ describe('DropdownDataService', () => {
       placeService.list.and.returnValue(Promise.resolve([]));
       addressService.list.and.returnValue(Promise.resolve([]));
       regionService.list.and.returnValue(Promise.resolve([]));
+      nameService.list.and.returnValue(Promise.resolve([]));
 
       const data = await service.getAllDropdownData();
 
@@ -139,6 +155,7 @@ describe('DropdownDataService', () => {
       expect(data.places).toEqual([]);
       expect(data.addresses).toEqual([]);
       expect(data.regions).toEqual([]);
+      expect(data.names).toEqual([]);
     });
   });
 
@@ -149,6 +166,7 @@ describe('DropdownDataService', () => {
       placeService.list.and.returnValue(Promise.resolve(mockPlaces));
       addressService.list.and.returnValue(Promise.resolve(mockAddresses));
       regionService.list.and.returnValue(Promise.resolve(mockRegions));
+      nameService.list.and.returnValue(Promise.resolve(mockNames));
     });
 
     it('should return services list', async () => {
@@ -176,6 +194,11 @@ describe('DropdownDataService', () => {
       expect(list).toEqual(['Downtown', 'Suburbs']);
     });
 
+    it('should return names list', async () => {
+      const list = await service.getDropdownList('Name');
+      expect(list).toEqual(['John', 'Jane']);
+    });
+
     it('should return empty array for invalid type', async () => {
       const list = await service.getDropdownList('Invalid' as DropdownType);
       expect(list).toEqual([]);
@@ -189,6 +212,7 @@ describe('DropdownDataService', () => {
       placeService.list.and.returnValue(Promise.resolve(mockPlaces));
       addressService.list.and.returnValue(Promise.resolve(mockAddresses));
       regionService.list.and.returnValue(Promise.resolve(mockRegions));
+      nameService.list.and.returnValue(Promise.resolve(mockNames));
     });
 
     it('should filter services by search term', async () => {
@@ -229,6 +253,11 @@ describe('DropdownDataService', () => {
     it('should filter regions', async () => {
       const result = await service.filterDropdown('Region', 'down');
       expect(result).toEqual(['Downtown']);
+    });
+
+    it('should filter names', async () => {
+      const result = await service.filterDropdown('Name', 'ja');
+      expect(result).toEqual(['Jane']);
     });
   });
 
@@ -308,6 +337,7 @@ describe('DropdownDataService', () => {
       placeService.list.and.returnValue(Promise.resolve(mockPlaces));
       addressService.list.and.returnValue(Promise.resolve(mockAddresses));
       regionService.list.and.returnValue(Promise.resolve(mockRegions));
+      nameService.list.and.returnValue(Promise.resolve(mockNames));
     });
 
     it('should clear cached data', async () => {

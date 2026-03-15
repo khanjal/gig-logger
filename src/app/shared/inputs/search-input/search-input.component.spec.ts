@@ -2,15 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchInputComponent } from './search-input.component';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
+import { DropdownDataService } from '@services/dropdown-data.service';
 
 describe('SearchInputComponent', () => {
   let component: SearchInputComponent;
   let fixture: ComponentFixture<SearchInputComponent>;
+  let dropdownDataSpy: jasmine.SpyObj<DropdownDataService>;
 
   beforeEach(async () => {
+    dropdownDataSpy = jasmine.createSpyObj('DropdownDataService', ['filterDropdown']);
+    dropdownDataSpy.filterDropdown.and.returnValue(Promise.resolve([]));
+
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, SearchInputComponent],
-      providers: [...commonTestingProviders]
+      providers: [
+        ...commonTestingProviders,
+        { provide: DropdownDataService, useValue: dropdownDataSpy }
+      ]
     })
     .compileComponents();
     
@@ -166,5 +174,31 @@ describe('SearchInputComponent', () => {
     (component as any).googlePredictionsCache = cache;
     (component as any).manageCacheSize();
     expect((component as any).googlePredictionsCache.size).toBe(limit);
+  });
+
+  it('appendDropdownMatches appends non-duplicate dropdown fallback values', async () => {
+    const existingItems = [
+      { id: 1, name: 'DoorDash', value: 'DoorDash', saved: true, trips: 2 }
+    ] as any[];
+    dropdownDataSpy.filterDropdown.and.returnValue(Promise.resolve(['DoorDash', 'Uber Eats']));
+
+    const result = await (component as any).appendDropdownMatches(existingItems, 'Service', 'do');
+
+    expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Service', 'do');
+    expect(result.length).toBe(2);
+    expect(result[0].name).toBe('DoorDash');
+    expect(result[1].name).toBe('Uber Eats');
+  });
+
+  it('getFilteredResults uses dropdown fallback for Service', async () => {
+    component.searchType = 'Service';
+    spyOn<any>(component, '_filterService').and.returnValue(Promise.resolve([]));
+    dropdownDataSpy.filterDropdown.and.returnValue(Promise.resolve(['Uber Eats']));
+
+    const result = await (component as any).getFilteredResults('uber');
+
+    expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Service', 'uber');
+    expect(result.length).toBe(1);
+    expect(result[0].name).toBe('Uber Eats');
   });
 });

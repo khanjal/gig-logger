@@ -16,6 +16,7 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DateHelper } from '@helpers/date.helper';
+import { DATE_FORMATS } from '@constants/date.constants';
 import { UnitHelper } from '@helpers/unit.helper';
 import { updateAction } from '@utils/action.utils';
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -34,12 +35,6 @@ import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,
     imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
-    // directive
-    // Use path to directive
-    // standalone directives must be added to imports to be usable in template
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore: imported for template
-    // Import below
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
@@ -57,7 +52,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   prefers24Hour: boolean = false;
   // Parsed date and computed format for display
   parsedTripDate: Date | null = null;
-  dateFormat: string = 'EEE, MMM d';
+  dateFormat: string = DATE_FORMATS.SHORT_DATE;
   
   // Distance unit properties
   get distanceUnit(): string {
@@ -129,10 +124,10 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
       this.parsedTripDate = DateHelper.parseLocalDate(this.trip.date);
       const tripYear = this.parsedTripDate.getFullYear();
       const now = new Date();
-      this.dateFormat = tripYear === now.getFullYear() ? "EEE, MMM d" : "EEE, MMM d, ''yy";
+      this.dateFormat = tripYear === now.getFullYear() ? DATE_FORMATS.SHORT_DATE : DATE_FORMATS.SHORT_DATE_WITH_YEAR;
     } catch (e) {
       this.parsedTripDate = null;
-      this.dateFormat = 'EEE, MMM d';
+      this.dateFormat = DATE_FORMATS.SHORT_DATE;
     }
   }
 

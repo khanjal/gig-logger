@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UpdatesService, UpdateEntry } from '@services/updates.service';
+import { UpdatesService } from '@services/updates.service';
+
+import type { IUpdateEntry } from '@interfaces/update.interface';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,12 +15,12 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './updates.component.scss'
 })
 export class UpdatesComponent implements OnInit {
-  updates: UpdateEntry[] = [];
+  updates: IUpdateEntry[] = [];
 
   constructor(private updatesService: UpdatesService) { }
 
   ngOnInit(): void {
-    this.updatesService.getUpdates().subscribe((updates: UpdateEntry[]) => {
+    this.updatesService.getUpdates().subscribe((updates: IUpdateEntry[]) => {
       this.updates = updates;
     });
   }

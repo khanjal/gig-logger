@@ -26,6 +26,7 @@ import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-di
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { updateAction } from '@utils/action.utils';
+import { DATE_FORMATS } from '@constants/date.constants';
 
 @Component({
   selector: 'app-expenses',
@@ -53,6 +54,7 @@ import { updateAction } from '@utils/action.utils';
 })
 
 export class ExpensesComponent implements OnInit {
+  dateFormats = DATE_FORMATS;
   groupedExpensesByYear: { [year: string]: IExpense[] } = {};
 
   getYearTotal(expenses: IExpense[]): number {

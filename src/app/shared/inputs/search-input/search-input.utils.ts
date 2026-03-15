@@ -30,38 +30,6 @@ export function createSearchItem(item: any, nameProperty: string): ISearchItem {
   };
 }
 
-// In-memory cache for JSON data per searchType (module-level, shared across all component instances)
-const jsonCache: Record<string, string[]> = {};
-
-export async function searchJson(searchType: string, value: string): Promise<ISearchItem[]> {
-  try {
-    // Check cache first
-    if (!jsonCache[searchType]) {
-      const response = await fetch(`/assets/json/${searchType}.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to load ${searchType}.json: ${response.status}`);
-      }
-      jsonCache[searchType] = await response.json();
-    }
-    
-    const itemsJson = jsonCache[searchType] || [];
-    const searchValue = value.toLowerCase();
-    
-    return itemsJson
-      .filter((item: string) => item.toLowerCase().includes(searchValue))
-      .map((item: string, idx: number) => ({
-        id: idx + 1, // Use a positive number as a made-up id to avoid triggering the Google icon
-        name: item,
-        saved: false,
-        value: item,
-        trips: 0
-      }));
-  } catch (error) {
-    logger.warn(`Error loading ${searchType}.json:`, error as any);
-    return [];
-  }
-}
-
 export function isRateLimitError(error: any): boolean {
   if (!error) return false;
   
@@ -92,13 +60,3 @@ export function isValidSearchType(searchType: string): boolean {
   return validTypes.includes(searchType);
 }
 
-/**
- * Clears the JSON cache for a specific search type or all types
- */
-export function clearJsonCache(searchType?: string): void {
-  if (searchType) {
-    delete jsonCache[searchType];
-  } else {
-    Object.keys(jsonCache).forEach(key => delete jsonCache[key]);
-  }
-}

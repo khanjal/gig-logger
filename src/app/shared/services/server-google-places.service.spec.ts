@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ServerGooglePlacesService, AutocompleteResult, PlaceDetails } from './server-google-places.service';
 import { LoggerService } from './logger.service';
 import { MockLocationService } from './mock-location.service';
+import { ServerGooglePlacesService } from './server-google-places.service';
+
+import type { IAutocompleteResult, IPlaceDetails } from '@interfaces/google-places.interface';
 
 describe('ServerGooglePlacesService', () => {
   let service: ServerGooglePlacesService;
@@ -42,7 +44,7 @@ describe('ServerGooglePlacesService', () => {
   it('caches autocomplete results for repeated queries', async () => {
     const reqPromise = service.getAutocomplete('Main');
     const req = httpMock.expectOne(r => r.url.includes('/places/autocomplete'));
-    req.flush([{ place: 'Main St', address: '123 Main St' } as AutocompleteResult]);
+    req.flush([{ place: 'Main St', address: '123 Main St' } as IAutocompleteResult]);
     const first = await reqPromise;
     expect(first.length).toBe(1);
 
@@ -55,7 +57,7 @@ describe('ServerGooglePlacesService', () => {
   it('fetches and caches place details', async () => {
     const promise = service.getPlaceDetails('place-1');
     const req = httpMock.expectOne(r => r.url.includes('/places/details'));
-    req.flush({ placeId: 'place-1', formattedAddress: 'City, ST, USA' } as PlaceDetails);
+    req.flush({ placeId: 'place-1', formattedAddress: 'City, ST, USA' } as IPlaceDetails);
     const first = await promise;
     expect(first?.placeId).toBe('place-1');
 
@@ -65,7 +67,7 @@ describe('ServerGooglePlacesService', () => {
   });
 
   it('getFullAddressWithZip appends zip when missing', async () => {
-    const details: PlaceDetails = {
+    const details: IPlaceDetails = {
       placeId: 'pid',
       formattedAddress: 'City, ST, USA',
       addressComponents: [
@@ -79,7 +81,7 @@ describe('ServerGooglePlacesService', () => {
   });
 
   it('parseAddressComponents extracts fields correctly', () => {
-    const details: PlaceDetails = {
+    const details: IPlaceDetails = {
       addressComponents: [
         { longText: '1600', shortText: '1600', types: ['street_number'] },
         { longText: 'Amphitheatre Pkwy', shortText: 'Amphitheatre', types: ['route'] },
@@ -125,7 +127,7 @@ describe('ServerGooglePlacesService', () => {
     const promise = service.getAutocompleteWithLocation('Main', 'address', 'US', true, true);
     await Promise.resolve();
     const req = httpMock.expectOne(r => r.url.includes('/places/autocomplete'));
-    req.flush([{ place: 'Main St', address: '123 Main St' } as AutocompleteResult]);
+    req.flush([{ place: 'Main St', address: '123 Main St' } as IAutocompleteResult]);
     const result = await promise;
     expect(result.length).toBe(1);
   });
@@ -164,7 +166,7 @@ describe('ServerGooglePlacesService', () => {
   it('getLocationBasedAutocomplete returns results when location is available', async () => {
     spyOn(service, 'canGetUserLocation').and.returnValue(Promise.resolve(true));
     spyOn(service, 'getUserLocation').and.returnValue(Promise.resolve({ lat: 1, lng: 2 } as any));
-    spyOn(service, 'getAutocomplete').and.returnValue(Promise.resolve([{ place: 'Main St', address: '123 Main St' } as AutocompleteResult]));
+    spyOn(service, 'getAutocomplete').and.returnValue(Promise.resolve([{ place: 'Main St', address: '123 Main St' } as IAutocompleteResult]));
 
     const result = await service.getLocationBasedAutocomplete('Main', 'address', 'US');
 

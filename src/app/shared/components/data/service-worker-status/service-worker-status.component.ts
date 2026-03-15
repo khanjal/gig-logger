@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
-import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
+import { AppUpdateService } from '@services/app-update.service';
+import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 import { Subscription } from 'rxjs';
-import { Inject } from '@angular/core';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
@@ -21,14 +21,14 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
   private deferredPrompt: any;
 
   constructor(
-    @Inject(AppUpdateService) private appUpdateService: AppUpdateService,
+    private appUpdateService: AppUpdateService,
     private logger: LoggerService
   ) {}
   
   async ngOnInit(): Promise<void> {
     // Subscribe to app update status
     this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
-      (status: AppUpdateStatus) => {
+      (status: IAppUpdateStatus) => {
         this.isUpdateAvailable = status.isUpdateAvailable;
         
         if (status.isEnabled) {

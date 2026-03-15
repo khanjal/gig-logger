@@ -103,7 +103,10 @@ export class VoiceSuggestionService {
       // DISTANCE patterns - from distancePatterns array
       () => {
         const distance = this.getRandomNumber(1, 20);
-        const templates = ['Distance is {d} miles', 'Drove {d} miles', '{d} miles away', 'It was {d} miles', 'Traveled {d} miles', 'Total distance {d} miles'];
+        const templates = [
+          'Distance is {d} miles', 'Drove {d} miles', '{d} miles away', 'It was {d} miles', 'Traveled {d} miles', 'Total distance {d} miles',
+          'Distance is {d} kilometers', 'Drove {d} kilometers', '{d} kilometers away', 'It was {d} kilometers', 'Traveled {d} kilometers', 'Total distance {d} kilometers'
+        ];
         return this.getRandomItem(templates).replace('{d}', distance.toString());
       },
       

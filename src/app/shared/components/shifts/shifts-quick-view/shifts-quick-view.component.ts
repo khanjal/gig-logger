@@ -12,6 +12,7 @@ import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { DateHelper } from '@helpers/date.helper';
+import { DATE_FORMATS } from '@constants/date.constants';
 import { UnitHelper } from '@helpers/unit.helper';
 import { BaseRectButtonComponent } from '@components/base';
 
@@ -35,6 +36,7 @@ import { BaseRectButtonComponent } from '@components/base';
 })
 export class ShiftsQuickViewComponent {
   ActionEnum = ActionEnum;
+  dateFormats = DATE_FORMATS;
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
   @Input() inlineMode: boolean = false;

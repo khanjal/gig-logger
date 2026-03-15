@@ -2,9 +2,8 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
-import { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
 
-export type { ThemePreference, ResolvedTheme };
+import type { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
 
 export const THEME_STORAGE_KEY = 'rg-theme-preference';
 const LIGHT_THEME_COLOR = '#1976d2';
