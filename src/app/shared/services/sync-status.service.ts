@@ -1,19 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { SyncStatus, SyncOperation, ISyncState, ISyncMessage } from '@interfaces/sync-status.interface';
 
-/**
- * @deprecated Use ISyncState from @interfaces/sync-status.interface instead
- */
-export type SyncState = ISyncState;
-
-/**
- * @deprecated Use ISyncMessage from @interfaces/sync-status.interface instead
- */
-export type SyncMessage = ISyncMessage;
-
-// Re-export types for backward compatibility
-export type { SyncStatus, SyncOperation };
+import type { ISyncMessage, ISyncState, SyncOperation, SyncStatus } from '@interfaces/sync-status.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -29,14 +17,14 @@ export class SyncStatusService implements OnDestroy {
     timestamp: new Date()
   };
 
-  private syncStateSubject = new BehaviorSubject<SyncState>(this.DEFAULT_STATE);
-  private messagesSubject = new BehaviorSubject<SyncMessage[]>([]);
+  private syncStateSubject = new BehaviorSubject<ISyncState>(this.DEFAULT_STATE);
+  private messagesSubject = new BehaviorSubject<ISyncMessage[]>([]);
   private lastSuccessfulSyncSubject = new BehaviorSubject<Date | null>(null);
   private countdownTimer: any = null;
 
   // Public observables
-  public readonly syncState$: Observable<SyncState> = this.syncStateSubject.asObservable();
-  public readonly messages$: Observable<SyncMessage[]> = this.messagesSubject.asObservable();
+  public readonly syncState$: Observable<ISyncState> = this.syncStateSubject.asObservable();
+  public readonly messages$: Observable<ISyncMessage[]> = this.messagesSubject.asObservable();
   public readonly lastSuccessfulSync$: Observable<Date | null> = this.lastSuccessfulSyncSubject.asObservable();
 
   constructor() {}
@@ -135,7 +123,7 @@ export class SyncStatusService implements OnDestroy {
    */
   addMessage(text: string, type: 'info' | 'warning' | 'error' = 'info'): void {
     const currentMessages = this.messagesSubject.value;
-    const newMessage: SyncMessage = {
+    const newMessage: ISyncMessage = {
       text,
       type,
       timestamp: new Date()
@@ -166,7 +154,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Get current sync state
    */
-  getCurrentState(): SyncState {
+  getCurrentState(): ISyncState {
     return this.syncStateSubject.value;
   }
 

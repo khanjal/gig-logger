@@ -113,47 +113,6 @@ export class SearchService {
   }
 
   /**
-   * Get all possible autocomplete options for selected categories
-   * @param categories Array of categories to get options from
-   * @returns Promise of unique autocomplete options
-   */
-  async getAutocompleteOptions(categories: SearchCategory[]): Promise<string[]> {
-    const options = new Set<string>();
-
-    if (categories.includes('Service')) {
-      const services = await spreadsheetDB.services.toArray();
-      services.forEach(s => options.add(s.service));
-    }
-
-    if (categories.includes('Place')) {
-      const places = await spreadsheetDB.places.toArray();
-      places.forEach(p => options.add(p.place));
-    }
-
-    if (categories.includes('Name')) {
-      const names = await spreadsheetDB.names.toArray();
-      names.forEach(n => options.add(n.name));
-    }
-
-    if (categories.includes('Address')) {
-      const addresses = await spreadsheetDB.addresses.toArray();
-      addresses.forEach(a => options.add(a.address));
-    }
-
-    if (categories.includes('Region')) {
-      const regions = await spreadsheetDB.regions.toArray();
-      regions.forEach(r => options.add(r.region));
-    }
-
-    if (categories.includes('Type')) {
-      const types = await spreadsheetDB.types.toArray();
-      types.forEach(t => options.add(t.type));
-    }
-
-    return Array.from(options).sort();
-  }
-
-  /**
    * Search services and return matching results with associated trips
    */
   private async searchServices(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {

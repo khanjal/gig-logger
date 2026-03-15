@@ -1,22 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
 
-/**
- * @deprecated Use IUpdateDetail from @interfaces/update.interface instead
- */
-export type UpdateDetail = IUpdateDetail;
-
-/**
- * @deprecated Use IUpdateEntry from @interfaces/update.interface instead
- */
-export type UpdateEntry = IUpdateEntry;
+import type { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UpdatesService {
-  private updatesSubject = new BehaviorSubject<UpdateEntry[]>([
+  private updatesSubject = new BehaviorSubject<IUpdateEntry[]>([
     {
       date: '2026-01-02',
       dateLabel: 'January 2, 2026',
@@ -319,7 +310,7 @@ export class UpdatesService {
     }
   ]);
 
-  getUpdates(): Observable<UpdateEntry[]> {
+  getUpdates(): Observable<IUpdateEntry[]> {
     return this.updatesSubject.asObservable();
   }
 }

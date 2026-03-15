@@ -7,13 +7,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
-import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
+import { SyncStatusService } from '@services/sync-status.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
+
+import type { ISyncMessage, ISyncState } from '@interfaces/sync-status.interface';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
 import { BaseFieldButtonComponent, BaseIconButtonComponent } from '@components/base';
-import { ThemePreference, ThemeService } from '@services/theme.service';
+import { ThemeService } from '@services/theme.service';
+import type { ThemePreference } from '@interfaces/theme.interface';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -36,8 +39,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private intervalId?: number;
   
-  syncState: SyncState | null = null;
-  messages: SyncMessage[] = [];
+  syncState: ISyncState | null = null;
+  messages: ISyncMessage[] = [];
   timeSinceLastSync = 'Never';
   showDetailedView = false;
   hasUnsavedChanges = false;

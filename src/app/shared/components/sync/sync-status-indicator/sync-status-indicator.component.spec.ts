@@ -3,7 +3,9 @@ import { SyncStatusIndicatorComponent } from './sync-status-indicator.component'
 import { SyncStatusService } from '@services/sync-status.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
-import { ThemeService, ThemePreference } from '@services/theme.service';
+import { ThemeService } from '@services/theme.service';
+
+import type { ThemePreference } from '@interfaces/theme.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, of } from 'rxjs';

@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
+import { AppUpdateService } from '@services/app-update.service';
+import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 import { Subscription } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base';
 
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private updateStatusSubscription: Subscription | undefined;  async ngOnInit() {
     // Subscribe to app update status
     this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
-      (status: AppUpdateStatus) => {
+      (status: IAppUpdateStatus) => {
         this.isUpdateAvailable = status.isUpdateAvailable;
         this.showUpdateNotification = status.isUpdateAvailable;
         
