@@ -93,6 +93,16 @@ export class SetupComponent {
     this.load();
     // Load formatted version string (YYYYMMDD.build)
     this.version = await this.versionService.getFormattedVersion();
+
+    // Append environment suffix for test subdomain installs
+    try {
+      const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
+      if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
+        this.version = `${this.version}-test`;
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   public async load() {
