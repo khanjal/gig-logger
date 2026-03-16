@@ -121,7 +121,7 @@
     </div>
     <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-blue-800 dark:text-blue-300">{{ year.key }}</h2>
+        <h2 class="text-xl font-bold text-primary">{{ year.key }}</h2>
         <div class="text-right text-lg font-semibold text-blue-900 dark:text-blue-300">
           Year Total: {{ getYearTotal(year.value) | currency }}
         </div>

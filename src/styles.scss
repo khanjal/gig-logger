@@ -222,17 +222,17 @@ html.theme-dark {
   --color-border-dark: #{map.get($gray, 500)};
   --color-border-focus: #{$primary-color};
 
-  --shadow-light: rgba(0, 0, 0, 0.35);
-  --shadow-medium: rgba(0, 0, 0, 0.45);
-  --shadow-heavy: rgba(0, 0, 0, 0.6);
+  --shadow-light: color-mix(in srgb, black 35%, transparent);
+  --shadow-medium: color-mix(in srgb, black 45%, transparent);
+  --shadow-heavy: color-mix(in srgb, black 60%, transparent);
 
   /* Override primary colors for better visibility in dark mode (use token values)
      These are lighter/intended accessibility overrides, keep as explicit tokens */
-  --primary-600: #60a5fa;
-  --primary-700: #93c5fd;
-  --secondary-500: #9f7aea;
-  --secondary-600: #8b5cf6;
-  --secondary-700: #b794f4;
+    --primary-600: #{$primary-600};
+    --primary-700: #{$primary-700};
+    --secondary-500: #{$secondary-light};
+    --secondary-600: #{$secondary-color};
+    --secondary-700: #{$secondary-dark};
   
   color-scheme: dark;
 }
@@ -516,14 +516,14 @@ html.theme-dark {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
-      border-color: rgba(203, 213, 225, 0.3) !important;
+      border-color: color-mix(in srgb, var(--color-border) 30%, transparent) !important;
     }
     
     &:not(.mdc-text-field--focused):hover {
-      .mdc-notched-outline__leading,
+        .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: rgba(203, 213, 225, 0.5) !important;
+        border-color: color-mix(in srgb, var(--color-border) 50%, transparent) !important;
       }
     }
   }
@@ -533,7 +533,7 @@ html.theme-dark {
 html.theme-dark {
   .mat-mdc-option.mat-mdc-option-active,
   .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
-    background-color: rgba(59, 130, 246, 0.08) !important;
+    background-color: color-mix(in srgb, var(--primary-600) 8%, transparent) !important;
   }
 }
 
@@ -960,7 +960,7 @@ html.theme-dark .link-color {
 /* Material Date Picker Overlay - Critical Styles for Immediate Application */
 /* These styles ensure the date picker overlay is styled correctly from the moment it appears */
 .mat-datepicker-content {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 8px 32px color-mix(in srgb, black 12%, transparent) !important;
   border-radius: 12px !important;
   overflow: hidden !important;
   background-color: $background-card !important;
@@ -986,7 +986,7 @@ html.theme-dark .link-color {
 
 /* Date Picker Backdrop - Only apply to date picker overlays */
 .cdk-overlay-pane:has(.mat-datepicker-content) ~ .cdk-overlay-backdrop {
-  background-color: rgba(0, 0, 0, 0.32) !important;
+  background-color: color-mix(in srgb, black 32%, transparent) !important;
 }
 
 /* Date Picker Positioning - Prevent FOUC (Flash of Unstyled Content) */

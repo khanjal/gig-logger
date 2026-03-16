@@ -2,9 +2,9 @@
   Service Worker Status:
   <strong
     [ngClass]="{
-      'text-blue-700 dark:text-blue-400': serviceWorkerStatus === 'Active',
-      'text-yellow-700 dark:text-yellow-400': serviceWorkerStatus.includes('Update'),
-      'text-red-700 dark:text-red-400': serviceWorkerStatus != 'Active' && !serviceWorkerStatus.includes('Update')
+      'text-primary': serviceWorkerStatus === 'Active',
+      'text-warning': serviceWorkerStatus.includes('Update'),
+      'text-error': serviceWorkerStatus != 'Active' && !serviceWorkerStatus.includes('Update')
     }"
     class="font-semibold text-gray-800 dark:text-gray-50"
   >

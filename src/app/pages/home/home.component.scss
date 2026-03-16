@@ -1128,30 +1128,30 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: #ffe082;
-      color: #b47b00;
+      background: color-mix(in srgb, var(--warning-500) 18%, var(--color-surface));
+      color: var(--warning-700);
       font-weight: 600;
       font-size: 1.1rem;
       padding: 0.7rem 1.5rem;
       border-radius: 2rem;
       text-decoration: none;
-      box-shadow: 0 2px 8px rgba(255, 193, 7, 0.10);
+      box-shadow: var(--shadow-light);
       transition: background 0.2s, color 0.2s;
       margin-top: 0.2rem;
       
       @media (prefers-color-scheme: dark) {
-        background: #92661b;
-        color: #fde047;
-        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.05);
+        background: color-mix(in srgb, var(--warning-500) 12%, var(--color-surface));
+        color: var(--warning-50);
+        box-shadow: var(--shadow-light);
       }
       
       &:hover, &:focus {
-        background: #ffd54f;
-        color: #7a5a00;
+        background: color-mix(in srgb, var(--warning-500) 28%, var(--color-surface));
+        color: var(--warning-700);
         
         @media (prefers-color-scheme: dark) {
-          background: #a8761f;
-          color: #fef08a;
+          background: color-mix(in srgb, var(--warning-500) 32%, var(--color-surface));
+          color: var(--warning-50);
         }
       }
       mat-icon {

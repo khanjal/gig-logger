@@ -19,8 +19,8 @@ const getComputedCssVar = (name: string, fallback: string) => {
   }
 };
 
-const LIGHT_THEME_COLOR = getComputedCssVar('--meta-theme-light', '#1976d2');
-const DARK_THEME_COLOR = getComputedCssVar('--meta-theme-dark', '#0b1221');
+// Note: do not compute meta theme colors at module load time — compute on demand
+// so runtime changes to CSS variables (e.g., in tests) are reflected.
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -167,8 +167,14 @@ export class ThemeService {
 
   private updateMetaThemeColor(resolved: ResolvedTheme): void {
     const meta = this.documentRef.querySelector('meta[name="theme-color"]');
-    if (meta) {
-      meta.setAttribute('content', resolved === 'dark' ? DARK_THEME_COLOR : LIGHT_THEME_COLOR);
+    if (!meta) return;
+
+    const light = getComputedCssVar('--meta-theme-light', '');
+    const dark = getComputedCssVar('--meta-theme-dark', '');
+
+    const value = resolved === 'dark' ? (dark || light) : (light || dark);
+    if (value) {
+      meta.setAttribute('content', value);
     }
   }
 }
