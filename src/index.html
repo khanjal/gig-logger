@@ -43,46 +43,6 @@
   </script>
 
   <script>
-    // Create a runtime manifest tailored to the resolved theme to influence PWA splash/background.
-    (function() {
-      try {
-        var manifestLink = document.querySelector('link[rel="manifest"]');
-        if (!manifestLink) return;
-
-        var storageKey = 'rg-theme-preference';
-        var saved = localStorage.getItem(storageKey) || 'system';
-        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var resolved = saved === 'dark' || (saved === 'system' && prefersDark) ? 'dark' : 'light';
-
-        // Fetch the original manifest and create a blob with adjusted colors
-        fetch(manifestLink.getAttribute('href')).then(function(resp) {
-          return resp.json();
-        }).then(function(manifest) {
-          // Fallback colors if manifest doesn't provide them
-          var lightBg = manifest.background_color || '#ffffff';
-          var lightTheme = manifest.theme_color || '#1976d2';
-          var darkBg = '#071021';
-          var darkTheme = '#0b1221';
-
-          manifest.background_color = resolved === 'dark' ? darkBg : lightBg;
-          manifest.theme_color = resolved === 'dark' ? darkTheme : lightTheme;
-
-          var blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-          var url = URL.createObjectURL(blob);
-          manifestLink.setAttribute('href', url);
-
-          // Revoke the blob URL later to avoid memory leak
-          setTimeout(function() { try { URL.revokeObjectURL(url); } catch (e) {} }, 60000);
-        }).catch(function(err) {
-          console.warn('[WARN]: Dynamic manifest creation failed', err);
-        });
-      } catch (e) {
-        console.warn('[WARN]: Dynamic manifest script failed', e);
-      }
-    })();
-  </script>
-
-  <script>
     if (global === undefined) {
       var global = window;
     }
