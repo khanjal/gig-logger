@@ -131,11 +131,11 @@ describe('PermissionsComponent', () => {
 
   describe('getStateColor', () => {
     it('returns correct color for each state', () => {
-      expect(component.getStateColor('granted')).toBe('text-green-600');
-      expect(component.getStateColor('denied')).toBe('text-red-600');
-      expect(component.getStateColor('prompt')).toBe('text-yellow-600');
-      expect(component.getStateColor('checking')).toBe('text-gray-500');
-      expect(component.getStateColor('unsupported')).toBe('text-gray-400');
+      expect(component.getStateColor('granted')).toBe('text-success-600');
+      expect(component.getStateColor('denied')).toBe('text-danger-600');
+      expect(component.getStateColor('prompt')).toBe('text-warning-600');
+      expect(component.getStateColor('checking')).toBe('text-tertiary');
+      expect(component.getStateColor('unsupported')).toBe('text-tertiary');
     });
   });
 

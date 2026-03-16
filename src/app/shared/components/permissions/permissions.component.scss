@@ -75,23 +75,22 @@
   width: fit-content;
 }
 
-.status-badge.text-green-600 {
+.status-badge.text-success-600 {
   background: color-mix(in srgb, var(--success-500) 12%, white);
   color: var(--success-800);
 }
 
-.status-badge.text-red-600 {
+.status-badge.text-danger-600 {
   background: color-mix(in srgb, var(--error-500) 12%, white);
   color: var(--error-800);
 }
 
-.status-badge.text-yellow-600 {
+.status-badge.text-warning-600 {
   background: color-mix(in srgb, var(--warning-500) 12%, white);
   color: var(--warning-800);
 }
 
-.status-badge.text-gray-500,
-.status-badge.text-gray-400 {
+.status-badge.text-tertiary {
   background: color-mix(in srgb, var(--color-surface) 88%, white);
   color: var(--gray-700);
 }
@@ -196,23 +195,22 @@
     background: color-mix(in srgb, var(--color-surface-2) 35%, transparent);
   }
 
-  .status-badge.text-green-600 {
+  .status-badge.text-success-600 {
     background: color-mix(in srgb, var(--success-500) 18%, transparent);
     color: var(--success-200);
   }
 
-  .status-badge.text-red-600 {
+  .status-badge.text-danger-600 {
     background: color-mix(in srgb, var(--error-500) 18%, transparent);
     color: var(--error-200);
   }
 
-  .status-badge.text-yellow-600 {
+  .status-badge.text-warning-600 {
     background: color-mix(in srgb, var(--warning-500) 18%, transparent);
     color: var(--warning-200);
   }
 
-  .status-badge.text-gray-500,
-  .status-badge.text-gray-400 {
+  .status-badge.text-tertiary {
     background: color-mix(in srgb, var(--color-surface-2) 45%, transparent);
     color: var(--gray-200);
   }

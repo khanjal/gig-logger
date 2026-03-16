@@ -86,17 +86,17 @@ export class PermissionsComponent implements OnInit {
   getStateColor(state: PermissionState): string {
     switch (state) {
       case 'granted':
-        return 'text-green-600';
+        return 'text-success-600';
       case 'denied':
-        return 'text-red-600';
+        return 'text-danger-600';
       case 'prompt':
-        return 'text-yellow-600';
+        return 'text-warning-600';
       case 'checking':
-        return 'text-gray-500';
+        return 'text-tertiary';
       case 'unsupported':
-        return 'text-gray-400';
+        return 'text-tertiary';
       default:
-        return 'text-gray-500';
+        return 'text-tertiary';
     }
   }
 

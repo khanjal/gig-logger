@@ -353,13 +353,13 @@ export class SearchService {
    */
   getCategoryColor(category: SearchCategory): string {
     const colors: Record<SearchCategory, string> = {
-      'Service': 'text-blue-600',
-      'Place': 'text-green-600',
-      'Name': 'text-purple-600',
-      'Address': 'text-orange-600',
-      'Region': 'text-teal-600',
-      'Type': 'text-pink-600',
-      'All': 'text-gray-600'
+      'Service': 'text-primary-600',
+      'Place': 'text-success-600',
+      'Name': 'text-secondary',
+      'Address': 'text-warning-600',
+      'Region': 'text-info',
+      'Type': 'text-primary',
+      'All': 'text-tertiary'
     };
     return colors[category];
   }

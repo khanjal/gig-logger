@@ -18,7 +18,7 @@ describe('SearchComponent', () => {
     searchServiceSpy = jasmine.createSpyObj('SearchService', ['searchMultipleCategories', 'groupByMonth', 'getCategoryColor', 'getCategoryIcon']);
     searchServiceSpy.searchMultipleCategories.and.returnValue(Promise.resolve([]));
     searchServiceSpy.groupByMonth.and.returnValue([]);
-    searchServiceSpy.getCategoryColor.and.returnValue('text-blue-600');
+    searchServiceSpy.getCategoryColor.and.returnValue('text-primary-600');
     searchServiceSpy.getCategoryIcon.and.returnValue('place');
 
     dropdownDataSpy = jasmine.createSpyObj('DropdownDataService', ['filterDropdown']);
