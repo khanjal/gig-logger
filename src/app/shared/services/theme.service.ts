@@ -6,8 +6,21 @@ import { LoggerService } from './logger.service';
 import type { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
 
 export const THEME_STORAGE_KEY = 'rg-theme-preference';
-const LIGHT_THEME_COLOR = '#1976d2';
-const DARK_THEME_COLOR = '#0b1221';
+
+// Compute meta theme colors at runtime from CSS variables so we avoid
+// inline hex literals in source. Falls back to legacy values if not present.
+const getComputedCssVar = (name: string, fallback: string) => {
+  try {
+    if (typeof document === 'undefined') return fallback;
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+const LIGHT_THEME_COLOR = getComputedCssVar('--meta-theme-light', '#1976d2');
+const DARK_THEME_COLOR = getComputedCssVar('--meta-theme-dark', '#0b1221');
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

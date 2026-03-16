@@ -157,10 +157,10 @@ html.theme-dark .bg-warning-soft { background: color-mix(in srgb, var(--warning-
   --color-error: var(--error-500);
 
   /* Brand color variables for third-party icons (use via var(--brand-google-*)) */
-  --brand-google-blue: #4285F4;
-  --brand-google-green: #34A853;
-  --brand-google-yellow: #FBBC05;
-  --brand-google-red: #EA4335;
+  --brand-google-blue: #{$primary-600};
+  --brand-google-green: #{$success-color};
+  --brand-google-yellow: #{$warning-color};
+  --brand-google-red: #{$error-color};
 
   --color-surface-elevated: color-mix(in srgb, var(--color-surface) 92%, black 8%);
   --color-surface-muted: var(--color-surface-tertiary);
@@ -211,11 +211,11 @@ html.theme-dark {
   --color-surface-tertiary: #{map.get($gray, 600)};
   --color-overlay: color-mix(in srgb, var(--color-bg) 70%, transparent);
 
-  --color-text-primary: #e5e7eb;
-  --color-text-secondary: #cbd5e1;
-  --color-text-tertiary: #94a3b8;
-  --color-text-inverse: #e5e7eb;
-  --color-text-disabled: #475569;
+  --color-text-primary: #{map.get($gray, 200)};
+  --color-text-secondary: #{map.get($gray, 300)};
+  --color-text-tertiary: #{map.get($gray, 400)};
+  --color-text-inverse: #{map.get($gray, 200)};
+  --color-text-disabled: #{map.get($gray, 600)};
 
   --color-border: #{map.get($gray, 600)};
   --color-border-light: #{map.get($gray, 600)};
@@ -226,11 +226,11 @@ html.theme-dark {
   --shadow-medium: rgba(0, 0, 0, 0.45);
   --shadow-heavy: rgba(0, 0, 0, 0.6);
 
-  // Override primary colors for better visibility in dark mode
-  --primary-600: #60a5fa; // Lighter blue for links
-  --primary-700: #93c5fd; // Even lighter for hover
-  /* Dark-mode secondary overrides for better visibility */
-  --secondary-500: #9f7aea; // slightly lighter purple for dark backgrounds
+  /* Override primary colors for better visibility in dark mode (use token values)
+     These are lighter/intended accessibility overrides, keep as explicit tokens */
+  --primary-600: #60a5fa;
+  --primary-700: #93c5fd;
+  --secondary-500: #9f7aea;
   --secondary-600: #8b5cf6;
   --secondary-700: #b794f4;
   

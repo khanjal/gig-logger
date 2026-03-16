@@ -42,11 +42,11 @@
 
   // Dark mode text tweaks for All/None buttons
   :host-context(html.theme-dark) .all-btn {
-    color: rgb(191 219 254) !important; // blue-200
+    color: var(--primary-200) !important;
   }
 
   :host-context(html.theme-dark) .none-btn {
-    color: rgb(226 232 240) !important; // slate-200
+    color: var(--color-text-secondary) !important;
   }
 
   // Expand/Collapse toggle button
@@ -170,7 +170,7 @@
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-light);
     }
 
     mat-icon {

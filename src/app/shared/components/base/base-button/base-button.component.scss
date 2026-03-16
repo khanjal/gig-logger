@@ -90,13 +90,13 @@
     background-color: var(--error-500);
     color: white;
 
-    &:hover:not(:disabled) {
-      background-color: var(--error-600, #dc2626);
-      box-shadow: 0 2px 8px color-mix(in srgb, var(--error-600, #dc2626) 25%, transparent);
+      &:hover:not(:disabled) {
+      background-color: var(--error-600);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--error-600) 25%, transparent);
     }
 
     &:active:not(:disabled) {
-      background-color: var(--error-700, #991b1b);
+      background-color: var(--error-700);
       transform: scale(0.98);
     }
   }
@@ -137,7 +137,7 @@
     min-height: 56px;
     width: 56px;
     height: 56px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    box-shadow: var(--shadow-medium);
 
     &:hover:not(:disabled) {
       box-shadow: 0 8px 16px var(--shadow-heavy);

@@ -102,7 +102,7 @@
   background-image: repeating-linear-gradient(
     135deg,
     color-mix(in srgb, var(--color-text-secondary) 18%, transparent) 0px,
-    rgba(128,128,128,0.18) 12px,
+    color-mix(in srgb, var(--color-text-secondary) 18%, transparent) 12px,
     transparent 12px,
     transparent 24px
   );

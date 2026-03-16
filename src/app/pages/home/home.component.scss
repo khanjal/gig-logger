@@ -24,7 +24,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 70%, color-mix(in srgb, var(--color-text-inverse) 10%, transparent) 0%, transparent 50%);
     pointer-events: none;
   }
   
@@ -99,17 +99,16 @@
     margin-bottom: 2rem;
     
     .update-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: left;
-      color: var(--color-text-primary);
-      max-width: 500px;
-      margin: 0 auto;
-
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid color-mix(in srgb, var(--color-text-inverse) 20%, transparent);
+    text-align: left;
+    color: var(--color-text-primary);
+    max-width: 500px;
+    margin: 0 auto;
       .update-icon {
         font-size: 2rem;
         color: var(--primary-600);
@@ -1090,39 +1089,39 @@
 
 // Donation Section - Mobile First
 .donation-section {
-  background: #fffbe7;
-  border: 1px solid #ffe0a3;
+  background: color-mix(in srgb, var(--warning-500) 10%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--warning-500) 12%, var(--color-surface));
   border-radius: 1rem;
   margin: 2rem auto 4rem auto;
   max-width: 420px;
   padding: 2rem 1.5rem 1.5rem 1.5rem;
-  box-shadow: 0 2px 12px rgba(255, 193, 7, 0.08);
+  box-shadow: var(--shadow-light);
   text-align: center;
   
   @media (prefers-color-scheme: dark) {
-    background: #3f3015;
-    border-color: #6b5c33;
-    box-shadow: 0 2px 12px rgba(255, 193, 7, 0.04);
+    background: color-mix(in srgb, var(--warning-500) 6%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--warning-500) 18%, var(--color-surface));
+    box-shadow: var(--shadow-medium);
   }
   
   h2 {
-    color: #b47b00;
+    color: var(--warning-500);
     margin-bottom: 0.5rem;
     font-size: 1.4rem;
     font-weight: 700;
     
     @media (prefers-color-scheme: dark) {
-      color: #fbbf24;
+      color: var(--warning-500);
     }
   }
   .donation-content {
     p {
-      color: #7a5a00;
+      color: var(--warning-700);
       margin-bottom: 1.2rem;
       font-size: 1.05rem;
       
       @media (prefers-color-scheme: dark) {
-        color: #ddd6a0;
+        color: var(--warning-50);
       }
     }
     .donation-link {

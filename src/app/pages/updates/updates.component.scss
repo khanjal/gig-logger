@@ -64,10 +64,10 @@
   }
 }
 
-.weekly-badge {
+  weekly-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background-color: var(--color-primary, #2196f3);
+  background-color: var(--color-primary);
   color: white;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -166,16 +166,16 @@
   gap: 0.5rem;
 }
 
-.page-badge {
+  .page-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   padding: 0.35rem 0.75rem;
-  background-color: color-mix(in srgb, var(--primary-600, #2563eb) 10%, var(--color-surface));
-  border: 1px solid color-mix(in srgb, var(--primary-600, #2563eb) 30%, var(--color-surface));
+  background-color: color-mix(in srgb, var(--primary-600) 10%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--primary-600) 30%, var(--color-surface));
   border-radius: 16px;
   font-size: 0.85rem;
-  color: var(--primary-600, #2563eb); // blue-600
+  color: var(--primary-600);
   font-weight: 500;
 
   @media (max-width: 768px) {
@@ -187,7 +187,7 @@
     font-size: 0.9rem;
     width: 0.9rem;
     height: 0.9rem;
-      color: var(--primary-600, #2563eb); // blue-600
+      color: var(--primary-600);
   }
 }
 
@@ -203,7 +203,7 @@
 // Dark mode adjustments
 :host-context(html.theme-dark) {
   .weekly-badge {
-    background-color: var(--primary-600, #2563eb);
+    background-color: var(--primary-600);
   }
 
   .updates-group {
@@ -211,12 +211,12 @@
   }
 
     .page-badge {
-    background-color: color-mix(in srgb, var(--primary-600, #2563eb) 15%, var(--color-surface));
-    border-color: color-mix(in srgb, var(--primary-600, #2563eb) 40%, var(--color-surface));
-    color: var(--primary-400, #60a5fa); // blue-400 lighter for dark mode
+    background-color: color-mix(in srgb, var(--primary-600) 15%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--primary-600) 40%, var(--color-surface));
+    color: var(--primary-400); // blue-400 lighter for dark mode
 
     .page-icon {
-      color: var(--primary-400, #60a5fa); // blue-400
+      color: var(--primary-400); // blue-400
     }
   }
 }

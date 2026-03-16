@@ -157,9 +157,9 @@ export class MetricsComponent implements OnInit, OnDestroy {
         }
       },
       datalabels: {
-        color: this.cssVar('--color-text-inverse', '#fff'),
+        color: this.cssVar('--color-text-inverse'),
         font: { weight: 'bold', size: 16 },
-        textShadowColor: this.cssVar('--color-text-primary', '#222'),
+        textShadowColor: this.cssVar('--color-text-primary'),
         textShadowBlur: 6,
         formatter: (value: number, ctx: any) => value > 0 ? value : '',
         display: (ctx: any) => ctx.dataset.data[ctx.dataIndex] > 0,
@@ -176,14 +176,12 @@ export class MetricsComponent implements OnInit, OnDestroy {
     // Provide sensible fallbacks depending on the active theme so tests
     // and non-browser environments get consistent values.
     const active = (this.themeService && (this.themeService as any).activeTheme) ? (this.themeService as any).activeTheme : undefined;
-    const fallback = active === 'dark' ? '#e5e7eb' : '#222';
-    return this.cssVar('--color-text-primary', fallback);
+    return this.cssVar('--color-text-primary');
   }
 
   private getGridColor(): string {
     const active = (this.themeService && (this.themeService as any).activeTheme) ? (this.themeService as any).activeTheme : undefined;
-    const fallback = active === 'dark' ? '#374151' : '#eee';
-    return this.cssVar('--color-border', fallback);
+    return this.cssVar('--color-border');
   }
 
   // Helper to read CSS variables at runtime with fallback

@@ -30,10 +30,10 @@ button {
   left: 16px;
   max-width: 400px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--color-surface);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-medium);
   z-index: 998; // Below voice button (999) and back-to-top (1000)
   animation: slideUp 0.3s ease-out;
   backdrop-filter: blur(10px);

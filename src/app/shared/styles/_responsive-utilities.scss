@@ -271,9 +271,9 @@ $tablet: 768px;
 .card-responsive {
   @include padding-responsive(1rem);
   @include border-radius-responsive(12px);
-  background: linear-gradient(135deg, var(--primary-50, #f8f9ff) 0%, var(--secondary-50, #f5f7fa) 100%);
-  border: 1px solid var(--border-light, #e0e0e0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--secondary-50) 100%);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-light);
 }
 
 // RESPONSIVE GRID UTILITIES
@@ -338,9 +338,9 @@ $tablet: 768px;
   border: 0;
 }
 
-.focus-visible {
-  &:focus-visible {
-    outline: 2px solid var(--accent-color, #007bff);
+  focus-visible {
+    &:focus-visible {
+    outline: 2px solid var(--accent-500);
     outline-offset: 2px;
   }
 }
@@ -349,7 +349,7 @@ $tablet: 768px;
 .scrollable-responsive {
   height: 200px;
   @include border-radius-responsive(8px);
-  border: 1px solid var(--border-color, #ccc);
+  border: 1px solid var(--border-color);
   
   @media (max-width: $tablet) {
     height: 150px;
