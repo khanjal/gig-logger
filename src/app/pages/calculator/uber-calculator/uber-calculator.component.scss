@@ -27,7 +27,7 @@ $touch-target-size: 44px;
     max-width: 750px;
     box-shadow: 
         var(--shadow-medium),
-        var(--shadow-sm);
+        var(--shadow-light);
     border: 1px solid color-mix(in srgb, white 10%, transparent);
     
     @media (min-width: 768px) {

@@ -4,120 +4,120 @@
 
 // Badge ID (blue)
 .badge-id {
-  color: var(--color-primary, #1d4ed8);
+  color: var(--color-primary);
 }
 
 // Badge Success (green)
 .badge-success {
-  color: var(--color-success, #15803d);
+  color: var(--color-success);
 }
 
 // Badge Warning (yellow)
 .badge-warning {
-  color: var(--color-warning, #d97706);
+  color: var(--color-warning);
 }
 
 // Badge Purple
 .badge-purple {
-  color: var(--color-accent, #7c3aed);
+  color: var(--color-accent);
 }
 
 // Badge Indigo
 .badge-indigo {
-  color: var(--color-accent-variant, #4f46e5);
+  color: var(--color-accent-variant);
 }
 
 // Badge Delete (red)
 .badge-delete {
-  color: var(--color-error, #b91c1c);
+  color: var(--color-error);
 }
 
 // Item date
 .item-date {
-  color: var(--color-text-primary, #1f2937);
+  color: var(--color-text-primary);
 }
 
 // Item key
 .item-key {
-  color: var(--color-text-secondary, #4b5563);
+  color: var(--color-text-secondary);
 }
 
 // Item meta
 .item-meta {
-  color: var(--color-text-secondary, #4b5563);
+  color: var(--color-text-secondary);
 }
 
 // Item meta light
 .item-meta-light {
-  color: var(--color-text-tertiary, #6b7280);
+  color: var(--color-text-tertiary);
 }
 
 // Item meta header
 .item-meta-header {
-  color: var(--color-text-secondary, #374151);
+  color: var(--color-text-secondary);
 }
 
 // Item time
 .item-time {
-  color: var(--color-text-secondary, #4b5563);
+  color: var(--color-text-secondary);
 }
 
 // Item name
 .item-name {
-  color: var(--color-text-primary, #1f2937);
+  color: var(--color-text-primary);
 }
 
 // Dark mode overrides
 :host-context(html.theme-dark) {
   .badge-id {
-    color: var(--color-primary, #93c5fd);
+    color: var(--color-primary);
   }
 
   .badge-success {
-    color: var(--color-success, #86efac);
+    color: var(--color-success);
   }
 
   .badge-warning {
-    color: var(--color-warning, #facc15);
+    color: var(--color-warning);
   }
 
   .badge-purple {
-    color: var(--color-accent, #c084fc);
+    color: var(--color-accent);
   }
 
   .badge-indigo {
-    color: var(--color-accent-variant, #a5b4fc);
+    color: var(--color-accent-variant);
   }
 
   .badge-delete {
-    color: var(--color-error, #f87171);
+    color: var(--color-error);
   }
 
   .item-date {
-    color: var(--color-text-primary, #e5e7eb);
+    color: var(--color-text-primary);
   }
 
   .item-key {
-    color: var(--color-text-tertiary, #d1d5db);
+    color: var(--color-text-tertiary);
   }
 
   .item-meta {
-    color: var(--color-text-tertiary, #d1d5db);
+    color: var(--color-text-tertiary);
   }
 
   .item-meta-light {
-    color: var(--color-text-disabled, #9ca3af);
+    color: var(--color-text-disabled);
   }
 
   .item-meta-header {
-    color: var(--color-text-tertiary, #d1d5db);
+    color: var(--color-text-tertiary);
   }
 
   .item-time {
-    color: var(--color-text-tertiary, #d1d5db);
+    color: var(--color-text-tertiary);
   }
 
   .item-name {
-    color: var(--color-text-primary, #e5e7eb);
+    color: var(--color-text-primary);
   }
 }

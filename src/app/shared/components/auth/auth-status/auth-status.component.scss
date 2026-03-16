@@ -4,7 +4,7 @@
 // Auth Status Card Container - Mobile First
 .auth-status-card {
   background: var(--color-surface);
-  box-shadow: var(--shadow-light), var(--shadow-sm);
+  box-shadow: var(--shadow-light);
   overflow: hidden;
   
   mat-card-header {
@@ -87,7 +87,7 @@
   background: var(--color-surface);
   border-radius: 0.75rem;
   border: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-light);
   transition: all 0.2s ease-in-out;
   
   &:hover {

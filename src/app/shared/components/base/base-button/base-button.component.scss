@@ -44,7 +44,7 @@
 
     &:hover:not(:disabled) {
       background-color: var(--primary-600);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 8px var(--shadow-medium);
     }
 
     &:active:not(:disabled) {
@@ -140,7 +140,7 @@
     box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 
     &:hover:not(:disabled) {
-      box-shadow: 0 8px 16px var(--shadow-medium, rgba(0,0,0,0.18));
+      box-shadow: 0 8px 16px var(--shadow-heavy);
     }
 
     &:active:not(:disabled) {

@@ -11,7 +11,7 @@ button {
   z-index: 999; // Lower than back-to-top (1000) so back-to-top appears on top when scrolled on small screens
   width: 56px;
   height: 56px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-medium);
 
   &:active {
     transform: scale(0.95);

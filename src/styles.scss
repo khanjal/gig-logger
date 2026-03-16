@@ -156,6 +156,12 @@ html.theme-dark .bg-warning-soft { background: color-mix(in srgb, var(--warning-
   --color-warning: var(--warning-500);
   --color-error: var(--error-500);
 
+  /* Brand color variables for third-party icons (use via var(--brand-google-*)) */
+  --brand-google-blue: #4285F4;
+  --brand-google-green: #34A853;
+  --brand-google-yellow: #FBBC05;
+  --brand-google-red: #EA4335;
+
   --color-surface-elevated: color-mix(in srgb, var(--color-surface) 92%, black 8%);
   --color-surface-muted: var(--color-surface-tertiary);
 
@@ -175,6 +181,16 @@ html.theme-dark .bg-warning-soft { background: color-mix(in srgb, var(--warning-
   --secondary-700: #{$secondary-dark};
   --secondary-800: #{$secondary-800};
   --secondary-900: #{$secondary-900};
+
+  /* Backwards-compatibility aliases for components still using --accent-* */
+  --accent-50: var(--secondary-50);
+  --accent-100: var(--secondary-100);
+  --accent-200: var(--secondary-200);
+  --accent-500: var(--secondary-500);
+  --accent-600: var(--secondary-600);
+  --accent-700: var(--secondary-700);
+  --accent-800: var(--secondary-800);
+  --accent-900: var(--secondary-900);
 
   --success-500: #{$success-color};
   --warning-500: #{$warning-color};

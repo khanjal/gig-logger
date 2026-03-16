@@ -6,7 +6,7 @@
   .mat-expansion-panel {
     margin-bottom: 1rem;
     border-radius: 0.5rem !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px var(--shadow-medium);
     border: 1px solid var(--color-border);
     background-color: var(--color-surface);
     
@@ -31,7 +31,7 @@
     }
     
     &:hover {
-      background: rgba(59, 130, 246, 0.05) !important;
+      background: var(--color-primary-overlay-5) !important;
     }
 
     .mat-content {
@@ -45,6 +45,7 @@
   .mat-expansion-panel-body {
     padding: 0 !important;
     background-color: var(--color-surface);
+      color: var(--color-text-primary) !important;
   }
 
   mat-panel-title {
@@ -88,7 +89,7 @@
     justify-content: flex-end;
     margin-left: 0;
     flex-shrink: 0;
-    color: var(--color-text-secondary);
+      color: var(--color-text-secondary) !important;
   }
 }
 
@@ -114,9 +115,9 @@
     .mat-expansion-panel-header {
       background-color: var(--color-surface) !important;
       color: var(--color-text-primary) !important;
-      
+
       &:hover {
-        background: rgba(59, 130, 246, 0.1) !important;
+        background: var(--color-primary-overlay-10) !important;
       }
     }
 
@@ -124,46 +125,46 @@
       background-color: var(--color-surface) !important;
       color: var(--color-text-primary) !important;
     }
-    
+
     .mat-expansion-panel-content {
       background-color: var(--color-surface) !important;
     }
-    
+
     mat-panel-title,
     mat-panel-description {
       color: var(--color-text-primary) !important;
-      
+
       // Only override the description text span, not the badge
       span.text-gray-600 {
-        color: rgb(209 213 219) !important; // text-gray-300
+        color: var(--color-text-secondary) !important;
       }
     }
   }
-  
+
   // Force light text colors on panel content elements
   ::ng-deep .mat-expansion-panel-body {
     color: var(--color-text-primary) !important;
-    
+
     // Panel description and group info text - all variations
     .text-gray-600,
     div.text-gray-600,
     p.text-gray-600 {
-      color: rgb(229 231 235) !important; // text-gray-200
+      color: var(--color-text-secondary) !important;
     }
-    
+
     // Specific override for the duplicate groups text
     div.text-sm.text-gray-600 {
-      color: rgb(229 231 235) !important; // text-gray-200
+      color: var(--color-text-secondary) !important;
     }
-    
+
     select,
     input[type="text"],
     input[type="radio"] {
-      background-color: var(--color-surface-2);
+      background-color: var(--color-surface-secondary);
       color: var(--color-text-primary);
       border-color: var(--color-border);
     }
-    
+
     .mat-radio-button {
       color: var(--color-text-primary);
     }

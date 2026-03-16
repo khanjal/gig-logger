@@ -260,7 +260,7 @@
   &:hover {
     background: linear-gradient(135deg, var(--color-border) 0%, var(--color-surface-tertiary) 100%);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-light);
   }
   
   &:active {

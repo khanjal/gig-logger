@@ -22,7 +22,7 @@
 }
 
 .mock-toggle-label {
-  color: rgb(31 41 55); /* text-gray-800 */
+  color: var(--color-text-primary); /* text-gray-800 */
 }
 
 :host-context(html.theme-dark) {
