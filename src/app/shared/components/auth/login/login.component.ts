@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { BaseRectButtonComponent, BaseCardComponent } from '@components/base';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 const MODULES: any[] = [
   CommonModule,
@@ -34,6 +35,7 @@ export class LoginComponent {
   }
 
   async signOut() {
+    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     await this.authService.logout();
     window.location.reload();
   }

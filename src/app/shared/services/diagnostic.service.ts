@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +46,7 @@ export class DiagnosticService {
 
   private checkLocalStorage(): void {
     try {
-      const testKey = '__diagnostic_test__';
+      const testKey = SESSION_CONSTANTS.DIAGNOSTIC_TEST;
       localStorage.setItem(testKey, 'test');
       const retrieved = localStorage.getItem(testKey);
       localStorage.removeItem(testKey);
