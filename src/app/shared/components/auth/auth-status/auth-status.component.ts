@@ -47,8 +47,8 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthGoogleService,
-    private secureCookieStorage: SecureCookieStorageService
-    ,private spreadsheetService: SpreadsheetService
+    private secureCookieStorage: SecureCookieStorageService,
+    private spreadsheetService: SpreadsheetService
   ) {}
 
   async ngOnInit() {
