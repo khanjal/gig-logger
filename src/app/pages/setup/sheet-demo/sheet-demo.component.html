@@ -10,13 +10,6 @@
       <div class="creating-demo-text">Creating demo spreadsheet...</div>
     </div>
   } @else {
-    <button 
-      mat-fab 
-      [extended]="true" 
-      color="accent" 
-      (click)="createDemoSheet()" 
-      class="flex items-center gap-2">
-      <mat-icon>science</mat-icon> Create Demo Spreadsheet
-    </button>
+    <app-base-rect-button variant="primary" (clicked)="createDemoSheet()" class="flex items-center gap-2 px-4 py-2" [icon]="'science'" [label]="'Create Demo Spreadsheet'"></app-base-rect-button>
   }
 </div>

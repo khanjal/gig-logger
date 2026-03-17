@@ -10,7 +10,7 @@
     }
     
     <div class="relative transition-all duration-300 w-full">
-        <app-current-average class="absolute top-0 right-0 z-10 m-4 lg:pr-10" [class.hidden]="isEditMode"></app-current-average>
+        <app-current-average class="absolute top-0 right-0 z-10 m-4 sm:pr-0 md:pr-10" [class.hidden]="isEditMode"></app-current-average>
         <trip-form 
             (parentReload)="load()" 
             (editModeExit)="exitEditMode($event)" 
@@ -21,7 +21,7 @@
 
     @if (unsavedData && !pollingEnabled && !isEditMode) {
         <div class="flex justify-center my-4 w-full">
-            <button mat-fab extended class="flex items-center gap-2 px-6 py-3 rounded-full bg-pink-500 hover:bg-pink-600 dark:bg-pink-600 dark:hover:bg-pink-700 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" color="accent" [class.spinner]="saving" [disabled]="saving || defaultSheet?.id === demoSheetId" (click)="confirmSaveTripsDialog()"><mat-icon>save</mat-icon> Save Changes to Spreadsheet</button>
+            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || defaultSheet?.id === demoSheetId" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
         </div>
     }
 
@@ -30,7 +30,7 @@
             <div *ngIf="shouldShowUpdateMessage()" class="mb-2 mt-0 text-xs text-yellow-700 dark:text-yellow-300 bg-warning-500/20 border border-warning-500/30 rounded px-3 py-1 text-center max-w-xs">
                 <span class="font-bold">Reminder:</span> Update before doing any trips today to get the latest stats from your spreadsheet.
             </div>
-            <button mat-fab extended color="primary" class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed" [class.spinner]="reloading" [disabled]="reloading || unsavedData"  (click)="confirmLoadTripsDialog()"><mat-icon>refresh</mat-icon> Update from Spreadsheet</button>
+            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="reloading || unsavedData" (clicked)="confirmLoadTripsDialog()" [icon]="'refresh'" [label]="'Update from Spreadsheet'"></app-base-rect-button>
         </div>
     }
 

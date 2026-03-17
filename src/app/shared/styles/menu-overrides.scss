@@ -26,8 +26,8 @@ $items: ".cdk-overlay-container .mat-menu-panel .mat-menu-item, .cdk-overlay-con
 #{$panels} *:not(.mat-icon) { color: var(--color-text-primary) !important; }
 
 /* default icon style (unless overridden by .menu-* utilities) */
-.cdk-overlay-container .mat-menu-panel .mat-icon:not(.menu-blue):not(.menu-green):not(.menu-red):not(.menu-purple),
-.cdk-overlay-container .mat-mdc-menu-panel .mat-icon:not(.menu-blue):not(.menu-green):not(.menu-red):not(.menu-purple) {
+.cdk-overlay-container .mat-menu-panel .mat-icon:not(.menu-blue):not(.menu-orange):not(.menu-green):not(.menu-red):not(.menu-purple),
+.cdk-overlay-container .mat-mdc-menu-panel .mat-icon:not(.menu-blue):not(.menu-orange):not(.menu-green):not(.menu-red):not(.menu-purple) {
   color: var(--color-text-secondary) !important;
   margin-right: 8px;
 }
@@ -38,6 +38,7 @@ $items: ".cdk-overlay-container .mat-menu-panel .mat-menu-item, .cdk-overlay-con
 /* color map and helpers for menu icon utilities */
 $menu-colors: (
   "blue": var(--primary-600),
+  "orange": var(--warning-500),
   "green": var(--success-500),
   "red": var(--error-500),
   "purple": #a78bfa

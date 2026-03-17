@@ -3,18 +3,16 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { environment } from "src/environments/environment";
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { NgIf } from '@angular/common';
-import { MatFabButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 
 @Component({
     selector: 'sheet-add-form',
     templateUrl: './sheet-add-form.component.html',
     styleUrls: ['./sheet-add-form.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatFabButton, MatIcon]
+    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseRectButtonComponent, BaseInputComponent]
 })
 export class SheetAddFormComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();

@@ -1,7 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { LoggerService } from './logger.service';
-import { THEME_STORAGE_KEY, ThemeService } from './theme.service';
+import { ThemeService } from './theme.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 type MockMediaQuery = MediaQueryList & { trigger?: (value: boolean) => void };
 
@@ -88,7 +89,7 @@ describe('ThemeService', () => {
     service.setTheme('dark');
 
     expect(service.activeTheme).toBe('dark');
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(localStorage.getItem(SESSION_CONSTANTS.THEME_STORAGE_KEY)).toBe('dark');
     expect(documentRef.documentElement.classList.contains('theme-dark')).toBeTrue();
     expect(documentRef.documentElement.style.colorScheme).toBe('dark');
   });

@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export type PermissionState = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'checking';
+import type { PermissionState } from '@interfaces/permission.interface';
+
+export type { PermissionState };
 
 @Injectable({ providedIn: 'root' })
 export class PermissionService {

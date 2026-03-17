@@ -3,9 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
-import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -19,7 +17,8 @@ import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
-import { AppPermissionsComponent } from '@components/app-permissions/app-permissions.component';
+import { PermissionsComponent } from '@components/permissions/permissions.component';
+import { LocationOverrideComponent } from '@components/location-override/location-override.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -30,11 +29,14 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { VersionService } from '@services/version.service';
 import { CommonService } from '@services/common.service';
 import { LoggerService } from '@services/logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseCardComponent } from '@components/base/base-card/base-card.component';
 
 @Component({
     selector: 'app-setup',
@@ -45,10 +47,6 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       CommonModule,
       NgIf,
       NgFor,
-      MatCard,
-      MatCardContent,
-      MatCardHeader,
-      MatFabButton,
       MatIcon,
       LoginComponent,
       ServiceWorkerStatusComponent,
@@ -57,7 +55,10 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       SheetQuickViewComponent,
       SheetQuotaComponent,
       AuthStatusComponent,
-      AppPermissionsComponent
+      PermissionsComponent,
+      LocationOverrideComponent,
+      BaseRectButtonComponent,
+      BaseCardComponent
   ]
 })
 export class SetupComponent {
@@ -70,6 +71,7 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
+  showAdvanced: boolean = false;
 
   version: string = '';
 
@@ -92,6 +94,16 @@ export class SetupComponent {
     this.load();
     // Load formatted version string (YYYYMMDD.build)
     this.version = await this.versionService.getFormattedVersion();
+
+    // Append environment suffix for test subdomain installs
+    try {
+      const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
+      if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
+        this.version = `${this.version}-test`;
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   public async load() {
@@ -156,6 +168,7 @@ export class SetupComponent {
 
   public async deleteAllData() {
     this.deleting = true;
+    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     this._spreadsheetService.deleteData();
 
     await this._timerService.delay(1000);
@@ -200,6 +213,7 @@ export class SetupComponent {
 
   public async deleteLocalData() {
     this.deleting = true;
+    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     this._spreadsheetService.deleteLocalData();
     this.deleting = false;    
     localStorage.clear();
@@ -264,7 +278,7 @@ export class SetupComponent {
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
-    dialogData.trueColor = "warn";
+    dialogData.trueColor = "danger";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -310,7 +324,6 @@ export class SetupComponent {
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;
-    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

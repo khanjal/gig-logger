@@ -42,6 +42,14 @@
     })();
   </script>
 
+    <script>
+      // Small static mapping for session/local keys used by inline scripts
+      // Keeps index.html free of raw magic strings while remaining plain JS
+      window.__RG_SESSION_KEYS__ = window.__RG_SESSION_KEYS__ || {
+        APP_LOADED_ONCE: 'app_loaded_once'
+      };
+    </script>
+
   <script>
     if (global === undefined) {
       var global = window;
@@ -51,10 +59,10 @@
     (function() {
       // Check if this is a fresh load (not a refresh)
       var isRefresh = performance.navigation && performance.navigation.type === performance.navigation.TYPE_RELOAD;
-      var isFirstLoad = !isRefresh && !sessionStorage.getItem('app_loaded_once');
-      
+      var isFirstLoad = !isRefresh && !sessionStorage.getItem(window.__RG_SESSION_KEYS__.APP_LOADED_ONCE);
+
       if (isFirstLoad) {
-        sessionStorage.setItem('app_loaded_once', 'true');
+        sessionStorage.setItem(window.__RG_SESSION_KEYS__.APP_LOADED_ONCE, 'true');
         
         // For first loads, ensure we have fresh resources
         if ('serviceWorker' in navigator && 'caches' in window) {
@@ -110,14 +118,14 @@
       justify-content: center;
       height: 100vh;
       font-family: 'Roboto', sans-serif;
-      background-color: #fafafa;
+      background-color: #fafafa; /* light fallback */
     }
     
     .loading-spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid #e0e0e0;
-      border-top: 4px solid #2196F3;
+      border: 4px solid #e0e0e0; /* light fallback */
+      border-top: 4px solid #2196F3; /* accent fallback */
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 16px;
@@ -129,8 +137,26 @@
     }
     
     .loading-text {
-      color: #666;
+      color: #666; /* light fallback */
       font-size: 14px;
+    }
+
+    /* Theme-aware overrides: when we set html.theme-dark (or data-theme=dark) early,
+       ensure the loading UI matches dark mode immediately to avoid flash. */
+    html.theme-dark .app-loading,
+    html[data-theme="dark"] .app-loading {
+      background-color: #071021; /* dark surface */
+    }
+
+    html.theme-dark .loading-spinner,
+    html[data-theme="dark"] .loading-spinner {
+      border: 4px solid #1f2937; /* dark border */
+      border-top: 4px solid #60a5fa; /* lighter accent in dark */
+    }
+
+    html.theme-dark .loading-text,
+    html[data-theme="dark"] .loading-text {
+      color: #cbd5e1; /* light text for dark bg */
     }
     
     /* Hide loading when Angular starts */

@@ -57,4 +57,15 @@ describe('TripsQuickViewComponent', () => {
     await component.editTrip();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/trips/edit', component.trip.rowId]);
   });
+
+  it('renders action buttons with labels using label input', () => {
+    component.trip = { rowId: 1, pickupTime: undefined, dropoffTime: undefined, exclude: false } as any;
+    component.showActions = true;
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    const texts = Array.from(el.querySelectorAll('.app-base-button .btn-text')).map(n => n.textContent?.trim());
+    expect(texts).toContain('Edit');
+    expect(texts).toContain('Pickup');
+  });
 });

@@ -5,6 +5,7 @@ import { DataLoaderService } from './data/data-loader.service';
 import { DataLinkingService } from './data/data-linking.service';
 import { GigCalculatorService } from './calculations/gig-calculator.service';
 import { ISheet } from '@interfaces/sheet.interface';
+import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 import { IShift } from '@interfaces/shift.interface';
 
@@ -132,10 +133,12 @@ describe('GigWorkflowService', () => {
     });
 
     it('delegates saveSheetData to ApiService', async () => {
-      const sheetData: ISheet = {
+      const sheetData: ISheetSavePayload = {
         properties: { id: 'id', name: 'name' },
-        addresses: [], daily: [], expenses: [], monthly: [], names: [], places: [], regions: [], services: [], setup: [], shifts: [], trips: [], types: [], weekdays: [], weekly: [], yearly: [], messages: []
-      };
+        trips: [],
+        shifts: [],
+        expenses: []
+      } as any;
       mockApiService.saveSheetData.and.returnValue(Promise.resolve({ success: true }));
 
       await service.saveSheetData(sheetData);

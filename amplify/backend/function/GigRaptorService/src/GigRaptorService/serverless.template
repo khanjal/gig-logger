@@ -129,6 +129,7 @@
         "FunctionName": "raptor-gig-service",
         "Handler": "GigRaptorService::GigRaptorService.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnet8",
+        "Architectures": ["arm64"],
         "CodeUri": "",
         "MemorySize": 1024,
         "Timeout": 30,
@@ -145,9 +146,6 @@
             },
             "AWS__S3__SizeThresholdInMB": "5"
           }
-        },
-        "SnapStart": {
-          "ApplyOn": "PublishedVersions"
         },
         "Events": {
           "ProxyResource": {

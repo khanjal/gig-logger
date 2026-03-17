@@ -1,0 +1,21 @@
+<div [ngClass]="['app-base-card', `card-${variant}`, `card-padding-${padding}`]">
+  <!-- Card Header (Title + Icon) -->
+  <div *ngIf="title" class="card-header">
+    <div class="card-title-container">
+      <mat-icon *ngIf="titleIcon" class="card-title-icon">
+        {{ titleIcon }}
+      </mat-icon>
+      <h2 class="card-title">{{ title }}</h2>
+    </div>
+  </div>
+
+  <!-- Card Subtitle -->
+  <p *ngIf="subtitle" class="card-subtitle">
+    {{ subtitle }}
+  </p>
+
+  <!-- Card Content (slot) -->
+  <div class="card-content">
+    <ng-content></ng-content>
+  </div>
+</div>

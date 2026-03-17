@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { CommonModule } from '@angular/common';
+import { BaseCardComponent, BaseRectButtonComponent } from '@components/base';
+import { MatIcon } from '@angular/material/icon';
 
 type PermissionState = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'checking';
 
@@ -20,12 +19,12 @@ interface PermissionStatus {
 
 @Component({
   selector: 'app-permissions',
-  templateUrl: './app-permissions.component.html',
-  styleUrls: ['./app-permissions.component.scss'],
+  templateUrl: './permissions.component.html',
+  styleUrls: ['./permissions.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatDividerModule]
+  imports: [CommonModule, BaseCardComponent, BaseRectButtonComponent, MatIcon, MatDividerModule]
 })
-export class AppPermissionsComponent implements OnInit {
+export class PermissionsComponent implements OnInit {
   locationPermission: PermissionStatus = {
     name: 'Location',
     icon: 'location_on',
@@ -47,7 +46,6 @@ export class AppPermissionsComponent implements OnInit {
   constructor(private logger: LoggerService, private _permissionService: PermissionService) {}
 
   async ngOnInit() {
-    // Initialize local states from PermissionService and subscribe to changes
     this.updateLocationPermissionState(this._permissionService.getLocationState());
     this.updateMicrophonePermissionState(this._permissionService.getMicrophoneState());
 
@@ -55,18 +53,16 @@ export class AppPermissionsComponent implements OnInit {
     this._permissionService.getMicrophoneState$().subscribe(state => this.updateMicrophonePermissionState(state));
   }
 
-  // PermissionService handles querying and watching permission state.
-
   private updateLocationPermissionState(state: PermissionState) {
     this.locationPermission.state = state;
     this.locationPermission.canRequest = state === 'prompt';
-    this.locationPermission.canRevoke = false; // Browser doesn't support programmatic revocation
+    this.locationPermission.canRevoke = false;
   }
 
   private updateMicrophonePermissionState(state: PermissionState) {
     this.microphonePermission.state = state;
     this.microphonePermission.canRequest = state === 'prompt';
-    this.microphonePermission.canRevoke = false; // Browser doesn't support programmatic revocation
+    this.microphonePermission.canRevoke = false;
   }
 
   async requestLocation() {

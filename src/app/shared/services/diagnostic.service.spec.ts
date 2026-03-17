@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DiagnosticService } from './diagnostic.service';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 describe('DiagnosticService', () => {
   let service: DiagnosticService;
@@ -89,7 +90,7 @@ describe('DiagnosticService', () => {
       service['checkLocalStorage']();
 
       expect(loggerSpy.debug).toHaveBeenCalledWith('LocalStorage check: OK');
-      expect(localStorage.getItem('__diagnostic_test__')).toBeNull();
+      expect(localStorage.getItem(SESSION_CONSTANTS.DIAGNOSTIC_TEST)).toBeNull();
     });
 
     it('should handle localStorage setItem failure', () => {
@@ -127,11 +128,11 @@ describe('DiagnosticService', () => {
 
     it('should clean up test key even if error occurs', () => {
       const removeItemSpy = spyOn(localStorage, 'removeItem');
-      localStorage.setItem('__diagnostic_test__', 'test');
+      localStorage.setItem(SESSION_CONSTANTS.DIAGNOSTIC_TEST, 'test');
 
       service['checkLocalStorage']();
 
-      expect(removeItemSpy).toHaveBeenCalledWith('__diagnostic_test__');
+      expect(removeItemSpy).toHaveBeenCalledWith(SESSION_CONSTANTS.DIAGNOSTIC_TEST);
     });
   });
 

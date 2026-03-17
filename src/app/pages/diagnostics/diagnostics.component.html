@@ -1,10 +1,16 @@
 <div class="page-container container flex flex-col min-h-screen md:p-8 lg:p-12">
   <div class="flex flex-wrap gap-4 mb-6 items-center justify-between">
     <h1 class="text-2xl font-bold flex-1">Data Diagnostics</h1>
-    <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading" class="!min-w-[140px]">
-      <mat-icon>{{ isLoading ? 'hourglass_empty' : 'refresh' }}</mat-icon>
-      {{ isLoading ? 'Running...' : 'Run Check' }}
-    </button>
+      <app-base-rect-button 
+        variant="primary" 
+        [icon]="isLoading ? 'hourglass_empty' : 'refresh'" 
+        iconPosition="left"
+        (clicked)="runDiagnostics()" 
+        [disabled]="isLoading"
+        class="!min-w-[140px]"
+      >
+        {{ isLoading ? 'Running...' : 'Run Check' }}
+      </app-base-rect-button>
   </div>
 
   <!-- Summary Cards -->
@@ -95,10 +101,15 @@
         
         <!-- Bulk Fix Button for Missing Durations -->
         <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
-          <button *ngIf="!isBulkFixing" mat-raised-button color="primary" (click)="bulkFixShiftDurations()">
-            <mat-icon>build</mat-icon>
-            Fix All ({{ item.count }})
-          </button>
+            <app-base-rect-button 
+              *ngIf="!isBulkFixing" 
+              variant="primary" 
+              [icon]="'build'" 
+              iconPosition="left"
+              (clicked)="bulkFixShiftDurations()"
+            >
+              Fix All ({{ item.count }})
+            </app-base-rect-button>
           <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
@@ -106,20 +117,31 @@
         </div>
         <!-- Bulk Create Shifts for Orphaned Trips -->
         <div *ngIf="item.name === 'Orphaned Trips' && item.count > 0" class="mb-4">
-          <button *ngIf="!isBulkFixing" mat-raised-button color="primary" (click)="createShiftsFromTrips(item.items || [])" class="!min-w-[160px]">
-            <mat-icon>playlist_add</mat-icon>
-            Create Shifts
-          </button>
+            <app-base-rect-button 
+              *ngIf="!isBulkFixing" 
+              variant="primary" 
+              [icon]="'playlist_add'" 
+              iconPosition="left"
+              (clicked)="createShiftsFromTrips(item.items || [])" 
+              class="!min-w-[160px]"
+            >
+              Create Shifts
+            </app-base-rect-button>
           <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Creating...</span>
           </div>
         </div>
         <div *ngIf="item.name === 'Trips Missing Duration' && item.count > 0" class="mb-4">
-          <button *ngIf="!isBulkFixing" mat-raised-button color="primary" (click)="bulkFixTripDurations()">
-            <mat-icon>build</mat-icon>
-            Fix All ({{ item.count }})
-          </button>
+            <app-base-rect-button 
+              *ngIf="!isBulkFixing" 
+              variant="primary" 
+              [icon]="'build'" 
+              iconPosition="left"
+              (clicked)="bulkFixTripDurations()"
+            >
+              Fix All ({{ item.count }})
+            </app-base-rect-button>
           <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-blue-600">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
@@ -161,12 +183,13 @@
                   (fixTripDuration)="fixTripDuration($event)">
                 </app-diagnostic-item>
               </div>
-              <button *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed" 
-                      mat-icon-button color="primary" 
-                      (click)="createShiftFromTrip(problemItem)"
+                    <app-base-fab-button *ngIf="item.name === 'Orphaned Trips' && !problemItem.fixed" 
+                      fabStyle="mini"
+                      variant="primary"
+                      [icon]="'add'"
+                      (clicked)="createShiftFromTrip(problemItem)"
                       matTooltip="Create shift from trip">
-                <mat-icon>add</mat-icon>
-              </button>
+                    </app-base-fab-button>
             </div>
             <div *ngIf="item.name === 'Trip Places Missing Address'" class="mt-2 pt-2 border-t border-soft">
               <div *ngIf="problemItem.addressApplied" class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm mb-2">
@@ -184,12 +207,14 @@
                        [(ngModel)]="selectedAddress[problemItem.rowId]"
                        placeholder="Enter address..."
                        class="border border-soft rounded px-2 py-1 text-sm flex-1 min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                <button mat-icon-button color="primary" 
-                        [disabled]="!selectedAddress[problemItem.rowId]"
-                        (click)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
-                        matTooltip="Apply address">
-                  <mat-icon>check</mat-icon>
-                </button>
+                  <app-base-fab-button
+                    fabStyle="mini"
+                    variant="primary"
+                    [disabled]="!selectedAddress[problemItem.rowId]"
+                    [icon]="'check'"
+                    (clicked)="applyAddressToTrip(problemItem, selectedAddress[problemItem.rowId])"
+                    matTooltip="Apply address">
+                  </app-base-fab-button>
               </div>
             </div>
           </div>

@@ -1,34 +1,5 @@
 @use 'color-vars' as *;
 
-// Enhanced add button for mobile
-.add-button {
-    transform: scale(0.9);
-    min-height: 44px;
-    min-width: 44px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    &:hover {
-        transform: scale(0.95);
-        box-shadow: var(--shadow-light);
-    }
-    
-    @media (max-width: 768px) {
-        transform: scale(0.85);
-        
-        &:hover {
-            transform: scale(0.9);
-        }
-    }
-    
-    @media (max-width: 480px) {
-        transform: scale(0.8);
-        
-        &:hover {
-            transform: scale(0.85);
-        }
-    }
-}
-
 // Enhanced card styling with mobile-first approach
 .mat-card {
     margin-bottom: 1rem;

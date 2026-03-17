@@ -5,12 +5,11 @@
 
   <form [formGroup]="shiftForm">
     <div class="flex gap-2 mb-3">
-        <mat-form-field class="w-1/2 min-w-[120px]" appearance="outline">
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="shiftDatePicker" formControlName="date">
-            <mat-datepicker-toggle matSuffix [for]="shiftDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #shiftDatePicker></mat-datepicker>
-        </mat-form-field>
+        <app-base-datepicker
+            formControlName="date"
+            label="Date"
+            class="w-1/2 min-w-[120px]">
+        </app-base-datepicker>
         <mat-form-field class="w-1/4 min-w-[70px]" appearance="outline">
             <mat-label>Shift #</mat-label>
             <input matInput type="number" [value]="computedShiftNumber" disabled tabindex="-1">
@@ -120,20 +119,44 @@
     </div>
     <div class="flex flex-row items-center justify-between gap-2 mt-6">
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="warn" type="button" (click)="formReset()">
-          <mat-icon>refresh</mat-icon> Reset
-        </button>
-        <button *ngIf="rowId" mat-fab extended color="warn" type="button" (click)="close()">
-          <mat-icon>cancel</mat-icon> Cancel
-        </button>
+        <app-base-fab-button *ngIf="!rowId"
+          [extended]="true"
+          variant="danger"
+          type="button"
+          (clicked)="formReset()"
+          [icon]="'refresh'">
+          Reset
+        </app-base-fab-button>
+
+        <app-base-fab-button *ngIf="rowId"
+          [extended]="true"
+          variant="danger"
+          type="button"
+          (clicked)="close()"
+          [icon]="'cancel'">
+          Cancel
+        </app-base-fab-button>
       </div>
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
-          <mat-icon>add</mat-icon> Store
-        </button>
-        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
-          <mat-icon>save</mat-icon> Update
-        </button>
+        <app-base-fab-button *ngIf="!rowId"
+          [extended]="true"
+          variant="primary"
+          type="button"
+          (clicked)="addShift()"
+          [disabled]="shiftForm.invalid"
+          [icon]="'add'">
+          Store
+        </app-base-fab-button>
+
+        <app-base-fab-button *ngIf="rowId"
+          [extended]="true"
+          variant="primary"
+          type="button"
+          (clicked)="editShift()"
+          [disabled]="shiftForm.invalid"
+          [icon]="'save'">
+          Update
+        </app-base-fab-button>
       </div>
     </div>
   </form>

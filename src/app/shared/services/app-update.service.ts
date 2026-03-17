@@ -1,59 +1,27 @@
-/**
- * AppUpdateService - Centralized service for handling PWA app updates
- * 
- * This service provides a unified interface for checking, managing, and applying
- * Progressive Web App updates using Angular's Service Worker functionality.
- * 
- * Features:
- * - Automatic update checking on service initialization
- * - Observable stream of update status changes
- * - Manual update checking
- * - Update activation with automatic reload
- * - Force cache clearing for troubleshooting
- * 
- * Usage:
- * ```typescript
- * constructor(private appUpdateService: AppUpdateService) {}
- * 
- * ngOnInit() {
- *   this.appUpdateService.updateStatus$.subscribe(status => {
- *     if (status.isUpdateAvailable) {
- *       // Show update notification
- *     }
- *   });
- * }
- * ```
- * 
- * @author GitHub Copilot
- * @since 2025-06-10
- */
 import { Injectable, inject } from '@angular/core';
 import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
-import { LoggerService } from './logger.service';
+import { LoggerService } from '@services/logger.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-
-export interface AppUpdateStatus {
-  isUpdateAvailable: boolean;
-  isEnabled: boolean;
-  currentVersion?: string;
-  latestVersion?: string;
-}
+import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * Manages PWA update lifecycle: detect, expose status, activate updates, and force cache refresh.
+ */
 export class AppUpdateService {
   private swUpdate = inject(SwUpdate);
   private logger = inject(LoggerService);
 
-  private updateStatusSubject = new BehaviorSubject<AppUpdateStatus>({
+  private updateStatusSubject = new BehaviorSubject<IAppUpdateStatus>({
     isUpdateAvailable: false,
     isEnabled: false
   });
 
   private versionUpdateSubscription: Subscription | undefined;
 
-  public readonly updateStatus$: Observable<AppUpdateStatus> = this.updateStatusSubject.asObservable();
+  public readonly updateStatus$: Observable<IAppUpdateStatus> = this.updateStatusSubject.asObservable();
 
   constructor() {
     this.initialize();
@@ -134,7 +102,7 @@ export class AppUpdateService {
   /**
    * Get current update status
    */
-  public getCurrentStatus(): AppUpdateStatus {
+  public getCurrentStatus(): IAppUpdateStatus {
     return this.updateStatusSubject.value;
   }
 

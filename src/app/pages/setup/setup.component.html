@@ -6,56 +6,61 @@
   </div>
 
   <ng-container *ngIf="isAuthenticated">
-    <div class="mb-6" *ngIf="!spreadsheets?.length">
-      <h2 class="text-2xl font-semibold text-primary dark:text-primary">Set Up Your Spreadsheet</h2>
-      <app-sheet-link (parentReload)="reload()"></app-sheet-link>
-      <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
-    </div>
+    <app-base-card title="Set Up Your Spreadsheet" variant="default" padding="md" class="mb-6" *ngIf="!spreadsheets?.length">
+      <div class="flex flex-col gap-4">
+        <app-sheet-link (parentReload)="reload()"></app-sheet-link>
+        <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
+      </div>
+    </app-base-card>
 
-    <mat-card class="mb-6 bg-surface text-gray-800 dark:text-gray-200 surface-card" *ngIf="spreadsheets?.length">
-      <mat-card-header>
-        <h2 class="text-2xl font-semibold text-primary dark:text-primary">Current Spreadsheets</h2>
-      </mat-card-header>
-      <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
-        <div *ngFor="let spreadsheet of spreadsheets" class="mb-4">
-          <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
-          <div class="flex flex-row justify-between items-center gap-2 mt-2">
-            <!-- <button mat-stroked-button type="button" color="primary" [class.spinner]="saving" [disabled]="saving" (click)="saveLocalTrip(trip)"><mat-icon>save</mat-icon> Save</button> -->
-            <!-- <button mat-stroked-button type="button"><mat-icon>edit</mat-icon> Edit</button> -->
-            <button mat-fab [extended]="true" color="primary" *ngIf="spreadsheet.default === 'true'" [class.spinner]="reloading" [disabled]="reloading || unsavedData" (click)="reload()" class="flex items-center gap-2"><mat-icon>refresh</mat-icon> Reload Data</button>
-            <button mat-fab [extended]="true" color="primary" *ngIf="spreadsheet.default === 'false'" [class.spinner]="setting" [disabled]="setting || reloading || unsavedData" (click)="setDefault(spreadsheet)" class="flex items-center gap-2"><mat-icon>schedule</mat-icon> Set Default</button>
-            <button mat-fab [extended]="true" color="primary" class="button-right flex items-center gap-2" color="warn" [class.spinner]="deleting" [disabled]="deleting || reloading || unsavedData" (click)="confirmUnlinkSpreadsheetDialog(spreadsheet)"><mat-icon>link_off</mat-icon> Unlink</button>
-          </div>
-          <div *ngIf="unsavedData" class="mt-2 text-sm text-orange-600 dark:text-orange-400 flex items-start gap-2 py-1">
-            <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
-            <span class="flex-1">Actions disabled due to unsaved changes. Use the <strong>Refresh Data</strong> or <strong>Delete Data</strong> buttons at the bottom to override (you will lose unsaved changes).</span>
-          </div>
+    <app-base-card title="Current Spreadsheets" variant="default" padding="md" class="mb-6" *ngIf="spreadsheets?.length">
+      <div *ngFor="let spreadsheet of spreadsheets" class="mb-4">
+        <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
+        <div class="flex flex-row justify-between items-center gap-2 mt-2">
+          <app-base-rect-button variant="primary" [icon]="'refresh'" [loading]="reloading" [disabled]="reloading || unsavedData" (clicked)="reload()" *ngIf="spreadsheet.default === 'true'" [label]="'Reload Data'"></app-base-rect-button>
+          <app-base-rect-button variant="primary" [icon]="'schedule'" [loading]="setting" [disabled]="setting || reloading || unsavedData" (clicked)="setDefault(spreadsheet)" *ngIf="spreadsheet.default === 'false'" [label]="'Set Default'"></app-base-rect-button>
+          <app-base-rect-button variant="danger" [icon]="'link_off'" [loading]="deleting" [disabled]="deleting || reloading || unsavedData" (clicked)="confirmUnlinkSpreadsheetDialog(spreadsheet)" [label]="'Unlink'"></app-base-rect-button>
         </div>
-      </mat-card-content>
-    </mat-card>
+        <div *ngIf="unsavedData" class="mt-2 text-sm text-orange-600 dark:text-orange-400 flex items-start gap-2 py-1">
+          <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
+          <span class="flex-1">Actions disabled due to unsaved changes. Use the <strong>Refresh Data</strong> or <strong>Delete Data</strong> buttons at the bottom to override (you will lose unsaved changes).</span>
+        </div>
+      </div>
+    </app-base-card>
+
+    <!-- Advanced Settings Toggle -->
+    <div class="mb-6">
+      <app-base-rect-button 
+        [variant]="showAdvanced ? 'primary' : 'secondary'"
+        [icon]="showAdvanced ? 'expand_less' : 'expand_more'"
+        [fullWidth]="true"
+        (clicked)="showAdvanced = !showAdvanced"
+        [label]="(showAdvanced ? 'Hide' : 'Show') + ' Advanced Settings'"></app-base-rect-button>
+    </div>
   </ng-container>
 
-  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft">
+  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
     <app-permissions></app-permissions>
   </div>
 
-  <mat-card class="mb-6 bg-surface text-gray-800 dark:text-gray-200 surface-card">
-    <mat-card-header><h2 class="text-2xl font-semibold text-primary">Application Insights</h2></mat-card-header>
-    <mat-card-content class="bg-surface text-gray-800 dark:text-gray-200">
-      <div class="mb-2 text-primary dark:text-primary">Version: <strong>{{ version }}</strong></div>
-      <app-sheet-quota></app-sheet-quota>
-      <app-service-worker-status></app-service-worker-status>
-    </mat-card-content>
-  </mat-card>
+  <div class="mb-6" *ngIf="showAdvanced">
+    <app-location-override></app-location-override>
+  </div>
 
-  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft">
+  <app-base-card title="Application Insights" variant="default" padding="md" class="mb-6" *ngIf="showAdvanced">
+    <div class="mb-2 text-primary dark:text-primary">Version: <strong>{{ version }}</strong></div>
+    <app-sheet-quota></app-sheet-quota>
+    <app-service-worker-status></app-service-worker-status>
+  </app-base-card>
+
+  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
     <app-auth-status></app-auth-status>
   </div>
 
-  <div class="mb-6">
-    <div class="flex flex-row justify-between items-center gap-2">
-      <button mat-fab [extended]="true" color="primary" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length" class="flex items-center gap-2"><mat-icon>refresh</mat-icon> Refresh Data</button>
-      <button mat-fab [extended]="true" color="warn" class="button-right flex items-center gap-2" [class.spinner]="deleting" [disabled]="deleting" (click)="confirmDeleteAllDialog()"><mat-icon>delete</mat-icon> Delete Data</button>
+  <div class="mb-6" *ngIf="showAdvanced">
+      <div class="flex flex-row justify-between items-center gap-2">
+      <app-base-rect-button variant="primary" [icon]="'refresh'" [loading]="deleting" [disabled]="deleting" (clicked)="confirmDeleteAndReloadDialog()" *ngIf="spreadsheets?.length" [label]="'Refresh Data'"></app-base-rect-button>
+      <app-base-rect-button variant="danger" [icon]="'delete'" [loading]="deleting" [disabled]="deleting" (clicked)="confirmDeleteAllDialog()" [label]="'Delete Data'"></app-base-rect-button>
     </div>
   </div>
 </div>

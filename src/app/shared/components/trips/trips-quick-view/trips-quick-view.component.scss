@@ -67,6 +67,9 @@
 .menu-blue {
   color: var(--primary-600) !important;
 }
+.menu-orange {
+  color: var(--warning-500) !important;
+}
 .menu-green {
   color: var(--success-700) !important;
 }
@@ -80,6 +83,9 @@
 // Optionally, add hover backgrounds if needed
 .menu-blue:hover, .mat-menu-item.menu-blue:hover {
   background: color-mix(in srgb, var(--primary-500) 10%, transparent) !important;
+}
+.menu-orange:hover, .mat-menu-item.menu-orange:hover {
+  background: color-mix(in srgb, var(--warning-500) 10%, transparent) !important;
 }
 .menu-green:hover, .mat-menu-item.menu-green:hover {
   background: color-mix(in srgb, var(--success-500) 10%, transparent) !important;

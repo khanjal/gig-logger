@@ -6,6 +6,7 @@ import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 describe('AuthGoogleService', () => {
   let service: AuthGoogleService;
@@ -75,9 +76,9 @@ describe('AuthGoogleService', () => {
 
       expect(storageSpy.setItem).toHaveBeenCalledWith(AUTH_CONSTANTS.ACCESS_TOKEN, token);
       expect(service.profile$.getValue()?.sub).toBe('user-1');
-      expect(localStorage.getItem('is_authenticated')).toBe('true');
+      expect(localStorage.getItem(SESSION_CONSTANTS.IS_AUTHENTICATED)).toBe('true');
       expect(loggerSpy.info).toHaveBeenCalledWith('Access token refreshed and validated successfully');
-      expect(localStorage.getItem('authenticatedUserId')).toBe('user-1');
+      expect(localStorage.getItem(SESSION_CONSTANTS.AUTHENTICATED_USER_ID)).toBe('user-1');
     });
 
     it('logs out on 401/403 refresh failures', async () => {
@@ -126,7 +127,7 @@ describe('AuthGoogleService', () => {
       expect(storageSpy.removeItem).toHaveBeenCalledWith(AUTH_CONSTANTS.ACCESS_TOKEN);
       expect(oauthSpy.logOut).toHaveBeenCalled();
       expect(service.profile$.getValue()).toBeNull();
-      expect(localStorage.getItem('is_authenticated')).toBe('false');
+      expect(localStorage.getItem(SESSION_CONSTANTS.IS_AUTHENTICATED)).toBe('false');
     });
   });
 });
