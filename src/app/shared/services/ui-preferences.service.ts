@@ -7,7 +7,6 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
 @Injectable({ providedIn: 'root' })
 export class UiPreferencesService {
   private pollingKey = SESSION_CONSTANTS.POLLING_ENABLED;
-  private readonly LEGACY_POLLING_KEY = 'pollingEnabled';
   private _pollingEnabled$ = new BehaviorSubject<boolean>(this.loadPolling());
   public pollingEnabled$ = this._pollingEnabled$.asObservable();
 
@@ -29,23 +28,7 @@ export class UiPreferencesService {
   }
 
   private loadPolling(): boolean {
-    // Prefer new RG-prefixed key; migrate legacy if found
-    let saved = localStorage.getItem(this.pollingKey);
-    if (!saved) {
-      const legacy = localStorage.getItem(this.LEGACY_POLLING_KEY);
-      if (legacy !== null) {
-        try {
-          // migrate to new key and remove legacy
-          localStorage.setItem(this.pollingKey, legacy);
-          localStorage.removeItem(this.LEGACY_POLLING_KEY);
-          saved = legacy;
-          this.logger.info('Migrated polling preference from legacy storage key');
-        } catch (err) {
-          this.logger.warn('Failed to migrate polling preference', err);
-        }
-      }
-    }
-
+    const saved = localStorage.getItem(this.pollingKey);
     return saved ? JSON.parse(saved) : false;
   }
 
