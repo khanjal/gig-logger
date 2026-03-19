@@ -179,7 +179,41 @@ Cypress.Commands.add('seedTrips', (trips = []) => {
             const tx = db.transaction('trips', 'readwrite');
             const store = tx.objectStore('trips');
             store.clear();
-            for (const t of trips) store.add(t);
+            for (const t of trips) {
+              // mark seeded rows as coming from spreadsheet unless explicitly overridden
+              const row = Object.assign({ saved: true }, t);
+              store.add(row);
+            }
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error || new Error('tx error'));
+          } catch (err) {
+            resolve();
+          }
+        };
+        openReq.onerror = () => resolve();
+      } catch (err) {
+        resolve();
+      }
+    });
+  });
+});
+
+// Seed shifts into spreadsheetDB.shifts
+Cypress.Commands.add('seedShifts', (shifts = []) => {
+  return cy.window().then((win) => {
+    return new Cypress.Promise((resolve, reject) => {
+      try {
+        const openReq = win.indexedDB.open('spreadsheetDB');
+        openReq.onsuccess = () => {
+          try {
+            const db = openReq.result;
+            const tx = db.transaction('shifts', 'readwrite');
+            const store = tx.objectStore('shifts');
+            store.clear();
+            for (const s of shifts) {
+              const row = Object.assign({ saved: true }, s);
+              store.add(row);
+            }
             tx.oncomplete = () => resolve();
             tx.onerror = () => reject(tx.error || new Error('tx error'));
           } catch (err) {
@@ -229,7 +263,7 @@ Cypress.Commands.add('setupApp', (opts = {}) => {
       }
     });
 
-    // Optionally seed trips after app load
+    // Optionally seed trips (and shifts) after app load
     if (opts.seedTrips) {
       const today = new Date().toISOString().slice(0, 10);
       const sample = {
@@ -241,7 +275,20 @@ Cypress.Commands.add('setupApp', (opts = {}) => {
         place: opts.place || 'Test Place',
         saved: true
       };
-      return cy.seedTrips(opts.trips || [sample]);
+      return cy.seedTrips(opts.trips || [sample]).then(() => {
+        if (opts.seedShifts) {
+          const shiftSample = {
+            rowId: 1,
+            date: today,
+            service: opts.shiftService || 'E2E',
+            number: 1,
+            key: 'shift-e2e-1',
+            saved: true
+          };
+          return cy.seedShifts(opts.shifts || [shiftSample]);
+        }
+        return cy.wrap(null);
+      });
     }
   });
 });
@@ -361,8 +408,19 @@ Cypress.Commands.add('bootVisit', (path = '/', opts = {}) => {
           place: opts.place || 'Test Place',
           saved: true
         };
+        // Seed trips first, then optionally seed shifts, then navigate within app
         return cy.seedTrips(opts.trips || [sample]).then(() => {
-          // Navigate within the already-loaded app to avoid another full page load.
+          if (opts.seedShifts) {
+            const shiftSample = {
+              rowId: 1,
+              date: today,
+              service: opts.shiftService || 'E2E',
+              number: 1,
+              key: 'shift-e2e-1',
+              saved: true
+            };
+            return cy.seedShifts(opts.shifts || [shiftSample]).then(() => navigateWithinApp(path));
+          }
           return navigateWithinApp(path);
         });
       } else {
