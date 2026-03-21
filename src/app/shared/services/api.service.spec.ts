@@ -1,5 +1,6 @@
 import { of, throwError } from 'rxjs';
 import { ApiService } from './api.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 describe('ApiService (focused tests)', () => {
   let httpSpy: any;
@@ -12,13 +13,13 @@ describe('ApiService (focused tests)', () => {
     secureCookieSpy = jasmine.createSpyObj('SecureCookieStorageService', ['getItem']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['error', 'debug', 'info', 'warn']);
 
-    localStorage.setItem('userId', 'user-123');
+    localStorage.setItem(SESSION_CONSTANTS.USER_ID, 'user-123');
 
     service = new ApiService(httpSpy, secureCookieSpy, loggerSpy);
   });
 
   afterEach(() => {
-    localStorage.removeItem('userId');
+    localStorage.removeItem(SESSION_CONSTANTS.USER_ID);
   });
 
   it('clearRefreshToken returns response when http succeeds', async () => {

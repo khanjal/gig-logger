@@ -29,6 +29,7 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { VersionService } from '@services/version.service';
 import { CommonService } from '@services/common.service';
 import { LoggerService } from '@services/logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
@@ -93,6 +94,16 @@ export class SetupComponent {
     this.load();
     // Load formatted version string (YYYYMMDD.build)
     this.version = await this.versionService.getFormattedVersion();
+
+    // Append environment suffix for test subdomain installs
+    try {
+      const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
+      if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
+        this.version = `${this.version}-test`;
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   public async load() {
@@ -157,6 +168,7 @@ export class SetupComponent {
 
   public async deleteAllData() {
     this.deleting = true;
+    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     this._spreadsheetService.deleteData();
 
     await this._timerService.delay(1000);
@@ -201,6 +213,7 @@ export class SetupComponent {
 
   public async deleteLocalData() {
     this.deleting = true;
+    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     this._spreadsheetService.deleteLocalData();
     this.deleting = false;    
     localStorage.clear();

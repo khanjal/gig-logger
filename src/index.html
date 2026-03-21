@@ -42,6 +42,14 @@
     })();
   </script>
 
+    <script>
+      // Small static mapping for session/local keys used by inline scripts
+      // Keeps index.html free of raw magic strings while remaining plain JS
+      window.__RG_SESSION_KEYS__ = window.__RG_SESSION_KEYS__ || {
+        APP_LOADED_ONCE: 'app_loaded_once'
+      };
+    </script>
+
   <script>
     if (global === undefined) {
       var global = window;
@@ -51,10 +59,10 @@
     (function() {
       // Check if this is a fresh load (not a refresh)
       var isRefresh = performance.navigation && performance.navigation.type === performance.navigation.TYPE_RELOAD;
-      var isFirstLoad = !isRefresh && !sessionStorage.getItem('app_loaded_once');
-      
+      var isFirstLoad = !isRefresh && !sessionStorage.getItem(window.__RG_SESSION_KEYS__.APP_LOADED_ONCE);
+
       if (isFirstLoad) {
-        sessionStorage.setItem('app_loaded_once', 'true');
+        sessionStorage.setItem(window.__RG_SESSION_KEYS__.APP_LOADED_ONCE, 'true');
         
         // For first loads, ensure we have fresh resources
         if ('serviceWorker' in navigator && 'caches' in window) {

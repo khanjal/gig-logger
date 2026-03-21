@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { IMockLocation, IPresetLocation } from '@interfaces/mock-location.interface';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 /**
  * @deprecated Use IMockLocation from @interfaces/mock-location.interface instead
@@ -16,7 +17,8 @@ export type PresetLocation = IPresetLocation;
   providedIn: 'root'
 })
 export class MockLocationService {
-  private readonly STORAGE_KEY = 'mockLocation';
+  private readonly STORAGE_KEY = SESSION_CONSTANTS.MOCK_LOCATION;
+  private readonly LEGACY_KEY = 'mockLocation';
   private readonly DEFAULT_RADIUS = 25; // miles
   
   // Preset locations for quick testing
@@ -57,7 +59,22 @@ export class MockLocationService {
    * Get current mock location settings
    */
   getMockLocation(): MockLocation {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
+    // Prefer new RG-prefixed key, but migrate legacy key if present
+    let stored = localStorage.getItem(this.STORAGE_KEY);
+    if (!stored) {
+      const legacy = localStorage.getItem(this.LEGACY_KEY);
+      if (legacy) {
+        try {
+          // migrate legacy value to new key
+          localStorage.setItem(this.STORAGE_KEY, legacy);
+          localStorage.removeItem(this.LEGACY_KEY);
+          stored = legacy;
+          this.logger.info('Migrated mock location from legacy storage key');
+        } catch (err) {
+          this.logger.warn('Failed to migrate mock location from legacy key', err);
+        }
+      }
+    }
     if (stored) {
       try {
         return JSON.parse(stored);

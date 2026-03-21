@@ -90,7 +90,7 @@
     background-color: var(--error-500);
     color: var(--color-text-inverse);
 
-      &:hover:not(:disabled) {
+    &:hover:not(:disabled) {
       background-color: var(--error-600);
       box-shadow: 0 2px 8px color-mix(in srgb, var(--error-600) 25%, transparent);
     }

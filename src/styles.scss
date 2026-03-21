@@ -241,13 +241,13 @@ html.theme-dark {
   --shadow-medium: color-mix(in srgb, black 45%, transparent);
   --shadow-heavy: color-mix(in srgb, black 60%, transparent);
 
-  /* Override primary colors for better visibility in dark mode (use token values)
-     These are lighter/intended accessibility overrides, keep as explicit tokens */
-    --primary-600: #{$primary-600};
-    --primary-700: #{$primary-700};
-    --secondary-500: #{$secondary-light};
-    --secondary-600: #{$secondary-color};
-    --secondary-700: #{$secondary-dark};
+  // Override primary colors for better visibility in dark mode
+  --primary-600: #60a5fa; // Lighter blue for links
+  --primary-700: #93c5fd; // Even lighter for hover
+  /* Dark-mode secondary overrides for better visibility */
+  --secondary-500: #9f7aea; // slightly lighter purple for dark backgrounds
+  --secondary-600: #8b5cf6;
+  --secondary-700: #b794f4;
   
   color-scheme: dark;
 }

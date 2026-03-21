@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +11,7 @@ export class AuthService {
     ) {}
 
     public isAuthenticated(): boolean {
-        const token = sessionStorage.getItem('token');
+        const token = sessionStorage.getItem(SESSION_CONSTANTS.AUTH_TOKEN);
 
         if (!token) {
             return false;

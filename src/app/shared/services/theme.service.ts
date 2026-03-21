@@ -2,11 +2,9 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 import type { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
-
-export const THEME_STORAGE_KEY = 'rg-theme-preference';
-
 // Compute meta theme colors at runtime from CSS variables so we avoid
 // inline hex literals in source. Falls back to legacy values if not present.
 const getComputedCssVar = (name: string, fallback: string) => {
@@ -14,13 +12,13 @@ const getComputedCssVar = (name: string, fallback: string) => {
     if (typeof document === 'undefined') return fallback;
     const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     return v || fallback;
-  } catch (e) {
+  } catch {
     return fallback;
   }
 };
 
-// Note: do not compute meta theme colors at module load time — compute on demand
-// so runtime changes to CSS variables (e.g., in tests) are reflected.
+const LIGHT_THEME_COLOR = '#1976d2';
+const DARK_THEME_COLOR = '#0b1221';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -62,7 +60,7 @@ export class ThemeService {
 
     if (persist) {
       try {
-        localStorage.setItem(THEME_STORAGE_KEY, preference);
+        localStorage.setItem(SESSION_CONSTANTS.THEME_STORAGE_KEY, preference);
       } catch (error) {
         this.logger.warn('Theme preference could not be persisted', error);
       }
@@ -100,7 +98,7 @@ export class ThemeService {
 
   private getStoredPreference(): ThemePreference | null {
     try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      const stored = localStorage.getItem(SESSION_CONSTANTS.THEME_STORAGE_KEY);
       if (stored === 'light' || stored === 'dark' || stored === 'system') {
         return stored;
       }
@@ -169,8 +167,8 @@ export class ThemeService {
     const meta = this.documentRef.querySelector('meta[name="theme-color"]');
     if (!meta) return;
 
-    const light = getComputedCssVar('--meta-theme-light', '');
-    const dark = getComputedCssVar('--meta-theme-dark', '');
+    const light = getComputedCssVar('--meta-theme-light', LIGHT_THEME_COLOR);
+    const dark = getComputedCssVar('--meta-theme-dark', DARK_THEME_COLOR);
 
     const value = resolved === 'dark' ? (dark || light) : (light || dark);
     if (value) {

@@ -63,5 +63,15 @@
       <span class="status-label text-secondary">Last Updated:</span>
       <span class="timestamp text-tertiary">{{ lastUpdated | date:'medium' }}</span>
     </div>
+
+    <!-- Reconnect notice when logged out but spreadsheets exist -->
+    <div *ngIf="showReconnectNotice" class="mt-4 p-3 rounded bg-warning-soft border border-warning">
+      <div class="text-sm text-warning">
+        You're currently signed out but your spreadsheet data is still present on this device. Please sign back in to sync and continue; your data has not been deleted.
+      </div>
+      <div class="mt-2 flex gap-2">
+        <button class="px-3 py-2 rounded-md bg-primary text-[var(--color-text-inverse)] text-sm font-medium" (click)="onReconnect()">Sign In</button>
+      </div>
+    </div>
   </div>
 </app-base-card>
