@@ -131,9 +131,9 @@ describe('PermissionsComponent', () => {
 
   describe('getStateColor', () => {
     it('returns correct color for each state', () => {
-      expect(component.getStateColor('granted')).toBe('text-success-600');
-      expect(component.getStateColor('denied')).toBe('text-danger-600');
-      expect(component.getStateColor('prompt')).toBe('text-warning-600');
+      expect(component.getStateColor('granted')).toBe('text-success');
+      expect(component.getStateColor('denied')).toBe('text-danger');
+      expect(component.getStateColor('prompt')).toBe('text-warning');
       expect(component.getStateColor('checking')).toBe('text-tertiary');
       expect(component.getStateColor('unsupported')).toBe('text-tertiary');
     });

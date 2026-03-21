@@ -10,37 +10,37 @@
     <!-- Table content when data is available -->
     <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface">
       <table *ngIf="items.length > 0" class="min-w-full text-sm">
-        <thead class="bg-primary-500/20 sticky top-0 z-10">
+        <thead class="bg-primary-soft sticky top-0 z-10">
           <tr>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">{{ name }}</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Trips</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Distance</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Pay</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Tips</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Bonus</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Total</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Cash</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Amt/Time</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Amt/Trip</th>
-            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-500/20">Amt/Dist</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">{{ name }}</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Trips</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Distance</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Pay</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Tips</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Bonus</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Total</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Cash</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Amt/Time</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Amt/Trip</th>
+            <th class="px-3 py-2 text-left font-semibold text-primary whitespace-nowrap bg-primary-soft">Amt/Dist</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of items; let i = index" [ngClass]="i % 2 === 0 ? 'bg-primary-500/5' : 'bg-surface'" class="hover:bg-surface-2">
+          <tr *ngFor="let item of items; let i = index" [ngClass]="i % 2 === 0 ? 'bg-surface-2' : 'bg-surface'" class="hover:bg-surface-2">
             <td class="px-3 py-2 font-semibold text-primary max-w-[150px] truncate" [title]="item.name">{{item.name}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.trips}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.distance | number}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-success-700 dark:text-success-400">{{item.pay | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-success-700 dark:text-success-400">{{item.tip | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-success-700 dark:text-success-400">{{item.bonus | currency}}</td>
-            <td class="px-3 py-2 whitespace-nowrap text-success-800 dark:text-success-400 font-semibold">{{item.total | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-success">{{item.pay | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-success">{{item.tip | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-success">{{item.bonus | currency}}</td>
+            <td class="px-3 py-2 whitespace-nowrap text-success font-semibold">{{item.total | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-secondary">{{item.cash | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerTime | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerTrip | currency}}</td>
             <td class="px-3 py-2 whitespace-nowrap text-primary">{{item.amountPerDistance | currency}}</td>
           </tr>
         </tbody>
-        <tfoot class="bg-primary-500/20">
+        <tfoot class="bg-primary-soft">
           <tr>
             <td class="px-3 py-2 font-bold text-primary">Total</td>
             <td class="px-3 py-2 font-bold text-primary">{{getTotal("trips")}}</td>

@@ -133,29 +133,12 @@
     mat-panel-title,
     mat-panel-description {
       color: var(--color-text-primary) !important;
-
-      // Only override the description text span, not the badge
-      span.text-gray-600 {
-        color: var(--color-text-secondary) !important;
-      }
     }
   }
 
   // Force light text colors on panel content elements
   ::ng-deep .mat-expansion-panel-body {
     color: var(--color-text-primary) !important;
-
-    // Panel description and group info text - all variations
-    .text-gray-600,
-    div.text-gray-600,
-    p.text-gray-600 {
-      color: var(--color-text-secondary) !important;
-    }
-
-    // Specific override for the duplicate groups text
-    div.text-sm.text-gray-600 {
-      color: var(--color-text-secondary) !important;
-    }
 
     select,
     input[type="text"],

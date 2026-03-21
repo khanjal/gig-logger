@@ -25,14 +25,14 @@
           <span class="mock-toggle-label font-medium mr-1 text-secondary">Enable override</span>
         </mat-slide-toggle>
         
-        <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-warning-700 dark:text-warning-200 bg-warning-50 dark:bg-warning-950 px-3 py-2 rounded">
+        <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-warning bg-warning-soft px-3 py-2 rounded">
           <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
-          <span class="mock-warning-text text-warning-700 dark:text-warning-200 mr-1">Override active - the app will use this location for Google Places and other location-sensitive features</span>
+          <span class="mock-warning-text text-warning mr-1">Override active - the app will use this location for Google Places and other location-sensitive features</span>
         </div>
       </div>
 
       <!-- Current Real Location Display -->
-      <div class="p-4 bg-warning-50 dark:bg-warning-950 rounded-lg border border-warning-200 dark:border-warning-700">
+      <div class="p-4 bg-warning-soft rounded-lg border border-warning">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-sm font-semibold text-primary flex items-center gap-2">
             <mat-icon class="!text-base !w-5 !h-5">my_location</mat-icon>
@@ -134,8 +134,8 @@
         </div>
 
         <!-- Current Mock Location Summary -->
-        <div class="p-4 bg-success-50 dark:bg-success-950 rounded-lg border border-success-200 dark:border-success-800">
-          <h3 class="text-sm font-semibold text-success-800 dark:text-success-300 mb-2 flex items-center gap-2">
+        <div class="p-4 bg-success-soft rounded-lg border border-success">
+          <h3 class="text-sm font-semibold text-success mb-2 flex items-center gap-2">
             <mat-icon class="!text-base !w-5 !h-5">check_circle</mat-icon>
             Active Override Location
           </h3>

@@ -26,9 +26,8 @@
     <div *ngFor="let problemItem of group" 
          class="p-3 hover:bg-surface-3 transition-colors flex items-center gap-2 item-row" 
          [class.opacity-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) || problemItem.markedForDelete" 
-         [class.bg-success-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0)"
-         [ngClass]="{ 'dark:bg-success-900/20': ((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) }"
-         [class.bg-error-500/10]="problemItem.markedForDelete">
+          [class.bg-success-soft]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0)"
+          [class.bg-error-soft]="problemItem.markedForDelete">
       <mat-radio-button *ngIf="canMerge" 
                         [value]="problemItem"></mat-radio-button>
       <input *ngIf="canDelete" type="radio" 
@@ -42,10 +41,10 @@
         <!-- Shift Item -->
         <div *ngIf="itemType === 'shift'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.rowId }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.rowId }}</span>
             <span class="font-semibold item-date" [class.line-through]="problemItem.markedForDelete">{{ problemItem.date }}</span>
             <span class="item-key text-sm">({{ problemItem.key }})</span>
-            <span *ngIf="problemItem.markedForDelete" class="px-2 py-0.5 bg-error-500/20 rounded text-xs badge-delete">MARKED FOR DELETE</span>
+            <span *ngIf="problemItem.markedForDelete" class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">MARKED FOR DELETE</span>
           </div>
           <div class="flex items-center justify-between gap-2 mt-1">
             <div class="flex flex-wrap items-center gap-2 text-sm">
@@ -58,7 +57,7 @@
         <!-- Trip Item -->
         <div *ngIf="itemType === 'trip'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.rowId }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.rowId }}</span>
             <span class="font-semibold item-name">{{ problemItem.name || 'No name' }}</span>
           </div>
           <div class="text-sm mt-1">
@@ -70,7 +69,7 @@
         <!-- Place Item -->
         <div *ngIf="itemType === 'place'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
             <span class="font-semibold item-name">{{ problemItem.place || 'No place name' }}</span>
           </div>
           <div class="text-sm mt-1">
@@ -82,7 +81,7 @@
         <!-- Name Item -->
         <div *ngIf="itemType === 'name'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
             <span class="font-semibold item-name">{{ problemItem.name || 'No name' }}</span>
           </div>
           <div class="text-sm mt-1">
@@ -93,7 +92,7 @@
         <!-- Address Item -->
         <div *ngIf="itemType === 'address'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
             <span class="font-semibold item-name">{{ problemItem.address || 'No address' }}</span>
           </div>
           <div class="text-sm mt-1">
@@ -104,7 +103,7 @@
         <!-- Service Item -->
         <div *ngIf="itemType === 'service'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
             <span class="font-semibold item-name">{{ problemItem.service || 'No service' }}</span>
           </div>
           <div class="text-sm mt-1">
@@ -116,7 +115,7 @@
         <!-- Region Item -->
         <div *ngIf="itemType === 'region'">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-primary-500/20 rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.id }}</span>
             <span class="font-semibold item-name">{{ problemItem.region || 'No region' }}</span>
           </div>
           <div class="text-sm mt-1">

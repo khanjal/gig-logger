@@ -63,6 +63,8 @@
   .text-warning { color: var(--color-warning); }
   .text-error { color: var(--color-error); }
   .text-info { color: var(--color-primary); }
+  .text-accent { color: var(--color-accent); }
+  .text-accent-variant { color: var(--color-accent-variant); }
 
   /* Solid background helpers (semantic) */
   .bg-primary { background-color: var(--color-primary); }
@@ -77,11 +79,18 @@
   .bg-primary-soft:hover { background: color-mix(in srgb, var(--primary-600) 35%, var(--color-surface)); }
   .bg-warning-soft { background: color-mix(in srgb, var(--warning-500) 25%, var(--color-surface)); }
   .bg-warning-soft:hover { background: color-mix(in srgb, var(--warning-500) 35%, var(--color-surface)); }
+  .bg-accent-soft { background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface)); }
+  .bg-accent-soft:hover { background: color-mix(in srgb, var(--color-accent) 28%, var(--color-surface)); }
+  .bg-accent-variant-soft { background: color-mix(in srgb, var(--color-accent-variant) 18%, var(--color-surface)); }
+  .bg-accent-variant-soft:hover { background: color-mix(in srgb, var(--color-accent-variant) 28%, var(--color-surface)); }
 
   /* Borders */
   .border-error { border-color: var(--color-error); }
   .border-warning { border-color: var(--color-warning); }
   .border-primary { border-color: var(--color-primary); }
+  .border-success { border-color: var(--color-success); }
+  .border-info { border-color: var(--color-primary); }
+  .border-accent { border-color: var(--color-accent); }
 
   /* Combined helpers */
   .badge-success { background: var(--color-success); color: var(--color-text-inverse); }
@@ -91,6 +100,8 @@
 html.theme-dark .bg-success-soft { background: color-mix(in srgb, var(--color-success) 35%, var(--color-surface)); }
 html.theme-dark .bg-primary-soft { background: color-mix(in srgb, var(--primary-600) 35%, var(--color-surface)); }
 html.theme-dark .bg-warning-soft { background: color-mix(in srgb, var(--warning-500) 35%, var(--color-surface)); }
+html.theme-dark .bg-accent-soft { background: color-mix(in srgb, var(--color-accent) 28%, var(--color-surface)); }
+html.theme-dark .bg-accent-variant-soft { background: color-mix(in srgb, var(--color-accent-variant) 28%, var(--color-surface)); }
 
 /* Additional semantic helpers */
 .bg-error-soft { background: color-mix(in srgb, var(--error-500) 25%, var(--color-surface)); }

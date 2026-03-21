@@ -43,7 +43,7 @@
               matTooltipPosition="below"
               (clicked)="toggleFilters()"
               variant="primary"
-              [class.bg-primary-500/10]="showFilters"
+              [class.bg-primary-soft]="showFilters"
               [icon]="'filter_list'">
             </app-base-fab-button>
             <span class="filter-badge">{{ getEnabledCount() }}</span>
@@ -83,7 +83,7 @@
             <div 
               *ngFor="let category of getCategoriesArray()"
               class="flex items-center p-2 rounded border transition-colors cursor-pointer bg-[var(--color-surface)] dark:bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] dark:hover:bg-[var(--color-surface-tertiary)] border-[var(--color-border-light)] dark:border-[var(--color-border)]"
-              [ngClass]="{ 'border-primary-500 dark:border-primary-400': isCategoryEnabled(category) }"
+              [ngClass]="{ 'border-primary': isCategoryEnabled(category) }"
               (click)="toggleCategory(category)">
               <mat-checkbox 
                 [checked]="isCategoryEnabled(category)"
@@ -136,7 +136,7 @@
             <span class="font-bold text-primary">{{ getTotalTripsCount() }}</span> trips
           </span>
           <span class="text-secondary">
-            <span class="font-bold text-success-600 dark:text-success-400">{{ getTotalEarnings() | currency }}</span> total
+            <span class="font-bold text-success">{{ getTotalEarnings() | currency }}</span> total
           </span>
         </div>
         <div *ngIf="groupedResults.length > 0">
@@ -193,7 +193,7 @@
             <div class="flex-end">
               <div class="text-right">
                 <div class="text-sm text-secondary whitespace-nowrap">{{ group.totalTrips }} trips</div>
-                <div class="text-sm font-bold text-success-600 dark:text-success-400 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
+                <div class="text-sm font-bold text-success whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
               </div>
               <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
             </div>
@@ -210,7 +210,7 @@
           </div>
           <div>
             Avg/hr:
-            <span class="font-bold text-success-700 dark:text-success-400">
+            <span class="font-bold text-success">
               {{ getGroupAvgRate(group) }}
             </span>
           </div>
@@ -223,7 +223,7 @@
           <!-- Result Header -->
           <div 
             class="p-4 card-hover border-l-4"
-            [ngClass]="getCategoryColor(result.type).replace('text-', 'border-')"
+            [ngClass]="getCategoryBorderClass(result.type)"
             (click)="toggleResult(getResultKey(result, group.month))">
             <div class="flex-between">
               <div class="flex-start">
@@ -238,7 +238,7 @@
               <div class="flex-end gap-4">
                 <div class="text-right">
                   <div class="text-sm text-secondary">{{ result.totalTrips }} trips</div>
-                  <div class="text-sm font-bold text-success-600 dark:text-success-400">{{ result.totalEarnings | currency }}</div>
+                  <div class="text-sm font-bold text-success">{{ result.totalEarnings | currency }}</div>
                 </div>
                 <mat-icon class="text-tertiary">
                   {{ isResultExpanded(getResultKey(result, group.month)) ? 'expand_less' : 'expand_more' }}
@@ -258,7 +258,7 @@
             </div>
             <div>
               Avg/hr:
-              <span class="font-bold text-success-700">
+              <span class="font-bold text-success">
                 {{ getResultAvgRate(result) }}
               </span>
             </div>

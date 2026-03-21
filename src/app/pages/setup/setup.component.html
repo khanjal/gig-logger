@@ -21,7 +21,7 @@
           <app-base-rect-button variant="primary" [icon]="'schedule'" [loading]="setting" [disabled]="setting || reloading || unsavedData" (clicked)="setDefault(spreadsheet)" *ngIf="spreadsheet.default === 'false'" [label]="'Set Default'"></app-base-rect-button>
           <app-base-rect-button variant="danger" [icon]="'link_off'" [loading]="deleting" [disabled]="deleting || reloading || unsavedData" (clicked)="confirmUnlinkSpreadsheetDialog(spreadsheet)" [label]="'Unlink'"></app-base-rect-button>
         </div>
-        <div *ngIf="unsavedData" class="mt-2 text-sm text-warning-600 dark:text-warning-400 flex items-start gap-2 py-1">
+        <div *ngIf="unsavedData" class="mt-2 text-sm text-warning flex items-start gap-2 py-1">
           <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
           <span class="flex-1">Actions disabled due to unsaved changes. Use the <strong>Refresh Data</strong> or <strong>Delete Data</strong> buttons at the bottom to override (you will lose unsaved changes).</span>
         </div>

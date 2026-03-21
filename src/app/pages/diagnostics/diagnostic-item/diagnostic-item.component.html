@@ -31,8 +31,8 @@
     </div>
     <div class="flex items-center justify-between gap-2 mt-1">
       <div class="flex flex-wrap items-center gap-2 text-sm">
-        <span *ngIf="item.place" class="px-2 py-0.5 bg-accent-soft dark:bg-accent-900/30 rounded text-xs badge-purple">{{ item.place }}</span>
-        <span *ngIf="item.name" class="px-2 py-0.5 bg-accent-variant-soft dark:bg-accent-variant-900/30 rounded text-xs badge-indigo">{{ item.name }}</span>
+        <span *ngIf="item.place" class="px-2 py-0.5 bg-accent-soft rounded text-xs badge-purple">{{ item.place }}</span>
+        <span *ngIf="item.name" class="px-2 py-0.5 bg-accent-variant-soft rounded text-xs badge-indigo">{{ item.name }}</span>
         <span *ngIf="item.exclude" class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">EXCLUDED</span>
       </div>
       <app-base-fab-button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed"
@@ -62,7 +62,7 @@
   <!-- Place Item -->
   <div *ngIf="itemType === 'place'">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-accent-soft dark:bg-accent-900/30 rounded text-xs font-mono badge-purple">ID: {{ item.rowId }}</span>
+      <span class="px-2 py-0.5 bg-accent-soft rounded text-xs font-mono badge-purple">ID: {{ item.rowId }}</span>
       <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.place }}</span>
     </div>
     <div class="flex flex-wrap items-center gap-2 mt-1 text-sm item-meta">
@@ -74,7 +74,7 @@
   <!-- Name Item -->
   <div *ngIf="itemType === 'name'">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-accent-variant-soft dark:bg-accent-variant-900/30 rounded text-xs font-mono badge-indigo">ID: {{ item.rowId }}</span>
+      <span class="px-2 py-0.5 bg-accent-variant-soft rounded text-xs font-mono badge-indigo">ID: {{ item.rowId }}</span>
       <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.name }}</span>
     </div>
     <div class="flex flex-col gap-1 mt-1 text-sm">

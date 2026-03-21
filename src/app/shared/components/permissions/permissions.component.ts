@@ -86,11 +86,11 @@ export class PermissionsComponent implements OnInit {
   getStateColor(state: PermissionState): string {
     switch (state) {
       case 'granted':
-        return 'text-success-600';
+        return 'text-success';
       case 'denied':
-        return 'text-danger-600';
+        return 'text-danger';
       case 'prompt':
-        return 'text-warning-600';
+        return 'text-warning';
       case 'checking':
         return 'text-tertiary';
       case 'unsupported':
