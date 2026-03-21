@@ -6,7 +6,7 @@
         hover:bg-primary-soft hover:border-strong focus:bg-primary-soft focus:border-strong focus:outline-none focus:ring-2 focus:ring-primary"
         [class.bg-primary]="selectedPreset === item"
         [ngClass]="{ 'dark:bg-primary': selectedPreset === item, 'dark:border-primary': selectedPreset === item }"
-        [class.text-white]="selectedPreset === item"
+        [class.text-inverse]="selectedPreset === item"
         [class.border-primary]="selectedPreset === item"
         (click)="selectRange(item)"
         (keydown.enter)="selectRange(item)"

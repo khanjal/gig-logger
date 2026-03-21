@@ -40,7 +40,7 @@
   // Primary variant - solid filled
   &.btn-primary {
     background-color: var(--primary-500);
-    color: white;
+    color: var(--color-text-inverse);
 
     &:hover:not(:disabled) {
       background-color: var(--primary-600);
@@ -88,7 +88,7 @@
   // Danger variant - red/destructive
   &.btn-danger {
     background-color: var(--error-500);
-    color: white;
+    color: var(--color-text-inverse);
 
       &:hover:not(:disabled) {
       background-color: var(--error-600);

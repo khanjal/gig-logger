@@ -74,7 +74,7 @@ bootstrapApplication(AppComponent, {
         onclick="window.location.reload()" 
         style="
           background: var(--primary-600);
-          color: white;
+            color: var(--color-text-inverse);
           border: none;
           padding: 12px 24px;
           border-radius: 4px;

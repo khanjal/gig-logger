@@ -4,7 +4,7 @@
                [style.background]="toolbarGradient">
     <div class="flex items-center">
       <button (click)="toggleMenu()"
-              class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+              class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
               aria-label="Toggle menu">
         <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
       </button>
@@ -14,7 +14,7 @@
 
     <div class="flex items-center gap-1">
       <a routerLink="/"
-         class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+         class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
          aria-label="Go to home page"
          matTooltip="Home"
          matTooltipPosition="below">
@@ -23,7 +23,7 @@
 
       <ng-container *ngIf="isAuthenticated && defaultSheet">
         <a routerLink="/trips"
-           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View trips"
            matTooltip="Trips"
            matTooltipPosition="below">
@@ -31,7 +31,7 @@
           <span *ngIf="unsavedTripsCount > 0" class="notification-badge">{{ unsavedTripsCount }}</span>
         </a>
         <a routerLink="/shifts"
-           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View shifts"
            matTooltip="Shifts"
            matTooltipPosition="below">
@@ -39,33 +39,33 @@
           <span *ngIf="unsavedShiftsCount > 0" class="notification-badge">{{ unsavedShiftsCount }}</span>
         </a>
         <a routerLink="/metrics"
-           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View metrics"
            matTooltip="Metrics"
            matTooltipPosition="below">
           <mat-icon>bar_chart</mat-icon>
         </a>
-        <a routerLink="/search"
-           class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
-           aria-label="Search"
-           matTooltip="Search"
-           matTooltipPosition="below">
+          <a routerLink="/search"
+            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+            aria-label="Search"
+            matTooltip="Search"
+            matTooltipPosition="below">
           <mat-icon>search</mat-icon>
         </a>
       </ng-container>
 
       <ng-container *ngIf="isAuthenticated && defaultSheet">
         <div class="hidden md:flex items-center gap-1">
-          <a routerLink="/stats" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View statistics" matTooltip="Statistics" matTooltipPosition="below">
+          <a routerLink="/stats" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View statistics" matTooltip="Statistics" matTooltipPosition="below">
             <mat-icon>table_chart</mat-icon>
           </a>
-          <a routerLink="/expenses" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View expenses" matTooltip="Expenses" matTooltipPosition="below">
+          <a routerLink="/expenses" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View expenses" matTooltip="Expenses" matTooltipPosition="below">
             <mat-icon>receipt_long</mat-icon>
           </a>
-          <a routerLink="/diagnostics" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View diagnostics" matTooltip="Diagnostics" matTooltipPosition="below">
+          <a routerLink="/diagnostics" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View diagnostics" matTooltip="Diagnostics" matTooltipPosition="below">
             <mat-icon>troubleshoot</mat-icon>
           </a>
-          <a routerLink="/updates" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Updates" matTooltip="Updates" matTooltipPosition="below">
+          <a routerLink="/updates" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="Updates" matTooltip="Updates" matTooltipPosition="below">
             <mat-icon>history</mat-icon>
           </a>
         </div>
@@ -76,7 +76,7 @@
       </ng-container>
 
       <a routerLink="/setup"
-         class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+         class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
          aria-label="Open settings"
          matTooltip="Settings"
          matTooltipPosition="below">
@@ -99,11 +99,11 @@
          aria-label="Main menu">
       <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-light)] text-inverse" style="background: linear-gradient(90deg, var(--primary-800), var(--primary-900));">
         <div class="flex flex-col">
-          <h2 id="menu-title" class="text-lg font-semibold leading-tight text-white">Raptor Gig</h2>
-          <div class="text-sm opacity-90 text-white">Quick logs, big insights</div>
+          <h2 id="menu-title" class="text-lg font-semibold leading-tight text-inverse">Raptor Gig</h2>
+          <div class="text-sm opacity-90 text-inverse">Quick logs, big insights</div>
         </div>
         <button (click)="closeMenu()"
-                class="flex h-9 w-9 items-center justify-center rounded-md text-inverse hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
+                class="flex h-9 w-9 items-center justify-center rounded-md text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
                 aria-label="Close menu">
           <mat-icon>close</mat-icon>
         </button>

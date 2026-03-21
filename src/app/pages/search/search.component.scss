@@ -25,7 +25,7 @@
       top: -6px;
       right: -6px;
       background-color: var(--error-500);
-      color: white;
+      color: var(--color-text-inverse);
       border-radius: 50%;
       width: 25px;
       height: 25px;
@@ -36,7 +36,7 @@
       justify-content: center;
       line-height: 1;
       box-shadow: var(--shadow-light);
-      border: 2px solid white;
+      border: 2px solid var(--color-text-inverse);
     }
   }
 
@@ -181,7 +181,7 @@
   }
 
   // Results card hover effects
-  .bg-white {
+  .bg-surface {
     transition: all 0.2s ease;
   }
 

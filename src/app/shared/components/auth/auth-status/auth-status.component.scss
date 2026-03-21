@@ -109,7 +109,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 0.75rem;
-  color: white;
+  color: var(--color-text-inverse);
   font-weight: 600;
   
   &.online {
@@ -214,7 +214,7 @@
   
   &.primary {
     background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-    color: white;
+    color: var(--color-text-inverse);
     border: none;
     
     &:hover {
@@ -236,7 +236,7 @@
   
   &.danger {
     background: linear-gradient(135deg, var(--error-500) 0%, var(--error-600) 100%);
-    color: white;
+    color: var(--color-text-inverse);
     border: none;
     
     &:hover {
@@ -510,7 +510,7 @@ mat-chip {
 // Dark mode: force chip text to white for readability
 :host-context(html.theme-dark) {
   mat-chip {
-    --chip-text-color: white;
+    --chip-text-color: var(--color-text-inverse);
   }
 }
 

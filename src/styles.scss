@@ -151,6 +151,10 @@ html.theme-dark .bg-accent-variant-soft { background: color-mix(in srgb, var(--c
   --color-border-active: var(--primary-600);
   --color-primary-overlay-5: color-mix(in srgb, var(--primary-600) 5%, var(--color-surface));
 
+  /* Meta theme colors used by ThemeService for the browser theme-color meta tag */
+  --meta-theme-light: var(--primary-600);
+  --meta-theme-dark: var(--primary-800);
+
   /* Expanded semantic token map (use these across components/templates) */
   --color-primary: var(--primary-600);
   --color-primary-variant: var(--primary-700);
@@ -508,7 +512,7 @@ html.theme-dark {
       
       .mat-calendar-body-selected {
         background-color: var(--primary-600) !important;
-        color: white !important;
+        color: var(--color-text-inverse) !important;
       }
     }
   }

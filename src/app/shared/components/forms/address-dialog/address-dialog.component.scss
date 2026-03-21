@@ -237,7 +237,7 @@
 // Save button styling
 .save-button {
   background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
-  color: white;
+  color: var(--color-text-inverse);
   border: none;
   
   &:hover {

@@ -295,13 +295,13 @@
         document.body.innerHTML = 
           '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; background: var(--color-surface); padding: 20px;">' +
             errorMessage + details +
-            '<button onclick="clearCacheAndReload()" style="background: var(--error-500); color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px;">' +
+            '<button onclick="clearCacheAndReload()" style="background: var(--error-500); color: var(--color-text-inverse); border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px;">' +
               'Clear Cache & Reload' +
             '</button>' +
-            '<button onclick="window.location.reload(true)" style="background: var(--primary-600); color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px;">' +
+            '<button onclick="window.location.reload(true)" style="background: var(--primary-600); color: var(--color-text-inverse); border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px;">' +
               'Hard Refresh' +
             '</button>' +
-            '<button onclick="window.location.href=window.location.origin" style="background: var(--color-border); color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px;">' +
+            '<button onclick="window.location.href=window.location.origin" style="background: var(--color-border); color: var(--color-text-inverse); border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px;">' +
               'Go to Home' +
             '</button>' +
           '</div>';
