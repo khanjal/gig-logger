@@ -116,4 +116,12 @@ describe('SearchComponent', () => {
     expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Type', 'u');
     expect(result).toEqual(['DoorDash', 'Food Delivery', 'Uber Eats']);
   });
+
+  it('getFilteredAutocompleteOptions returns empty when no categories are enabled', async () => {
+    component.categoryFilters.forEach((_, key) => component.categoryFilters.set(key, false));
+
+    const result = await (component as any).getFilteredAutocompleteOptions('u');
+
+    expect(result).toEqual([]);
+  });
 });

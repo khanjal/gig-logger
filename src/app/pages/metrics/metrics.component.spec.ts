@@ -8,12 +8,16 @@ describe('MetricsComponent', () => {
   let component: MetricsComponent;
   let shiftSpy: any;
   let themeSpy: any;
+  let shiftSubject: BehaviorSubject<any[]>;
+  let themeSubject: BehaviorSubject<'light' | 'dark'>;
 
   beforeEach(async () => {
-    shiftSpy = jasmine.createSpyObj('ShiftService', ['getShiftsBetweenDates'], { shifts$: new BehaviorSubject<any[]>([]) });
+    shiftSubject = new BehaviorSubject<any[]>([]);
+    shiftSpy = jasmine.createSpyObj('ShiftService', ['getShiftsBetweenDates'], { shifts$: shiftSubject });
     shiftSpy.getShiftsBetweenDates.and.returnValue(Promise.resolve([]));
 
-    themeSpy = jasmine.createSpyObj('ThemeService', ['activeTheme$'], { activeTheme: 'light', activeTheme$: new BehaviorSubject('light').asObservable() });
+    themeSubject = new BehaviorSubject<'light' | 'dark'>('light');
+    themeSpy = jasmine.createSpyObj('ThemeService', [], { activeTheme: 'light', activeTheme$: themeSubject.asObservable() });
 
     await TestBed.configureTestingModule({
       imports: [MetricsComponent],
@@ -54,5 +58,24 @@ describe('MetricsComponent', () => {
     expect((component.distanceData.datasets[0].data as number[])[0]).toBe(10);
     expect((component.payData.datasets[0].data as number[])[0]).toBe(20);
   });
+
+  it('rebuilds chart data when the theme changes', async () => {
+    const filterSpy = spyOn(component, 'filterByDate').and.returnValue(Promise.resolve());
+
+    themeSubject.next('dark');
+
+    expect(filterSpy).toHaveBeenCalled();
+  });
+
+  it('updates chart colors and refilters when the theme changes', async () => {
+    const colorsSpy = spyOn<any>(component as any, 'updateChartColors').and.callThrough();
+    const filterSpy = spyOn(component, 'filterByDate').and.returnValue(Promise.resolve());
+
+    themeSubject.next('dark');
+
+    expect(colorsSpy).toHaveBeenCalled();
+    expect(filterSpy).toHaveBeenCalled();
+  });
+
 });
 

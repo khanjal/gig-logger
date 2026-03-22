@@ -88,7 +88,7 @@ export class PermissionsComponent implements OnInit {
       case 'granted':
         return 'text-success';
       case 'denied':
-        return 'text-danger';
+        return 'text-error';
       case 'prompt':
         return 'text-warning';
       case 'checking':

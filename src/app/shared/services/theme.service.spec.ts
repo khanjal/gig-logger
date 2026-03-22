@@ -133,4 +133,24 @@ describe('ThemeService', () => {
     expect(lightColor).toBeTruthy();
     expect(lightColor).not.toBe(darkColor);
   });
+
+  it('does not throw when theme-color meta tag is missing', () => {
+    mockMatchMedia(false);
+    document.head.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.remove());
+
+    const service = createService();
+
+    expect(() => service.setTheme('dark')).not.toThrow();
+  });
+
+  it('logs a warning when persisting preference fails', () => {
+    mockMatchMedia(false);
+    const setItemSpy = spyOn(Storage.prototype, 'setItem').and.throwError('storage unavailable');
+    const service = createService();
+
+    service.setTheme('dark');
+
+    expect(setItemSpy).toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalled();
+  });
 });

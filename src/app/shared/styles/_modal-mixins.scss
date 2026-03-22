@@ -6,31 +6,31 @@
 @mixin backdrop-blur($blur: 8px, $opacity: 0.5, $color: null) {
   backdrop-filter: blur($blur);
   -webkit-backdrop-filter: blur($blur);
-  background-color: if($color, $color, var(--modal-backdrop)) !important;
+  background-color: if($color, $color, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 60%, transparent))) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // Modal backdrop blur variations
 @mixin modal-backdrop-light {
-  @include backdrop-blur(6px, 0.4, var(--modal-backdrop));
+  @include backdrop-blur(6px, 0.4, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 55%, transparent)));
 }
 
 @mixin modal-backdrop-medium {
-  @include backdrop-blur(8px, 0.5, var(--modal-backdrop));
+  @include backdrop-blur(8px, 0.5, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 60%, transparent)));
 }
 
 @mixin modal-backdrop-strong {
-  @include backdrop-blur(10px, 0.6, var(--modal-backdrop));
+  @include backdrop-blur(10px, 0.6, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 65%, transparent)));
 }
 
 @mixin modal-backdrop-heavy {
-  @include backdrop-blur(12px, 0.7, var(--modal-backdrop));
+  @include backdrop-blur(12px, 0.7, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 70%, transparent)));
 }
 
 // Custom modal panel class backdrop
 @mixin custom-modal-backdrop($blur: 10px, $opacity: 0.6) {
   .cdk-overlay-backdrop {
-    @include backdrop-blur($blur, $opacity, var(--modal-backdrop));
+    @include backdrop-blur($blur, $opacity, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 60%, transparent)));
   }
 }
 
@@ -42,7 +42,7 @@
 // Fallback for browsers that don't support backdrop-filter
 @mixin backdrop-fallback($opacity: 0.8) {
   @supports not (backdrop-filter: blur(1px)) {
-    background-color: var(--modal-backdrop) !important;
+    background-color: var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 70%, transparent)) !important;
   }
 }
 
@@ -84,7 +84,7 @@
 
   // Dark backdrop enhancement
     ::ng-deep .cdk-overlay-dark-backdrop {
-    @include backdrop-blur(12px, 0.7, var(--modal-backdrop));
+    @include backdrop-blur(12px, 0.7, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 70%, transparent)));
   }
 
   // Smooth animations

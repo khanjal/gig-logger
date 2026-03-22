@@ -34,7 +34,10 @@
 
         var meta = document.querySelector('meta[name="theme-color"]');
         if (meta) {
-          meta.setAttribute('content', resolved === 'dark' ? 'var(--meta-theme-dark)' : 'var(--meta-theme-light)');
+          var styles = getComputedStyle(html);
+          var lightThemeColor = (styles.getPropertyValue('--meta-theme-light') || '#1976d2').trim();
+          var darkThemeColor = (styles.getPropertyValue('--meta-theme-dark') || '#0b1221').trim();
+          meta.setAttribute('content', resolved === 'dark' ? (darkThemeColor || lightThemeColor) : (lightThemeColor || darkThemeColor));
         }
       } catch (err) {
         console.warn('[WARN]: Theme bootstrap failed', err);
@@ -107,7 +110,7 @@
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   
   <!-- Enhanced service worker management is loaded via angular.json scripts array -->
-  <meta name="theme-color" content="var(--meta-theme-light)">
+  <meta name="theme-color" content="#1976d2">
   
   <style>
     /* Fallback styles for loading state */

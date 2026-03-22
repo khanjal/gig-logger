@@ -91,12 +91,12 @@
     color: var(--color-text-inverse);
 
     &:hover:not(:disabled) {
-      background-color: var(--error-600);
-      box-shadow: 0 2px 8px color-mix(in srgb, var(--error-600) 25%, transparent);
+      background-color: color-mix(in srgb, var(--error-500) 88%, black);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--error-500) 30%, transparent);
     }
 
     &:active:not(:disabled) {
-      background-color: var(--error-700);
+      background-color: color-mix(in srgb, var(--error-500) 76%, black);
       transform: scale(0.98);
     }
   }

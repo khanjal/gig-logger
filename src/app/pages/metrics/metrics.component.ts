@@ -450,13 +450,14 @@ export class MetricsComponent implements OnInit, OnDestroy {
     this.dexieSubscriptions.push(
       this.shiftService.shifts$.subscribe(shifts => {
         this.shifts = shifts;
-        this.filterByDate();
+        void this.filterByDate();
       })
     );
     
-    // Subscribe to theme changes to update chart colors
+    // Rebuild charts on theme changes so dataset colors refresh too.
     this.themeSubscription = this.themeService.activeTheme$.subscribe(() => {
       this.updateChartColors();
+      void this.filterByDate();
     });
   }
 

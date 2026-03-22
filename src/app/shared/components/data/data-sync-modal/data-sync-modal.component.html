@@ -15,7 +15,7 @@
                     <span [ngClass]="{
                         'text-success': message.type === 'info',
                         'text-warning': message.type === 'warning',
-                        'text-danger': message.type === 'error'
+                        'text-error': message.type === 'error'
                     }" class="ml-2 flex-1">{{ message.text }}</span>
                 </div>
             </ng-container>

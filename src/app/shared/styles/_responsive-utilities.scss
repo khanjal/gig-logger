@@ -272,7 +272,7 @@ $tablet: 768px;
   @include padding-responsive(1rem);
   @include border-radius-responsive(12px);
   background: linear-gradient(135deg, var(--primary-50) 0%, var(--secondary-50) 100%);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-light);
 }
 
@@ -338,8 +338,8 @@ $tablet: 768px;
   border: 0;
 }
 
-  focus-visible {
-    &:focus-visible {
+.focus-visible {
+  &:focus-visible {
     outline: 2px solid var(--accent-500);
     outline-offset: 2px;
   }
@@ -349,7 +349,7 @@ $tablet: 768px;
 .scrollable-responsive {
   height: 200px;
   @include border-radius-responsive(8px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   
   @media (max-width: $tablet) {
     height: 150px;
