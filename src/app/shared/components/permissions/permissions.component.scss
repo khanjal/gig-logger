@@ -90,10 +90,10 @@
   color: var(--color-warning);
 }
 
-.status-badge.text-tertiary {
-  background: color-mix(in srgb, var(--color-surface) 88%, var(--color-surface));
-  color: var(--gray-700);
-}
+  .status-badge.text-tertiary {
+    background: color-mix(in srgb, var(--color-surface) 88%, var(--color-surface));
+    color: var(--color-text-primary);
+  }
 
 .status-icon {
   font-size: 1.25rem;
@@ -138,7 +138,7 @@
     }
   }
 
-  .help-icon {
+    .help-icon {
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
@@ -171,11 +171,11 @@
     }
   }
 
-  .footer-icon {
+    .footer-icon {
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
-    color: var(--gray-400);
+    color: var(--color-text-secondary);
     flex-shrink: 0;
     margin-top: 0.125rem;
   }
@@ -212,7 +212,7 @@
 
   .status-badge.text-tertiary {
     background: color-mix(in srgb, var(--color-surface-2) 45%, transparent);
-    color: var(--gray-200);
+    color: var(--color-text-tertiary);
   }
 
   .permission-help {
@@ -238,7 +238,7 @@
   }
 
   .permissions-footer .footer-icon {
-    color: var(--gray-300);
+    color: var(--color-text-secondary);
   }
 
   .permissions-footer button.mat-stroked-button {

@@ -5,14 +5,29 @@
     color: var(--color-text-primary);
 }
 
+/* Terminal area should use a themed elevated surface for contrast */
+.sync-terminal {
+    background: var(--color-surface-elevated) !important;
+    color: var(--color-text-inverse) !important;
+    border-radius: 8px;
+}
+
+.sync-terminal .text-success,
+.sync-terminal .text-warning,
+.sync-terminal .text-error {
+    /* Ensure message colors are readable on dark background */
+    color: inherit !important;
+    opacity: 0.95;
+}
+
 button[disabled] {
     opacity: 0.7 !important;
     cursor: not-allowed !important;
-    background: var(--gray-400) !important;
-    color: var(--gray-700) !important;
+    background: var(--color-surface-tertiary) !important;
+    color: var(--color-text-disabled) !important;
     
     &:hover {
-        background: var(--gray-400) !important;
+        background: var(--color-surface-tertiary) !important;
     }
 }
 
@@ -22,11 +37,11 @@ button[disabled] {
     }
     
     button[disabled] {
-        background: var(--gray-600) !important;
-        color: var(--gray-300) !important;
+        background: var(--color-surface-secondary) !important;
+        color: var(--color-text-disabled) !important;
         
         &:hover {
-            background: var(--gray-600) !important;
+            background: var(--color-surface-secondary) !important;
         }
     }
 }
