@@ -7,17 +7,24 @@
 
 /* Terminal area should use a themed elevated surface for contrast */
 .sync-terminal {
-    background: var(--color-surface-elevated) !important;
-    color: var(--color-text-inverse) !important;
+    background: var(--terminal-bg) !important;
+    color: var(--terminal-text) !important;
     border-radius: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+    padding: 0.75rem;
+    white-space: pre-wrap;
 }
 
-.sync-terminal .text-success,
-.sync-terminal .text-warning,
+.sync-terminal .text-success {
+    color: var(--terminal-success) !important;
+}
+
+.sync-terminal .text-warning {
+    color: var(--terminal-warning) !important;
+}
+
 .sync-terminal .text-error {
-    /* Ensure message colors are readable on dark background */
-    color: inherit !important;
-    opacity: 0.95;
+    color: var(--terminal-error) !important;
 }
 
 button[disabled] {
