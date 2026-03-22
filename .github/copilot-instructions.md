@@ -147,6 +147,30 @@ Migration note: Replace all remaining `<app-base-button>` usages with the approp
 - **API communication** through centralized `ApiService` with typed endpoints
 - **Error handling** with `LoggerService` and `MatSnackBar` for user feedback
 
+### Template-invoked functions — performance warning
+Be careful: any method called from a template (for example `{{ getTotalEarnings() }}` or calls used in bindings like `[ngClass]="getCategoryBorderClass(type)"`) will be executed on every Angular change-detection pass. In lists (`*ngFor`) or deeply nested components this can result in many repeated computations and visible performance regressions.
+
+Mitigations and preferred patterns:
+- Precompute expensive values when the underlying data changes and expose them as properties (e.g. compute totals/averages when `searchResults` or `groupedResults` are set).
+- For pure lookups, build a `Map` or attach lookup values to the model objects once instead of computing in a template-bound function.
+- Use pure pipes for stateless transformations that are safe to cache.
+- Prefer `ChangeDetectionStrategy.OnPush` for components that receive immutable inputs to reduce CD frequency.
+- Add `trackBy` functions on `*ngFor` to avoid unnecessary DOM updates.
+- Use RxJS transformations (`.pipe(map(...))`) to derive values and bind with the `async` pipe instead of calling functions from the template.
+
+Examples:
+```
+// precompute totals when results update
+this.totalEarnings = results.reduce((s, r) => s + (r.totalEarnings || 0), 0);
+// template: {{ totalEarnings | currency }}
+
+// build a lookup once
+this.categoryClassMap = new Map(categories.map(c => [c, computeClass(c)]));
+// template: [ngClass]="categoryClassMap.get(category)"
+```
+
+Add this guidance to PR descriptions when making template/DOM or performance-related changes.
+
 ### Constants & Magic Strings
 
 **Never use magic strings or magic numbers inline — extract them to a constants file.**
@@ -428,6 +452,13 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 - **Theme Service**: `ThemeService` manages theme state, persistence, and system preference detection
 
 ### Color Standards & Best Practices
+
+### Quick Color Rules (Single Source)
+- Treat this section as the only color standard source. Do not create separate color process docs unless explicitly requested.
+- Use semantic tokens/utilities only (`text-primary`, `bg-surface`, `border-soft`, `--color-*`).
+- Do not use raw hex/rgb/hsl or Tailwind palette shade classes in templates/components (`text-blue-600`, `bg-gray-50`, etc.).
+- Every visual color choice must work in both light and dark themes.
+- If no semantic utility exists, add/extend a semantic token in global styles instead of adding one-off literals in component files.
 
 **REQUIRED: Always implement both light and dark mode variants for all UI elements**
 
