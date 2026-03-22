@@ -22,19 +22,19 @@
 }
 
 .mock-toggle-label {
-  color: rgb(31 41 55); /* text-gray-800 */
+  color: var(--color-text-primary); /* text-gray-800 */
 }
 
 :host-context(html.theme-dark) {
   .mock-toggle-label {
-    color: rgb(229 231 235); /* text-gray-200 */
+    color: var(--color-text-inverse);
   }
 
   .mock-warning {
-    background-color: rgba(250, 204, 21, 0.06); /* subtle orange tint in dark */
+    background-color: color-mix(in srgb, var(--warning-500) 6%, transparent);
   }
 
   .mock-warning-text {
-    color: rgb(250 204 21);
+    color: var(--warning-500);
   }
 }

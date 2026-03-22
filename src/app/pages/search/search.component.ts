@@ -330,6 +330,13 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get border color class for a category.
+   */
+  getCategoryBorderClass(category: SearchCategory): string {
+    return this.searchService.getCategoryBorderClass(category);
+  }
+
+  /**
    * Get categories as array for template iteration
    */
   getCategoriesArray(): SearchCategory[] {

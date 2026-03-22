@@ -21,3 +21,29 @@
   border: 2px solid var(--color-border-dark);
   border-left: 8px solid var(--warning-500);
 }
+
+.shift-gradient-primary {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-primary) 5%, var(--color-surface)),
+    var(--color-surface)
+  );
+}
+
+.shift-gradient-success {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-success) 5%, var(--color-surface)),
+    var(--color-surface)
+  );
+}
+
+.shift-header-primary,
+.shift-action-primary {
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+}
+
+.shift-header-success,
+.shift-action-success {
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+}

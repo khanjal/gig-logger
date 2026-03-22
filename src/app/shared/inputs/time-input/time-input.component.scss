@@ -220,7 +220,7 @@ mat-form-field {
     
     &.selected {
       background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-      color: white;
+      color: var(--color-text-inverse);
       border-color: var(--primary-600);
     }
     
