@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
@@ -43,7 +44,8 @@ export class ShiftsComponent implements OnInit {
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    protected authService: AuthGoogleService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -122,6 +124,12 @@ export class ShiftsComponent implements OnInit {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this._snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue

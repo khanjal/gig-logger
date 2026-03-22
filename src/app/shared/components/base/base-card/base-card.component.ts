@@ -34,8 +34,8 @@ export class BaseCardComponent {
   /** Subtitle text */
   @Input() subtitle?: string;
 
-  /** Variant: default, elevated, outlined */
-  @Input() variant: 'default' | 'elevated' | 'outlined' = 'default';
+  /** Variant: default, elevated, outlined, warning */
+  @Input() variant: 'default' | 'elevated' | 'outlined' | 'warning' = 'default';
 
   /** Padding size: sm, md, lg */
   @Input() padding: 'sm' | 'md' | 'lg' = 'md';

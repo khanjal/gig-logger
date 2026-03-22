@@ -36,6 +36,7 @@ import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trip
 import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { AuthGoogleService } from '@services/auth-google.service';
 
 @Component({
     selector: 'app-trip',
@@ -86,7 +87,8 @@ export class TripComponent implements OnInit, OnDestroy {
       private _uiPreferences: UiPreferencesService,
       private logger: LoggerService,
       private _route: ActivatedRoute,
-      private _router: Router
+        private _router: Router,
+        protected authService: AuthGoogleService
     ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
@@ -191,6 +193,12 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async loadSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this._snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
@@ -204,6 +212,12 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this._snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      return;
+    }
+
     this.saving = true;
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',

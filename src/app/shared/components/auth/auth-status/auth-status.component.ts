@@ -41,7 +41,7 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   accessTokenPreview = '';
   lastUpdated = new Date();
   // Reconnect notice when logged out but sheets exist
-  showReconnectNotice = false;
+  // reconnect notice removed from UI
   
   // use centralized session constants for keys
 
@@ -88,28 +88,17 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
       this.accessTokenPreview = 'None';
     }
     
-    // Check overall authentication
-    this.isAuthenticated = await this.authService.isAuthenticated();
+    // Check overall authentication (sync capability)
+    this.isAuthenticated = await this.authService.canSync();
     // Get user ID using shared utility
     this.userId = getCurrentUserId();
     this.lastUpdated = new Date();
 
-    // Decide whether to show a reconnect notice: when not authenticated,
-    // there is at least one spreadsheet, and the user did not intentionally log out/delete data.
-    try {
-      const sheets = await this.spreadsheetService.getSpreadsheets();
-      const hasSheets = !!(sheets && sheets.length > 0);
-      const intentional = localStorage.getItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT) === 'true';
-
-      this.showReconnectNotice = !this.isAuthenticated && hasSheets && !intentional;
-    } catch (e) {
-      this.showReconnectNotice = false;
-    }
+    // No reconnect notice logic here; message is shown on the Setup page instead.
   }
 
   onReconnect() {
-    // Clear any intentional flag and start login flow
-    try { localStorage.removeItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT); } catch (e) {}
+    // Start login flow
     this.authService.login();
   }
 

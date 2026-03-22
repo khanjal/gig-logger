@@ -99,3 +99,20 @@ nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+
+.notification-dot {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-warning, var(--warning-500));
+  color: var(--color-text-on-warning, var(--color-text-inverse));
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.35rem;
+  box-shadow: 0 2px 6px var(--shadow-medium);
+}

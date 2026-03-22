@@ -1,5 +1,4 @@
 export const SESSION_CONSTANTS = {
-  INTENTIONAL_LOGOUT: 'rg-intentional-logout',
   IS_AUTHENTICATED: 'rg-is-authenticated',
   AUTHENTICATED_USER_ID: 'rg-authenticated-user-id',
   USER_ID: 'rg-user-id',

@@ -90,7 +90,7 @@ export class SetupComponent {
 
 
   async ngOnInit(): Promise<void> {
-    this.isAuthenticated = await this.authService.isAuthenticated();
+    this.isAuthenticated = await this.authService.canSync();
     this.load();
     // Load formatted version string (YYYYMMDD.build)
     this.version = await this.versionService.getFormattedVersion();
@@ -168,7 +168,6 @@ export class SetupComponent {
 
   public async deleteAllData() {
     this.deleting = true;
-    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     this._spreadsheetService.deleteData();
 
     await this._timerService.delay(1000);
@@ -213,7 +212,6 @@ export class SetupComponent {
 
   public async deleteLocalData() {
     this.deleting = true;
-    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     this._spreadsheetService.deleteLocalData();
     this.deleting = false;    
     localStorage.clear();
@@ -237,6 +235,12 @@ export class SetupComponent {
   }
 
   async loadSheetDialog(inputValue: string) {
+        const canSync = await this.authService.canSync();
+        if (!canSync) {
+          this._snackBar.open('Login to load/save spreadsheet data', 'Dismiss', { duration: 5000 });
+          return;
+        }
+
         let dialogRef = this.dialog.open(DataSyncModalComponent, {
             panelClass: 'custom-modalbox',
             data: inputValue

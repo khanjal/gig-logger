@@ -38,6 +38,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   
   defaultSheet: ISpreadsheet | undefined;
   isAuthenticated = false;
+  // True when user can't sync remotely but has local spreadsheets
+  localOnlyMode = false;
   isLoading = false;
   currentRoute = '/';
   isMenuOpen = false;
@@ -131,7 +133,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private async initializeHeader(): Promise<void> {
     // Check authentication state
-    this.isAuthenticated = await this.authService.isAuthenticated();
+    this.isAuthenticated = await this.authService.canSync();
+    // Determine whether the app is in local-only mode (signed out or offline but sheets exist)
+    try {
+      const sheets = (await this._spreadsheetService.getSpreadsheets()) || [];
+      this.localOnlyMode = !this.isAuthenticated && sheets.length > 0;
+    } catch (e) {
+      this.localOnlyMode = false;
+    }
+
+    // Regardless of auth, try to locate the default sheet so navigation can show when a sheet exists
+    try {
+      const defaultSheets = (await this._spreadsheetService.querySpreadsheets('default', 'true')) || [];
+      this.defaultSheet = defaultSheets[0];
+    } catch (e) {
+      // ignore - defaultSheet remains whatever it was
+    }
 
     // Load initial data if authenticated
     if (this.isAuthenticated) {
@@ -169,12 +186,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   
   private async updateUnsavedCounts() {
     // Check authentication state before updating
-    this.isAuthenticated = await this.authService.isAuthenticated();
-    if (!this.isAuthenticated) {
-      this.unsavedTripsCount = 0;
-      this.unsavedShiftsCount = 0;
-      return;
-    }
+    this.isAuthenticated = await this.authService.canSync();
     const trips = (await this.tripService.getUnsaved()) || [];
     const shifts = (await this.shiftService.getUnsavedShifts()) || [];
     this.unsavedTripsCount = trips.length;

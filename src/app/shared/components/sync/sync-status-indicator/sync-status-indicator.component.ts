@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
 import { SyncStatusService } from '@services/sync-status.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 
@@ -60,7 +61,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    protected authService: AuthGoogleService
   ) {}
 
   ngOnInit(): void {
@@ -141,6 +143,12 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
 
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this.snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      return;
+    }
+
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
       panelClass: 'custom-modalbox',
       data: 'save'
@@ -163,6 +171,12 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
         verticalPosition: 'top',
         panelClass: ['error-snackbar']
       });
+      return;
+    }
+
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this.snackBar.open('Login to load changes', 'Dismiss', { duration: 5000 });
       return;
     }
 

@@ -22,6 +22,7 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ActionEnum } from '@enums/action.enum';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -84,7 +85,8 @@ export class ExpensesComponent implements OnInit {
     private expensesService: ExpensesService,
     private unsavedDataService: UnsavedDataService,
     public dialog: MatDialog,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    protected authService: AuthGoogleService
   ) {}
 
   async ngOnInit() {
@@ -302,6 +304,12 @@ export class ExpensesComponent implements OnInit {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this._snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
