@@ -77,17 +77,17 @@
 
 .status-badge.text-success {
   background: color-mix(in srgb, var(--success-500) 12%, var(--color-surface));
-  color: var(--success-800);
+  color: var(--color-success);
 }
 
-.status-badge.text-danger {
+.status-badge.text-error {
   background: color-mix(in srgb, var(--error-500) 12%, var(--color-surface));
-  color: var(--error-800);
+  color: var(--color-error);
 }
 
 .status-badge.text-warning {
   background: color-mix(in srgb, var(--warning-500) 12%, var(--color-surface));
-  color: var(--warning-800);
+  color: var(--color-warning);
 }
 
 .status-badge.text-tertiary {
@@ -197,17 +197,17 @@
 
   .status-badge.text-success {
     background: color-mix(in srgb, var(--success-500) 18%, transparent);
-    color: var(--success-200);
+    color: var(--color-success);
   }
 
-  .status-badge.text-danger {
+  .status-badge.text-error {
     background: color-mix(in srgb, var(--error-500) 18%, transparent);
-    color: var(--error-200);
+    color: var(--color-error);
   }
 
   .status-badge.text-warning {
     background: color-mix(in srgb, var(--warning-500) 18%, transparent);
-    color: var(--warning-200);
+    color: var(--color-warning);
   }
 
   .status-badge.text-tertiary {

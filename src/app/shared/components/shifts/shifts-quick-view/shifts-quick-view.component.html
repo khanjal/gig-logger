@@ -25,7 +25,7 @@
           'text-info': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
           'text-error': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
           'text-warning': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
-          'text-warning': duplicateShift
+          'text-accent': duplicateShift
         }">
         @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
         @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }

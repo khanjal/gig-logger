@@ -175,12 +175,10 @@ export class MetricsComponent implements OnInit, OnDestroy {
   private getTextColor(): string {
     // Provide sensible fallbacks depending on the active theme so tests
     // and non-browser environments get consistent values.
-    const active = (this.themeService && (this.themeService as any).activeTheme) ? (this.themeService as any).activeTheme : undefined;
     return this.cssVar('--color-text-primary');
   }
 
   private getGridColor(): string {
-    const active = (this.themeService && (this.themeService as any).activeTheme) ? (this.themeService as any).activeTheme : undefined;
     return this.cssVar('--color-border');
   }
 
@@ -190,7 +188,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
       if (typeof document === 'undefined') return fallback ?? '';
       const v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
       return v || (fallback ?? '');
-    } catch (e) {
+    } catch {
       return fallback ?? '';
     }
   }
