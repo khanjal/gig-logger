@@ -15,10 +15,11 @@ describe('SearchComponent', () => {
   let viewportSpy: jasmine.SpyObj<ViewportScroller>;
 
   beforeEach(async () => {
-    searchServiceSpy = jasmine.createSpyObj('SearchService', ['searchMultipleCategories', 'groupByMonth', 'getCategoryColor', 'getCategoryIcon']);
+    searchServiceSpy = jasmine.createSpyObj('SearchService', ['searchMultipleCategories', 'groupByMonth', 'getCategoryColor', 'getCategoryBorderClass', 'getCategoryIcon']);
     searchServiceSpy.searchMultipleCategories.and.returnValue(Promise.resolve([]));
     searchServiceSpy.groupByMonth.and.returnValue([]);
-    searchServiceSpy.getCategoryColor.and.returnValue('text-blue-600');
+    searchServiceSpy.getCategoryColor.and.returnValue('text-primary');
+    searchServiceSpy.getCategoryBorderClass.and.returnValue('border-primary');
     searchServiceSpy.getCategoryIcon.and.returnValue('place');
 
     dropdownDataSpy = jasmine.createSpyObj('DropdownDataService', ['filterDropdown']);
@@ -114,5 +115,13 @@ describe('SearchComponent', () => {
     expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Service', 'u');
     expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Type', 'u');
     expect(result).toEqual(['DoorDash', 'Food Delivery', 'Uber Eats']);
+  });
+
+  it('getFilteredAutocompleteOptions returns empty when no categories are enabled', async () => {
+    component.categoryFilters.forEach((_, key) => component.categoryFilters.set(key, false));
+
+    const result = await (component as any).getFilteredAutocompleteOptions('u');
+
+    expect(result).toEqual([]);
   });
 });

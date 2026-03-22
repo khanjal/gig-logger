@@ -28,7 +28,7 @@
     
     @media (max-width: 768px) {
         border-radius: 8px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-light);
         
         // Hide table on small screens, show card layout instead
         mat-table {
@@ -56,7 +56,7 @@ mat-table {
     overflow: hidden;
     
     @media (min-width: 769px) {
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-light);
     }
 }
 
@@ -90,11 +90,11 @@ mat-row:nth-child(odd){
 // Enhanced header styling
 mat-header-row {
     background: linear-gradient(135deg, var(--primary-600) 0%, var(--secondary-600) 100%);
-    color: white;
+    color: var(--color-text-inverse);
     font-weight: 600;
     
     mat-header-cell {
-        color: white;
+        color: var(--color-text-inverse);
         font-weight: 600;
         font-size: 0.95rem;
         letter-spacing: 0.5px;

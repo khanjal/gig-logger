@@ -19,7 +19,7 @@ $touch-target-size: 44px;
 
 // Enhanced form styling
 .uber-form {
-    background: linear-gradient(145deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 95%, white) 100%);
+    background: linear-gradient(145deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 95%, var(--color-surface)) 100%);
     border-radius: $form-border-radius;
     padding: 1.5rem;
     margin: 0 auto 2rem;
@@ -27,8 +27,8 @@ $touch-target-size: 44px;
     max-width: 750px;
     box-shadow: 
         var(--shadow-medium),
-        var(--shadow-sm);
-    border: 1px solid color-mix(in srgb, white 10%, transparent);
+        var(--shadow-light);
+    border: 1px solid color-mix(in srgb, var(--color-surface) 10%, transparent);
     
     @media (min-width: 768px) {
         padding: 2rem;

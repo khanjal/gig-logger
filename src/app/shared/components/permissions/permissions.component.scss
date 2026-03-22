@@ -71,28 +71,27 @@
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--color-surface) 92%, white);
+  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-surface));
   width: fit-content;
 }
 
-.status-badge.text-green-600 {
-  background: color-mix(in srgb, var(--success-500) 12%, white);
-  color: var(--success-800);
+.status-badge.text-success {
+  background: color-mix(in srgb, var(--success-500) 12%, var(--color-surface));
+  color: var(--color-success);
 }
 
-.status-badge.text-red-600 {
-  background: color-mix(in srgb, var(--error-500) 12%, white);
-  color: var(--error-800);
+.status-badge.text-error {
+  background: color-mix(in srgb, var(--error-500) 12%, var(--color-surface));
+  color: var(--color-error);
 }
 
-.status-badge.text-yellow-600 {
-  background: color-mix(in srgb, var(--warning-500) 12%, white);
-  color: var(--warning-800);
+.status-badge.text-warning {
+  background: color-mix(in srgb, var(--warning-500) 12%, var(--color-surface));
+  color: var(--color-warning);
 }
 
-.status-badge.text-gray-500,
-.status-badge.text-gray-400 {
-  background: color-mix(in srgb, var(--color-surface) 88%, white);
+.status-badge.text-tertiary {
+  background: color-mix(in srgb, var(--color-surface) 88%, var(--color-surface));
   color: var(--gray-700);
 }
 
@@ -164,10 +163,10 @@
   button.mat-stroked-button {
     border-color: var(--color-border-light);
     color: var(--color-text-primary);
-    background: color-mix(in srgb, var(--color-surface) 90%, white);
+    background: color-mix(in srgb, var(--color-surface) 90%, var(--color-surface));
 
     &:hover {
-      background: color-mix(in srgb, var(--color-surface) 75%, white);
+      background: color-mix(in srgb, var(--color-surface) 75%, var(--color-surface));
       border-color: var(--color-border);
     }
   }
@@ -196,23 +195,22 @@
     background: color-mix(in srgb, var(--color-surface-2) 35%, transparent);
   }
 
-  .status-badge.text-green-600 {
+  .status-badge.text-success {
     background: color-mix(in srgb, var(--success-500) 18%, transparent);
-    color: var(--success-200);
+    color: var(--color-success);
   }
 
-  .status-badge.text-red-600 {
+  .status-badge.text-error {
     background: color-mix(in srgb, var(--error-500) 18%, transparent);
-    color: var(--error-200);
+    color: var(--color-error);
   }
 
-  .status-badge.text-yellow-600 {
+  .status-badge.text-warning {
     background: color-mix(in srgb, var(--warning-500) 18%, transparent);
-    color: var(--warning-200);
+    color: var(--color-warning);
   }
 
-  .status-badge.text-gray-500,
-  .status-badge.text-gray-400 {
+  .status-badge.text-tertiary {
     background: color-mix(in srgb, var(--color-surface-2) 45%, transparent);
     color: var(--gray-200);
   }

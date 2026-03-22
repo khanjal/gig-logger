@@ -43,7 +43,7 @@
     &--active,
     &.active {
         transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 8px var(--shadow-medium);
     }
     
     @media (min-width: 769px) {
@@ -79,7 +79,7 @@
     
     &--selected {
         background-color: var(--accent-color);
-        color: white;
+        color: var(--color-text-inverse);
     }
 }
 
@@ -154,7 +154,7 @@
             
             &:hover {
                 transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 4px 12px var(--shadow-medium);
             }
             
             @media (max-width: 768px) {
@@ -198,7 +198,7 @@
     // Primary action button styling
     .btn-primary {
         background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-        color: white;
+        color: var(--color-text-inverse);
         border: none;
           &:hover {
             background: linear-gradient(135deg, color.adjust($primary-color, $lightness: -5%) 0%, color.adjust($primary-color, $lightness: -15%) 100%);
@@ -220,7 +220,7 @@
         border: 2px solid $primary-color;
           &:hover {
             background: $primary-color;
-            color: white;
+                        color: var(--color-text-inverse);
         }
         
         &:disabled {
@@ -235,7 +235,7 @@
     // Danger/delete action button styling
     .btn-danger {
         background: linear-gradient(135deg, $error-color 0%, color.adjust($error-color, $lightness: -10%) 100%);
-        color: white;
+        color: var(--color-text-inverse);
         border: none;
         
         &:hover {

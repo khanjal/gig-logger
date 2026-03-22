@@ -75,7 +75,6 @@ export class MockLocationService {
         }
       }
     }
-
     if (stored) {
       try {
         return JSON.parse(stored);

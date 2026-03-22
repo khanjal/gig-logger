@@ -56,6 +56,62 @@
   }
 }
 
+/* Semantic utility classes for colors and overlays */
+@layer components {
+  /* Text */
+  .text-success { color: var(--color-success); }
+  .text-warning { color: var(--color-warning); }
+  .text-error { color: var(--color-error); }
+  .text-info { color: var(--color-primary); }
+  .text-accent { color: var(--color-accent); }
+  .text-accent-variant { color: var(--color-accent-variant); }
+
+  /* Solid background helpers (semantic) */
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-error { background-color: var(--color-error); }
+  .bg-success { background-color: var(--color-success); }
+  .bg-warning { background-color: var(--color-warning); }
+
+  /* Background soft / translucent variants (light/dark aware) */
+  .bg-success-soft { background: color-mix(in srgb, var(--color-success) 25%, var(--color-surface)); }
+  .bg-success-soft:hover { background: color-mix(in srgb, var(--color-success) 35%, var(--color-surface)); }
+  .bg-primary-soft { background: color-mix(in srgb, var(--primary-600) 25%, var(--color-surface)); }
+  .bg-primary-soft:hover { background: color-mix(in srgb, var(--primary-600) 35%, var(--color-surface)); }
+  .bg-warning-soft { background: color-mix(in srgb, var(--warning-500) 25%, var(--color-surface)); }
+  .bg-warning-soft:hover { background: color-mix(in srgb, var(--warning-500) 35%, var(--color-surface)); }
+  .bg-accent-soft { background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface)); }
+  .bg-accent-soft:hover { background: color-mix(in srgb, var(--color-accent) 28%, var(--color-surface)); }
+  .bg-accent-variant-soft { background: color-mix(in srgb, var(--color-accent-variant) 18%, var(--color-surface)); }
+  .bg-accent-variant-soft:hover { background: color-mix(in srgb, var(--color-accent-variant) 28%, var(--color-surface)); }
+
+  /* Borders */
+  .border-error { border-color: var(--color-error); }
+  .border-warning { border-color: var(--color-warning); }
+  .border-primary { border-color: var(--color-primary); }
+  .border-success { border-color: var(--color-success); }
+  .border-info { border-color: var(--color-primary); }
+  .border-accent { border-color: var(--color-accent); }
+
+  /* Combined helpers */
+  .badge-success { background: var(--color-success); color: var(--color-text-inverse); }
+}
+
+/* Dark-mode tweaks for soft backgrounds (html.theme-dark is used by ThemeService) */
+html.theme-dark .bg-success-soft { background: color-mix(in srgb, var(--color-success) 35%, var(--color-surface)); }
+html.theme-dark .bg-primary-soft { background: color-mix(in srgb, var(--primary-600) 35%, var(--color-surface)); }
+html.theme-dark .bg-warning-soft { background: color-mix(in srgb, var(--warning-500) 35%, var(--color-surface)); }
+html.theme-dark .bg-accent-soft { background: color-mix(in srgb, var(--color-accent) 28%, var(--color-surface)); }
+html.theme-dark .bg-accent-variant-soft { background: color-mix(in srgb, var(--color-accent-variant) 28%, var(--color-surface)); }
+
+/* Additional semantic helpers */
+.bg-error-soft { background: color-mix(in srgb, var(--error-500) 25%, var(--color-surface)); }
+.bg-error-soft:hover { background: color-mix(in srgb, var(--error-500) 35%, var(--color-surface)); }
+.bg-info-soft { background: color-mix(in srgb, var(--primary-600) 12%, var(--color-surface)); }
+.bg-info-soft:hover { background: color-mix(in srgb, var(--primary-600) 20%, var(--color-surface)); }
+
+.border-success { border-color: var(--color-success); }
+
+
 /* Theme CSS variables for runtime light/dark switching */
 :root {
   --color-bg: #{$background-color};
@@ -91,6 +147,46 @@
   --primary-800: #{$primary-800};
   --primary-900: #{$primary-900};
 
+  /* Semantic aliases for common derived uses */
+  --color-border-active: var(--primary-600);
+  --color-primary-overlay-5: color-mix(in srgb, var(--primary-600) 5%, var(--color-surface));
+
+  /* Meta theme colors used by ThemeService for the browser theme-color meta tag */
+  --meta-theme-light: var(--primary-600);
+  --meta-theme-dark: var(--primary-800);
+
+  /* Expanded semantic token map (use these across components/templates) */
+  --color-primary: var(--primary-600);
+  --color-primary-variant: var(--primary-700);
+  --color-primary-contrast: var(--primary-50);
+  --color-primary-hover: var(--primary-700);
+
+  --color-accent: var(--secondary-600);
+  --color-accent-variant: var(--secondary-700);
+
+  --color-link: var(--primary-600);
+  --color-link-hover: var(--primary-700);
+
+  --color-success: var(--success-500);
+  --color-warning: var(--warning-500);
+  --color-error: var(--error-500);
+
+  /* Brand color variables for third-party icons (use via var(--brand-google-*)) */
+  --brand-google-blue: #{$primary-600};
+  --brand-google-green: #{$success-color};
+  --brand-google-yellow: #{$warning-color};
+  --brand-google-red: #{$error-color};
+
+  --color-surface-elevated: color-mix(in srgb, var(--color-surface) 92%, black 8%);
+  --color-surface-muted: var(--color-surface-tertiary);
+
+  --color-border-default: var(--color-border);
+  --color-border-strong: var(--color-border-dark);
+
+  /* Overlay helpers */
+  --color-primary-overlay-10: color-mix(in srgb, var(--primary-600) 10%, var(--color-surface));
+  --color-primary-overlay-15: color-mix(in srgb, var(--primary-600) 15%, var(--color-surface));
+
   /* Secondary color tokens (purple) - used across components */
   --secondary-50: #{$secondary-50};
   --secondary-100: #{$secondary-100};
@@ -100,6 +196,16 @@
   --secondary-700: #{$secondary-dark};
   --secondary-800: #{$secondary-800};
   --secondary-900: #{$secondary-900};
+
+  /* Backwards-compatibility aliases for components still using --accent-* */
+  --accent-50: var(--secondary-50);
+  --accent-100: var(--secondary-100);
+  --accent-200: var(--secondary-200);
+  --accent-500: var(--secondary-500);
+  --accent-600: var(--secondary-600);
+  --accent-700: var(--secondary-700);
+  --accent-800: var(--secondary-800);
+  --accent-900: var(--secondary-900);
 
   --success-500: #{$success-color};
   --warning-500: #{$warning-color};
@@ -118,22 +224,22 @@ html.theme-dark {
   --color-surface: #{map.get($gray, 800)};
   --color-surface-secondary: #{map.get($gray, 700)};
   --color-surface-tertiary: #{map.get($gray, 600)};
-  --color-overlay: rgba(0, 0, 0, 0.7);
+  --color-overlay: color-mix(in srgb, var(--color-bg) 70%, transparent);
 
-  --color-text-primary: #e5e7eb;
-  --color-text-secondary: #cbd5e1;
-  --color-text-tertiary: #94a3b8;
-  --color-text-inverse: #e5e7eb;
-  --color-text-disabled: #475569;
+  --color-text-primary: #{map.get($gray, 200)};
+  --color-text-secondary: #{map.get($gray, 300)};
+  --color-text-tertiary: #{map.get($gray, 400)};
+  --color-text-inverse: #{map.get($gray, 200)};
+  --color-text-disabled: #{map.get($gray, 600)};
 
   --color-border: #{map.get($gray, 600)};
   --color-border-light: #{map.get($gray, 600)};
   --color-border-dark: #{map.get($gray, 500)};
   --color-border-focus: #{$primary-color};
 
-  --shadow-light: rgba(0, 0, 0, 0.35);
-  --shadow-medium: rgba(0, 0, 0, 0.45);
-  --shadow-heavy: rgba(0, 0, 0, 0.6);
+  --shadow-light: color-mix(in srgb, black 35%, transparent);
+  --shadow-medium: color-mix(in srgb, black 45%, transparent);
+  --shadow-heavy: color-mix(in srgb, black 60%, transparent);
 
   // Override primary colors for better visibility in dark mode
   --primary-600: #60a5fa; // Lighter blue for links
@@ -277,7 +383,7 @@ html.theme-dark {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: rgba(203, 213, 225, 0.3) !important; // gray-300 with 30% opacity - very light
+        border-color: color-mix(in srgb, var(--color-border) 30%, transparent) !important; // gray-300 with 30% opacity - very light
       }
     }
     
@@ -295,7 +401,7 @@ html.theme-dark {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: rgba(203, 213, 225, 0.5) !important; // gray-300 with 50% opacity
+        border-color: color-mix(in srgb, var(--color-border) 50%, transparent) !important; // gray-300 with 50% opacity
       }
     }
     
@@ -304,12 +410,12 @@ html.theme-dark {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: #ef4444 !important;
+        border-color: var(--error-500) !important;
       }
     }
     
     &.mat-form-field-invalid .mat-mdc-floating-label {
-      color: #ef4444 !important;
+      color: var(--error-500) !important;
     }
     
     // Placeholder
@@ -347,7 +453,7 @@ html.theme-dark {
       }
       
       &.mat-selected:not(.mat-mdc-option-multiple) {
-        background-color: rgba(59, 130, 246, 0.1) !important;
+        background-color: color-mix(in srgb, var(--primary-500) 10%, transparent) !important;
         color: var(--color-text-primary) !important;
       }
     }
@@ -377,7 +483,7 @@ html.theme-dark {
 
       &.mat-selected,
       &.mdc-list-item--selected {
-        background-color: rgba(59, 130, 246, 0.08) !important;
+        background-color: color-mix(in srgb, var(--primary-500) 8%, transparent) !important;
         color: var(--color-text-primary) !important;
       }
     }
@@ -406,7 +512,7 @@ html.theme-dark {
       
       .mat-calendar-body-selected {
         background-color: var(--primary-600) !important;
-        color: white !important;
+        color: var(--color-text-inverse) !important;
       }
     }
   }
@@ -425,14 +531,14 @@ html.theme-dark {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
-      border-color: rgba(203, 213, 225, 0.3) !important;
+      border-color: color-mix(in srgb, var(--color-border) 30%, transparent) !important;
     }
     
     &:not(.mdc-text-field--focused):hover {
-      .mdc-notched-outline__leading,
+        .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: rgba(203, 213, 225, 0.5) !important;
+        border-color: color-mix(in srgb, var(--color-border) 50%, transparent) !important;
       }
     }
   }
@@ -442,7 +548,7 @@ html.theme-dark {
 html.theme-dark {
   .mat-mdc-option.mat-mdc-option-active,
   .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
-    background-color: rgba(59, 130, 246, 0.08) !important;
+    background-color: color-mix(in srgb, var(--primary-600) 8%, transparent) !important;
   }
 }
 
@@ -467,7 +573,7 @@ html.theme-dark {
   max-width: 680px !important;
   margin: 24px auto !important;
   border: 1px solid var(--color-border) !important;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.35) !important;
+  box-shadow: 0 6px 18px var(--shadow-heavy) !important;
 }
 
 @media (max-width: 640px) {
@@ -621,18 +727,18 @@ mat-card {
 
 /* Link Styles - Enhanced */
 a {
-  color: #2563eb; // blue-600 for light mode
+  color: var(--primary-600); // blue-600 for light mode
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease-in-out;
   
   &:hover {
-    color: #1d4ed8; // blue-700 for light mode
+    color: var(--primary-700); // blue-700 for light mode
     text-decoration: underline;
   }
   
   &:visited {
-    color: #2563eb; // blue-600 for light mode
+    color: var(--primary-600); // blue-600 for light mode
   }
   
   &:focus {
@@ -644,32 +750,32 @@ a {
 
 html.theme-dark {
   a {
-    color: #60a5fa; // blue-400 for dark mode
+    color: var(--primary-600); // blue-400 for dark mode
     
     &:hover {
-      color: #93c5fd; // blue-300 for dark mode
+      color: var(--primary-700); // blue-300 for dark mode
     }
     
     &:visited {
-      color: #60a5fa; // blue-400 for dark mode
+      color: var(--primary-600); // blue-400 for dark mode
     }
   }
 }
 
 /* Link color utility class - use instead of hardcoded text-blue-600 */
 .link-color {
-  color: #2563eb; // blue-600 for light mode
+  color: var(--primary-600); // blue-600 for light mode
   
   &:hover {
-    color: #1d4ed8; // blue-700 for light mode
+    color: var(--primary-700); // blue-700 for light mode
   }
 }
 
 html.theme-dark .link-color {
-  color: #60a5fa; // blue-400 for dark mode
+  color: var(--primary-600); // blue-400 for dark mode
   
   &:hover {
-    color: #93c5fd; // blue-300 for dark mode
+    color: var(--primary-700); // blue-300 for dark mode
   }
 }
 
@@ -869,7 +975,7 @@ html.theme-dark .link-color {
 /* Material Date Picker Overlay - Critical Styles for Immediate Application */
 /* These styles ensure the date picker overlay is styled correctly from the moment it appears */
 .mat-datepicker-content {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 8px 32px color-mix(in srgb, black 12%, transparent) !important;
   border-radius: 12px !important;
   overflow: hidden !important;
   background-color: $background-card !important;
@@ -895,7 +1001,7 @@ html.theme-dark .link-color {
 
 /* Date Picker Backdrop - Only apply to date picker overlays */
 .cdk-overlay-pane:has(.mat-datepicker-content) ~ .cdk-overlay-backdrop {
-  background-color: rgba(0, 0, 0, 0.32) !important;
+  background-color: color-mix(in srgb, black 32%, transparent) !important;
 }
 
 /* Date Picker Positioning - Prevent FOUC (Flash of Unstyled Content) */
@@ -968,12 +1074,12 @@ html.theme-dark {
 .split-trip-dialog .mdc-dialog__surface {
   border-radius: 12px !important;
   overflow: hidden;
-  background: var(--color-surface, #ffffff) !important;
+  background: var(--color-surface) !important;
 }
 
 html.theme-dark .split-trip-dialog .mat-mdc-dialog-container,
 html.theme-dark .split-trip-dialog .mdc-dialog__surface {
-  background: var(--color-surface, #1e293b) !important;
+  background: var(--color-surface) !important;
 }
 
 /* Split dialog specific dark mode fixes - use panelClass for precise targeting */
@@ -984,7 +1090,7 @@ html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-label-wrapper,
 html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-label-content span,
 html.theme-dark .split-trip-dialog .mat-radio-label-content,
 html.theme-dark .split-trip-dialog .mat-radio-label {
-  color: #cbd5e1 !important;
+  color: var(--color-text-secondary) !important;
   opacity: 1 !important;
 }
 
@@ -995,7 +1101,7 @@ html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-form-field label,
 html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-radio__label,
 html.theme-dark .split-trip-dialog .mdc-radio .mdc-label,
 html.theme-dark .split-trip-dialog .mdc-form-field > label {
-  color: #cbd5e1 !important;
+  color: var(--color-text-secondary) !important;
   opacity: 1 !important;
 }
 
@@ -1003,7 +1109,7 @@ html.theme-dark .split-trip-dialog .mdc-form-field > label {
 html.theme-dark .split-trip-dialog button.mat-button,
 html.theme-dark .split-trip-dialog button[mat-button],
 html.theme-dark .split-trip-dialog .mat-mdc-button {
-  color: #94a3b8 !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 /* Aggressive fallback: force ALL text in split dialog to be light in dark mode */
@@ -1012,33 +1118,33 @@ html.theme-dark .cdk-overlay-pane.split-trip-dialog h3,
 html.theme-dark .cdk-overlay-pane.split-trip-dialog p,
 html.theme-dark .cdk-overlay-pane.split-trip-dialog label,
 html.theme-dark .cdk-overlay-pane.split-trip-dialog span {
-  color: #cbd5e1 !important;
+  color: var(--color-text-secondary) !important;
 }
 
 /* Re-override buttons to be slightly muted */
 html.theme-dark .cdk-overlay-pane.split-trip-dialog button.mat-button,
 html.theme-dark .cdk-overlay-pane.split-trip-dialog button[mat-button] {
-  color: #94a3b8 !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 /* Keep primary button white text */
 html.theme-dark .cdk-overlay-pane.split-trip-dialog button.mat-flat-button,
 html.theme-dark .cdk-overlay-pane.split-trip-dialog button[mat-flat-button] {
-  color: #fff !important;
+  color: var(--color-text-inverse) !important;
 }
 
 /* Fix radio button circles (the actual selector) in dark mode */
 html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-outer-circle,
 html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-radio__outer-circle {
-  border-color: #94a3b8 !important;
+  border-color: var(--color-border-light) !important;
 }
 
 html.theme-dark .split-trip-dialog .mat-radio-button .mat-radio-inner-circle,
 html.theme-dark .split-trip-dialog .mat-mdc-radio-button .mdc-radio__inner-circle {
-  background-color: #60a5fa !important;
+  background-color: var(--primary-600) !important;
 }
 
 html.theme-dark .split-trip-dialog .mat-radio-button.mat-radio-checked .mat-radio-outer-circle,
 html.theme-dark .split-trip-dialog .mat-mdc-radio-button.mdc-radio--checked .mdc-radio__outer-circle {
-  border-color: #60a5fa !important;
+  border-color: var(--primary-600) !important;
 }

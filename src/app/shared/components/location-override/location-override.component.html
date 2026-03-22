@@ -6,7 +6,7 @@
   variant="default"
   padding="md"
 >
-    <p class="text-gray-600 dark:text-gray-300 mb-4">
+    <p class="text-secondary mb-4">
       Override your effective location when you need the app to behave as if you're in a different area —
       useful when you can't or don't want to grant browser location permission, are working in an area different
       from your real GPS (e.g., testing), or when a VPN is affecting results.
@@ -22,19 +22,19 @@
           aria-label="Toggle location override"
           class="w-full"
         >
-          <span class="mock-toggle-label font-medium mr-1 text-gray-800 dark:text-gray-200">Enable override</span>
+          <span class="mock-toggle-label font-medium mr-1 text-secondary">Enable override</span>
         </mat-slide-toggle>
         
-        <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-orange-700 dark:text-orange-200 bg-orange-50 dark:bg-orange-950 px-3 py-2 rounded">
+        <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-warning bg-warning-soft px-3 py-2 rounded">
           <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
-          <span class="mock-warning-text text-orange-700 dark:text-orange-200 mr-1">Override active - the app will use this location for Google Places and other location-sensitive features</span>
+          <span class="mock-warning-text text-warning mr-1">Override active - the app will use this location for Google Places and other location-sensitive features</span>
         </div>
       </div>
 
       <!-- Current Real Location Display -->
-      <div class="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+      <div class="p-4 bg-warning-soft rounded-lg border border-warning">
         <div class="flex items-center justify-between mb-2">
-          <h3 class="text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
+          <h3 class="text-sm font-semibold text-primary flex items-center gap-2">
             <mat-icon class="!text-base !w-5 !h-5">my_location</mat-icon>
             Your Real Location
           </h3>
@@ -47,14 +47,14 @@
             (clicked)="getCurrentRealLocation()"
           ></app-base-fab-button>
         </div>
-        <div *ngIf="currentRealLocation" class="text-sm text-gray-700 dark:text-gray-300">
+        <div *ngIf="currentRealLocation" class="text-sm text-secondary">
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <span class="text-gray-500 dark:text-gray-400">Latitude:</span>
+              <span class="text-tertiary">Latitude:</span>
               <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lat) }}</span>
             </div>
             <div>
-              <span class="text-gray-500 dark:text-gray-400">Longitude:</span>
+              <span class="text-tertiary">Longitude:</span>
               <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lng) }}</span>
             </div>
           </div>
@@ -70,7 +70,7 @@
             Use This Location as Override
           </app-base-rect-button>
         </div>
-        <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-gray-500 dark:text-gray-400">
+        <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-tertiary">
           Location unavailable - click refresh to try again
         </div>
       </div>
@@ -78,8 +78,8 @@
       <div *ngIf="enabled" class="space-y-5">
         <!-- Preset Locations -->
         <div>
-          <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Quick Select City</label>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <label class="block text-sm font-medium mb-2 text-secondary">Quick Select City</label>
+          <p class="text-xs text-tertiary mb-3">
             Choose a popular US/Canada city to auto-fill the coordinates.
           </p>
           <mat-form-field class="w-full" appearance="outline">
@@ -102,7 +102,7 @@
 
         <!-- Manual Coordinates + Search Radius (three equal columns) -->
         <div>
-          <h3 class="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Custom Coordinates</h3>
+          <h3 class="text-sm font-semibold mb-3 text-secondary">Custom Coordinates</h3>
           <div class="grid grid-cols-3 gap-4">
             <app-base-input
               [(ngModel)]="latitude"
@@ -134,12 +134,12 @@
         </div>
 
         <!-- Current Mock Location Summary -->
-        <div class="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
-          <h3 class="text-sm font-semibold text-green-800 dark:text-green-300 mb-2 flex items-center gap-2">
+        <div class="p-4 bg-success-soft rounded-lg border border-success">
+          <h3 class="text-sm font-semibold text-success mb-2 flex items-center gap-2">
             <mat-icon class="!text-base !w-5 !h-5">check_circle</mat-icon>
             Active Override Location
           </h3>
-          <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+          <div class="text-sm text-secondary space-y-1">
             <div><strong>Name:</strong> {{ locationName || 'Unnamed' }}</div>
             <div><strong>Coordinates:</strong> {{ formatCoordinate(latitude) }}, {{ formatCoordinate(longitude) }}</div>
             <div><strong>Search Radius:</strong> {{ radius }} miles</div>
