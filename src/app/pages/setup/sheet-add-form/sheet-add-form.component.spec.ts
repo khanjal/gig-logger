@@ -10,6 +10,8 @@ describe('SheetSetupFormComponent', () => {
 
   beforeEach(async () => {
     spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets', 'update']);
+    // Default safe returns to avoid component load() TypeError during detectChanges
+    spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([]));
 
     await TestBed.configureTestingModule({
       imports: [MatSnackBarModule, SheetAddFormComponent],
@@ -29,7 +31,8 @@ describe('SheetSetupFormComponent', () => {
 
   it('loads default spreadsheet on init', async () => {
     spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'default-1' }] as any));
-    await fixture.whenStable();
+    // trigger load explicitly since ngOnInit already ran during detectChanges
+    await component.load();
     expect(component.defaultSpreadsheet?.id).toBe('default-1');
   });
 

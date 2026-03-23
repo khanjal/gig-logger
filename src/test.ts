@@ -17,6 +17,11 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
 import { AuthGoogleService } from './app/shared/services/auth-google.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SpreadsheetService } from './app/shared/services/spreadsheet.service';
+import { ShiftService } from './app/shared/services/sheets/shift.service';
+import { TripService } from './app/shared/services/sheets/trip.service';
+import { LoggerService } from './app/shared/services/logger.service';
+import { ThemeService } from './app/shared/services/theme.service';
 
 // Initialize the Angular testing environment (Angular CLI discovers specs automatically)
 getTestBed().initTestEnvironment(
@@ -47,9 +52,7 @@ getTestBed().configureTestingModule({
         logOut: () => {}
       }
     },
-    // Global mock for AuthGoogleService to satisfy components/services that
-    // call `canSync()` or subscribe to `profile$`. Individual specs can
-    // override this provider when needed.
+    // Global mock for AuthGoogleService: individual specs may override
     {
       provide: AuthGoogleService,
       useValue: {
@@ -59,10 +62,50 @@ getTestBed().configureTestingModule({
         profile$: new BehaviorSubject(null)
       }
     },
-    // Global lightweight MatSnackBar mock: many specs assert that
-    // `snackBar.open(...)` is called; provide a tolerant stub here so
-    // tests don't fail on argument shape changes. Individual specs can
-    // override this provider when they need to inspect the call.
+    // Global mock for SpreadsheetService: avoid hitting IndexedDB during tests
+    {
+      provide: SpreadsheetService,
+      useValue: {
+        querySpreadsheets: () => Promise.resolve([]),
+        getSpreadsheets: () => Promise.resolve([]),
+        getDefaultSheet: () => Promise.resolve(undefined),
+        add: async () => {},
+        update: async () => {},
+        deleteSpreadsheet: async () => {},
+      }
+    },
+    // Lightweight stubs for ShiftService and TripService used by HeaderComponent
+    {
+      provide: ShiftService,
+      useValue: {
+        getUnsavedShifts: () => Promise.resolve([])
+      }
+    },
+    {
+      provide: TripService,
+      useValue: {
+        getUnsaved: () => Promise.resolve([])
+      }
+    },
+    // LoggerService no-op stub
+    {
+      provide: LoggerService,
+      useValue: {
+        error: () => {},
+        info: () => {},
+        debug: () => {}
+      }
+    },
+    // ThemeService stub with simple observables
+    {
+      provide: ThemeService,
+      useValue: {
+        preferenceChanges: new BehaviorSubject('system'),
+        activeTheme$: new BehaviorSubject('light'),
+        setTheme: (_: any) => {}
+      }
+    },
+    // Global lightweight MatSnackBar mock
     {
       provide: MatSnackBar,
       useValue: {
@@ -80,6 +123,42 @@ getTestBed().overrideProvider(AuthGoogleService, {
     isAuthenticated: () => Promise.resolve(false),
     isAuthenticatedSync: () => false,
     profile$: new BehaviorSubject(null)
+  }
+});
+
+getTestBed().overrideProvider(SpreadsheetService, {
+  useValue: {
+    querySpreadsheets: () => Promise.resolve([]),
+    getSpreadsheets: () => Promise.resolve([]),
+    getDefaultSheet: () => Promise.resolve(undefined)
+  }
+});
+
+getTestBed().overrideProvider(ShiftService, {
+  useValue: {
+    getUnsavedShifts: () => Promise.resolve([])
+  }
+});
+
+getTestBed().overrideProvider(TripService, {
+  useValue: {
+    getUnsaved: () => Promise.resolve([])
+  }
+});
+
+getTestBed().overrideProvider(LoggerService, {
+  useValue: {
+    error: () => {},
+    info: () => {},
+    debug: () => {}
+  }
+});
+
+getTestBed().overrideProvider(ThemeService, {
+  useValue: {
+    preferenceChanges: new BehaviorSubject('system'),
+    activeTheme$: new BehaviorSubject('light'),
+    setTheme: (_: any) => {}
   }
 });
 
