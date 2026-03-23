@@ -29,7 +29,7 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { VersionService } from '@services/version.service';
 import { CommonService } from '@services/common.service';
 import { LoggerService } from '@services/logger.service';
-import { SESSION_CONSTANTS } from '@constants/session.constants';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
@@ -154,7 +154,7 @@ export class SetupComponent {
       await this.deleteAllData();
     } else if (isDefaultSheet && !isOnlySheet) {
       // Cannot unlink default sheet when there are others - user must set another as default first
-      this._snackBar.open("Please set another spreadsheet as default first", "Dismiss", { duration: 5000 });
+      this._snackBar.open(SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
       this.deleting = false;
       return;
     } else {
@@ -197,11 +197,11 @@ export class SetupComponent {
     };
 
     if (!this.defaultSheet?.id) {
-      this._snackBar.open("Please Reload Manually");
+      this._snackBar.open(SNACKBAR_MESSAGES.RELOAD_MANUALLY);
       return;
     }
 
-    this._snackBar.open("Connecting to Spreadsheet");
+    this._snackBar.open(SNACKBAR_MESSAGES.CONNECTING_TO_SPREADSHEET);
 
     await this.reload();
 
@@ -216,7 +216,7 @@ export class SetupComponent {
     this.deleting = false;    
     localStorage.clear();
 
-    this._snackBar.open("All Data Deleted");
+    this._snackBar.open(SNACKBAR_MESSAGES.ALL_DATA_DELETED);
 
     await this.load();
   }
@@ -237,7 +237,7 @@ export class SetupComponent {
   async loadSheetDialog(inputValue: string) {
         const canSync = await this.authService.canSync();
         if (!canSync) {
-          this._snackBar.open('Login to load/save spreadsheet data', 'Dismiss', { duration: 5000 });
+          this._snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
           return;
         }
 
@@ -255,6 +255,12 @@ export class SetupComponent {
     }
 
   async confirmDeleteAndReloadDialog() {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      this._snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_RELOAD, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      return;
+    }
+
     const message = `Reloading will fetch data from the spreadsheet and <strong>WILL NOT</strong> preserve any unsaved local changes. Please ensure all your data is saved before proceeding.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -304,7 +310,7 @@ export class SetupComponent {
 
     // Cannot unlink default sheet when there are other sheets
     if (isDefaultSheet && !isOnlySheet) {
-      this._snackBar.open("Please set another spreadsheet as default first", "Dismiss", { duration: 5000 });
+      this._snackBar.open(SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
       return;
     }
 

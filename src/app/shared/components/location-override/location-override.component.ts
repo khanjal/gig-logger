@@ -7,6 +7,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatOptgroup } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { MockLocationService, PresetLocation } from '@services/mock-location.service';
 import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
 
@@ -77,10 +78,10 @@ export class LocationOverrideComponent implements OnInit {
     if (this.enabled) {
       this.mockLocationService.enable();
       this.saveSettings();
-      this.snackBar.open('Location override enabled', 'Dismiss', { duration: 3000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.LOCATION_OVERRIDE_ENABLED, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
     } else {
       this.mockLocationService.disable();
-      this.snackBar.open('Location override disabled - using real location', 'Dismiss', { duration: 3000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.LOCATION_OVERRIDE_DISABLED, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
     }
   }
 
@@ -95,7 +96,7 @@ export class LocationOverrideComponent implements OnInit {
     this.longitude = preset.longitude;
     this.locationName = preset.name;
     this.saveSettings();
-    this.snackBar.open(`Location set to ${preset.name}`, 'Dismiss', { duration: 2000 });
+    this.snackBar.open(`Location set to ${preset.name}`, SNACKBAR_DEFAULT_ACTION, { duration: 2000 });
   }
 
   onCoordinatesChange(): void {
@@ -108,17 +109,17 @@ export class LocationOverrideComponent implements OnInit {
     if (this.mockLocationService.isValidRadius(this.radius)) {
       this.mockLocationService.setRadius(this.radius);
     } else {
-      this.snackBar.open('Radius must be between 1 and 50 miles', 'Dismiss', { duration: 3000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.RADIUS_INVALID, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
     }
   }
 
   validateCoordinates(): boolean {
     if (!this.mockLocationService.isValidLatitude(this.latitude)) {
-      this.snackBar.open('Latitude must be between -90 and 90', 'Dismiss', { duration: 3000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.LATITUDE_INVALID, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
       return false;
     }
     if (!this.mockLocationService.isValidLongitude(this.longitude)) {
-      this.snackBar.open('Longitude must be between -180 and 180', 'Dismiss', { duration: 3000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.LONGITUDE_INVALID, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
       return false;
     }
     return true;
@@ -134,7 +135,7 @@ export class LocationOverrideComponent implements OnInit {
   resetToDefaults(): void {
     this.mockLocationService.reset();
     this.loadSettings();
-    this.snackBar.open('Reset to default settings', 'Dismiss', { duration: 2000 });
+    this.snackBar.open(SNACKBAR_MESSAGES.RESET_TO_DEFAULT_SETTINGS, SNACKBAR_DEFAULT_ACTION, { duration: 2000 });
     this.scrollToCard();
   }
 
@@ -178,7 +179,7 @@ export class LocationOverrideComponent implements OnInit {
       this.longitude = this.currentRealLocation.lng;
       this.locationName = 'Current Location';
       this.saveSettings();
-      this.snackBar.open('Using current real location', 'Dismiss', { duration: 2000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.USING_CURRENT_REAL_LOCATION, SNACKBAR_DEFAULT_ACTION, { duration: 2000 });
     }
   }
 

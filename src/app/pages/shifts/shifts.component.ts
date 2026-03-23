@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { AuthGoogleService } from '@services/auth-google.service';
@@ -126,7 +127,7 @@ export class ShiftsComponent implements OnInit {
   async saveSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this._snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      this._snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
       return;
     }
 
@@ -138,7 +139,7 @@ export class ShiftsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (result: any) => {
         if (result) {
             // Show success message
-            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            this._snackBar.open(SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, "Close", { duration: 3000 });
             
             // Refresh the page to show updated state
             this.handleParentReload();

@@ -8,6 +8,7 @@ import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 
 // RxJS imports
 import { Observable } from 'rxjs';
@@ -314,7 +315,7 @@ export class TripFormComponent implements OnInit {
       await this._gigLoggerService.calculateShiftTotals([shift]);
       await this._gigLoggerService.updateAncillaryInfo();
 
-      this._snackBar.open('Trip Stored to Device');
+      this._snackBar.open(SNACKBAR_MESSAGES.TRIP_STORED);
 
       await this.formReset();
       this.parentReload.emit();
@@ -322,7 +323,7 @@ export class TripFormComponent implements OnInit {
       await this._timerService.delay(1000);
       this._viewportScroller.scrollToAnchor('todaysTrips');
     } catch (error) {
-      this._snackBar.open('Failed to store trip. Please try again.', 'Dismiss', { duration: 5000 });
+      this._snackBar.open(SNACKBAR_MESSAGES.TRIP_STORE_FAILED, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
     }
   }
 
@@ -355,7 +356,7 @@ export class TripFormComponent implements OnInit {
       await this._gigLoggerService.calculateShiftTotals(shifts);
       await this._gigLoggerService.updateAncillaryInfo();
 
-      this._snackBar.open('Trip Updated');
+      this._snackBar.open(SNACKBAR_MESSAGES.TRIP_UPDATED);
 
       if (this.isInEditMode) {
         this.editModeExit.emit(trip.rowId?.toString());
@@ -363,7 +364,7 @@ export class TripFormComponent implements OnInit {
         this.dialogRef.close();
       }
     } catch (error) {
-      this._snackBar.open('Failed to update trip. Please try again.', 'Dismiss', { duration: 5000 });
+      this._snackBar.open(SNACKBAR_MESSAGES.TRIP_UPDATE_FAILED, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
     }
   }
 
@@ -580,6 +581,6 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    this._snackBar.open('Voice input applied to form.', '', { duration: 1500 });
+    this._snackBar.open(SNACKBAR_MESSAGES.VOICE_INPUT_APPLIED, '', { duration: 1500 });
   }
 }

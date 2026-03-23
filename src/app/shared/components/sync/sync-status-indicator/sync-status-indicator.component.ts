@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
@@ -145,7 +146,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this.snackBar.open('Login to sync changes', 'Dismiss', { duration: 5000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
       return;
     }
 
@@ -165,7 +166,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
     if (this.hasUnsavedChanges) {
-      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
+      this.snackBar.open(SNACKBAR_MESSAGES.CANNOT_UPDATE_UNSAVED_CHANGES, 'Close', {
         duration: 5000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
@@ -176,7 +177,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this.snackBar.open('Login to load changes', 'Dismiss', { duration: 5000 });
+      this.snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_LOAD_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
       return;
     }
 
