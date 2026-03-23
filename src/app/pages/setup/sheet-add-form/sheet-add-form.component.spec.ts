@@ -1,57 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SheetAddFormComponent } from './sheet-add-form.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { HttpClient, HttpHandler } from '@angular/common/http';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AddressService } from '@services/sheets/address.service';
-import { CommonService } from '@services/common.service';
-import { DailyService } from '@services/sheets/daily.service';
-import { DeliveryService } from '@services/delivery.service';
-import { GigWorkflowService } from '@services/gig-workflow.service';
-import { MonthlyService } from '@services/sheets/monthly.service';
-import { NameService } from '@services/sheets/name.service';
-import { PlaceService } from '@services/sheets/place.service';
-import { RegionService } from '@services/sheets/region.service';
-import { ServiceService } from '@services/sheets/service.service';
-import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { TimerService } from '@services/timer.service';
-import { TripService } from '@services/sheets/trip.service';
-import { TypeService } from '@services/sheets/type.service';
-import { WeekdayService } from '@services/sheets/weekday.service';
-import { WeeklyService } from '@services/sheets/weekly.service';
-import { YearlyService } from '@services/sheets/yearly.service';
 
 describe('SheetSetupFormComponent', () => {
   let component: SheetAddFormComponent;
   let fixture: ComponentFixture<SheetAddFormComponent>;
+  let spreadsheetSpy: jasmine.SpyObj<SpreadsheetService>;
 
   beforeEach(async () => {
+    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets', 'update']);
+
     await TestBed.configureTestingModule({
-    imports: [MatSnackBarModule, SheetAddFormComponent],
-    providers: [
-        HttpClient,
-        HttpHandler,
-        AddressService,
-        DailyService,
-        DeliveryService,
-        GigWorkflowService,
-        MonthlyService,
-        NameService,
-        PlaceService,
-        RegionService,
-        ServiceService,
-        ShiftService,
-        SpreadsheetService,
-        TripService,
-        TypeService,
-        WeekdayService,
-        WeeklyService,
-        YearlyService
-    ]
-})
-    .compileComponents();
+      imports: [MatSnackBarModule, SheetAddFormComponent],
+      providers: [
+        { provide: SpreadsheetService, useValue: spreadsheetSpy }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SheetAddFormComponent);
     component = fixture.componentInstance;
@@ -60,5 +25,34 @@ describe('SheetSetupFormComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('loads default spreadsheet on init', async () => {
+    spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'default-1' }] as any));
+    await fixture.whenStable();
+    expect(component.defaultSpreadsheet?.id).toBe('default-1');
+  });
+
+  it('setupSheet calls update with default=true when no default exists', async () => {
+    spreadsheetSpy.update.and.returnValue(Promise.resolve());
+    component.defaultSpreadsheet = undefined as any;
+    await component.setupSheet('SHEET_ID');
+    expect(spreadsheetSpy.update).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'SHEET_ID', default: 'true' }));
+  });
+
+  it('addSheet extracts id from URL and emits parentReload', async () => {
+    spreadsheetSpy.update.and.returnValue(Promise.resolve());
+    spyOn(component.parentReload, 'emit');
+    component.sheetForm.controls.sheetId.setValue('https://docs.google.com/spreadsheets/d/ABC123/edit#gid=0');
+    await component.addSheet();
+    expect(spreadsheetSpy.update).toHaveBeenCalled();
+    expect(component.parentReload.emit).toHaveBeenCalled();
+  });
+
+  it('addSheet does nothing when sheetId is empty', async () => {
+    spreadsheetSpy.update.calls.reset();
+    component.sheetForm.controls.sheetId.setValue('');
+    await component.addSheet();
+    expect(spreadsheetSpy.update).not.toHaveBeenCalled();
   });
 });
