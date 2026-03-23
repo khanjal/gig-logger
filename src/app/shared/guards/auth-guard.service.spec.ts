@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthGuardService } from './auth-guard.service';
 import { AuthGoogleService } from '../services/auth-google.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 
 describe('AuthGuardService', () => {
   let service: AuthGuardService;
@@ -16,6 +17,9 @@ describe('AuthGuardService', () => {
       providers: [
         AuthGuardService,
         { provide: AuthGoogleService, useValue: authServiceSpy },
+        // Provide a lightweight mock for SpreadsheetService so the guard's
+        // constructor doesn't pull in the full service graph (HttpClient, etc.)
+        { provide: SpreadsheetService, useValue: { getSpreadsheets: () => Promise.resolve([]) } },
         { provide: Router, useValue: routerSpy }
       ]
     });

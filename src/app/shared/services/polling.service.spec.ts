@@ -9,6 +9,7 @@ import { ExpensesService } from './sheets/expenses.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
+import { AuthGoogleService } from './auth-google.service';
 
 describe('PollingService', () => {
   let service: PollingService;
@@ -21,6 +22,7 @@ describe('PollingService', () => {
   let shiftServiceSpy: jasmine.SpyObj<ShiftService>;
   let expensesServiceSpy: jasmine.SpyObj<ExpensesService>;
   let gigWorkflowSpy: jasmine.SpyObj<GigWorkflowService>;
+  let authSpy: jasmine.SpyObj<AuthGoogleService>;
 
   beforeEach(() => {
     const logger = jasmine.createSpyObj('LoggerService', ['info', 'warn', 'error', 'debug']);
@@ -42,6 +44,8 @@ describe('PollingService', () => {
       'calculateShiftTotals',
       'saveSheetData'
     ]);
+    const auth = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
+    auth.canSync.and.returnValue(Promise.resolve(true));
 
     TestBed.configureTestingModule({
       providers: [
@@ -55,6 +59,7 @@ describe('PollingService', () => {
         { provide: ShiftService, useValue: shiftService },
         { provide: ExpensesService, useValue: expensesService },
         { provide: GigWorkflowService, useValue: gigWorkflow }
+        , { provide: AuthGoogleService, useValue: auth }
       ]
     });
 
@@ -68,6 +73,7 @@ describe('PollingService', () => {
     shiftServiceSpy = TestBed.inject(ShiftService) as jasmine.SpyObj<ShiftService>;
     expensesServiceSpy = TestBed.inject(ExpensesService) as jasmine.SpyObj<ExpensesService>;
     gigWorkflowSpy = TestBed.inject(GigWorkflowService) as jasmine.SpyObj<GigWorkflowService>;
+    authSpy = TestBed.inject(AuthGoogleService) as jasmine.SpyObj<AuthGoogleService>;
   });
 
   afterEach(() => {

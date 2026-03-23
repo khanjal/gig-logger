@@ -15,6 +15,7 @@ import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { BehaviorSubject } from 'rxjs';
+import { AuthGoogleService } from './auth-google.service';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
@@ -44,7 +45,8 @@ export class PollingService implements OnDestroy {
     private _unsavedDataService: UnsavedDataService,
     private _gigWorkflowService: GigWorkflowService,
     private _syncStatusService: SyncStatusService,
-    private _logger: LoggerService
+    private _logger: LoggerService,
+    protected authService: AuthGoogleService
   ) {
     this.initializeWorker();
     this.setupVisibilityChangeListener();
@@ -250,6 +252,22 @@ export class PollingService implements OnDestroy {
       
       if (counts.total === 0) {
         this._logger.info('No unsaved data to sync');
+        return;
+      }
+
+      // Ensure we're authenticated and able to sync before attempting autosave
+      try {
+        const canSync = await this.authService.canSync();
+        if (!canSync) {
+          this.safeLog('info', 'Not authenticated - skipping autosave');
+          // Inform the user that autosave was skipped due to authentication state
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED, { duration: 5000 });
+          this._syncStatusService.failSync('Not authenticated');
+          return;
+        }
+      } catch (err) {
+        this.safeLog('warn', 'Auth check failed, skipping autosave', err);
+        this._syncStatusService.failSync('Auth check failed');
         return;
       }
 

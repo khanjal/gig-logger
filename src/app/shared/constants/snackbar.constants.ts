@@ -48,6 +48,7 @@ export const SNACKBAR_MESSAGES = {
   SHEET_ERROR_LINKING: 'Error linking sheet',
   ADDED_NEXT_TRIP: 'Added Next Trip',
   AUTO_SAVE_COMPLETED_WITH_ERRORS: 'Auto-save completed with errors',
+  AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED: 'Auto-save skipped: not authenticated',
   AUTO_SAVE_FAILED_UNSAVED: 'Auto-save failed - data remains unsaved'
 };
 

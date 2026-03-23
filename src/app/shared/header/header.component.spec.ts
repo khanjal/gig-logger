@@ -19,10 +19,11 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     commonSpy = { onHeaderLinkUpdate: of(null) };
-    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
+    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets', 'getSpreadsheets']);
     spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([]));
-    authSpy = jasmine.createSpyObj('AuthGoogleService', ['isAuthenticated']);
-    authSpy.isAuthenticated.and.returnValue(Promise.resolve(false));
+    spreadsheetSpy.getSpreadsheets.and.returnValue(Promise.resolve([]));
+    authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync'], { profile$: new Subject<any>() });
+    authSpy.canSync.and.returnValue(Promise.resolve(false));
     shiftSpy = jasmine.createSpyObj('ShiftService', ['getUnsavedShifts']);
     tripSpy = jasmine.createSpyObj('TripService', ['getUnsaved']);
     tripSpy.getUnsaved.and.returnValue(Promise.resolve([]));
@@ -84,7 +85,7 @@ describe('HeaderComponent', () => {
   });
 
   it('updateUnsavedCounts sets counts when authenticated', async () => {
-    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    authSpy.canSync.and.returnValue(Promise.resolve(true));
     tripSpy.getUnsaved.and.returnValue(Promise.resolve([1,2,3]));
     shiftSpy.getUnsavedShifts.and.returnValue(Promise.resolve([1]));
 
@@ -96,7 +97,7 @@ describe('HeaderComponent', () => {
 
   it('ngOnInit initializes header and loads default sheet when authenticated', async () => {
     // Make auth return true and spreadsheet service return a default sheet
-    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    authSpy.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'sheet-1' }]));
 
     // Call ngOnInit and wait for it to complete

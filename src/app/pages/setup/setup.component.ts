@@ -92,7 +92,7 @@ export class SetupComponent {
 
   async ngOnInit(): Promise<void> {
     this.isAuthenticated = await this.authService.canSync();
-    this.load();
+    await this.load();
     // Load formatted version string (YYYYMMDD.build)
     this.version = await this.versionService.getFormattedVersion();
 
