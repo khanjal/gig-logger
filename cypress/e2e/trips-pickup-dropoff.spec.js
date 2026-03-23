@@ -21,11 +21,6 @@ describe('Trips - pickup/dropoff display and DB verification', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('POST', '**/auth/refresh', {
-      statusCode: 200,
-      body: { accessToken: 'fake-jwt-token' }
-    }).as('refresh');
-
     cy.bootVisit('/trips', {
       seedTrips: true,
       trips: [makeTripWithTimes()]

@@ -1,4 +1,4 @@
-// Cypress support commands for app setup: auth + fake spreadsheet + seed data
+// Cypress support commands for app setup: default spreadsheet + seed data
 
 function ensureLocalDbSchema(db) {
   let spreadsheetsStore;
@@ -80,6 +80,10 @@ function ensureSpreadsheetDbSchema(db) {
 }
 
 function navigateWithinApp(path) {
+  if (!path || path === '/') {
+    return cy.wrap(null);
+  }
+
   const pathToAriaLabel = {
     '/trips': 'View trips',
     '/shifts': 'View shifts',
@@ -88,8 +92,7 @@ function navigateWithinApp(path) {
     '/stats': 'View statistics',
     '/expenses': 'View expenses',
     '/diagnostics': 'View diagnostics',
-    '/setup': 'Open settings',
-    '/': 'Go to home page'
+    '/setup': 'Open settings'
   };
 
   const ariaLabel = pathToAriaLabel[path];
@@ -132,12 +135,6 @@ function recreateLocalDb(win) {
     }
   });
 }
-
-// Simple login helper (sets cookie). Use setupApp() for full boot-time setup.
-Cypress.Commands.add('login', (token) => {
-  if (token) return cy.setCookie('ACCESS_TOKEN', token, { secure: true });
-  return cy.fixture('token').then(t => cy.setCookie('ACCESS_TOKEN', t.token, { secure: true }));
-});
 
 // Write a spreadsheet record directly into localDB before app initializes
 Cypress.Commands.add('addFakeSpreadsheet', (id = 'sheet-e2e', name = 'E2E Sheet') => {
@@ -228,89 +225,21 @@ Cypress.Commands.add('seedShifts', (shifts = []) => {
   });
 });
 
-// Full setup: performs auth cookie + writes spreadsheet before app boot, and optionally seeds trips
+// Full setup: writes default spreadsheet before app boot, and optionally seeds trips
 Cypress.Commands.add('setupApp', (opts = {}) => {
-  const tokenPromise = opts.token ? cy.wrap(opts.token) : cy.fixture('token').then(t => t.token);
-  const userId = opts.userId || 'e2e-user';
-  const sheetId = opts.sheetId || 'sheet-e2e';
-  const sheetName = opts.sheetName || 'E2E Sheet';
-
-  return tokenPromise.then((token) => {
-    // Set cookie via Cypress API before visiting so cookie exists at page load
-    const isHttps = !!Cypress.config('baseUrl') && Cypress.config('baseUrl').startsWith('https');
-    const cookieOpts = isHttps ? { secure: true, sameSite: 'Strict', path: '/' } : { sameSite: 'Strict', path: '/' };
-    cy.setCookie('ACCESS_TOKEN', token, cookieOpts);
-    cy.setCookie('PKCE_verifier', opts.pkce || 'e2e-verifier', cookieOpts);
-
-    // Visit root and set storage and create minimal DB stores during onBeforeLoad so Angular sees session/localStorage
-    cy.visit('/', {
-      onBeforeLoad(win) {
-        try {
-          win.sessionStorage.setItem('token', token);
-          win.localStorage.setItem('rg-is-authenticated', 'true');
-          win.localStorage.setItem('rg-authenticated-user-id', userId);
-          // Ensure localDB has expected stores and indexes before app runs
-          try {
-            const req = win.indexedDB.open('localDB', 1);
-            req.onupgradeneeded = () => {
-              const db = req.result;
-              try { ensureLocalDbSchema(db); } catch(e) {}
-            };
-          } catch (e) {}
-        } catch (e) {
-          // ignore
-        }
-      }
-    });
-
-    // Optionally seed trips (and shifts) after app load
-    if (opts.seedTrips) {
-      const today = new Date().toISOString().slice(0, 10);
-      const sample = {
-        rowId: 2,
-        date: today,
-        pay: 12.5,
-        distance: 3.2,
-        pickupTime: '08:00',
-        place: opts.place || 'Test Place',
-        saved: true
-      };
-      return cy.seedTrips(opts.trips || [sample]).then(() => {
-        if (opts.seedShifts) {
-          const shiftSample = {
-            rowId: 1,
-            date: today,
-            service: opts.shiftService || 'E2E',
-            number: 1,
-            key: 'shift-e2e-1',
-            saved: true
-          };
-          return cy.seedShifts(opts.shifts || [shiftSample]);
-        }
-        return cy.wrap(null);
-      });
-    }
-  });
+  return cy.bootVisit('/', opts);
 });
 
-// Visit a specific path and inject boot-time state in onBeforeLoad so the target page
-// initializes with auth + default spreadsheet present. Preferred for pages like /trips.
+// Visit a specific path and inject boot-time state so the target page
+// initializes with a default spreadsheet present. Preferred for pages like /trips.
 Cypress.Commands.add('bootVisit', (path = '/', opts = {}) => {
-  const tokenPromise = opts.token ? cy.wrap(opts.token) : cy.fixture('token').then(t => t.token);
-  const userId = opts.userId || 'e2e-user';
   const sheetId = opts.sheetId || 'sheet-e2e';
   const sheetName = opts.sheetName || 'E2E Sheet';
+  const themePreference = opts.themePreference;
   const spreadsheetDbVersion = 3;
 
-  return tokenPromise.then((token) => {
-    // Ensure cookies are set before first visit so SecureCookieStorageService can read them
-    const isHttps2 = !!Cypress.config('baseUrl') && Cypress.config('baseUrl').startsWith('https');
-    const cookieOpts2 = isHttps2 ? { secure: true, sameSite: 'Strict', path: '/' } : { sameSite: 'Strict', path: '/' };
-    cy.setCookie('ACCESS_TOKEN', token, cookieOpts2);
-    cy.setCookie('PKCE_verifier', opts.pkce || 'e2e-verifier', cookieOpts2);
-
-    // Start from a neutral static page so we can safely rebuild DBs before Angular opens Dexie connections.
-    cy.visit('/offline.html');
+  // Start from a neutral static page so we can safely rebuild DBs before Angular opens Dexie connections.
+  cy.visit('/offline.html');
 
     // Rebuild test DB state from scratch: empty spreadsheetDB schema + localDB default sheet.
     cy.window().then((win) => {
@@ -379,23 +308,35 @@ Cypress.Commands.add('bootVisit', (path = '/', opts = {}) => {
         .then(() => createLocalDb())
         .then(() => createSpreadsheetDb());
     }).then(() => {
-      // Now load Angular with auth storage already set at boot.
+      // Load Angular after storage + IndexedDB setup is complete.
       cy.visit('/', {
+        timeout: 300000,
         onBeforeLoad(win) {
           try {
-            win.sessionStorage.setItem('token', token);
-            win.localStorage.setItem('rg-is-authenticated', 'true');
-            win.localStorage.setItem('rg-authenticated-user-id', userId);
+            if (themePreference) {
+              win.localStorage.setItem('rg-theme-preference', themePreference);
+            }
+          } catch (e) {
+            // ignore
+          }
+
+          // In flaky environments, external resources can delay native load.
+          // Dispatching a load event prevents long hangs in Cypress page visit.
+          try {
+            setTimeout(() => {
+              try { win.dispatchEvent(new Event('load')); } catch (e) {}
+            }, 1000);
           } catch (e) {
             // ignore
           }
         }
       });
     }).then(() => {
-      // Wait for the header to reflect authenticated + default sheet state.
-      // Prefer waiting for the header trips link rather than an arbitrary delay.
-      const headerTimeout = opts.headerTimeout || 10000;
-      cy.get('[aria-label="View trips"]', { timeout: headerTimeout }).should('be.visible');
+      if (path !== '/') {
+        // Wait for the header to reflect default sheet state.
+        const headerTimeout = opts.headerTimeout || 10000;
+        cy.get('[aria-label="View trips"]', { timeout: headerTimeout }).should('be.visible');
+      }
 
       if (opts.seedTrips) {
         const today = new Date().toISOString().slice(0, 10);
@@ -423,11 +364,10 @@ Cypress.Commands.add('bootVisit', (path = '/', opts = {}) => {
           }
           return navigateWithinApp(path);
         });
-      } else {
-        // Navigate within the already-loaded app after header is ready.
-        return navigateWithinApp(path);
       }
+
+      // Navigate within the already-loaded app after header is ready.
+      return navigateWithinApp(path);
     });
-  });
 });
 

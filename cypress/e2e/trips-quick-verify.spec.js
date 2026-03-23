@@ -15,11 +15,6 @@ describe('Trips - quick UI and IndexedDB validation', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('POST', '**/auth/refresh', {
-      statusCode: 200,
-      body: { accessToken: 'fake-jwt-token' }
-    }).as('refresh');
-
     cy.bootVisit('/trips', {
       seedTrips: true,
       trips: [makeSeedTrip()]

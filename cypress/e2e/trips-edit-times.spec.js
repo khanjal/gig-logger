@@ -17,11 +17,6 @@ describe.skip('Trips - edit pickup/dropoff times and persist', () => {
   });
 
   beforeEach(() => {
-    cy.intercept('POST', '**/auth/refresh', {
-      statusCode: 200,
-      body: { accessToken: 'fake-jwt-token' }
-    }).as('refresh');
-
     cy.bootVisit('/trips', {
       seedTrips: true,
       trips: [makeSeedTrip()]
