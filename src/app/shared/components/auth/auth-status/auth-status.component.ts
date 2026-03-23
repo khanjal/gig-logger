@@ -40,10 +40,6 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   // Token info
   accessTokenPreview = '';
   lastUpdated = new Date();
-  // Reconnect notice when logged out but sheets exist
-  // reconnect notice removed from UI
-  
-  // use centralized session constants for keys
 
   constructor(
     private authService: AuthGoogleService,
@@ -93,8 +89,6 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
     // Get user ID using shared utility
     this.userId = getCurrentUserId();
     this.lastUpdated = new Date();
-
-    // No reconnect notice logic here; message is shown on the Setup page instead.
   }
 
   onReconnect() {

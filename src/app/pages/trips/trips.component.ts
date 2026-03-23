@@ -78,9 +78,7 @@ export class TripComponent implements OnInit, OnDestroy {
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
-      private _gigLoggerService: GigWorkflowService,
       private _sheetService: SpreadsheetService,
-      private _shiftService: ShiftService,
       private _tripService: TripService,
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
@@ -88,8 +86,8 @@ export class TripComponent implements OnInit, OnDestroy {
       private _uiPreferences: UiPreferencesService,
       private logger: LoggerService,
       private _route: ActivatedRoute,
-        private _router: Router,
-        protected authService: AuthGoogleService
+      private _router: Router,
+      protected authService: AuthGoogleService
     ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
