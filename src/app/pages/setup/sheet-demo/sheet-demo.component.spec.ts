@@ -73,4 +73,36 @@ describe('SheetDemoComponent', () => {
     expect(component.creatingDemo).toBeFalse();
     expect(component.parentReload.emit).not.toHaveBeenCalled();
   });
+
+  it('createDemoSheet - createSheet rejects should log and show error', async () => {
+    gigWorkflowSpy.createFile.and.returnValue(Promise.resolve({ id: 'fid', name: 'Demo file' } as any));
+    gigWorkflowSpy.createSheet.and.returnValue(Promise.reject(new Error('createSheet fail')));
+
+    spyOn(component.parentReload, 'emit');
+
+    await component.createDemoSheet();
+
+    expect(gigWorkflowSpy.createFile).toHaveBeenCalled();
+    expect(loggerSpy.error).toHaveBeenCalled();
+    expect(snackBarSpy.open).toHaveBeenCalled();
+    expect(component.creatingDemo).toBeFalse();
+    expect(component.parentReload.emit).not.toHaveBeenCalled();
+  });
+
+  it('createDemoSheet - insertDemoData rejects should log and show error', async () => {
+    gigWorkflowSpy.createFile.and.returnValue(Promise.resolve({ id: 'fid', name: 'Demo file' } as any));
+    gigWorkflowSpy.createSheet.and.returnValue(Promise.resolve());
+    gigWorkflowSpy.insertDemoData.and.returnValue(Promise.reject(new Error('insert fail')));
+
+    spyOn(component.parentReload, 'emit');
+
+    await component.createDemoSheet();
+
+    expect(gigWorkflowSpy.createFile).toHaveBeenCalled();
+    expect(gigWorkflowSpy.createSheet).toHaveBeenCalledWith('fid');
+    expect(loggerSpy.error).toHaveBeenCalled();
+    expect(snackBarSpy.open).toHaveBeenCalled();
+    expect(component.creatingDemo).toBeFalse();
+    expect(component.parentReload.emit).not.toHaveBeenCalled();
+  });
 });

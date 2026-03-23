@@ -107,4 +107,38 @@ describe('SheetLinkComponent', () => {
     expect(snackBarSpy.open).toHaveBeenCalled();
     expect(component.parentReload.emit).not.toHaveBeenCalled();
   });
+
+  it('openListSheetsDialog - success should link selected sheet', async () => {
+    const dialogResult = { id: 'l1', name: 'List Item' } as any;
+    dialogSpy.open.and.returnValue({ afterClosed: () => of(dialogResult) } as any);
+    spreadsheetSpy.findSheet.and.returnValue(Promise.resolve(undefined));
+    spreadsheetSpy.add.and.returnValue(Promise.resolve());
+
+    spyOn(component.parentReload, 'emit');
+
+    component.openListSheetsDialog();
+
+    // allow promise microtasks
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(dialogSpy.open).toHaveBeenCalled();
+    expect(spreadsheetSpy.add).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'l1' }));
+    expect(snackBarSpy.open).toHaveBeenCalled();
+    expect(component.parentReload.emit).toHaveBeenCalled();
+  });
+
+  it('openListSheetsDialog - canceled should not link', async () => {
+    dialogSpy.open.and.returnValue({ afterClosed: () => of(null) } as any);
+
+    spyOn(component.parentReload, 'emit');
+
+    component.openListSheetsDialog();
+
+    await Promise.resolve();
+
+    expect(dialogSpy.open).toHaveBeenCalled();
+    expect(spreadsheetSpy.add).not.toHaveBeenCalled();
+    expect(component.parentReload.emit).not.toHaveBeenCalled();
+  });
 });

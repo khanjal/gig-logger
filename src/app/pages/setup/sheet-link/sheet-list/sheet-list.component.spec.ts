@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SheetListComponent } from './sheet-list.component';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 describe('SheetListComponent', () => {
   let component: SheetListComponent;
@@ -20,7 +21,7 @@ describe('SheetListComponent', () => {
       providers: [
         { provide: GigWorkflowService, useValue: gigSpy },
         { provide: LoggerService, useValue: loggerSpy },
-        { provide: 'MatDialogRef', useValue: dialogRefSpy }
+        { provide: MatDialogRef, useValue: dialogRefSpy }
       ]
     }).compileComponents();
 
