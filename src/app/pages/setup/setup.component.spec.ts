@@ -72,6 +72,82 @@ describe('SetupComponent (class-only)', () => {
     expect(comp.isAuthenticated).toBeFalse();
     expect((comp.spreadsheets ?? []).length).toBeGreaterThan(0);
   });
+
+  it('setDefault sets spreadsheet as default and calls update/load/reload', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    const defaultSheet = { id: 'd1', name: 'Default', default: 'true' } as any;
+    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([defaultSheet]));
+    spreadsheetService.update.and.returnValue(Promise.resolve());
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    await comp.ngOnInit();
+
+    const sheetToSet = { id: 's2', name: 'Other', default: 'false' } as any;
+
+    spyOn(comp, 'load').and.returnValue(Promise.resolve());
+    spyOn(comp, 'reload').and.returnValue(Promise.resolve());
+
+    await comp.setDefault(sheetToSet);
+
+    expect(sheetToSet.default).toBe('true');
+    expect(spreadsheetService.update).toHaveBeenCalled();
+    expect((comp.load as any)).toHaveBeenCalled();
+    expect((comp.reload as any)).toHaveBeenCalled();
+  });
+
+  it('unlinkSpreadsheet will call deleteAllData when default and only sheet', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
+    spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
+
+    await comp.unlinkSpreadsheet({ id: '1', name: 'S', default: 'true' } as any);
+
+    expect((comp.deleteAllData as any)).toHaveBeenCalled();
+  });
+
+  it('unlinkSpreadsheet shows snackbar when default and other sheets exist', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([
+      { id: '1', name: 'S1', default: 'true' },
+      { id: '2', name: 'S2', default: 'false' }
+    ]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+
+    await comp.unlinkSpreadsheet({ id: '1', name: 'S1', default: 'true' } as any);
+
+    expect(snackSpy.open).toHaveBeenCalled();
+  });
+
+  it('deleteLocalData clears storage and shows snackbar', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+
+    spyOn(comp, 'load').and.returnValue(Promise.resolve());
+    const clearSpy = spyOn(localStorage, 'clear');
+
+    await comp.deleteLocalData();
+
+    expect(clearSpy).toHaveBeenCalled();
+    expect(snackSpy.open).toHaveBeenCalled();
+    expect((comp.load as any)).toHaveBeenCalled();
+  });
+
+  it('loadSheetDialog shows snackbar when not authenticated', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(false));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+
+    await comp.loadSheetDialog('load');
+
+    expect(snackSpy.open).toHaveBeenCalled();
+  });
 });
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
