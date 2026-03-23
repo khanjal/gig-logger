@@ -211,6 +211,13 @@ html.theme-dark .bg-accent-variant-soft { background: color-mix(in srgb, var(--c
   --warning-500: #{$warning-color};
   --error-500: #{$error-color};
 
+  /* Terminal-themed tokens (used by sync terminal components) */
+  --terminal-bg: #000000;
+  --terminal-text: #39ff14; /* bright terminal green */
+  --terminal-success: var(--success-500);
+  --terminal-warning: var(--warning-500);
+  --terminal-error: var(--error-500);
+
   color-scheme: light;
 }
 
