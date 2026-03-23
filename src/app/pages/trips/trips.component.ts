@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 
 import { DateHelper } from '@helpers/date.helper';
 
@@ -194,7 +195,7 @@ export class TripComponent implements OnInit, OnDestroy {
   async loadSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this._snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       return;
     }
 
@@ -213,7 +214,7 @@ export class TripComponent implements OnInit, OnDestroy {
   async saveSheetDialog(inputValue: string) {
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this._snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       return;
     }
 
@@ -226,7 +227,7 @@ export class TripComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async result => {
       try {
         if (result) {
-          this._snackBar.open(SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
           await this.reload("todaysTrips");
           this._viewportScroller.scrollToAnchor("todaysTrips");
         }

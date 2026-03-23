@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { openSnackbar } from '@utils/snackbar.util';
 import { DateHelper } from '@helpers/date.helper';
 import { MonthlyService } from '@services/sheets/monthly.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -88,6 +89,6 @@ export class CurrentAverageComponent implements OnInit {
     this[key] = true;
   
     // Show a snackbar message
-    this._snackBar.open(`Showing ${states[nextIndex]} Average`);
+    openSnackbar(this._snackBar, `Showing ${states[nextIndex]} Average`);
   }
 }

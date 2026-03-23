@@ -5,6 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { LoggerService } from '@services/logger.service';
@@ -37,7 +38,7 @@ export class SheetDemoComponent {
 
   async createDemoSheet() {
     this.creatingDemo = true;
-    this._snackBar.open(SNACKBAR_MESSAGES.CREATING_DEMO_SPREADSHEET, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CREATING_DEMO_SPREADSHEET, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
 
     try {
       // Step 1: Create the file with a unique timestamp-based name
@@ -62,17 +63,17 @@ export class SheetDemoComponent {
       }
 
       this._logger.info(`Demo file created with ID: ${createdFile.id}`);
-      this._snackBar.open(SNACKBAR_MESSAGES.DEMO_SPREADSHEET_SETUP_SHEETS, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_SETUP_SHEETS, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
 
       // Step 2: Create all the sheets
       await this._gigWorkflowService.createSheet(createdFile.id);
       this._logger.info('Sheets created successfully');
-      this._snackBar.open(SNACKBAR_MESSAGES.DEMO_SHEETS_INSERTING_DATA, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SHEETS_INSERTING_DATA, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
 
       // Step 3: Insert demo data
       await this._gigWorkflowService.insertDemoData(createdFile.id);
       this._logger.info('Demo data inserted successfully');
-      this._snackBar.open(SNACKBAR_MESSAGES.DEMO_DATA_INSERTED_LOADING, SNACKBAR_DEFAULT_ACTION, { duration: 3000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_DATA_INSERTED_LOADING, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
 
       // Step 4: Link the spreadsheet
       await this._spreadsheetService.add({
@@ -87,10 +88,10 @@ export class SheetDemoComponent {
       // Step 5: Trigger parent reload to fetch all the data
       this.parentReload.emit();
 
-      this._snackBar.open(SNACKBAR_MESSAGES.DEMO_SPREADSHEET_CREATED, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_CREATED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     } catch (error) {
       this._logger.error('Error creating demo spreadsheet', error);
-      this._snackBar.open(SNACKBAR_MESSAGES.DEMO_SPREADSHEET_ERROR, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_ERROR, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     } finally {
       this.creatingDemo = false;
     }

@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from './spreadsheet.service';
 import { UnsavedDataService } from './unsaved-data.service';
 import { TripService } from './sheets/trip.service';
@@ -312,14 +313,14 @@ export class PollingService implements OnDestroy {
         this._syncStatusService.failSync(errorMsg);
         
         // Show snackbar for errors
-        this._snackBar.open(SNACKBAR_MESSAGES.AUTO_SAVE_COMPLETED_WITH_ERRORS, "View Details", { duration: 5000 });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_COMPLETED_WITH_ERRORS, { action: "View Details", duration: 5000 });
       }
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this.safeLog('error', 'Auto-save failed:', error);
       this._syncStatusService.failSync(errorMsg);
-      this._snackBar.open(SNACKBAR_MESSAGES.AUTO_SAVE_FAILED_UNSAVED, undefined, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_FAILED_UNSAVED, { duration: 5000 });
     } finally {
       this.processing = false;
       // Only restart countdown if polling is still enabled

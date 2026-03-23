@@ -5,6 +5,7 @@ import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
@@ -47,7 +48,7 @@ export class SheetLinkComponent {
         if (result.error) {
           // Handle error
           this._logger.error('Sheet creation failed', { error: result.error });
-          this._snackBar.open(SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
         } else {
           // Handle success
           let sheetData = {} as ISheet;
@@ -57,7 +58,7 @@ export class SheetLinkComponent {
           };
           this.linkSheet(sheetData);
           this._logger.info('Sheet created successfully', { result });
-          this._snackBar.open(SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
           this.parentReload.emit(); // Emit event to reload parent component
         }
       }
@@ -90,8 +91,8 @@ export class SheetLinkComponent {
 
   linkSheet(sheet: ISheet) {
     this._spreadsheetService.findSheet(sheet.properties.id).then((existingSheet) => {
-      if (existingSheet) {
-        this._snackBar.open(SNACKBAR_MESSAGES.SHEET_ALREADY_LINKED, 'Close');
+        if (existingSheet) {
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ALREADY_LINKED, { action: 'Close' });
       } else {
         this._spreadsheetService.add({
           id: sheet.properties.id,
@@ -99,11 +100,11 @@ export class SheetLinkComponent {
           default: "true",
           size: 0
         }).then(() => {
-          this._snackBar.open(SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
           this.parentReload.emit(); // Emit event to reload parent component
         }).catch((error) => {
           this._logger.error('Error linking sheet', { error });
-          this._snackBar.open(SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });
         });
       }
     });

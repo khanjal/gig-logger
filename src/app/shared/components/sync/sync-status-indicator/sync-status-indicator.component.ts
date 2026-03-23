@@ -5,6 +5,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
@@ -146,7 +147,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this.snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       return;
     }
 
@@ -166,18 +167,13 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
     if (this.hasUnsavedChanges) {
-      this.snackBar.open(SNACKBAR_MESSAGES.CANNOT_UPDATE_UNSAVED_CHANGES, 'Close', {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['error-snackbar']
-      });
+      openSnackbar(this.snackBar, SNACKBAR_MESSAGES.CANNOT_UPDATE_UNSAVED_CHANGES, { action: 'Close', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top', panelClass: ['error-snackbar'] });
       return;
     }
 
     const canSync = await this.authService.canSync();
     if (!canSync) {
-      this.snackBar.open(SNACKBAR_MESSAGES.LOGIN_TO_LOAD_CHANGES, SNACKBAR_DEFAULT_ACTION, { duration: 5000 });
+      openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       return;
     }
 
