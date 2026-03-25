@@ -70,6 +70,10 @@ describe('DiagnosticsComponent', () => {
 
     spyOn(DiagnosticHelper, 'recomputeGroupCounts').and.returnValue(Promise.resolve());
 
+    // Ensure global testbed stubs are overridden with our spies
+    TestBed.overrideProvider(TripService, { useValue: tripService });
+    TestBed.overrideProvider(ShiftService, { useValue: shiftService });
+
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, DiagnosticsComponent],
       providers: [
