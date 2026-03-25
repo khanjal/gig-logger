@@ -1179,3 +1179,18 @@ html.theme-dark .split-trip-dialog .mat-radio-button.mat-radio-checked .mat-radi
 html.theme-dark .split-trip-dialog .mat-mdc-radio-button.mdc-radio--checked .mdc-radio__outer-circle {
   border-color: var(--primary-600) !important;
 }
+
+/* Floating label background
+   - Ensure the floating label uses the same elevated background as the field
+   - Remove any border so the label visually sits cleanly inside the notch
+*/
+.mat-mdc-form-field .mat-mdc-floating-label,
+.mat-mdc-form-field .mdc-floating-label,
+.mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label--float-above,
+.mat-mdc-form-field .mdc-floating-label.mdc-floating-label--float-above {
+  background: var(--color-surface-elevated) !important;
+  border: none !important;
+  padding: 0 0.35rem !important;
+  border-radius: 0.25rem 0.25rem 0 0 !important;
+}
+
