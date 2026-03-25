@@ -222,6 +222,19 @@ export class AuthGoogleService {
     }
   }
 
+  /**
+   * Public helper to determine if remote sync is available.
+   * Returns true when the user is currently authenticated (token present/refresh OK).
+   */
+  async canSync(): Promise<boolean> {
+    try {
+      return await this.isAuthenticated();
+    } catch (e) {
+      this.logger.warn('canSync check failed, assuming not sync-capable', e);
+      return false;
+    }
+  }
+
   getAccessToken(): string | null {
     return this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }

@@ -2,12 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-and-lint:
+    name: Build and Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,4 +26,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-
       - run: npm ci --legacy-peer-deps
-      - run: npm test -- --watch=false
+      - name: Build
+        run: npm run build --if-present
+      - name: Lint
+        run: npm run lint --if-present

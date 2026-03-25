@@ -7,6 +7,8 @@ import { SplitDialogComponent } from '@components/trips/split-dialog/split-dialo
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { MatChipsModule } from '@angular/material/chips';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseButtonDirective } from '@directives/base-button.directive';
@@ -188,9 +190,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
   
   async cloneUnsavedTrip() {
-   await this._tripService.clone(this.trip);
+  await this._tripService.clone(this.trip);
    this.parentReload.emit();
-   this._snackBar.open("Cloned Trip");
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CLONED_TRIP);
    // Scroll to today's trips section
    this.scrollToTrip.emit(undefined);
   }
@@ -206,14 +208,14 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
     await this._gigLoggerService.calculateShiftTotalsByKey(this.trip.key);
 
     this.parentReload.emit();
-    this._snackBar.open('Trip Split');
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_SPLIT);
     this.scrollToTrip.emit(undefined);
   }
   
   async nextStopTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
-    this._snackBar.open("Added Next Trip");
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ADDED_NEXT_TRIP);
     // Scroll to today's trips section
     this.scrollToTrip.emit(undefined);
   }

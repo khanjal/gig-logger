@@ -27,7 +27,7 @@ export class LoginComponent {
 
   async ngOnInit() {
     // Check authentication state (this may trigger a refresh)
-    this.isAuthenticated = await this.authService.isAuthenticated();
+    this.isAuthenticated = await this.authService.canSync();
   }
 
   signInWithGoogle() {
@@ -35,7 +35,6 @@ export class LoginComponent {
   }
 
   async signOut() {
-    try { localStorage.setItem(SESSION_CONSTANTS.INTENTIONAL_LOGOUT, 'true'); } catch (e) {}
     await this.authService.logout();
     window.location.reload();
   }
