@@ -81,7 +81,7 @@
          matTooltip="Settings"
          matTooltipPosition="below">
         <mat-icon>settings</mat-icon>
-        <span *ngIf="localOnlyMode" class="notification-dot" title="Signed out / offline — local data only">!</span>
+        <span *ngIf="localOnlyMode" class="notification-dot" title="Signed out / offline — local data only" role="status" aria-label="Signed out or offline; local data only">!</span>
       </a>
     </div>
   </mat-toolbar>

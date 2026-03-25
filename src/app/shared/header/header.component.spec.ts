@@ -20,8 +20,6 @@ describe('HeaderComponent', () => {
   let routerEvents: Subject<any>;
 
   beforeEach(async () => {
-    // Increase default Jasmine timeout for header initialization logic
-    (jasmine as any).DEFAULT_TIMEOUT_INTERVAL = 20000;
     // Prevent the component's internal polling interval from scheduling during tests
     spyOn(window as any, 'setInterval').and.callFake(() => 0);
     commonSpy = { onHeaderLinkUpdate: of(null) };

@@ -10,6 +10,13 @@ export class AuthGuardService {
 
     constructor(private authService: AuthGoogleService, private router: Router, private _sheetService: SpreadsheetService) {}
 
+    /**
+     * Route guard flow:
+     * 1. If the user can sync remotely (`canSync()`), allow navigation.
+     * 2. Otherwise, permit navigation when local spreadsheets exist so the
+     *    app can operate in local-only mode.
+     * 3. If neither condition is met, redirect to the setup page.
+     */
     async canActivate(): Promise<boolean> {
         const isAuthenticated = await this.authService.canSync();
 
@@ -17,13 +24,10 @@ export class AuthGuardService {
             return true;
         }
 
-        // Allow access to routes when the user is not authenticated but already
-        // has an attached spreadsheet. In that case the app should operate in
-        // local-only mode (no remote sync) so navigation is permitted.
+        // If not authenticated, allow navigation when local spreadsheets exist.
         try {
-            const sheets = await this._sheetService.getSpreadsheets();
-            const hasSheets = !!(sheets && sheets.length > 0);
-            if (hasSheets) {
+            const hasLocal = await this.hasLocalSpreadsheets();
+            if (hasLocal) {
                 return true;
             }
         } catch (e) {
@@ -34,6 +38,11 @@ export class AuthGuardService {
 
         this.router.navigate(['setup']);
         return false;
+    }
+
+    private async hasLocalSpreadsheets(): Promise<boolean> {
+        const sheets = await this._sheetService.getSpreadsheets();
+        return !!(sheets && sheets.length > 0);
     }
 }
 
