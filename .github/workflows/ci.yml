@@ -4,7 +4,8 @@ on:
   push:
 
 jobs:
-  build-and-test:
+  build-and-lint:
+    name: Build and Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
