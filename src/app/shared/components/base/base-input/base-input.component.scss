@@ -20,8 +20,8 @@
       }
 
       .mat-mdc-form-field-flex {
-        background: var(--color-surface);
-        border-radius: 0; /* match search inputs square corners */
+        background: transparent; /* let wrapper surface-elevated show through */
+        border-radius: 0.5rem; /* match elevated wrapper radius */
         transition: all 0.2s ease-in-out;
       }
 
