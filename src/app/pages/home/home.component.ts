@@ -69,7 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showStartLoggingButton = this.isAuthenticated && this.hasDefaultSheet && !this.showUpdateNotification;
   }  private async checkUserStatus() {
     try {
-      this.isAuthenticated = await this.authService.isAuthenticated();
+      this.isAuthenticated = await this.authService.canSync();
       
       if (this.isAuthenticated) {
         // Check if user has a default spreadsheet

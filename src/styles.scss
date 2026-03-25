@@ -890,6 +890,28 @@ html.theme-dark .link-color {
   }
 }
 
+/* Make form fields visually distinct from surrounding cards/surfaces
+   - Use an elevated surface token so inputs contrast with parent containers
+   - Keep input elements themselves transparent so the wrapper controls the visible surface
+*/
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: var(--color-surface-elevated) !important;
+  border-radius: 0.5rem;
+}
+
+.mat-mdc-form-field .mat-mdc-input-element,
+.mat-mdc-form-field input,
+.mat-mdc-form-field textarea,
+.mat-mdc-form-field .mat-mdc-select-value,
+.mat-mdc-form-field .mat-mdc-select-trigger {
+  background: transparent !important;
+}
+
+/* Dark-mode tweak: slightly adjust elevated surface for readable contrast */
+html.theme-dark .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: color-mix(in srgb, var(--color-surface) 92%, black 8%) !important;
+}
+
 /* Override any remaining Material Design subscript spacing */
 .mat-form-field-subscript-wrapper,
 .mat-form-field-underline,

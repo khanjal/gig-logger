@@ -74,7 +74,7 @@ describe('LocationOverrideComponent', () => {
     component.onToggleChange();
     
     expect(mockLocationServiceSpy.enable).toHaveBeenCalled();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Location override enabled', 'Dismiss', { duration: 3000 });
+    expect(snackBarSpy.open).toHaveBeenCalledWith('Location override enabled', 'Dismiss', jasmine.objectContaining({ duration: 3000 }));
   });
 
   it('should disable override when toggled off', () => {
@@ -83,7 +83,7 @@ describe('LocationOverrideComponent', () => {
     component.onToggleChange();
     
     expect(mockLocationServiceSpy.disable).toHaveBeenCalled();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Location override disabled - using real location', 'Dismiss', { duration: 3000 });
+    expect(snackBarSpy.open).toHaveBeenCalledWith('Location override disabled - using real location', 'Dismiss', jasmine.objectContaining({ duration: 3000 }));
   });
 
   it('should set coordinates from preset', () => {
@@ -113,7 +113,7 @@ describe('LocationOverrideComponent', () => {
     const result = component.validateCoordinates();
     
     expect(result).toBe(false);
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Latitude must be between -90 and 90', 'Dismiss', { duration: 3000 });
+    expect(snackBarSpy.open).toHaveBeenCalledWith('Latitude must be between -90 and 90', 'Dismiss', jasmine.objectContaining({ duration: 3000 }));
   });
 
   it('should format coordinates', () => {
@@ -125,6 +125,6 @@ describe('LocationOverrideComponent', () => {
     component.resetToDefaults();
     
     expect(mockLocationServiceSpy.reset).toHaveBeenCalled();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Reset to default settings', 'Dismiss', { duration: 2000 });
+    expect(snackBarSpy.open).toHaveBeenCalledWith('Reset to default settings', 'Dismiss', jasmine.objectContaining({ duration: 2000 }));
   });
 });

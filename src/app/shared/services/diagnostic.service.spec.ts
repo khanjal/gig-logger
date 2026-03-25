@@ -8,6 +8,11 @@ describe('DiagnosticService', () => {
   let loggerSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(() => {
+    // Ensure a fresh TestBed to avoid previously-instantiated root providers
+    // (some CI runs share a prior injector which can return real services
+    // instead of the spy). Resetting guarantees our provider override is used.
+    TestBed.resetTestingModule();
+
     const spy = jasmine.createSpyObj('LoggerService', ['info', 'debug', 'warn', 'error']);
 
     TestBed.configureTestingModule({
