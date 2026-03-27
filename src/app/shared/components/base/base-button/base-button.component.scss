@@ -53,15 +53,19 @@
     }
   }
 
-  // Secondary variant - filled with surface color
+  // Secondary variant - filled with surface color (light mode)
   &.btn-secondary {
-    background-color: var(--color-surface-secondary);
+     /* Global semantic style: use muted surface so secondary buttons are
+       clearly distinguishable from white backgrounds. */
+     background-color: var(--color-surface-muted);
     color: var(--color-text-primary);
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-light);
 
     &:hover:not(:disabled) {
       background-color: var(--color-surface-tertiary);
-      border-color: var(--color-border);
+      border-color: var(--color-border-active);
+      box-shadow: var(--shadow-medium);
     }
 
     &:active:not(:disabled) {
@@ -416,6 +420,8 @@
 :host-context(html.theme-dark) {
   .app-base-button {
     &.btn-secondary {
+      /* In dark mode, keep the surface token suitable for dark backgrounds. */
+      background-color: var(--color-surface-secondary);
       color: var(--color-text-primary);
 
       &:hover:not(:disabled) {
