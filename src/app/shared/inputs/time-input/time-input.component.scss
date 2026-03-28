@@ -1,273 +1,119 @@
-// Mobile-First Time Input Component Styles
-@use 'color-vars' as *;
-
-// Host element styling to ensure proper width inheritance and layout compatibility
 :host {
   display: block;
   width: 100%;
-  
-  // Ensure time input works properly within form-row--halves
-  .form-row--halves & {
-    flex: 1 !important;
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0 !important;
-  }
-  
-  // Ensure the mat-form-field takes full width of its container
-  mat-form-field {
-    width: 100% !important;
-    max-width: 100% !important;
-    display: block !important;
-  }
 }
 
-// Direct mat-form-field styling
 mat-form-field {
   width: 100% !important;
   max-width: 100% !important;
-  
-  .mat-mdc-form-field-flex {
-    background: var(--color-surface);
-    border-radius: 0.75rem;
-    border: 1px solid var(--color-border);
-    transition: all 0.2s ease-in-out;
-    
-    &:hover {
-      border-color: var(--primary-300);
-      box-shadow: var(--shadow-light);
-    }
-    
-    &.mdc-text-field--focused {
-      border-color: var(--primary-600);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
-    }
-  }
-  
-  .mat-mdc-form-field-infix {
-    padding: 1rem;
-    min-height: 44px;
-    
-    @media (min-width: 768px) {
-      padding: 1.25rem;
-    }
-  }
-  
-  input {
-    font-size: 1rem;
-    color: var(--color-text-primary);
-    
-    &::placeholder {
-      color: var(--color-text-tertiary);
-    }
-  }
-  
-  .mat-mdc-form-field-label {
-    color: var(--color-text-secondary);
-    font-weight: 500;
-  }
-}
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-light);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  --mat-form-field-state-layer-color: transparent;
+  --mat-form-field-hover-state-layer-opacity: 0;
+  --mat-form-field-focus-state-layer-opacity: 0;
+  --mdc-filled-text-field-active-indicator-color: transparent;
+  --mdc-filled-text-field-hover-active-indicator-color: transparent;
+  --mdc-filled-text-field-focus-active-indicator-color: transparent;
+  --mdc-filled-text-field-active-indicator-height: 0px;
+  --mdc-filled-text-field-focus-active-indicator-height: 0px;
 
-// Time Actions Container
-.time-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  justify-content: center;
-  
-  @media (min-width: 768px) {
-    gap: 0.75rem;
+  &:hover:not(:focus-within) {
+    border-color: var(--primary-300);
   }
-    .mat-icon-button,
-  .mat-mdc-icon-button {
-    min-width: 44px;
-    min-height: 44px;
-    width: 44px;
-    height: 44px;
-    border-radius: 0.75rem;
-    transition: all 0.2s ease-in-out;
-    
-    // Override global align-self: center that may be applied elsewhere
-    align-self: stretch;
-    
-    // Explicit flexbox centering for icons - override any global styles
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    
-    // Ensure touch target and button wrapper are also centered
-    .mat-mdc-button-touch-target,
-    .mdc-icon-button__touch,
-    .mat-mdc-button-wrapper {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      width: 100% !important;
-      height: 100% !important;
+
+  &:focus-within {
+    border-color: var(--primary-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
+  }
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      width: 100%;
+      min-height: 56px;
+      padding-bottom: 0;
+      border-radius: 0.5rem;
+      border-bottom: none !important;
+      box-shadow: none !important;
+      background-image: none !important;
     }
-    
-    @media (min-width: 768px) {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      min-height: 48px;
+
+    .mat-mdc-form-field-flex {
+      border: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
     }
-    
-    // Icon sizing and centering
-    .mat-icon {
-      font-size: 1.25rem;
-      width: 1.25rem;
-      height: 1.25rem;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      margin: 0 !important;
-      line-height: 1 !important;
-      
+
+    .mat-mdc-form-field-infix {
+      min-height: 56px;
+      padding-top: 1rem !important;
+      padding-bottom: 0.25rem !important;
+      border-top: 0;
+      border-bottom: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+
+    .mdc-line-ripple,
+    .mdc-text-field--filled::before,
+    .mdc-text-field--filled::after,
+    .mdc-text-field--filled .mdc-text-field__ripple::before,
+    .mdc-text-field--filled .mdc-text-field__ripple::after {
+      border-bottom: 0 !important;
+      opacity: 0 !important;
+      display: none !important;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      opacity: 0 !important;
+    }
+
+    .mdc-text-field__input {
+      padding: 0 !important;
+      margin: 0;
+      line-height: 1.5;
+      color: var(--color-text-primary);
+
+      &::placeholder {
+        color: var(--color-text-tertiary);
+      }
+
       @media (min-width: 768px) {
-        font-size: 1.5rem;
-        width: 1.5rem;
-        height: 1.5rem;
+        font-size: 1.125rem;
       }
     }
-  }
-  
-  .current-time-btn {
-    color: var(--success-500);
-    
-    &:hover:not(:disabled) {
-      box-shadow: 0 2px 8px color-mix(in srgb, var(--success-500) 20%, transparent);
-      transform: translateY(-1px);
-    }
-    
-    &:active {
-      transform: translateY(0);
-    }
-    
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-  
-  .clear-time-btn {
-    color: var(--error-500);
-    
-    &:hover:not(:disabled) {
-      transform: translateY(-1px);
-    }
-    
-    &:active {
-      transform: translateY(0);
-    }
-    
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+
+    .mat-mdc-form-field-label {
+      color: var(--color-text-secondary);
+      font-weight: 500;
     }
   }
 }
 
-// Time Picker Dialog Enhancement
-.time-picker-dialog {
-  .mat-mdc-dialog-container {
-    border-radius: 1rem;
-    box-shadow: var(--shadow-heavy);
-  }
-  
-  .mat-mdc-dialog-content {
-    padding: 1.5rem;
-    
-    @media (min-width: 768px) {
-      padding: 2rem;
-    }
-  }
-}
-
-// Quick Time Selection
-.quick-time-selection {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  margin-top: 1rem;
-  
-  @media (min-width: 480px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
-  }
-  
-  .quick-time-btn {
-    min-height: 44px;
-    padding: 0.75rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    color: var(--color-text-primary);
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    
-    &:hover {
-      background: color-mix(in srgb, var(--primary-500) 10%, transparent);
-      border-color: var(--primary-600);
-      color: var(--primary-600);
-    }
-    
-    &.selected {
-      background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-      color: var(--color-text-inverse);
-      border-color: var(--primary-600);
-    }
-    
-    @media (min-width: 768px) {
-      padding: 1rem;
-      font-size: 1rem;
-    }
-  }
-}
-
-// Time Format Toggle
-.time-format-toggle {
-  display: flex;
+.time-actions {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: var(--color-surface-tertiary);
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border-light);
-  
-  .format-label {
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-    font-weight: 500;
-  }
-  
-  .format-switch {
-    margin-left: auto;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.current-time-btn,
+.clear-time-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+
+  @media (max-width: 480px) {
+    min-width: 36px !important;
+    min-height: 36px !important;
   }
 }
 
-// Error States
-.time-input-error {
-  .time-input-field mat-form-field .mat-mdc-form-field-flex {
-    border-color: var(--error-500);
-    background: color-mix(in srgb, var(--error-500) 5%, transparent);
-  }
-}
-
-// Focus States for Accessibility
 .time-actions button:focus {
-  outline: 2px solid var(--primary-600);
-  outline-offset: 2px;
-}
-
-.quick-time-btn:focus {
   outline: 2px solid var(--primary-600);
   outline-offset: 2px;
 }
