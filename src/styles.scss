@@ -910,6 +910,23 @@ html.theme-dark .mat-mdc-form-field .mat-mdc-text-field-wrapper {
   background: color-mix(in srgb, var(--color-surface) 92%, black 8%) !important;
 }
 
+/* Select fields: match base-input border + shadow treatment. */
+.mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-light);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-type-mat-select:not(.mat-focused) .mat-mdc-text-field-wrapper:hover {
+  border-color: var(--primary-300);
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-type-mat-select.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
+}
+
 /* Override any remaining Material Design subscript spacing */
 .mat-form-field-subscript-wrapper,
 .mat-form-field-underline,
@@ -1178,17 +1195,13 @@ html.theme-dark .split-trip-dialog .mat-mdc-radio-button.mdc-radio--checked .mdc
   border-color: var(--primary-600) !important;
 }
 
-/* Floating label background
-   - Ensure the floating label uses the same elevated background as the field
-   - Remove any border so the label visually sits cleanly inside the notch
-*/
+/* Floating label — always transparent so it blends with fill field background. */
 .mat-mdc-form-field .mat-mdc-floating-label,
 .mat-mdc-form-field .mdc-floating-label,
 .mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label--float-above,
 .mat-mdc-form-field .mdc-floating-label.mdc-floating-label--float-above {
-  background: var(--color-surface-elevated) !important;
+  background: transparent !important;
   border: none !important;
-  padding: 0 0.35rem !important;
-  border-radius: 0.25rem 0.25rem 0 0 !important;
+  padding: 0 !important;
 }
 

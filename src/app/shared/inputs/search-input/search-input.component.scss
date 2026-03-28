@@ -14,6 +14,27 @@ form {
 
 mat-form-field {
   width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-light);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  --mat-form-field-state-layer-color: transparent;
+  --mat-form-field-hover-state-layer-opacity: 0;
+  --mat-form-field-focus-state-layer-opacity: 0;
+  --mdc-filled-text-field-active-indicator-color: transparent;
+  --mdc-filled-text-field-hover-active-indicator-color: transparent;
+  --mdc-filled-text-field-focus-active-indicator-color: transparent;
+  --mdc-filled-text-field-active-indicator-height: 0px;
+  --mdc-filled-text-field-focus-active-indicator-height: 0px;
+
+  &:hover:not(:focus-within) {
+    border-color: var(--primary-300);
+  }
+
+  &:focus-within {
+    border-color: var(--primary-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
+  }
 
   &.field-full-width {
     width: 100%;
@@ -29,22 +50,15 @@ mat-form-field {
       min-height: 56px;
       padding-bottom: 0;
       border-radius: 0.5rem;
+      box-shadow: none !important;
+      background-image: none !important;
     }
 
     .mat-mdc-form-field-flex {
       border-radius: 0.5rem;
-      border: 1px solid var(--color-border);
-      box-shadow: var(--shadow-light);
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-
-      &:hover:not(.mdc-text-field--focused) {
-        border-color: var(--primary-300);
-      }
-
-      &.mdc-text-field--focused {
-        border-color: var(--primary-600);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
-      }
+      border: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
     }
 
     .mat-mdc-form-field-infix {
@@ -52,11 +66,21 @@ mat-form-field {
       padding-top: 1rem !important;
       padding-bottom: 0.25rem !important;
       border-top: 0;
+      border-bottom: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
     }
 
     .mdc-line-ripple,
     .mdc-text-field--filled .mdc-text-field__ripple::before,
     .mdc-text-field--filled .mdc-text-field__ripple::after {
+      display: none !important;
+    }
+
+    .mdc-text-field--filled::before,
+    .mdc-text-field--filled::after {
+      border-bottom: 0 !important;
+      opacity: 0 !important;
       display: none !important;
     }
 
