@@ -210,7 +210,7 @@
               <div class="flex items-center gap-2">
                 <mat-form-field
                   *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0"
-                  appearance="outline"
+                  appearance="fill"
                   class="flex-1 min-w-0"
                 >
                   <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
