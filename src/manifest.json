@@ -4,7 +4,7 @@
   "version": "1",
   "description": "An intuitive and powerful web application designed to help you log, track, and manage your gigs and trips effortlessly. Stay organized with detailed insights, shift tracking, and performance statistics tailored for gig workers.",
   "theme_color": "#2563eb",
-  "background_color": "#fff",
+  "background_color": "#e6f3ff",
   "display": "standalone",
   "id": "/",
   "scope": "/",
@@ -14,7 +14,7 @@
       "src": "assets/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
