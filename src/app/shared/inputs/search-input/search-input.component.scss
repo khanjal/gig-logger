@@ -1,95 +1,96 @@
-// Mobile-First Search Input Component Styles
-@use 'color-vars' as *;
-
-// Host element styling to ensure proper width inheritance
 :host {
   display: block;
   width: 100%;
-  
+
   &.field-full-width {
     width: 100% !important;
     flex: 1 !important;
   }
 }
 
-// Search Input Container - Mobile First
-.search-input-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+form {
   width: 100%;
-  
-  @media (min-width: 768px) {
-    gap: 1rem;
-  }
 }
 
-// Search Field Container
-.search-field-container {
-  position: relative;
+mat-form-field {
   width: 100%;
-  
-  &.field-button-width {
-    width: 100%;
-    
-    @media (min-width: 768px) {
-      width: 80%;
-    }
-  }
-  
+
   &.field-full-width {
     width: 100%;
   }
-}
 
-// Search Input Field
-.search-input-field {
-  width: 100%;
-  
-  mat-form-field {
-    width: 100%;
-    
+  ::ng-deep {
+    .mat-mdc-form-field,
+    .mat-mdc-text-field-wrapper {
+      width: 100%;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      min-height: 56px;
+      padding-bottom: 0;
+      border-radius: 0.5rem;
+    }
+
     .mat-mdc-form-field-flex {
-      background: var(--color-surface);
-      border-radius: 1rem;
+      border-radius: 0.5rem;
       border: 1px solid var(--color-border);
-      transition: all 0.2s ease-in-out;
       box-shadow: var(--shadow-light);
-      
-      &:hover {
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+      &:hover:not(.mdc-text-field--focused) {
         border-color: var(--primary-300);
-        box-shadow: var(--shadow-light);
       }
-      
+
       &.mdc-text-field--focused {
         border-color: var(--primary-600);
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-600) 10%, transparent);
       }
     }
-    
+
     .mat-mdc-form-field-infix {
-      padding: 1rem 1rem 1rem 3rem;
-      min-height: 44px;
-      
-      @media (min-width: 768px) {
-        padding: 1.25rem 1.25rem 1.25rem 3.5rem;
-        min-height: 48px;
-      }
+      min-height: 56px;
+      padding-top: 1rem !important;
+      padding-bottom: 0.25rem !important;
+      border-top: 0;
     }
-    
-    input {
-      font-size: 1rem;
+
+    .mdc-line-ripple,
+    .mdc-text-field--filled .mdc-text-field__ripple::before,
+    .mdc-text-field--filled .mdc-text-field__ripple::after {
+      display: none !important;
+    }
+
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      border-bottom-width: 0 !important;
+    }
+
+    .mat-mdc-text-field-wrapper.mdc-text-field--filled {
+      border-bottom: none !important;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      opacity: 0 !important;
+    }
+
+    .mat-mdc-form-field-form-control,
+    .mdc-text-field__input {
       color: var(--color-text-primary);
-      
+    }
+
+    .mdc-text-field__input {
+      padding: 0 !important;
+      margin: 0;
+      line-height: 1.5;
+
       &::placeholder {
         color: var(--color-text-tertiary);
       }
-      
+
       @media (min-width: 768px) {
         font-size: 1.125rem;
       }
     }
-    
+
     .mat-mdc-form-field-label {
       color: var(--color-text-secondary);
       font-weight: 500;
@@ -97,834 +98,122 @@
   }
 }
 
-// Material Form Field Focus Improvements
-mat-form-field {
-  width: 100%;
-  
-  &.field-full-width {
-    width: 100% !important;
-  }
-  
-  // Ensure proper label positioning on focus
-  .mat-mdc-form-field-label-wrapper {
-    .mat-mdc-form-field-label {
-      transition: all 0.2s ease-in-out;
-      
-      &.mat-mdc-form-field-label-floating {
-        transform: translateY(-50%) scale(0.75);
-        top: 14px;
-      }
-    }
-  }
-  
-  // Fix outline positioning to prevent label cutoff
-  .mat-mdc-text-field-wrapper {
-    .mat-mdc-form-field-flex {
-      .mat-mdc-form-field-outline {
-        .mat-mdc-form-field-outline-start,
-        .mat-mdc-form-field-outline-gap,
-        .mat-mdc-form-field-outline-end {
-          border-width: 1px;
-          border-style: solid;
-          border-color: var(--color-border);
-        }
-      }
-      
-      &.mdc-text-field--focused {
-        .mat-mdc-form-field-outline {
-          .mat-mdc-form-field-outline-start,
-          .mat-mdc-form-field-outline-gap,
-          .mat-mdc-form-field-outline-end {
-            border-color: var(--primary-600);
-            border-width: 2px;
-          }
-        }
-      }
-    }
-  }
-  
-  // Ensure proper infix container positioning
-  .mat-mdc-form-field-infix {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    border-top: none;
-    
-    input {
-      padding: 0;
-      margin: 0;
-      border: none;
-      outline: none;
-      background: transparent;
-    }
-  }
-  
-  // Mobile-specific adjustments for virtual keyboard and dropdown visibility
+.standard-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+
   @media (max-width: 768px) {
-    // Ensure form field has enough top margin when focused to keep label visible
-    &.mat-focused {
-      margin-top: 1rem;
-      transition: margin-top 0.3s ease;
-    }
-    
-    // Better label positioning for mobile
-    .mat-mdc-form-field-label-wrapper {
-      .mat-mdc-form-field-label {
-        &.mat-mdc-form-field-label-floating {
-          transform: translateY(-50%) scale(0.75);
-          top: 8px; // Adjusted for mobile to stay visible
-          z-index: 10; // Ensure label stays above other elements
-        }
-      }
-    }
-    
-    // Enhanced outline visibility on mobile
-    .mat-mdc-text-field-wrapper {
-      .mat-mdc-form-field-flex {
-        .mat-mdc-form-field-outline {
-          .mat-mdc-form-field-outline-start,
-          .mat-mdc-form-field-outline-gap,
-          .mat-mdc-form-field-outline-end {
-            border-width: 2px; // Thicker border for better visibility on mobile
-          }
-        }
-      }
-    }
+    min-width: 40px !important;
+    min-height: 40px !important;
   }
-  
-  // Ensure autocomplete panel has enough space below on mobile
-  @media (max-width: 768px) and (max-height: 800px) {
-    .mat-mdc-autocomplete-panel {
-      max-height: 200px; // Limit height for small mobile screens
-      margin-top: 0.25rem;
-    }
+
+  @media (max-width: 480px) {
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+
+  @media (max-width: 400px) {
+    min-width: 32px !important;
+    min-height: 32px !important;
   }
 }
 
-// Search Icon
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-tertiary);
-  z-index: 2;
-  transition: color 0.2s ease-in-out;
-  
-  @media (min-width: 768px) {
-    left: 1.25rem;
-  }
-  
-  &.active {
-    color: var(--primary-600);
-  }
-}
-
-// Clear Button
-.clear-button {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  min-width: 32px;
-  min-height: 32px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--color-text-tertiary) 10%, transparent);
-  color: var(--color-text-tertiary);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  z-index: 2;
-  
-  &:hover {
-    background: color-mix(in srgb, var(--error-500) 10%, transparent);
-    color: var(--error-500);
-    transform: translateY(-50%) scale(1.1);
-  }
-  
-  &:active {
-    transform: translateY(-50%) scale(0.95);
-  }
-  
-  mat-icon {
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
-  }
-  
-  @media (min-width: 768px) {
-    right: 0.75rem;
-    min-width: 36px;
-    min-height: 36px;
-    width: 36px;
-    height: 36px;
-    
-    mat-icon {
-      font-size: 1.125rem;
-      width: 1.125rem;
-      height: 1.125rem;
-    }
-  }
-}
-
-// Action Buttons Container
-.search-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  
-  @media (min-width: 768px) {
-    gap: 0.75rem;
-  }
-    .mat-icon-button,
-  .mat-mdc-icon-button {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 0.75rem;
-    margin: 0;
-    transition: all 0.2s ease-in-out;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface);
-    
-    &:hover {
-      background: var(--color-surface-tertiary);
-      border-color: var(--primary-600);
-      box-shadow: var(--shadow-light);
-      transform: translateY(-1px);
-    }
-    
-    &:active {
-      transform: translateY(0);
-    }
-    
-    @media (min-width: 768px) {
-      min-width: 48px;
-      min-height: 48px;
-    }
-    
-    mat-icon {
-      color: var(--color-text-primary);
-    }
-  }
-}
-
-// Search Results Container
-.search-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0 0 1rem 1rem;
-  box-shadow: var(--shadow-medium);
-  z-index: 1000;
-  max-height: 300px;
-  overflow: hidden;
-  
-  @media (min-width: 768px) {
-    max-height: 400px;
-  }
-}
-
-// Virtual Scroll Viewport
 .virtual-scroll-viewport {
   width: 100%;
   height: 100%;
   overflow: auto;
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: var(--color-surface-tertiary);
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: var(--color-border);
     border-radius: 3px;
-    
-    &:hover {
-      background: var(--color-text-tertiary);
-    }
   }
 }
 
-// Virtual scroll viewport styling to prevent horizontal scrolling
 ::ng-deep .virtual-scroll-viewport {
-  overflow-x: hidden !important; // Prevent horizontal scrolling
-  overflow-y: auto; // Allow vertical scrolling
+  overflow-x: hidden !important;
+  overflow-y: auto;
 }
 
-// Ensure autocomplete panel doesn't create horizontal scroll
 ::ng-deep .mat-mdc-autocomplete-panel {
   overflow-x: hidden !important;
   max-width: 100% !important;
-  
+
   .mat-mdc-option {
     overflow: hidden !important;
     max-width: 100% !important;
   }
 }
 
-// Search Result Item
-.search-result-item {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border-light);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  
-  &:hover {
-    background: color-mix(in srgb, var(--primary-500) 10%, transparent);
-    color: var(--primary-600);
-  }
-  
-  &:last-child {
-    border-bottom: none;
-  }
-  
-  &.selected {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, color-mix(in srgb, var(--primary-500) 20%, transparent) 100%);
-    color: var(--primary-600);
-  }
-  
-  @media (min-width: 768px) {
-    padding: 1.25rem;
-  }
-  
-  .result-title {
-    font-weight: 500;
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-    
-    @media (min-width: 768px) {
-      font-size: 1rem;
-    }
-  }
-  
-  .result-subtitle {
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    
-    @media (min-width: 768px) {
-      font-size: 0.875rem;
-    }
-  }
-}
+::ng-deep mat-option.search-result-option {
+  height: 48px !important;
+  line-height: 48px !important;
+  padding: 0 16px !important;
+  overflow: hidden !important;
 
-// No Results State
-.no-results {
-  padding: 2rem 1rem;
-  text-align: center;
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-  
-  mat-icon {
-    font-size: 2rem;
-    width: 2rem;
-    height: 2rem;
-    margin-bottom: 0.5rem;
-    color: var(--color-text-tertiary);
-  }
-  
-  @media (min-width: 768px) {
-    padding: 2.5rem 1.5rem;
-    font-size: 1rem;
-    
-    mat-icon {
-      font-size: 2.5rem;
-      width: 2.5rem;
-      height: 2.5rem;
-    }
-  }
-}
-
-// Loading State
-.search-loading {
-  padding: 1rem;
-  text-align: center;
-  
-  .loading-spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--color-border);
-    border-top: 2px solid var(--primary-600);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 0.5rem;
-  }
-  
-  .loading-text {
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-  }
-}
-
-// Search Suggestions
-.search-suggestions {
-  padding: 0.5rem;
-  border-bottom: 1px solid var(--color-border-light);
-  
-  .suggestions-title {
-    font-size: 0.75rem;
-    color: var(--color-text-tertiary);
-    font-weight: 500;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    padding: 0 0.5rem;
-  }
-  
-  .suggestion-chip {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    margin: 0.25rem;
-    background: var(--color-surface-tertiary);
-    border: 1px solid var(--color-border-light);
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    
-    &:hover {
-      background: color-mix(in srgb, var(--primary-500) 10%, transparent);
-      border-color: var(--primary-600);
-      color: var(--primary-600);
-    }
-  }
-}
-
-// Search result options styling
-.search-result-option {
   .option-content {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
-    min-height: 48px;
-    
-    .option-text {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding-right: 8px;
-    }
-    
-    .google-indicator {
+    height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .google-indicator {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+
+    .google-logo {
+      width: 16px;
+      height: 16px;
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      
-      .google-logo {
-        width: 16px;
-        height: 16px;
-        opacity: 0.7;
-      }
     }
   }
-}
 
-// Enhanced dropdown option styles with no word wrapping
-::ng-deep mat-option {
-  &.search-result-option {
-    height: 48px !important;
-    line-height: 48px !important;
-    padding: 0 16px !important;
-    overflow: hidden !important; // Prevent any overflow on the option itself
-    
-    .option-content {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-      max-width: 100%; // Ensure content doesn't exceed container
-      overflow: hidden; // Prevent overflow
-      
-      .google-indicator {
-        flex-shrink: 0; // Never shrink the Google logo
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px; // Fixed width for logo space
-        height: 24px;
-        margin-right: 8px; // Space between logo and next element
-        
-        .google-logo {
-          width: 16px;
-          height: 16px;
-          flex-shrink: 0;
-        }
-      }
-      
-      .trips-indicator {
-        flex-shrink: 0; // Never shrink the trips count
-        font-size: 0.875rem; // Slightly smaller than main text
-        color: var(--color-text-secondary); // Muted color
-        margin-right: 8px; // Space between trips count and address
-        font-weight: 500;
-      }
-      
-      .option-address {
-        color: var(--color-text-tertiary);
-      }
-      
-      .option-text {
-        flex: 1;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        line-height: 1.2;
-        min-width: 0; // Allow text to shrink below its content size
-      }
-    }
-    
-    .mat-option-text {
-      white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      width: 100% !important;
-    }
+  .trips-indicator {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-right: 8px;
+    font-weight: 500;
   }
-}
 
-// Mobile-specific focus scroll adjustments
-@media (max-width: 768px) {
-  // Add padding to top of viewport when form fields are focused
-  .focus-scroll {
-    scroll-margin-top: 2rem; // Ensures label stays visible after scroll
+  .option-address {
+    color: var(--color-text-tertiary);
   }
-  
-  // Better spacing for search input containers on mobile
-  .search-input-container {
-    padding-top: 0.5rem;
-    
-    &.focused {
-      padding-top: 1rem;
-      transition: padding-top 0.3s ease;
-    }
-  }
-}
 
-// Animations
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-// Focus States for Accessibility
-.search-input-field mat-form-field input:focus {
-  outline: none;
-}
-
-.mat-icon-button:focus,
-.clear-button:focus {
-  outline: 2px solid var(--primary-600);
-  outline-offset: 2px;
-}
-
-.search-result-item:focus {
-  outline: 2px solid var(--primary-600);
-  outline-offset: -2px;
-}
-
-// Search Input Wrapper for responsive button layout
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  width: 100%;
-    mat-form-field {
+  .option-text,
+  .mat-option-text {
     flex: 1;
+    width: 100% !important;
     min-width: 0;
+    line-height: 1.2;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 }
 
-// Default state: buttons stay inside form field (larger screens only)
-@media (min-width: 401px) {
-  .search-input-wrapper {
-    // Hide compact menu on larger screens
-    .compact-menu-button {
-      display: none !important;
-    }
-    
-    // Show standard buttons inside form field
-    .standard-button {
-      display: inline-flex !important;
-    }
-  }
-}
-
-// Small to medium screens (≤400px): responsive button handling
-@media (max-width: 400px) {
-  .search-input-wrapper {
-    // Default: show standard buttons (for single button case)
-    .standard-button {
-      display: inline-flex !important;
-      min-width: 32px !important;
-      min-height: 32px !important;
-    }
-    
-    // When compact menu is active, hide standard buttons and show menu
-    &.show-compact-menu {
-      .standard-button {
-        display: none !important;
-      }
-      
-      .compact-menu-button {
-        display: inline-flex !important;
-      }
-    }
-    
-    // Default compact menu state (hidden when not active)
-    .compact-menu-button {
-      display: none !important;
-    }
-  }
-}
-
-// Standard button styling (for inside form field)
-.standard-button {
-  transition: all 0.2s ease-in-out !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 50% !important;
-  // Default size for desktop and tablet - allow natural expansion
-  min-width: 44px !important;
-  min-height: 44px !important;
-  
-  // Medium screens - still good touch targets
-  @media (max-width: 768px) {
-    min-width: 40px !important;
-    min-height: 40px !important;
-  }
-  
-  // Small screens - more compact but still usable
-  @media (max-width: 480px) {
-    min-width: 36px !important;
-    min-height: 36px !important;
-  }
-  
-  // Very small screens but still in form field
-  @media (max-width: 400px) {
-    min-width: 32px !important;
-    min-height: 32px !important;
-  }
-}
-
-// Compact menu button styling (as matSuffix inside form field)
-.compact-menu-button {
-  transition: all 0.2s ease-in-out !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 50% !important;
-  // Match standard button sizing
-  min-width: 44px !important;
-  min-height: 44px !important;
-  
-  // Medium screens - still good touch targets
-  @media (max-width: 768px) {
-    min-width: 40px !important;
-    min-height: 40px !important;
-  }
-  
-  // Small screens - more compact but still usable
-  @media (max-width: 480px) {
-    min-width: 36px !important;
-    min-height: 36px !important;
-  }
-  
-  // Very small screens but still in form field
-  @media (max-width: 400px) {
-    min-width: 32px !important;
-    min-height: 32px !important;
-  }
-  
-  &:hover {
-    background: var(--color-surface-tertiary) !important;
-    box-shadow: var(--shadow-light) !important;
-  }
-  
-  mat-icon {
-    color: var(--color-text-primary) !important;
-    margin: 0 !important;
-    line-height: 1 !important;
-  }
-}
-
-// Search actions menu styling
-.search-actions-menu {
-  .mat-mdc-menu-content {
-    padding: 0.5rem 0 !important;
-    min-width: 180px !important;
-  }
-  
-  .mat-mdc-menu-item {
-    min-height: 44px !important;
-    padding: 0 1rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    font-size: 0.875rem !important;
-      mat-icon {
-      color: var(--color-text-secondary) !important;
-    }
-    
-    span {
-      flex: 1 !important;
-      color: var(--color-text-primary) !important;
-    }
-    
-    &:hover {
-      background: color-mix(in srgb, var(--primary-500) 10%, transparent) !important;
-      
-      mat-icon,
-      span {
-        color: var(--primary-600) !important;
-      }
-    }
-  }
-}
-
-// Form field responsive adjustments to prevent internal wrapping
-@media (max-width: 768px) {
-  :host {
-    display: block !important;
-    width: 100% !important;
-    
-    &.field-full-width {
-      width: 100% !important;
-      flex: 1 !important;
-    }
-  }
-  
-  form {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-  
-  .search-input-wrapper {
-    mat-form-field {
-      flex: 1 !important;
-      min-width: 0 !important;
-      width: auto !important;
-      
-      .mat-mdc-text-field-wrapper {
-        min-width: 0 !important;
-        
-        .mat-mdc-form-field-flex {
-          min-width: 0 !important;
-          white-space: nowrap !important;
-          flex-wrap: nowrap !important;
-        }
-        
-        .mat-mdc-form-field-infix {
-          min-width: 0 !important;
-          flex: 1 !important;
-          
-          input {
-            min-width: 0 !important;
-            width: 100% !important;
-          }
-        }
-          // Ensure suffix buttons don't wrap
-        .mat-mdc-form-field-suffix {
-          display: flex !important;
-          flex-direction: row !important;
-          flex-wrap: nowrap !important;
-          align-items: center !important;
-          gap: 2px !important;
-          flex-shrink: 0 !important;
-          margin-left: 4px !important;
-        }
-      }
-      
-      // Label adjustments for mobile
-      .mat-mdc-form-field-label-wrapper {
-        max-width: 70% !important;
-        
-        .mat-mdc-form-field-label {
-          font-size: 0.875rem !important;
-          white-space: nowrap !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-          
-          &.mat-mdc-form-field-label-floating {
-            font-size: 0.75rem !important;
-            max-width: 90% !important;
-          }
-        }
-      }
-    }
-  }
-}
-
-// Extra aggressive spacing for small screens to prevent wrapping at 375px
-@media (max-width: 400px) {
-  .search-input-wrapper {
-    gap: 0.125rem !important;
-    
-    mat-form-field {
-      .mat-mdc-text-field-wrapper {
-        .mat-mdc-form-field-suffix {
-          gap: 1px !important;
-          margin-left: 2px !important;
-        }
-      }
-      
-      .mat-mdc-form-field-label-wrapper {
-        max-width: 60% !important;
-        
-        .mat-mdc-form-field-label {
-          font-size: 0.8rem !important;
-          
-          &.mat-mdc-form-field-label-floating {
-            font-size: 0.7rem !important;
-          }
-        }
-      }
-    }
-  }
-}
-
-// Prevent input shifting on focus for outline appearance
-.mat-mdc-form-field-outline-start,
-.mat-mdc-form-field-outline-gap,
-.mat-mdc-form-field-outline-end {
-  border-width: 1px !important;
-  transition: border-width 0s !important;
-}
-
-.mdc-text-field--focused .mat-mdc-form-field-outline-start,
-.mdc-text-field--focused .mat-mdc-form-field-outline-gap,
-.mdc-text-field--focused .mat-mdc-form-field-outline-end {
-  border-width: 1px !important;
-}
-
-// Prevent infix padding/margin changes on focus
-.mat-mdc-form-field-infix {
-  padding-top: 16px !important;
-  padding-bottom: 16px !important;
-}
-
-// Remove mobile margin-top on focus
-@media (max-width: 768px) {
-  mat-form-field.mat-focused {
-    margin-top: 0 !important;
-  }
-}
-
-// Default font size for option text
 .option-text-normal {
   font-size: 1.12rem;
   font-weight: 400;
-  display: flex;
-  align-items: center;
-  height: 48px;
 }
 
 .option-text-large {
