@@ -1,15 +1,17 @@
 // Quick view styling enhancements
-.shift-bg-even { background-image: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.7)); }
-.shift-bg-odd { background-image: linear-gradient(180deg, rgba(248,250,252,0.9), rgba(241,245,249,0.7)); }
 
-:host-context(html.theme-dark) .shift-bg-even { background-image: linear-gradient(180deg, rgba(31,41,55,0.9), rgba(17,24,39,0.7)); }
-:host-context(html.theme-dark) .shift-bg-odd { background-image: linear-gradient(180deg, rgba(17,24,39,0.9), rgba(31,41,55,0.7)); }
+/* Use semantic surface variables for subtle gradients */
+.shift-bg-even { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 92%, transparent 8%), color-mix(in srgb, var(--color-surface-secondary) 85%, transparent 15%)); }
+.shift-bg-odd { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-secondary) 92%, transparent 8%), color-mix(in srgb, var(--color-surface-tertiary) 85%, transparent 15%)); }
 
-.shift-bg-even:hover, .shift-bg-odd:hover { box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06); }
+:host-context(html.theme-dark) .shift-bg-even { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 90%, black 8%), color-mix(in srgb, var(--color-surface-secondary) 85%, black 15%)); }
+:host-context(html.theme-dark) .shift-bg-odd { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-secondary) 90%, black 8%), color-mix(in srgb, var(--color-surface-tertiary) 85%, black 15%)); }
+
+.shift-bg-even:hover, .shift-bg-odd:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-border-light) 40%, transparent 60%), 0 2px 4px var(--shadow-light); }
 
 :host-context(html.theme-dark) .shift-bg-even:hover,
-:host-context(html.theme-dark) .shift-bg-odd:hover { box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4); }
+:host-context(html.theme-dark) .shift-bg-odd:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-text-tertiary) 20%, transparent 80%), 0 2px 4px var(--shadow-medium); }
 
-.text-gray-600 { color: #6b7280; }
+.text-tertiary { color: var(--color-text-tertiary); }
 
 mat-icon { line-height: 1; }

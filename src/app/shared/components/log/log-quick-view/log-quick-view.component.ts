@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { TripService } from '@services/sheets/trip.service';
@@ -9,7 +10,7 @@ import { TripService } from '@services/sheets/trip.service';
 @Component({
   selector: 'log-quick-view',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, BaseFabButtonComponent],
   templateUrl: './log-quick-view.component.html',
   styleUrls: ['./log-quick-view.component.scss']
 })

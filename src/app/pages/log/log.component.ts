@@ -7,6 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { SearchInputComponent } from '@inputs/search-input/search-input.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { LogQuickViewComponent } from '@components/log/log-quick-view/log-quick-view.component';
 import { LogShiftQuickFormComponent } from '@components/log/log-shift-quick-form/log-shift-quick-form.component';
 import { LogTripQuickFormComponent } from '@components/log/log-trip-quick-form/log-trip-quick-form.component';
@@ -22,7 +24,7 @@ import { DateHelper } from '@helpers/date.helper';
 @Component({
   selector: 'app-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, SearchInputComponent, LogQuickViewComponent, LogShiftQuickFormComponent, LogTripQuickFormComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, SearchInputComponent, LogQuickViewComponent, LogShiftQuickFormComponent, LogTripQuickFormComponent, BaseRectButtonComponent, BaseFabButtonComponent],
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.scss']
 })

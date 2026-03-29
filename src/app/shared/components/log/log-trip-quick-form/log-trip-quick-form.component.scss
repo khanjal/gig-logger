@@ -1,0 +1,11 @@
+/* Small helper styles for the quick trip form */
+:host { display: block; }
+.log-trip-quick-form { width: 100%; }
+.log-trip-quick-form .flex { display: flex; }
+.log-trip-quick-form .justify-end { justify-content: flex-end; }
+.log-trip-quick-form button[mat-stroked-button] { min-width: 96px; }
+.log-trip-quick-form button[mat-raised-button] { min-width: 96px; }
+
+@media (max-width: 640px) {
+	.log-trip-quick-form .grid { grid-template-columns: 1fr; }
+}

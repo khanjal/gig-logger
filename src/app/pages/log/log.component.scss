@@ -102,3 +102,49 @@
 .space-y-4 {
 	position: relative;
 }
+
+/* Disabled / deleted shift state */
+.shift-card-disabled {
+	background: linear-gradient(135deg, rgba(243,244,246,0.9) 0%, rgba(229,231,235,0.7) 100%) !important;
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+:host-context(html.theme-dark) .shift-card-disabled {
+	background: linear-gradient(135deg, rgba(31,41,55,0.9) 0%, rgba(55,65,81,0.7) 100%) !important;
+}
+
+/* Simple .mat-card fallback used by some quick-view children */
+.mat-card {
+	margin-bottom: 1rem;
+	border-radius: 12px;
+	transition: all 0.3s ease;
+	overflow: hidden;
+	box-shadow: none;
+}
+
+/* Scrollable area helpers (share with shifts page) */
+.shifts-scrollable {
+	overflow-y: auto;
+	box-sizing: border-box;
+	padding-right: 0.5rem;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-600, #3b82f6) var(--color-surface-tertiary, #f3f4f6);
+}
+
+.shifts-scrollable::-webkit-scrollbar {
+	width: 8px;
+}
+.shifts-scrollable::-webkit-scrollbar-track {
+	background: var(--color-surface-tertiary, #f3f4f6);
+	border-radius: 4px;
+}
+.shifts-scrollable::-webkit-scrollbar-thumb {
+	background: var(--accent-600, #3b82f6);
+	border-radius: 4px;
+}
+
+/* Small helpers for quick forms */
+.log-quick-form .opacity-60 { opacity: 0.6; }
+.log-quick-form .w-full { width: 100%; }
+
