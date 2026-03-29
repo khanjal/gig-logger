@@ -1,0 +1,17 @@
+// Quick view styling enhancements
+
+/* Use semantic surface variables for subtle gradients */
+.shift-bg-even { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 92%, transparent 8%), color-mix(in srgb, var(--color-surface-secondary) 85%, transparent 15%)); }
+.shift-bg-odd { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-secondary) 92%, transparent 8%), color-mix(in srgb, var(--color-surface-tertiary) 85%, transparent 15%)); }
+
+:host-context(html.theme-dark) .shift-bg-even { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 90%, black 8%), color-mix(in srgb, var(--color-surface-secondary) 85%, black 15%)); }
+:host-context(html.theme-dark) .shift-bg-odd { background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-secondary) 90%, black 8%), color-mix(in srgb, var(--color-surface-tertiary) 85%, black 15%)); }
+
+.shift-bg-even:hover, .shift-bg-odd:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-border-light) 40%, transparent 60%), 0 2px 4px var(--shadow-light); }
+
+:host-context(html.theme-dark) .shift-bg-even:hover,
+:host-context(html.theme-dark) .shift-bg-odd:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-text-tertiary) 20%, transparent 80%), 0 2px 4px var(--shadow-medium); }
+
+.text-tertiary { color: var(--color-text-tertiary); }
+
+mat-icon { line-height: 1; }

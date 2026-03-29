@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ExpensesComponent } from './expenses.component';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,6 +11,7 @@ import { IExpense } from '@interfaces/expense.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { spreadsheetDB } from '@data/spreadsheet.db';
+import { BehaviorSubject } from 'rxjs';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;
@@ -18,6 +20,7 @@ describe('ExpensesComponent', () => {
   let unsavedDataServiceSpy: jasmine.SpyObj<UnsavedDataService>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
+  let authGoogleServiceMock: Partial<AuthGoogleService>;
 
   const makeExpense = (overrides: Partial<IExpense> = {}): IExpense => ({
     id: overrides.id ?? 1,
@@ -39,6 +42,12 @@ describe('ExpensesComponent', () => {
     unsavedDataServiceSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+    authGoogleServiceMock = {
+      canSync: () => Promise.resolve(false),
+      isAuthenticated: () => Promise.resolve(false),
+      isAuthenticatedSync: () => false,
+      profile$: new BehaviorSubject<any>(null)
+    };
 
     expensesServiceSpy.getMaxRowId.and.returnValue(Promise.resolve(10));
     unsavedDataServiceSpy.hasUnsavedData.and.returnValue(Promise.resolve(false));
@@ -49,6 +58,7 @@ describe('ExpensesComponent', () => {
         FormBuilder,
         { provide: ExpensesService, useValue: expensesServiceSpy },
         { provide: UnsavedDataService, useValue: unsavedDataServiceSpy },
+        { provide: AuthGoogleService, useValue: authGoogleServiceMock },
         { provide: MatDialog, useValue: dialogSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
         CurrencyPipe,

@@ -4,6 +4,7 @@ import { SyncStatusService } from '@services/sync-status.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ThemeService } from '@services/theme.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 
 import type { ThemePreference } from '@interfaces/theme.interface';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,6 +24,7 @@ describe('SyncStatusIndicatorComponent', () => {
   let syncState$: BehaviorSubject<any>;
   let messages$: BehaviorSubject<any[]>;
   let preference$: BehaviorSubject<ThemePreference>;
+  let authSpy: jasmine.SpyObj<any>;
 
   beforeEach(async () => {
     syncState$ = new BehaviorSubject({ status: 'idle', message: 'Ready', progress: 0 });
@@ -50,12 +52,15 @@ describe('SyncStatusIndicatorComponent', () => {
 
     themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { currentPreference: 'system', preferenceChanges: preference$.asObservable() });
 
+    authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
+    authSpy.canSync.and.returnValue(Promise.resolve(true));
     await TestBed.configureTestingModule({
       imports: [SyncStatusIndicatorComponent],
       providers: [
         { provide: SyncStatusService, useValue: syncStatusSpy },
         { provide: UiPreferencesService, useValue: uiPreferencesSpy },
         { provide: UnsavedDataService, useValue: unsavedDataSpy },
+        { provide: AuthGoogleService, useValue: authSpy },
         { provide: MatDialog, useValue: dialogSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: ThemeService, useValue: themeSpy }
@@ -110,7 +115,9 @@ describe('SyncStatusIndicatorComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      try { fixture.destroy(); } catch { /* ignore cleanup errors */ }
+    }
   });
 
   it('should create', () => {

@@ -108,6 +108,15 @@ describe('PermissionsComponent', () => {
       
       expect(component.locationPermission.state).toBe('denied');
     });
+
+    it('logs error when location request throws', async () => {
+      const err = new Error('location failed');
+      permissionServiceSpy.requestLocation.and.returnValue(Promise.reject(err));
+
+      await component.requestLocation();
+
+      expect(loggerSpy.error).toHaveBeenCalledWith('Error requesting location:', err);
+    });
   });
 
   describe('requestMicrophone', () => {
@@ -131,11 +140,11 @@ describe('PermissionsComponent', () => {
 
   describe('getStateColor', () => {
     it('returns correct color for each state', () => {
-      expect(component.getStateColor('granted')).toBe('text-green-600');
-      expect(component.getStateColor('denied')).toBe('text-red-600');
-      expect(component.getStateColor('prompt')).toBe('text-yellow-600');
-      expect(component.getStateColor('checking')).toBe('text-gray-500');
-      expect(component.getStateColor('unsupported')).toBe('text-gray-400');
+      expect(component.getStateColor('granted')).toBe('text-success');
+      expect(component.getStateColor('denied')).toBe('text-error');
+      expect(component.getStateColor('prompt')).toBe('text-warning');
+      expect(component.getStateColor('checking')).toBe('text-tertiary');
+      expect(component.getStateColor('unsupported')).toBe('text-tertiary');
     });
   });
 

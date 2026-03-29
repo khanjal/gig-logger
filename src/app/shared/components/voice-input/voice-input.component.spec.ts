@@ -409,13 +409,13 @@ describe('VoiceInputComponent', () => {
     it('returns red when recognizing', () => {
       component.recognizing = true;
 
-      expect(component.micButtonColor).toBe('bg-red-600');
+      expect(component.micButtonColor).toBe('bg-error');
     });
 
     it('returns blue when not recognizing', () => {
       component.recognizing = false;
 
-      expect(component.micButtonColor).toBe('bg-blue-600');
+      expect(component.micButtonColor).toBe('bg-primary');
     });
   });
 

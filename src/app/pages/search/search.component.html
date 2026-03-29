@@ -7,7 +7,7 @@
     <div class="px-4 py-3">
       <div class="flex gap-2">
         <div class="flex-1">
-          <mat-form-field appearance="outline" class="w-full">
+          <mat-form-field appearance="fill" class="w-full rg-field-shell">
             <mat-label>Search</mat-label>
             <input 
               matInput 
@@ -43,7 +43,7 @@
               matTooltipPosition="below"
               (clicked)="toggleFilters()"
               variant="primary"
-              [class.bg-primary-500/10]="showFilters"
+              [class.bg-primary-soft]="showFilters"
               [icon]="'filter_list'">
             </app-base-fab-button>
             <span class="filter-badge">{{ getEnabledCount() }}</span>
@@ -65,14 +65,14 @@
               <app-base-rect-button
                 color="primary"
                 (clicked)="selectAllCategories()"
-                class="text-xs font-semibold px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900 all-btn">
+                class="text-xs font-semibold px-3 py-1 rounded-md bg-surface text-primary hover:bg-surface-2 all-btn">
                 <mat-icon class="text-sm">check_box</mat-icon>
                 &nbsp;All
               </app-base-rect-button>
               <app-base-rect-button
                 color="primary"
                 (clicked)="deselectAllCategories()"
-                class="text-xs font-semibold px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-gray-800 dark:text-blue-50 hover:bg-slate-200 dark:hover:bg-slate-700 none-btn">
+                class="text-xs font-semibold px-3 py-1 rounded-md bg-surface-2 dark:bg-surface-3 text-secondary dark:text-secondary hover:bg-surface-2 dark:hover:bg-surface-2 none-btn">
                 <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
                 &nbsp;None
               </app-base-rect-button>
@@ -83,7 +83,7 @@
             <div 
               *ngFor="let category of getCategoriesArray()"
               class="flex items-center p-2 rounded border transition-colors cursor-pointer bg-[var(--color-surface)] dark:bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] dark:hover:bg-[var(--color-surface-tertiary)] border-[var(--color-border-light)] dark:border-[var(--color-border)]"
-              [ngClass]="{ 'border-blue-500 dark:border-blue-400': isCategoryEnabled(category) }"
+              [ngClass]="{ 'border-primary': isCategoryEnabled(category) }"
               (click)="toggleCategory(category)">
               <mat-checkbox 
                 [checked]="isCategoryEnabled(category)"
@@ -136,7 +136,7 @@
             <span class="font-bold text-primary">{{ getTotalTripsCount() }}</span> trips
           </span>
           <span class="text-secondary">
-            <span class="font-bold text-green-600 dark:text-green-400">{{ getTotalEarnings() | currency }}</span> total
+            <span class="font-bold text-success">{{ getTotalEarnings() | currency }}</span> total
           </span>
         </div>
         <div *ngIf="groupedResults.length > 0">
@@ -182,7 +182,7 @@
         <div class="p-4">
           <div class="flex-between">
             <div class="flex-start">
-              <mat-icon class="text-blue-600 dark:text-blue-400 flex-shrink-0">calendar_month</mat-icon>
+              <mat-icon class="text-primary flex-shrink-0">calendar_month</mat-icon>
               <div class="flex-1 min-w-0">
                 <div class="text-lg font-bold text-primary text-truncate text-tight">{{ group.month }}</div>
                 <span class="text-xs text-secondary text-tight">
@@ -193,7 +193,7 @@
             <div class="flex-end">
               <div class="text-right">
                 <div class="text-sm text-secondary whitespace-nowrap">{{ group.totalTrips }} trips</div>
-                <div class="text-sm font-bold text-green-600 dark:text-green-400 whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
+                <div class="text-sm font-bold text-success whitespace-nowrap">{{ group.totalEarnings | currency }}</div>
               </div>
               <mat-icon class="flex-shrink-0">{{ isGroupExpanded(group.month) ? 'expand_less' : 'expand_more' }}</mat-icon>
             </div>
@@ -204,13 +204,13 @@
         <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium">
           <div>
             Avg/trip:
-            <span class="font-bold text-blue-700 dark:text-blue-400">
+            <span class="font-bold text-primary">
               {{ getGroupAvgPerTrip(group) }}
             </span>
           </div>
           <div>
             Avg/hr:
-            <span class="font-bold text-green-700 dark:text-green-400">
+            <span class="font-bold text-success">
               {{ getGroupAvgRate(group) }}
             </span>
           </div>
@@ -223,7 +223,7 @@
           <!-- Result Header -->
           <div 
             class="p-4 card-hover border-l-4"
-            [ngClass]="getCategoryColor(result.type).replace('text-', 'border-')"
+            [ngClass]="getCategoryBorderClass(result.type)"
             (click)="toggleResult(getResultKey(result, group.month))">
             <div class="flex-between">
               <div class="flex-start">
@@ -237,10 +237,10 @@
               </div>
               <div class="flex-end gap-4">
                 <div class="text-right">
-                  <div class="text-sm text-gray-500">{{ result.totalTrips }} trips</div>
-                  <div class="text-sm font-bold text-green-600 dark:text-green-400">{{ result.totalEarnings | currency }}</div>
+                  <div class="text-sm text-secondary">{{ result.totalTrips }} trips</div>
+                  <div class="text-sm font-bold text-success">{{ result.totalEarnings | currency }}</div>
                 </div>
-                <mat-icon class="text-gray-400 dark:text-gray-500">
+                <mat-icon class="text-tertiary">
                   {{ isResultExpanded(getResultKey(result, group.month)) ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
               </div>
@@ -252,13 +252,13 @@
                *ngIf="!isResultSameAsGroup(result, group)">
             <div>
               Avg/trip:
-              <span class="font-bold text-blue-700 dark:text-blue-300">
+              <span class="font-bold text-primary">
                 {{ getResultAvgPerTrip(result) }}
               </span>
             </div>
             <div>
               Avg/hr:
-              <span class="font-bold text-green-700">
+              <span class="font-bold text-success">
                 {{ getResultAvgRate(result) }}
               </span>
             </div>

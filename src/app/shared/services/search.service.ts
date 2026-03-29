@@ -349,18 +349,34 @@ export class SearchService {
   }
 
   /**
-   * Get category color class for Tailwind
+   * Get category icon/text class using semantic theme utilities.
    */
   getCategoryColor(category: SearchCategory): string {
     const colors: Record<SearchCategory, string> = {
-      'Service': 'text-blue-600',
-      'Place': 'text-green-600',
-      'Name': 'text-purple-600',
-      'Address': 'text-orange-600',
-      'Region': 'text-teal-600',
-      'Type': 'text-pink-600',
-      'All': 'text-gray-600'
+      'Service': 'text-primary',
+      'Place': 'text-success',
+      'Name': 'text-accent',
+      'Address': 'text-warning',
+      'Region': 'text-info',
+      'Type': 'text-primary',
+      'All': 'text-tertiary'
     };
     return colors[category];
+  }
+
+  /**
+   * Get category border class using semantic theme utilities.
+   */
+  getCategoryBorderClass(category: SearchCategory): string {
+    const borders: Record<SearchCategory, string> = {
+      'Service': 'border-primary',
+      'Place': 'border-success',
+      'Name': 'border-accent',
+      'Address': 'border-warning',
+      'Region': 'border-info',
+      'Type': 'border-primary',
+      'All': 'border-soft'
+    };
+    return borders[category];
   }
 }

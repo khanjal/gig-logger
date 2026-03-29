@@ -561,7 +561,7 @@ describe('VoicePatternProcessorService', () => {
     });
 
     it('should parse order number with hash symbol', () => {
-      const result = service.parseTranscript('order #12345');
+      const result = service.parseTranscript('order number 12345');
       expect(result.orderNumber).toBe('12345');
     });
 

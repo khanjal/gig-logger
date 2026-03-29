@@ -63,7 +63,7 @@
           [required]="true">
         </app-base-input>
       </div>
-      <mat-form-field class="w-full" appearance="outline">
+      <mat-form-field class="w-full rg-field-shell" appearance="fill">
         <mat-label>Category</mat-label>
         <input matInput formControlName="category" [matAutocomplete]="autoCategory" required />
         <mat-autocomplete #autoCategory="matAutocomplete">
@@ -115,28 +115,28 @@
   </div>
 
   <div *ngIf="!(showAddForm || editingExpenseId)" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
-    <div *ngIf="(expenses?.length ?? 0) === 0" class="pt-12 text-center">
+    <div *ngIf="expenses.length === 0" class="pt-12 text-center">
       <p class="text-lg text-secondary mb-4">You have no expenses yet. Add your first expense to get started.</p>
       <app-base-rect-button variant="primary" (clicked)="showAddForm = true; resetForm()" [icon]="'add'" [label]="'Add Expense'"></app-base-rect-button>
     </div>
     <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-blue-800 dark:text-blue-300">{{ year.key }}</h2>
-        <div class="text-right text-lg font-semibold text-blue-900 dark:text-blue-300">
+        <h2 class="text-xl font-bold text-primary">{{ year.key }}</h2>
+        <div class="text-right text-lg font-semibold text-primary">
           Year Total: {{ getYearTotal(year.value) | currency }}
         </div>
       </div>
       <div *ngFor="let month of (year.value | groupByMonth | keyvalue:sortByMonth)">
         <div class="flex items-end justify-between mb-0 py-1">
-          <h3 class="text-lg font-bold text-blue-700 dark:text-blue-300 pb-0">{{ month.key | date:dateFormats.MONTH_YEAR }}</h3>
-          <div class="text-right text-base font-semibold text-blue-900 dark:text-blue-300 mb-2">
+          <h3 class="text-lg font-bold text-primary pb-0">{{ month.key | date:dateFormats.MONTH_YEAR }}</h3>
+          <div class="text-right text-base font-semibold text-primary mb-2">
             Total: {{ getMonthTotal(month.value) | currency }}
           </div>
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full bg-surface rounded-lg shadow mb-8">
             <thead>
-              <tr class="bg-primary-500/20">
+              <tr class="bg-primary-soft">
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Date</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Name</th>
                 <th class="py-1 px-2 sm:py-2 sm:px-4 text-left font-semibold text-xs sm:text-base">Amount</th>
@@ -146,7 +146,7 @@
             </thead>
             <tbody>
               <ng-container *ngFor="let expense of month.value | orderBy:'date':'asc'">
-                <tr class="even:bg-gray-50 dark:even:bg-slate-800/50" [class.!bg-warning-500/20]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
+                <tr class="even:bg-surface dark:even:bg-surface-3/50" [class.bg-warning-soft]="expense.saved === false" [class.line-through]="expense.action === actionEnum.Delete" [class.opacity-50]="expense.action === actionEnum.Delete" id="expense-row-{{expense.id}}">
                   <td class="py-0.5 px-1 sm:py-1.5 sm:px-3 align-middle text-xs sm:text-base">
                     {{ expense.date | date:'EEE M/d' }}
                   </td>
@@ -175,7 +175,7 @@
                 </tr>
                 <tr *ngIf="expense.note">
                   <td class="py-0 px-1 sm:px-3"></td>
-                  <td colspan="3" class="py-0 px-1 sm:px-3 text-gray-500 italic text-xs sm:text-base">"{{ expense.note }}"</td>
+                  <td colspan="3" class="py-0 px-1 sm:px-3 text-tertiary italic text-xs sm:text-base">"{{ expense.note }}"</td>
                   <td class="py-0 px-1 sm:px-3"></td>
                 </tr>
               </ng-container>

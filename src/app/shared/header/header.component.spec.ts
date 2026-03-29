@@ -6,6 +6,8 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { LoggerService } from '@services/logger.service';
+import { ThemeService } from '@services/theme.service';
 import { of, Subject } from 'rxjs';
 
 describe('HeaderComponent', () => {
@@ -18,12 +20,16 @@ describe('HeaderComponent', () => {
   let routerEvents: Subject<any>;
 
   beforeEach(async () => {
+    // Prevent the component's internal polling interval from scheduling during tests
+    spyOn(window as any, 'setInterval').and.callFake(() => 0);
     commonSpy = { onHeaderLinkUpdate: of(null) };
-    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
+    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets', 'getSpreadsheets']);
     spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([]));
-    authSpy = jasmine.createSpyObj('AuthGoogleService', ['isAuthenticated']);
-    authSpy.isAuthenticated.and.returnValue(Promise.resolve(false));
+    spreadsheetSpy.getSpreadsheets.and.returnValue(Promise.resolve([]));
+    authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync'], { profile$: new Subject<any>() });
+    authSpy.canSync.and.returnValue(Promise.resolve(false));
     shiftSpy = jasmine.createSpyObj('ShiftService', ['getUnsavedShifts']);
+    shiftSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
     tripSpy = jasmine.createSpyObj('TripService', ['getUnsaved']);
     tripSpy.getUnsaved.and.returnValue(Promise.resolve([]));
 
@@ -36,6 +42,9 @@ describe('HeaderComponent', () => {
     };
     const activatedRouteStub: any = { snapshot: { url: [] } };
 
+    const loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
+    const themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { preferenceChanges: of('system'), activeTheme$: of('light') });
+
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
@@ -44,6 +53,8 @@ describe('HeaderComponent', () => {
         { provide: AuthGoogleService, useValue: authSpy },
         { provide: ShiftService, useValue: shiftSpy },
         { provide: TripService, useValue: tripSpy },
+        { provide: LoggerService, useValue: loggerSpy },
+        { provide: ThemeService, useValue: themeSpy },
         { provide: Router, useValue: routerSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub }
       ]
@@ -52,6 +63,12 @@ describe('HeaderComponent', () => {
     const fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    // Do NOT await global lifecycle whenStable here — it can hang due to
+    // the component's internal interval/timers. Tests that need lifecycle
+    // behavior should call `await component.ngOnInit()` themselves.
+    // Tear down any subscriptions started in the constructor so the test
+    // environment doesn't remain unstable.
+    try { component.ngOnDestroy(); } catch (e) { /* ignore */ }
   });
 
   it('toggles menu open/close', () => {
@@ -84,7 +101,7 @@ describe('HeaderComponent', () => {
   });
 
   it('updateUnsavedCounts sets counts when authenticated', async () => {
-    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    authSpy.canSync.and.returnValue(Promise.resolve(true));
     tripSpy.getUnsaved.and.returnValue(Promise.resolve([1,2,3]));
     shiftSpy.getUnsavedShifts.and.returnValue(Promise.resolve([1]));
 
@@ -96,7 +113,7 @@ describe('HeaderComponent', () => {
 
   it('ngOnInit initializes header and loads default sheet when authenticated', async () => {
     // Make auth return true and spreadsheet service return a default sheet
-    authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
+    authSpy.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'sheet-1' }]));
 
     // Call ngOnInit and wait for it to complete

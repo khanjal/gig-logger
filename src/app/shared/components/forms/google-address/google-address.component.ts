@@ -5,8 +5,7 @@ import { ServerGooglePlacesService } from '@services/server-google-places.servic
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgIf, CommonModule } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
-import { BaseButtonDirective } from '@directives/base-button.directive';
+import { BaseIconButtonComponent } from '@components/base/base-icon-button/base-icon-button.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import type { IAutocompleteResult } from '@interfaces/google-places.interface';
@@ -16,7 +15,7 @@ import type { IAutocompleteResult } from '@interfaces/google-places.interface';
     templateUrl: './google-address.component.html',
     styleUrls: ['./google-address.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatSuffix, MatIcon, CommonModule, BaseButtonDirective]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatSuffix, CommonModule, BaseIconButtonComponent]
 })
 export class GoogleAddressComponent implements OnInit, OnDestroy {
   @Input() address!: string;

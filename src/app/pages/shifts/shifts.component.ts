@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
@@ -43,7 +46,8 @@ export class ShiftsComponent implements OnInit {
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    protected authService: AuthGoogleService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -122,6 +126,12 @@ export class ShiftsComponent implements OnInit {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
@@ -130,7 +140,7 @@ export class ShiftsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (result: any) => {
         if (result) {
             // Show success message
-            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
             
             // Refresh the page to show updated state
             this.handleParentReload();
