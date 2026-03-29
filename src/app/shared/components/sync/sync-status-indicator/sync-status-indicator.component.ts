@@ -1,20 +1,25 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { Subject, takeUntil } from 'rxjs';
-import { SyncStatusService, SyncState, SyncMessage } from '@services/sync-status.service';
+import { SyncStatusService } from '@services/sync-status.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
+
+import type { ISyncMessage, ISyncState } from '@interfaces/sync-status.interface';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
-import { ThemePreference, ThemeService } from '@services/theme.service';
+import { BaseFieldButtonComponent, BaseIconButtonComponent } from '@components/base';
+import { ThemeService } from '@services/theme.service';
+import type { ThemePreference } from '@interfaces/theme.interface';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -22,22 +27,23 @@ import { ThemePreference, ThemeService } from '@services/theme.service';
   imports: [
     CommonModule,
     MatIconModule,
-    MatButtonModule,
     MatTooltipModule,
-    MatBadgeModule,
     OverlayModule,
-    QuickControlsComponent
+    QuickControlsComponent,
+    BaseFieldButtonComponent,
+    BaseIconButtonComponent
   ],
   templateUrl: './sync-status-indicator.component.html',
   styleUrls: ['./sync-status-indicator.component.scss']
 })
+
 export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   @Input() mode: 'button' | 'panel' = 'button';
   private destroy$ = new Subject<void>();
   private intervalId?: number;
   
-  syncState: SyncState | null = null;
-  messages: SyncMessage[] = [];
+  syncState: ISyncState | null = null;
+  messages: ISyncMessage[] = [];
   timeSinceLastSync = 'Never';
   showDetailedView = false;
   hasUnsavedChanges = false;
@@ -57,7 +63,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    protected authService: AuthGoogleService
   ) {}
 
   ngOnInit(): void {
@@ -111,8 +118,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.themePreference = preference;
   }
 
-  toggleMenu(event: MouseEvent): void {
-    event.stopPropagation();
+  toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
@@ -139,6 +145,12 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   async forceSync(): Promise<void> {    // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
 
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
       panelClass: 'custom-modalbox',
       data: 'save'
@@ -155,12 +167,13 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
     if (this.hasUnsavedChanges) {
-      this.snackBar.open('Cannot update from spreadsheet. You have unsaved changes. Please save or discard them first.', 'Close', {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['error-snackbar']
-      });
+      openSnackbar(this.snackBar, SNACKBAR_MESSAGES.CANNOT_UPDATE_UNSAVED_CHANGES, { action: 'Close', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top', panelClass: ['error-snackbar'] });
+      return;
+    }
+
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       return;
     }
 

@@ -1,26 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
-import { MatMiniFabButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
+import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
     selector: 'app-shifts',
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [MatMiniFabButton, MatIcon, NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent]
+    imports: [NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent, BaseRectButtonComponent]
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
@@ -43,7 +46,8 @@ export class ShiftsComponent implements OnInit {
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    protected authService: AuthGoogleService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -66,6 +70,10 @@ export class ShiftsComponent implements OnInit {
     this.currentPage++;
     this.isLoading = false;
     this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+    // If there are no shifts at all, open the add form by default so users can create one.
+    if ((this.shifts ?? []).length === 0) {
+      this.showAddForm = true;
+    }
   }
 
   onScroll(event: Event): void {
@@ -118,6 +126,12 @@ export class ShiftsComponent implements OnInit {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
@@ -126,7 +140,7 @@ export class ShiftsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (result: any) => {
         if (result) {
             // Show success message
-            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
             
             // Refresh the page to show updated state
             this.handleParentReload();

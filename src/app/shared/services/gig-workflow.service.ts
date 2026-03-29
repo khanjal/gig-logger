@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ISheet } from "@interfaces/sheet.interface";
 import { ISheetProperties } from "@interfaces/sheet-properties.interface";
+import type { ISheetSavePayload } from "@interfaces/sheet-save-payload.interface";
 import { IShift } from "@interfaces/shift.interface";
 import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
@@ -54,7 +55,7 @@ export class GigWorkflowService {
         return this._apiService.getSecondarySheetData(sheetId);
     }
 
-    public async saveSheetData(sheetData: ISheet): Promise<any> {
+    public async saveSheetData(sheetData: ISheetSavePayload): Promise<any> {
         return this._apiService.saveSheetData(sheetData);
     }
 
@@ -86,6 +87,10 @@ export class GigWorkflowService {
     // Calculation Methods - Delegate to Calculator
     public async calculateShiftTotals(shifts: IShift[] = []) {
         return this._calculator.calculateShiftTotals(shifts);
+    }
+
+    public async calculateShiftTotalsByKey(key: string) {
+        return this._calculator.calculateShiftTotalsByKey(key);
     }
 
     public async calculateDailyTotal(dates: string[] = []) {

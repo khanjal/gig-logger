@@ -60,7 +60,7 @@ nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.35rem;
-  background: var(--error-500);
+  background: var(--color-error, var(--error-500));
   color: var(--color-text-inverse);
   font-size: 0.75rem;
   font-weight: 700;
@@ -79,7 +79,7 @@ nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--primary-100);
+  background: var(--color-primary-100, var(--primary-100));
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
@@ -90,7 +90,7 @@ nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
 
 .loading-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-600), var(--success-500));
+  background: linear-gradient(90deg, var(--color-primary, var(--primary-600)), var(--color-success, var(--success-500)));
   transform: translateX(-100%);
   animation: loading-progress 2s infinite;
 }
@@ -98,4 +98,21 @@ nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
 @keyframes loading-progress {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
+}
+
+.notification-dot {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-warning, var(--warning-500));
+  color: var(--color-text-on-warning, var(--color-text-inverse));
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.35rem;
+  box-shadow: 0 2px 6px var(--shadow-medium);
 }

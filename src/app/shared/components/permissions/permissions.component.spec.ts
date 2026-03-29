@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AppPermissionsComponent } from './app-permissions.component';
+import { PermissionsComponent } from './permissions.component';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { BehaviorSubject } from 'rxjs';
 
-describe('AppPermissionsComponent', () => {
-  let component: AppPermissionsComponent;
-  let fixture: ComponentFixture<AppPermissionsComponent>;
+describe('PermissionsComponent', () => {
+  let component: PermissionsComponent;
+  let fixture: ComponentFixture<PermissionsComponent>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let permissionServiceSpy: jasmine.SpyObj<PermissionService>;
   let locationState$: BehaviorSubject<any>;
@@ -28,14 +28,14 @@ describe('AppPermissionsComponent', () => {
     permissionServiceSpy.getMicrophoneState.and.returnValue('checking');
 
     await TestBed.configureTestingModule({
-      imports: [AppPermissionsComponent],
+      imports: [PermissionsComponent],
       providers: [
         { provide: LoggerService, useValue: loggerSpy },
         { provide: PermissionService, useValue: permissionServiceSpy }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppPermissionsComponent);
+    fixture = TestBed.createComponent(PermissionsComponent);
     component = fixture.componentInstance;
   });
 
@@ -108,6 +108,15 @@ describe('AppPermissionsComponent', () => {
       
       expect(component.locationPermission.state).toBe('denied');
     });
+
+    it('logs error when location request throws', async () => {
+      const err = new Error('location failed');
+      permissionServiceSpy.requestLocation.and.returnValue(Promise.reject(err));
+
+      await component.requestLocation();
+
+      expect(loggerSpy.error).toHaveBeenCalledWith('Error requesting location:', err);
+    });
   });
 
   describe('requestMicrophone', () => {
@@ -131,11 +140,11 @@ describe('AppPermissionsComponent', () => {
 
   describe('getStateColor', () => {
     it('returns correct color for each state', () => {
-      expect(component.getStateColor('granted')).toBe('text-green-600');
-      expect(component.getStateColor('denied')).toBe('text-red-600');
-      expect(component.getStateColor('prompt')).toBe('text-yellow-600');
-      expect(component.getStateColor('checking')).toBe('text-gray-500');
-      expect(component.getStateColor('unsupported')).toBe('text-gray-400');
+      expect(component.getStateColor('granted')).toBe('text-success');
+      expect(component.getStateColor('denied')).toBe('text-error');
+      expect(component.getStateColor('prompt')).toBe('text-warning');
+      expect(component.getStateColor('checking')).toBe('text-tertiary');
+      expect(component.getStateColor('unsupported')).toBe('text-tertiary');
     });
   });
 

@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { AppUpdateService, AppUpdateStatus } from './app-update.service';
+import { AppUpdateService } from './app-update.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { LoggerService } from './logger.service';
+import { LoggerService } from '@services/logger.service';
 import { Subject } from 'rxjs';
+import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 
 describe('AppUpdateService', () => {
   let service: AppUpdateService;
@@ -54,7 +55,7 @@ describe('AppUpdateService', () => {
 
     versionSubject.next(event);
 
-    const status: AppUpdateStatus = service.getCurrentStatus();
+    const status: IAppUpdateStatus = service.getCurrentStatus();
     expect(status.isUpdateAvailable).toBeTrue();
     expect(status.currentVersion).toBe('v1');
     expect(status.latestVersion).toBe('v2');

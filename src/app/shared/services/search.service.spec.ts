@@ -160,39 +160,16 @@ describe('SearchService', () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
-  it('returns autocomplete options for selected categories', async () => {
-    (spreadsheetDB.services.toArray as jasmine.Spy).and.resolveTo([
-      { id: 1, service: 'Uber', rowId: 1, saved: true, pay: 5, tip: 1, bonus: 0, cash: 0, total: 6, trips: 1, distance: 3, time: '0:15' },
-      { id: 2, service: 'DoorDash', rowId: 2, saved: true, pay: 10, tip: 2, bonus: 0, cash: 0, total: 12, trips: 1, distance: 5, time: '0:30' }
-    ]);
-    (spreadsheetDB.places.toArray as jasmine.Spy).and.resolveTo([
-      { id: 1, place: 'Target', rowId: 1, saved: true, addresses: [], types: [], pay: 10, tip: 2, bonus: 0, cash: 0, total: 12, trips: 1 }
-    ]);
+  it('returns empty array when searchMultipleCategories has no categories', async () => {
+    const result = await service.searchMultipleCategories('uber', []);
 
-    const options = await service.getAutocompleteOptions(['Service', 'Place']);
-
-    expect(options.length).toBeGreaterThan(0);
-    expect(options).toContain('Uber');
-    expect(options).toContain('DoorDash');
-    expect(options).toContain('Target');
+    expect(result).toEqual([]);
   });
 
-  it('returns sorted autocomplete options', async () => {
-    (spreadsheetDB.services.toArray as jasmine.Spy).and.resolveTo([
-      { id: 1, service: 'Zebra', rowId: 1, saved: true, pay: 5, tip: 1, bonus: 0, cash: 0, total: 6, trips: 1, distance: 3, time: '0:15' },
-      { id: 2, service: 'Apple', rowId: 2, saved: true, pay: 10, tip: 2, bonus: 0, cash: 0, total: 12, trips: 1, distance: 5, time: '0:30' }
-    ]);
+  it('returns empty array when searchMultipleCategories term is blank', async () => {
+    const result = await service.searchMultipleCategories('   ', ['Service']);
 
-    const options = await service.getAutocompleteOptions(['Service']);
-
-    expect(options[0]).toBe('Apple');
-    expect(options[1]).toBe('Zebra');
-  });
-
-  it('filters autocomplete options when no categories selected', async () => {
-    const options = await service.getAutocompleteOptions([]);
-
-    expect(options.length).toBe(0);
+    expect(result).toEqual([]);
   });
 
   it('handles case-insensitive search by default', async () => {

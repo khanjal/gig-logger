@@ -4,30 +4,28 @@ import { Subject, takeUntil } from 'rxjs';
 import { getCurrentUserId } from '@utils/user-id.util';
 
 // Angular Material
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
 import { MatChip } from '@angular/material/chips';
+import { BaseCardComponent } from '@components/base';
 
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SecureCookieStorageService } from '@services/secure-cookie-storage.service';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
+import { SpreadsheetService } from '@services/spreadsheet.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Component({
   selector: 'app-auth-status',
   standalone: true,
   imports: [
     CommonModule,
-    MatCard,
-    MatCardContent,
-    MatCardHeader,
-    MatCardTitle,
-    MatIcon,
+    BaseCardComponent,
     MatChip
   ],
   templateUrl: './auth-status.component.html',
   styleUrl: './auth-status.component.scss'
 })
+
 export class AuthStatusComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
@@ -42,12 +40,11 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   // Token info
   accessTokenPreview = '';
   lastUpdated = new Date();
-  
-  private readonly IS_AUTHENTICATED_KEY = 'is_authenticated';
 
   constructor(
     private authService: AuthGoogleService,
-    private secureCookieStorage: SecureCookieStorageService
+    private secureCookieStorage: SecureCookieStorageService,
+    private spreadsheetService: SpreadsheetService
   ) {}
 
   async ngOnInit() {
@@ -74,7 +71,7 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
 
   async updateStatus() {
     // Check localStorage
-    this.localStorageAuth = localStorage.getItem(this.IS_AUTHENTICATED_KEY) === 'true';
+    this.localStorageAuth = localStorage.getItem(SESSION_CONSTANTS.IS_AUTHENTICATED) === 'true';
     
     // Check access token
     const accessToken = this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
@@ -87,11 +84,16 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
       this.accessTokenPreview = 'None';
     }
     
-    // Check overall authentication
-    this.isAuthenticated = await this.authService.isAuthenticated();
+    // Check overall authentication (sync capability)
+    this.isAuthenticated = await this.authService.canSync();
     // Get user ID using shared utility
     this.userId = getCurrentUserId();
     this.lastUpdated = new Date();
+  }
+
+  onReconnect() {
+    // Start login flow
+    this.authService.login();
   }
 
   getStatusIcon(): string {

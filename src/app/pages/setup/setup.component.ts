@@ -3,9 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
-import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -19,7 +17,8 @@ import { SheetLinkComponent } from './sheet-link/sheet-link.component';
 import { SheetDemoComponent } from './sheet-demo/sheet-demo.component';
 import { SheetQuickViewComponent } from './sheet-quick-view/sheet-quick-view.component';
 import { SheetQuotaComponent } from './sheet-quota/sheet-quota.component';
-import { AppPermissionsComponent } from '@components/app-permissions/app-permissions.component';
+import { PermissionsComponent } from '@components/permissions/permissions.component';
+import { LocationOverrideComponent } from '@components/location-override/location-override.component';
 
 // App Interfaces
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
@@ -30,11 +29,15 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { VersionService } from '@services/version.service';
 import { CommonService } from '@services/common.service';
 import { LoggerService } from '@services/logger.service';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseCardComponent } from '@components/base/base-card/base-card.component';
 
 @Component({
     selector: 'app-setup',
@@ -45,10 +48,6 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       CommonModule,
       NgIf,
       NgFor,
-      MatCard,
-      MatCardContent,
-      MatCardHeader,
-      MatFabButton,
       MatIcon,
       LoginComponent,
       ServiceWorkerStatusComponent,
@@ -57,7 +56,10 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
       SheetQuickViewComponent,
       SheetQuotaComponent,
       AuthStatusComponent,
-      AppPermissionsComponent
+      PermissionsComponent,
+      LocationOverrideComponent,
+      BaseRectButtonComponent,
+      BaseCardComponent
   ]
 })
 export class SetupComponent {
@@ -70,6 +72,7 @@ export class SetupComponent {
   spreadsheets: ISpreadsheet[] | undefined;
   defaultSheet: ISpreadsheet | undefined;
   unsavedData: boolean = false;
+  showAdvanced: boolean = false;
 
   version: string = '';
 
@@ -88,10 +91,20 @@ export class SetupComponent {
 
 
   async ngOnInit(): Promise<void> {
-    this.isAuthenticated = await this.authService.isAuthenticated();
-    this.load();
+    this.isAuthenticated = await this.authService.canSync();
+    await this.load();
     // Load formatted version string (YYYYMMDD.build)
     this.version = await this.versionService.getFormattedVersion();
+
+    // Append environment suffix for test subdomain installs
+    try {
+      const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
+      if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
+        this.version = `${this.version}-test`;
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   public async load() {
@@ -142,7 +155,7 @@ export class SetupComponent {
       await this.deleteAllData();
     } else if (isDefaultSheet && !isOnlySheet) {
       // Cannot unlink default sheet when there are others - user must set another as default first
-      this._snackBar.open("Please set another spreadsheet as default first", "Dismiss", { duration: 5000 });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       this.deleting = false;
       return;
     } else {
@@ -185,11 +198,11 @@ export class SetupComponent {
     };
 
     if (!this.defaultSheet?.id) {
-      this._snackBar.open("Please Reload Manually");
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.RELOAD_MANUALLY);
       return;
     }
 
-    this._snackBar.open("Connecting to Spreadsheet");
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CONNECTING_TO_SPREADSHEET);
 
     await this.reload();
 
@@ -204,7 +217,7 @@ export class SetupComponent {
     this.deleting = false;    
     localStorage.clear();
 
-    this._snackBar.open("All Data Deleted");
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
 
     await this.load();
   }
@@ -223,6 +236,12 @@ export class SetupComponent {
   }
 
   async loadSheetDialog(inputValue: string) {
+        const canSync = await this.authService.canSync();
+        if (!canSync) {
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+          return;
+        }
+
         let dialogRef = this.dialog.open(DataSyncModalComponent, {
             panelClass: 'custom-modalbox',
             data: inputValue
@@ -237,6 +256,12 @@ export class SetupComponent {
     }
 
   async confirmDeleteAndReloadDialog() {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_RELOAD, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     const message = `Reloading will fetch data from the spreadsheet and <strong>WILL NOT</strong> preserve any unsaved local changes. Please ensure all your data is saved before proceeding.`;
 
     let dialogData: IConfirmDialog = {} as IConfirmDialog;
@@ -264,7 +289,7 @@ export class SetupComponent {
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
-    dialogData.trueColor = "warn";
+    dialogData.trueColor = "danger";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -286,7 +311,7 @@ export class SetupComponent {
 
     // Cannot unlink default sheet when there are other sheets
     if (isDefaultSheet && !isOnlySheet) {
-      this._snackBar.open("Please set another spreadsheet as default first", "Dismiss", { duration: 5000 });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       return;
     }
 
@@ -310,7 +335,6 @@ export class SetupComponent {
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;
-    dialogData.trueColor = "warn";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

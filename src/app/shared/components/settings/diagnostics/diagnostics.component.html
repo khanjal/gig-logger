@@ -1,9 +1,14 @@
 <div class="diagnostics-container">
   <div class="diagnostics-actions">
-    <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading">
-      <mat-icon>refresh</mat-icon>
-      {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
-    </button>
+      <app-base-rect-button 
+        variant="primary" 
+        [icon]="'refresh'" 
+        iconPosition="left"
+        (clicked)="runDiagnostics()" 
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
+      </app-base-rect-button>
   </div>
   <div class="diagnostics-list">
     <div *ngFor="let item of dataDiagnostics" class="diagnostic-item-container">

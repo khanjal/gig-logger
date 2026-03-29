@@ -1,9 +1,8 @@
 <div class="diagnostics-container p-4 bg-surface-2 rounded-lg shadow">
   <div class="diagnostics-actions mb-4 flex justify-end">
-    <button mat-raised-button color="primary" (click)="runDiagnostics()" [disabled]="isLoading" class="flex items-center gap-2">
-      <mat-icon>refresh</mat-icon>
-      <span>{{ isLoading ? 'Running...' : 'Run Diagnostics' }}</span>
-    </button>
+    <app-base-rect-button variant="primary" [icon]="'refresh'" [loading]="isLoading" (clicked)="runDiagnostics()">
+      {{ isLoading ? 'Running...' : 'Run Diagnostics' }}
+    </app-base-rect-button>
   </div>
   <div class="diagnostics-list space-y-6">
     <div *ngFor="let item of dataDiagnostics" class="mb-6">
@@ -13,9 +12,9 @@
         </mat-icon>
         <div class="flex-1">
           <div class="font-semibold text-lg text-primary">{{ item.name }}</div>
-          <div class="text-gray-500 dark:text-gray-400 text-sm">{{ item.description }}</div>
+          <div class="text-tertiary text-sm">{{ item.description }}</div>
         </div>
-        <div class="text-xs bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded px-2 py-1">{{ item.count }}</div>
+        <div class="text-xs bg-surface-2 dark:bg-surface-3 text-tertiary rounded px-2 py-1">{{ item.count }}</div>
       </div>
       <div *ngIf="item.items && item.items.length > 0" class="mt-2">
         <div class="font-medium mb-2 text-primary">
@@ -23,10 +22,10 @@
         </div>
         <ng-container *ngIf="item.groups && item.groups.length > 0; else showIndividualItems">
           <div *ngFor="let group of item.groups; let groupIndex = index" class="mb-4">
-            <div class="font-bold text-blue-700 dark:text-blue-300 mb-1">
+                <div class="font-bold text-primary mb-1">
               Duplicate Group {{ groupIndex + 1 }} ({{ group.length }} items):
             </div>
-            <ul class="pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+                <ul class="pl-4 border-l-2 border-soft dark:border-[var(--color-border)]">
               <li *ngFor="let problemItem of group" class="py-1">
                 <ng-container [ngSwitch]="item.itemType">
                   <ng-container *ngSwitchCase="'shift'">

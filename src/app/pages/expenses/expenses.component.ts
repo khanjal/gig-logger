@@ -10,10 +10,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
+import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
+import { BaseFabButtonComponent } from '@components/base';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatMenuModule } from '@angular/material/menu';
 import { ExpensesService } from '@services/sheets/expenses.service';
@@ -21,10 +22,14 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ActionEnum } from '@enums/action.enum';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
+import { AuthGoogleService } from '@services/auth-google.service';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { updateAction } from '@utils/action.utils';
+import { DATE_FORMATS } from '@constants/date.constants';
 
 @Component({
   selector: 'app-expenses',
@@ -36,14 +41,15 @@ import { updateAction } from '@utils/action.utils';
     MatInputModule,
     MatSelectModule,
     MatOptionModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatDatepickerToggle,
     MatIconModule,
     OrderByPipe,
     MatAutocompleteModule,
     GroupByMonthPipe,
-    MatMenuModule
+    MatMenuModule,
+    BaseDatepickerComponent,
+    BaseFabButtonComponent,
+    BaseRectButtonComponent,
+    BaseInputComponent
   ],
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.scss'],
@@ -51,6 +57,7 @@ import { updateAction } from '@utils/action.utils';
 })
 
 export class ExpensesComponent implements OnInit {
+  dateFormats = DATE_FORMATS;
   groupedExpensesByYear: { [year: string]: IExpense[] } = {};
 
   getYearTotal(expenses: IExpense[]): number {
@@ -80,14 +87,15 @@ export class ExpensesComponent implements OnInit {
     private expensesService: ExpensesService,
     private unsavedDataService: UnsavedDataService,
     public dialog: MatDialog,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    protected authService: AuthGoogleService
   ) {}
 
   async ngOnInit() {
     this.maxRowId = await this.expensesService.getMaxRowId() || 1;
     const nextRowId = this.maxRowId + 1;
     this.expenseForm = this.fb.group({
-      rowId: [nextRowId],
+      rowId: [{ value: nextRowId, disabled: true }],
       date: [this.getToday(), Validators.required],
       name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
@@ -119,6 +127,10 @@ export class ExpensesComponent implements OnInit {
     }, {} as { [year: string]: IExpense[] });
 
     this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+    // If there are no expenses, open the add form by default so users can create one.
+    if ((this.expenses ?? []).length === 0) {
+      this.showAddForm = true;
+    }
   }
 
   async addExpense() {
@@ -238,7 +250,7 @@ export class ExpensesComponent implements OnInit {
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
-    dialogData.trueColor = "warn";
+    dialogData.trueColor = "danger";
     dialogData.falseText = "Cancel";
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -294,6 +306,12 @@ export class ExpensesComponent implements OnInit {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
@@ -302,7 +320,7 @@ export class ExpensesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (result: any) => {
         if (result) {
             // Show success message
-            this._snackBar.open("Changes Saved to Spreadsheet", "Close", { duration: 3000 });
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
             
             // Refresh the page to show updated state
             await this.loadExpenses();

@@ -64,7 +64,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
   private themeSubscription?: Subscription;
 
   // Chart Data
-  tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: '#f472b6', borderColor: '#be185d', borderWidth: 2, datalabels: { color: '#be185d', font: { weight: 'bold', size: 14 } } }] };
+  tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] };
   distanceData: ChartData<'line'> = { labels: [], datasets: [] };
   payData: ChartData<'bar'> = { labels: [], datasets: [] };
   dailyEarningsData: ChartData<'bar'> = { labels: [], datasets: [] };
@@ -157,9 +157,9 @@ export class MetricsComponent implements OnInit, OnDestroy {
         }
       },
       datalabels: {
-        color: '#fff',
+        color: this.cssVar('--color-text-inverse'),
         font: { weight: 'bold', size: 16 },
-        textShadowColor: '#222',
+        textShadowColor: this.cssVar('--color-text-primary'),
         textShadowBlur: 6,
         formatter: (value: number, ctx: any) => value > 0 ? value : '',
         display: (ctx: any) => ctx.dataset.data[ctx.dataIndex] > 0,
@@ -173,11 +173,24 @@ export class MetricsComponent implements OnInit, OnDestroy {
   constructor(private shiftService: ShiftService, private themeService: ThemeService) {}
 
   private getTextColor(): string {
-    return this.themeService.activeTheme === 'dark' ? '#e5e7eb' : '#222';
+    // Provide sensible fallbacks depending on the active theme so tests
+    // and non-browser environments get consistent values.
+    return this.cssVar('--color-text-primary');
   }
 
   private getGridColor(): string {
-    return this.themeService.activeTheme === 'dark' ? '#374151' : '#eee';
+    return this.cssVar('--color-border');
+  }
+
+  // Helper to read CSS variables at runtime with fallback
+  private cssVar(varName: string, fallback?: string): string {
+    try {
+      if (typeof document === 'undefined') return fallback ?? '';
+      const v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      return v || (fallback ?? '');
+    } catch {
+      return fallback ?? '';
+    }
   }
 
   private updateChartColors(): void {
@@ -190,6 +203,11 @@ export class MetricsComponent implements OnInit, OnDestroy {
     }
     if (this.pieOptions.plugins?.legend?.labels) {
       this.pieOptions.plugins.legend.labels.color = this.getTextColor();
+    }
+    // Update pie datalabel colors to theme-aware values
+    if (this.pieOptions.plugins?.datalabels) {
+      this.pieOptions.plugins.datalabels.color = this.cssVar('--color-text-inverse');
+      (this.pieOptions.plugins.datalabels as any).textShadowColor = this.cssVar('--color-text-primary');
     }
     
     // Trigger chart refresh by reassigning options
@@ -304,10 +322,10 @@ export class MetricsComponent implements OnInit, OnDestroy {
       datasets: [{
         label: 'Total Trips',
         data: labels.map(l => grouped[l].trips),
-        backgroundColor: '#f472b6',
-        borderColor: '#be185d',
+        backgroundColor: this.cssVar('--color-accent'),
+        borderColor: this.cssVar('--color-accent-variant'),
         borderWidth: 2,
-        datalabels: { color: '#be185d', font: { weight: 'bold', size: 14 } }
+        datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } }
       }]
     };
     this.distanceData = {
@@ -315,17 +333,17 @@ export class MetricsComponent implements OnInit, OnDestroy {
       datasets: [{
         label: 'Total Distance',
         data: labels.map(l => grouped[l].distance),
-        borderColor: '#10b981',
+        borderColor: this.cssVar('--color-success'),
         fill: false,
       }]
     };
     this.payData = {
       labels,
       datasets: [
-        { label: 'Pay', data: labels.map(l => grouped[l].pay), backgroundColor: '#f59e42' },
-        { label: 'Tips', data: labels.map(l => grouped[l].tips), backgroundColor: '#10b981' },
-        { label: 'Bonus', data: labels.map(l => grouped[l].bonus), backgroundColor: '#6366f1' },
-        { label: 'Cash', data: labels.map(l => grouped[l].cash), backgroundColor: '#ef4444' }
+        { label: 'Pay', data: labels.map(l => grouped[l].pay), backgroundColor: this.cssVar('--color-warning') },
+        { label: 'Tips', data: labels.map(l => grouped[l].tips), backgroundColor: this.cssVar('--color-success') },
+        { label: 'Bonus', data: labels.map(l => grouped[l].bonus), backgroundColor: this.cssVar('--color-accent') },
+        { label: 'Cash', data: labels.map(l => grouped[l].cash), backgroundColor: this.cssVar('--color-error') }
       ]
     };
   }
@@ -365,7 +383,16 @@ export class MetricsComponent implements OnInit, OnDestroy {
         label: service,
         data: labels.map(l => earningsByLabel[l][service] || 0),
         backgroundColor: [
-          '#3b82f6', '#10b981', '#f59e42', '#6366f1', '#ef4444', '#14b8a6', '#f472b6', '#fbbf24', '#a3e635', '#38bdf8'
+          this.cssVar('--color-primary'),
+          this.cssVar('--color-success'),
+          this.cssVar('--color-warning'),
+          this.cssVar('--color-accent'),
+          this.cssVar('--color-error'),
+          this.cssVar('--color-primary'),
+          this.cssVar('--color-accent'),
+          this.cssVar('--color-warning'),
+          this.cssVar('--color-primary-variant'),
+          this.cssVar('--color-primary')
         ][i % 10],
       }))
     };
@@ -382,7 +409,14 @@ export class MetricsComponent implements OnInit, OnDestroy {
       labels,
       datasets: [{
         data,
-        backgroundColor: ['#3b82f6', '#10b981', '#f59e42', '#6366f1', '#ef4444', '#14b8a6'],
+        backgroundColor: [
+          this.cssVar('--color-primary'),
+          this.cssVar('--color-success'),
+          this.cssVar('--color-warning'),
+          this.cssVar('--color-accent'),
+          this.cssVar('--color-error'),
+          this.cssVar('--color-primary')
+        ],
       }]
     };
   }
@@ -402,10 +436,10 @@ export class MetricsComponent implements OnInit, OnDestroy {
     this.yoyData = {
       labels,
       datasets: [
-        { label: 'Pay', data: labels.map(y => grouped[y].pay), backgroundColor: '#f59e42' },
-        { label: 'Tips', data: labels.map(y => grouped[y].tips), backgroundColor: '#10b981' },
-        { label: 'Bonus', data: labels.map(y => grouped[y].bonus), backgroundColor: '#6366f1' },
-        { label: 'Cash', data: labels.map(y => grouped[y].cash), backgroundColor: '#ef4444' }
+        { label: 'Pay', data: labels.map(y => grouped[y].pay), backgroundColor: this.cssVar('--color-warning') },
+        { label: 'Tips', data: labels.map(y => grouped[y].tips), backgroundColor: this.cssVar('--color-success') },
+        { label: 'Bonus', data: labels.map(y => grouped[y].bonus), backgroundColor: this.cssVar('--color-accent') },
+        { label: 'Cash', data: labels.map(y => grouped[y].cash), backgroundColor: this.cssVar('--color-error') }
       ]
     };
   }
@@ -414,13 +448,14 @@ export class MetricsComponent implements OnInit, OnDestroy {
     this.dexieSubscriptions.push(
       this.shiftService.shifts$.subscribe(shifts => {
         this.shifts = shifts;
-        this.filterByDate();
+        void this.filterByDate();
       })
     );
     
-    // Subscribe to theme changes to update chart colors
+    // Rebuild charts on theme changes so dataset colors refresh too.
     this.themeSubscription = this.themeService.activeTheme$.subscribe(() => {
       this.updateChartColors();
+      void this.filterByDate();
     });
   }
 

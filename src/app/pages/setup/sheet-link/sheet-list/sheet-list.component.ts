@@ -1,24 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-// Angular Material
 import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogRef } from '@angular/material/dialog';
-
-// App Interfaces
 import { ISheetProperties } from '@interfaces/sheet-properties.interface';
-
-// App Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
 import { TruncatePipe } from "@pipes/truncate.pipe";
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
   selector: 'app-sheet-list',
@@ -27,13 +21,13 @@ import { TruncatePipe } from "@pipes/truncate.pipe";
     CommonModule,
     FormsModule,
     MatCardModule,
-    MatButtonModule,
     MatIconModule,
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    TruncatePipe
+    TruncatePipe,
+    BaseRectButtonComponent
 ],
   templateUrl: './sheet-list.component.html',
   styleUrl: './sheet-list.component.scss'

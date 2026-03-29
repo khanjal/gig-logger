@@ -41,11 +41,304 @@ src/app/
 - Example component structure follows `trips.component.ts` pattern
 - **Parent-child communication**: Some components use event emitters and input properties for data flow
 
+### Reusable UI Components
+
+#### Button Components (use specific variants — NOT `app-base-button`)
+We migrated away from a single generic `app-base-button` component. Always use the specialized button components instead:
+
+- `app-base-fab` — Floating action button (circular)
+- `app-base-rect` — Rectangular/standard action button
+- `app-base-icon` — Minimal icon-only button (input suffixes, nav)
+- `app-base-extended-fab` — FAB with label (if needed)
+
+**Usage rules**:
+- NEVER embed `<mat-icon>` inside a base button. Use the `icon` input.
+- Boolean inputs must use property binding: `[fab]="true"` (if applicable).
+- Use `iconColor` to set icon color (CSS value or CSS variable).
+- Use `noBackground="true"` or `[noBackground]="true"` on icon-only buttons in forms/navigation.
+
+Examples:
+
+```html
+<!-- Icon-only mini FAB (correct) -->
+<app-base-fab
+  fabStyle="mini"
+  [noBackground]="true"
+  [icon]="'clear'"
+  [iconColor]="'var(--error-500)'"
+  matSuffix
+  (clicked)="onClear()">
+</app-base-fab>
+
+<!-- Standard rectangular action -->
+<app-base-rect
+  variant="primary"
+  [icon]="'save'"
+  (clicked)="save()">
+  Save Changes
+</app-base-rect>
+
+<!-- Toggle mini FAB with dynamic variant -->
+<app-base-fab
+  fabStyle="mini"
+  [variant]="isActive ? 'primary' : 'secondary'"
+  [icon]="'drive_eta'"
+  (clicked)="toggle()">
+</app-base-fab>
+
+<!-- FAB with loading state -->
+<app-base-fab
+  variant="primary"
+  [loading]="isSaving"
+  (clicked)="submit()"
+  extended>
+  Submit
+</app-base-fab>
+```
+
+### Icon-only Rect Buttons
+When you need a rectangular button that shows only an icon (no visible label), follow these rules so the icon is centered and accessibility is preserved:
+
+- **Use the `icon` input** on the specialized component — do not project a `<mat-icon>` yourself.
+- The `BaseButtonComponent` automatically detects when an icon exists and there is no projected text and will add a `btn-icon-only` host class so styles can center the icon.
+- For small-screen templates where text is hidden with utility classes (e.g., `<span class="hidden sm:inline">`), add the helper class `icon-only-sm` to the `app-base-rect` element to force small-viewport centering.
+
+Example:
+
+```html
+<app-base-rect
+  class="icon-only-sm"      <!-- optional: helps small-screen centering -->
+  variant="secondary"
+  size="sm"
+  [icon]="'file_upload'"
+  title="Set Pickup Time"
+  (clicked)="setPickupTime()">
+  <span class="hidden sm:inline">Pickup</span>
+</app-base-rect>
+```
+
+Prefer this pattern over adding long Tailwind blobs to the button — if you need a different visual, add a variant in the base button component instead of overriding styles in each template.
+
+Available options (map to specific components as appropriate):
+- `variant`: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon'
+- `size`: 'sm' | 'md' | 'lg' (rect buttons)
+- `icon`: Material icon name (string)
+- `iconColor`: CSS color or variable
+- `iconPosition`: 'left' | 'right' (rect buttons)
+- `fabStyle`: 'regular' | 'mini' (FABs)
+- `extended`: boolean (FAB with label)
+- `noBackground`: boolean (icon-only)
+- `disabled`, `loading`, `fullWidth`
+
+Migration note: Replace all remaining `<app-base-button>` usages with the appropriate specialized component (`app-base-fab`, `app-base-rect`, `app-base-icon`, etc.) and follow the examples above.
+
+**Button Layout & Color Rules**
+- **Single Button, Right:** Align a lone action button to the right of the row. Use a wrapper like `class="flex justify-end"` so single-row actions sit on the right edge.
+- **Two Buttons, Opposite Sides:** For two actions, place them at opposite edges using `class="flex justify-between items-center"` (primary action typically on the right).
+- **Three or More, Even Spacing:** Use `class="flex justify-between"` (or `gap-x-*` with `flex`) to distribute three+ buttons evenly across the row.
+- **Default Color Rules:** Most buttons that perform actions should use `variant="primary"`.
+- **Cancel / Close:** Use `variant="secondary"` for buttons that dismiss modals or cancel flows.
+- **Undo / Remove / Dangerous Actions:** Use `variant="danger"` for destructive or undoable actions.
+- **Implementation Notes:** Prefer `app-base-rect-button` with the `variant` input. Use `fullWidth` for stacked lists or narrow contexts (e.g., address lists inside accordions). Avoid making all buttons full-width by default; reserve full-width for mobile-first or list items.
+
 ### Service Patterns
 - **Injectable services** with `providedIn: 'root'`
 - **Reactive data** using Dexie's `liveQuery()` for local storage
 - **API communication** through centralized `ApiService` with typed endpoints
 - **Error handling** with `LoggerService` and `MatSnackBar` for user feedback
+
+### Template-invoked functions — performance warning
+Be careful: any method called from a template (for example `{{ getTotalEarnings() }}` or calls used in bindings like `[ngClass]="getCategoryBorderClass(type)"`) will be executed on every Angular change-detection pass. In lists (`*ngFor`) or deeply nested components this can result in many repeated computations and visible performance regressions.
+
+Mitigations and preferred patterns:
+- Precompute expensive values when the underlying data changes and expose them as properties (e.g. compute totals/averages when `searchResults` or `groupedResults` are set).
+- For pure lookups, build a `Map` or attach lookup values to the model objects once instead of computing in a template-bound function.
+- Use pure pipes for stateless transformations that are safe to cache.
+- Prefer `ChangeDetectionStrategy.OnPush` for components that receive immutable inputs to reduce CD frequency.
+- Add `trackBy` functions on `*ngFor` to avoid unnecessary DOM updates.
+- Use RxJS transformations (`.pipe(map(...))`) to derive values and bind with the `async` pipe instead of calling functions from the template.
+
+Examples:
+```
+// precompute totals when results update
+this.totalEarnings = results.reduce((s, r) => s + (r.totalEarnings || 0), 0);
+// template: {{ totalEarnings | currency }}
+
+// build a lookup once
+this.categoryClassMap = new Map(categories.map(c => [c, computeClass(c)]));
+// template: [ngClass]="categoryClassMap.get(category)"
+```
+
+Add this guidance to PR descriptions when making template/DOM or performance-related changes.
+
+### Constants & Magic Strings
+
+**Never use magic strings or magic numbers inline — extract them to a constants file.**
+
+- **Location**: `src/app/shared/constants/` — group by domain (e.g., `date.constants.ts`, `sheet.constants.ts`)
+- **Naming**: Use `SCREAMING_SNAKE_CASE` for constant objects and their keys (e.g., `DATE_FORMATS.SHORT_DATE`)
+- **Import using path alias**: Reference as `@constants/date.constants`
+- **Scope**: Any string or number literal used more than once, or that carries semantic meaning, belongs in a constants file
+
+Examples of values that must be constants:
+- Date format strings (`'EEE, MMM d'`, `'yyyy-MM-dd'`)
+- API endpoint fragments
+- Storage keys (localStorage, sessionStorage, IndexedDB)
+- Regex patterns reused across files
+- Numeric thresholds or limits
+
+```typescript
+// ❌ WRONG: magic string inline
+this.dateFormat = 'EEE, MMM d';
+
+// ✅ CORRECT: named constant
+import { DATE_FORMATS } from '@constants/date.constants';
+this.dateFormat = DATE_FORMATS.SHORT_DATE;
+```
+
+### Type-Only Imports & Exports
+
+**Use type-only syntax for type aliases and interfaces when there is no runtime usage.**
+
+- **Imports**: Prefer `import type { Foo } from '...'` when `Foo` is used only in type positions
+- **Grouping**: Keep runtime imports first, then add a separate type-only import block (preferably alphabetized within each block)
+- **Exports**: Prefer `export type { Foo }` for re-exporting types
+- **Why**: Prevents runtime import emission issues in strict TypeScript builds (e.g., `verbatimModuleSyntax`), and keeps runtime bundles clean
+
+```typescript
+// ❌ WRONG: runtime import for a type-only symbol
+import { DropdownType } from '@interfaces/dropdown-data.interface';
+
+// ✅ CORRECT: type-only import
+import type { DropdownType } from '@interfaces/dropdown-data.interface';
+
+// ✅ CORRECT: grouped runtime and type-only imports
+import { ApiService } from '@services/api.service';
+import { LoggerService } from '@services/logger.service';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/shift.interface';
+
+// ❌ WRONG: value re-export for type-only symbol
+export { DropdownType };
+
+// ✅ CORRECT: type-only re-export
+export type { DropdownType };
+```
+
+### No `@deprecated` — Fix It Instead
+
+**Never add `@deprecated` JSDoc comments as a way to defer work — fix the usage at the point of discovery.**
+
+When you find a type alias, re-export shim, or wrapper that has a `@deprecated` comment:
+1. **Remove the deprecated shim** from the service/component file.
+2. **Update all consumers** to import the canonical type directly from `@interfaces/`.
+3. **Use `import type`** for the canonical import (see Type-Only Imports section).
+
+This applies equally to convenience re-exports (`export type { Foo }`) that exist only so callers avoid importing from the interface file. Remove them and update callers to import from the source.
+
+```typescript
+// ❌ WRONG: leaving a deprecated shim in place
+/**
+ * @deprecated Use ISyncState from @interfaces/sync-status.interface instead
+ */
+export type SyncState = ISyncState;
+
+// ✅ CORRECT: remove the shim and update all consumers to import directly
+import type { ISyncState } from '@interfaces/sync-status.interface';
+```
+
+### Interface Organization
+
+**Public interfaces must be in separate files in `shared/interfaces/`, not embedded in services or components.**
+
+- **Naming convention**: Use `I` prefix for all interfaces (e.g., `ITrip`, `IVoiceParseResult`, `IShift`)
+- **File location**: All public/exported interfaces go in `src/app/shared/interfaces/`
+- **One interface per file**: Name the file after the interface (e.g., `voice-parse-result.interface.ts` for `IVoiceParseResult`)
+- **Import using path alias**: Reference as `@interfaces/interface-name`
+- **Exception**: Private implementation interfaces that are NOT exported can remain in service/component files
+
+**Why this matters**:
+- Promotes reusability across services and components
+- Improves testability by allowing mock implementations
+- Clear separation of concerns between data contracts and implementation
+- Enables type sharing without circular dependencies
+
+Example of **correct** interface organization:
+```typescript
+// ✅ CORRECT: voice-parse-result.interface.ts (separate file in shared/interfaces/)
+export interface IVoiceParseResult {
+  service?: string;
+  type?: string;
+  pay?: number;
+  // ... other properties
+}
+
+// ✅ CORRECT: voice-pattern-processor.service.ts (imports from separate file)
+import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+
+export class VoicePatternProcessorService {
+  parseTranscript(transcript: string): IVoiceParseResult {
+    // ... implementation
+  }
+  
+  // ✅ CORRECT: Private interface not exported - can stay in service file
+  private interface PatternMatch {
+    pattern: VoicePattern;
+    match: RegExpMatchArray;
+  }
+}
+```
+
+Example of **incorrect** interface organization:
+```typescript
+// ❌ WRONG: Public interface defined in service file
+export interface IVoiceParseResult {  // Should be in separate file!
+  service?: string;
+  // ...
+}
+
+export class VoicePatternProcessorService {
+  parseTranscript(transcript: string): IVoiceParseResult {
+    // ... implementation
+  }
+}
+```
+
+### Code Documentation Standards
+
+**Helper Functions & Utilities**:
+- Use JSDoc-style comments for all exported/public functions
+- Include `@param` for each parameter with description
+- Include `@returns` describing the return value
+- Add `@example` for complex functions showing typical usage
+- Explain edge cases (e.g., "Returns 0 for empty arrays")
+
+Example:
+```typescript
+/**
+ * Gets a value from an item or falls back to the first item in an array that has that property.
+ * Useful for forms that need to default to the most recent non-empty value.
+ * @param item The primary item to get the value from
+ * @param fallbackArray Array to search if primary item doesn't have the value
+ * @param propertyName The property name to retrieve
+ * @returns The value or undefined
+ * 
+ * @example
+ * const shift = shifts[0];
+ * const service = getValueOrFallback(shift, shifts, 'service');
+ * // Returns shift.service if truthy, otherwise finds first shift with service property
+ */
+export function getValueOrFallback<T>(item: T | undefined, fallbackArray: T[], propertyName: keyof T): any {
+```
+
+**Services & Components**:
+- Document complex business logic with inline comments
+- Explain *why* decisions were made, not just *what* the code does
+- Add comments for non-obvious workarounds or browser-specific fixes
+
+### Form Input Nullability
+- **Form models allow null, domain models use numbers**: Form-specific types (e.g., `TripFormValue`) allow `null` for user inputs to represent "not provided" state. Domain models (`ITrip`, `IAmount`) use non-nullable numbers for calculations. The boundary conversion (form → domain) converts `null`/empty to `0` using `NumberHelper.toNumber()`. This keeps calculations simple while preventing unnecessary zeros in the UI.
+- **Sheet serialization**: Backend/mapper logic should omit fields with value `0` when writing to Google Sheets to avoid clutter. Domain models work with `0` internally, but sheets see empty cells for unprovided values.
 
 ### Authentication & Authorization
 - Google OAuth2 via `AuthGoogleService` and `AuthService`
@@ -160,7 +453,16 @@ const makeEntity = (overrides: Partial<IEntity> = {}): IEntity => ({
 
 ### Color Standards & Best Practices
 
+### Quick Color Rules (Single Source)
+- Treat this section as the only color standard source. Do not create separate color process docs unless explicitly requested.
+- Use semantic tokens/utilities only (`text-primary`, `bg-surface`, `border-soft`, `--color-*`).
+- Do not use raw hex/rgb/hsl or Tailwind palette shade classes in templates/components (`text-blue-600`, `bg-gray-50`, etc.).
+- Every visual color choice must work in both light and dark themes.
+- If no semantic utility exists, add/extend a semantic token in global styles instead of adding one-off literals in component files.
+
 **REQUIRED: Always implement both light and dark mode variants for all UI elements**
+
+**REQUIRED: Use semantic tokens for colors.** All components, templates, and styles must reference named semantic tokens (CSS variables such as `--color-primary`, `--color-border`, or the semantic utility classes like `text-primary`, `bg-surface`) rather than raw hex, `rgb(a)`, `hsl(a)` values or Tailwind color utilities (for example `text-blue-600`, `bg-green-500/25`). This ensures consistent theming, easier dark/light variants, and prevents scattered hardcoded color values across the codebase.
 
 #### 1. Text Colors
 Use Tailwind's gray scale with proper dark mode variants:

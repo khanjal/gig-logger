@@ -4,28 +4,21 @@ import { TypeService } from '@services/sheets/type.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { AddressService } from '@services/sheets/address.service';
 import { RegionService } from '@services/sheets/region.service';
+import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
 import { IService } from '@interfaces/service.interface';
 import { IType } from '@interfaces/type.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IAddress } from '@interfaces/address.interface';
 import { IRegion } from '@interfaces/region.interface';
-
-export type DropdownType = 'Service' | 'Type' | 'Place' | 'Address' | 'Region';
-
-export interface DropdownData {
-  services: string[];
-  types: string[];
-  places: string[];
-  addresses: string[];
-  regions: string[];
-}
+import { IName } from '@interfaces/name.interface';
+import type { DropdownType, IDropdownData } from '@interfaces/dropdown-data.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DropdownDataService {
-  private cachedData: DropdownData | null = null;
+  private cachedData: IDropdownData | null = null;
   
   // Canonical lists from static JSON files (fallback for proper casing)
   private canonicalServices: string[] = [];
@@ -39,6 +32,7 @@ export class DropdownDataService {
     private _placeService: PlaceService,
     private _addressService: AddressService,
     private _regionService: RegionService,
+    private _nameService: NameService,
     private logger: LoggerService
   ) {
     this.loadCanonicalLists();
@@ -72,7 +66,7 @@ export class DropdownDataService {
   /**
    * Fetches all dropdown data and caches it
    */
-  async getAllDropdownData(): Promise<DropdownData> {
+  async getAllDropdownData(): Promise<IDropdownData> {
     if (this.cachedData) {
       return this.cachedData;
     }
@@ -80,12 +74,13 @@ export class DropdownDataService {
     // Ensure canonical lists are loaded
     await this.loadCanonicalLists();
 
-    const [services, types, places, addresses, regions] = await Promise.all([
+    const [services, types, places, addresses, regions, names] = await Promise.all([
       this._serviceService.list(),
       this._typeService.list(),
       this._placeService.list(),
       this._addressService.list(),
-      this._regionService.list()
+      this._regionService.list(),
+      this._nameService.list()
     ]);
 
     this.cachedData = {
@@ -93,7 +88,8 @@ export class DropdownDataService {
       types: (types as IType[]).map((t: IType) => t.type),
       places: (places as IPlace[]).map((p: IPlace) => p.place),
       addresses: (addresses as IAddress[]).map((a: IAddress) => a.address),
-      regions: (regions as IRegion[]).map((r: IRegion) => r.region)
+      regions: (regions as IRegion[]).map((r: IRegion) => r.region),
+      names: (names as IName[]).map((n: IName) => n.name)
     };
 
     return this.cachedData;
@@ -115,6 +111,8 @@ export class DropdownDataService {
         return data.addresses;
       case 'Region':
         return data.regions;
+      case 'Name':
+        return data.names;
       default:
         return [];
     }

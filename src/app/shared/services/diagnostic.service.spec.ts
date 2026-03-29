@@ -1,12 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { DiagnosticService } from './diagnostic.service';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 describe('DiagnosticService', () => {
   let service: DiagnosticService;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(() => {
+    // Ensure a fresh TestBed to avoid previously-instantiated root providers
+    // (some CI runs share a prior injector which can return real services
+    // instead of the spy). Resetting guarantees our provider override is used.
+    TestBed.resetTestingModule();
+
     const spy = jasmine.createSpyObj('LoggerService', ['info', 'debug', 'warn', 'error']);
 
     TestBed.configureTestingModule({
@@ -89,7 +95,7 @@ describe('DiagnosticService', () => {
       service['checkLocalStorage']();
 
       expect(loggerSpy.debug).toHaveBeenCalledWith('LocalStorage check: OK');
-      expect(localStorage.getItem('__diagnostic_test__')).toBeNull();
+      expect(localStorage.getItem(SESSION_CONSTANTS.DIAGNOSTIC_TEST)).toBeNull();
     });
 
     it('should handle localStorage setItem failure', () => {
@@ -127,11 +133,11 @@ describe('DiagnosticService', () => {
 
     it('should clean up test key even if error occurs', () => {
       const removeItemSpy = spyOn(localStorage, 'removeItem');
-      localStorage.setItem('__diagnostic_test__', 'test');
+      localStorage.setItem(SESSION_CONSTANTS.DIAGNOSTIC_TEST, 'test');
 
       service['checkLocalStorage']();
 
-      expect(removeItemSpy).toHaveBeenCalledWith('__diagnostic_test__');
+      expect(removeItemSpy).toHaveBeenCalledWith(SESSION_CONSTANTS.DIAGNOSTIC_TEST);
     });
   });
 

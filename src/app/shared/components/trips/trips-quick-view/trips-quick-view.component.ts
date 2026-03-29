@@ -2,16 +2,23 @@ import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChange
 import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
+import { SplitDialogComponent } from '@components/trips/split-dialog/split-dialog.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { MatChipsModule } from '@angular/material/chips';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { BaseButtonDirective } from '@directives/base-button.directive';
 
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DateHelper } from '@helpers/date.helper';
+import { DATE_FORMATS } from '@constants/date.constants';
 import { UnitHelper } from '@helpers/unit.helper';
 import { updateAction } from '@utils/action.utils';
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -22,13 +29,14 @@ import { DurationFormatPipe } from '@pipes/duration-format.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
+import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
 
 @Component({
     selector: 'trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule]
+    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
@@ -44,6 +52,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   actionEnum = ActionEnum;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
+  // Parsed date and computed format for display
+  parsedTripDate: Date | null = null;
+  dateFormat: string = DATE_FORMATS.SHORT_DATE;
   
   // Distance unit properties
   get distanceUnit(): string {
@@ -93,12 +104,32 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.setExpansionState();
     this.prefers24Hour = DateHelper.prefers24Hour();
+    this.updateDateFormat();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // Re-evaluate expansion state when trip data changes
     if (changes['trip'] && changes['trip'].currentValue) {
       this.setExpansionState();
+      this.updateDateFormat();
+    }
+  }
+
+  private updateDateFormat() {
+    if (!this.trip || !this.trip.date) {
+      this.parsedTripDate = null;
+      return;
+    }
+
+    // Trip dates are stored as YYYY-MM-DD; parse locally to avoid timezone shifts
+    try {
+      this.parsedTripDate = DateHelper.parseLocalDate(this.trip.date);
+      const tripYear = this.parsedTripDate.getFullYear();
+      const now = new Date();
+      this.dateFormat = tripYear === now.getFullYear() ? DATE_FORMATS.SHORT_DATE : DATE_FORMATS.SHORT_DATE_WITH_YEAR;
+    } catch (e) {
+      this.parsedTripDate = null;
+      this.dateFormat = DATE_FORMATS.SHORT_DATE;
     }
   }
 
@@ -159,17 +190,32 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
   
   async cloneUnsavedTrip() {
-   await this._tripService.clone(this.trip);
+  await this._tripService.clone(this.trip);
    this.parentReload.emit();
-   this._snackBar.open("Cloned Trip");
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CLONED_TRIP);
    // Scroll to today's trips section
    this.scrollToTrip.emit(undefined);
+  }
+
+  async splitTrip() {
+    const dialogRef = this.dialog.open(SplitDialogComponent, { 
+      width: '360px',
+      panelClass: 'split-trip-dialog'
+    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (!result) return;
+    await this._tripService.split(this.trip, result);
+    await this._gigLoggerService.calculateShiftTotalsByKey(this.trip.key);
+
+    this.parentReload.emit();
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_SPLIT);
+    this.scrollToTrip.emit(undefined);
   }
   
   async nextStopTrip() {
     await this._tripService.addNext(this.trip);
     this.parentReload.emit();
-    this._snackBar.open("Added Next Trip");
+    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ADDED_NEXT_TRIP);
     // Scroll to today's trips section
     this.scrollToTrip.emit(undefined);
   }
@@ -213,11 +259,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   
   async deleteTrip() {
     await this._tripService.deleteItem(this.trip);
-
-    const shift = await this._shiftService.queryShiftByKey(this.trip.key);
-    if (shift) {
-      await this._gigLoggerService.calculateShiftTotals([shift]);
-    }
+    await this._gigLoggerService.calculateShiftTotalsByKey(this.trip.key);
 
     this.parentReload.emit();
   }

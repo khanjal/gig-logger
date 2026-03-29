@@ -12,6 +12,10 @@
     log: function(msg) { console.log('[LOG]: ' + msg); }
   };
 
+  // Local storage keys used by this script
+  var SW_PENDING_REFRESH_KEY = 'sw_pending_refresh';
+  var SW_ERROR_COUNT_KEY = 'sw_error_count';
+
   if ('serviceWorker' in navigator) {
     // Enhanced service worker registration with better error handling
     window.addEventListener('load', function() {
@@ -31,9 +35,9 @@
                   logger.info('SW Enhancement - New or updated content is available.');
                   
                   // Check if we should auto-refresh for critical updates
-                  var shouldAutoRefresh = sessionStorage.getItem('sw_pending_refresh');
+                  var shouldAutoRefresh = sessionStorage.getItem(SW_PENDING_REFRESH_KEY);
                   if (shouldAutoRefresh) {
-                    sessionStorage.removeItem('sw_pending_refresh');
+                    sessionStorage.removeItem(SW_PENDING_REFRESH_KEY);
                     window.location.reload();
                   }
                 } else {
@@ -75,7 +79,7 @@
     navigator.serviceWorker.addEventListener('message', function(event) {
       if (event.data && event.data.type === 'CRITICAL_UPDATE') {
         // Mark that we need to refresh on next SW update
-        sessionStorage.setItem('sw_pending_refresh', 'true');
+                  sessionStorage.setItem(SW_PENDING_REFRESH_KEY, 'true');
       }
     });
 
@@ -84,13 +88,13 @@
       logger.error('SW Enhancement - Service worker error', event);
       
       // If we get persistent SW errors, try to recover
-      var errorCount = parseInt(sessionStorage.getItem('sw_error_count') || '0', 10);
+      var errorCount = parseInt(sessionStorage.getItem(SW_ERROR_COUNT_KEY) || '0', 10);
       errorCount++;
-      sessionStorage.setItem('sw_error_count', errorCount.toString());
+      sessionStorage.setItem(SW_ERROR_COUNT_KEY, errorCount.toString());
       
       if (errorCount >= 3) {
         logger.warn('SW Enhancement - Multiple SW errors detected, attempting recovery...');
-        sessionStorage.removeItem('sw_error_count');
+        sessionStorage.removeItem(SW_ERROR_COUNT_KEY);
         
         // Unregister and clear caches
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -119,7 +123,7 @@
     setTimeout(function() {
       var appRoot = document.querySelector('app-root');
       if (appRoot && appRoot.children.length > 0) {
-        sessionStorage.removeItem('sw_error_count');
+        sessionStorage.removeItem(SW_ERROR_COUNT_KEY);
         logger.info('SW Enhancement - App loaded successfully, cleared error count');
       }
     }, 2000);

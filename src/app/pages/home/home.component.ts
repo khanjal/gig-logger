@@ -1,19 +1,20 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { AppUpdateService, AppUpdateStatus } from '@services/app-update.service';
+import { AppUpdateService } from '@services/app-update.service';
+import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 import { Subscription } from 'rxjs';
+import { BaseRectButtonComponent } from '@components/base';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon, MatButtonModule]
+    imports: [CommonModule, MatIcon, BaseRectButtonComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private logger = inject(LoggerService);
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private updateStatusSubscription: Subscription | undefined;  async ngOnInit() {
     // Subscribe to app update status
     this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
-      (status: AppUpdateStatus) => {
+      (status: IAppUpdateStatus) => {
         this.isUpdateAvailable = status.isUpdateAvailable;
         this.showUpdateNotification = status.isUpdateAvailable;
         
@@ -68,7 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showStartLoggingButton = this.isAuthenticated && this.hasDefaultSheet && !this.showUpdateNotification;
   }  private async checkUserStatus() {
     try {
-      this.isAuthenticated = await this.authService.isAuthenticated();
+      this.isAuthenticated = await this.authService.canSync();
       
       if (this.isAuthenticated) {
         // Check if user has a default spreadsheet

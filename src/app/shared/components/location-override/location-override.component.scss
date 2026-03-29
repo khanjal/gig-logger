@@ -1,0 +1,40 @@
+.mock-warning {
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+#mock-location-card {
+  /* Small spacing tweaks for the override card */
+  .mat-slide-toggle {
+    align-items: center;
+  }
+
+  .mock-warning-text {
+    font-size: 0.875rem;
+  }
+}
+
+.location-summary {
+  .label { font-weight: 600; }
+}
+
+.mock-toggle-label {
+  color: var(--color-text-primary); /* text-gray-800 */
+}
+
+:host-context(html.theme-dark) {
+  .mock-toggle-label {
+    color: var(--color-text-inverse);
+  }
+
+  .mock-warning {
+    background-color: color-mix(in srgb, var(--warning-500) 6%, transparent);
+  }
+
+  .mock-warning-text {
+    color: var(--warning-500);
+  }
+}

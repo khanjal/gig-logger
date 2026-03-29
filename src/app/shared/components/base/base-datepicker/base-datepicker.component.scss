@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+mat-form-field {
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.required-indicator {
+  color: var(--error-500);
+  margin-left: 2px;
+}

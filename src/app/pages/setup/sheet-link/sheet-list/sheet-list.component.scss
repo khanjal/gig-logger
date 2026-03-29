@@ -168,7 +168,7 @@
     border-top: 1px solid var(--color-border);
     padding: 12px;
     border-radius: 0 0 12px 12px;
-    box-shadow: 0 -6px 18px rgba(2,6,23,0.12);
+    box-shadow: var(--shadow-light);
     backdrop-filter: blur(4px);
   }
 }
@@ -181,6 +181,7 @@
   
   .content-area {
     padding: 12px;
+    padding-bottom: calc(140px + env(safe-area-inset-bottom));
   }
   
   .sheets-grid {

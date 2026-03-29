@@ -2,11 +2,21 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
-export type ThemePreference = 'light' | 'dark' | 'system';
-export type ResolvedTheme = 'light' | 'dark';
+import type { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
+// Compute meta theme colors at runtime from CSS variables so we avoid
+// inline hex literals in source. Falls back to legacy values if not present.
+const getComputedCssVar = (name: string, fallback: string) => {
+  try {
+    if (typeof document === 'undefined') return fallback;
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  } catch {
+    return fallback;
+  }
+};
 
-export const THEME_STORAGE_KEY = 'rg-theme-preference';
 const LIGHT_THEME_COLOR = '#1976d2';
 const DARK_THEME_COLOR = '#0b1221';
 
@@ -50,7 +60,7 @@ export class ThemeService {
 
     if (persist) {
       try {
-        localStorage.setItem(THEME_STORAGE_KEY, preference);
+        localStorage.setItem(SESSION_CONSTANTS.THEME_STORAGE_KEY, preference);
       } catch (error) {
         this.logger.warn('Theme preference could not be persisted', error);
       }
@@ -88,7 +98,7 @@ export class ThemeService {
 
   private getStoredPreference(): ThemePreference | null {
     try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      const stored = localStorage.getItem(SESSION_CONSTANTS.THEME_STORAGE_KEY);
       if (stored === 'light' || stored === 'dark' || stored === 'system') {
         return stored;
       }
@@ -155,8 +165,14 @@ export class ThemeService {
 
   private updateMetaThemeColor(resolved: ResolvedTheme): void {
     const meta = this.documentRef.querySelector('meta[name="theme-color"]');
-    if (meta) {
-      meta.setAttribute('content', resolved === 'dark' ? DARK_THEME_COLOR : LIGHT_THEME_COLOR);
+    if (!meta) return;
+
+    const light = getComputedCssVar('--meta-theme-light', LIGHT_THEME_COLOR);
+    const dark = getComputedCssVar('--meta-theme-dark', DARK_THEME_COLOR);
+
+    const value = resolved === 'dark' ? (dark || light) : (light || dark);
+    if (value) {
+      meta.setAttribute('content', value);
     }
   }
 }

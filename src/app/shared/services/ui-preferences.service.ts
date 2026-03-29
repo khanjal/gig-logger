@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { PollingService } from '@services/polling.service';
 import { LoggerService } from '@services/logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable({ providedIn: 'root' })
 export class UiPreferencesService {
-  private pollingKey = 'pollingEnabled';
+  private pollingKey = SESSION_CONSTANTS.POLLING_ENABLED;
   private _pollingEnabled$ = new BehaviorSubject<boolean>(this.loadPolling());
   public pollingEnabled$ = this._pollingEnabled$.asObservable();
 

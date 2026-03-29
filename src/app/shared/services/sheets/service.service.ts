@@ -37,13 +37,13 @@ export class ServiceService extends GenericCrudService<IService> {
 
             if (existingService) {
                 this._logger.debug('Found existing service', existingService);
-                // Accumulate new values into existing
-                existingService.bonus += service.bonus;
-                existingService.cash += service.cash;
-                existingService.pay += service.pay;
-                existingService.tip += service.tip;
-                existingService.total += service.total;
-                existingService.trips += service.trips;
+                // Accumulate new values into existing (treat null as 0)
+                existingService.bonus = (existingService.bonus ?? 0) + (service.bonus ?? 0);
+                existingService.cash = (existingService.cash ?? 0) + (service.cash ?? 0);
+                existingService.pay = (existingService.pay ?? 0) + (service.pay ?? 0);
+                existingService.tip = (existingService.tip ?? 0) + (service.tip ?? 0);
+                existingService.total = (existingService.total ?? 0) + (service.total ?? 0);
+                existingService.trips = (existingService.trips ?? 0) + (service.trips ?? 0);
 
                 // Replace with merged service
                 services[i] = existingService;

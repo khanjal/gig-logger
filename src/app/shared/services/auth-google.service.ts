@@ -8,6 +8,7 @@ import { UserProfile } from '../interfaces/user-profile.interface';
 import { GigWorkflowService } from './gig-workflow.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ import { AUTH_CONSTANTS } from '@constants/auth.constants';
 export class AuthGoogleService {
   public profile$ = new BehaviorSubject<UserProfile | null>(null);
   private isInitialized = false;
-  private readonly IS_AUTHENTICATED_KEY = 'is_authenticated';
+  private readonly IS_AUTHENTICATED_KEY = SESSION_CONSTANTS.IS_AUTHENTICATED;
 
   constructor(
     private oAuthService: OAuthService,
@@ -105,7 +106,7 @@ export class AuthGoogleService {
     this.secureCookieStorage.removeItem(AUTH_CONSTANTS.ACCESS_TOKEN);
     this.oAuthService.logOut();
     this.profile$.next(null);
-    localStorage.removeItem('authenticatedUserId');
+    localStorage.removeItem(SESSION_CONSTANTS.AUTHENTICATED_USER_ID);
     this.setAuthenticationState(false);
     this.logger.info('Local state cleared');
   }
@@ -221,13 +222,26 @@ export class AuthGoogleService {
     }
   }
 
+  /**
+   * Public helper to determine if remote sync is available.
+   * Returns true when the user is currently authenticated (token present/refresh OK).
+   */
+  async canSync(): Promise<boolean> {
+    try {
+      return await this.isAuthenticated();
+    } catch (e) {
+      this.logger.warn('canSync check failed, assuming not sync-capable', e);
+      return false;
+    }
+  }
+
   getAccessToken(): string | null {
     return this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
   }
 
   private storeUserId(profile: UserProfile | null): void {
     if (profile?.sub) {
-      localStorage.setItem('authenticatedUserId', profile.sub);
+      localStorage.setItem(SESSION_CONSTANTS.AUTHENTICATED_USER_ID, profile.sub);
     }
   }
 }

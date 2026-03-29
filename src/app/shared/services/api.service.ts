@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { firstValueFrom } from "rxjs";
 import { ISheet } from "@interfaces/sheet.interface";
+import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
@@ -267,7 +268,7 @@ export class ApiService {
         }
     }
 
-    public async saveSheetData(sheetData: ISheet): Promise<any> {
+    public async saveSheetData(sheetData: ISheetSavePayload): Promise<any> {
         try {
             const response = await firstValueFrom(
                 this._http.put<any>(

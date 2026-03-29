@@ -6,7 +6,6 @@ import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validat
 // Angular Material imports
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatOptionSelectionChange } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,11 +13,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+// Application-specific imports - Components
+import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
+
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
 // Application-specific imports - Interfaces
 import { IAddress } from '@interfaces/address.interface';
+import type { IAutocompleteResult } from '@interfaces/google-places.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
 import { IRegion } from '@interfaces/region.interface';
@@ -33,9 +36,11 @@ import { PlaceService } from '@services/sheets/place.service';
 import { RegionService } from '@services/sheets/region.service';
 import { ServiceService } from '@services/sheets/service.service';
 import { TypeService } from '@services/sheets/type.service';
-import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
+import { ServerGooglePlacesService } from '@services/server-google-places.service';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
+import { MockLocationService } from '@services/mock-location.service';
+import { DropdownDataService } from '@services/dropdown-data.service';
 
 // Application-specific imports - Pipes
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
@@ -43,14 +48,15 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
 // RxJS imports
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import type { DropdownType } from '@interfaces/dropdown-data.interface';
 
 // Utility imports
-import { createSearchItem, searchJson, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
+import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FocusScrollDirective, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule],
+  imports: [CommonModule, FocusScrollDirective, MatFormFieldModule, MatIconModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, ScrollingModule, MatMenuModule, MatProgressSpinnerModule, ShortAddressPipe, MatDialogModule, BaseFieldButtonComponent],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   providers: [
@@ -87,6 +93,7 @@ export class SearchInputComponent implements OnDestroy {
   hasSelection = false;
   isGoogleSearching = false;
   showNoGoogleResults = false;
+  private initialValue: string = '';
   // When true skip the next focus handler after a user selection (prevents refocus on mobile)
   private skipNextFocus: boolean = false;
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
@@ -112,7 +119,11 @@ export class SearchInputComponent implements OnDestroy {
     }
   }
   writeValue(value: string): void {
-    this.searchForm.controls.searchInput.setValue(value || '', { emitEvent: false });
+    const normalizedValue = value || '';
+    this.searchForm.controls.searchInput.setValue(normalizedValue, { emitEvent: false });
+    this.initialValue = normalizedValue;
+    // If value is set externally, treat it as a selection when non-empty
+    this.hasSelection = !!normalizedValue;
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -130,7 +141,9 @@ export class SearchInputComponent implements OnDestroy {
     private _typeService: TypeService,
     private _serverGooglePlacesService: ServerGooglePlacesService,
     private logger: LoggerService,
-    private _permissionService: PermissionService
+    private _dropdownDataService: DropdownDataService,
+    private _permissionService: PermissionService,
+    private _mockLocationService: MockLocationService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -178,8 +191,10 @@ export class SearchInputComponent implements OnDestroy {
     this.setInputValue(value);
     this.valueChanged.emit(value);
     
-    // Reset selection state when input changes
-    this.hasSelection = false;
+    // Only reset selection state if value actually changed from initial
+    if (value !== this.initialValue) {
+      this.hasSelection = false;
+    }
     this.showNoGoogleResults = false;
     
     // Hide icon if input is cleared
@@ -234,6 +249,7 @@ export class SearchInputComponent implements OnDestroy {
     }
 
     this.setInputValue(finalAddress);
+    this.initialValue = finalAddress;
     this.hasSelection = true;
 
     // Clear suggestions and close dropdown so the selected item doesn't reappear
@@ -387,7 +403,7 @@ export class SearchInputComponent implements OnDestroy {
     let items = await this.getAllItemsForType();
     
     if (items.length === 0) {
-      items = await this.getJsonFallback('');
+      items = await this.getDropdownFallbackBySearchType('');
     }
     
     this.showGoogleMapsIcon = false;
@@ -412,9 +428,7 @@ export class SearchInputComponent implements OnDestroy {
       case 'Place':
         let places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
-        if (placeItems.length === 0) {
-          placeItems = await this.getJsonFallback(value);
-        }
+        placeItems = await this.appendDropdownMatches(placeItems, 'Place', value);
         // For Place, do not auto-trigger Google predictions
         if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon = true;
@@ -425,24 +439,47 @@ export class SearchInputComponent implements OnDestroy {
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
       case 'Service':
-        let services = (await this._filterService(value)).map(item => createSearchItem(item, 'service'));
-        return await this.getJsonFallback(value);
+        return await this.appendDropdownMatches(
+          (await this._filterService(value)).map(item => createSearchItem(item, 'service')),
+          'Service',
+          value
+        );
       case 'Type':
-        let types = (await this._filterType(value)).map(item => createSearchItem(item, 'type'));
-        return await this.getJsonFallback(value);
+        return await this.appendDropdownMatches(
+          (await this._filterType(value)).map(item => createSearchItem(item, 'type')),
+          'Type',
+          value
+        );
       default:
         return [];
     }
   }
 
-  private async getJsonFallback(value: string): Promise<ISearchItem[]> {
+  private async appendDropdownMatches(existingItems: ISearchItem[], type: DropdownType, value: string): Promise<ISearchItem[]> {
+    const existingKeys = new Set(existingItems.map((item: ISearchItem) => item.name.toLowerCase()));
+    const dropdownMatches = await this._dropdownDataService.filterDropdown(type, value);
+
+    const fallbackItems = dropdownMatches
+      .filter((name: string) => !existingKeys.has(name.toLowerCase()))
+      .map((name: string, idx: number) => ({
+        id: idx + 1,
+        name,
+        saved: false,
+        value: name,
+        trips: 0
+      } as ISearchItem));
+
+    return [...existingItems, ...fallbackItems];
+  }
+
+  private async getDropdownFallbackBySearchType(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
       case 'Place':
-        return await searchJson('places', value);
+        return this.appendDropdownMatches([], 'Place', value);
       case 'Service':
-        return await searchJson('services', value);
+        return this.appendDropdownMatches([], 'Service', value);
       case 'Type':
-        return await searchJson('types', value);
+        return this.appendDropdownMatches([], 'Type', value);
       default:
         return [];
     }
@@ -549,8 +586,8 @@ export class SearchInputComponent implements OnDestroy {
     }
   }
 
-  private transformGooglePredictions(predictions: AutocompleteResult[]): ISearchItem[] {
-    return predictions.map((prediction: AutocompleteResult) => ({
+  private transformGooglePredictions(predictions: IAutocompleteResult[]): ISearchItem[] {
+    return predictions.map((prediction: IAutocompleteResult) => ({
       id: undefined,
       name: this.googleSearch === 'address' ? prediction.address : prediction.place,
       saved: false,
@@ -660,7 +697,11 @@ export class SearchInputComponent implements OnDestroy {
   }
 
   public isLocationAllowed(): boolean {
-    return this._permissionService.getLocationState() !== 'denied';
+    if (this._permissionService.getLocationState() !== 'denied') {
+      return true;
+    }
+
+    return !!this._mockLocationService.getLocation();
   }
   // #endregion
 }

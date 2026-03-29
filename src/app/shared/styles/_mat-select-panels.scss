@@ -3,31 +3,31 @@
 
 /* Shift Select Panel (used in trip-form) */
 .shift-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
-  background-color: rgb(219 234 254) !important; /* blue-100 */
-  color: rgb(29 78 216) !important; /* blue-700 */
+  background-color: var(--primary-100) !important;
+  color: var(--primary-700) !important;
   
   .mdc-list-item__primary-text {
-    color: rgb(29 78 216) !important;
+    color: var(--primary-600) !important;
     font-weight: 600;
   }
   
   &:hover {
-    background-color: rgb(191 219 254) !important; /* blue-200 */
+    background-color: var(--primary-200) !important;
   }
 }
 
 /* Diagnostics Select Panel (used in diagnostics page) */
 .diagnostics-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
-  background-color: rgb(219 234 254) !important; /* blue-100 */
-  color: rgb(29 78 216) !important; /* blue-700 */
+  background-color: var(--primary-100) !important;
+  color: var(--primary-700) !important;
   
   .mdc-list-item__primary-text {
-    color: rgb(29 78 216) !important;
+    color: var(--primary-600) !important;
     font-weight: 600;
   }
   
   &:hover {
-    background-color: rgb(191 219 254) !important; /* blue-200 */
+    background-color: var(--primary-200) !important;
   }
 }
 
@@ -35,16 +35,16 @@
 html.theme-dark {
   .shift-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple),
   .diagnostics-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
-    background-color: rgb(59 130 246) !important; /* blue-500 */
-    color: rgb(255 255 255) !important; /* white */
+    background-color: var(--primary-500) !important;
+    color: var(--color-text-inverse) !important;
     
-    .mdc-list-item__primary-text {
-      color: rgb(255 255 255) !important;
+      .mdc-list-item__primary-text {
+      color: var(--color-text-inverse) !important;
       font-weight: 600 !important;
     }
     
-    &:hover {
-      background-color: rgb(96 165 250) !important; /* blue-400 */
+      &:hover {
+      background-color: var(--primary-400) !important;
     }
   }
   

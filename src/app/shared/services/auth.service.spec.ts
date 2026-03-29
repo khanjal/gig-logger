@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -35,7 +36,7 @@ describe('AuthService', () => {
 
   describe('isAuthenticated', () => {
     it('returns false when no token in sessionStorage', () => {
-      sessionStorage.removeItem('token');
+      sessionStorage.removeItem(SESSION_CONSTANTS.AUTH_TOKEN);
 
       const result = service.isAuthenticated();
 
@@ -43,7 +44,7 @@ describe('AuthService', () => {
     });
 
     it('returns true when token exists and is not expired', () => {
-      sessionStorage.setItem('token', 'valid-token');
+      sessionStorage.setItem(SESSION_CONSTANTS.AUTH_TOKEN, 'valid-token');
       jwtHelperSpy.isTokenExpired.and.returnValue(false as any);
 
       const result = service.isAuthenticated();
@@ -54,7 +55,7 @@ describe('AuthService', () => {
     });
 
     it('returns false when token is expired', () => {
-      sessionStorage.setItem('token', 'expired-token');
+      sessionStorage.setItem(SESSION_CONSTANTS.AUTH_TOKEN, 'expired-token');
       jwtHelperSpy.isTokenExpired.and.returnValue(true as any);
 
       const result = service.isAuthenticated();
@@ -65,7 +66,7 @@ describe('AuthService', () => {
     });
 
     it('logs token expiration status', () => {
-      sessionStorage.setItem('token', 'test-token');
+      sessionStorage.setItem(SESSION_CONSTANTS.AUTH_TOKEN, 'test-token');
         jwtHelperSpy.isTokenExpired.and.returnValue(false as any);
 
       service.isAuthenticated();

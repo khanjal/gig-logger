@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
+import { BaseRectButtonComponent } from '@components/base';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 import { IAddress } from '@interfaces/address.interface';
@@ -29,7 +28,7 @@ interface DiagnosticItem {
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatListModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })

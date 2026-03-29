@@ -5,20 +5,13 @@
 
   <form [formGroup]="shiftForm">
     <div class="flex gap-2 mb-3">
-        <mat-form-field class="w-1/2 min-w-[120px]" appearance="outline">
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="shiftDatePicker" formControlName="date">
-            <mat-datepicker-toggle matSuffix [for]="shiftDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #shiftDatePicker></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field class="w-1/4 min-w-[70px]" appearance="outline">
-            <mat-label>Shift #</mat-label>
-            <input matInput type="number" [value]="computedShiftNumber" disabled tabindex="-1">
-        </mat-form-field>
-        <mat-form-field class="w-1/4 min-w-[70px]" appearance="outline">
-            <mat-label>Trips</mat-label>
-            <input matInput type="number" formControlName="trips" >
-        </mat-form-field>
+        <app-base-datepicker
+            formControlName="date"
+            label="Date"
+            class="w-1/2 min-w-[120px]">
+        </app-base-datepicker>
+      <app-base-input class="w-1/4 min-w-[70px]" [label]="'Shift #'" [type]="'number'" [ngModel]="computedShiftNumber" [ngModelOptions]="{ standalone: true }" [disabled]="true"></app-base-input>
+      <app-base-input class="w-1/4 min-w-[70px]" [label]="'Trips'" [type]="'number'" formControlName="trips" [showClear]="false"></app-base-input>
     </div>
     <div class="flex flex-col gap-3 mb-3">
         <app-search-input 
@@ -47,38 +40,20 @@
         ></app-time-input>
       </div>
       <div class="flex gap-2">
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Active Duration</mat-label>
-          <input matInput type="text" formControlName="active" placeholder="HH:MM">
-        </mat-form-field>
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Total Time</mat-label>
-          <input matInput type="text" formControlName="time" placeholder="HH:MM">
-        </mat-form-field>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Active Duration'" [type]="'text'" [placeholder]="'HH:MM'" formControlName="active"></app-base-input>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Total Time'" [type]="'text'" [placeholder]="'HH:MM'" formControlName="time"></app-base-input>
       </div>
       <div class="flex gap-2">
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Pay</mat-label>
-          <input matInput type="number" formControlName="pay" placeholder="Pay">
-        </mat-form-field>
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Tips</mat-label>
-          <input matInput type="number" formControlName="tip" placeholder="Tips">
-        </mat-form-field>
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Bonus</mat-label>
-          <input matInput type="number" formControlName="bonus" placeholder="Bonus">
-        </mat-form-field>
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Cash</mat-label>
-          <input matInput type="number" formControlName="cash" placeholder="Cash">
-        </mat-form-field>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Pay'" [type]="'number'" [placeholder]="'Pay'" formControlName="pay"></app-base-input>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Tips'" [type]="'number'" [placeholder]="'Tips'" formControlName="tip"></app-base-input>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Bonus'" [type]="'number'" [placeholder]="'Bonus'" formControlName="bonus"></app-base-input>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Cash'" [type]="'number'" [placeholder]="'Cash'" formControlName="cash"></app-base-input>
       </div>
     </div>
     <!-- Trip Totals only in edit mode -->
     <div *ngIf="rowId" class="mb-3">
       <div class="font-semibold text-primary mb-1">Trip Totals</div>
-      <div class="grid grid-cols-2 gap-2 bg-primary-500/10 rounded p-3 mb-2">
+      <div class="grid grid-cols-2 gap-2 bg-surface-2 rounded p-3 mb-2">
         <div>
           <span class="font-semibold text-primary">Count:</span>
           <span class="ml-2">{{ computedTotals.totalTrips }}</span>
@@ -106,34 +81,52 @@
       </div>
     </div>
       <div class="flex gap-2 items-center mb-3">
-        <mat-form-field class="min-w-[70px] w-1/2" appearance="outline">
-          <mat-label>Distance</mat-label>
-          <input matInput type="number" formControlName="distance" placeholder="Distance (mi)">
-        </mat-form-field>
+        <app-base-input class="min-w-[70px] w-1/2" [label]="'Distance'" [type]="'number'" [placeholder]="'Distance (mi/km)'" formControlName="distance"></app-base-input>
         <mat-slide-toggle formControlName="omit" color="primary" class="ml-2">Omit from calculations</mat-slide-toggle>
       </div>
     <div class="flex gap-2">
-        <mat-form-field class="min-w-[90px] flex-1" appearance="outline">
-          <mat-label>Note</mat-label>
-          <input matInput type="text" formControlName="note" placeholder="Notes">
-        </mat-form-field>
+        <app-base-input class="min-w-[90px] flex-1" [label]="'Note'" [type]="'text'" [placeholder]="'Notes'" formControlName="note"></app-base-input>
     </div>
     <div class="flex flex-row items-center justify-between gap-2 mt-6">
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="warn" type="button" (click)="formReset()">
-          <mat-icon>refresh</mat-icon> Reset
-        </button>
-        <button *ngIf="rowId" mat-fab extended color="warn" type="button" (click)="close()">
-          <mat-icon>cancel</mat-icon> Cancel
-        </button>
+        <app-base-fab-button *ngIf="!rowId"
+          [extended]="true"
+          variant="danger"
+          type="button"
+          (clicked)="formReset()"
+          [icon]="'refresh'">
+          Reset
+        </app-base-fab-button>
+
+        <app-base-fab-button *ngIf="rowId"
+          [extended]="true"
+          variant="danger"
+          type="button"
+          (clicked)="close()"
+          [icon]="'cancel'">
+          Cancel
+        </app-base-fab-button>
       </div>
       <div class="flex gap-2">
-        <button *ngIf="!rowId" mat-fab extended color="primary" type="button" (click)="addShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
-          <mat-icon>add</mat-icon> Store
-        </button>
-        <button *ngIf="rowId" mat-fab extended color="primary" type="button" (click)="editShift()" [disabled]="shiftForm.invalid" [class.button-disabled]="shiftForm.invalid">
-          <mat-icon>save</mat-icon> Update
-        </button>
+        <app-base-fab-button *ngIf="!rowId"
+          [extended]="true"
+          variant="primary"
+          type="button"
+          (clicked)="addShift()"
+          [disabled]="shiftForm.invalid"
+          [icon]="'add'">
+          Store
+        </app-base-fab-button>
+
+        <app-base-fab-button *ngIf="rowId"
+          [extended]="true"
+          variant="primary"
+          type="button"
+          (clicked)="editShift()"
+          [disabled]="shiftForm.invalid"
+          [icon]="'save'">
+          Update
+        </app-base-fab-button>
       </div>
     </div>
   </form>

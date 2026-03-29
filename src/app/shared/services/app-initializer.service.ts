@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
+import { SESSION_CONSTANTS } from '@constants/session.constants';
 import { DiagnosticService } from './diagnostic.service';
 
 @Injectable({
@@ -53,8 +54,8 @@ export class AppInitializerService {
   private async checkCriticalDependencies(): Promise<void> {
     // Check if localStorage is available
     try {
-      localStorage.setItem('test', 'test');
-      localStorage.removeItem('test');
+      localStorage.setItem(SESSION_CONSTANTS.APP_TEST_KEY, 'test');
+      localStorage.removeItem(SESSION_CONSTANTS.APP_TEST_KEY);
     } catch (error) {
       throw new Error('localStorage is not available');
     }

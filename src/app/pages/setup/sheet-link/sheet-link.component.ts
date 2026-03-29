@@ -1,23 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { MatFabButton } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ISheet } from '@interfaces/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
+import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({
   selector: 'app-sheet-link',
   standalone: true,
     imports: [
     CommonModule,
-    MatFabButton,
-    MatIconModule
+    BaseRectButtonComponent
     ],
   templateUrl: './sheet-link.component.html',
   styleUrl: './sheet-link.component.scss'
@@ -48,7 +48,7 @@ export class SheetLinkComponent {
         if (result.error) {
           // Handle error
           this._logger.error('Sheet creation failed', { error: result.error });
-          this._snackBar.open('Error creating sheet', 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
         } else {
           // Handle success
           let sheetData = {} as ISheet;
@@ -58,7 +58,7 @@ export class SheetLinkComponent {
           };
           this.linkSheet(sheetData);
           this._logger.info('Sheet created successfully', { result });
-          this._snackBar.open('Sheet created successfully', 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
           this.parentReload.emit(); // Emit event to reload parent component
         }
       }
@@ -91,8 +91,8 @@ export class SheetLinkComponent {
 
   linkSheet(sheet: ISheet) {
     this._spreadsheetService.findSheet(sheet.properties.id).then((existingSheet) => {
-      if (existingSheet) {
-        this._snackBar.open('Sheet already linked', 'Close');
+        if (existingSheet) {
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ALREADY_LINKED, { action: 'Close' });
       } else {
         this._spreadsheetService.add({
           id: sheet.properties.id,
@@ -100,11 +100,11 @@ export class SheetLinkComponent {
           default: "true",
           size: 0
         }).then(() => {
-          this._snackBar.open('Sheet linked successfully', 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
           this.parentReload.emit(); // Emit event to reload parent component
         }).catch((error) => {
           this._logger.error('Error linking sheet', { error });
-          this._snackBar.open('Error linking sheet', 'Close');
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });
         });
       }
     });

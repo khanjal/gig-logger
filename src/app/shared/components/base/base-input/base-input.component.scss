@@ -1,0 +1,70 @@
+// =============================================================================
+// BASE INPUT COMPONENT STYLES (MINIMAL RESET)
+// =============================================================================
+
+.app-base-input {
+  width: 100%;
+
+  .input-field {
+    width: 100%;
+
+    ::ng-deep {
+      .mat-mdc-form-field {
+        width: 100%;
+      }
+
+      .mat-mdc-form-field-form-control {
+        color: var(--color-text-primary);
+
+        &::placeholder {
+          color: var(--color-text-tertiary);
+        }
+      }
+
+      .mdc-text-field__input {
+        padding: 0 !important;
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      input[type='number'] {
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+
+      input[type='number']::-webkit-outer-spin-button,
+      input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .mat-mdc-form-field-icon-suffix {
+        display: inline-flex !important;
+        align-items: center;
+      }
+    }
+
+    .input-icon {
+      color: var(--color-text-secondary);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+    }
+
+    &.input-field--with-clear {
+      ::ng-deep .mdc-text-field__input {
+        padding-right: 0.75rem !important;
+      }
+    }
+
+    .standard-button {
+      margin-left: 0.125rem;
+    }
+  }
+}
+
+.required-indicator {
+  color: var(--error-500);
+  margin-left: 0.25rem;
+}

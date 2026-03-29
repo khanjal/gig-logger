@@ -1,20 +1,21 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 import { LoggerService } from '@services/logger.service';
+import { ServerGooglePlacesService } from '@services/server-google-places.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgIf, CommonModule } from '@angular/common';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { BaseIconButtonComponent } from '@components/base/base-icon-button/base-icon-button.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+import type { IAutocompleteResult } from '@interfaces/google-places.interface';
 
 @Component({
     selector: 'app-google-address',
     templateUrl: './google-address.component.html',
     styleUrls: ['./google-address.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatIconButton, MatSuffix, MatIcon, CommonModule]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgIf, MatSuffix, CommonModule, BaseIconButtonComponent]
 })
 export class GoogleAddressComponent implements OnInit, OnDestroy {
   @Input() address!: string;
@@ -22,7 +23,7 @@ export class GoogleAddressComponent implements OnInit, OnDestroy {
   
   @ViewChild('address') addressInput!: ElementRef;
 
-  suggestions: AutocompleteResult[] = [];
+  suggestions: IAutocompleteResult[] = [];
   isLoading = false;
   showSuggestions = false;
 
@@ -83,7 +84,7 @@ export class GoogleAddressComponent implements OnInit, OnDestroy {
     this.addressChange.emit(currentValue);
   }
 
-  async selectSuggestion(suggestion: AutocompleteResult): Promise<void> {
+  async selectSuggestion(suggestion: IAutocompleteResult): Promise<void> {
     this.addressForm.controls.address.setValue(suggestion.address);
     this.addressChange.emit(suggestion.address);
     this.showSuggestions = false;

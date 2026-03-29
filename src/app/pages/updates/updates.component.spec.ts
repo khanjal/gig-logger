@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UpdatesComponent } from './updates.component';
-import { UpdatesService, UpdateDetail } from '@services/updates.service';
+import { UpdatesService } from '@services/updates.service';
+
+import type { IUpdateDetail } from '@interfaces/update.interface';
 import { of } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -24,7 +26,7 @@ describe('UpdatesComponent', () => {
             'Fixed bugs'
           ]
         }
-      ] as UpdateDetail[]
+      ] as IUpdateDetail[]
     },
     {
       date: '2025-10-25-11-01',
@@ -46,7 +48,7 @@ describe('UpdatesComponent', () => {
           ],
           pagesAffected: ['Setup']
         }
-      ] as UpdateDetail[]
+      ] as IUpdateDetail[]
     }
   ];
 

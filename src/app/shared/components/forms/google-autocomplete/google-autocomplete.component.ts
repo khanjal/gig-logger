@@ -1,9 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ServerGooglePlacesService, AutocompleteResult } from '@services/server-google-places.service';
 import { LoggerService } from '@services/logger.service';
+import { ServerGooglePlacesService } from '@services/server-google-places.service';
 import { CommonModule } from '@angular/common';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+import type { IAutocompleteResult } from '@interfaces/google-places.interface';
 
 @Component({
     selector: 'app-google-autocomplete',
@@ -19,7 +21,7 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
   @Input() componentRestrictions: { country: string } = { country: 'US' };
   
   @Output() addressChange = new EventEmitter<string>();
-  @Output() placeSelected = new EventEmitter<AutocompleteResult>();
+  @Output() placeSelected = new EventEmitter<IAutocompleteResult>();
   
   @ViewChild('address') addressInput!: ElementRef;
 
@@ -27,7 +29,7 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
     address: new FormControl('')
   });
 
-  suggestions: AutocompleteResult[] = [];
+  suggestions: IAutocompleteResult[] = [];
   isLoading = false;
   showSuggestions = false;
 
@@ -84,7 +86,7 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
     this.addressChange.emit(currentValue);
   }
 
-  async selectSuggestion(suggestion: AutocompleteResult): Promise<void> {
+  async selectSuggestion(suggestion: IAutocompleteResult): Promise<void> {
     this.addressForm.controls.address.setValue(suggestion.address);
     this.addressChange.emit(suggestion.address);
     this.placeSelected.emit(suggestion);

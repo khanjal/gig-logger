@@ -113,47 +113,6 @@ export class SearchService {
   }
 
   /**
-   * Get all possible autocomplete options for selected categories
-   * @param categories Array of categories to get options from
-   * @returns Promise of unique autocomplete options
-   */
-  async getAutocompleteOptions(categories: SearchCategory[]): Promise<string[]> {
-    const options = new Set<string>();
-
-    if (categories.includes('Service')) {
-      const services = await spreadsheetDB.services.toArray();
-      services.forEach(s => options.add(s.service));
-    }
-
-    if (categories.includes('Place')) {
-      const places = await spreadsheetDB.places.toArray();
-      places.forEach(p => options.add(p.place));
-    }
-
-    if (categories.includes('Name')) {
-      const names = await spreadsheetDB.names.toArray();
-      names.forEach(n => options.add(n.name));
-    }
-
-    if (categories.includes('Address')) {
-      const addresses = await spreadsheetDB.addresses.toArray();
-      addresses.forEach(a => options.add(a.address));
-    }
-
-    if (categories.includes('Region')) {
-      const regions = await spreadsheetDB.regions.toArray();
-      regions.forEach(r => options.add(r.region));
-    }
-
-    if (categories.includes('Type')) {
-      const types = await spreadsheetDB.types.toArray();
-      types.forEach(t => options.add(t.type));
-    }
-
-    return Array.from(options).sort();
-  }
-
-  /**
    * Search services and return matching results with associated trips
    */
   private async searchServices(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
@@ -390,18 +349,34 @@ export class SearchService {
   }
 
   /**
-   * Get category color class for Tailwind
+   * Get category icon/text class using semantic theme utilities.
    */
   getCategoryColor(category: SearchCategory): string {
     const colors: Record<SearchCategory, string> = {
-      'Service': 'text-blue-600',
-      'Place': 'text-green-600',
-      'Name': 'text-purple-600',
-      'Address': 'text-orange-600',
-      'Region': 'text-teal-600',
-      'Type': 'text-pink-600',
-      'All': 'text-gray-600'
+      'Service': 'text-primary',
+      'Place': 'text-success',
+      'Name': 'text-accent',
+      'Address': 'text-warning',
+      'Region': 'text-info',
+      'Type': 'text-primary',
+      'All': 'text-tertiary'
     };
     return colors[category];
+  }
+
+  /**
+   * Get category border class using semantic theme utilities.
+   */
+  getCategoryBorderClass(category: SearchCategory): string {
+    const borders: Record<SearchCategory, string> = {
+      'Service': 'border-primary',
+      'Place': 'border-success',
+      'Name': 'border-accent',
+      'Address': 'border-warning',
+      'Region': 'border-info',
+      'Type': 'border-primary',
+      'All': 'border-soft'
+    };
+    return borders[category];
   }
 }

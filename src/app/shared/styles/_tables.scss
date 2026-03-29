@@ -1362,16 +1362,16 @@ tr[mat-footer-row] {
     }
     
     &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--shadow-light);
       border-radius: 2px;
     }
     
     &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.3);
+      background: var(--shadow-medium);
       border-radius: 2px;
       
       &:hover {
-        background: rgba(0, 0, 0, 0.5);
+        background: var(--shadow-heavy);
       }
     }
   }
