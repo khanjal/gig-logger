@@ -82,7 +82,7 @@
           <p class="text-xs text-tertiary mb-3">
             Choose a popular US/Canada city to auto-fill the coordinates.
           </p>
-          <mat-form-field class="w-full" appearance="fill">
+          <mat-form-field class="w-full rg-field-shell" appearance="fill">
             <mat-label>Popular cities</mat-label>
             <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelect($event.value)">
               <mat-option [value]="null">Custom coordinates</mat-option>
@@ -120,7 +120,7 @@
               [hint]="'Range: -180 to 180'"
             ></app-base-input>
 
-              <mat-form-field class="w-full" appearance="fill">
+              <mat-form-field class="w-full rg-field-shell" appearance="fill">
                 <mat-label>Search Radius (miles)</mat-label>
                 <mat-select [(ngModel)]="radius" (selectionChange)="onRadiusChange()">
                   <mat-option [value]="5">5 miles</mat-option>

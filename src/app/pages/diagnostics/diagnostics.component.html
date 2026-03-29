@@ -211,7 +211,7 @@
                 <mat-form-field
                   *ngIf="problemItem.availableAddresses && problemItem.availableAddresses.length > 0"
                   appearance="fill"
-                  class="flex-1 min-w-0"
+                  class="flex-1 min-w-0 rg-field-shell"
                 >
                   <mat-select [(ngModel)]="selectedAddress[problemItem.rowId]" panelClass="diagnostics-select-panel" placeholder="Select address...">
                     <mat-option [value]="undefined">Select address...</mat-option>
