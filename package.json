@@ -33,7 +33,7 @@
     "minimatch": "^10"
   },
   "dependencies": {
-    "@angular/animations": "^20.3.16",
+    "@angular/animations": "^21.2.6",
     "@angular/cdk": "~20.2.14",
     "@angular/common": "^20.3.16",
     "@angular/compiler": "^20.3.16",
