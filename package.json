@@ -48,7 +48,7 @@
     "angular-oauth2-oidc": "^20.0.2",
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "dexie": "^4.2.1",
+    "dexie": "^4.4.1",
     "ng2-charts": "^8.0.0",
     "ngx-mat-timepicker": "^20.0.1",
     "rxjs": "^7.8.2",
