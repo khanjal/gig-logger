@@ -10,6 +10,8 @@
 @use 'app/shared/styles/menu-overrides';
 @use 'sass:map';
 
+@import 'material-icons/iconfont/material-icons.css';
+
 /* Tailwind CSS imports */
 @tailwind base;
 @tailwind components;
