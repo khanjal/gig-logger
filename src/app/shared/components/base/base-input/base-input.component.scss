@@ -52,12 +52,6 @@
       line-height: 20px;
     }
 
-    &.input-field--with-clear {
-      ::ng-deep .mdc-text-field__input {
-        padding-right: 0.75rem !important;
-      }
-    }
-
     .standard-button {
       margin-left: 0.125rem;
     }

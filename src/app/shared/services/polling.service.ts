@@ -31,6 +31,7 @@ export class PollingService implements OnDestroy {
   private processing = false;
   private currentInterval = DEFAULT_INTERVAL;
   private lastPollTime = 0;
+  private lastSnackbarTime = 0;
   private visibilityChangeListener: (() => void) | null = null;
   private enabledState = new BehaviorSubject<boolean>(false);
 
@@ -260,8 +261,17 @@ export class PollingService implements OnDestroy {
         const canSync = await this.authService.canSync();
         if (!canSync) {
           this.safeLog('info', 'Not authenticated - skipping autosave');
-          // Inform the user that autosave was skipped due to authentication state
-          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED, { duration: 5000 });
+          // Throttle repeated snackbars so users aren't spammed if autosave runs frequently
+          try {
+            const now = Date.now();
+            const THROTTLE_MS = 15 * 60 * 1000; // 15 minutes
+            if (now - this.lastSnackbarTime > THROTTLE_MS) {
+              this.lastSnackbarTime = now;
+              openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED);
+            }
+          } catch (e) {
+            // swallow snackbar errors to avoid breaking autosave
+          }
           this._syncStatusService.failSync('Not authenticated');
           return;
         }
@@ -331,14 +341,14 @@ export class PollingService implements OnDestroy {
         this._syncStatusService.failSync(errorMsg);
         
         // Show snackbar for errors
-        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_COMPLETED_WITH_ERRORS, { action: "View Details", duration: 5000 });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_COMPLETED_WITH_ERRORS, { action: "View Details" });
       }
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this.safeLog('error', 'Auto-save failed:', error);
       this._syncStatusService.failSync(errorMsg);
-      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_FAILED_UNSAVED, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_FAILED_UNSAVED);
     } finally {
       this.processing = false;
       // Only restart countdown if polling is still enabled

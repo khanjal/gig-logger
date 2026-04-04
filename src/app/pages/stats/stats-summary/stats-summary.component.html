@@ -5,7 +5,7 @@
     *ngFor="let card of summaryCards; let i = index"
     class="flex flex-col justify-between bg-surface rounded-lg shadow-md p-4 transition hover:shadow-lg border border-soft"
     [ngClass]="{
-      'border-2 border-primary ring-2 ring-primary': card.highlight,
+      'border-2 border-primary ring-2 ring-primary-500': card.highlight,
       'hover:bg-surface-2 dark:hover:bg-surface-3': card.action,
       'border-soft dark:border-[var(--color-border)]': !card.highlight,
       'cursor-pointer': card.action

@@ -3,7 +3,7 @@
         *ngFor="let item of customPresets; let i = index"
         class="rounded border shadow-sm cursor-pointer px-3 py-2 text-sm font-semibold flex items-center justify-center select-none transition active:scale-95
         border-soft bg-surface-2 text-primary
-        hover:bg-primary-soft hover:border-strong focus:bg-primary-soft focus:border-strong focus:outline-none focus:ring-2 focus:ring-primary"
+        hover:bg-primary-soft hover:border-strong focus:bg-primary-soft focus:border-strong focus:outline-none focus:ring-2 focus:ring-primary-500"
         [class.bg-primary]="selectedPreset === item"
         [ngClass]="{ 'dark:bg-primary': selectedPreset === item, 'dark:border-primary': selectedPreset === item }"
         [class.text-inverse]="selectedPreset === item"

@@ -61,3 +61,4 @@ export const SNACKBAR_MESSAGES = {
 };
 
 export const SNACKBAR_DEFAULT_ACTION = 'Dismiss';
+export const SNACKBAR_DEFAULT_DURATION_MS = 3000;
