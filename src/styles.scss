@@ -31,9 +31,6 @@
   .border-soft { border: 1px solid var(--color-border-light); }
   .border-strong { border: 1px solid var(--color-border); }
   .ring-focus { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
-  /* Semantic ring utility so Tailwind's `ring` classes can use app tokens
-    Use like: `ring ring-2 ring-primary` */
-  .ring-primary { --tw-ring-color: var(--color-primary); }
 
   .shadow-soft { box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium); }
   .shadow-strong { box-shadow: 0 4px 6px var(--shadow-light), 0 2px 4px var(--shadow-medium); }
