@@ -8,18 +8,19 @@ describe('AuthGuardService', () => {
   let service: AuthGuardService;
   let authService: jasmine.SpyObj<AuthGoogleService>;
   let router: jasmine.SpyObj<Router>;
+  let spreadsheetService: jasmine.SpyObj<SpreadsheetService>;
 
   beforeEach(() => {
     const authServiceSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['getSpreadsheets']);
+    spreadsheetSpy.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
     TestBed.configureTestingModule({
       providers: [
         AuthGuardService,
         { provide: AuthGoogleService, useValue: authServiceSpy },
-        // Provide a lightweight mock for SpreadsheetService so the guard's
-        // constructor doesn't pull in the full service graph (HttpClient, etc.)
-        { provide: SpreadsheetService, useValue: { getSpreadsheets: () => Promise.resolve([]) } },
+        { provide: SpreadsheetService, useValue: spreadsheetSpy },
         { provide: Router, useValue: routerSpy }
       ]
     });
@@ -27,6 +28,7 @@ describe('AuthGuardService', () => {
     service = TestBed.inject(AuthGuardService);
     authService = TestBed.inject(AuthGoogleService) as jasmine.SpyObj<AuthGoogleService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    spreadsheetService = TestBed.inject(SpreadsheetService) as jasmine.SpyObj<SpreadsheetService>;
   });
 
   it('should be created', () => {
@@ -81,6 +83,40 @@ describe('AuthGuardService', () => {
       await service.canActivate();
 
       expect(authService.canSync).toHaveBeenCalledTimes(1);
+    });
+
+    describe('local-only fallback', () => {
+      beforeEach(() => {
+        authService.canSync.and.returnValue(Promise.resolve(false));
+      });
+
+      it('should return true when unauthenticated but local spreadsheets exist', async () => {
+        const fakeSheet = { id: 1, name: 'My Sheet' } as any;
+        spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([fakeSheet]));
+
+        const result = await service.canActivate();
+
+        expect(result).toBe(true);
+        expect(router.navigate).not.toHaveBeenCalled();
+      });
+
+      it('should redirect to setup when unauthenticated and no local spreadsheets', async () => {
+        spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+        const result = await service.canActivate();
+
+        expect(result).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['setup']);
+      });
+
+      it('should redirect to setup when getSpreadsheets throws', async () => {
+        spreadsheetService.getSpreadsheets.and.returnValue(Promise.reject(new Error('DB error')));
+
+        const result = await service.canActivate();
+
+        expect(result).toBe(false);
+        expect(router.navigate).toHaveBeenCalledWith(['setup']);
+      });
     });
   });
   // Note: canActivateAuth functional guard tests are difficult to test in isolation

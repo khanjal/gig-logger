@@ -31,7 +31,7 @@
   .border-soft { border: 1px solid var(--color-border-light); }
   .border-strong { border: 1px solid var(--color-border); }
   .ring-focus { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
-
+c
   .shadow-soft { box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium); }
   .shadow-strong { box-shadow: 0 4px 6px var(--shadow-light), 0 2px 4px var(--shadow-medium); }
 
@@ -914,7 +914,7 @@ html.theme-dark .mat-mdc-form-field .mat-mdc-text-field-wrapper {
 .mat-mdc-form-field.rg-field-shell {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   --mat-form-field-state-layer-color: transparent;
   --mat-form-field-hover-state-layer-opacity: 0;
@@ -1013,7 +1013,7 @@ html.theme-dark .mat-mdc-form-field .mat-mdc-text-field-wrapper {
 .mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 

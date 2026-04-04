@@ -4,7 +4,7 @@
 // Auth Status Card Container - Mobile First
 .auth-status-card {
   background: var(--color-surface);
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   overflow: hidden;
   
   mat-card-header {
@@ -87,11 +87,11 @@
   background: var(--color-surface);
   border-radius: 0.75rem;
   border: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   transition: all 0.2s ease-in-out;
   
   &:hover {
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     transform: translateY(-2px);
   }
   
@@ -230,7 +230,7 @@
     
     &:hover {
       background: var(--color-surface-tertiary);
-      box-shadow: var(--shadow-light);
+      box-shadow: 0 1px 3px var(--shadow-light);
     }
   }
   

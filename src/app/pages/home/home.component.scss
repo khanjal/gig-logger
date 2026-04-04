@@ -73,7 +73,7 @@
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 1;
@@ -81,7 +81,7 @@
     
     &:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-heavy);
+      box-shadow: 0 8px 16px var(--shadow-heavy);
     }
     
     &:active {
@@ -103,7 +103,7 @@
     backdrop-filter: blur(10px);
     border-radius: 1rem;
     padding: 1.5rem;
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     border: 1px solid color-mix(in srgb, var(--color-text-inverse) 20%, transparent);
     text-align: left;
     color: var(--color-text-primary);
@@ -156,7 +156,7 @@
           border-radius: 0.5rem;
           
           &[color="primary"] {
-            box-shadow: var(--shadow-light);
+            box-shadow: 0 1px 3px var(--shadow-light);
           }
         }
       }
@@ -208,13 +208,13 @@
   padding: 1.5rem;
   border-radius: 1rem;
   text-align: center;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--color-border);
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-heavy);
+    box-shadow: 0 8px 16px var(--shadow-heavy);
   }
   
   @media (min-width: 768px) {
@@ -301,12 +301,12 @@
   padding: 1rem;
   background: var(--color-surface);
   border-radius: 0.75rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     transform: translateY(-1px);
   }
   
@@ -327,7 +327,7 @@
     font-weight: 600;
     flex-shrink: 0;
     font-size: 0.875rem;
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     
     @media (min-width: 768px) {
       width: 3rem;
@@ -433,14 +433,14 @@
   text-decoration: none;
   color: inherit;
   text-align: center;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--color-border);
   min-height: 44px; // Touch target
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-heavy);
+    box-shadow: 0 8px 16px var(--shadow-heavy);
     text-decoration: none;
   }
   
@@ -554,7 +554,7 @@
   padding: 0.75rem 1rem;
   background: var(--color-surface);
   border-radius: 0.5rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   min-width: 200px;
   justify-content: center;
@@ -592,7 +592,7 @@
   background: var(--color-surface);
   padding: 1.5rem;
   border-radius: 0.75rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   
   h4 {
@@ -696,13 +696,13 @@
   color: var(--primary-600);
   text-decoration: none;
   border-radius: 0.5rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   min-height: 44px; // Touch target
   transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     transform: translateY(-1px);
     text-decoration: none;
   }
@@ -805,7 +805,7 @@
   background: var(--color-surface-card);
   padding: 2rem 1.5rem;
   border-radius: 1rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   text-align: center;
   flex: 1;
@@ -814,7 +814,7 @@
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-heavy);
+    box-shadow: 0 8px 16px var(--shadow-heavy);
   }
   
   @media (min-width: 768px) {
@@ -887,12 +887,12 @@
       padding: 1rem;
       background: var(--color-surface);
       border-radius: 0.75rem;
-      box-shadow: var(--shadow-light);
+      box-shadow: 0 1px 3px var(--shadow-light);
       border: 1px solid var(--color-border);
       transition: all 0.3s ease;
       
       &:hover {
-        box-shadow: var(--shadow-medium);
+        box-shadow: 0 2px 8px var(--shadow-medium);
         transform: translateY(-1px);
       }
       
@@ -946,7 +946,7 @@
   background: var(--color-surface);
   padding: 1.5rem;
   border-radius: 0.75rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   
   h3 {
@@ -1000,12 +1000,12 @@
       padding: 1rem;
       background: var(--color-surface-card);
       border-radius: 0.75rem;
-      box-shadow: var(--shadow-light);
+      box-shadow: 0 1px 3px var(--shadow-light);
       border: 1px solid var(--color-border);
       transition: all 0.3s ease;
       
       &:hover {
-        box-shadow: var(--shadow-medium);
+        box-shadow: 0 2px 8px var(--shadow-medium);
         transform: translateY(-1px);
       }
       
@@ -1055,12 +1055,12 @@
   background: var(--color-surface-card);
   padding: 1.5rem;
   border-radius: 0.75rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   border: 1px solid var(--color-border);
   transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
     transform: translateY(-1px);
   }
   
@@ -1095,13 +1095,13 @@
   margin: 2rem auto 4rem auto;
   max-width: 420px;
   padding: 2rem 1.5rem 1.5rem 1.5rem;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 1px 3px var(--shadow-light);
   text-align: center;
   
   @media (prefers-color-scheme: dark) {
     background: color-mix(in srgb, var(--warning-500) 6%, var(--color-surface));
     border-color: color-mix(in srgb, var(--warning-500) 18%, var(--color-surface));
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 2px 8px var(--shadow-medium);
   }
   
   h2 {
@@ -1135,14 +1135,14 @@
       padding: 0.7rem 1.5rem;
       border-radius: 2rem;
       text-decoration: none;
-      box-shadow: var(--shadow-light);
+      box-shadow: 0 1px 3px var(--shadow-light);
       transition: background 0.2s, color 0.2s;
       margin-top: 0.2rem;
       
       @media (prefers-color-scheme: dark) {
         background: color-mix(in srgb, var(--warning-500) 12%, var(--color-surface));
         color: var(--warning-50);
-        box-shadow: var(--shadow-light);
+        box-shadow: 0 1px 3px var(--shadow-light);
       }
       
       &:hover, &:focus {

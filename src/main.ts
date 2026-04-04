@@ -66,15 +66,15 @@ bootstrapApplication(AppComponent, {
       padding: 20px;
       font-family: Arial, sans-serif;
     ">
-      <h1 style="color: var(--error-500); margin-bottom: 16px;">Application Failed to Load</h1>
-      <p style="color: var(--color-text-secondary); margin-bottom: 24px;">
+      <h1 style="color: var(--error-500, #ef4444); margin-bottom: 16px;">Application Failed to Load</h1>
+      <p style="color: var(--color-text-secondary, #4b5563); margin-bottom: 24px;">
         The application encountered an error during startup. Please try refreshing the page.
       </p>
       <button 
         onclick="window.location.reload()" 
         style="
-          background: var(--primary-600);
-            color: var(--color-text-inverse);
+          background: var(--primary-600, #2563eb);
+            color: var(--color-text-inverse, #ffffff);
           border: none;
           padding: 12px 24px;
           border-radius: 4px;
