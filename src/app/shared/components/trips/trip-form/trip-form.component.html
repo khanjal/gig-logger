@@ -12,7 +12,7 @@
           <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)' panelClass="shift-select-panel">
             <mat-select-trigger>
               <ng-container *ngIf="selectedShift; else newShiftLabel">
-                <div class="flex flex-col leading-tight py-0.5">
+                <div class="flex flex-col leading-tight pt-1.5 pb-0.5">
                   <span>{{ selectedShift?.date | date:'E MMM d' }} - {{ (selectedShift?.service ?? '') | truncate:10 }} {{ selectedShift?.number == 0 ? '' : '#' + selectedShift?.number }}</span>
                   <span class="text-secondary text-xs">Qty: {{ selectedShift?.totalTrips }} | Amount: {{ selectedShift?.grandTotal | currency }}</span>
                 </div>
