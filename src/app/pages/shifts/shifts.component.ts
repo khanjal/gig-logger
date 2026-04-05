@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { isDemoSheetName } from '@constants/sheet.constants';
+import { UI_MESSAGES } from '@constants/ui-message.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
@@ -30,6 +31,7 @@ import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
+  protected readonly uiMessages = UI_MESSAGES;
   shifts: IShift[] = [];
   actionEnum = ActionEnum;
   saving: boolean = false;

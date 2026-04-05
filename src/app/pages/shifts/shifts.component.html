@@ -40,7 +40,7 @@
     <div class="h-14"></div>
 
     <div *ngIf="!(showAddForm || editId) && demoSheetAttached" class="mx-4 mt-2 rounded-lg border border-info bg-info-soft px-3 py-2 text-center text-sm text-info">
-      Demo spreadsheet is currently attached. Changes here are synced to the demo sheet.
+      {{ uiMessages.DEMO_SHEET_ATTACHED }}
     </div>
 
     <div *ngIf="showAddForm || editId">

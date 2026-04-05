@@ -5,6 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { isDemoSheetName } from '@constants/sheet.constants';
+import { UI_MESSAGES } from '@constants/ui-message.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 
 import { DateHelper } from '@helpers/date.helper';
@@ -74,6 +75,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
+  protected readonly uiMessages = UI_MESSAGES;
   
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
