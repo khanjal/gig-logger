@@ -187,9 +187,9 @@ describe('SpreadsheetService', () => {
 
       await service.loadSpreadsheetData(sheetData);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Loading Primary Spreadsheet Data');
+      expect(mockSnackBar.open).toHaveBeenCalledWith('Loading Primary Spreadsheet Data', 'Dismiss', jasmine.any(Object));
       expect(mockGigWorkflow.loadData).toHaveBeenCalledWith(sheetData);
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Loaded Primary Spreadsheet Data');
+      expect(mockSnackBar.open).toHaveBeenCalledWith('Loaded Primary Spreadsheet Data', 'Dismiss', jasmine.any(Object));
     });
   });
 
@@ -203,9 +203,9 @@ describe('SpreadsheetService', () => {
 
       await service.appendSpreadsheetData(sheetData);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Loading Secondary Spreadsheet Data');
+      expect(mockSnackBar.open).toHaveBeenCalledWith('Loading Secondary Spreadsheet Data', 'Dismiss', jasmine.any(Object));
       expect(mockGigWorkflow.appendData).toHaveBeenCalledWith(sheetData);
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Loaded Secondary Spreadsheet Data');
+      expect(mockSnackBar.open).toHaveBeenCalledWith('Loaded Secondary Spreadsheet Data', 'Dismiss', jasmine.any(Object));
     });
   });
 });

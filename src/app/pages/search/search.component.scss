@@ -25,7 +25,7 @@
       top: -6px;
       right: -6px;
       background-color: var(--error-500);
-      color: white;
+      color: var(--color-text-inverse);
       border-radius: 50%;
       width: 25px;
       height: 25px;
@@ -35,18 +35,18 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      border: 2px solid white;
+      box-shadow: 0 1px 3px var(--shadow-light);
+      border: 2px solid var(--color-text-inverse);
     }
   }
 
   // Dark mode text tweaks for All/None buttons
   :host-context(html.theme-dark) .all-btn {
-    color: rgb(191 219 254) !important; // blue-200
+    color: var(--primary-200) !important;
   }
 
   :host-context(html.theme-dark) .none-btn {
-    color: rgb(226 232 240) !important; // slate-200
+    color: var(--color-text-secondary) !important;
   }
 
   // Expand/Collapse toggle button
@@ -95,7 +95,7 @@
     background: var(--color-surface) !important;
     color: var(--color-text-primary) !important;
     border: 1px solid var(--color-border) !important;
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 1px 3px var(--shadow-light);
 
     .mat-mdc-option {
       color: var(--color-text-primary) !important;
@@ -170,7 +170,7 @@
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px var(--shadow-light);
     }
 
     mat-icon {
@@ -181,7 +181,7 @@
   }
 
   // Results card hover effects
-  .bg-white {
+  .bg-surface {
     transition: all 0.2s ease;
   }
 
@@ -208,35 +208,6 @@
     }
   }
 
-  // Border color utilities for category colors
-  .border-blue-600 {
-    border-left-color: var(--primary-600);
-  }
-
-  .border-green-600 {
-    border-left-color: var(--success-600);
-  }
-
-  .border-purple-600 {
-    border-left-color: var(--accent-600);
-  }
-
-  .border-orange-600 {
-    border-left-color: var(--warning-600);
-  }
-
-  .border-teal-600 {
-    border-left-color: var(--info-600);
-  }
-
-  .border-pink-600 {
-    border-left-color: var(--accent-500);
-  }
-
-  .border-gray-600 {
-    border-left-color: var(--color-border-dark);
-  }
-
   // Common spacing utilities
   .content-spacing {
     margin-top: 135px;
@@ -246,7 +217,7 @@
   .card {
     background-color: var(--color-surface);
     border-radius: 0.5rem;
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 1px 3px var(--shadow-light);
     overflow: hidden;
   }
 

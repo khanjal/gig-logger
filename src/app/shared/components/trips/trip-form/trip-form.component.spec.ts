@@ -211,6 +211,34 @@ describe('TripFormComponent', () => {
     expect(component.tripForm.controls.dropoffTime.value).toBe('10:00');
   });
 
+  it('addTrip should use selected previous-day shift when shift control is set and not create a new shift', async () => {
+    const oldShift: IShift = { key: '2026-03-25_1', date: '2026-03-25', service: 'DoorDash', rowId: 99 } as any;
+
+    // No today's shifts returned
+    shiftService.query.and.callFake(async (field: string, value: any) => []);
+
+    // Ensure tripService will accept adds
+    tripService.getMaxRowId.and.returnValue(Promise.resolve(100));
+    tripService.add.and.returnValue(Promise.resolve());
+
+    // Set the form to use an existing (previous-day) shift
+    component.tripForm.controls.shift.setValue(oldShift);
+
+    // Reset any previous calls
+    shiftService.add.calls.reset();
+    tripService.add.calls.reset();
+
+    await component.addTrip();
+
+    // Should not have created a new shift
+    expect(shiftService.add).not.toHaveBeenCalled();
+
+    // Trip should have been added and associated with the provided shift key
+    expect(tripService.add).toHaveBeenCalled();
+    const addedTrip = tripService.add.calls.argsFor(0)[0] as any;
+    expect(addedTrip.key).toBe(oldShift.key);
+  });
+
   it('close should emit editModeExit when in edit mode', () => {
     const emitted: any[] = [];
     component.isInEditMode = true;

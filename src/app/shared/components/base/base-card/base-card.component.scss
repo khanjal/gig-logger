@@ -17,12 +17,17 @@
   }
 
   &.card-elevated {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 
-                0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px var(--shadow-light), 
+                0 1px 3px var(--shadow-medium);
   }
 
   &.card-outlined {
     border: 1.5px solid var(--color-border);
+  }
+
+  &.card-warning {
+    border-left: 4px solid var(--color-warning, var(--warning-500));
+    background: linear-gradient(90deg, color-mix(in srgb, var(--color-warning) 6%, var(--color-surface)), transparent);
   }
 
   // =========================================================================

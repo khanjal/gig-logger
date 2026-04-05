@@ -1,5 +1,7 @@
 import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from './spreadsheet.service';
 import { UnsavedDataService } from './unsaved-data.service';
 import { TripService } from './sheets/trip.service';
@@ -13,6 +15,7 @@ import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { BehaviorSubject } from 'rxjs';
+import { AuthGoogleService } from './auth-google.service';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
 
@@ -28,6 +31,7 @@ export class PollingService implements OnDestroy {
   private processing = false;
   private currentInterval = DEFAULT_INTERVAL;
   private lastPollTime = 0;
+  private lastSnackbarTime = 0;
   private visibilityChangeListener: (() => void) | null = null;
   private enabledState = new BehaviorSubject<boolean>(false);
 
@@ -42,7 +46,8 @@ export class PollingService implements OnDestroy {
     private _unsavedDataService: UnsavedDataService,
     private _gigWorkflowService: GigWorkflowService,
     private _syncStatusService: SyncStatusService,
-    private _logger: LoggerService
+    private _logger: LoggerService,
+    protected authService: AuthGoogleService
   ) {
     this.initializeWorker();
     this.setupVisibilityChangeListener();
@@ -251,6 +256,31 @@ export class PollingService implements OnDestroy {
         return;
       }
 
+      // Ensure we're authenticated and able to sync before attempting autosave
+      try {
+        const canSync = await this.authService.canSync();
+        if (!canSync) {
+          this.safeLog('info', 'Not authenticated - skipping autosave');
+          // Throttle repeated snackbars so users aren't spammed if autosave runs frequently
+          try {
+            const now = Date.now();
+            const THROTTLE_MS = 15 * 60 * 1000; // 15 minutes
+            if (now - this.lastSnackbarTime > THROTTLE_MS) {
+              this.lastSnackbarTime = now;
+              openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED);
+            }
+          } catch (e) {
+            // swallow snackbar errors to avoid breaking autosave
+          }
+          this._syncStatusService.failSync('Not authenticated');
+          return;
+        }
+      } catch (err) {
+        this.safeLog('warn', 'Auth check failed, skipping autosave', err);
+        this._syncStatusService.failSync('Auth check failed');
+        return;
+      }
+
       this.safeLog('info', `Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
 
       // Pre-calculate totals for unsaved shifts before saving
@@ -311,14 +341,14 @@ export class PollingService implements OnDestroy {
         this._syncStatusService.failSync(errorMsg);
         
         // Show snackbar for errors
-        this._snackBar.open("Auto-save completed with errors", "View Details", { duration: 5000 });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_COMPLETED_WITH_ERRORS, { action: "View Details" });
       }
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this.safeLog('error', 'Auto-save failed:', error);
       this._syncStatusService.failSync(errorMsg);
-      this._snackBar.open("Auto-save failed - data remains unsaved", undefined, { duration: 5000 });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_FAILED_UNSAVED);
     } finally {
       this.processing = false;
       // Only restart countdown if polling is still enabled

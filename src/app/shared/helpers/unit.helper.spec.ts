@@ -98,15 +98,15 @@ describe('UnitHelper', () => {
   });
 
   // Future enhancement tests (currently these would fail but document expected behavior)
-  describe('Future enhancements (Issue #353)', () => {
+  describe('Future enhancements (Issue 353)', () => {
     it('should convert miles to kilometers when preference is km', () => {
       // TODO: Enable when user preferences are implemented
-      // This test documents the expected behavior for #353
+      // This test documents the expected behavior for issue 353
       // const distanceInMiles = 10;
       // spyOn(UnitHelper, 'getPreferredDistanceUnit').and.returnValue('km');
       // const converted = UnitHelper.convertDistance(distanceInMiles);
       // expect(converted).toBeCloseTo(16.0934, 4); // 10 miles = ~16.09 km
-      pending('User preference system not yet implemented (Issue #353)');
+      pending('User preference system not yet implemented (Issue 353)');
     });
 
     it('should format with km unit when preference is km', () => {
@@ -114,7 +114,7 @@ describe('UnitHelper', () => {
       // spyOn(UnitHelper, 'getPreferredDistanceUnit').and.returnValue('km');
       // const result = UnitHelper.formatDistance(10);
       // expect(result).toContain(' km');
-      pending('User preference system not yet implemented (Issue #353)');
+      pending('User preference system not yet implemented (Issue 353)');
     });
 
     it('should persist preference to localStorage', () => {
@@ -122,7 +122,7 @@ describe('UnitHelper', () => {
       // spyOn(localStorage, 'setItem');
       // UnitHelper.setPreferredDistanceUnit('km');
       // expect(localStorage.setItem).toHaveBeenCalledWith('preferredDistanceUnit', 'km');
-      pending('LocalStorage persistence not yet implemented (Issue #353)');
+      pending('LocalStorage persistence not yet implemented (Issue 353)');
     });
 
     it('should read preference from localStorage', () => {
@@ -130,7 +130,7 @@ describe('UnitHelper', () => {
       // spyOn(localStorage, 'getItem').and.returnValue('km');
       // const unit = UnitHelper.getPreferredDistanceUnit();
       // expect(unit).toBe('km');
-      pending('LocalStorage reading not yet implemented (Issue #353)');
+      pending('LocalStorage reading not yet implemented (Issue 353)');
     });
   });
 });

@@ -160,6 +160,18 @@ describe('SearchService', () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
+  it('returns empty array when searchMultipleCategories has no categories', async () => {
+    const result = await service.searchMultipleCategories('uber', []);
+
+    expect(result).toEqual([]);
+  });
+
+  it('returns empty array when searchMultipleCategories term is blank', async () => {
+    const result = await service.searchMultipleCategories('   ', ['Service']);
+
+    expect(result).toEqual([]);
+  });
+
   it('handles case-insensitive search by default', async () => {
     const trips = [makeTrip({ place: 'TARGET' })];
     (spreadsheetDB.trips.toArray as jasmine.Spy).and.resolveTo(trips);

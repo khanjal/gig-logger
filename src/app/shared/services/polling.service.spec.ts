@@ -9,6 +9,9 @@ import { ExpensesService } from './sheets/expenses.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
+import { AuthGoogleService } from './auth-google.service';
+import { ApiMessageHelper } from '@helpers/api-message.helper';
+import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 
 describe('PollingService', () => {
   let service: PollingService;
@@ -21,10 +24,11 @@ describe('PollingService', () => {
   let shiftServiceSpy: jasmine.SpyObj<ShiftService>;
   let expensesServiceSpy: jasmine.SpyObj<ExpensesService>;
   let gigWorkflowSpy: jasmine.SpyObj<GigWorkflowService>;
+  let authSpy: jasmine.SpyObj<AuthGoogleService>;
 
   beforeEach(() => {
     const logger = jasmine.createSpyObj('LoggerService', ['info', 'warn', 'error', 'debug']);
-    const unsaved = jasmine.createSpyObj('UnsavedDataService', ['getUnsavedCounts']);
+    const unsaved = jasmine.createSpyObj('UnsavedDataService', ['getUnsavedCounts', 'markAllAsSaved']);
     const syncStatus = jasmine.createSpyObj('SyncStatusService', [
       'startCountdown',
       'stopCountdown',
@@ -42,6 +46,12 @@ describe('PollingService', () => {
       'calculateShiftTotals',
       'saveSheetData'
     ]);
+    const auth = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
+    auth.canSync.and.returnValue(Promise.resolve(true));
+    sheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'sheet1', name: 'Default' }]));
+    tripService.getUnsaved.and.returnValue(Promise.resolve([]));
+    shiftService.getUnsavedShifts.and.returnValue(Promise.resolve([]));
+    expensesService.getUnsaved.and.returnValue(Promise.resolve([]));
 
     TestBed.configureTestingModule({
       providers: [
@@ -55,6 +65,7 @@ describe('PollingService', () => {
         { provide: ShiftService, useValue: shiftService },
         { provide: ExpensesService, useValue: expensesService },
         { provide: GigWorkflowService, useValue: gigWorkflow }
+        , { provide: AuthGoogleService, useValue: auth }
       ]
     });
 
@@ -68,6 +79,7 @@ describe('PollingService', () => {
     shiftServiceSpy = TestBed.inject(ShiftService) as jasmine.SpyObj<ShiftService>;
     expensesServiceSpy = TestBed.inject(ExpensesService) as jasmine.SpyObj<ExpensesService>;
     gigWorkflowSpy = TestBed.inject(GigWorkflowService) as jasmine.SpyObj<GigWorkflowService>;
+    authSpy = TestBed.inject(AuthGoogleService) as jasmine.SpyObj<AuthGoogleService>;
   });
 
   afterEach(() => {
@@ -352,6 +364,53 @@ describe('PollingService', () => {
       }
 
       expect(service['lastPollTime']).toBeGreaterThanOrEqual(beforeTime);
+    });
+  });
+
+  describe('Save Flow', () => {
+    beforeEach(() => {
+      // Ensure document is visible for save tests
+      Object.defineProperty(document, 'visibilityState', {
+        writable: true,
+        configurable: true,
+        value: 'visible'
+      });
+    });
+
+    it('should skip save when there is no unsaved data', async () => {
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 0, trips: 0, shifts: 0, expenses: 0 } as any));
+
+      await service.forceSave();
+
+      expect(loggerSpy.info).toHaveBeenCalledWith('No unsaved data to sync');
+    });
+
+    it('should show snackbar when not authenticated', async () => {
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 2, trips: 1, shifts: 1, expenses: 0 } as any));
+      authSpy.canSync.and.returnValue(Promise.resolve(false));
+
+      await service.forceSave();
+
+      expect(snackBarSpy.open).toHaveBeenCalled();
+      expect(syncStatusSpy.failSync).toHaveBeenCalledWith('Not authenticated');
+    });
+
+    it('should save and mark items as saved when backend returns success', async () => {
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 3, trips: 1, shifts: 1, expenses: 1 } as any));
+      authSpy.canSync.and.returnValue(Promise.resolve(true));
+
+      // Spy serializer to avoid complex transformations
+      spyOn(SheetSerializerHelper, 'serializeTrips').and.returnValue([]);
+      spyOn(SheetSerializerHelper, 'serializeShifts').and.returnValue([]);
+
+      const fakeMessages: any[] = [];
+      gigWorkflowSpy.saveSheetData.and.returnValue(Promise.resolve(fakeMessages));
+      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
+
+      await service.forceSave();
+
+      expect(unsavedDataSpy.markAllAsSaved).toHaveBeenCalled();
+      expect(syncStatusSpy.completeSync).toHaveBeenCalled();
     });
   });
 });

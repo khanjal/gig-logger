@@ -3,6 +3,8 @@ import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 
 import { DateHelper } from '@helpers/date.helper';
 
@@ -36,6 +38,7 @@ import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trip
 import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { AuthGoogleService } from '@services/auth-google.service';
 
 @Component({
     selector: 'app-trip',
@@ -76,9 +79,7 @@ export class TripComponent implements OnInit, OnDestroy {
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
-      private _gigLoggerService: GigWorkflowService,
       private _sheetService: SpreadsheetService,
-      private _shiftService: ShiftService,
       private _tripService: TripService,
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
@@ -86,7 +87,8 @@ export class TripComponent implements OnInit, OnDestroy {
       private _uiPreferences: UiPreferencesService,
       private logger: LoggerService,
       private _route: ActivatedRoute,
-      private _router: Router
+      private _router: Router,
+      protected authService: AuthGoogleService
     ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
@@ -191,6 +193,12 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async loadSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     let dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
@@ -204,6 +212,12 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async saveSheetDialog(inputValue: string) {
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_SYNC_CHANGES, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
+    }
+
     this.saving = true;
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
@@ -213,7 +227,7 @@ export class TripComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async result => {
       try {
         if (result) {
-          this._snackBar.open("Trip(s) Saved to Spreadsheet");
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
           await this.reload("todaysTrips");
           this._viewportScroller.scrollToAnchor("todaysTrips");
         }

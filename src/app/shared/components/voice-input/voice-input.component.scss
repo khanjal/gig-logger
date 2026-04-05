@@ -11,7 +11,7 @@ button {
   z-index: 999; // Lower than back-to-top (1000) so back-to-top appears on top when scrolled on small screens
   width: 56px;
   height: 56px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-medium);
 
   &:active {
     transform: scale(0.95);
@@ -30,10 +30,10 @@ button {
   left: 16px;
   max-width: 400px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--color-surface);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-medium);
   z-index: 998; // Below voice button (999) and back-to-top (1000)
   animation: slideUp 0.3s ease-out;
   backdrop-filter: blur(10px);
@@ -49,8 +49,8 @@ button {
   background: var(--color-surface);
 
   &.recognizing {
-    border: 2px solid #1976d2; // Blue border when actively listening
-    background: rgba(25, 118, 210, 0.05);
+    border: 2px solid var(--color-border-active);
+    background: var(--color-primary-overlay-5);
   }
 }
 

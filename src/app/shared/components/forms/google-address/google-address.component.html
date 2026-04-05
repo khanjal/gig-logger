@@ -1,6 +1,6 @@
 <div class="address-container">
   <form [formGroup]="addressForm">
-      <mat-form-field class="field-full-width" appearance="outline">
+      <mat-form-field class="field-full-width rg-field-shell" appearance="fill">
           <mat-label>Search Address</mat-label>
           <input type="text"
               name="address"
@@ -11,9 +11,15 @@
               (focus)="onInputFocus()"
               (blur)="onInputBlur()"
               #address />
-          <button type="button" *ngIf="address.value" matSuffix aria-label="Clear Address" appBaseButton [appBaseButtonFab]="true" appBaseButtonFabStyle="mini" (appBaseButtonClicked)="addressForm.controls.address.setValue('')" class="h-8 w-8 flex items-center justify-center">
-            <mat-icon class="text-[var(--error-500)]">clear</mat-icon>
-          </button>
+          <app-base-icon-button
+            matSuffix
+            [icon]="'clear'"
+            [iconColor]="'var(--error-500)'"
+            aria-label="Clear Address"
+            class="h-8 w-8"
+            [style.visibility]="address.value ? 'visible' : 'hidden'"
+            (clicked)="addressForm.controls.address.setValue('')">
+          </app-base-icon-button>
       </mat-form-field>
   </form>
   

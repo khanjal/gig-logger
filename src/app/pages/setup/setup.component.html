@@ -1,12 +1,24 @@
-<div class="page-container container flex flex-col min-h-screen md:p-8 lg:p-12 text-gray-800 dark:text-gray-200">
+<div class="page-container container flex flex-col min-h-screen md:p-8 lg:p-12 text-secondary">
   <h1 class="text-3xl font-bold">Setup</h1>
+
+  <div class="mb-4" *ngIf="spreadsheets?.length && !isAuthenticated">
+    <app-base-card title="Local-only mode" variant="warning" padding="sm">
+      <div class="flex items-start gap-3">
+        <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">info</mat-icon>
+        <div>
+          <div class="font-medium">Signed out or offline</div>
+          <div class="text-sm">You're currently signed out but your spreadsheet data is still present on this device. Please sign back in to sync and continue; your data has not been deleted.</div>
+        </div>
+      </div>
+    </app-base-card>
+  </div>
 
   <div class="mb-6">
     <app-login></app-login>
   </div>
 
-  <ng-container *ngIf="isAuthenticated">
-    <app-base-card title="Set Up Your Spreadsheet" variant="default" padding="md" class="mb-6" *ngIf="!spreadsheets?.length">
+  <ng-container>
+    <app-base-card title="Set Up Your Spreadsheet" variant="default" padding="md" class="mb-6" *ngIf="!spreadsheets?.length && isAuthenticated">
       <div class="flex flex-col gap-4">
         <app-sheet-link (parentReload)="reload()"></app-sheet-link>
         <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
@@ -17,11 +29,11 @@
       <div *ngFor="let spreadsheet of spreadsheets" class="mb-4">
         <app-sheet-quick-view [spreadsheet]="spreadsheet"></app-sheet-quick-view>
         <div class="flex flex-row justify-between items-center gap-2 mt-2">
-          <app-base-rect-button variant="primary" [icon]="'refresh'" [loading]="reloading" [disabled]="reloading || unsavedData" (clicked)="reload()" *ngIf="spreadsheet.default === 'true'" [label]="'Reload Data'"></app-base-rect-button>
+          <app-base-rect-button variant="primary" [icon]="'refresh'" [loading]="reloading" [disabled]="!isAuthenticated || reloading || unsavedData" (clicked)="reload()" *ngIf="spreadsheet.default === 'true'" [label]="'Reload Data'"></app-base-rect-button>
           <app-base-rect-button variant="primary" [icon]="'schedule'" [loading]="setting" [disabled]="setting || reloading || unsavedData" (clicked)="setDefault(spreadsheet)" *ngIf="spreadsheet.default === 'false'" [label]="'Set Default'"></app-base-rect-button>
           <app-base-rect-button variant="danger" [icon]="'link_off'" [loading]="deleting" [disabled]="deleting || reloading || unsavedData" (clicked)="confirmUnlinkSpreadsheetDialog(spreadsheet)" [label]="'Unlink'"></app-base-rect-button>
         </div>
-        <div *ngIf="unsavedData" class="mt-2 text-sm text-orange-600 dark:text-orange-400 flex items-start gap-2 py-1">
+          <div *ngIf="unsavedData" class="mt-2 text-sm text-warning flex items-start gap-2 py-1">
           <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
           <span class="flex-1">Actions disabled due to unsaved changes. Use the <strong>Refresh Data</strong> or <strong>Delete Data</strong> buttons at the bottom to override (you will lose unsaved changes).</span>
         </div>
@@ -39,7 +51,7 @@
     </div>
   </ng-container>
 
-  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
+  <div class="mb-6 bg-surface text-secondary rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
     <app-permissions></app-permissions>
   </div>
 
@@ -53,7 +65,7 @@
     <app-service-worker-status></app-service-worker-status>
   </app-base-card>
 
-  <div class="mb-6 bg-surface text-gray-800 dark:text-gray-200 rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
+  <div class="mb-6 bg-surface text-secondary rounded-lg shadow-sm border border-soft" *ngIf="showAdvanced">
     <app-auth-status></app-auth-status>
   </div>
 

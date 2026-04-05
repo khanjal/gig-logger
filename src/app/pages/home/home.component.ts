@@ -29,7 +29,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   isUpdateAvailable = false;
   showUpdateNotification = false;
   private deferredPrompt: any;
-  private updateStatusSubscription: Subscription | undefined;  async ngOnInit() {
+  private updateStatusSubscription: Subscription | undefined;
+
+  async ngOnInit() {
     // Subscribe to app update status
     this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
       (status: IAppUpdateStatus) => {
@@ -67,9 +69,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   private evaluateStartLoggingButton(): void {
     // Show "Start Logging" button if user is authenticated, has default sheet, and no update is pending
     this.showStartLoggingButton = this.isAuthenticated && this.hasDefaultSheet && !this.showUpdateNotification;
-  }  private async checkUserStatus() {
+  }
+
+  private async checkUserStatus() {
     try {
-      this.isAuthenticated = await this.authService.isAuthenticated();
+      this.isAuthenticated = await this.authService.canSync();
       
       if (this.isAuthenticated) {
         // Check if user has a default spreadsheet

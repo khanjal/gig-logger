@@ -3,6 +3,8 @@ import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
+import { openSnackbar } from '@utils/snackbar.util';
 import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import { ISheet } from '@interfaces/sheet.interface';
@@ -91,16 +93,16 @@ export class SpreadsheetService {
     }
 
     public async loadSpreadsheetData(data: ISheet) {
-        this._snackBar.open("Loading Primary Spreadsheet Data");
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADING_PRIMARY_SPREADSHEET);
         
-        await this._gigLoggerService.loadData(<ISheet>data);
-        this._snackBar.open("Loaded Primary Spreadsheet Data");
+            await this._gigLoggerService.loadData(<ISheet>data);
+                openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADED_PRIMARY_SPREADSHEET);
     }
 
     public async appendSpreadsheetData(data: ISheet) {
-        this._snackBar.open("Loading Secondary Spreadsheet Data");
-        await this._gigLoggerService.appendData(<ISheet>data);
-        this._snackBar.open("Loaded Secondary Spreadsheet Data");
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADING_SECONDARY_SPREADSHEET);
+            await this._gigLoggerService.appendData(<ISheet>data);
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADED_SECONDARY_SPREADSHEET);
     }
 
     private async updateSheetInfo(sheetId: string, data: any){

@@ -38,13 +38,13 @@
       font-weight: 500;
       font-size: 0.9rem;
       transition: all 0.3s ease;
-      box-shadow: var(--shadow-light);
+      box-shadow: 0 1px 3px var(--shadow-light);
       min-height: 44px; // Touch target
       
       &:hover {
         background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-800) 100%);
         transform: translateY(-2px);
-        box-shadow: var(--shadow-medium);
+        box-shadow: 0 2px 8px var(--shadow-medium);
       }
       
       &:active {
@@ -67,7 +67,7 @@
     margin-bottom: 1.5rem;
     background: var(--color-surface);
     border-radius: 1rem;
-    box-shadow: var(--shadow-light), var(--shadow-sm);
+    box-shadow: 0 1px 3px var(--shadow-light), 0 1px 2px var(--shadow-medium);
     border: 1px solid var(--color-border-light);
     overflow: hidden;
     
@@ -134,11 +134,11 @@
     transition: all 0.3s ease;
     overflow-wrap: break-word;
     word-break: break-word;
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 1px 3px var(--shadow-light);
     
     &:hover {
       background: linear-gradient(135deg, color-mix(in srgb, var(--primary-500) 10%, transparent) 0%, color-mix(in srgb, var(--accent-500) 5%, transparent) 100%);
-      box-shadow: var(--shadow-medium);
+      box-shadow: 0 2px 8px var(--shadow-medium);
       transform: translateY(-2px);
       border-color: var(--primary-200);
     }
