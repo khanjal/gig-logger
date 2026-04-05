@@ -14,6 +14,7 @@ import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
+import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // Application-specific imports - Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -27,7 +28,7 @@ import { NgFor, NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 // Define types for better type safety
-type SyncType = 'save' | 'load';
+type SyncType = 'save' | 'load' | 'create-demo';
 type MessageType = 'info' | 'warning' | 'error';
 
 interface TerminalMessage {
@@ -115,15 +116,19 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit(): Promise<void> {
-        this.defaultSheet = await this._sheetService.getDefaultSheet();
-        await this.warmup(0);
-
         switch (this.type) {
             case 'save':
+                this.defaultSheet = await this._sheetService.getDefaultSheet();
+                await this.warmup(0);
                 await this.saveData();
                 break;
             case 'load':
+                this.defaultSheet = await this._sheetService.getDefaultSheet();
+                await this.warmup(0);
                 await this.getData();
+                break;
+            case 'create-demo':
+                await this.createDemoAndLoad();
                 break;
             default:
                 this.appendToTerminal(`Invalid type: ${this.type}`, 'error');
@@ -191,6 +196,70 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         await this._expensesService.saveUnsaved();
 
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
+    }
+
+    private async createDemoAndLoad() {
+        this.startTimer(0);
+
+        // Step 1: Create spreadsheet file
+        this.appendToTerminal('Creating demo spreadsheet file...');
+        const timestamp = new Date().toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        const sheetProperties: ISheetProperties = {
+            id: '',
+            name: `RaptorGig Demo - ${timestamp}`
+        };
+
+        const createdFile = await this._gigLoggerService.createFile(sheetProperties);
+        if (!createdFile?.id) {
+            this.processFailure('ERROR');
+            return;
+        }
+        this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
+
+        // Step 2: Make the new sheet the only default in local DB
+        this.time = this.currentTime;
+        this.appendToTerminal('Linking spreadsheet locally...');
+        const existingSheets = await this._sheetService.getSpreadsheets();
+        for (const existingSheet of existingSheets) {
+            if (existingSheet.default === 'true') {
+                existingSheet.default = 'false';
+                await this._sheetService.update(existingSheet);
+            }
+        }
+
+        const createdSpreadsheet: ISpreadsheet = {
+            id: createdFile.id,
+            name: createdFile.name || sheetProperties.name,
+            default: 'true',
+            size: 0
+        };
+        await this._sheetService.add(createdSpreadsheet);
+        this.defaultSheet = createdSpreadsheet;
+        this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
+
+        // Step 3: Create backing sheets
+        this.time = this.currentTime;
+        this.appendToTerminal('Creating sheets...');
+        await this._gigLoggerService.createSheet(createdFile.id);
+        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+        // Step 4: Insert demo data
+        this.time = this.currentTime;
+        this.appendToTerminal('Inserting demo data...');
+        await this._gigLoggerService.insertDemoData(createdFile.id);
+        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+        // Step 5: Continue through normal warmup + get/load sync path
+        await this.warmup(this.currentTime);
+        await this.getData();
     }
 
     private async getData() {

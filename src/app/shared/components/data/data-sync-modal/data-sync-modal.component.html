@@ -3,7 +3,7 @@
         <div class="sync-terminal bg-surface-2 dark:bg-surface-3 rounded-md p-4 mb-4 text-secondary font-mono text-sm overflow-y-auto h-80" #terminal>
             <div class="flex mb-1 items-start">
                 <span class="text-success whitespace-nowrap w-10">00:00</span>
-                <span class="ml-2 text-success flex-1">Please wait while your data is {{ type === 'save' ? 'saved' : 'loaded' }}.</span>
+                <span class="ml-2 text-success flex-1">Please wait while your data is {{ type === 'save' ? 'saved' : type === 'create-demo' ? 'created and loaded' : 'loaded' }}.</span>
             </div>
             <div class="flex mb-1 items-start">
                 <span class="text-success whitespace-nowrap w-10">00:00</span>
