@@ -9,6 +9,7 @@ import { map, Subscription, timer } from 'rxjs';
 import { DateHelper } from '@helpers/date.helper';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
+import { SHEET_CONSTANTS } from '@constants/sheet.constants';
 
 // Application-specific imports - Interfaces
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
@@ -214,7 +215,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
         const sheetProperties: ISheetProperties = {
             id: '',
-            name: `RaptorGig Demo - ${timestamp}`
+            name: `${SHEET_CONSTANTS.DEMO_NAME_PREFIX} - ${timestamp}`
         };
 
         const createdFile = await this._gigLoggerService.createFile(sheetProperties);

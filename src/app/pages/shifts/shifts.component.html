@@ -39,6 +39,10 @@
     </div>
     <div class="h-14"></div>
 
+    <div *ngIf="!(showAddForm || editId) && demoSheetAttached" class="mx-4 mt-2 rounded-lg border border-info bg-info-soft px-3 py-2 text-center text-sm text-info">
+      Demo spreadsheet is currently attached. Changes here are synced to the demo sheet.
+    </div>
+
     <div *ngIf="showAddForm || editId">
         <shift-form 
           [rowId]="editId"
@@ -49,7 +53,7 @@
 
     <div *ngIf="!(showAddForm || editId)" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
       <!-- Empty state: show message and add button when there are no shifts -->
-      <div *ngIf="(shifts?.length ?? 0) === 0" class="pt-12 text-center">
+      <div *ngIf="shifts.length === 0" class="pt-12 text-center">
         <p class="text-lg text-secondary mb-4">You have no shifts yet. Add your first shift to get started, or add a trip and a shift will be created for it automatically.</p>
         <app-base-rect-button
           variant="primary"

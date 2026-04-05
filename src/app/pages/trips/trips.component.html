@@ -19,6 +19,12 @@
         </trip-form>
     </div>
 
+    @if (!isEditMode && demoSheetAttached) {
+        <div class="mx-4 mt-3 rounded-lg border border-info bg-info-soft px-3 py-2 text-center text-sm text-info">
+            Demo spreadsheet is currently attached. Changes here are synced to the demo sheet.
+        </div>
+    }
+
     @if (unsavedData && !pollingEnabled && !isEditMode) {
         <div class="flex justify-center my-4 w-full">
             <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || defaultSheet?.id === demoSheetId" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>

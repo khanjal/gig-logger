@@ -22,6 +22,7 @@ describe('TripComponent', () => {
   beforeEach(async () => {
     const mockPollingService = jasmine.createSpyObj('PollingService', ['startPolling','stopPolling'], { pollingEnabled$: new BehaviorSubject(false).asObservable() });
     const viewportSpy = jasmine.createSpyObj('ViewportScroller', ['scrollToAnchor']);
+    mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([] as any));
 
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, MatDialogModule, MatSnackBarModule, TripComponent],
@@ -77,5 +78,21 @@ describe('TripComponent', () => {
     const viewport = TestBed.inject(ViewportScroller);
     component.scrollToTrip('nonexistent');
     expect(viewport.scrollToAnchor).toHaveBeenCalled();
+  });
+
+  it('refreshes demoSheetAttached based on default sheet name format', async () => {
+    mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
+      { id: 'any-id', name: 'RaptorGig Demo - Apr 5, 2026, 5:20 PM', default: 'true', size: 0 }
+    ] as any));
+
+    await component.ngOnInit();
+    expect(component.demoSheetAttached).toBeTrue();
+
+    mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
+      { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
+    ] as any));
+
+    await component.reload();
+    expect(component.demoSheetAttached).toBeFalse();
   });
 });

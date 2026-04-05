@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { isDemoSheetName } from '@constants/sheet.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
@@ -11,12 +12,15 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
 import { NgClass, NgIf } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { environment } from 'src/environments/environment';
+import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 @Component({
     selector: 'app-shifts',
@@ -27,6 +31,7 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
+  demoSheetId = environment.demoSheet;
   shifts: IShift[] = [];
   actionEnum = ActionEnum;
   saving: boolean = false;
@@ -37,12 +42,15 @@ export class ShiftsComponent implements OnInit {
   isLoading: boolean = false; // Prevent multiple simultaneous requests
   noMoreData: boolean = false; // Stop loading if all data is loaded
   showAddForm = false; // Control the visibility of the add form
+  defaultSheet: ISpreadsheet | undefined;
+  demoSheetAttached: boolean = false;
 
   editId: string | null = null; // ID of the shift being edited, if any
 
   constructor(
     public dialog: MatDialog, 
     private _shiftService: ShiftService,
+    private _sheetService: SpreadsheetService,
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
@@ -70,6 +78,8 @@ export class ShiftsComponent implements OnInit {
     this.currentPage++;
     this.isLoading = false;
     this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+    this.defaultSheet = (await this._sheetService.querySpreadsheets('default', 'true'))[0];
+    this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
     // If there are no shifts at all, open the add form by default so users can create one.
     if ((this.shifts ?? []).length === 0) {
       this.showAddForm = true;

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { isDemoSheetName } from '@constants/sheet.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 
 import { DateHelper } from '@helpers/date.helper';
@@ -69,6 +70,7 @@ export class TripComponent implements OnInit, OnDestroy {
   todaysTrips: ITrip[] = [];
   yesterdaysTrips: ITrip[] = [];
   unsavedData: boolean = false;
+  demoSheetAttached: boolean = false;
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
@@ -126,7 +128,7 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.startPolling();
       }
     }
-    this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    await this.refreshDefaultSheetState();
     
     // Load trip data for editing if in edit mode
     if (this.isEditMode && this.editingTripId) {
@@ -287,6 +289,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async reload(anchor?: string, isParentReload: boolean = false) {
+    await this.refreshDefaultSheetState();
     let sheetId = this.defaultSheet?.id;
     if (!sheetId) {
       return;
@@ -373,5 +376,10 @@ export class TripComponent implements OnInit, OnDestroy {
 
   shouldShowUpdateMessage(): boolean {
     return !(this.todaysTrips && this.todaysTrips.length > 0);
+  }
+
+  private async refreshDefaultSheetState(): Promise<void> {
+    this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
   }
 }
