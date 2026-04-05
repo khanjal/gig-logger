@@ -19,7 +19,6 @@ import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.com
 import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import { environment } from 'src/environments/environment';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 @Component({
@@ -31,7 +30,6 @@ import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 })
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
-  demoSheetId = environment.demoSheet;
   shifts: IShift[] = [];
   actionEnum = ActionEnum;
   saving: boolean = false;
@@ -69,20 +67,23 @@ export class ShiftsComponent implements OnInit {
     if (this.isLoading || this.noMoreData) return;
 
     this.isLoading = true;
-    // Use 'rowId' as the sort field and 'desc' for reverse order
-    const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize, 'rowId', 'desc');
-    if (newShifts.length < this.pageSize) {
-      this.noMoreData = true;
-    }
-    this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
-    this.currentPage++;
-    this.isLoading = false;
-    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
-    this.defaultSheet = (await this._sheetService.querySpreadsheets('default', 'true'))[0];
-    this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
-    // If there are no shifts at all, open the add form by default so users can create one.
-    if ((this.shifts ?? []).length === 0) {
-      this.showAddForm = true;
+    try {
+      // Use 'rowId' as the sort field and 'desc' for reverse order
+      const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize, 'rowId', 'desc');
+      if (newShifts.length < this.pageSize) {
+        this.noMoreData = true;
+      }
+      this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
+      this.currentPage++;
+      this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+      this.defaultSheet = (await this._sheetService.querySpreadsheets('default', 'true'))[0];
+      this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
+      // If there are no shifts at all, open the add form by default so users can create one.
+      if ((this.shifts ?? []).length === 0) {
+        this.showAddForm = true;
+      }
+    } finally {
+      this.isLoading = false;
     }
   }
 

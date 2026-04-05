@@ -126,4 +126,19 @@ describe('DataSyncModalComponent', () => {
     expect(sheetSpy.warmUpLambda).not.toHaveBeenCalled();
     expect(dialogRefSpy.close).not.toHaveBeenCalled();
   });
+
+  it('create-demo flow should handle unexpected errors and keep modal open', async () => {
+    workflowSpy.createFile.and.resolveTo({ id: 'new-demo-id', name: 'Demo' } as any);
+    sheetSpy.getSpreadsheets.and.resolveTo([] as any);
+    sheetSpy.add.and.resolveTo();
+    workflowSpy.createSheet.and.rejectWith(new Error('create sheet failed'));
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    expect(loggerSpy.error).toHaveBeenCalled();
+    expect(dialogRefSpy.close).not.toHaveBeenCalled();
+  });
 });

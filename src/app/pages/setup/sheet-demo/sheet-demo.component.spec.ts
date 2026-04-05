@@ -5,7 +5,9 @@ import { SheetDemoComponent } from './sheet-demo.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { LoggerService } from '@services/logger.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { throwError } from 'rxjs';
 
 describe('SheetDemoComponent', () => {
   let component: SheetDemoComponent;
@@ -14,11 +16,13 @@ describe('SheetDemoComponent', () => {
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let authSpy: jasmine.SpyObj<AuthGoogleService>;
+  let loggerSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(async () => {
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
+    loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug']);
 
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, SheetDemoComponent],
@@ -26,7 +30,8 @@ describe('SheetDemoComponent', () => {
         ...commonTestingProviders,
         { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: MatDialog, useValue: dialogSpy },
-        { provide: AuthGoogleService, useValue: authSpy }
+        { provide: AuthGoogleService, useValue: authSpy },
+        { provide: LoggerService, useValue: loggerSpy }
       ]
     })
     .compileComponents();
@@ -86,5 +91,21 @@ describe('SheetDemoComponent', () => {
     expect(dialogSpy.open).toHaveBeenCalled();
     expect(component.creatingDemo).toBeFalse();
     expect(component.parentReload.emit).not.toHaveBeenCalled();
+  });
+
+  it('createDemoSheet - shows error snackbar when modal flow fails', async () => {
+    authSpy.canSync.and.resolveTo(true);
+    dialogSpy.open.and.returnValue({
+      afterClosed: () => throwError(() => new Error('dialog failed'))
+    } as any);
+
+    spyOn(component.parentReload, 'emit');
+
+    await component.createDemoSheet();
+
+    expect(loggerSpy.error).toHaveBeenCalled();
+    expect(snackBarSpy.open).toHaveBeenCalled();
+    expect(component.parentReload.emit).not.toHaveBeenCalled();
+    expect(component.creatingDemo).toBeFalse();
   });
 });

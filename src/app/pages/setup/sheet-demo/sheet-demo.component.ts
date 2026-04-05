@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { LoggerService } from '@services/logger.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { firstValueFrom } from 'rxjs';
@@ -32,6 +33,7 @@ export class SheetDemoComponent {
   constructor(
     private _dialog: MatDialog,
     private _snackBar: MatSnackBar,
+    private _logger: LoggerService,
     protected authService: AuthGoogleService
   ) { }
 
@@ -55,6 +57,9 @@ export class SheetDemoComponent {
         this.parentReload.emit();
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_CREATED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       }
+    } catch (error) {
+      this._logger.error('Error creating demo spreadsheet', error);
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_ERROR, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     } finally {
       this.creatingDemo = false;
     }

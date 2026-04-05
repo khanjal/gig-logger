@@ -59,4 +59,13 @@ describe('ShiftsComponent', () => {
     await component.loadShifts();
     expect(component.demoSheetAttached).toBeFalse();
   });
+
+  it('resets isLoading when loadShifts throws', async () => {
+    shiftSpy.paginate.and.resolveTo([{ id: '1' }] as any);
+    unsavedSpy.hasUnsavedData.and.rejectWith(new Error('unsaved lookup failed'));
+
+    await expectAsync(component.loadShifts()).toBeRejected();
+
+    expect(component.isLoading).toBeFalse();
+  });
 });
