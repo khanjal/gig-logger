@@ -6,6 +6,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '@services/logger.service';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 
 describe('SheetLinkComponent', () => {
   let component: SheetLinkComponent;
@@ -43,36 +45,49 @@ describe('SheetLinkComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('openCreateSheetDialog - success should link sheet and emit', async () => {
-    const dialogResult = { id: 's1', name: 'Sheet 1' } as any;
-    dialogSpy.open.and.returnValue({ afterClosed: () => of(dialogResult) } as any);
-    spreadsheetSpy.findSheet.and.returnValue(Promise.resolve(undefined));
-    spreadsheetSpy.add.and.returnValue(Promise.resolve());
+  it('openCreateSheetDialog - success should run create-sheet sync flow and emit', async () => {
+    dialogSpy.open.and.returnValues(
+      { afterClosed: () => of({ sheetName: 'Sheet 1' }) } as any,
+      { afterClosed: () => of(true) } as any
+    );
 
     spyOn(component.parentReload, 'emit');
 
     component.openCreateSheetDialog();
 
-    // wait for promises to resolve
+    // wait for nested subscriptions
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(dialogSpy.open).toHaveBeenCalled();
-    expect(spreadsheetSpy.add).toHaveBeenCalledWith(jasmine.objectContaining({ id: 's1' }));
+    expect(dialogSpy.open).toHaveBeenCalledWith(SheetCreateComponent, jasmine.any(Object));
+    expect(dialogSpy.open).toHaveBeenCalledWith(DataSyncModalComponent, jasmine.objectContaining({
+      panelClass: 'custom-modalbox',
+      data: jasmine.objectContaining({
+        type: 'create-sheet',
+        sheetName: 'Sheet 1'
+      })
+    }));
+    expect(spreadsheetSpy.add).not.toHaveBeenCalled();
     expect(snackBarSpy.open).toHaveBeenCalled();
     expect(component.parentReload.emit).toHaveBeenCalled();
   });
 
-  it('openCreateSheetDialog - failure should log and show error snackbar', async () => {
-    const dialogResult = { error: 'boom' } as any;
-    dialogSpy.open.and.returnValue({ afterClosed: () => of(dialogResult) } as any);
+  it('openCreateSheetDialog - sync failure should log and show error snackbar', async () => {
+    dialogSpy.open.and.returnValues(
+      { afterClosed: () => of({ sheetName: 'Sheet 1' }) } as any,
+      { afterClosed: () => of(false) } as any
+    );
+
+    spyOn(component.parentReload, 'emit');
 
     component.openCreateSheetDialog();
 
     await Promise.resolve();
+    await Promise.resolve();
 
     expect(loggerSpy.error).toHaveBeenCalled();
     expect(snackBarSpy.open).toHaveBeenCalled();
+    expect(component.parentReload.emit).not.toHaveBeenCalled();
   });
 
   it('linkSheet - when sheet exists should show already linked snackbar', async () => {

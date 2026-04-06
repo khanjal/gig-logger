@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,6 +10,7 @@ import { ISheet } from '@interfaces/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
 @Component({
   selector: 'app-sheet-link',
@@ -26,7 +26,6 @@ export class SheetLinkComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
   constructor(
-    private _gigLoggerService: GigWorkflowService,
     private _spreadsheetService: SpreadsheetService,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
@@ -44,24 +43,26 @@ export class SheetLinkComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (result.error) {
-          // Handle error
-          this._logger.error('Sheet creation failed', { error: result.error });
-          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
-        } else {
-          // Handle success
-          let sheetData = {} as ISheet;
-          sheetData.properties = {
-            id: result.id,
-            name: result.name
-          };
-          this.linkSheet(sheetData);
-          this._logger.info('Sheet created successfully', { result });
-          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
-          this.parentReload.emit(); // Emit event to reload parent component
+      if (result?.sheetName) {
+        const syncDialogRef = this.dialog.open(DataSyncModalComponent, {
+          panelClass: 'custom-modalbox',
+          data: {
+            type: 'create-sheet',
+            sheetName: result.sheetName
+          }
+        });
+
+        syncDialogRef.afterClosed().subscribe(syncResult => {
+          if (syncResult) {
+            this._logger.info('Sheet created successfully', { sheetName: result.sheetName });
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
+            this.parentReload.emit(); // Emit event to reload parent component
+          } else {
+            this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
+            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
+          }
+        });
         }
-      }
       // result is null if dialog was cancelled
     });
   }

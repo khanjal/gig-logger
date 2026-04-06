@@ -29,7 +29,7 @@ import { NgFor, NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 // Define types for better type safety
-type SyncType = 'save' | 'load' | 'create-demo';
+type SyncType = 'save' | 'load' | 'create-demo' | 'create-sheet';
 type MessageType = 'info' | 'warning' | 'error';
 
 interface TerminalMessage {
@@ -48,6 +48,7 @@ interface SyncState {
 
 interface DataSyncConfig {
   type: SyncType;
+    sheetName?: string;
   autoCloseOnError?: boolean;
   autoCloseTimer?: number;
 }
@@ -64,6 +65,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     
     // Configuration inputs
     public type: SyncType;
+    private sheetName?: string;
     private autoCloseOnError: boolean;
     private timerDelay: number;
     
@@ -111,6 +113,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             this.timerDelay = 5000;
         } else {
             this.type = config.type;
+            this.sheetName = config.sheetName;
             this.autoCloseOnError = config.autoCloseOnError ?? false;
             this.timerDelay = config.autoCloseTimer ?? 5000;
         }
@@ -130,6 +133,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
                 break;
             case 'create-demo':
                 await this.createDemoAndLoad();
+                break;
+            case 'create-sheet':
+                await this.createSheetAndLoad();
                 break;
             default:
                 this.appendToTerminal(`Invalid type: ${this.type}`, 'error');
@@ -264,6 +270,61 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             await this.getData();
         } catch (error) {
             this._logger.error('Failed to create and load demo spreadsheet.', error);
+            await this.processFailure('ERROR');
+        }
+    }
+
+    private async createSheetAndLoad() {
+        this.startTimer(0);
+
+        try {
+            // Step 1: Create spreadsheet file
+            this.appendToTerminal('Creating spreadsheet file...');
+            const defaultSheetName = 'New Sheet';
+            const sheetProperties: ISheetProperties = {
+                id: '',
+                name: this.sheetName?.trim() || defaultSheetName
+            };
+
+            const createdFile = await this._gigLoggerService.createFile(sheetProperties);
+            if (!createdFile?.id) {
+                await this.processFailure('ERROR');
+                return;
+            }
+            this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
+
+            // Step 2: Make the new sheet the only default in local DB
+            this.time = this.currentTime;
+            this.appendToTerminal('Linking spreadsheet locally...');
+            const existingSheets = await this._sheetService.getSpreadsheets();
+            for (const existingSheet of existingSheets) {
+                if (existingSheet.default === 'true') {
+                    existingSheet.default = 'false';
+                    await this._sheetService.update(existingSheet);
+                }
+            }
+
+            const createdSpreadsheet: ISpreadsheet = {
+                id: createdFile.id,
+                name: createdFile.name || sheetProperties.name,
+                default: 'true',
+                size: 0
+            };
+            await this._sheetService.add(createdSpreadsheet);
+            this.defaultSheet = createdSpreadsheet;
+            this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
+
+            // Step 3: Create backing sheets
+            this.time = this.currentTime;
+            this.appendToTerminal('Creating sheets...');
+            await this._gigLoggerService.createSheet(createdFile.id);
+            this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+            // Step 4: Continue through normal warmup + get/load sync path
+            await this.warmup(this.currentTime);
+            await this.getData();
+        } catch (error) {
+            this._logger.error('Failed to create and load spreadsheet.', error);
             await this.processFailure('ERROR');
         }
     }

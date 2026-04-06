@@ -141,4 +141,43 @@ describe('DataSyncModalComponent', () => {
     expect(loggerSpy.error).toHaveBeenCalled();
     expect(dialogRefSpy.close).not.toHaveBeenCalled();
   });
+
+  it('create-sheet flow should create, link, and load without demo data insertion', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, {
+      useValue: { type: 'create-sheet', sheetName: 'My New Sheet' }
+    });
+
+    workflowSpy.createFile.and.resolveTo({ id: 'new-sheet-id', name: 'My New Sheet' } as any);
+    workflowSpy.createSheet.and.resolveTo();
+
+    sheetSpy.getSpreadsheets.and.returnValues(
+      Promise.resolve([{ id: 'old-default', name: 'Old', default: 'true', size: 0 }] as any),
+      Promise.resolve([{ id: 'new-sheet-id', name: 'My New Sheet', default: 'true', size: 0 }] as any)
+    );
+    sheetSpy.update.and.resolveTo();
+    sheetSpy.add.and.resolveTo();
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    sheetSpy.getSpreadsheetData.and.resolveTo({
+      properties: { id: 'new-sheet-id', name: 'My New Sheet' },
+      messages: []
+    } as any);
+    sheetSpy.loadSpreadsheetData.and.resolveTo();
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    expect(workflowSpy.createFile).toHaveBeenCalledWith(jasmine.objectContaining({ name: 'My New Sheet' }));
+    expect(workflowSpy.createSheet).toHaveBeenCalledWith('new-sheet-id');
+    expect(workflowSpy.insertDemoData).not.toHaveBeenCalled();
+    expect(sheetSpy.add).toHaveBeenCalledWith(jasmine.objectContaining({
+      id: 'new-sheet-id',
+      default: 'true'
+    }));
+    expect(sheetSpy.warmUpLambda).toHaveBeenCalled();
+    expect(sheetSpy.getSpreadsheetData).toHaveBeenCalled();
+    expect(sheetSpy.loadSpreadsheetData).toHaveBeenCalled();
+    expect(dialogRefSpy.close).toHaveBeenCalledWith(true);
+  });
 });
