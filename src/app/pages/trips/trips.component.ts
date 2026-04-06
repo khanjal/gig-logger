@@ -31,7 +31,6 @@ import { TripFormComponent } from '@components/trips/trip-form/trip-form.compone
 import { TripsTableGroupComponent } from '@components/trips/trips-table-group/trips-table-group.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
-import { environment } from 'src/environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatIcon } from '@angular/material/icon';
@@ -54,8 +53,6 @@ export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
-
-  demoSheetId = environment.demoSheet;
 
   clearing: boolean = false;
   reloading: boolean = false;

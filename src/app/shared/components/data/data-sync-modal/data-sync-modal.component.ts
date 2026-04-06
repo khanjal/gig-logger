@@ -48,7 +48,7 @@ interface SyncState {
 
 interface DataSyncConfig {
   type: SyncType;
-    sheetName?: string;
+  sheetName?: string;
   autoCloseOnError?: boolean;
   autoCloseTimer?: number;
 }
@@ -93,6 +93,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     
     get terminalMessages(): TerminalMessage[] {
         return this.messages;
+    }
+
+    get syncStatusLabel(): string {
+        if (this.type === 'save') return 'saved';
+        if (this.type === 'load') return 'loaded';
+        return 'created and loaded';
     }
     
     constructor(
@@ -208,64 +214,30 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     private async createDemoAndLoad() {
         this.startTimer(0);
 
+        const timestamp = new Date().toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+        const sheetProperties: ISheetProperties = {
+            id: '',
+            name: `${SHEET_CONSTANTS.DEMO_NAME_PREFIX} - ${timestamp}`
+        };
+
         try {
-            // Step 1: Create spreadsheet file
             this.appendToTerminal('Creating demo spreadsheet file...');
-            const timestamp = new Date().toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
+            const linked = await this.createFileAndLink(sheetProperties);
+            if (!linked) return;
 
-            const sheetProperties: ISheetProperties = {
-                id: '',
-                name: `${SHEET_CONSTANTS.DEMO_NAME_PREFIX} - ${timestamp}`
-            };
-
-            const createdFile = await this._gigLoggerService.createFile(sheetProperties);
-            if (!createdFile?.id) {
-                await this.processFailure('ERROR');
-                return;
-            }
-            this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
-
-            // Step 2: Make the new sheet the only default in local DB
-            this.time = this.currentTime;
-            this.appendToTerminal('Linking spreadsheet locally...');
-            const existingSheets = await this._sheetService.getSpreadsheets();
-            for (const existingSheet of existingSheets) {
-                if (existingSheet.default === 'true') {
-                    existingSheet.default = 'false';
-                    await this._sheetService.update(existingSheet);
-                }
-            }
-
-            const createdSpreadsheet: ISpreadsheet = {
-                id: createdFile.id,
-                name: createdFile.name || sheetProperties.name,
-                default: 'true',
-                size: 0
-            };
-            await this._sheetService.add(createdSpreadsheet);
-            this.defaultSheet = createdSpreadsheet;
-            this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
-
-            // Step 3: Create backing sheets
-            this.time = this.currentTime;
-            this.appendToTerminal('Creating sheets...');
-            await this._gigLoggerService.createSheet(createdFile.id);
-            this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
-
-            // Step 4: Insert demo data
+            // Insert demo data (exclusive to demo flow)
             this.time = this.currentTime;
             this.appendToTerminal('Inserting demo data...');
-            await this._gigLoggerService.insertDemoData(createdFile.id);
+            await this._gigLoggerService.insertDemoData(linked.id);
             this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
 
-            // Step 5: Continue through normal warmup + get/load sync path
             await this.warmup(this.currentTime);
             await this.getData();
         } catch (error) {
@@ -277,56 +249,64 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     private async createSheetAndLoad() {
         this.startTimer(0);
 
+        const sheetProperties: ISheetProperties = {
+            id: '',
+            name: this.sheetName?.trim() || 'New Sheet'
+        };
+
         try {
-            // Step 1: Create spreadsheet file
             this.appendToTerminal('Creating spreadsheet file...');
-            const defaultSheetName = 'New Sheet';
-            const sheetProperties: ISheetProperties = {
-                id: '',
-                name: this.sheetName?.trim() || defaultSheetName
-            };
+            const linked = await this.createFileAndLink(sheetProperties);
+            if (!linked) return;
 
-            const createdFile = await this._gigLoggerService.createFile(sheetProperties);
-            if (!createdFile?.id) {
-                await this.processFailure('ERROR');
-                return;
-            }
-            this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
-
-            // Step 2: Make the new sheet the only default in local DB
-            this.time = this.currentTime;
-            this.appendToTerminal('Linking spreadsheet locally...');
-            const existingSheets = await this._sheetService.getSpreadsheets();
-            for (const existingSheet of existingSheets) {
-                if (existingSheet.default === 'true') {
-                    existingSheet.default = 'false';
-                    await this._sheetService.update(existingSheet);
-                }
-            }
-
-            const createdSpreadsheet: ISpreadsheet = {
-                id: createdFile.id,
-                name: createdFile.name || sheetProperties.name,
-                default: 'true',
-                size: 0
-            };
-            await this._sheetService.add(createdSpreadsheet);
-            this.defaultSheet = createdSpreadsheet;
-            this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
-
-            // Step 3: Create backing sheets
-            this.time = this.currentTime;
-            this.appendToTerminal('Creating sheets...');
-            await this._gigLoggerService.createSheet(createdFile.id);
-            this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
-
-            // Step 4: Continue through normal warmup + get/load sync path
             await this.warmup(this.currentTime);
             await this.getData();
         } catch (error) {
             this._logger.error('Failed to create and load spreadsheet.', error);
             await this.processFailure('ERROR');
         }
+    }
+
+    /**
+     * Creates a Google Drive file, unsets any existing default sheets, and links
+     * the newly created spreadsheet as the default in local DB.
+     * @param sheetProperties Name and placeholder ID for the new spreadsheet.
+     * @returns The linked ISpreadsheet, or null if file creation failed.
+     */
+    private async createFileAndLink(sheetProperties: ISheetProperties): Promise<ISpreadsheet | null> {
+        const createdFile = await this._gigLoggerService.createFile(sheetProperties);
+        if (!createdFile?.id) {
+            await this.processFailure('ERROR');
+            return null;
+        }
+        this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
+
+        this.time = this.currentTime;
+        this.appendToTerminal('Linking spreadsheet locally...');
+        const existingSheets = await this._sheetService.getSpreadsheets();
+        for (const existingSheet of existingSheets) {
+            if (existingSheet.default === 'true') {
+                existingSheet.default = 'false';
+                await this._sheetService.update(existingSheet);
+            }
+        }
+
+        const created: ISpreadsheet = {
+            id: createdFile.id,
+            name: createdFile.name || sheetProperties.name,
+            default: 'true',
+            size: 0
+        };
+        await this._sheetService.add(created);
+        this.defaultSheet = created;
+        this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
+
+        this.time = this.currentTime;
+        this.appendToTerminal('Creating sheets...');
+        await this._gigLoggerService.createSheet(createdFile.id);
+        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+        return created;
     }
 
     private async getData() {

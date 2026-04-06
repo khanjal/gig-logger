@@ -142,6 +142,23 @@ describe('DataSyncModalComponent', () => {
     expect(dialogRefSpy.close).not.toHaveBeenCalled();
   });
 
+  it('create-sheet flow should stop when file creation fails and not close dialog', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, {
+      useValue: { type: 'create-sheet', sheetName: 'My New Sheet' }
+    });
+
+    workflowSpy.createFile.and.resolveTo(null as any);
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    expect(workflowSpy.createSheet).not.toHaveBeenCalled();
+    expect(sheetSpy.warmUpLambda).not.toHaveBeenCalled();
+    expect(dialogRefSpy.close).not.toHaveBeenCalled();
+  });
+
   it('create-sheet flow should create, link, and load without demo data insertion', async () => {
     TestBed.overrideProvider(MAT_DIALOG_DATA, {
       useValue: { type: 'create-sheet', sheetName: 'My New Sheet' }

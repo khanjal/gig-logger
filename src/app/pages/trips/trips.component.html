@@ -27,7 +27,7 @@
 
     @if (unsavedData && !pollingEnabled && !isEditMode) {
         <div class="flex justify-center my-4 w-full">
-            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || defaultSheet?.id === demoSheetId" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
+            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || demoSheetAttached" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
         </div>
     }
 

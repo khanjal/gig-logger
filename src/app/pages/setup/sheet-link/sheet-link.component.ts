@@ -62,7 +62,7 @@ export class SheetLinkComponent {
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
           }
         });
-        }
+      }
       // result is null if dialog was cancelled
     });
   }
