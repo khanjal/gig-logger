@@ -14,7 +14,7 @@
               <ng-container *ngIf="selectedShift; else newShiftLabel">
                 <div class="flex flex-col leading-tight pt-1.5 pb-0.5">
                   <span>{{ selectedShift.date | date:'E MMM d' }} - {{ selectedShift.service | truncate:10 }} {{ selectedShift.number == 0 ? '' : '#' + selectedShift.number }}</span>
-                  <span class="text-secondary text-xs">Qty: {{ selectedShift.totalTrips }} | Amount: {{ selectedShift.grandTotal | currency }}</span>
+                  <span class="text-secondary text-xs">Trips: {{ selectedShift.totalTrips }} | Total: {{ selectedShift.grandTotal | currency }}</span>
                 </div>
               </ng-container>
               <ng-template #newShiftLabel>New</ng-template>
@@ -23,7 +23,7 @@
             <mat-option *ngFor="let shift of shifts" [value]="shift">
               <div class="flex flex-col leading-tight">
                 <span>{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:10 }} {{ shift.number == 0 ? "" : '#' + shift.number }}</span>
-                <span class="text-secondary text-xs">Qty: {{ shift.totalTrips }} | Amount: {{ shift.grandTotal | currency }}</span>
+                <span class="text-secondary text-xs">Trips: {{ shift.totalTrips }} | Total: {{ shift.grandTotal | currency }}</span>
               </div>
             </mat-option>
           </mat-select>
