@@ -107,6 +107,19 @@ export class SetupComponent {
     }
   }
 
+  /**
+   * Handles setup child events and avoids duplicate sync operations.
+   * create-sheet/create-demo already load data in the modal, so only refresh local sheet state.
+   */
+  public async handleParentReload(event?: { mode?: 'load-only' | 'reload' }): Promise<void> {
+    if (event?.mode === 'load-only') {
+      await this.load();
+      return;
+    }
+
+    await this.reload();
+  }
+
   public async load() {
     this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
     this.spreadsheets = await this._spreadsheetService.getSpreadsheets();

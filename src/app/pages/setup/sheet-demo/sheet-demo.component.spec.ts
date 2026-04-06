@@ -60,7 +60,7 @@ describe('SheetDemoComponent', () => {
       panelClass: 'custom-modalbox',
       data: 'create-demo'
     }));
-    expect(component.parentReload.emit).toHaveBeenCalled();
+    expect(component.parentReload.emit).toHaveBeenCalledWith({ mode: 'load-only' });
     expect(snackBarSpy.open).toHaveBeenCalled();
     expect(component.creatingDemo).toBeFalse();
   });

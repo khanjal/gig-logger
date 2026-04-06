@@ -54,7 +54,8 @@ export class SheetDemoComponent {
     try {
       const result = await firstValueFrom(dialogRef.afterClosed());
       if (result) {
-        this.parentReload.emit();
+        // create-demo flow already loaded data in sync modal; only refresh setup state
+        this.parentReload.emit({ mode: 'load-only' });
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_CREATED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       }
     } catch (error) {

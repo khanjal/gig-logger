@@ -20,8 +20,8 @@
   <ng-container>
     <app-base-card title="Set Up Your Spreadsheet" variant="default" padding="md" class="mb-6" *ngIf="!spreadsheets?.length && isAuthenticated">
       <div class="flex flex-col gap-4">
-        <app-sheet-link (parentReload)="reload()"></app-sheet-link>
-        <app-sheet-demo (parentReload)="reload()"></app-sheet-demo>
+        <app-sheet-link (parentReload)="handleParentReload($event)"></app-sheet-link>
+        <app-sheet-demo (parentReload)="handleParentReload($event)"></app-sheet-demo>
       </div>
     </app-base-card>
 

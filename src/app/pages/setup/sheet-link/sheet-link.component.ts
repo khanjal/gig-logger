@@ -56,7 +56,8 @@ export class SheetLinkComponent {
           if (syncResult) {
             this._logger.info('Sheet created successfully', { sheetName: result.sheetName });
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
-            this.parentReload.emit(); // Emit event to reload parent component
+            // create-sheet flow already loaded data in sync modal; only refresh setup state
+            this.parentReload.emit({ mode: 'load-only' });
           } else {
             this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
@@ -102,7 +103,7 @@ export class SheetLinkComponent {
           size: 0
         }).then(() => {
           openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
-          this.parentReload.emit(); // Emit event to reload parent component
+          this.parentReload.emit({ mode: 'reload' });
         }).catch((error) => {
           this._logger.error('Error linking sheet', { error });
           openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });

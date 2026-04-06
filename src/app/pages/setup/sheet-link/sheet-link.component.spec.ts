@@ -69,7 +69,7 @@ describe('SheetLinkComponent', () => {
     }));
     expect(spreadsheetSpy.add).not.toHaveBeenCalled();
     expect(snackBarSpy.open).toHaveBeenCalled();
-    expect(component.parentReload.emit).toHaveBeenCalled();
+    expect(component.parentReload.emit).toHaveBeenCalledWith({ mode: 'load-only' });
   });
 
   it('openCreateSheetDialog - sync failure should log and show error snackbar', async () => {
@@ -140,7 +140,7 @@ describe('SheetLinkComponent', () => {
     expect(dialogSpy.open).toHaveBeenCalled();
     expect(spreadsheetSpy.add).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'l1' }));
     expect(snackBarSpy.open).toHaveBeenCalled();
-    expect(component.parentReload.emit).toHaveBeenCalled();
+    expect(component.parentReload.emit).toHaveBeenCalledWith({ mode: 'reload' });
   });
 
   it('openListSheetsDialog - canceled should not link', async () => {
