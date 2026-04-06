@@ -197,4 +197,58 @@ describe('DataSyncModalComponent', () => {
     expect(sheetSpy.loadSpreadsheetData).toHaveBeenCalled();
     expect(dialogRefSpy.close).toHaveBeenCalledWith(true);
   });
+
+  it('save flow with unsaved shifts should calculate totals before saving', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'save' });
+
+    const defaultSheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 } as any;
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    shiftSpy.getUnsavedShifts.and.resolveTo([{ id: 1, shifts: 5 } as any]);
+    tripSpy.getUnsaved.and.resolveTo([]);
+    expensesSpy.getUnsaved.and.resolveTo([]);
+    workflowSpy.calculateShiftTotals.and.resolveTo();
+    workflowSpy.saveSheetData.and.resolveTo([{ level: 'INFO', message: 'Changes saved' }]);
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    expect(workflowSpy.calculateShiftTotals).toHaveBeenCalled();
+  });
+
+  it('should support new config object format in constructor with all properties', () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, {
+      useValue: { 
+        type: 'save', 
+        sheetName: 'My Sheet', 
+        autoCloseOnError: true, 
+        autoCloseTimer: 3000 
+      }
+    });
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    expect(component.type).toBe('save');
+  });
+
+  it('should handle old string config format in constructor', () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'load' });
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    expect(component.type).toBe('load');
+  });
+
+  it('should close dialog on cancel', () => {
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    component.cancelSync();
+
+    expect(dialogRefSpy.close).toHaveBeenCalledWith(false);
+  });
 });
