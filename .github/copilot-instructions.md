@@ -745,6 +745,17 @@ Available columns: New, Backlog, Ready, In progress, In review, Done
 - Column names support partial matching (e.g., "Done" matches "✅ Done")
 - Use `-ProjectName` parameter to override default project name
 
+### Pull Request Template Usage
+- When preparing or updating a PR description, always follow `.github/PULL_REQUEST_TEMPLATE.md`.
+- Populate all relevant sections instead of leaving placeholders.
+- Include explicit issue linkage using these labels when applicable:
+  - `Resolves: #...` for issues closed by this PR
+  - `Related: #...` for context-only links
+  - `Working on: #...` for partial/in-progress scope
+  - `Follow-up: #...` for intentionally deferred work
+- If template/DOM performance-sensitive changes are included, document what was changed to avoid template-invoked heavy functions.
+- For UI-affecting changes, include concise manual validation notes and screenshots/video when available.
+
 ## Critical Dependencies
 - **@angular/material**: UI component library
 - **dexie**: IndexedDB wrapper for local storage

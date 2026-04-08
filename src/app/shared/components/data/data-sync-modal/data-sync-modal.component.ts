@@ -9,11 +9,13 @@ import { map, Subscription, timer } from 'rxjs';
 import { DateHelper } from '@helpers/date.helper';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
+import { SHEET_CONSTANTS } from '@constants/sheet.constants';
 
 // Application-specific imports - Interfaces
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ISheet } from '@interfaces/sheet.interface';
 import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
+import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // Application-specific imports - Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -27,7 +29,7 @@ import { NgFor, NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 // Define types for better type safety
-type SyncType = 'save' | 'load';
+type SyncType = 'save' | 'load' | 'create-demo' | 'create-sheet';
 type MessageType = 'info' | 'warning' | 'error';
 
 interface TerminalMessage {
@@ -46,6 +48,7 @@ interface SyncState {
 
 interface DataSyncConfig {
   type: SyncType;
+  sheetName?: string;
   autoCloseOnError?: boolean;
   autoCloseTimer?: number;
 }
@@ -62,6 +65,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     
     // Configuration inputs
     public type: SyncType;
+    private sheetName?: string;
     private autoCloseOnError: boolean;
     private timerDelay: number;
     
@@ -90,6 +94,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     get terminalMessages(): TerminalMessage[] {
         return this.messages;
     }
+
+    get syncStatusLabel(): string {
+        if (this.type === 'save') return 'saved';
+        if (this.type === 'load') return 'loaded';
+        return 'created and loaded';
+    }
     
     constructor(
         @Inject(MAT_DIALOG_DATA) public config: DataSyncConfig | SyncType,
@@ -109,21 +119,29 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             this.timerDelay = 5000;
         } else {
             this.type = config.type;
+            this.sheetName = config.sheetName;
             this.autoCloseOnError = config.autoCloseOnError ?? false;
             this.timerDelay = config.autoCloseTimer ?? 5000;
         }
     }
 
     async ngOnInit(): Promise<void> {
-        this.defaultSheet = await this._sheetService.getDefaultSheet();
-        await this.warmup(0);
-
         switch (this.type) {
             case 'save':
+                this.defaultSheet = await this._sheetService.getDefaultSheet();
+                await this.warmup(0);
                 await this.saveData();
                 break;
             case 'load':
+                this.defaultSheet = await this._sheetService.getDefaultSheet();
+                await this.warmup(0);
                 await this.getData();
+                break;
+            case 'create-demo':
+                await this.createDemoAndLoad();
+                break;
+            case 'create-sheet':
+                await this.createSheetAndLoad();
                 break;
             default:
                 this.appendToTerminal(`Invalid type: ${this.type}`, 'error');
@@ -191,6 +209,104 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         await this._expensesService.saveUnsaved();
 
         this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
+    }
+
+    private async createDemoAndLoad() {
+        this.startTimer(0);
+
+        const timestamp = new Date().toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+        const sheetProperties: ISheetProperties = {
+            id: '',
+            name: `${SHEET_CONSTANTS.DEMO_NAME_PREFIX} - ${timestamp}`
+        };
+
+        try {
+            this.appendToTerminal('Creating demo spreadsheet file...');
+            const linked = await this.createFileAndLink(sheetProperties);
+            if (!linked) return;
+
+            // Insert demo data (exclusive to demo flow)
+            this.time = this.currentTime;
+            this.appendToTerminal('Inserting demo data...');
+            await this._gigLoggerService.insertDemoData(linked.id);
+            this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+            await this.warmup(this.currentTime);
+            await this.getData();
+        } catch (error) {
+            this._logger.error('Failed to create and load demo spreadsheet.', error);
+            await this.processFailure('ERROR');
+        }
+    }
+
+    private async createSheetAndLoad() {
+        this.startTimer(0);
+
+        const sheetProperties: ISheetProperties = {
+            id: '',
+            name: this.sheetName?.trim() || 'New Sheet'
+        };
+
+        try {
+            this.appendToTerminal('Creating spreadsheet file...');
+            const linked = await this.createFileAndLink(sheetProperties);
+            if (!linked) return;
+
+            await this.warmup(this.currentTime);
+            await this.getData();
+        } catch (error) {
+            this._logger.error('Failed to create and load spreadsheet.', error);
+            await this.processFailure('ERROR');
+        }
+    }
+
+    /**
+     * Creates a Google Drive file, unsets any existing default sheets, and links
+     * the newly created spreadsheet as the default in local DB.
+     * @param sheetProperties Name and placeholder ID for the new spreadsheet.
+     * @returns The linked ISpreadsheet, or null if file creation failed.
+     */
+    private async createFileAndLink(sheetProperties: ISheetProperties): Promise<ISpreadsheet | null> {
+        const createdFile = await this._gigLoggerService.createFile(sheetProperties);
+        if (!createdFile?.id) {
+            await this.processFailure('ERROR');
+            return null;
+        }
+        this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
+
+        this.time = this.currentTime;
+        this.appendToTerminal('Linking spreadsheet locally...');
+        const existingSheets = await this._sheetService.getSpreadsheets();
+        for (const existingSheet of existingSheets) {
+            if (existingSheet.default === 'true') {
+                existingSheet.default = 'false';
+                await this._sheetService.update(existingSheet);
+            }
+        }
+
+        const created: ISpreadsheet = {
+            id: createdFile.id,
+            name: createdFile.name || sheetProperties.name,
+            default: 'true',
+            size: 0
+        };
+        await this._sheetService.add(created);
+        this.defaultSheet = created;
+        this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
+
+        this.time = this.currentTime;
+        this.appendToTerminal('Creating sheets...');
+        await this._gigLoggerService.createSheet(createdFile.id);
+        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+
+        return created;
     }
 
     private async getData() {

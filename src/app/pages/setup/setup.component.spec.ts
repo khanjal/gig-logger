@@ -1,6 +1,7 @@
 import { SetupComponent } from './setup.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { of } from 'rxjs';
 
 describe('SetupComponent (class-only)', () => {
   let dialogSpy: jasmine.SpyObj<MatDialog>;
@@ -27,7 +28,8 @@ describe('SetupComponent (class-only)', () => {
       querySpreadsheets: jasmine.createSpy('querySpreadsheets'),
       deleteData: jasmine.createSpy('deleteData'),
       deleteLocalData: jasmine.createSpy('deleteLocalData'),
-      update: jasmine.createSpy('update')
+      update: jasmine.createSpy('update'),
+      deleteSpreadsheet: jasmine.createSpy('deleteSpreadsheet')
     };
 
     tripService = { getUnsaved: jasmine.createSpy('getUnsaved').and.returnValue(Promise.resolve([])) };
@@ -147,6 +149,67 @@ describe('SetupComponent (class-only)', () => {
     await comp.loadSheetDialog('load');
 
     expect(snackSpy.open).toHaveBeenCalled();
+  });
+
+  it('confirmDeleteAndReloadDialog shows snackbar when not authenticated', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(false));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+
+    await comp.confirmDeleteAndReloadDialog();
+
+    expect(snackSpy.open).toHaveBeenCalled();
+  });
+
+  it('confirmDeleteAndReloadDialog opens dialog when authenticated', (done: DoneFn) => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    
+    const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(false) });
+    dialogSpy.open.and.returnValue(dialogRefSpyObj);
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+
+    comp.confirmDeleteAndReloadDialog().then(() => {
+      expect(dialogSpy.open).toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('confirmDeleteAndReloadDialog calls deleteAndReload when user confirms', (done: DoneFn) => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    
+    const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
+    dialogSpy.open.and.returnValue(dialogRefSpyObj);
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'deleteAndReload').and.returnValue(Promise.resolve());
+
+    comp.confirmDeleteAndReloadDialog().then(() => {
+      // Give async operation time to complete
+      setTimeout(() => {
+        expect((comp.deleteAndReload as any)).toHaveBeenCalled();
+        done();
+      }, 50);
+    });
+  });
+
+  it('unlinkSpreadsheet calls deleteSpreadsheet for non-default sheet', async () => {
+    const allSheets = [
+      { id: '1', name: 'S1', default: 'false' },
+      { id: '2', name: 'S2', default: 'true' }
+    ];
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve(allSheets));
+    spreadsheetService.deleteSpreadsheet.and.returnValue(Promise.resolve());
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'load').and.returnValue(Promise.resolve());
+
+    const nonDefaultSheet = { id: '1', name: 'S1', default: 'false' };
+    await comp.unlinkSpreadsheet(nonDefaultSheet as any);
+
+    expect(spreadsheetService.deleteSpreadsheet).toHaveBeenCalledWith(nonDefaultSheet);
+    expect((comp.load as any)).toHaveBeenCalled();
   });
 });
 import { ComponentFixture, TestBed } from '@angular/core/testing';

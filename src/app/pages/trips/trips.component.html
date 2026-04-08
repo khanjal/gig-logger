@@ -19,16 +19,22 @@
         </trip-form>
     </div>
 
+    @if (!isEditMode && demoSheetAttached) {
+        <div class="mx-4 mt-3 rounded-lg border border-info bg-info-soft px-3 py-2 text-center text-sm text-info">
+            {{ uiMessages.DEMO_SHEET_ATTACHED }}
+        </div>
+    }
+
     @if (unsavedData && !pollingEnabled && !isEditMode) {
         <div class="flex justify-center my-4 w-full">
-            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || defaultSheet?.id === demoSheetId" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
+            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || demoSheetAttached" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
         </div>
     }
 
     @if ((!unsavedData || pollingEnabled) && !isEditMode) {
             <div class="flex flex-col items-center my-4 w-full">
             <div *ngIf="shouldShowUpdateMessage()" class="mb-2 mt-0 text-xs text-warning bg-warning-soft border border-warning rounded px-3 py-1 text-center max-w-xs">
-                <span class="font-bold">Reminder:</span> Update before doing any trips today to get the latest stats from your spreadsheet.
+                <span class="font-bold">Reminder:</span> {{ uiMessages.UPDATE_DAILY_REMINDER }}
             </div>
             <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="reloading || unsavedData" (clicked)="confirmLoadTripsDialog()" [icon]="'refresh'" [label]="'Update from Spreadsheet'"></app-base-rect-button>
         </div>

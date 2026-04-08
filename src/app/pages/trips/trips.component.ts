@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
+import { isDemoSheetName } from '@constants/sheet.constants';
+import { UI_MESSAGES } from '@constants/ui-message.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 
 import { DateHelper } from '@helpers/date.helper';
@@ -29,7 +31,6 @@ import { TripFormComponent } from '@components/trips/trip-form/trip-form.compone
 import { TripsTableGroupComponent } from '@components/trips/trips-table-group/trips-table-group.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
-import { environment } from 'src/environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatIcon } from '@angular/material/icon';
@@ -53,8 +54,6 @@ export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
-  demoSheetId = environment.demoSheet;
-
   clearing: boolean = false;
   reloading: boolean = false;
   saving: boolean = false;
@@ -69,9 +68,11 @@ export class TripComponent implements OnInit, OnDestroy {
   todaysTrips: ITrip[] = [];
   yesterdaysTrips: ITrip[] = [];
   unsavedData: boolean = false;
+  demoSheetAttached: boolean = false;
 
   defaultSheet: ISpreadsheet | undefined;
   actionEnum = ActionEnum;
+  protected readonly uiMessages = UI_MESSAGES;
   
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
@@ -126,7 +127,7 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.startPolling();
       }
     }
-    this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    await this.refreshDefaultSheetState();
     
     // Load trip data for editing if in edit mode
     if (this.isEditMode && this.editingTripId) {
@@ -287,6 +288,7 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async reload(anchor?: string, isParentReload: boolean = false) {
+    await this.refreshDefaultSheetState();
     let sheetId = this.defaultSheet?.id;
     if (!sheetId) {
       return;
@@ -373,5 +375,10 @@ export class TripComponent implements OnInit, OnDestroy {
 
   shouldShowUpdateMessage(): boolean {
     return !(this.todaysTrips && this.todaysTrips.length > 0);
+  }
+
+  private async refreshDefaultSheetState(): Promise<void> {
+    this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
+    this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
   }
 }

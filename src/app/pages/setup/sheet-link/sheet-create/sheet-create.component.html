@@ -1,5 +1,5 @@
 <div class="section bg-surface text-secondary rounded-md">
-  <form class="sheet-form mt-5" [formGroup]="sheetCreate" *ngIf="!saving">
+  <form class="sheet-form mt-5" [formGroup]="sheetCreate">
       <app-base-input 
         class="field-full-width"
         label="Sheet Name"
@@ -11,13 +11,8 @@
       </app-base-input>
   </form>
 
-  <div *ngIf="saving" class="creating-sheet-spinner">
-      <mat-spinner diameter="40"></mat-spinner>
-      <div class="creating-sheet-text">Creating sheet...</div>
-  </div>
-
-    <div *ngIf="!saving" class="row-flex px-5" style="justify-content: space-between;">
+    <div class="row-flex px-5" style="justify-content: space-between;">
       <app-base-rect-button variant="secondary" [icon]="'refresh'" (clicked)="closeModal()" class="mr-auto" [label]="'Cancel'"></app-base-rect-button>
-      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid || saving" [loading]="saving" (clicked)="createSheet()" class="ml-auto" [label]="'Create'"></app-base-rect-button>
+      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!sheetCreate.valid" (clicked)="createSheet()" class="ml-auto" [label]="'Create'"></app-base-rect-button>
     </div>
 </div>
