@@ -23,6 +23,10 @@ Move from manual change-detection patching to robust, testable, and reactive sta
   - src/app/pages/search/search.component.ts
 - [ ] Define a repeatable migration pattern for other pages.
 
+Progress updates:
+- [~] Shifts reference migration started (signals for high-churn UI state and template signal bindings).
+- [ ] Validate runtime behavior and use Shifts as pattern for Search/Trips/Expenses.
+
 ### 2) Standardize async data flow with RxJS + async pipe or toSignal
 - [ ] Replace imperative load chains with single reactive pipelines where practical.
 - [ ] Prioritize pages:
@@ -66,7 +70,7 @@ Move from manual change-detection patching to robust, testable, and reactive sta
 - [ ] Prevent reintroduction of zone-based assumptions.
 
 ## Current Focus
-- [ ] Complete signal-first migration for one reference page (recommended: shifts or search).
+- [~] Complete signal-first migration for one reference page (Shifts started).
 
 ## Notes
 - Keep commits small and build-validated.

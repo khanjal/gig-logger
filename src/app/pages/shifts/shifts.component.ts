@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
@@ -32,20 +32,20 @@ import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
   protected readonly uiMessages = UI_MESSAGES;
-  shifts: IShift[] = [];
+  shifts = signal<IShift[]>([]);
   actionEnum = ActionEnum;
-  saving: boolean = false;
+  saving = signal(false);
   unsavedShifts: IShift[] = [];
-  unsavedData: boolean = false;
+  unsavedData = signal(false);
   pageSize: number = 20; // Number of shifts to load per request
-  currentPage: number = 0; // Current page index
-  isLoading: boolean = false; // Prevent multiple simultaneous requests
-  noMoreData: boolean = false; // Stop loading if all data is loaded
-  showAddForm = false; // Control the visibility of the add form
-  defaultSheet: ISpreadsheet | undefined;
-  demoSheetAttached: boolean = false;
+  currentPage = signal(0); // Current page index
+  isLoading = signal(false); // Prevent multiple simultaneous requests
+  noMoreData = signal(false); // Stop loading if all data is loaded
+  showAddForm = signal(false); // Control the visibility of the add form
+  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  demoSheetAttached = signal(false);
 
-  editId: string | null = null; // ID of the shift being edited, if any
+  editId = signal<string | null>(null); // ID of the shift being edited, if any
 
   constructor(
     public dialog: MatDialog, 
@@ -55,47 +55,40 @@ export class ShiftsComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private router: Router, 
     private route: ActivatedRoute,
-    protected authService: AuthGoogleService,
-    private cdr: ChangeDetectorRef
+    protected authService: AuthGoogleService
   ) { }
 
   async ngOnInit(): Promise<void> {
     this.route.paramMap.subscribe(params => {
-      this.editId = params.get('id');
-      this.cdr.markForCheck();
+      this.editId.set(params.get('id'));
     });
     await this.loadShifts();
   }
 
   async loadShifts(): Promise<void> {
-    if (this.isLoading || this.noMoreData) return;
+    if (this.isLoading() || this.noMoreData()) return;
 
-    this.isLoading = true;
-    this.cdr.markForCheck();
+    this.isLoading.set(true);
     try {
       // Use 'rowId' as the sort field and 'desc' for reverse order
-      const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize, 'rowId', 'desc');
+      const newShifts = await this._shiftService.paginate(this.currentPage(), this.pageSize, 'rowId', 'desc');
       if (newShifts.length < this.pageSize) {
-        this.noMoreData = true;
+        this.noMoreData.set(true);
       }
-      this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
-      this.currentPage++;
-      this.unsavedData = await this.unsavedDataService.hasUnsavedData();
-      this.defaultSheet = (await this._sheetService.querySpreadsheets('default', 'true'))[0];
-      this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
+      this.shifts.update(current => [...current, ...newShifts]); // Append new shifts to the list
+      this.currentPage.update(page => page + 1);
+      this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
+      this.defaultSheet.set((await this._sheetService.querySpreadsheets('default', 'true'))[0]);
+      this.demoSheetAttached.set(isDemoSheetName(this.defaultSheet()?.name));
       // If there are no shifts at all, open the add form by default so users can create one.
-      if ((this.shifts ?? []).length === 0 && !this.showAddForm && !this.editId) {
-        // Defer UI branch toggle to the next macrotask to avoid NG0100
-        // while Angular is still finishing the current check cycle.
+      if (this.shifts().length === 0 && !this.showAddForm() && !this.editId()) {
+        // Defer branch toggle to the next macrotask to avoid NG0100.
         setTimeout(() => {
-          this.showAddForm = true;
-          this.cdr.markForCheck();
+          this.showAddForm.set(true);
         });
       }
-      this.cdr.markForCheck();
     } finally {
-      this.isLoading = false;
-      this.cdr.markForCheck();
+      this.isLoading.set(false);
     }
   }
 
@@ -106,18 +99,17 @@ export class ShiftsComponent implements OnInit {
     const clientHeight = target.clientHeight;
     const threshold = ShiftsComponent.SCROLL_THRESHOLD_PX;
     const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
-    if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading && !this.noMoreData) {
-      this.loadShifts();
+    if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading() && !this.noMoreData()) {
+      void this.loadShifts();
     }
   }
 
   handleParentReload() {
-    this.shifts = []; // Clear the shifts array
-    this.currentPage = 0; // Reset pagination
-    this.noMoreData = false; // Reset noMoreData flag
-    this.showAddForm = false;
-    this.cdr.markForCheck();
-    this.loadShifts();
+    this.shifts.set([]); // Clear the shifts array
+    this.currentPage.set(0); // Reset pagination
+    this.noMoreData.set(false); // Reset noMoreData flag
+    this.showAddForm.set(false);
+    void this.loadShifts();
   }
 
   async confirmSaveDialog() {
@@ -173,12 +165,12 @@ export class ShiftsComponent implements OnInit {
   }
 
   exitEditMode(shiftId?: string) {
-    this.editId = null;
+    this.editId.set(null);
     this.router.navigate(['/shifts']);
     this.handleParentReload();
   }
 
   hideAddForm() {
-    this.showAddForm = false;
+    this.showAddForm.set(false);
   }
 }
