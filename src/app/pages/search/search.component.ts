@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -51,25 +51,27 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, from, startWit
   providers: [CurrencyPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
-  searchTerm: string = '';
-  isSearching: boolean = false;
-  hasSearched: boolean = false;
-  showFilters: boolean = false;
-  exactMatch: boolean = false;
-  caseSensitive: boolean = false;
-  
-  searchResults: ISearchResult[] = [];
-  groupedResults: ISearchResultGroup[] = [];
-  
+  readonly categories: SearchCategory[] = ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
+  searchTerm = signal('');
+  isSearching = signal(false);
+  hasSearched = signal(false);
+  showFilters = signal(false);
+  exactMatch = signal(false);
+  caseSensitive = signal(false);
+
+  searchResults = signal<ISearchResult[]>([]);
+  groupedResults = signal<ISearchResultGroup[]>([]);
+
   // Category filter management
-  categoryFilters = new Map<SearchCategory, boolean>([
-    ['Address', true],
-    ['Name', true],
-    ['Place', true],
-    ['Region', true],
-    ['Service', true],
-    ['Type', true]
-  ]);
+  categoryFilters = signal<Record<SearchCategory, boolean>>({
+    All: false,
+    Address: true,
+    Name: true,
+    Place: true,
+    Region: true,
+    Service: true,
+    Type: true
+  });
   
   // Autocomplete
   filteredAutocomplete$: Observable<string[]> | undefined;
@@ -80,15 +82,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Track expanded panels
-  expandedGroups = new Set<string>();
-  expandedResults = new Set<string>();
+  expandedGroups = signal(new Set<string>());
+  expandedResults = signal(new Set<string>());
 
   constructor(
     private searchService: SearchService,
     private dropdownDataService: DropdownDataService,
     private currencyPipe: CurrencyPipe,
-    private logger: LoggerService,
-    private cdr: ChangeDetectorRef
+    private logger: LoggerService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -99,12 +100,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(term => {
-        this.performSearch(term);
+        void this.performSearch(term);
       });
 
     // Setup autocomplete filtering
     this.setupAutocompleteFilter();
-    this.autocompleteSubject.next(this.searchTerm);
+    this.autocompleteSubject.next(this.searchTerm());
   }
 
   ngOnDestroy(): void {
@@ -119,7 +120,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   setupAutocompleteFilter(): void {
     this.filteredAutocomplete$ = this.autocompleteSubject.pipe(
-      startWith(this.searchTerm),
+      startWith(this.searchTerm()),
       switchMap((searchValue: string) => from(this.getFilteredAutocompleteOptions(searchValue)))
     );
   }
@@ -151,54 +152,52 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Called when user types in search input
    */
   onSearchInput(value: string): void {
-  this.searchTerm = value;
-  this.showFilters = false;
-  this.searchSubject.next(value);
-  this.autocompleteSubject.next(value);
+    this.searchTerm.set(value);
+    this.showFilters.set(false);
+    this.searchSubject.next(value);
+    this.autocompleteSubject.next(value);
   }
 
   /**
    * Called when autocomplete option is selected
    */
   onAutocompleteSelected(value: string): void {
-    this.searchTerm = value;
-    this.performSearch(value);
+    this.searchTerm.set(value);
+    void this.performSearch(value);
   }
 
   /**
    * Toggle filter section visibility
    */
   toggleFilters(): void {
-    this.showFilters = !this.showFilters;
+    this.showFilters.update(show => !show);
   }
 
   /**
    * Get list of enabled categories
    */
   getEnabledCategories(): SearchCategory[] {
-    const enabled: SearchCategory[] = [];
-    this.categoryFilters.forEach((isEnabled, category) => {
-      if (isEnabled) {
-        enabled.push(category);
-      }
-    });
+    const filters = this.categoryFilters();
+    const enabled = this.categories.filter(category => filters[category]);
     // Return alphabetically sorted or default alphabetical list
-    return enabled.length > 0 ? enabled.sort() : ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
+    return enabled.length > 0 ? [...enabled].sort() : [...this.categories];
   }
 
   /**
    * Toggle a category filter
    */
-  async toggleCategory(category: SearchCategory): Promise<void> {
-    const currentValue = this.categoryFilters.get(category) || false;
-    this.categoryFilters.set(category, !currentValue);
+  toggleCategory(category: SearchCategory): void {
+    this.categoryFilters.update(filters => ({
+      ...filters,
+      [category]: !filters[category]
+    }));
 
     // Refresh autocomplete based on current filters
-    this.autocompleteSubject.next(this.searchTerm);
+    this.autocompleteSubject.next(this.searchTerm());
     
     // Re-run search if already searched
-    if (this.searchTerm && this.searchTerm.trim().length > 0) {
-      this.performSearch(this.searchTerm);
+    if (this.searchTerm().trim().length > 0) {
+      void this.performSearch(this.searchTerm());
     }
   }
 
@@ -206,43 +205,51 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Check if a category is enabled
    */
   isCategoryEnabled(category: SearchCategory): boolean {
-    return this.categoryFilters.get(category) || false;
+    return this.categoryFilters()[category] || false;
   }
 
   /**
    * Get count of enabled categories
    */
   getEnabledCount(): number {
-    let count = 0;
-    this.categoryFilters.forEach(isEnabled => {
-      if (isEnabled) count++;
-    });
-    return count;
+    return this.getEnabledCategories().length;
   }
 
   /**
    * Select all categories
    */
-  async selectAllCategories(): Promise<void> {
-    this.categoryFilters.forEach((_, category) => {
-      this.categoryFilters.set(category, true);
+  selectAllCategories(): void {
+    this.categoryFilters.set({
+      All: false,
+      Address: true,
+      Name: true,
+      Place: true,
+      Region: true,
+      Service: true,
+      Type: true
     });
-    this.autocompleteSubject.next(this.searchTerm);
-    if (this.searchTerm && this.searchTerm.trim().length > 0) {
-      this.performSearch(this.searchTerm);
+    this.autocompleteSubject.next(this.searchTerm());
+    if (this.searchTerm().trim().length > 0) {
+      void this.performSearch(this.searchTerm());
     }
   }
 
   /**
    * Deselect all categories
    */
-  async deselectAllCategories(): Promise<void> {
-    this.categoryFilters.forEach((_, category) => {
-      this.categoryFilters.set(category, false);
+  deselectAllCategories(): void {
+    this.categoryFilters.set({
+      All: false,
+      Address: false,
+      Name: false,
+      Place: false,
+      Region: false,
+      Service: false,
+      Type: false
     });
-    this.autocompleteSubject.next(this.searchTerm);
-    if (this.searchTerm && this.searchTerm.trim().length > 0) {
-      this.performSearch(this.searchTerm);
+    this.autocompleteSubject.next(this.searchTerm());
+    if (this.searchTerm().trim().length > 0) {
+      void this.performSearch(this.searchTerm());
     }
   }
 
@@ -250,8 +257,8 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Handle exact match toggle
    */
   onExactMatchChange(): void {
-    if (this.searchTerm && this.searchTerm.trim().length > 0) {
-      this.performSearch(this.searchTerm);
+    if (this.searchTerm().trim().length > 0) {
+      void this.performSearch(this.searchTerm());
     }
   }
 
@@ -259,8 +266,8 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Handle case sensitive toggle
    */
   onCaseSensitiveChange(): void {
-    if (this.searchTerm && this.searchTerm.trim().length > 0) {
-      this.performSearch(this.searchTerm);
+    if (this.searchTerm().trim().length > 0) {
+      void this.performSearch(this.searchTerm());
     }
   }
 
@@ -276,32 +283,30 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   async performSearch(term: string): Promise<void> {
     if (!term || term.trim().length === 0) {
-      this.searchResults = [];
-      this.groupedResults = [];
-      this.hasSearched = false;
-      this.expandedGroups.clear();
-      this.expandedResults.clear();
-      this.cdr.markForCheck();
+      this.searchResults.set([]);
+      this.groupedResults.set([]);
+      this.hasSearched.set(false);
+      this.expandedGroups.set(new Set<string>());
+      this.expandedResults.set(new Set<string>());
       return;
     }
 
-    this.isSearching = true;
-    this.hasSearched = true;
-    this.expandedGroups.clear();
-    this.expandedResults.clear();
-    this.cdr.markForCheck();
+    this.isSearching.set(true);
+    this.hasSearched.set(true);
+    this.expandedGroups.set(new Set<string>());
+    this.expandedResults.set(new Set<string>());
 
     try {
       const enabledCategories = this.getEnabledCategories();
-      this.searchResults = await this.searchService.searchMultipleCategories(term, enabledCategories, this.exactMatch, this.caseSensitive);
-      this.groupedResults = this.searchService.groupByMonth(this.searchResults);
+      const searchResults = await this.searchService.searchMultipleCategories(term, enabledCategories, this.exactMatch(), this.caseSensitive());
+      this.searchResults.set(searchResults);
+      this.groupedResults.set(this.searchService.groupByMonth(searchResults));
     } catch (error) {
       this.logger.error('Search error:', error);
-      this.searchResults = [];
-      this.groupedResults = [];
+      this.searchResults.set([]);
+      this.groupedResults.set([]);
     } finally {
-      this.isSearching = false;
-      this.cdr.markForCheck();
+      this.isSearching.set(false);
     }
   }
 
@@ -309,15 +314,14 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Clear search results and reset form
    */
   clearSearch(): void {
-    this.searchTerm = '';
-    this.searchResults = [];
-    this.groupedResults = [];
-    this.hasSearched = false;
-    this.expandedGroups.clear();
-    this.expandedResults.clear();
+    this.searchTerm.set('');
+    this.searchResults.set([]);
+    this.groupedResults.set([]);
+    this.hasSearched.set(false);
+    this.expandedGroups.set(new Set<string>());
+    this.expandedResults.set(new Set<string>());
     // Reset autocomplete suggestions
-    this.autocompleteSubject.next(this.searchTerm);
-    this.cdr.markForCheck();
+    this.autocompleteSubject.next(this.searchTerm());
   }
 
   /**
@@ -345,43 +349,51 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Get categories as array for template iteration
    */
   getCategoriesArray(): SearchCategory[] {
-    return Array.from(this.categoryFilters.keys());
+    return this.categories;
   }
 
   /**
    * Toggle group expansion
    */
   toggleGroup(monthKey: string): void {
-    if (this.expandedGroups.has(monthKey)) {
-      this.expandedGroups.delete(monthKey);
-    } else {
-      this.expandedGroups.add(monthKey);
-    }
+    this.expandedGroups.update(current => {
+      const next = new Set(current);
+      if (next.has(monthKey)) {
+        next.delete(monthKey);
+      } else {
+        next.add(monthKey);
+      }
+      return next;
+    });
   }
 
   /**
    * Check if group is expanded
    */
   isGroupExpanded(monthKey: string): boolean {
-    return this.expandedGroups.has(monthKey);
+    return this.expandedGroups().has(monthKey);
   }
 
   /**
    * Toggle result expansion to show trips
    */
   toggleResult(resultKey: string): void {
-    if (this.expandedResults.has(resultKey)) {
-      this.expandedResults.delete(resultKey);
-    } else {
-      this.expandedResults.add(resultKey);
-    }
+    this.expandedResults.update(current => {
+      const next = new Set(current);
+      if (next.has(resultKey)) {
+        next.delete(resultKey);
+      } else {
+        next.add(resultKey);
+      }
+      return next;
+    });
   }
 
   /**
    * Check if result is expanded
    */
   isResultExpanded(resultKey: string): boolean {
-    return this.expandedResults.has(resultKey);
+    return this.expandedResults().has(resultKey);
   }
 
   /**
@@ -395,7 +407,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Get total unique results count (not grouped)
    */
   getTotalResultsCount(): number {
-    return this.searchResults.length;
+    return this.searchResults().length;
   }
 
   /**
@@ -403,7 +415,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   getTotalTripsCount(): number {
     const uniqueTripIds = new Set<number>();
-    this.searchResults.forEach(result => {
+    this.searchResults().forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude) uniqueTripIds.add(trip.id);
       });
@@ -416,7 +428,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   getTotalEarnings(): number {
     const uniqueTrips = new Map<number, any>();
-    this.searchResults.forEach(result => {
+    this.searchResults().forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
           uniqueTrips.set(trip.id, trip);
@@ -434,25 +446,25 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Expand all groups
    */
   expandAll(): void {
-    this.groupedResults.forEach(group => {
-      this.expandedGroups.add(group.month);
-    });
+    this.expandedGroups.set(new Set(this.groupedResults().map(group => group.month)));
   }
 
   /**
    * Collapse all groups
    */
   collapseAll(): void {
-    this.expandedGroups.clear();
-    this.expandedResults.clear();
+    this.expandedGroups.set(new Set<string>());
+    this.expandedResults.set(new Set<string>());
   }
 
   /**
    * Check if all groups are expanded
    */
   areAllGroupsExpanded(): boolean {
-    if (this.groupedResults.length === 0) return false;
-    return this.groupedResults.every(group => this.expandedGroups.has(group.month));
+    const groupedResults = this.groupedResults();
+    if (groupedResults.length === 0) return false;
+    const expandedGroups = this.expandedGroups();
+    return groupedResults.every(group => expandedGroups.has(group.month));
   }
 
   /**
