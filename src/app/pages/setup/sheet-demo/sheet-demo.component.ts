@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -28,14 +28,13 @@ import { firstValueFrom } from 'rxjs';
 export class SheetDemoComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
 
-  creatingDemo: boolean = false;
+  creatingDemo = signal(false);
 
   constructor(
     private _dialog: MatDialog,
     private _snackBar: MatSnackBar,
     private _logger: LoggerService,
-    protected authService: AuthGoogleService,
-    private cdr: ChangeDetectorRef
+    protected authService: AuthGoogleService
   ) { }
 
   async createDemoSheet() {
@@ -45,8 +44,7 @@ export class SheetDemoComponent {
       return;
     }
 
-    this.creatingDemo = true;
-    this.cdr.markForCheck();
+    this.creatingDemo.set(true);
 
     const dialogRef = this._dialog.open(DataSyncModalComponent, {
       panelClass: 'custom-modalbox',
@@ -64,8 +62,7 @@ export class SheetDemoComponent {
       this._logger.error('Error creating demo spreadsheet', error);
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_ERROR, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     } finally {
-      this.creatingDemo = false;
-      this.cdr.markForCheck();
+      this.creatingDemo.set(false);
     }
   }
 }
