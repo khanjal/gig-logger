@@ -74,15 +74,15 @@ describe('HeaderComponent', () => {
   });
 
   it('toggles menu open/close', () => {
-    expect(component.isMenuOpen).toBeFalse();
+    expect(component.isMenuOpen()).toBeFalse();
     component.toggleMenu();
-    expect(component.isMenuOpen).toBeTrue();
+    expect(component.isMenuOpen()).toBeTrue();
     component.closeMenu();
-    expect(component.isMenuOpen).toBeFalse();
+    expect(component.isMenuOpen()).toBeFalse();
   });
 
   it('reports active route correctly', () => {
-    component.currentRoute = '/home';
+    component.currentRoute.set('/home');
     expect(component.isActiveRoute('/home')).toBeTrue();
     expect(component.isActiveRoute('/other')).toBeFalse();
   });
@@ -90,7 +90,7 @@ describe('HeaderComponent', () => {
   it('cycles theme via ThemeService', () => {
     const themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { preferenceChanges: of('system'), activeTheme$: of('light') });
     component['themeService'] = themeSpy as any;
-    component.themePreference = 'system';
+    component.themePreference.set('system');
     component.cycleTheme();
     expect(themeSpy.setTheme).toHaveBeenCalled();
   });
@@ -98,8 +98,8 @@ describe('HeaderComponent', () => {
   it('updateUnsavedCounts sets counts to 0 when not authenticated', async () => {
     // authSpy default returns false
     await (component as any).updateUnsavedCounts();
-    expect(component.unsavedTripsCount).toBe(0);
-    expect(component.unsavedShiftsCount).toBe(0);
+    expect(component.unsavedTripsCount()).toBe(0);
+    expect(component.unsavedShiftsCount()).toBe(0);
   });
 
   it('updateUnsavedCounts sets counts when authenticated', async () => {
@@ -109,8 +109,8 @@ describe('HeaderComponent', () => {
 
     await (component as any).updateUnsavedCounts();
 
-    expect(component.unsavedTripsCount).toBe(3);
-    expect(component.unsavedShiftsCount).toBe(1);
+    expect(component.unsavedTripsCount()).toBe(3);
+    expect(component.unsavedShiftsCount()).toBe(1);
   });
 
   it('ngOnInit initializes header and loads default sheet when authenticated', async () => {
@@ -121,20 +121,20 @@ describe('HeaderComponent', () => {
     // Call ngOnInit and wait for it to complete
     await component.ngOnInit();
 
-    expect(component.isLoading).toBeFalse();
-    expect(component.defaultSheet).toBeDefined();
-    expect(component.defaultSheet && (component.defaultSheet as any).id).toBe('sheet-1');
+    expect(component.isLoading()).toBeFalse();
+    expect(component.defaultSheet()).toBeDefined();
+    expect(component.defaultSheet() && (component.defaultSheet() as any).id).toBe('sheet-1');
   });
 
   it('themeLabel and themeIcon reflect preference and resolved theme', () => {
-    component.themePreference = 'dark';
+    component.themePreference.set('dark');
     expect(component.themeLabel).toBe('Dark');
 
-    component.themePreference = 'light';
-    component.resolvedTheme = 'light';
+    component.themePreference.set('light');
+    component.resolvedTheme.set('light');
     expect(component.themeIcon).toBe('light_mode');
 
-    component.themePreference = 'system';
+    component.themePreference.set('system');
     expect(component.themeIcon).toBe('brightness_auto');
   });
 
@@ -144,12 +144,12 @@ describe('HeaderComponent', () => {
 
     (component as any).setLoadingState(true);
     tick(0); // process immediate show
-    expect(component.isLoading).toBeTrue();
+    expect(component.isLoading()).toBeTrue();
 
     (component as any).setLoadingState(false);
     tick(299);
-    expect(component.isLoading).toBeTrue();
+    expect(component.isLoading()).toBeTrue();
     tick(1);
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
   }));
 });

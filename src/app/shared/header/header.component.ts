@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, signal } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -36,17 +36,17 @@ import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indic
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() error = new EventEmitter<Error>();
   
-  defaultSheet: ISpreadsheet | undefined;
-  isAuthenticated = false;
+  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  isAuthenticated = signal(false);
   // True when user can't sync remotely but has local spreadsheets
-  localOnlyMode = false;
-  isLoading = false;
-  currentRoute = '/';
-  isMenuOpen = false;
+  localOnlyMode = signal(false);
+  isLoading = signal(false);
+  currentRoute = signal('/');
+  isMenuOpen = signal(false);
 
   // Notification badge counts for unsaved trips and shifts
-  public unsavedTripsCount: number = 0;
-  public unsavedShiftsCount: number = 0;
+  public unsavedTripsCount = signal(0);
+  public unsavedShiftsCount = signal(0);
   
   // Polling interval for unsaved counts (ms)
   public static readonly DEFAULT_UNSAVED_POLL_INTERVAL = 5000;
@@ -60,8 +60,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private spreadsheetsSubscription?: { unsubscribe: () => void };
 
   // Theme state
-  themePreference: ThemePreference = 'system';
-  resolvedTheme: 'light' | 'dark' = 'light';
+  themePreference = signal<ThemePreference>('system');
+  resolvedTheme = signal<'light' | 'dark'>('light');
   toolbarGradient = 'linear-gradient(135deg, var(--primary-800), var(--primary-900))'; // uses theme tokens for gradient
 
   constructor(
@@ -72,8 +72,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private shiftService: ShiftService,
     private tripService: TripService,
     private logger: LoggerService,
-    private themeService: ThemeService,
-    private cdr: ChangeDetectorRef
+    private themeService: ThemeService
   ) { 
     // Subscribe to header updates with automatic cleanup on destroy
     this._commonService.onHeaderLinkUpdate
@@ -89,9 +88,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe((event: NavigationEnd) => {
-        this.currentRoute = event.url;
+        this.currentRoute.set(event.url);
         this.setLoadingState(false); // Hide loading when navigation completes
-        this.cdr.markForCheck();
       });
     
     // Start polling for unsaved counts at configurable interval with automatic cleanup
@@ -101,28 +99,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.spreadsheetsSubscription = this._spreadsheetService.spreadsheets$.subscribe((sheets: ISpreadsheet[]) => {
       const availableSheets = sheets ?? [];
-      this.defaultSheet = availableSheets.find((sheet: ISpreadsheet) => sheet.default === 'true');
+      this.defaultSheet.set(availableSheets.find((sheet: ISpreadsheet) => sheet.default === 'true'));
 
-      if (!this.isAuthenticated) {
-        this.localOnlyMode = availableSheets.length > 0;
+      if (!this.isAuthenticated()) {
+        this.localOnlyMode.set(availableSheets.length > 0);
       }
-
-      this.cdr.markForCheck();
     });
 
     // Theme updates
     this.themeService.preferenceChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(preference => {
-        this.themePreference = preference;
-        this.cdr.markForCheck();
+        this.themePreference.set(preference);
       });
 
     this.themeService.activeTheme$
       .pipe(takeUntil(this.destroy$))
       .subscribe(active => {
-        this.resolvedTheme = active;
-        this.cdr.markForCheck();
+        this.resolvedTheme.set(active);
       });
   }
 
@@ -144,35 +138,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
-      this.cdr.markForCheck();
     }
   }
 
   private async initializeHeader(): Promise<void> {
     // Check authentication state
-    this.isAuthenticated = await this.authService.canSync();
+    this.isAuthenticated.set(await this.authService.canSync());
     // Determine whether the app is in local-only mode (signed out or offline but sheets exist)
     try {
       const sheets = (await this._spreadsheetService.getSpreadsheets()) || [];
-      this.localOnlyMode = !this.isAuthenticated && sheets.length > 0;
+      this.localOnlyMode.set(!this.isAuthenticated() && sheets.length > 0);
     } catch (e) {
-      this.localOnlyMode = false;
+      this.localOnlyMode.set(false);
     }
 
     // Regardless of auth, try to locate the default sheet so navigation can show when a sheet exists
     try {
       const defaultSheets = (await this._spreadsheetService.querySpreadsheets('default', 'true')) || [];
-      this.defaultSheet = defaultSheets[0];
+      this.defaultSheet.set(defaultSheets[0]);
     } catch (e) {
       // ignore - defaultSheet remains whatever it was
     }
 
     // Load initial data if authenticated
-    if (this.isAuthenticated) {
+    if (this.isAuthenticated()) {
       await this.load();
     }
-
-    this.cdr.markForCheck();
   }
 
   public async load(): Promise<void> {
@@ -192,27 +183,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // Don't throw - allow app to continue with degraded functionality
     } finally {
       this.setLoadingState(false);
-      this.cdr.markForCheck();
     }
   }
 
   private async loadHeaderData(): Promise<void> {
     // Only load data if authenticated
-    if (this.isAuthenticated) {
+    if (this.isAuthenticated()) {
       const sheets = (await this._spreadsheetService.querySpreadsheets("default", "true")) || [];
-      this.defaultSheet = sheets[0];
-      this.cdr.markForCheck();
+      this.defaultSheet.set(sheets[0]);
     }
   }
   
   private async updateUnsavedCounts() {
     // Check authentication state before updating
-    this.isAuthenticated = await this.authService.canSync();
+    this.isAuthenticated.set(await this.authService.canSync());
     const trips = (await this.tripService.getUnsaved()) || [];
     const shifts = (await this.shiftService.getUnsavedShifts()) || [];
-    this.unsavedTripsCount = trips.length;
-    this.unsavedShiftsCount = shifts.length;
-    this.cdr.markForCheck();
+    this.unsavedTripsCount.set(trips.length);
+    this.unsavedShiftsCount.set(shifts.length);
   }
   
   /**
@@ -222,8 +210,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private setLoadingState(loading: boolean): void {
     // Use setTimeout to ensure smooth animations
     setTimeout(() => {
-      this.isLoading = loading;
-      this.cdr.markForCheck();
+      this.isLoading.set(loading);
     }, loading ? 0 : 300); // Delay hiding to show completion
   }
     /**
@@ -232,20 +219,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * @returns True if the current route matches
    */
   public isActiveRoute(route: string): boolean {
-    return this.currentRoute === route || 
-           (route === '/' && this.currentRoute === '/');
+      return this.currentRoute() === route || 
+        (route === '/' && this.currentRoute() === '/');
   }
 
   /**
    * Toggles the mobile menu open/closed state
    */
   public toggleMenu(): void {
-    this.isMenuOpen = !this.isMenuOpen;
+    this.isMenuOpen.update((open) => !open);
   }  /**
    * Closes the mobile menu
    */
   public closeMenu(): void {
-    this.isMenuOpen = false;
+    this.isMenuOpen.set(false);
   }
 
   ngOnDestroy(): void {
@@ -257,13 +244,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public cycleTheme(): void {
     const order: ThemePreference[] = ['light', 'dark', 'system'];
-    const currentIndex = order.indexOf(this.themePreference);
+    const currentIndex = order.indexOf(this.themePreference());
     const next = order[(currentIndex + 1) % order.length];
     this.themeService.setTheme(next);
   }
 
   public get themeLabel(): string {
-    switch (this.themePreference) {
+    switch (this.themePreference()) {
       case 'dark':
         return 'Dark';
       case 'light':
@@ -274,9 +261,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public get themeIcon(): string {
-    if (this.themePreference === 'system') {
+    if (this.themePreference() === 'system') {
       return 'brightness_auto';
     }
-    return this.resolvedTheme === 'dark' ? 'dark_mode' : 'light_mode';
+    return this.resolvedTheme() === 'dark' ? 'dark_mode' : 'light_mode';
   }
 }
