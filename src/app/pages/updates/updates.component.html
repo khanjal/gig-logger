@@ -5,7 +5,7 @@
   </div>
 
   <div class="updates-list">
-    <div *ngFor="let entry of updates; let last = last" class="update-entry">
+    <div *ngFor="let entry of updates(); let last = last" class="update-entry">
       <div class="update-date">
         <span class="date-label">{{ entry.dateLabel }}</span>
         <span *ngIf="entry.isWeekly" class="weekly-badge">Weekly Summary</span>
