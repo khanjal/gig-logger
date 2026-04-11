@@ -49,6 +49,7 @@ Progress updates:
 - [~] Setup `sheet-link/sheet-list` refactored to signal-backed list/selection/loading state and removed manual `markForCheck` usage.
 - [~] Setup `sheet-link` refactored to async/await dialog workflows and removed manual `markForCheck` usage.
 - [~] Setup page state (`isAuthenticated`, operation flags, spreadsheet/default state, advanced toggle, version) refactored to signals and manual `markForCheck` removed.
+- [~] Setup confirm/data-sync dialog handlers refactored from `afterClosed().subscribe(...)` to `async/await` with `firstValueFrom(...)`.
 - [ ] Continue Step 2 conversion on metrics/stats where stream composition gives the biggest benefit.
 
 ### 3) Introduce a zoneless-safe UI state pattern

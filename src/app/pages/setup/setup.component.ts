@@ -38,6 +38,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseCardComponent } from '@components/base/base-card/base-card.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-setup',
@@ -249,24 +250,22 @@ export class SetupComponent {
   }
 
   async loadSheetDialog(inputValue: string) {
-        const canSync = await this.authService.canSync();
-        if (!canSync) {
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
-          return;
-        }
-
-        let dialogRef = this.dialog.open(DataSyncModalComponent, {
-            panelClass: 'custom-modalbox',
-            data: inputValue
-        });
-  
-        dialogRef.afterClosed().subscribe(async result => {
-  
-            if (result) {
-                await this.load();
-            }
-        });
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
     }
+
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
+      panelClass: 'custom-modalbox',
+      data: inputValue
+    });
+
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.load();
+    }
+  }
 
   async confirmDeleteAndReloadDialog() {
     const canSync = await this.authService.canSync();
@@ -288,11 +287,10 @@ export class SetupComponent {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.deleteAndReload();
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.deleteAndReload();
+    }
   }
 
   async confirmDeleteAllDialog() {
@@ -310,11 +308,10 @@ export class SetupComponent {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.deleteAllData();
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.deleteAllData();
+    }
   }
 
   async confirmUnlinkSpreadsheetDialog(spreadsheet: ISpreadsheet) {
@@ -355,10 +352,9 @@ export class SetupComponent {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.unlinkSpreadsheet(spreadsheet);
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.unlinkSpreadsheet(spreadsheet);
+    }
   }
 }
