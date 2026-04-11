@@ -84,8 +84,13 @@ export class ShiftsComponent implements OnInit {
       this.defaultSheet = (await this._sheetService.querySpreadsheets('default', 'true'))[0];
       this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
       // If there are no shifts at all, open the add form by default so users can create one.
-      if ((this.shifts ?? []).length === 0) {
-        this.showAddForm = true;
+      if ((this.shifts ?? []).length === 0 && !this.showAddForm && !this.editId) {
+        // Defer UI branch toggle to the next macrotask to avoid NG0100
+        // while Angular is still finishing the current check cycle.
+        setTimeout(() => {
+          this.showAddForm = true;
+          this.cdr.markForCheck();
+        });
       }
       this.cdr.markForCheck();
     } finally {
