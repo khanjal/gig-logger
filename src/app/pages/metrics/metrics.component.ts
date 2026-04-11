@@ -1,5 +1,5 @@
 // Imports
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ThemeService } from '@services/theme.service';
@@ -170,7 +170,11 @@ export class MetricsComponent implements OnInit, OnDestroy {
   // Date Range
   range = new FormGroup({ start: new FormControl(), end: new FormControl() });
 
-  constructor(private shiftService: ShiftService, private themeService: ThemeService) {}
+  constructor(
+    private shiftService: ShiftService,
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   private getTextColor(): string {
     // Provide sensible fallbacks depending on the active theme so tests
@@ -252,6 +256,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered, aggType);
     this.updateYearlyComparison(filtered);
+    this.cdr.markForCheck();
   }
 
   private sortLabels(labels: string[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): string[] {
@@ -456,6 +461,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
     this.themeSubscription = this.themeService.activeTheme$.subscribe(() => {
       this.updateChartColors();
       void this.filterByDate();
+      this.cdr.markForCheck();
     });
   }
 

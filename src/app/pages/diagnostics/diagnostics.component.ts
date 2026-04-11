@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -61,7 +61,8 @@ export class DiagnosticsComponent implements OnInit {
     private _logger: LoggerService,
     private _gigCalculator: GigCalculatorService,
     private _gigWorkflow: GigWorkflowService,
-    private _uiPreferences: UiPreferencesService
+    private _uiPreferences: UiPreferencesService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -73,11 +74,14 @@ export class DiagnosticsComponent implements OnInit {
     this.isLoading = true;
     this.dataDiagnostics = [];
     this.selectedValue = [];
+    this.cdr.markForCheck();
 
     try {
       await this.checkDataIntegrity();
+      this.cdr.markForCheck();
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -371,6 +375,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Disable autosave after making data fixes to avoid unintended background syncs
     this.disableAutoSave();
+    this.cdr.markForCheck();
   }
 
   async fixShiftDuration(shift: IShift) {
@@ -382,6 +387,7 @@ export class DiagnosticsComponent implements OnInit {
     (shift as any).fixed = true;
     this.decrementDiagnosticCount('Shifts Missing Time Duration');
     this.disableAutoSave();
+    this.cdr.markForCheck();
   }
 
   async fixTripDuration(trip: ITrip) {
@@ -390,10 +396,12 @@ export class DiagnosticsComponent implements OnInit {
     (trip as any).fixed = true;
     this.decrementDiagnosticCount('Trips Missing Duration');
     this.disableAutoSave();
+    this.cdr.markForCheck();
   }
 
   async bulkFixShiftDurations() {
     this.isBulkFixing = true;
+    this.cdr.markForCheck();
     try {
       // Ensure autosave is disabled before long-running batch updates
       this.disableAutoSave();
@@ -412,11 +420,13 @@ export class DiagnosticsComponent implements OnInit {
       await this.runDiagnostics();
     } finally {
       this.isBulkFixing = false;
+      this.cdr.markForCheck();
     }
   }
 
   async bulkFixTripDurations() {
     this.isBulkFixing = true;
+    this.cdr.markForCheck();
     try {
       // Ensure autosave is disabled before long-running batch updates
       this.disableAutoSave();
@@ -430,6 +440,7 @@ export class DiagnosticsComponent implements OnInit {
       await this.runDiagnostics();
     } finally {
       this.isBulkFixing = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -439,6 +450,7 @@ export class DiagnosticsComponent implements OnInit {
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
     this.disableAutoSave();
+    this.cdr.markForCheck();
   }
 
   async createShiftFromTrip(trip: ITrip) {
@@ -457,6 +469,7 @@ export class DiagnosticsComponent implements OnInit {
     if (!trips || trips.length === 0) return;
 
     this.isBulkFixing = true;
+    this.cdr.markForCheck();
     try {
       // Ensure autosave is disabled during batch operation
       this.disableAutoSave();
@@ -500,8 +513,10 @@ export class DiagnosticsComponent implements OnInit {
       // Update diagnostics: mark orphaned trips as fixed for each created shift
       const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
       DiagnosticHelper.markOrphanedTripsFixed(diagnostic, newShifts.map(s => s.key));
+      this.cdr.markForCheck();
     } finally {
       this.isBulkFixing = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -532,6 +547,7 @@ export class DiagnosticsComponent implements OnInit {
     (shift as any).markedForDelete = true;
     this.selectedShiftToDelete[groupIndex] = undefined as any;
     this.disableAutoSave();
+    this.cdr.markForCheck();
   }
 
   /**
