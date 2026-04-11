@@ -65,7 +65,9 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 interface IShiftSummaryOption {
   shiftKey: string;
   rowId: number;
-  title: string;
+  dateLabel: string;
+  serviceLabel: string;
+  numberLabel: string;
   subtitle: string;
 }
 
@@ -559,7 +561,9 @@ export class TripFormComponent implements OnInit {
     return {
       shiftKey: shift.key,
       rowId: shift.rowId,
-      title: `${DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10)} - ${shift.service}${shiftNumberSuffix}`,
+      dateLabel: DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10),
+      serviceLabel: shift.service,
+      numberLabel: shiftNumberSuffix,
       subtitle: `Trips: ${shift.totalTrips || 0} | Total: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(shift.grandTotal || 0)}`
     };
   }
