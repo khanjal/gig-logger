@@ -1,6 +1,6 @@
 // Angular core imports
 import { ViewportScroller, NgFor, NgIf, CommonModule } from '@angular/common';
-import { afterNextRender, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, runInInjectionContext, signal, ViewChild, inject } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, runInInjectionContext, signal, ViewChild, inject } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -172,7 +172,8 @@ export class TripFormComponent implements OnInit {
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
-      private _viewportScroller: ViewportScroller
+      private _viewportScroller: ViewportScroller,
+      private cdr: ChangeDetectorRef
     ) {}
 
   async ngOnInit(): Promise<void> {
@@ -183,7 +184,7 @@ export class TripFormComponent implements OnInit {
     // to avoid NG0100 in dev mode under zoneless change detection.
     runInInjectionContext(this.injector, () => {
       afterNextRender(() => {
-        void this.load();
+        void this.load().finally(() => this.cdr.markForCheck());
       });
     });
   }
@@ -571,7 +572,7 @@ export class TripFormComponent implements OnInit {
       dateLabel: DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10),
       serviceLabel: shift.service,
       numberLabel: shiftNumberSuffix,
-      subtitle: `Trips: ${shift.totalTrips || 0} | Total: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(shift.grandTotal || 0)}`
+      subtitle: `Trips: ${shift.totalTrips || 0} | Total: $${NumberHelper.formatNumber(shift.grandTotal || 0)}`
     };
   }
 

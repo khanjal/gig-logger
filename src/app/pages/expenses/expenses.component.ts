@@ -109,10 +109,6 @@ export class ExpensesComponent implements OnInit {
     await this.loadExpenses();
   }
 
-  getToday(): string {
-    return new Date().toISOString().slice(0, 10);
-  }
-
   private getTodayDate(): Date {
     return new Date();
   }

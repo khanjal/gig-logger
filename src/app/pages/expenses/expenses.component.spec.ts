@@ -108,11 +108,14 @@ describe('ExpensesComponent', () => {
     });
   });
 
-  describe('getToday', () => {
-    it('returns today in ISO format', () => {
-      const today = component.getToday();
-      
-      expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  describe('date defaults', () => {
+    it('initializes date control with a Date value', async () => {
+      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
+
+      await component.ngOnInit();
+
+      const dateValue = component.expenseForm.get('date')?.value;
+      expect(dateValue instanceof Date).toBeTrue();
     });
   });
 

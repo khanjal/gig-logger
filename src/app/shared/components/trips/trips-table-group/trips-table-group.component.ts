@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
@@ -29,7 +29,8 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
 
   constructor(
     private _tripService: TripService,
-    private _weekdayService: WeekdayService
+    private _weekdayService: WeekdayService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -60,7 +61,10 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
 
   private async loadAndCheck(): Promise<void> {
     await this.load();
-    queueMicrotask(() => this.checkScrollable());
+    queueMicrotask(() => {
+      this.checkScrollable();
+      this.cdr.markForCheck();
+    });
   }
 
   async load() {
