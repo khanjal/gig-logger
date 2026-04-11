@@ -15,33 +15,34 @@ Move from manual change-detection patching to robust, testable, and reactive sta
 ## Work Plan
 
 ### 1) Move high-churn page state to signals first
-- [ ] Convert mutable page state and manual markForCheck calls to writable/computed signals.
-- [ ] Prioritize pages:
+- [x] Convert mutable page state and manual markForCheck calls to writable/computed signals.
+- [x] Prioritize pages:
   - src/app/pages/trips/trips.component.ts
   - src/app/pages/shifts/shifts.component.ts
   - src/app/pages/expenses/expenses.component.ts
   - src/app/pages/search/search.component.ts
-- [ ] Define a repeatable migration pattern for other pages.
+- [x] Define a repeatable migration pattern for other pages.
 
 Progress updates:
-- [~] Shifts reference migration started (signals for high-churn UI state and template signal bindings).
-- [~] Search migration started (signals for high-churn UI state, filter state, and template signal bindings).
-- [~] Trips migration started (signals for high-churn UI state, route/edit state, and template signal bindings).
-- [~] Expenses migration started (signals for high-churn page state and template signal bindings).
-- [ ] Validate runtime behavior and use Shifts as pattern for Search/Trips/Expenses.
+- [x] Shifts reference migration completed (signals for high-churn UI state and template signal bindings).
+- [x] Search migration completed (signals for high-churn UI state, filter state, and template signal bindings).
+- [x] Trips migration completed (signals for high-churn UI state, route/edit state, and template signal bindings).
+- [x] Expenses migration completed (signals for high-churn page state and template signal bindings).
+- [x] Runtime behavior validated and Shifts pattern applied across Search/Trips/Expenses.
 
 ### 2) Standardize async data flow with RxJS + async pipe or toSignal
-- [ ] Replace imperative load chains with single reactive pipelines where practical.
+- [~] Replace imperative load chains with single reactive pipelines where practical.
 - [ ] Prioritize pages:
   - src/app/pages/metrics/metrics.component.ts
   - src/app/pages/stats/stats.component.ts
   - src/app/pages/pending-changes/pending-changes.component.ts
-- [ ] Reduce manual lifecycle and subscription boilerplate.
+- [~] Reduce manual lifecycle and subscription boilerplate.
 
 Progress updates:
 - [~] Pending Changes refactored to signal-based state and `toSignal` query param handling.
 - [~] Metrics refactored to lifecycle-safe reactive subscriptions with `takeUntilDestroyed` (removed manual subscription tracking).
 - [~] Stats refactored to signal-backed page state and template bindings (removed manual `markForCheck` usage).
+- [~] Home refactored to signal-backed state and lifecycle-safe browser event/update subscriptions (removed manual CD triggers and subscription cleanup code).
 - [ ] Continue Step 2 conversion on metrics/stats where stream composition gives the biggest benefit.
 
 ### 3) Introduce a zoneless-safe UI state pattern
@@ -79,7 +80,7 @@ Progress updates:
 - [ ] Prevent reintroduction of zone-based assumptions.
 
 ## Current Focus
-- [~] Complete signal-first migration for one reference page (Shifts started).
+- [~] Continue Step 2 stream composition cleanup and targeted runtime validation on converted pages.
 
 ## Notes
 - Keep commits small and build-validated.
