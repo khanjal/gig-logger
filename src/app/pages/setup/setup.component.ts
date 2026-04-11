@@ -1,5 +1,5 @@
 // Angular Core
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
@@ -65,16 +65,16 @@ import { BaseCardComponent } from '@components/base/base-card/base-card.componen
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
-  isAuthenticated = false;
-  deleting: boolean = false;
-  reloading: boolean = false;
-  setting: boolean = false;
-  spreadsheets: ISpreadsheet[] | undefined;
-  defaultSheet: ISpreadsheet | undefined;
-  unsavedData: boolean = false;
-  showAdvanced: boolean = false;
+  isAuthenticated = signal(false);
+  deleting = signal(false);
+  reloading = signal(false);
+  setting = signal(false);
+  spreadsheets = signal<ISpreadsheet[] | undefined>(undefined);
+  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  unsavedData = signal(false);
+  showAdvanced = signal(false);
 
-  version: string = '';
+  version = signal('');
 
   constructor(
     public dialog: MatDialog,
@@ -86,28 +86,25 @@ export class SetupComponent {
     private _tripService: TripService,
     private _timerService: TimerService,
     protected authService: AuthGoogleService,
-    private versionService: VersionService,
-    private cdr: ChangeDetectorRef
+    private versionService: VersionService
   ) { }
 
 
   async ngOnInit(): Promise<void> {
-    this.isAuthenticated = await this.authService.canSync();
+    this.isAuthenticated.set(await this.authService.canSync());
     await this.load();
     // Load formatted version string (YYYYMMDD.build)
-    this.version = await this.versionService.getFormattedVersion();
+    this.version.set(await this.versionService.getFormattedVersion());
 
     // Append environment suffix for test subdomain installs
     try {
       const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
       if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
-        this.version = `${this.version}-test`;
+        this.version.set(`${this.version()}-test`);
       }
     } catch (e) {
       // ignore
     }
-
-    this.cdr.markForCheck();
   }
 
   /**
@@ -124,29 +121,25 @@ export class SetupComponent {
   }
 
   public async load() {
-    this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
-    this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
-    this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    this.unsavedData.set((await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0);
+    this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
+    this.defaultSheet.set((await this._spreadsheetService.querySpreadsheets("default", "true"))[0]);
     this.updateHeader();
-    this.cdr.markForCheck();
   }
 
   public async reload() {
     await this.load();
-    if (!this.defaultSheet?.id) {
+    if (!this.defaultSheet()?.id) {
       return;
     }
 
-    this.reloading = true;
-    this.cdr.markForCheck();
+    this.reloading.set(true);
     await this.loadSheetDialog('load');
-    this.reloading = false;
-    this.cdr.markForCheck();
+    this.reloading.set(false);
   }
 
   public async setDefault(spreadsheet: ISpreadsheet) {
-    this.setting = true;
-    this.cdr.markForCheck();
+    this.setting.set(true);
     // Make current default not default
     let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
     
@@ -159,13 +152,11 @@ export class SetupComponent {
     await this._spreadsheetService.update(spreadsheet);
     this.load();
     this.reload();
-    this.setting = false;
-    this.cdr.markForCheck();
+    this.setting.set(false);
   }
 
   public async unlinkSpreadsheet(spreadsheet: ISpreadsheet) {
-    this.deleting = true;
-    this.cdr.markForCheck();
+    this.deleting.set(true);
     
     // Get all spreadsheets
     const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
@@ -178,53 +169,48 @@ export class SetupComponent {
     } else if (isDefaultSheet && !isOnlySheet) {
       // Cannot unlink default sheet when there are others - user must set another as default first
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
-      this.deleting = false;
-      this.cdr.markForCheck();
+      this.deleting.set(false);
       return;
     } else {
       // Non-default sheet, just unlink it
       await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
     }
 
-    this.deleting = false;
+    this.deleting.set(false);
     await this.load();
-    this.cdr.markForCheck();
   }
 
   public async deleteAllData() {
-    this.deleting = true;
-    this.cdr.markForCheck();
+    this.deleting.set(true);
     this._spreadsheetService.deleteData();
 
     await this._timerService.delay(1000);
 
-    this.spreadsheets = [];
-    this.deleting = false;
+    this.spreadsheets.set([]);
+    this.deleting.set(false);
 
     await this.load();
-    this.cdr.markForCheck();
   }
 
   public async deleteAndReload() {
-    this.deleting = true;
-    this.reloading = true;
-    this.setting = true;
-    this.cdr.markForCheck();
+    this.deleting.set(true);
+    this.reloading.set(true);
+    this.setting.set(true);
     
     // Store current spreadsheets.
-    this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
+    this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
     this._spreadsheetService.deleteData();
 
     // Need a delay to delete DBs and reopen them.
     await this._timerService.delay(2000);
 
     // Add spreadsheets back to DB
-    for (const spreadsheet of this.spreadsheets) {
+    for (const spreadsheet of this.spreadsheets() ?? []) {
       this._logger.info(`Adding spreadsheet: ${spreadsheet.name}`);
       await this._spreadsheetService.update(spreadsheet);
     };
 
-    if (!this.defaultSheet?.id) {
+    if (!this.defaultSheet()?.id) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.RELOAD_MANUALLY);
       return;
     }
@@ -233,23 +219,20 @@ export class SetupComponent {
 
     await this.reload();
 
-    this.deleting = false;
-    this.reloading = false;
-    this.setting = false;
-    this.cdr.markForCheck();
+    this.deleting.set(false);
+    this.reloading.set(false);
+    this.setting.set(false);
   }
 
   public async deleteLocalData() {
-    this.deleting = true;
-    this.cdr.markForCheck();
+    this.deleting.set(true);
     this._spreadsheetService.deleteLocalData();
-    this.deleting = false;    
+    this.deleting.set(false);
     localStorage.clear();
 
     openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
 
     await this.load();
-    this.cdr.markForCheck();
   }
   public getDataSize() {
     /**

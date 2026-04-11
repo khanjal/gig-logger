@@ -48,6 +48,7 @@ Progress updates:
 - [~] Setup subcomponents (`sheet-quota`, `sheet-demo`, `sheet-add-form`) refactored to signal-backed UI flags/values and removed manual `markForCheck` usage.
 - [~] Setup `sheet-link/sheet-list` refactored to signal-backed list/selection/loading state and removed manual `markForCheck` usage.
 - [~] Setup `sheet-link` refactored to async/await dialog workflows and removed manual `markForCheck` usage.
+- [~] Setup page state (`isAuthenticated`, operation flags, spreadsheet/default state, advanced toggle, version) refactored to signals and manual `markForCheck` removed.
 - [ ] Continue Step 2 conversion on metrics/stats where stream composition gives the biggest benefit.
 
 ### 3) Introduce a zoneless-safe UI state pattern
