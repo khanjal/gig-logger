@@ -145,6 +145,7 @@ export class TripFormComponent implements OnInit {
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
   selectedShift: IShift | undefined;
+  selectedShiftDisplay: IShift | undefined;
 
   title: string = "Add Trip";
 
@@ -244,6 +245,7 @@ export class TripFormComponent implements OnInit {
   
     // Handle dependent logic
     this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
+    this.selectedShiftDisplay = this.createShiftSnapshot(this.selectedShift);
     await this.selectPlace();
     await this.showNameAddresses();
     await this.showAddressNames();
@@ -282,6 +284,7 @@ export class TripFormComponent implements OnInit {
       }
       if (lastUsedShift) {
         this.selectedShift = lastUsedShift;
+        this.selectedShiftDisplay = this.createShiftSnapshot(lastUsedShift);
       }
 
       const places = await this._placeService.list();
@@ -393,6 +396,8 @@ export class TripFormComponent implements OnInit {
   public async onShiftSelected(value: IShift | null | undefined) {
     if (value) {
       this.isNewShift = false;
+      this.selectedShift = value;
+      this.selectedShiftDisplay = this.createShiftSnapshot(value);
       this.tripForm.controls.service.clearValidators();
       this.tripForm.controls.service.updateValueAndValidity();
       this.tripForm.controls.region.setValue(this.data.region ?? value.region);
@@ -400,6 +405,8 @@ export class TripFormComponent implements OnInit {
     }
 
     this.isNewShift = true;
+    this.selectedShift = undefined;
+    this.selectedShiftDisplay = undefined;
     this.tripForm.controls.service.setValidators([Validators.required]);
 
     const shifts = (await this._shiftService.list()).reverse();
@@ -528,6 +535,21 @@ export class TripFormComponent implements OnInit {
   
   compareShifts(o1: IShift, o2: IShift): boolean {
     return ShiftHelper.compareShifts(o1, o2);
+  }
+
+  private createShiftSnapshot(shift: IShift | null | undefined): IShift | undefined {
+    if (!shift) {
+      return undefined;
+    }
+
+    return {
+      ...shift,
+      date: shift.date,
+      service: shift.service,
+      number: shift.number,
+      totalTrips: shift.totalTrips,
+      grandTotal: shift.grandTotal
+    };
   }
 
 
