@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -29,7 +29,8 @@ export class SheetLinkComponent {
     private _spreadsheetService: SpreadsheetService,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private _logger: LoggerService
+    private _logger: LoggerService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   openCreateSheetDialog() {
@@ -62,6 +63,7 @@ export class SheetLinkComponent {
             this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
           }
+          this.cdr.markForCheck();
         });
       }
       // result is null if dialog was cancelled
@@ -88,6 +90,7 @@ export class SheetLinkComponent {
 
         this.linkSheet(sheetData);
       }
+      this.cdr.markForCheck();
     });
   }
 
@@ -104,11 +107,14 @@ export class SheetLinkComponent {
         }).then(() => {
           openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
           this.parentReload.emit({ mode: 'reload' });
+          this.cdr.markForCheck();
         }).catch((error) => {
           this._logger.error('Error linking sheet', { error });
           openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });
+          this.cdr.markForCheck();
         });
       }
+      this.cdr.markForCheck();
     });
   }
 }

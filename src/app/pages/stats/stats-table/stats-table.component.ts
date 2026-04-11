@@ -17,7 +17,7 @@ export class StatsTableComponent implements OnInit {
 
   displayedColumns: string[] = [];
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.displayedColumns = ['name', 'trips', 'distance', 'pay', 'tips', 'bonus', 'total', 'cash', 'time', 'amountPerTrip', 'amountPerDistance'];
   }
 
