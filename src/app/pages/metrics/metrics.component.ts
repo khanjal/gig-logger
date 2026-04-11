@@ -1,5 +1,5 @@
 // Imports
-import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -58,15 +58,15 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
 })
 export class MetricsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  shifts: any[] = [];
+  shifts = signal<any[]>([]);
   private readonly destroyRef = inject(DestroyRef);
 
   // Chart Data
-  tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] };
-  distanceData: ChartData<'line'> = { labels: [], datasets: [] };
-  payData: ChartData<'bar'> = { labels: [], datasets: [] };
-  dailyEarningsData: ChartData<'bar'> = { labels: [], datasets: [] };
-  servicePieData: ChartData<'pie'> = { labels: [], datasets: [] };
+  tripsData = signal<ChartData<'bar'>>({ labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] });
+  distanceData = signal<ChartData<'line'>>({ labels: [], datasets: [] });
+  payData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
+  dailyEarningsData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
+  servicePieData = signal<ChartData<'pie'>>({ labels: [], datasets: [] });
   yoyData: ChartData<'bar'> = { labels: [], datasets: [] };
 
   // Chart Options
@@ -170,8 +170,7 @@ export class MetricsComponent implements OnInit {
 
   constructor(
     private shiftService: ShiftService,
-    private themeService: ThemeService,
-    private cdr: ChangeDetectorRef
+    private themeService: ThemeService
   ) {}
 
   private getTextColor(): string {
@@ -230,7 +229,7 @@ export class MetricsComponent implements OnInit {
     const startYMD = this.range.value.start ? DateHelper.toISO(new Date(this.range.value.start)) : '';
     const endYMD = this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '';
     // Use the same DB query as stats: inclusive between
-    let filtered = this.shifts;
+    let filtered = this.shifts();
     
     if (startYMD || endYMD) {
       filtered = await this.shiftService.getShiftsBetweenDates(startYMD, endYMD);
@@ -254,7 +253,6 @@ export class MetricsComponent implements OnInit {
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered, aggType);
     this.updateYearlyComparison(filtered);
-    this.cdr.markForCheck();
   }
 
   private sortLabels(labels: string[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): string[] {
@@ -288,7 +286,7 @@ export class MetricsComponent implements OnInit {
     return labels;
   }
 
-  updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateCharts(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       // Always use local date for label
@@ -320,7 +318,7 @@ export class MetricsComponent implements OnInit {
       grouped[label].cash += s.totalCash || 0;
     });
     const labels = this.sortLabels(Object.keys(grouped), aggType);
-    this.tripsData = {
+    this.tripsData.set({
       labels,
       datasets: [{
         label: 'Total Trips',
@@ -330,8 +328,8 @@ export class MetricsComponent implements OnInit {
         borderWidth: 2,
         datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } }
       }]
-    };
-    this.distanceData = {
+    });
+    this.distanceData.set({
       labels,
       datasets: [{
         label: 'Total Distance',
@@ -339,8 +337,8 @@ export class MetricsComponent implements OnInit {
         borderColor: this.cssVar('--color-success'),
         fill: false,
       }]
-    };
-    this.payData = {
+    });
+    this.payData.set({
       labels,
       datasets: [
         { label: 'Pay', data: labels.map(l => grouped[l].pay), backgroundColor: this.cssVar('--color-warning') },
@@ -348,10 +346,10 @@ export class MetricsComponent implements OnInit {
         { label: 'Bonus', data: labels.map(l => grouped[l].bonus), backgroundColor: this.cssVar('--color-accent') },
         { label: 'Cash', data: labels.map(l => grouped[l].cash), backgroundColor: this.cssVar('--color-error') }
       ]
-    };
+    });
   }
 
-  updateDailyEarnings(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateDailyEarnings(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
@@ -380,7 +378,7 @@ export class MetricsComponent implements OnInit {
     });
     const labels = this.sortLabels(Object.keys(earningsByLabel), aggType);
     const services = Array.from(serviceSet);
-    this.dailyEarningsData = {
+    this.dailyEarningsData.set({
       labels,
       datasets: services.map((service, i) => ({
         label: service,
@@ -398,17 +396,17 @@ export class MetricsComponent implements OnInit {
           this.cssVar('--color-primary')
         ][i % 10],
       }))
-    };
+    });
   }
 
-  updateServicePie(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateServicePie(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const serviceCounts: { [service: string]: number } = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
     });
     const labels = Object.keys(serviceCounts);
     const data = labels.map(l => serviceCounts[l]);
-    this.servicePieData = {
+    this.servicePieData.set({
       labels,
       datasets: [{
         data,
@@ -421,10 +419,10 @@ export class MetricsComponent implements OnInit {
           this.cssVar('--color-primary')
         ],
       }]
-    };
+    });
   }
 
-  updateYearlyComparison(filteredShifts = this.shifts) {
+  updateYearlyComparison(filteredShifts = this.shifts()) {
     const grouped: { [year: string]: { pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
@@ -451,7 +449,7 @@ export class MetricsComponent implements OnInit {
     this.shiftService.shifts$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(shifts => {
-        this.shifts = shifts;
+        this.shifts.set(shifts);
         void this.filterByDate();
       });
     
@@ -461,7 +459,6 @@ export class MetricsComponent implements OnInit {
       .subscribe(() => {
         this.updateChartColors();
         void this.filterByDate();
-        this.cdr.markForCheck();
       });
   }
 }
