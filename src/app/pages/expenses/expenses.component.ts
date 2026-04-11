@@ -1,7 +1,7 @@
 import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
 import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IExpense } from '@interfaces/expense.interface';
@@ -60,29 +60,29 @@ import { takeUntil } from 'rxjs/operators';
 
 export class ExpensesComponent implements OnInit, OnDestroy {
   dateFormats = DATE_FORMATS;
-  groupedExpensesByYear: { [year: string]: IExpense[] } = {};
+  groupedExpensesByYear = signal<{ [year: string]: IExpense[] }>({});
 
   getYearTotal(expenses: IExpense[]): number {
     return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
   }
-  showAddForm = false;
+  showAddForm = signal(false);
 
   getMonthTotal(expenses: IExpense[]): number {
     return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
   }
   // ...existing code...
   expenseForm!: FormGroup;
-  expenses: IExpense[] = [];
-  groupedExpenses: { [month: string]: IExpense[] } = {};
+  expenses = signal<IExpense[]>([]);
+  groupedExpenses = signal<{ [month: string]: IExpense[] }>({});
   defaultCategories = [
     'Fuel', 'Food', 'Parking', 'Maintenance', 'Tolls', 'Supplies', 'Other'
   ];
-  customCategories: string[] = [];
-  editingExpenseId?: number;
-  unsavedData: boolean = false;
-  saving: boolean = false;
+  customCategories = signal<string[]>([]);
+  editingExpenseId = signal<number | undefined>(undefined);
+  unsavedData = signal(false);
+  saving = signal(false);
   actionEnum = ActionEnum;
-  maxRowId: number = 1;
+  maxRowId = signal(1);
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -91,8 +91,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     private unsavedDataService: UnsavedDataService,
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
-    protected authService: AuthGoogleService,
-    private cdr: ChangeDetectorRef
+    protected authService: AuthGoogleService
   ) {}
 
   ngOnDestroy(): void {
@@ -101,8 +100,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.maxRowId = await this.expensesService.getMaxRowId() || 1;
-    const nextRowId = this.maxRowId + 1;
+    this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
+    const nextRowId = this.maxRowId() + 1;
     this.expenseForm = this.fb.group({
       rowId: [{ value: nextRowId, disabled: true }],
       date: [this.getTodayDate(), Validators.required],
@@ -111,14 +110,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       category: ['', Validators.required],
       note: ['']
     });
-
-    this.expenseForm.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.cdr.markForCheck());
-
-    this.expenseForm.statusChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.cdr.markForCheck());
 
     await this.loadExpenses();
   }
@@ -144,31 +135,31 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   async loadExpenses() {
-    this.expenses = (await spreadsheetDB.expenses.toArray()).map(expense => ({
+    const expenses = (await spreadsheetDB.expenses.toArray()).map(expense => ({
       ...expense,
       date: this.normalizeExpenseDate(expense.date as string | Date)
     }));
-    this.maxRowId = await this.expensesService.getMaxRowId() || 1;
-    this.customCategories = Array.from(new Set(this.expenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c))));
-    this.groupedExpenses = this.expenses.reduce((groups, expense) => {
+    this.expenses.set(expenses);
+    this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
+    this.customCategories.set(Array.from(new Set(expenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c)))));
+    this.groupedExpenses.set(expenses.reduce((groups, expense) => {
       const month = expense.date.slice(0, 7); // yyyy-mm
       if (!groups[month]) groups[month] = [];
       groups[month].push(expense);
       return groups;
-    }, {} as { [month: string]: IExpense[] });
-    this.groupedExpensesByYear = this.expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+    }, {} as { [month: string]: IExpense[] }));
+    this.groupedExpensesByYear.set(expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
       const year = expense.date.slice(0, 4);
       if (!groups[year]) groups[year] = [];
       groups[year].push(expense);
       return groups;
-    }, {} as { [year: string]: IExpense[] });
+    }, {} as { [year: string]: IExpense[] }));
 
-    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
     // If there are no expenses, open the add form by default so users can create one.
-    if ((this.expenses ?? []).length === 0) {
-      this.showAddForm = true;
+    if (expenses.length === 0) {
+      this.showAddForm.set(true);
     }
-    this.cdr.markForCheck();
   }
 
   async addExpense() {
@@ -183,24 +174,23 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       saved: false
     };
 
-    if (this.editingExpenseId) {
+    if (this.editingExpenseId()) {
       // Update existing expense by id
-      const existingExpense = this.expenses.find(e => e.id === this.editingExpenseId);
-      expense.id = this.editingExpenseId;
+      const existingExpense = this.expenses().find(e => e.id === this.editingExpenseId());
+      expense.id = this.editingExpenseId();
       expense.rowId = existingExpense!.rowId;
       expense.action = ActionEnum.Update;
       await this.expensesService.update([expense]);
-      this.editingExpenseId = undefined;
+      this.editingExpenseId.set(undefined);
     } else {
       // Insert new expense with rowId (starting at 2, since 1 is the header)
-      expense.rowId = this.maxRowId + 1;
+      expense.rowId = this.maxRowId() + 1;
       expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
     }
     this.expenseForm.reset({ date: this.getTodayDate() });
-    this.showAddForm = false;
+    this.showAddForm.set(false);
     await this.loadExpenses();
-    this.cdr.markForCheck();
   }
 
   editExpense(expense: IExpense) {
@@ -208,9 +198,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       ...expense,
       date: expense.date ? new Date(expense.date) : null
     });
-    this.editingExpenseId = expense.id;
-    this.showAddForm = true;
-    this.cdr.markForCheck();
+    this.editingExpenseId.set(expense.id);
+    this.showAddForm.set(true);
   }
 
   /**
@@ -228,25 +217,23 @@ export class ExpensesComponent implements OnInit, OnDestroy {
    */
   cancelEdit() {
     this.clearFormState();
-    this.showAddForm = false;
-    this.cdr.markForCheck();
+    this.showAddForm.set(false);
   }
 
   /**
    * Shared logic to reset the form and clear editing state.
    */
   private async clearFormState() {
-    this.editingExpenseId = undefined;
-    this.expenseForm.reset({ date: this.getTodayDate(), rowId: this.maxRowId + 1 });
-    this.cdr.markForCheck();
+    this.editingExpenseId.set(undefined);
+    this.expenseForm.reset({ date: this.getTodayDate(), rowId: this.maxRowId() + 1 });
   }
 
   /**
    * Deletes the currently editing expense
    */
   async deleteCurrentExpense() {
-    if (!this.editingExpenseId) return;
-    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (!this.editingExpenseId()) return;
+    const expense = this.expenses().find(e => e.id === this.editingExpenseId());
     if (expense) {
       await this.confirmDeleteExpenseDialog(expense);
     }
@@ -256,8 +243,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
    * Checks if the currently editing expense is marked for deletion
    */
   isEditingDeleted(): boolean {
-    if (!this.editingExpenseId) return false;
-    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (!this.editingExpenseId()) return false;
+    const expense = this.expenses().find(e => e.id === this.editingExpenseId());
     return expense?.action === ActionEnum.Delete;
   }
 
@@ -265,15 +252,14 @@ export class ExpensesComponent implements OnInit, OnDestroy {
    * Restores a deleted expense
    */
   async restoreCurrentExpense() {
-    if (!this.editingExpenseId) return;
-    const expense = this.expenses.find(e => e.id === this.editingExpenseId);
+    if (!this.editingExpenseId()) return;
+    const expense = this.expenses().find(e => e.id === this.editingExpenseId());
     if (expense) {
       updateAction(expense, ActionEnum.Update);
       expense.saved = false;
       await this.expensesService.update([expense]);
       await this.loadExpenses();
       this.cancelEdit();
-      this.cdr.markForCheck();
     }
   }
 
@@ -285,7 +271,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     expense.saved = false;
     await this.expensesService.update([expense]);
     await this.loadExpenses();
-    this.cdr.markForCheck();
   }
 
   /**
@@ -330,7 +315,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       await this.expensesService.update([expense]);
     }
     await this.loadExpenses();
-    this.cdr.markForCheck();
   }
 
   async confirmSaveDialog() {
@@ -378,13 +362,12 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   hideAddForm() {
-    this.showAddForm = false;
-    this.cdr.markForCheck();
+    this.showAddForm.set(false);
   }
 
   get categories(): string[] {
     // Merge, dedupe, and sort categories alphabetically
-    const merged = Array.from(new Set([...this.defaultCategories, ...this.customCategories]));
+    const merged = Array.from(new Set([...this.defaultCategories, ...this.customCategories()]));
     return merged.sort((a, b) => a.localeCompare(b));
   }
 

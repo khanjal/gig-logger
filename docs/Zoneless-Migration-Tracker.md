@@ -27,6 +27,7 @@ Progress updates:
 - [~] Shifts reference migration started (signals for high-churn UI state and template signal bindings).
 - [~] Search migration started (signals for high-churn UI state, filter state, and template signal bindings).
 - [~] Trips migration started (signals for high-churn UI state, route/edit state, and template signal bindings).
+- [~] Expenses migration started (signals for high-churn page state and template signal bindings).
 - [ ] Validate runtime behavior and use Shifts as pattern for Search/Trips/Expenses.
 
 ### 2) Standardize async data flow with RxJS + async pipe or toSignal
