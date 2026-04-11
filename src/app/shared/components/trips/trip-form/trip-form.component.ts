@@ -178,7 +178,11 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
 
-    this.load();
+    // Defer initial load so async shift option hydration does not mutate bindings
+    // during Angular's first dev-mode check cycle (prevents NG0100).
+    setTimeout(() => {
+      void this.load();
+    });
   }
 
   public async load() {
