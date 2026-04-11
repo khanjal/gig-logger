@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -33,15 +33,14 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
   styleUrl: './sheet-list.component.scss'
 })
 export class SheetListComponent implements OnInit {
-  sheets: ISheetProperties[] = [];
-  selectedSheet: ISheetProperties | null = null;
-  loading: boolean = true;
+  sheets = signal<ISheetProperties[]>([]);
+  selectedSheet = signal<ISheetProperties | null>(null);
+  loading = signal(true);
 
   constructor(
     private _gigLoggerService: GigWorkflowService,
     private _logger: LoggerService,
-    private dialogRef: MatDialogRef<SheetListComponent>,
-    private cdr: ChangeDetectorRef
+    private dialogRef: MatDialogRef<SheetListComponent>
   ) { }
   
   ngOnInit() {
@@ -49,37 +48,35 @@ export class SheetListComponent implements OnInit {
   }
 
   async loadSheets() {
-    this.loading = true;
-    this.cdr.markForCheck();
+    this.loading.set(true);
     try {
       // Load sheets from your service
       const sheetsData = await this._gigLoggerService.listFiles();
       
       // Sort alphabetically by name
-      this.sheets = sheetsData.sort((a, b) => 
+      this.sheets.set(sheetsData.sort((a, b) => 
         a.name.localeCompare(b.name, undefined, { 
           numeric: true, 
           sensitivity: 'base' 
         })
-      );
+      ));
     } catch (error) {
       this._logger.error('Error loading sheets', { error });
       // Optionally show error message to user
     } finally {
-      this.loading = false;
-      this.cdr.markForCheck();
+      this.loading.set(false);
     }
   }
 
   selectSheet(sheet: ISheetProperties) {
-    this.selectedSheet = sheet;
-    this.cdr.markForCheck();
+    this.selectedSheet.set(sheet);
   }
 
   confirmSelection() {
-    if (this.selectedSheet) {
+    const selectedSheet = this.selectedSheet();
+    if (selectedSheet) {
       // Close dialog and pass selected sheet back to parent
-      this.dialogRef.close(this.selectedSheet);
+      this.dialogRef.close(selectedSheet);
     }
   }
 
