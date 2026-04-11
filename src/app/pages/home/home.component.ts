@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
   private authService = inject(AuthGoogleService);
   private spreadsheetService = inject(SpreadsheetService);
   private appUpdateService = inject(AppUpdateService);
+  private destroyRef = inject(DestroyRef);
   
   showInstallButton = signal(false);
   isAuthenticated = signal(false);
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit {
   async ngOnInit() {
     // Subscribe to app update status
     this.appUpdateService.updateStatus$
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((status: IAppUpdateStatus) => {
         this.isUpdateAvailable.set(status.isUpdateAvailable);
         this.showUpdateNotification.set(status.isUpdateAvailable);
@@ -46,7 +47,7 @@ export class HomeComponent implements OnInit {
     
     // Listen for the install prompt
     fromEvent(window as any, 'beforeinstallprompt')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
       const e = event as any;
       e.preventDefault();
@@ -56,7 +57,7 @@ export class HomeComponent implements OnInit {
 
     // Hide button if already installed
     fromEvent(window, 'appinstalled')
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
       this.showInstallButton.set(false);
     });
