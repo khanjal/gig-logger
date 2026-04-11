@@ -38,6 +38,10 @@ Progress updates:
   - src/app/pages/pending-changes/pending-changes.component.ts
 - [ ] Reduce manual lifecycle and subscription boilerplate.
 
+Progress updates:
+- [~] Pending Changes refactored to signal-based state and `toSignal` query param handling.
+- [ ] Continue Step 2 conversion on metrics/stats where stream composition gives the biggest benefit.
+
 ### 3) Introduce a zoneless-safe UI state pattern
 - [ ] Create a shared async state pattern for loading/success/error transitions.
 - [ ] Apply first in setup and search flows:
