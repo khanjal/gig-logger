@@ -1,4 +1,3 @@
-import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
 /**
@@ -10,7 +9,7 @@ import { ITrip } from '@interfaces/trip.interface';
  * boundary when creating domain entities using NumberHelper.toNumber().
  */
 export type TripFormValue = Omit<Partial<ITrip>, 'distance'|'startOdometer'|'endOdometer'|'pay'|'tip'|'bonus'|'cash'|'pickupTime'|'dropoffTime'|'exclude'> & {
-  shift?: IShift | 'new' | null;
+  shift?: string | null;
   // Numeric fields are represented as strings in the form inputs
   distance?: string | number | null;
   startOdometer?: string | number | null;
