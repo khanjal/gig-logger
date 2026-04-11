@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +32,7 @@ interface ISummaryCard {
 })
 export class StatsSummaryComponent implements OnChanges, OnInit {
   private stats: ITripStatistics = this.createEmptyStats();
-  dailyData: IDaily[] = [];
+  dailyData = signal<IDaily[]>([]);
 
   @Input() trips: ITrip[] = [];
   @Input() startDate?: string;
@@ -44,7 +44,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     panelClass: 'custom-modalbox'
   } as const;
 
-  summaryCards: ISummaryCard[] = [];
+  summaryCards = signal<ISummaryCard[]>([]);
 
   // Memoized computed properties
   private _cachedBusiestDay: { date: string; trips: number } | null = null;
@@ -55,17 +55,15 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   constructor(
     private dialog: MatDialog,
     private dailyService: DailyService,
-    private destroyRef: DestroyRef,
-    private cdr: ChangeDetectorRef
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
     this.dailyService.daily$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
-        this.dailyData = data || [];
+        this.dailyData.set(data || []);
         this.refreshSummary();
-        this.cdr.markForCheck();
       });
   }
 
@@ -79,13 +77,12 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     this.stats = this.calculateStatistics(this.trips);
     
     // Memoize computed properties to avoid recalculating on every template evaluation
-    this._cachedBusiestDay = StatHelper.getBusiestDayFromDaily(this.dailyData, this.startDate, this.endDate);
-    this._cachedHighestEarningDay = StatHelper.getHighestEarningDayFromDaily(this.dailyData, this.startDate, this.endDate);
+    this._cachedBusiestDay = StatHelper.getBusiestDayFromDaily(this.dailyData(), this.startDate, this.endDate);
+    this._cachedHighestEarningDay = StatHelper.getHighestEarningDayFromDaily(this.dailyData(), this.startDate, this.endDate);
     this._cachedBestWeekdayPerTrip = this.calculateBestWeekdayPerTrip();
     this._cachedBestWeekdayPerTime = this.calculateBestWeekdayPerTime();
     
-    this.summaryCards = this.buildSummaryCards();
-    this.cdr.markForCheck();
+    this.summaryCards.set(this.buildSummaryCards());
   }
 
   private createEmptyStats(): ITripStatistics {
@@ -174,7 +171,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   private calculateBestWeekdayPerTrip(): { label: string; value: number; dayIndex: number } | null {
-    const map = StatHelper.getWeekdayAggregatesFromDaily(this.dailyData, this.startDate, this.endDate);
+    const map = StatHelper.getWeekdayAggregatesFromDaily(this.dailyData(), this.startDate, this.endDate);
     let best: { label: string; value: number; dayIndex: number } | null = null;
 
     Object.entries(map).forEach(([weekday, stats]) => {
@@ -191,7 +188,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   private calculateBestWeekdayPerTime(): { label: string; value: number; dayIndex: number } | null {
-    const map = StatHelper.getWeekdayAggregatesFromDaily(this.dailyData, this.startDate, this.endDate);
+    const map = StatHelper.getWeekdayAggregatesFromDaily(this.dailyData(), this.startDate, this.endDate);
     let best: { label: string; value: number; dayIndex: number } | null = null;
 
     Object.entries(map).forEach(([weekday, stats]) => {
@@ -208,7 +205,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   executeAction(index: number): void {
-    const action = this.summaryCards[index].action;
+    const action = this.summaryCards()[index].action;
     if (action) {
       action();
     }

@@ -42,6 +42,7 @@ Progress updates:
 - [~] Pending Changes refactored to signal-based state and `toSignal` query param handling.
 - [~] Metrics refactored to lifecycle-safe reactive subscriptions with `takeUntilDestroyed` (removed manual subscription tracking).
 - [~] Stats refactored to signal-backed page state and template bindings (removed manual `markForCheck` usage).
+- [~] Stats Summary refactored to signal-backed async view state (daily data + summary cards) and removed manual `markForCheck` calls.
 - [~] Home refactored to signal-backed state and lifecycle-safe browser event/update subscriptions (removed manual CD triggers and subscription cleanup code).
 - [ ] Continue Step 2 conversion on metrics/stats where stream composition gives the biggest benefit.
 
