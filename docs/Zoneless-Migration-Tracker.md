@@ -112,19 +112,20 @@ Progress updates:
 ### 7) Clean up bootstrap/runtime migration debt
 - [x] Document the zoneless component update pattern for contributors.
 - [x] Enforce a single preferred approach in new component changes.
-- [~] Prevent reintroduction of zone-based assumptions.
+- [x] Prevent reintroduction of runtime zone-based assumptions.
 
 Progress updates:
 - [x] Added concise contributor-facing zoneless runtime rules in `.github/copilot-instructions.md`.
 - [x] Wired zoneless requirements into contributor workflow (`CONTRIBUTING.md`, `README.md`, and PR template checklist).
 - [x] Added automated runtime guard script (`npm run check:zoneless-runtime`) to block reintroducing `import 'zone.js'` in runtime files.
 - [x] Added CI enforcement for zoneless runtime guard in pull request workflow (`.github/workflows/ci.yml`).
-- [~] Began test-time decoupling work by reducing timer-coupling and stabilizing test harness stubs for header/app specs (`spreadsheets$` test stream support in `src/test.ts`).
-- [~] Test-time zone.js remains in `src/test.ts` until legacy zone-based tests are migrated.
+- [x] Began test-time decoupling work by reducing timer-coupling and stabilizing test harness stubs for header/app specs (`spreadsheets$` test stream support in `src/test.ts`).
+- [~] Test-time zone.js remains in `src/test.ts` until legacy zone-based tests are migrated (follow-up scope).
 
 ## Current Focus
 - [x] Step 6 regression tests complete and validated.
-- [~] Continue Step 7 - finish test-harness migration to remove zone.js from test-time setup.
+- [x] Step 7 runtime hardening complete (guardrails + CI enforcement).
+- [~] Follow-up: finish test-harness migration to remove zone.js from test-time setup.
 
 ## Notes
 - Keep commits small and build-validated.
