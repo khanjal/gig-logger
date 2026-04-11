@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
@@ -24,14 +24,14 @@ import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
 })
 export class StatsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  places: IStatItem[] = [];
-  services: IStatItem[] = [];
-  types: IStatItem[] = [];
-  regions: IStatItem[] = [];
-  trips: ITrip[] = [];
-  shifts: IShift[] = [];
-  startDate: string = "2000-01-01";
-  endDate: string = DateHelper.toISO();
+  places = signal<IStatItem[]>([]);
+  services = signal<IStatItem[]>([]);
+  types = signal<IStatItem[]>([]);
+  regions = signal<IStatItem[]>([]);
+  trips = signal<ITrip[]>([]);
+  shifts = signal<IShift[]>([]);
+  startDate = signal<string>('2000-01-01');
+  endDate = signal<string>(DateHelper.toISO());
 
   range = new FormGroup({
     start: new FormControl(),
@@ -40,18 +40,16 @@ export class StatsComponent implements OnInit {
 
   constructor(
     private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private cdr: ChangeDetectorRef
+    private _tripService: TripService
   ) {}
 
   async ngOnInit(): Promise<void> {
-
-    this.dateChanged();
+    await this.dateChanged();
   }
 
   async dateChanged() {
-    this.startDate = "2000-01-01";
-    this.endDate = DateHelper.toISO();
+    this.startDate.set('2000-01-01');
+    this.endDate.set(DateHelper.toISO());
 
     if (!(this.range.valid && 
         ((!this.range.value.start && !this.range.value.end) ||
@@ -60,29 +58,26 @@ export class StatsComponent implements OnInit {
     }    
     
     if (this.range.value.start && this.range.value.end) {
-      this.startDate = DateHelper.toISO(this.range.value.start);
-      this.endDate = DateHelper.toISO(this.range.value.end);
+      this.startDate.set(DateHelper.toISO(this.range.value.start));
+      this.endDate.set(DateHelper.toISO(this.range.value.end));
     }
 
-    await this.getShiftsRange(this.startDate, this.endDate);
-    await this.getTripsRange(this.startDate, this.endDate);
-    this.cdr.markForCheck();
+    await this.getShiftsRange(this.startDate(), this.endDate());
+    await this.getTripsRange(this.startDate(), this.endDate());
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
-    let shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
-    this.shifts = shifts;
-    this.services = this.getShiftList(shifts, "service");
-    this.regions = this.getShiftList(shifts, "region");
-    this.cdr.markForCheck();
+    const shifts = await this._shiftService.getShiftsBetweenDates(startDate, endDate);
+    this.shifts.set(shifts);
+    this.services.set(this.getShiftList(shifts, 'service'));
+    this.regions.set(this.getShiftList(shifts, 'region'));
   }
 
   async getTripsRange(startDate: string, endDate: string) {
-    let trips = (await this._tripService.getBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
-    this.trips = trips;
-    this.places = this.getTripList(trips, "place");
-    this.types = this.getTripList(trips, "type");
-    this.cdr.markForCheck();
+    const trips = (await this._tripService.getBetweenDates(startDate, endDate)).filter(x => !x.exclude || x.action === ActionEnum.Delete);
+    this.trips.set(trips);
+    this.places.set(this.getTripList(trips, 'place'));
+    this.types.set(this.getTripList(trips, 'type'));
   }
 
   getTripList(trips: ITrip[], name: string): IStatItem[] {
