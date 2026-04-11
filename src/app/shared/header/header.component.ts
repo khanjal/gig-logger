@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -57,6 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
+  private spreadsheetsSubscription?: { unsubscribe: () => void };
 
   // Theme state
   themePreference: ThemePreference = 'system';
@@ -71,7 +72,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private shiftService: ShiftService,
     private tripService: TripService,
     private logger: LoggerService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef
   ) { 
     // Subscribe to header updates with automatic cleanup on destroy
     this._commonService.onHeaderLinkUpdate
@@ -89,6 +91,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.url;
         this.setLoadingState(false); // Hide loading when navigation completes
+        this.cdr.markForCheck();
       });
     
     // Start polling for unsaved counts at configurable interval with automatic cleanup
@@ -96,17 +99,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.updateUnsavedCounts());
 
+    this.spreadsheetsSubscription = this._spreadsheetService.spreadsheets$.subscribe((sheets: ISpreadsheet[]) => {
+      const availableSheets = sheets ?? [];
+      this.defaultSheet = availableSheets.find((sheet: ISpreadsheet) => sheet.default === 'true');
+
+      if (!this.isAuthenticated) {
+        this.localOnlyMode = availableSheets.length > 0;
+      }
+
+      this.cdr.markForCheck();
+    });
+
     // Theme updates
     this.themeService.preferenceChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(preference => {
         this.themePreference = preference;
+        this.cdr.markForCheck();
       });
 
     this.themeService.activeTheme$
       .pipe(takeUntil(this.destroy$))
       .subscribe(active => {
         this.resolvedTheme = active;
+        this.cdr.markForCheck();
       });
   }
 
@@ -128,6 +144,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
+      this.cdr.markForCheck();
     }
   }
 
@@ -154,6 +171,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.isAuthenticated) {
       await this.load();
     }
+
+    this.cdr.markForCheck();
   }
 
   public async load(): Promise<void> {
@@ -173,6 +192,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // Don't throw - allow app to continue with degraded functionality
     } finally {
       this.setLoadingState(false);
+      this.cdr.markForCheck();
     }
   }
 
@@ -181,6 +201,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.isAuthenticated) {
       const sheets = (await this._spreadsheetService.querySpreadsheets("default", "true")) || [];
       this.defaultSheet = sheets[0];
+      this.cdr.markForCheck();
     }
   }
   
@@ -191,6 +212,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const shifts = (await this.shiftService.getUnsavedShifts()) || [];
     this.unsavedTripsCount = trips.length;
     this.unsavedShiftsCount = shifts.length;
+    this.cdr.markForCheck();
   }
   
   /**
@@ -201,6 +223,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Use setTimeout to ensure smooth animations
     setTimeout(() => {
       this.isLoading = loading;
+      this.cdr.markForCheck();
     }, loading ? 0 : 300); // Delay hiding to show completion
   }
     /**
@@ -229,6 +252,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
     this.destroy$.complete();
+    this.spreadsheetsSubscription?.unsubscribe();
   }
 
   public cycleTheme(): void {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -89,7 +89,8 @@ export class TripComponent implements OnInit, OnDestroy {
       private logger: LoggerService,
       private _route: ActivatedRoute,
       private _router: Router,
-      protected authService: AuthGoogleService
+      protected authService: AuthGoogleService,
+      private cdr: ChangeDetectorRef
     ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
@@ -110,6 +111,7 @@ export class TripComponent implements OnInit, OnDestroy {
           this.isEditMode = false;
           this.editingTripId = null;
         }
+        this.cdr.markForCheck();
       });
 
     // Sync polling preference via UiPreferencesService
@@ -117,6 +119,7 @@ export class TripComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(enabled => {
         this.pollingEnabled = enabled;
+        this.cdr.markForCheck();
       });
 
     // Only load if not in edit mode
@@ -147,17 +150,25 @@ export class TripComponent implements OnInit, OnDestroy {
     if (this.editingTripId) return;
     if (showSpinner) {
       this.isLoading = true;
+      this.cdr.markForCheck();
     }
-    this.unsavedData = await this.unsavedDataService.hasUnsavedData();
-    this.todaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse();
-    this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
-    await this.average?.load();
-    await this.tripsTable?.load();
-    this.tripForm?.load();
-    if (showSpinner) {
-      setTimeout(() => {
-        this.isLoading = false;
-      }, 400);
+    try {
+      this.unsavedData = await this.unsavedDataService.hasUnsavedData();
+      this.todaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse();
+      this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
+      await this.average?.load();
+      await this.tripsTable?.load();
+      await this.tripForm?.load();
+      this.cdr.markForCheck();
+    } catch (error) {
+      this.logger.error('Failed to load trips page data', error);
+    } finally {
+      if (showSpinner) {
+        setTimeout(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }, 400);
+      }
     }
   }
 
@@ -234,6 +245,7 @@ export class TripComponent implements OnInit, OnDestroy {
         }
       } finally {
         this.saving = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -295,12 +307,14 @@ export class TripComponent implements OnInit, OnDestroy {
     }
 
     this.reloading = true;
+    this.cdr.markForCheck();
     try {
       await this.load(!isParentReload); // Don't show spinner if it's a parent reload
     } catch (err) {
       this.logger.error('Error during reload:', err);
     } finally {
       this.reloading = false;
+      this.cdr.markForCheck();
     }
 
     if (anchor) {
@@ -336,6 +350,7 @@ export class TripComponent implements OnInit, OnDestroy {
     if (!this.editingTripId) return;
     
     this.isLoading = true;
+    this.cdr.markForCheck();
     
     try {
       const tripId = parseInt(this.editingTripId);
@@ -344,6 +359,7 @@ export class TripComponent implements OnInit, OnDestroy {
         this.tripForm.data = trip;
         await this.tripForm.load();
       }
+      this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Error loading trip for editing:', error);
       this._router.navigate(['/trips']);
@@ -352,6 +368,7 @@ export class TripComponent implements OnInit, OnDestroy {
     // Small delay for smooth transition
     setTimeout(() => {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }, 200);
   }
   
@@ -380,5 +397,6 @@ export class TripComponent implements OnInit, OnDestroy {
   private async refreshDefaultSheetState(): Promise<void> {
     this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
     this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
+    this.cdr.markForCheck();
   }
 }

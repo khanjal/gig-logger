@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
@@ -55,12 +55,14 @@ export class ShiftsComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private router: Router, 
     private route: ActivatedRoute,
-    protected authService: AuthGoogleService
+    protected authService: AuthGoogleService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit(): Promise<void> {
     this.route.paramMap.subscribe(params => {
       this.editId = params.get('id');
+      this.cdr.markForCheck();
     });
     await this.loadShifts();
   }
@@ -69,6 +71,7 @@ export class ShiftsComponent implements OnInit {
     if (this.isLoading || this.noMoreData) return;
 
     this.isLoading = true;
+    this.cdr.markForCheck();
     try {
       // Use 'rowId' as the sort field and 'desc' for reverse order
       const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize, 'rowId', 'desc');
@@ -84,8 +87,10 @@ export class ShiftsComponent implements OnInit {
       if ((this.shifts ?? []).length === 0) {
         this.showAddForm = true;
       }
+      this.cdr.markForCheck();
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -106,6 +111,7 @@ export class ShiftsComponent implements OnInit {
     this.currentPage = 0; // Reset pagination
     this.noMoreData = false; // Reset noMoreData flag
     this.showAddForm = false;
+    this.cdr.markForCheck();
     this.loadShifts();
   }
 

@@ -1,4 +1,4 @@
-import { enableProdMode, importProvidersFrom, APP_INITIALIZER } from '@angular/core';
+import { enableProdMode, importProvidersFrom, APP_INITIALIZER, provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -26,6 +26,7 @@ export function initializeApp(appInitializer: AppInitializerService) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZonelessChangeDetection(),
     importProvidersFrom(
       CommonModule,
       RouterModule,

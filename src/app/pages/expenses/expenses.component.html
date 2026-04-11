@@ -96,7 +96,8 @@
             [extended]="true"
             variant="primary" 
             [icon]="'add'"
-            type="submit" 
+            type="button"
+            (clicked)="addExpense()"
             [disabled]="expenseForm.invalid">
             Store
           </app-base-fab-button>
@@ -105,7 +106,8 @@
             [extended]="true"
             variant="primary" 
             [icon]="'save'"
-            type="submit" 
+            type="button"
+            (clicked)="addExpense()"
             [disabled]="expenseForm.invalid">
             Update
           </app-base-fab-button>

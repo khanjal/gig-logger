@@ -1,7 +1,7 @@
 import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
 import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IExpense } from '@interfaces/expense.interface';
@@ -30,6 +30,8 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-expenses',
@@ -56,7 +58,7 @@ import { DATE_FORMATS } from '@constants/date.constants';
   providers: [CurrencyPipe, DatePipe]
 })
 
-export class ExpensesComponent implements OnInit {
+export class ExpensesComponent implements OnInit, OnDestroy {
   dateFormats = DATE_FORMATS;
   groupedExpensesByYear: { [year: string]: IExpense[] } = {};
 
@@ -81,6 +83,7 @@ export class ExpensesComponent implements OnInit {
   saving: boolean = false;
   actionEnum = ActionEnum;
   maxRowId: number = 1;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -88,20 +91,35 @@ export class ExpensesComponent implements OnInit {
     private unsavedDataService: UnsavedDataService,
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
-    protected authService: AuthGoogleService
+    protected authService: AuthGoogleService,
+    private cdr: ChangeDetectorRef
   ) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   async ngOnInit() {
     this.maxRowId = await this.expensesService.getMaxRowId() || 1;
     const nextRowId = this.maxRowId + 1;
     this.expenseForm = this.fb.group({
       rowId: [{ value: nextRowId, disabled: true }],
-      date: [this.getToday(), Validators.required],
+      date: [this.getTodayDate(), Validators.required],
       name: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       category: ['', Validators.required],
       note: ['']
     });
+
+    this.expenseForm.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.cdr.markForCheck());
+
+    this.expenseForm.statusChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.cdr.markForCheck());
+
     await this.loadExpenses();
   }
 
@@ -109,8 +127,27 @@ export class ExpensesComponent implements OnInit {
     return new Date().toISOString().slice(0, 10);
   }
 
+  private getTodayDate(): Date {
+    return new Date();
+  }
+
+  private normalizeExpenseDate(date: string | Date | null | undefined): string {
+    if (!date) {
+      return '';
+    }
+
+    if (date instanceof Date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    return typeof date === 'string' ? date.slice(0, 10) : '';
+  }
+
   async loadExpenses() {
-    this.expenses = await spreadsheetDB.expenses.toArray();
+    this.expenses = (await spreadsheetDB.expenses.toArray()).map(expense => ({
+      ...expense,
+      date: this.normalizeExpenseDate(expense.date as string | Date)
+    }));
     this.maxRowId = await this.expensesService.getMaxRowId() || 1;
     this.customCategories = Array.from(new Set(this.expenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c))));
     this.groupedExpenses = this.expenses.reduce((groups, expense) => {
@@ -131,6 +168,7 @@ export class ExpensesComponent implements OnInit {
     if ((this.expenses ?? []).length === 0) {
       this.showAddForm = true;
     }
+    this.cdr.markForCheck();
   }
 
   async addExpense() {
@@ -139,6 +177,7 @@ export class ExpensesComponent implements OnInit {
     const formValue = this.expenseForm.value;
     let expense: IExpense = {
       ...formValue,
+      date: this.normalizeExpenseDate(formValue.date),
       action: ActionEnum.Add,
       actionTime: now,
       saved: false
@@ -158,15 +197,20 @@ export class ExpensesComponent implements OnInit {
       expense.action = ActionEnum.Add;
       await this.expensesService.add(expense);
     }
-    this.expenseForm.reset({ date: this.getToday() });
+    this.expenseForm.reset({ date: this.getTodayDate() });
     this.showAddForm = false;
     await this.loadExpenses();
+    this.cdr.markForCheck();
   }
 
   editExpense(expense: IExpense) {
-    this.expenseForm.patchValue(expense);
+    this.expenseForm.patchValue({
+      ...expense,
+      date: expense.date ? new Date(expense.date) : null
+    });
     this.editingExpenseId = expense.id;
     this.showAddForm = true;
+    this.cdr.markForCheck();
   }
 
   /**
@@ -185,6 +229,7 @@ export class ExpensesComponent implements OnInit {
   cancelEdit() {
     this.clearFormState();
     this.showAddForm = false;
+    this.cdr.markForCheck();
   }
 
   /**
@@ -192,7 +237,8 @@ export class ExpensesComponent implements OnInit {
    */
   private async clearFormState() {
     this.editingExpenseId = undefined;
-    this.expenseForm.reset({ date: this.getToday(), rowId: this.maxRowId + 1 });
+    this.expenseForm.reset({ date: this.getTodayDate(), rowId: this.maxRowId + 1 });
+    this.cdr.markForCheck();
   }
 
   /**
@@ -227,6 +273,7 @@ export class ExpensesComponent implements OnInit {
       await this.expensesService.update([expense]);
       await this.loadExpenses();
       this.cancelEdit();
+      this.cdr.markForCheck();
     }
   }
 
@@ -238,6 +285,7 @@ export class ExpensesComponent implements OnInit {
     expense.saved = false;
     await this.expensesService.update([expense]);
     await this.loadExpenses();
+    this.cdr.markForCheck();
   }
 
   /**
@@ -282,6 +330,7 @@ export class ExpensesComponent implements OnInit {
       await this.expensesService.update([expense]);
     }
     await this.loadExpenses();
+    this.cdr.markForCheck();
   }
 
   async confirmSaveDialog() {
@@ -330,6 +379,7 @@ export class ExpensesComponent implements OnInit {
 
   hideAddForm() {
     this.showAddForm = false;
+    this.cdr.markForCheck();
   }
 
   get categories(): string[] {
