@@ -51,7 +51,13 @@ describe('TripComponent', () => {
         { provide: ExpensesService, useValue: mockExpensesService },
         { provide: PollingService, useValue: mockPollingService },
         { provide: ViewportScroller, useValue: viewportSpy },
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})) } }
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({}) },
+            paramMap: of(convertToParamMap({}))
+          }
+        }
       ]
     }).compileComponents();
 
@@ -103,13 +109,13 @@ describe('TripComponent', () => {
     ] as any));
 
     await component.ngOnInit();
-    expect(component.demoSheetAttached).toBeTrue();
+    expect(component.demoSheetAttached()).toBeTrue();
 
     mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
       { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
     ] as any));
 
     await component.reload();
-    expect(component.demoSheetAttached).toBeFalse();
+    expect(component.demoSheetAttached()).toBeFalse();
   });
 });

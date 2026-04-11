@@ -50,7 +50,7 @@ describe('SheetListComponent', () => {
   it('selectSheet and confirmSelection close dialog with selection', () => {
     const sheet = { id: 's1', name: 'one' } as any;
     component.selectSheet(sheet);
-    expect(component.selectedSheet).toBe(sheet);
+    expect(component.selectedSheet()).toEqual(sheet);
     component.confirmSelection();
     expect(dialogRefSpy.close).toHaveBeenCalledWith(sheet);
   });

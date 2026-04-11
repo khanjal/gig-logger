@@ -98,13 +98,13 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    const initialTripId = this._route.snapshot.paramMap.get('id');
+    const initialTripId = this._route?.snapshot?.paramMap?.get('id') ?? null;
     this.isEditMode.set(!!initialTripId);
     this.editingTripId.set(initialTripId);
 
     // Check if we're in edit mode based on route with automatic cleanup
-    this._route.paramMap
-      .pipe(takeUntil(this.destroy$))
+    this._route?.paramMap
+      ?.pipe(takeUntil(this.destroy$))
       .subscribe(params => {
         const tripId = params.get('id');
         if (tripId) {

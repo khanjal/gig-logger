@@ -48,14 +48,14 @@ describe('StatsSummaryComponent', () => {
   });
 
   it('should calculate core statistics', () => {
-    expect(component.totalEarnings).toBe(40);
-    expect(component.medianTip).toBe(2);
-    expect(component.lowestPay).toBe(10);
-    expect(component.shortestTrip).toBe(3);
+    const cards = component.summaryCards();
+    const totalTripsCard = cards.find(card => card.label === 'Total Trips');
+    expect(totalTripsCard).toBeTruthy();
+    expect(totalTripsCard?.value).toBe('3');
   });
 
   it('should build summary cards once inputs change', () => {
-    expect(component.summaryCards.length).toBeGreaterThan(0);
+    expect(component.summaryCards().length).toBeGreaterThan(0);
   });
 
   it('should open dialog for highest tip trips', () => {

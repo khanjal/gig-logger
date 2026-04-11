@@ -128,7 +128,8 @@ export class SetupComponent {
   public async load() {
     this.unsavedData.set((await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0);
     this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
-    this.defaultSheet.set((await this._spreadsheetService.querySpreadsheets("default", "true"))[0]);
+    const defaultSheets = await this._spreadsheetService.querySpreadsheets("default", "true");
+    this.defaultSheet.set(defaultSheets?.[0]);
     this.updateHeader();
   }
 

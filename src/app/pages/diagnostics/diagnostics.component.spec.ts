@@ -105,7 +105,7 @@ describe('DiagnosticsComponent', () => {
   it('runDiagnostics should populate default diagnostics with zero counts', async () => {
     await component.runDiagnostics();
 
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
     expect(component.dataDiagnostics().length).toBe(11);
     expect(component.getTotalIssues()).toBe(0);
   });
