@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -34,7 +34,8 @@ export class SheetDemoComponent {
     private _dialog: MatDialog,
     private _snackBar: MatSnackBar,
     private _logger: LoggerService,
-    protected authService: AuthGoogleService
+    protected authService: AuthGoogleService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async createDemoSheet() {
@@ -45,6 +46,7 @@ export class SheetDemoComponent {
     }
 
     this.creatingDemo = true;
+    this.cdr.markForCheck();
 
     const dialogRef = this._dialog.open(DataSyncModalComponent, {
       panelClass: 'custom-modalbox',
@@ -63,6 +65,7 @@ export class SheetDemoComponent {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.DEMO_SPREADSHEET_ERROR, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     } finally {
       this.creatingDemo = false;
+      this.cdr.markForCheck();
     }
   }
 }

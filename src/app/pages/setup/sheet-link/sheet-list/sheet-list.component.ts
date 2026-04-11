@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -40,7 +40,8 @@ export class SheetListComponent implements OnInit {
   constructor(
     private _gigLoggerService: GigWorkflowService,
     private _logger: LoggerService,
-    private dialogRef: MatDialogRef<SheetListComponent>
+    private dialogRef: MatDialogRef<SheetListComponent>,
+    private cdr: ChangeDetectorRef
   ) { }
   
   ngOnInit() {
@@ -49,6 +50,7 @@ export class SheetListComponent implements OnInit {
 
   async loadSheets() {
     this.loading = true;
+    this.cdr.markForCheck();
     try {
       // Load sheets from your service
       const sheetsData = await this._gigLoggerService.listFiles();
@@ -65,11 +67,13 @@ export class SheetListComponent implements OnInit {
       // Optionally show error message to user
     } finally {
       this.loading = false;
+      this.cdr.markForCheck();
     }
   }
 
   selectSheet(sheet: ISheetProperties) {
     this.selectedSheet = sheet;
+    this.cdr.markForCheck();
   }
 
   confirmSelection() {

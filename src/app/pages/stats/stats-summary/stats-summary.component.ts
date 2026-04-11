@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,7 +52,12 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   private _cachedBestWeekdayPerTrip: { label: string; value: number; dayIndex: number } | null = null;
   private _cachedBestWeekdayPerTime: { label: string; value: number; dayIndex: number } | null = null;
 
-  constructor(private dialog: MatDialog, private dailyService: DailyService, private destroyRef: DestroyRef) {}
+  constructor(
+    private dialog: MatDialog,
+    private dailyService: DailyService,
+    private destroyRef: DestroyRef,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.dailyService.daily$
@@ -60,6 +65,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
       .subscribe(data => {
         this.dailyData = data || [];
         this.refreshSummary();
+        this.cdr.markForCheck();
       });
   }
 
@@ -79,6 +85,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
     this._cachedBestWeekdayPerTime = this.calculateBestWeekdayPerTime();
     
     this.summaryCards = this.buildSummaryCards();
+    this.cdr.markForCheck();
   }
 
   private createEmptyStats(): ITripStatistics {
