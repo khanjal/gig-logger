@@ -21,6 +21,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-shifts',
@@ -126,11 +127,10 @@ export class ShiftsComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
-      if(result) {
-        await this.saveSheetDialog('save');
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.saveSheetDialog('save');
+    }
   }
   
   addShift() {
@@ -148,20 +148,19 @@ export class ShiftsComponent implements OnInit {
       return;
     }
 
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
-        if (result) {
-            // Show success message
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
-            
-            // Refresh the page to show updated state
-            this.handleParentReload();
-        }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+        // Show success message
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+        
+        // Refresh the page to show updated state
+        this.handleParentReload();
+    }
   }
 
   exitEditMode(shiftId?: string) {

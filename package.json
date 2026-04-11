@@ -22,6 +22,7 @@
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "check:zoneless-runtime": "node scripts/check-zoneless-runtime.js",
     "update-lambda": "node scripts/update-lambda.js",
     "setup-metrics": "node scripts/setup-metrics.js"
   },

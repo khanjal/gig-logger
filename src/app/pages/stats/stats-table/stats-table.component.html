@@ -5,7 +5,7 @@
     <div *ngIf="items.length === 0" class="flex flex-col items-center justify-center py-8 text-tertiary dark:text-tertiary">
       <mat-icon class="text-4xl mb-2">info_outline</mat-icon>
       <h3 class="text-lg font-semibold mb-1">No {{ name }} Data</h3>
-      <p>There are currently no {{ name?.toLowerCase() }} data available for the selected period.</p>
+      <p>There are currently no {{ lowerCaseName }} data available for the selected period.</p>
     </div>
     <!-- Table content when data is available -->
     <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface">
@@ -43,16 +43,16 @@
         <tfoot class="bg-primary-soft">
           <tr>
             <td class="px-3 py-2 font-bold text-primary">Total</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("trips")}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("distance") | number}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("pay") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("tip") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("bonus") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("total") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getTotal("cash") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getAverage("amountPerTime") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getAverage("amountPerTrip") | currency}}</td>
-            <td class="px-3 py-2 font-bold text-primary">{{getAverage("amountPerDistance") | currency}}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.trips }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.distance | number }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.pay | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.tip | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.bonus | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.total | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ totals.cash | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ averages.amountPerTime | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ averages.amountPerTrip | currency }}</td>
+            <td class="px-3 py-2 font-bold text-primary">{{ averages.amountPerDistance | currency }}</td>
           </tr>
         </tfoot>
       </table>

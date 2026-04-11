@@ -39,6 +39,7 @@ import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.co
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseCardComponent } from '@components/base/base-card/base-card.component';
 import { firstValueFrom } from 'rxjs';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 
 @Component({
     selector: 'app-setup',
@@ -67,9 +68,12 @@ export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
   isAuthenticated = signal(false);
-  deleting = signal(false);
-  reloading = signal(false);
-  setting = signal(false);
+  readonly deletingState = createAsyncOperationState();
+  readonly reloadingState = createAsyncOperationState();
+  readonly settingState = createAsyncOperationState();
+  deleting = this.deletingState.isLoading;
+  reloading = this.reloadingState.isLoading;
+  setting = this.settingState.isLoading;
   spreadsheets = signal<ISpreadsheet[] | undefined>(undefined);
   defaultSheet = signal<ISpreadsheet | undefined>(undefined);
   unsavedData = signal(false);
@@ -134,106 +138,139 @@ export class SetupComponent {
       return;
     }
 
-    this.reloading.set(true);
-    await this.loadSheetDialog('load');
-    this.reloading.set(false);
+    this.reloadingState.setLoading();
+    try {
+      await this.loadSheetDialog('load');
+      this.reloadingState.setSuccess();
+    } catch (error) {
+      this.reloadingState.setError('Reload failed');
+      throw error;
+    }
   }
 
   public async setDefault(spreadsheet: ISpreadsheet) {
-    this.setting.set(true);
-    // Make current default not default
-    let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
-    
-    if (defaultSpreadsheet) {
-      defaultSpreadsheet.default = "false";
-      await this._spreadsheetService.update(defaultSpreadsheet);
-    }
+    this.settingState.setLoading();
+    try {
+      // Make current default not default
+      let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+      
+      if (defaultSpreadsheet) {
+        defaultSpreadsheet.default = "false";
+        await this._spreadsheetService.update(defaultSpreadsheet);
+      }
 
-    spreadsheet.default = "true";
-    await this._spreadsheetService.update(spreadsheet);
-    this.load();
-    this.reload();
-    this.setting.set(false);
+      spreadsheet.default = "true";
+      await this._spreadsheetService.update(spreadsheet);
+      await this.load();
+      await this.reload();
+      this.settingState.setSuccess();
+    } catch (error) {
+      this.settingState.setError('Set default failed');
+      throw error;
+    }
   }
 
   public async unlinkSpreadsheet(spreadsheet: ISpreadsheet) {
-    this.deleting.set(true);
-    
-    // Get all spreadsheets
-    const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
-    const isDefaultSheet = spreadsheet.default === "true";
-    const isOnlySheet = allSpreadsheets.length === 1;
+    this.deletingState.setLoading();
+    try {
+      // Get all spreadsheets
+      const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
+      const isDefaultSheet = spreadsheet.default === "true";
+      const isOnlySheet = allSpreadsheets.length === 1;
 
-    if (isDefaultSheet && isOnlySheet) {
-      // If it's the default and only sheet, clear all data (like Delete Data button)
-      await this.deleteAllData();
-    } else if (isDefaultSheet && !isOnlySheet) {
-      // Cannot unlink default sheet when there are others - user must set another as default first
-        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
-      this.deleting.set(false);
-      return;
-    } else {
-      // Non-default sheet, just unlink it
-      await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
+      if (isDefaultSheet && isOnlySheet) {
+        // If it's the default and only sheet, clear all data (like Delete Data button)
+        await this.deleteAllData();
+      } else if (isDefaultSheet && !isOnlySheet) {
+        // Cannot unlink default sheet when there are others - user must set another as default first
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+        this.deletingState.setSuccess();
+        return;
+      } else {
+        // Non-default sheet, just unlink it
+        await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
+      }
+
+      await this.load();
+      this.deletingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Unlink failed');
+      throw error;
     }
-
-    this.deleting.set(false);
-    await this.load();
   }
 
   public async deleteAllData() {
-    this.deleting.set(true);
-    this._spreadsheetService.deleteData();
+    this.deletingState.setLoading();
+    try {
+      this._spreadsheetService.deleteData();
 
-    await this._timerService.delay(1000);
+      await this._timerService.delay(1000);
 
-    this.spreadsheets.set([]);
-    this.deleting.set(false);
-
-    await this.load();
+      this.spreadsheets.set([]);
+      await this.load();
+      this.deletingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Delete failed');
+      throw error;
+    }
   }
 
   public async deleteAndReload() {
-    this.deleting.set(true);
-    this.reloading.set(true);
-    this.setting.set(true);
-    
-    // Store current spreadsheets.
-    this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
-    this._spreadsheetService.deleteData();
+    this.deletingState.setLoading();
+    this.reloadingState.setLoading();
+    this.settingState.setLoading();
 
-    // Need a delay to delete DBs and reopen them.
-    await this._timerService.delay(2000);
+    try {
+      // Store current spreadsheets.
+      this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
+      this._spreadsheetService.deleteData();
 
-    // Add spreadsheets back to DB
-    for (const spreadsheet of this.spreadsheets() ?? []) {
-      this._logger.info(`Adding spreadsheet: ${spreadsheet.name}`);
-      await this._spreadsheetService.update(spreadsheet);
-    };
+      // Need a delay to delete DBs and reopen them.
+      await this._timerService.delay(2000);
 
-    if (!this.defaultSheet()?.id) {
-      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.RELOAD_MANUALLY);
-      return;
+      // Add spreadsheets back to DB
+      for (const spreadsheet of this.spreadsheets() ?? []) {
+        this._logger.info(`Adding spreadsheet: ${spreadsheet.name}`);
+        await this._spreadsheetService.update(spreadsheet);
+      };
+
+      if (!this.defaultSheet()?.id) {
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.RELOAD_MANUALLY);
+        this.deletingState.setSuccess();
+        this.reloadingState.setSuccess();
+        this.settingState.setSuccess();
+        return;
+      }
+
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CONNECTING_TO_SPREADSHEET);
+
+      await this.reload();
+
+      this.deletingState.setSuccess();
+      this.reloadingState.setSuccess();
+      this.settingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Delete and reload failed');
+      this.reloadingState.setError('Delete and reload failed');
+      this.settingState.setError('Delete and reload failed');
+      throw error;
     }
-
-    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CONNECTING_TO_SPREADSHEET);
-
-    await this.reload();
-
-    this.deleting.set(false);
-    this.reloading.set(false);
-    this.setting.set(false);
   }
 
   public async deleteLocalData() {
-    this.deleting.set(true);
-    this._spreadsheetService.deleteLocalData();
-    this.deleting.set(false);
-    localStorage.clear();
+    this.deletingState.setLoading();
+    try {
+      this._spreadsheetService.deleteLocalData();
+      localStorage.clear();
 
-    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
 
-    await this.load();
+      await this.load();
+      this.deletingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Delete local data failed');
+      throw error;
+    }
   }
   public getDataSize() {
     /**

@@ -1,7 +1,7 @@
 import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
 import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IExpense } from '@interfaces/expense.interface';
@@ -30,8 +30,9 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
+import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from '@helpers/expense-form.helper';
+import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface';
 
 @Component({
   selector: 'app-expenses',
@@ -58,7 +59,7 @@ import { takeUntil } from 'rxjs/operators';
   providers: [CurrencyPipe, DatePipe]
 })
 
-export class ExpensesComponent implements OnInit, OnDestroy {
+export class ExpensesComponent implements OnInit {
   dateFormats = DATE_FORMATS;
   groupedExpensesByYear = signal<{ [year: string]: IExpense[] }>({});
 
@@ -83,7 +84,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   saving = signal(false);
   actionEnum = ActionEnum;
   maxRowId = signal(1);
-  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -93,11 +93,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar,
     protected authService: AuthGoogleService
   ) {}
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
   async ngOnInit() {
     this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
@@ -122,22 +117,10 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     return new Date();
   }
 
-  private normalizeExpenseDate(date: string | Date | null | undefined): string {
-    if (!date) {
-      return '';
-    }
-
-    if (date instanceof Date) {
-      return date.toISOString().slice(0, 10);
-    }
-
-    return typeof date === 'string' ? date.slice(0, 10) : '';
-  }
-
   async loadExpenses() {
     const expenses = (await spreadsheetDB.expenses.toArray()).map(expense => ({
       ...expense,
-      date: this.normalizeExpenseDate(expense.date as string | Date)
+      date: normalizeExpenseDate(expense.date as string | Date)
     }));
     this.expenses.set(expenses);
     this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
@@ -165,10 +148,11 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   async addExpense() {
     if (this.expenseForm.invalid) return;
     const now = Date.now();
-    const formValue = this.expenseForm.value;
+    const formValue = this.expenseForm.value as IExpenseFormValue;
+    const draft = mapExpenseFormValueToDraft(formValue);
     let expense: IExpense = {
-      ...formValue,
-      date: this.normalizeExpenseDate(formValue.date),
+      ...draft,
+      rowId: Number(formValue.rowId) || this.maxRowId() + 1,
       action: ActionEnum.Add,
       actionTime: now,
       saved: false
@@ -194,10 +178,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   editExpense(expense: IExpense) {
-    this.expenseForm.patchValue({
-      ...expense,
-      date: expense.date ? new Date(expense.date) : null
-    });
+    this.expenseForm.patchValue(mapExpenseToFormValue(expense));
     this.editingExpenseId.set(expense.id);
     this.showAddForm.set(true);
   }
@@ -291,12 +272,11 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.deleteExpense(expense);
-        this.cancelEdit();
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.deleteExpense(expense);
+      this.cancelEdit();
+    }
   }
 
   /**
@@ -331,11 +311,10 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
-      if(result) {
-        await this.saveSheetDialog('save');
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.saveSheetDialog('save');
+    }
   }
 
   async saveSheetDialog(inputValue: string) {
@@ -345,20 +324,19 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
-        if (result) {
-            // Show success message
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
-            
-            // Refresh the page to show updated state
-            await this.loadExpenses();
-        }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      // Show success message
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+        
+      // Refresh the page to show updated state
+      await this.loadExpenses();
+    }
   }
 
   hideAddForm() {

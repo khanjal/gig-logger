@@ -14,6 +14,8 @@ import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-he
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
+import { combineLatest, from, of } from 'rxjs';
+import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
 // Chart.js registration
 Chart.register(...registerables);
@@ -59,6 +61,8 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
 export class MetricsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   shifts = signal<any[]>([]);
+  filteredShifts = signal<any[]>([]);
+  aggregationType = signal<'day' | 'week' | 'month' | 'quarter' | 'year'>('day');
   private readonly destroyRef = inject(DestroyRef);
 
   // Chart Data
@@ -224,18 +228,18 @@ export class MetricsComponent implements OnInit {
       : DateHelper.toISO(new Date(s.date));
   }
 
-  async filterByDate() {
-    // Convert picked dates to YYYY-MM-DD strings (date only, LOCAL time)
-    const startYMD = this.range.value.start ? DateHelper.toISO(new Date(this.range.value.start)) : '';
-    const endYMD = this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '';
-    // Use the same DB query as stats: inclusive between
-    let filtered = this.shifts();
-    
-    if (startYMD || endYMD) {
-      filtered = await this.shiftService.getShiftsBetweenDates(startYMD, endYMD);
-    }
+  private getDateRangeFilter(): { startYMD: string; endYMD: string } {
+    return {
+      startYMD: this.range.value.start ? DateHelper.toISO(new Date(this.range.value.start)) : '',
+      endYMD: this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '',
+    };
+  }
 
-    let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
+  private getAggregationTypeForFilteredData(
+    filtered: any[],
+    startYMD: string,
+    endYMD: string
+  ): 'day' | 'week' | 'month' | 'quarter' | 'year' {
     let actualStart = startYMD ? DateHelper.getDateFromISO(startYMD) : null;
     let actualEnd = endYMD ? DateHelper.getDateFromISO(endYMD) : null;
 
@@ -246,9 +250,13 @@ export class MetricsComponent implements OnInit {
     }
 
     if (actualStart && actualEnd) {
-      aggType = getAggregationType(actualStart, actualEnd);
+      return getAggregationType(actualStart, actualEnd);
     }
 
+    return 'day';
+  }
+
+  private applyChartData(filtered: any[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered, aggType);
@@ -445,20 +453,41 @@ export class MetricsComponent implements OnInit {
     };
   }
 
-  async ngOnInit() {
-    this.shiftService.shifts$
+  ngOnInit() {
+    const dateRange$ = this.range.valueChanges.pipe(
+      startWith(this.range.value),
+      map(() => this.getDateRangeFilter()),
+      distinctUntilChanged((a, b) => a.startYMD === b.startYMD && a.endYMD === b.endYMD)
+    );
+
+    combineLatest([this.shiftService.shifts$, dateRange$])
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(shifts => {
-        this.shifts.set(shifts);
-        void this.filterByDate();
+      .pipe(
+        switchMap(([shifts, { startYMD, endYMD }]) => {
+          this.shifts.set(shifts);
+
+          if (startYMD || endYMD) {
+            return from(this.shiftService.getShiftsBetweenDates(startYMD, endYMD)).pipe(
+              map(filtered => ({ filtered, startYMD, endYMD }))
+            );
+          }
+
+          return of({ filtered: shifts, startYMD, endYMD });
+        })
+      )
+      .subscribe(({ filtered, startYMD, endYMD }) => {
+        const aggType = this.getAggregationTypeForFilteredData(filtered, startYMD, endYMD);
+
+        this.filteredShifts.set(filtered);
+        this.aggregationType.set(aggType);
+        this.applyChartData(filtered, aggType);
       });
-    
-    // Rebuild charts on theme changes so dataset colors refresh too.
+
     this.themeService.activeTheme$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.updateChartColors();
-        void this.filterByDate();
+        this.applyChartData(this.filteredShifts(), this.aggregationType());
       });
   }
 }

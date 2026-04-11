@@ -39,14 +39,14 @@
         <div class="flex items-end pb-10">
           <div class="filter-toggle-btn">
             <app-base-fab-button
-              [matTooltip]="(showFilters() ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categories.length + ')'"
+              [matTooltip]="(showFilters() ? 'Hide' : 'Show') + ' Filters (' + enabledCount() + '/' + categories.length + ')'"
               matTooltipPosition="below"
               (clicked)="toggleFilters()"
               variant="primary"
               [class.bg-primary-soft]="showFilters()"
               [icon]="'filter_list'">
             </app-base-fab-button>
-            <span class="filter-badge">{{ getEnabledCount() }}</span>
+            <span class="filter-badge">{{ enabledCount() }}</span>
           </div>
         </div>
       </div>
@@ -95,8 +95,8 @@
               <div class="flex items-center gap-1.5 flex-1 min-w-0">
                 <mat-icon 
                   class="filter-icon"
-                  [ngClass]="getCategoryColor(category)">
-                  {{ getCategoryIcon(category) }}
+                  [ngClass]="categoryMetadata[category].color">
+                  {{ categoryMetadata[category].icon }}
                 </mat-icon>
                 <span class="text-sm font-medium truncate">{{ category }}</span>
               </div>
@@ -130,13 +130,13 @@
          *ngIf="hasSearched() && !isSearching()">
         <div class="flex items-center gap-4 pl-5">
           <span class="text-secondary">
-            <span class="font-bold text-primary">{{ getTotalResultsCount() }}</span> matches
+            <span class="font-bold text-primary">{{ totalResultsCount() }}</span> matches
           </span>
           <span class="text-secondary">
-            <span class="font-bold text-primary">{{ getTotalTripsCount() }}</span> trips
+            <span class="font-bold text-primary">{{ totalTripsCount() }}</span> trips
           </span>
           <span class="text-secondary">
-            <span class="font-bold text-success">{{ getTotalEarnings() | currency }}</span> total
+            <span class="font-bold text-success">{{ totalEarnings() | currency }}</span> total
           </span>
         </div>
         <div *ngIf="groupedResults().length > 0">
@@ -147,7 +147,7 @@
             (clicked)="toggleAllGroups()"
             [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
             matTooltipPosition="below"
-            [icon]="areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
+            [icon]="allGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
             class="expand-toggle-btn">
           </app-base-fab-button>
         </div>
@@ -205,13 +205,13 @@
           <div>
             Avg/trip:
             <span class="font-bold text-primary">
-              {{ getGroupAvgPerTrip(group) }}
+              {{ groupAvgPerTripMap().get(group.month) || '-' }}
             </span>
           </div>
           <div>
             Avg/hr:
             <span class="font-bold text-success">
-              {{ getGroupAvgRate(group) }}
+              {{ groupAvgRateMap().get(group.month) || '-' }}
             </span>
           </div>
         </div>
@@ -223,12 +223,12 @@
           <!-- Result Header -->
           <div 
             class="p-4 card-hover border-l-4"
-            [ngClass]="getCategoryBorderClass(result.type)"
+            [ngClass]="categoryMetadata[result.type].borderClass"
             (click)="toggleResult(getResultKey(result, group.month))">
             <div class="flex-between">
               <div class="flex-start">
-                <mat-icon [ngClass]="getCategoryColor(result.type)">
-                  {{ getCategoryIcon(result.type) }}
+                <mat-icon [ngClass]="categoryMetadata[result.type].color">
+                  {{ categoryMetadata[result.type].icon }}
                 </mat-icon>
                 <div class="flex-1 min-w-0">
                   <div class="font-semibold text-primary text-truncate">{{ result.value }}</div>
@@ -249,17 +249,17 @@
 
           <!-- Sub-result Averages Bar -->
           <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium" 
-               *ngIf="!isResultSameAsGroup(result, group)">
+               *ngIf="!isResultSameAsGroupByKey(result, group)">
             <div>
               Avg/trip:
               <span class="font-bold text-primary">
-                {{ getResultAvgPerTrip(result) }}
+                {{ getResultMetric(result, group.month, resultAvgPerTripMap()) }}
               </span>
             </div>
             <div>
               Avg/hr:
               <span class="font-bold text-success">
-                {{ getResultAvgRate(result) }}
+                {{ getResultMetric(result, group.month, resultAvgRateMap()) }}
               </span>
             </div>
           </div>

@@ -12,6 +12,7 @@ import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { firstValueFrom } from 'rxjs';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 
 @Component({
   selector: 'app-sheet-link',
@@ -25,6 +26,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class SheetLinkComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  readonly sheetLinkState = createAsyncOperationState();
 
   constructor(
     private _spreadsheetService: SpreadsheetService,
@@ -34,70 +36,88 @@ export class SheetLinkComponent {
   ) { }
 
   async openCreateSheetDialog() {
-    const dialogRef = this.dialog.open(SheetCreateComponent, {
-      width: '400px',
-      height: '200px',
-      panelClass: 'custom-modalbox',
-      position: {
-        top: '125px' // Adjust this value to position the dialog higher
+    this.sheetLinkState.setLoading();
+    try {
+      const dialogRef = this.dialog.open(SheetCreateComponent, {
+        width: '400px',
+        height: '200px',
+        panelClass: 'custom-modalbox',
+        position: {
+          top: '125px' // Adjust this value to position the dialog higher
+        }
+      });
+
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (!result?.sheetName) {
+        this.sheetLinkState.reset();
+        return;
       }
-    });
 
-    const result = await firstValueFrom(dialogRef.afterClosed());
-    if (!result?.sheetName) {
-      return;
-    }
+      const syncDialogRef = this.dialog.open(DataSyncModalComponent, {
+        panelClass: 'custom-modalbox',
+        data: {
+          type: 'create-sheet',
+          sheetName: result.sheetName
+        }
+      });
 
-    const syncDialogRef = this.dialog.open(DataSyncModalComponent, {
-      panelClass: 'custom-modalbox',
-      data: {
-        type: 'create-sheet',
-        sheetName: result.sheetName
+      const syncResult = await firstValueFrom(syncDialogRef.afterClosed());
+      if (syncResult) {
+        this._logger.info('Sheet created successfully', { sheetName: result.sheetName });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
+        // create-sheet flow already loaded data in sync modal; only refresh setup state
+        this.parentReload.emit({ mode: 'load-only' });
+        this.sheetLinkState.setSuccess();
+        return;
       }
-    });
 
-    const syncResult = await firstValueFrom(syncDialogRef.afterClosed());
-    if (syncResult) {
-      this._logger.info('Sheet created successfully', { sheetName: result.sheetName });
-      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
-      // create-sheet flow already loaded data in sync modal; only refresh setup state
-      this.parentReload.emit({ mode: 'load-only' });
-      return;
+      this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
+      this.sheetLinkState.setError('Create sheet failed');
+    } catch (error) {
+      this.sheetLinkState.setError('Create sheet failed');
+      throw error;
     }
-
-    this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
-    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
   }
 
   async openListSheetsDialog() {
-    const dialogRef = this.dialog.open(SheetListComponent, {
-      width: '400px',
-      height: '400px',
-      panelClass: 'custom-modalbox'
-    });
+    this.sheetLinkState.setLoading();
+    try {
+      const dialogRef = this.dialog.open(SheetListComponent, {
+        width: '400px',
+        height: '400px',
+        panelClass: 'custom-modalbox'
+      });
 
-    const result = await firstValueFrom(dialogRef.afterClosed());
-    if (!result) {
-      return;
-    }
-
-    // User selected a sheet
-    this._logger.info('Selected sheet', { result });
-
-    const sheetData = {
-      properties: {
-        id: result.id,
-        name: result.name
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (!result) {
+        this.sheetLinkState.reset();
+        return;
       }
-    } as ISheet;
 
-    await this.linkSheet(sheetData);
+      // User selected a sheet
+      this._logger.info('Selected sheet', { result });
+
+      const sheetData = {
+        properties: {
+          id: result.id,
+          name: result.name
+        }
+      } as ISheet;
+
+      await this.linkSheet(sheetData);
+    } catch (error) {
+      this.sheetLinkState.setError('Link sheet failed');
+      throw error;
+    }
   }
 
   async linkSheet(sheet: ISheet): Promise<void> {
+    this.sheetLinkState.setLoading();
     const existingSheet = await this._spreadsheetService.findSheet(sheet.properties.id);
     if (existingSheet) {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ALREADY_LINKED, { action: 'Close' });
+      this.sheetLinkState.setSuccess();
       return;
     }
 
@@ -110,9 +130,11 @@ export class SheetLinkComponent {
       });
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
       this.parentReload.emit({ mode: 'reload' });
+      this.sheetLinkState.setSuccess();
     } catch (error) {
       this._logger.error('Error linking sheet', { error });
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });
+      this.sheetLinkState.setError('Link sheet failed');
     }
   }
 }

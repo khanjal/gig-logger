@@ -4,6 +4,8 @@ import { ShiftsComponent } from './shifts.component';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('ShiftsComponent', () => {
   let component: ShiftsComponent;
@@ -27,7 +29,8 @@ describe('ShiftsComponent', () => {
         ...commonTestingProviders,
         { provide: ShiftService, useValue: shiftSpy },
         { provide: UnsavedDataService, useValue: unsavedSpy },
-        { provide: SpreadsheetService, useValue: sheetSpy }
+        { provide: SpreadsheetService, useValue: sheetSpy },
+        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})), snapshot: { paramMap: convertToParamMap({}) } } }
       ]
     })
     .compileComponents();
@@ -35,6 +38,7 @@ describe('ShiftsComponent', () => {
     fixture = TestBed.createComponent(ShiftsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -42,30 +46,38 @@ describe('ShiftsComponent', () => {
   });
 
   it('sets demoSheetAttached based on default sheet name format', async () => {
+    component.shifts.set([]);
+    component.currentPage.set(0);
+    component.isLoading.set(false);
+    component.noMoreData.set(false);
     sheetSpy.querySpreadsheets.and.resolveTo([
       { id: 'any-id', name: 'RaptorGig Demo - Apr 5, 2026, 5:20 PM', default: 'true', size: 0 }
     ] as any);
 
     await component.loadShifts();
-    expect(component.demoSheetAttached).toBeTrue();
+    expect(component.demoSheetAttached()).toBeTrue();
 
     sheetSpy.querySpreadsheets.and.resolveTo([
       { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
     ] as any);
 
-    component.shifts = [];
-    component.currentPage = 0;
-    component.noMoreData = false;
+    component.shifts.set([]);
+    component.currentPage.set(0);
+    component.noMoreData.set(false);
     await component.loadShifts();
-    expect(component.demoSheetAttached).toBeFalse();
+    expect(component.demoSheetAttached()).toBeFalse();
   });
 
   it('resets isLoading when loadShifts throws', async () => {
+    component.shifts.set([]);
+    component.currentPage.set(0);
+    component.isLoading.set(false);
+    component.noMoreData.set(false);
     shiftSpy.paginate.and.resolveTo([{ id: '1' }] as any);
     unsavedSpy.hasUnsavedData.and.rejectWith(new Error('unsaved lookup failed'));
 
     await expectAsync(component.loadShifts()).toBeRejected();
 
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
   });
 });

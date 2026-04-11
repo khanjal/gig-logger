@@ -26,6 +26,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-
       - run: npm ci --legacy-peer-deps
+      - name: Zoneless runtime guard
+        run: npm run check:zoneless-runtime
       - name: Build
         run: npm run build --if-present
       - name: Lint

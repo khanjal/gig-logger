@@ -43,8 +43,8 @@ describe('SheetListComponent', () => {
     ] as any));
 
     await component.loadSheets();
-    expect(component.sheets.length).toBe(2);
-    expect(component.sheets[0].name.toLowerCase()).toBe('aaa');
+    expect(component.sheets().length).toBe(2);
+    expect(component.sheets()[0].name.toLowerCase()).toBe('aaa');
   });
 
   it('selectSheet and confirmSelection close dialog with selection', () => {

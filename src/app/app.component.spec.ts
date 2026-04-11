@@ -61,7 +61,7 @@ describe('AppComponent', () => {
     expect(app.isLoading).toBeFalse();
   }));
 
-  it('should hide loading when window load fires', fakeAsync(() => {
+  it('should hide loading when window load fires', () => {
     try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -69,22 +69,22 @@ describe('AppComponent', () => {
 
     expect(app.isLoading).toBeTrue();
 
-    // dispatch load event and allow any listener to run
     window.dispatchEvent(new Event('load'));
-    tick();
     expect(app.isLoading).toBeFalse();
-  }));
+  });
 
   it('should hide loading after NavigationEnd event', fakeAsync(() => {
+    try { Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true }); } catch {}
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
     const app = fixture.componentInstance;
+    app.ngOnInit();
 
     app.isLoading = true;
     routerEvents$.next(new NavigationEnd(1, '/foo', '/foo'));
 
     tick(100);
     expect(app.isLoading).toBeFalse();
+    app.ngOnDestroy();
   }));
 
   it('onHeaderError should set hasError true and stop loading', () => {

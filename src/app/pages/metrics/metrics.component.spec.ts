@@ -50,31 +50,31 @@ describe('MetricsComponent', () => {
 
   it('updateCharts aggregates simple shift data', () => {
     const sample = [{ date: '2024-01-01', totalTrips: 2, totalDistance: 10, totalPay: 20, totalTips: 5, totalBonus: 0, totalCash: 0 }];
-    component.shifts = sample as any;
+    component.shifts.set(sample as any);
     component.updateCharts(sample as any, 'day');
 
-    expect(component.tripsData.labels && component.tripsData.labels.length).toBeGreaterThan(0);
-    expect((component.tripsData.datasets[0].data as number[])[0]).toBe(2);
-    expect((component.distanceData.datasets[0].data as number[])[0]).toBe(10);
-    expect((component.payData.datasets[0].data as number[])[0]).toBe(20);
+    expect(component.tripsData().labels && component.tripsData().labels!.length).toBeGreaterThan(0);
+    expect((component.tripsData().datasets[0].data as number[])[0]).toBe(2);
+    expect((component.distanceData().datasets[0].data as number[])[0]).toBe(10);
+    expect((component.payData().datasets[0].data as number[])[0]).toBe(20);
   });
 
   it('rebuilds chart data when the theme changes', async () => {
-    const filterSpy = spyOn(component, 'filterByDate').and.returnValue(Promise.resolve());
-
-    themeSubject.next('dark');
-
-    expect(filterSpy).toHaveBeenCalled();
-  });
-
-  it('updates chart colors and refilters when the theme changes', async () => {
-    const colorsSpy = spyOn<any>(component as any, 'updateChartColors').and.callThrough();
-    const filterSpy = spyOn(component, 'filterByDate').and.returnValue(Promise.resolve());
+    const colorsSpy = spyOn<any>(component as any, 'updateChartColors');
 
     themeSubject.next('dark');
 
     expect(colorsSpy).toHaveBeenCalled();
-    expect(filterSpy).toHaveBeenCalled();
+  });
+
+  it('updates chart colors and refilters when the theme changes', async () => {
+    const colorsSpy = spyOn<any>(component as any, 'updateChartColors').and.callThrough();
+    const applyChartSpy = spyOn<any>(component as any, 'applyChartData');
+
+    themeSubject.next('dark');
+
+    expect(colorsSpy).toHaveBeenCalled();
+    expect(applyChartSpy).toHaveBeenCalled();
   });
 
 });

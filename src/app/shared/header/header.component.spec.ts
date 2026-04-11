@@ -8,7 +8,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoggerService } from '@services/logger.service';
 import { ThemeService } from '@services/theme.service';
-import { of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -23,7 +23,9 @@ describe('HeaderComponent', () => {
     // Prevent the component's internal polling interval from scheduling during tests
     spyOn(window as any, 'setInterval').and.callFake(() => 0);
     commonSpy = { onHeaderLinkUpdate: of(null) };
-    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets', 'getSpreadsheets']);
+    spreadsheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets', 'getSpreadsheets'], {
+      spreadsheets$: new BehaviorSubject<any[]>([])
+    });
     spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([]));
     spreadsheetSpy.getSpreadsheets.and.returnValue(Promise.resolve([]));
     authSpy = jasmine.createSpyObj('AuthGoogleService', ['canSync'], { profile$: new Subject<any>() });
