@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -34,7 +34,8 @@ export class PendingChangesComponent implements OnInit {
     private shiftService: ShiftService,
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -44,6 +45,7 @@ export class PendingChangesComponent implements OnInit {
     this.querySub = this.route.queryParams.subscribe(params => {
       const section = params['section'];
       this.handleSection(section);
+      this.cdr.markForCheck();
     });
   }
 
@@ -60,6 +62,7 @@ export class PendingChangesComponent implements OnInit {
       this.expandedTrips = true;
       this.expandedShifts = false;
     }
+    this.cdr.markForCheck();
 
     // Wait a tick for panels to expand/collapse, then scroll
     setTimeout(() => {
@@ -76,6 +79,7 @@ export class PendingChangesComponent implements OnInit {
       this.trips = [];
       this.shifts = [];
     }
+    this.cdr.markForCheck();
   }
 
   openTripEditor(t: any): void {

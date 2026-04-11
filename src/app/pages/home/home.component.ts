@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private authService = inject(AuthGoogleService);
   private spreadsheetService = inject(SpreadsheetService);
   private appUpdateService = inject(AppUpdateService);
+  private cdr = inject(ChangeDetectorRef);
   
   showInstallButton = false;
   isAuthenticated = false;
@@ -40,6 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         
         // Re-evaluate showing the start logging button when update status changes
         this.evaluateStartLoggingButton();
+        this.cdr.markForCheck();
       }
     );
     
@@ -51,11 +53,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       e.preventDefault();
       this.deferredPrompt = e;
       this.showInstallButton = true;
+      this.cdr.markForCheck();
     });
 
     // Hide button if already installed
     window.addEventListener('appinstalled', () => {
       this.showInstallButton = false;
+      this.cdr.markForCheck();
     });
   }
 
@@ -87,11 +91,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       
       // Evaluate showing the start logging button
       this.evaluateStartLoggingButton();
+      this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Error checking user status', error);
       this.isAuthenticated = false;
       this.hasDefaultSheet = false;
       this.showStartLoggingButton = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -107,6 +113,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showUpdateNotification = false;
     // Re-evaluate showing the start logging button
     this.evaluateStartLoggingButton();
+    this.cdr.markForCheck();
   }
 
   async installApp() {
@@ -119,6 +126,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       
       this.deferredPrompt = null;
       this.showInstallButton = false;
+      this.cdr.markForCheck();
     }
   }
 }

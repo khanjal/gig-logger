@@ -1,5 +1,5 @@
 // Angular Core
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
@@ -86,7 +86,8 @@ export class SetupComponent {
     private _tripService: TripService,
     private _timerService: TimerService,
     protected authService: AuthGoogleService,
-    private versionService: VersionService
+    private versionService: VersionService,
+    private cdr: ChangeDetectorRef
   ) { }
 
 
@@ -105,6 +106,8 @@ export class SetupComponent {
     } catch (e) {
       // ignore
     }
+
+    this.cdr.markForCheck();
   }
 
   /**
@@ -125,6 +128,7 @@ export class SetupComponent {
     this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
     this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
     this.updateHeader();
+    this.cdr.markForCheck();
   }
 
   public async reload() {
@@ -134,12 +138,15 @@ export class SetupComponent {
     }
 
     this.reloading = true;
+    this.cdr.markForCheck();
     await this.loadSheetDialog('load');
     this.reloading = false;
+    this.cdr.markForCheck();
   }
 
   public async setDefault(spreadsheet: ISpreadsheet) {
     this.setting = true;
+    this.cdr.markForCheck();
     // Make current default not default
     let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
     
@@ -153,10 +160,12 @@ export class SetupComponent {
     this.load();
     this.reload();
     this.setting = false;
+    this.cdr.markForCheck();
   }
 
   public async unlinkSpreadsheet(spreadsheet: ISpreadsheet) {
     this.deleting = true;
+    this.cdr.markForCheck();
     
     // Get all spreadsheets
     const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
@@ -170,6 +179,7 @@ export class SetupComponent {
       // Cannot unlink default sheet when there are others - user must set another as default first
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
       this.deleting = false;
+      this.cdr.markForCheck();
       return;
     } else {
       // Non-default sheet, just unlink it
@@ -178,10 +188,12 @@ export class SetupComponent {
 
     this.deleting = false;
     await this.load();
+    this.cdr.markForCheck();
   }
 
   public async deleteAllData() {
     this.deleting = true;
+    this.cdr.markForCheck();
     this._spreadsheetService.deleteData();
 
     await this._timerService.delay(1000);
@@ -190,12 +202,14 @@ export class SetupComponent {
     this.deleting = false;
 
     await this.load();
+    this.cdr.markForCheck();
   }
 
   public async deleteAndReload() {
     this.deleting = true;
     this.reloading = true;
     this.setting = true;
+    this.cdr.markForCheck();
     
     // Store current spreadsheets.
     this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
@@ -222,10 +236,12 @@ export class SetupComponent {
     this.deleting = false;
     this.reloading = false;
     this.setting = false;
+    this.cdr.markForCheck();
   }
 
   public async deleteLocalData() {
     this.deleting = true;
+    this.cdr.markForCheck();
     this._spreadsheetService.deleteLocalData();
     this.deleting = false;    
     localStorage.clear();
@@ -233,6 +249,7 @@ export class SetupComponent {
     openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
 
     await this.load();
+    this.cdr.markForCheck();
   }
   public getDataSize() {
     /**

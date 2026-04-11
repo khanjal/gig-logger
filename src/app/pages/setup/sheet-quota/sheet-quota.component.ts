@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
 import { LoggerService } from '@services/logger.service';
 
@@ -12,7 +12,7 @@ export class SheetQuotaComponent {
   quota: string | undefined;
   usage: string | undefined;
 
-  constructor(private _logger: LoggerService) {}
+  constructor(private _logger: LoggerService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
     await this.showEstimatedQuota();
@@ -23,6 +23,7 @@ export class SheetQuotaComponent {
         const estimation = await navigator.storage.estimate();
         this.quota = NumberHelper.getDataSize(estimation?.quota);
         this.usage = NumberHelper.getDataSize(estimation?.usage);
+      this.cdr.markForCheck();
         
         return estimation;
     } else {
