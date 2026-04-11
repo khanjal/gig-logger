@@ -1,9 +1,9 @@
 // Imports
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ThemeService } from '@services/theme.service';
-import { Subscription as DexieSubscription } from 'dexie';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +14,6 @@ import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-he
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
-import { Subscription } from 'rxjs';
 
 // Chart.js registration
 Chart.register(...registerables);
@@ -57,11 +56,10 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
   styleUrls: ['./metrics.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class MetricsComponent implements OnInit, OnDestroy {
+export class MetricsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   shifts: any[] = [];
-  private dexieSubscriptions: DexieSubscription[] = [];
-  private themeSubscription?: Subscription;
+  private readonly destroyRef = inject(DestroyRef);
 
   // Chart Data
   tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] };
@@ -450,23 +448,20 @@ export class MetricsComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.dexieSubscriptions.push(
-      this.shiftService.shifts$.subscribe(shifts => {
+    this.shiftService.shifts$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(shifts => {
         this.shifts = shifts;
         void this.filterByDate();
-      })
-    );
+      });
     
     // Rebuild charts on theme changes so dataset colors refresh too.
-    this.themeSubscription = this.themeService.activeTheme$.subscribe(() => {
-      this.updateChartColors();
-      void this.filterByDate();
-      this.cdr.markForCheck();
-    });
-  }
-
-  ngOnDestroy() {
-    this.dexieSubscriptions.forEach(sub => sub.unsubscribe());
-    this.themeSubscription?.unsubscribe();
+    this.themeService.activeTheme$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateChartColors();
+        void this.filterByDate();
+        this.cdr.markForCheck();
+      });
   }
 }

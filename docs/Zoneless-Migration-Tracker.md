@@ -40,6 +40,7 @@ Progress updates:
 
 Progress updates:
 - [~] Pending Changes refactored to signal-based state and `toSignal` query param handling.
+- [~] Metrics refactored to lifecycle-safe reactive subscriptions with `takeUntilDestroyed` (removed manual subscription tracking).
 - [ ] Continue Step 2 conversion on metrics/stats where stream composition gives the biggest benefit.
 
 ### 3) Introduce a zoneless-safe UI state pattern
