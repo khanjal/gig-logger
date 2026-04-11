@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UpdatesService } from '@services/updates.service';
 
@@ -17,11 +17,15 @@ import { MatIconModule } from '@angular/material/icon';
 export class UpdatesComponent implements OnInit {
   updates: IUpdateEntry[] = [];
 
-  constructor(private updatesService: UpdatesService) { }
+  constructor(
+    private updatesService: UpdatesService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.updatesService.getUpdates().subscribe((updates: IUpdateEntry[]) => {
       this.updates = updates;
+      this.cdr.markForCheck();
     });
   }
 }

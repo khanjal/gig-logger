@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
@@ -40,7 +40,8 @@ export class StatsComponent implements OnInit {
 
   constructor(
     private _shiftService: ShiftService,
-    private _tripService: TripService
+    private _tripService: TripService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -65,6 +66,7 @@ export class StatsComponent implements OnInit {
 
     await this.getShiftsRange(this.startDate, this.endDate);
     await this.getTripsRange(this.startDate, this.endDate);
+    this.cdr.markForCheck();
   }
 
   async getShiftsRange(startDate: string, endDate: string) {
@@ -72,6 +74,7 @@ export class StatsComponent implements OnInit {
     this.shifts = shifts;
     this.services = this.getShiftList(shifts, "service");
     this.regions = this.getShiftList(shifts, "region");
+    this.cdr.markForCheck();
   }
 
   async getTripsRange(startDate: string, endDate: string) {
@@ -79,6 +82,7 @@ export class StatsComponent implements OnInit {
     this.trips = trips;
     this.places = this.getTripList(trips, "place");
     this.types = this.getTripList(trips, "type");
+    this.cdr.markForCheck();
   }
 
   getTripList(trips: ITrip[], name: string): IStatItem[] {

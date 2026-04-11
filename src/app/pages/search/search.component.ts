@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -87,7 +87,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     private searchService: SearchService,
     private dropdownDataService: DropdownDataService,
     private currencyPipe: CurrencyPipe,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -280,6 +281,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.hasSearched = false;
       this.expandedGroups.clear();
       this.expandedResults.clear();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -287,6 +289,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.hasSearched = true;
     this.expandedGroups.clear();
     this.expandedResults.clear();
+    this.cdr.markForCheck();
 
     try {
       const enabledCategories = this.getEnabledCategories();
@@ -298,6 +301,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.groupedResults = [];
     } finally {
       this.isSearching = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -313,6 +317,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.expandedResults.clear();
     // Reset autocomplete suggestions
     this.autocompleteSubject.next(this.searchTerm);
+    this.cdr.markForCheck();
   }
 
   /**
