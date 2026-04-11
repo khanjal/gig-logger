@@ -1,6 +1,6 @@
 // Angular core imports
 import { ViewportScroller, NgFor, NgIf, CommonModule } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
+import { afterNextRender, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, runInInjectionContext, signal, ViewChild, inject } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -153,9 +153,10 @@ export class TripFormComponent implements OnInit {
   
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
-  shiftOptions: IShiftSummaryOption[] = [];
+  shiftOptions = signal<IShiftSummaryOption[]>([]);
   selectedShift: IShift | undefined;
   selectedShiftOption: IShiftSummaryOption | undefined;
+  private injector = inject(Injector);
 
   title: string = "Add Trip";
 
@@ -178,10 +179,12 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
 
-    // Defer initial load so async shift option hydration does not mutate bindings
-    // during Angular's first dev-mode check cycle (prevents NG0100).
-    setTimeout(() => {
-      void this.load();
+    // Wait until first render completes before hydrating async options
+    // to avoid NG0100 in dev mode under zoneless change detection.
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        void this.load();
+      });
     });
   }
 
@@ -290,7 +293,7 @@ export class TripFormComponent implements OnInit {
       }
     }
 
-    this.shiftOptions = this.shifts.map(shift => this.toShiftSummaryOption(shift));
+    this.shiftOptions.set(this.shifts.map(shift => this.toShiftSummaryOption(shift)));
 
     if (!this.data?.id) {
       const today = DateHelper.toISO();
