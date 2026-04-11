@@ -153,7 +153,8 @@ export class SetupComponent {
     this.settingState.setLoading();
     try {
       // Make current default not default
-      let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+      const defaultSheets = await this._spreadsheetService.querySpreadsheets("default", "true");
+      const defaultSpreadsheet = defaultSheets?.[0];
       
       if (defaultSpreadsheet) {
         defaultSpreadsheet.default = "false";
