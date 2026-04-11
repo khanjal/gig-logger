@@ -3,18 +3,18 @@
     <h1 class="text-2xl font-bold flex-1">Data Diagnostics</h1>
       <app-base-rect-button 
         variant="primary" 
-        [icon]="isLoading ? 'hourglass_empty' : 'refresh'" 
+        [icon]="isLoading() ? 'hourglass_empty' : 'refresh'" 
         iconPosition="left"
         (clicked)="runDiagnostics()" 
-        [disabled]="isLoading"
+        [disabled]="isLoading()"
         class="!min-w-[140px]"
       >
-        {{ isLoading ? 'Running...' : 'Run Check' }}
+        {{ isLoading() ? 'Running...' : 'Run Check' }}
       </app-base-rect-button>
   </div>
 
   <!-- Summary Cards -->
-  <div class="grid grid-cols-3 gap-4 mb-6" *ngIf="dataDiagnostics.length > 0">
+  <div class="grid grid-cols-3 gap-4 mb-6" *ngIf="dataDiagnostics().length > 0">
     <div class="bg-error-soft border-l-4 border-error p-4 rounded-lg">
       <div class="flex items-center gap-1 text-2xl font-bold text-error mb-1 lg:mb-0 leading-none">
         <mat-icon class="text-error !text-2xl !w-8 !h-8 !leading-none relative top-0.5">error</mat-icon>
@@ -42,29 +42,29 @@
   </div>
 
   <!-- Loading State -->
-    <div *ngIf="isLoading" class="text-center py-12">
+    <div *ngIf="isLoading()" class="text-center py-12">
     <mat-icon class="text-info !text-[64px] !w-16 !h-16 mx-auto mb-4 animate-spin">refresh</mat-icon>
     <h2 class="text-xl font-semibold text-primary mb-2">Running Diagnostics...</h2>
     <p class="text-secondary">Analyzing your data for potential issues.</p>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!isLoading && dataDiagnostics.length === 0" class="text-center py-12">
+  <div *ngIf="!isLoading() && dataDiagnostics().length === 0" class="text-center py-12">
     <mat-icon class="text-tertiary !text-[64px] !w-16 !h-16 mx-auto mb-4">check_circle</mat-icon>
     <h2 class="text-xl font-semibold text-secondary mb-2">No Diagnostics Run Yet</h2>
     <p class="text-tertiary">Click "Run Check" to analyze your data for potential issues.</p>
   </div>
 
   <!-- All Clear State -->
-  <div *ngIf="!isLoading && dataDiagnostics.length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-soft rounded-lg border border-success">
+  <div *ngIf="!isLoading() && dataDiagnostics().length > 0 && getTotalIssues() === 0" class="text-center py-12 bg-success-soft rounded-lg border border-success">
     <mat-icon class="text-success !text-[64px] !w-16 !h-16 mx-auto mb-4">verified</mat-icon>
     <h2 class="text-xl font-semibold text-success mb-2">All Clear!</h2>
     <p class="text-success">No issues found in your data. Everything looks good!</p>
   </div>
 
   <!-- Diagnostic Items as Expansion Panels -->
-  <mat-accordion class="diagnostics-accordion" *ngIf="!isLoading && getTotalIssues() > 0">
-    <mat-expansion-panel *ngFor="let item of dataDiagnostics" [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
+  <mat-accordion class="diagnostics-accordion" *ngIf="!isLoading() && getTotalIssues() > 0">
+    <mat-expansion-panel *ngFor="let item of dataDiagnostics()" [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
       <mat-expansion-panel-header>
         <mat-panel-title>
           <mat-icon [class.text-error]="item.severity === 'error'"
@@ -101,7 +101,7 @@
 
         <div *ngIf="item.name === 'Shifts Missing Time Duration' && item.count > 0" class="mb-4">
           <app-base-rect-button
-            *ngIf="!isBulkFixing"
+            *ngIf="!isBulkFixing()"
             variant="primary"
             [icon]="'build'"
             iconPosition="left"
@@ -109,7 +109,7 @@
           >
             Fix All ({{ item.count }})
           </app-base-rect-button>
-          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-info">
+          <div *ngIf="isBulkFixing()" class="flex items-center gap-2 text-info">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
           </div>
@@ -117,7 +117,7 @@
 
         <div *ngIf="item.name === 'Orphaned Trips' && item.count > 0" class="mb-4">
           <app-base-rect-button
-            *ngIf="!isBulkFixing"
+            *ngIf="!isBulkFixing()"
             variant="primary"
             [icon]="'playlist_add'"
             iconPosition="left"
@@ -126,7 +126,7 @@
           >
             Create Shifts
           </app-base-rect-button>
-          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-info">
+          <div *ngIf="isBulkFixing()" class="flex items-center gap-2 text-info">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Creating...</span>
           </div>
@@ -134,7 +134,7 @@
 
         <div *ngIf="item.name === 'Trips Missing Duration' && item.count > 0" class="mb-4">
           <app-base-rect-button
-            *ngIf="!isBulkFixing"
+            *ngIf="!isBulkFixing()"
             variant="primary"
             [icon]="'build'"
             iconPosition="left"
@@ -142,7 +142,7 @@
           >
             Fix All ({{ item.count }})
           </app-base-rect-button>
-          <div *ngIf="isBulkFixing" class="flex items-center gap-2 text-info">
+          <div *ngIf="isBulkFixing()" class="flex items-center gap-2 text-info">
             <mat-spinner diameter="20"></mat-spinner>
             <span>Fixing...</span>
           </div>
