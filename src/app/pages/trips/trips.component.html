@@ -1,6 +1,6 @@
 <div class="page-container w-full" id="addTrip">
     <!-- Loading overlay for transitions and page loads -->
-    @if (isLoading) {
+    @if (isLoading()) {
                 <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div class="flex flex-col items-center justify-center p-8 bg-surface rounded-lg shadow-lg">
                 <mat-icon class="animate-spin text-info text-4xl mb-2">refresh</mat-icon>
@@ -10,51 +10,51 @@
     }
     
     <div class="relative transition-all duration-300 w-full">
-        <app-current-average class="absolute top-0 right-0 z-10 m-4 sm:pr-0 md:pr-10" [class.hidden]="isEditMode"></app-current-average>
+        <app-current-average class="absolute top-0 right-0 z-10 m-4 sm:pr-0 md:pr-10" [class.hidden]="isEditMode()"></app-current-average>
         <trip-form 
             (parentReload)="load()" 
             (editModeExit)="exitEditMode($event)" 
-            [isInEditMode]="isEditMode" 
+            [isInEditMode]="isEditMode()" 
             id="tripForm">
         </trip-form>
     </div>
 
-    @if (!isEditMode && demoSheetAttached) {
+    @if (!isEditMode() && demoSheetAttached()) {
         <div class="mx-4 mt-3 rounded-lg border border-info bg-info-soft px-3 py-2 text-center text-sm text-info">
             {{ uiMessages.DEMO_SHEET_ATTACHED }}
         </div>
     }
 
-    @if (unsavedData && !pollingEnabled && !isEditMode) {
+    @if (unsavedData() && !pollingEnabled() && !isEditMode()) {
         <div class="flex justify-center my-4 w-full">
-            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving || demoSheetAttached" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
+            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="saving() || demoSheetAttached()" (clicked)="confirmSaveTripsDialog()" [icon]="'save'" [label]="'Save Changes to Spreadsheet'"></app-base-rect-button>
         </div>
     }
 
-    @if ((!unsavedData || pollingEnabled) && !isEditMode) {
+    @if ((!unsavedData() || pollingEnabled()) && !isEditMode()) {
             <div class="flex flex-col items-center my-4 w-full">
             <div *ngIf="shouldShowUpdateMessage()" class="mb-2 mt-0 text-xs text-warning bg-warning-soft border border-warning rounded px-3 py-1 text-center max-w-xs">
                 <span class="font-bold">Reminder:</span> {{ uiMessages.UPDATE_DAILY_REMINDER }}
             </div>
-            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="reloading || unsavedData" (clicked)="confirmLoadTripsDialog()" [icon]="'refresh'" [label]="'Update from Spreadsheet'"></app-base-rect-button>
+            <app-base-rect-button variant="primary" class="flex items-center gap-2 px-6 py-3 rounded-full" [disabled]="reloading() || unsavedData()" (clicked)="confirmLoadTripsDialog()" [icon]="'refresh'" [label]="'Update from Spreadsheet'"></app-base-rect-button>
         </div>
     }
 
-    <h2 id="todaysTrips" [class.hidden]="isEditMode" class="text-2xl font-bold flex items-center gap-4 mt-6 mb-2">
-        @if (todaysTrips.length > 0) {
-            Today's Trips ({{todaysTrips.length}})
+    <h2 id="todaysTrips" [class.hidden]="isEditMode()" class="text-2xl font-bold flex items-center gap-4 mt-6 mb-2">
+        @if (todaysTrips().length > 0) {
+            Today's Trips ({{todaysTrips().length}})
         }
         @else {
             No Trips Today
         }
 
-        <mat-slide-toggle class="ml-auto" [checked]="pollingEnabled" (change)="changePolling()">
+        <mat-slide-toggle class="ml-auto" [checked]="pollingEnabled()" (change)="changePolling()">
             Auto Save
         </mat-slide-toggle>
     </h2>
     
-    @if (!isEditMode) {
-        @for (trip of todaysTrips; track $index) {
+    @if (!isEditMode()) {
+        @for (trip of todaysTrips(); track $index) {
             <div [id]="trip.rowId">
                 <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)">
                 </trips-quick-view>
@@ -68,19 +68,19 @@
             </div>
         }
     }    <br/>
-    @if (yesterdaysTrips.length > 0 && !isEditMode) {
+    @if (yesterdaysTrips().length > 0 && !isEditMode()) {
         <div class="my-4">
             <h2 id="yesterdaysTrips" class="flex items-center cursor-pointer bg-surface-2 rounded-lg px-4 py-2 transition hover:bg-surface-3 select-none text-xl font-semibold mb-2" (click)="toggleYesterdayTrips()">
-                <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips">
-                    {{ showYesterdayTrips ? 'expand_less' : 'expand_more' }}
+                <mat-icon class="mr-2 transition-transform duration-200" [class.rotate-180]="showYesterdayTrips()">
+                    {{ showYesterdayTrips() ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
-                <span>Yesterday's Trips ({{yesterdaysTrips.length}})</span>
-                <span class="ml-auto text-base text-secondary font-medium">{{ showYesterdayTrips ? 'Hide' : 'Show' }}</span>
+                <span>Yesterday's Trips ({{yesterdaysTrips().length}})</span>
+                <span class="ml-auto text-base text-secondary font-medium">{{ showYesterdayTrips() ? 'Hide' : 'Show' }}</span>
             </h2>
             
-            @if (showYesterdayTrips) {
+            @if (showYesterdayTrips()) {
                 <div>
-                    @for (trip of yesterdaysTrips; track $index) {
+                    @for (trip of yesterdaysTrips(); track $index) {
                         <div [id]="trip.rowId">
                             <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>
@@ -90,11 +90,11 @@
         </div>
     }
     <br/>
-    @if (!isEditMode) {
+    @if (!isEditMode()) {
         <div class="flex justify-center my-4 w-full">
-            <app-trips-table-group class="w-full max-w-5xl" [title]="((defaultSheet?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet?.id ?? ''" [days]="6"></app-trips-table-group>
+            <app-trips-table-group class="w-full max-w-5xl" [title]="((defaultSheet()?.name ?? 'Sheet') | truncate:25) + ' - Trips'" [link]="defaultSheet()?.id ?? ''" [days]="6"></app-trips-table-group>
         </div>
     }
 </div>
 
-<app-back-to-top *ngIf="!isEditMode"></app-back-to-top>
+<app-back-to-top *ngIf="!isEditMode()"></app-back-to-top>

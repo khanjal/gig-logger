@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
 import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -54,23 +54,23 @@ export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
-  clearing: boolean = false;
-  reloading: boolean = false;
-  saving: boolean = false;
-  pollingEnabled: boolean = false;
-  showYesterdayTrips: boolean = false; // Controls the visibility of yesterday's trips section
+  clearing = signal(false);
+  reloading = signal(false);
+  saving = signal(false);
+  pollingEnabled = signal(false);
+  showYesterdayTrips = signal(false); // Controls the visibility of yesterday's trips section
   // Edit mode properties
-  isEditMode: boolean = false;
-  editingTripId: string | null = null;
-  isLoading: boolean = false; // General loading overlay state
+  isEditMode = signal(false);
+  editingTripId = signal<string | null>(null);
+  isLoading = signal(false); // General loading overlay state
 
   savedTrips: ITrip[] = [];
-  todaysTrips: ITrip[] = [];
-  yesterdaysTrips: ITrip[] = [];
-  unsavedData: boolean = false;
-  demoSheetAttached: boolean = false;
+  todaysTrips = signal<ITrip[]>([]);
+  yesterdaysTrips = signal<ITrip[]>([]);
+  unsavedData = signal(false);
+  demoSheetAttached = signal(false);
 
-  defaultSheet: ISpreadsheet | undefined;
+  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
   actionEnum = ActionEnum;
   protected readonly uiMessages = UI_MESSAGES;
   
@@ -89,8 +89,7 @@ export class TripComponent implements OnInit, OnDestroy {
       private logger: LoggerService,
       private _route: ActivatedRoute,
       private _router: Router,
-      protected authService: AuthGoogleService,
-      private cdr: ChangeDetectorRef
+      protected authService: AuthGoogleService
     ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
@@ -99,41 +98,43 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    const initialTripId = this._route.snapshot.paramMap.get('id');
+    this.isEditMode.set(!!initialTripId);
+    this.editingTripId.set(initialTripId);
+
     // Check if we're in edit mode based on route with automatic cleanup
     this._route.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
         const tripId = params.get('id');
         if (tripId) {
-          this.isEditMode = true;
-          this.editingTripId = tripId;
+          this.isEditMode.set(true);
+          this.editingTripId.set(tripId);
         } else {
-          this.isEditMode = false;
-          this.editingTripId = null;
+          this.isEditMode.set(false);
+          this.editingTripId.set(null);
         }
-        this.cdr.markForCheck();
       });
 
     // Sync polling preference via UiPreferencesService
     this._uiPreferences.pollingEnabled$
       .pipe(takeUntil(this.destroy$))
       .subscribe(enabled => {
-        this.pollingEnabled = enabled;
-        this.cdr.markForCheck();
+        this.pollingEnabled.set(enabled);
       });
 
     // Only load if not in edit mode
-    if (!this.isEditMode) {
+    if (!this.isEditMode()) {
       await this.load();
       // Start polling if enabled and not in edit mode
-      if (this.pollingEnabled) {
+      if (this.pollingEnabled()) {
         await this.startPolling();
       }
     }
     await this.refreshDefaultSheetState();
     
     // Load trip data for editing if in edit mode
-    if (this.isEditMode && this.editingTripId) {
+    if (this.isEditMode() && this.editingTripId()) {
       await this.loadTripForEditing();
     }
     
@@ -147,26 +148,23 @@ export class TripComponent implements OnInit, OnDestroy {
 
   public async load(showSpinner: boolean = true) {
     // Prevent reload if editing form
-    if (this.editingTripId) return;
+    if (this.editingTripId()) return;
     if (showSpinner) {
-      this.isLoading = true;
-      this.cdr.markForCheck();
+      this.isLoading.set(true);
     }
     try {
-      this.unsavedData = await this.unsavedDataService.hasUnsavedData();
-      this.todaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse();
-      this.yesterdaysTrips = (await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
+      this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
+      this.todaysTrips.set((await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse());
+      this.yesterdaysTrips.set(await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
       await this.average?.load();
       await this.tripsTable?.load();
       await this.tripForm?.load();
-      this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Failed to load trips page data', error);
     } finally {
       if (showSpinner) {
         setTimeout(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
+          this.isLoading.set(false);
         }, 400);
       }
     }
@@ -176,7 +174,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
   // Toggle yesterday's trips visibility
   toggleYesterdayTrips(): void {
-    this.showYesterdayTrips = !this.showYesterdayTrips;
+    this.showYesterdayTrips.update(show => !show);
   }
 
   // Scroll to today's trips section or specific trip
@@ -230,7 +228,7 @@ export class TripComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
+    this.saving.set(true);
     const dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
@@ -244,8 +242,7 @@ export class TripComponent implements OnInit, OnDestroy {
           this._viewportScroller.scrollToAnchor("todaysTrips");
         }
       } finally {
-        this.saving = false;
-        this.cdr.markForCheck();
+        this.saving.set(false);
       }
     });
   }
@@ -266,7 +263,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async result => {
       if (result) {
-        this.saving = true;
+        this.saving.set(true);
         await this.saveSheetDialog('save');
       }
     });
@@ -293,7 +290,7 @@ export class TripComponent implements OnInit, OnDestroy {
         await this.loadSheetDialog('load');
       }
       // Resume polling if appropriate
-      if (this.pollingEnabled && !this.isEditMode) {
+      if (this.pollingEnabled() && !this.isEditMode()) {
         await this.startPolling();
       }
     });
@@ -301,20 +298,18 @@ export class TripComponent implements OnInit, OnDestroy {
 
   async reload(anchor?: string, isParentReload: boolean = false) {
     await this.refreshDefaultSheetState();
-    let sheetId = this.defaultSheet?.id;
+    let sheetId = this.defaultSheet()?.id;
     if (!sheetId) {
       return;
     }
 
-    this.reloading = true;
-    this.cdr.markForCheck();
+    this.reloading.set(true);
     try {
       await this.load(!isParentReload); // Don't show spinner if it's a parent reload
     } catch (err) {
       this.logger.error('Error during reload:', err);
     } finally {
-      this.reloading = false;
-      this.cdr.markForCheck();
+      this.reloading.set(false);
     }
 
     if (anchor) {
@@ -328,7 +323,7 @@ export class TripComponent implements OnInit, OnDestroy {
 
   async startPolling() {
     // Only poll if pollingEnabled and not in edit mode
-    if (!this.pollingEnabled || this.isEditMode) {
+    if (!this.pollingEnabled() || this.isEditMode()) {
       return;
     }
     
@@ -347,19 +342,17 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   async loadTripForEditing() {
-    if (!this.editingTripId) return;
+    if (!this.editingTripId()) return;
     
-    this.isLoading = true;
-    this.cdr.markForCheck();
+    this.isLoading.set(true);
     
     try {
-      const tripId = parseInt(this.editingTripId);
+      const tripId = parseInt(this.editingTripId()!);
       const trip = await this._tripService.getByRowId(tripId);
       if (trip && this.tripForm) {
         this.tripForm.data = trip;
         await this.tripForm.load();
       }
-      this.cdr.markForCheck();
     } catch (error) {
       this.logger.error('Error loading trip for editing:', error);
       this._router.navigate(['/trips']);
@@ -367,20 +360,19 @@ export class TripComponent implements OnInit, OnDestroy {
     
     // Small delay for smooth transition
     setTimeout(() => {
-      this.isLoading = false;
-      this.cdr.markForCheck();
+      this.isLoading.set(false);
     }, 200);
   }
   
   async exitEditMode(scrollToTripId?: string) {
-    this.isEditMode = false;
-    this.editingTripId = null;
+    this.isEditMode.set(false);
+    this.editingTripId.set(null);
     this._router.navigate(['/trips']);
     if (this.tripForm) {
       await this.tripForm.formReset();
     }
     await this.load(); // This handles the overlay timing
-    if (this.pollingEnabled) {
+    if (this.pollingEnabled()) {
       await this.startPolling();
     }
     if (scrollToTripId) {
@@ -391,12 +383,11 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   shouldShowUpdateMessage(): boolean {
-    return !(this.todaysTrips && this.todaysTrips.length > 0);
+    return this.todaysTrips().length === 0;
   }
 
   private async refreshDefaultSheetState(): Promise<void> {
-    this.defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
-    this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
-    this.cdr.markForCheck();
+    this.defaultSheet.set((await this._sheetService.querySpreadsheets("default", "true"))[0]);
+    this.demoSheetAttached.set(isDemoSheetName(this.defaultSheet()?.name));
   }
 }
