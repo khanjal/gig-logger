@@ -6,7 +6,11 @@
 @mixin backdrop-blur($blur: 8px, $opacity: 0.5, $color: null) {
   backdrop-filter: blur($blur);
   -webkit-backdrop-filter: blur($blur);
-  background-color: if($color, $color, var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 60%, transparent))) !important;
+  @if $color {
+    background-color: $color !important;
+  } @else {
+    background-color: var(--modal-backdrop, color-mix(in srgb, var(--color-bg) 60%, transparent)) !important;
+  }
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

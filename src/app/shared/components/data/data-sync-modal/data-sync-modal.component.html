@@ -9,7 +9,7 @@
                 <span class="text-success whitespace-nowrap w-10">00:00</span>
                 <span class="ml-2 text-success flex-1">Modal will close when complete.</span>
             </div>
-            <ng-container *ngFor="let message of terminalMessages">
+            <ng-container *ngFor="let message of terminalMessages()">
                 <div class="flex mb-1 items-start">
                     <span class="text-success whitespace-nowrap w-10">{{ message.time }}</span>
                     <span [ngClass]="{
@@ -23,13 +23,13 @@
         <!-- Button pinned at the bottom -->
         <div class="flex gap-2 mt-auto items-center w-full">
             <div class="flex gap-2">
-                @if (syncState.canContinue) {
+                @if (syncState().canContinue) {
                     <app-base-rect-button variant="secondary" (clicked)="continueLoad()" [label]="'Continue'"></app-base-rect-button>
                     <app-base-rect-button variant="primary" (clicked)="retryLoad()" [label]="'Retry'"></app-base-rect-button>
                 }
             </div>
             <div class="ml-auto">
-                 <app-base-rect-button variant="danger" [disabled]="currentTime < 60 && syncState.isAutoClose" (clicked)="cancelSync()" [label]="syncState.isAutoClose ? 'Cancel' : 'Close'"></app-base-rect-button>
+                 <app-base-rect-button variant="danger" [disabled]="currentTime() < 60 && syncState().isAutoClose" (clicked)="cancelSync()" [label]="syncState().isAutoClose ? 'Cancel' : 'Close'"></app-base-rect-button>
             </div>
         </div>
     </div>
