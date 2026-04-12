@@ -1,4 +1,4 @@
 <div class="section bg-surface text-secondary flex justify-between items-center p-3 rounded-md">
-    <app-base-rect-button variant="primary" [icon]="'add'" (clicked)="openCreateSheetDialog()" [label]="'Create New'"></app-base-rect-button>
-    <app-base-rect-button variant="primary" [icon]="'list'" (clicked)="openListSheetsDialog()" class="ml-3" [label]="'Link Sheet'"></app-base-rect-button>
+    <app-base-rect-button variant="primary" [icon]="'add'" [loading]="sheetLinkState.isLoading()" [disabled]="sheetLinkState.isLoading()" (clicked)="openCreateSheetDialog()" [label]="'Create New'"></app-base-rect-button>
+    <app-base-rect-button variant="primary" [icon]="'list'" [loading]="sheetLinkState.isLoading()" [disabled]="sheetLinkState.isLoading()" (clicked)="openListSheetsDialog()" class="ml-3" [label]="'Link Sheet'"></app-base-rect-button>
 </div>

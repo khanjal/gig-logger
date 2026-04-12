@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -22,43 +23,44 @@ import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.com
   styleUrls: ['./pending-changes.component.scss']
 })
 export class PendingChangesComponent implements OnInit {
-  trips: any[] = [];
-  shifts: any[] = [];
-  expandedShifts = false;
-  expandedTrips = true;
-  private querySub: any;
+  trips = signal<any[]>([]);
+  shifts = signal<any[]>([]);
+  expandedShifts = signal(false);
+  expandedTrips = signal(true);
+
+  private queryParams = toSignal(this.route.queryParams, { initialValue: {} as Record<string, string> });
+  private lastHandledSection: string | undefined;
 
   constructor(
     private unsavedService: UnsavedDataService,
     private tripService: TripService,
     private shiftService: ShiftService,
-    private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog
-  ) {}
+  ) {
+    effect(() => {
+      const section = this.queryParams()['section'];
+      if (section === this.lastHandledSection) {
+        return;
+      }
 
-  async ngOnInit(): Promise<void> {
-    await this.load();
-
-    // react to query param changes so navigation from the sync indicator works
-    this.querySub = this.route.queryParams.subscribe(params => {
-      const section = params['section'];
+      this.lastHandledSection = section;
       this.handleSection(section);
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.querySub) this.querySub.unsubscribe();
+  async ngOnInit(): Promise<void> {
+    await this.load();
   }
 
   private handleSection(section?: string): void {
     if (!section) return;
     if (section === 'shifts') {
-      this.expandedShifts = true;
-      this.expandedTrips = false;
+      this.expandedShifts.set(true);
+      this.expandedTrips.set(false);
     } else if (section === 'trips') {
-      this.expandedTrips = true;
-      this.expandedShifts = false;
+      this.expandedTrips.set(true);
+      this.expandedShifts.set(false);
     }
 
     // Wait a tick for panels to expand/collapse, then scroll
@@ -70,11 +72,11 @@ export class PendingChangesComponent implements OnInit {
 
   public async load(): Promise<void> {
     try {
-      this.trips = await this.tripService.getUnsaved();
-      this.shifts = await this.shiftService.getUnsavedShifts();
+      this.trips.set(await this.tripService.getUnsaved());
+      this.shifts.set(await this.shiftService.getUnsavedShifts());
     } catch (err) {
-      this.trips = [];
-      this.shifts = [];
+      this.trips.set([]);
+      this.shifts.set([]);
     }
   }
 
@@ -87,7 +89,7 @@ export class PendingChangesComponent implements OnInit {
         data: { id: t.id, rowId: t.rowId }
       })
       .afterClosed()
-      .subscribe(() => this.load());
+      .subscribe(() => void this.load());
   }
 
   openShiftEditor(s: any): void {
@@ -99,6 +101,6 @@ export class PendingChangesComponent implements OnInit {
         data: { id: s.id, rowId: s.rowId }
       })
       .afterClosed()
-      .subscribe(() => this.load());
+      .subscribe(() => void this.load());
   }
 }

@@ -11,7 +11,7 @@ import { IExpense } from '@interfaces/expense.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;
@@ -104,15 +104,18 @@ describe('ExpensesComponent', () => {
       await component.ngOnInit();
 
       expect(expensesServiceSpy.getMaxRowId).toHaveBeenCalled();
-      expect(component.maxRowId).toBe(10);
+      expect(component.maxRowId()).toBe(10);
     });
   });
 
-  describe('getToday', () => {
-    it('returns today in ISO format', () => {
-      const today = component.getToday();
-      
-      expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  describe('date defaults', () => {
+    it('initializes date control with a Date value', async () => {
+      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
+
+      await component.ngOnInit();
+
+      const dateValue = component.expenseForm.get('date')?.value;
+      expect(dateValue instanceof Date).toBeTrue();
     });
   });
 
@@ -128,9 +131,9 @@ describe('ExpensesComponent', () => {
 
       await component.loadExpenses();
 
-      expect(component.groupedExpenses['2024-01']).toBeDefined();
-      expect(component.groupedExpenses['2024-01'].length).toBe(2);
-      expect(component.groupedExpenses['2024-02'].length).toBe(1);
+      expect(component.groupedExpenses()['2024-01']).toBeDefined();
+      expect(component.groupedExpenses()['2024-01'].length).toBe(2);
+      expect(component.groupedExpenses()['2024-02'].length).toBe(1);
     });
 
     it('groups expenses by year', async () => {
@@ -142,8 +145,8 @@ describe('ExpensesComponent', () => {
 
       await component.loadExpenses();
 
-      expect(component.groupedExpensesByYear['2024']).toBeDefined();
-      expect(component.groupedExpensesByYear['2023']).toBeDefined();
+      expect(component.groupedExpensesByYear()['2024']).toBeDefined();
+      expect(component.groupedExpensesByYear()['2023']).toBeDefined();
     });
 
     it('extracts custom categories', async () => {
@@ -156,9 +159,9 @@ describe('ExpensesComponent', () => {
 
       await component.loadExpenses();
 
-      expect(component.customCategories).toContain('CustomCategory');
-      expect(component.customCategories).toContain('AnotherCustom');
-      expect(component.customCategories).not.toContain('Fuel'); // default category
+      expect(component.customCategories()).toContain('CustomCategory');
+      expect(component.customCategories()).toContain('AnotherCustom');
+      expect(component.customCategories()).not.toContain('Fuel'); // default category
     });
 
     it('checks for unsaved data', async () => {
@@ -185,7 +188,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('adds new expense with correct action', async () => {
-      component.maxRowId = 10;
+      component.maxRowId.set(10);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Gas',
@@ -206,8 +209,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('updates existing expense when editing', async () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, rowId: 6 })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, rowId: 6 })]);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Updated Name',
@@ -229,8 +232,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('clears editing state after update', async () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, rowId: 6 })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, rowId: 6 })]);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Gas',
@@ -241,7 +244,7 @@ describe('ExpensesComponent', () => {
 
       await component.addExpense();
 
-      expect(component.editingExpenseId).toBeUndefined();
+      expect(component.editingExpenseId()).toBeUndefined();
     });
 
     it('resets form after add', async () => {
@@ -259,7 +262,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('closes form after add', async () => {
-      component.showAddForm = true;
+      component.showAddForm.set(true);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Gas',
@@ -270,7 +273,7 @@ describe('ExpensesComponent', () => {
 
       await component.addExpense();
 
-      expect(component.showAddForm).toBe(false);
+      expect(component.showAddForm()).toBe(false);
     });
   });
 
@@ -293,16 +296,16 @@ describe('ExpensesComponent', () => {
 
       component.editExpense(expense);
 
-      expect(component.editingExpenseId).toBe(5);
+      expect(component.editingExpenseId()).toBe(5);
     });
 
     it('shows add form', () => {
       const expense = makeExpense();
-      component.showAddForm = false;
+      component.showAddForm.set(false);
 
       component.editExpense(expense);
 
-      expect(component.showAddForm).toBe(true);
+      expect(component.showAddForm()).toBe(true);
     });
   });
 
@@ -312,19 +315,19 @@ describe('ExpensesComponent', () => {
     });
 
     it('clears editing state', () => {
-      component.editingExpenseId = 5;
+      component.editingExpenseId.set(5);
 
       component.cancelEdit();
 
-      expect(component.editingExpenseId).toBeUndefined();
+      expect(component.editingExpenseId()).toBeUndefined();
     });
 
     it('closes form', () => {
-      component.showAddForm = true;
+      component.showAddForm.set(true);
 
       component.cancelEdit();
 
-      expect(component.showAddForm).toBe(false);
+      expect(component.showAddForm()).toBe(false);
     });
 
     it('resets form', () => {
@@ -338,7 +341,7 @@ describe('ExpensesComponent', () => {
 
   describe('deleteCurrentExpense', () => {
     it('does nothing if no expense is being edited', async () => {
-      component.editingExpenseId = undefined;
+      component.editingExpenseId.set(undefined);
       spyOn(component, 'confirmDeleteExpenseDialog');
 
       await component.deleteCurrentExpense();
@@ -348,8 +351,8 @@ describe('ExpensesComponent', () => {
 
     it('confirms deletion for editing expense', async () => {
       const expense = makeExpense({ id: 5 });
-      component.editingExpenseId = 5;
-      component.expenses = [expense];
+      component.editingExpenseId.set(5);
+      component.expenses.set([expense]);
       spyOn(component, 'confirmDeleteExpenseDialog').and.returnValue(Promise.resolve());
 
       await component.deleteCurrentExpense();
@@ -360,21 +363,21 @@ describe('ExpensesComponent', () => {
 
   describe('isEditingDeleted', () => {
     it('returns false if not editing', () => {
-      component.editingExpenseId = undefined;
+      component.editingExpenseId.set(undefined);
 
       expect(component.isEditingDeleted()).toBe(false);
     });
 
     it('returns true if editing expense marked for deletion', () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, action: ActionEnum.Delete })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, action: ActionEnum.Delete })]);
 
       expect(component.isEditingDeleted()).toBe(true);
     });
 
     it('returns false if editing expense not deleted', () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, action: ActionEnum.Saved })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, action: ActionEnum.Saved })]);
 
       expect(component.isEditingDeleted()).toBe(false);
     });
@@ -388,8 +391,8 @@ describe('ExpensesComponent', () => {
 
     it('restores deleted expense being edited', async () => {
       const expense = makeExpense({ id: 5, action: ActionEnum.Delete });
-      component.editingExpenseId = 5;
-      component.expenses = [expense];
+      component.editingExpenseId.set(5);
+      component.expenses.set([expense]);
       expensesServiceSpy.update.and.returnValue(Promise.resolve());
 
       await component.restoreCurrentExpense();
@@ -406,8 +409,8 @@ describe('ExpensesComponent', () => {
 
     it('cancels edit after restore', async () => {
       const expense = makeExpense({ id: 5, action: ActionEnum.Delete });
-      component.editingExpenseId = 5;
-      component.expenses = [expense];
+      component.editingExpenseId.set(5);
+      component.expenses.set([expense]);
       expensesServiceSpy.update.and.returnValue(Promise.resolve());
 
       await component.restoreCurrentExpense();
@@ -453,6 +456,98 @@ describe('ExpensesComponent', () => {
       const total = component.getYearTotal(expenses);
 
       expect(total).toBe(350);
+    });
+  });
+
+  describe('confirmDeleteExpenseDialog', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
+      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
+    });
+
+    it('deletes expense and cancels edit when dialog is confirmed', async () => {
+      const expense = makeExpense({ id: 5, action: ActionEnum.Saved });
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      expensesServiceSpy.update.and.returnValue(Promise.resolve());
+      component.editingExpenseId.set(5);
+
+      await component.confirmDeleteExpenseDialog(expense);
+
+      expect(expensesServiceSpy.update).toHaveBeenCalledWith(
+        jasmine.arrayContaining([
+          jasmine.objectContaining({ id: 5, action: ActionEnum.Delete })
+        ])
+      );
+      expect(component.editingExpenseId()).toBeUndefined();
+    });
+
+    it('does not delete when dialog is cancelled', async () => {
+      const expense = makeExpense({ id: 5 });
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+
+      await component.confirmDeleteExpenseDialog(expense);
+
+      expect(expensesServiceSpy.delete).not.toHaveBeenCalled();
+      expect(expensesServiceSpy.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('confirmSaveDialog', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
+    });
+
+    it('calls saveSheetDialog when dialog is confirmed', async () => {
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
+
+      await component.confirmSaveDialog();
+
+      expect(saveSpy).toHaveBeenCalledWith('save');
+    });
+
+    it('does not call saveSheetDialog when dialog is cancelled', async () => {
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
+
+      await component.confirmSaveDialog();
+
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('saveSheetDialog', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
+      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
+    });
+
+    it('shows login snackbar when canSync is false', async () => {
+      (authGoogleServiceMock as any).canSync = () => Promise.resolve(false);
+
+      await component.saveSheetDialog('save');
+
+      expect(snackBarSpy.open).toHaveBeenCalled();
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+    });
+
+    it('calls loadExpenses and shows success snackbar after successful sync', async () => {
+      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+
+      await component.saveSheetDialog('save');
+
+      expect(component.loadExpenses).toHaveBeenCalled();
+      expect(snackBarSpy.open).toHaveBeenCalled();
+    });
+
+    it('does not reload when sync dialog is cancelled', async () => {
+      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+
+      await component.saveSheetDialog('save');
+
+      expect(component.loadExpenses).not.toHaveBeenCalled();
     });
   });
 });

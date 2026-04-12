@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { UpdatesService } from '@services/updates.service';
 
@@ -15,13 +16,16 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './updates.component.scss'
 })
 export class UpdatesComponent implements OnInit {
-  updates: IUpdateEntry[] = [];
+  updates = signal<IUpdateEntry[]>([]);
+  private destroyRef = inject(DestroyRef);
 
   constructor(private updatesService: UpdatesService) { }
 
   ngOnInit(): void {
-    this.updatesService.getUpdates().subscribe((updates: IUpdateEntry[]) => {
-      this.updates = updates;
-    });
+    this.updatesService.getUpdates()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((updates: IUpdateEntry[]) => {
+        this.updates.set(updates);
+      });
   }
 }

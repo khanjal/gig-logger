@@ -57,7 +57,7 @@ describe('TripFormComponent', () => {
         { provide: GigWorkflowService, useValue: gigSpy },
         { provide: TimerService, useValue: timerSpy },
         { provide: MatDialogRef, useValue: dialogSpy },
-        { provide: MAT_DIALOG_DATA, useValue: null }
+        { provide: MAT_DIALOG_DATA, useValue: {} }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -141,7 +141,9 @@ describe('TripFormComponent', () => {
 
   it('onShiftSelected should remove validator and set region when shift provided', async () => {
     const shift: IShift = { key: '2024-01-01_1', region: 'Downtown', service: 'DoorDash' } as any;
-    await component.onShiftSelected(shift);
+    component.data = {} as any;
+    component.shifts = [shift];
+    await component.onShiftSelected(shift.key);
 
     expect(component.isNewShift).toBeFalse();
     expect(component.tripForm.controls.region.value).toBe('Downtown');
@@ -213,6 +215,7 @@ describe('TripFormComponent', () => {
 
   it('addTrip should use selected previous-day shift when shift control is set and not create a new shift', async () => {
     const oldShift: IShift = { key: '2026-03-25_1', date: '2026-03-25', service: 'DoorDash', rowId: 99 } as any;
+    component.shifts = [oldShift];
 
     // No today's shifts returned
     shiftService.query.and.callFake(async (field: string, value: any) => []);
@@ -222,7 +225,7 @@ describe('TripFormComponent', () => {
     tripService.add.and.returnValue(Promise.resolve());
 
     // Set the form to use an existing (previous-day) shift
-    component.tripForm.controls.shift.setValue(oldShift);
+    component.tripForm.controls.shift.setValue(oldShift.key);
 
     // Reset any previous calls
     shiftService.add.calls.reset();

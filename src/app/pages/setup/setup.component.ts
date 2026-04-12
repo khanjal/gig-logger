@@ -1,5 +1,5 @@
 // Angular Core
-import { Component, ViewChild } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
@@ -38,6 +38,8 @@ import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseCardComponent } from '@components/base/base-card/base-card.component';
+import { firstValueFrom } from 'rxjs';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 
 @Component({
     selector: 'app-setup',
@@ -65,16 +67,19 @@ import { BaseCardComponent } from '@components/base/base-card/base-card.componen
 export class SetupComponent {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
-  isAuthenticated = false;
-  deleting: boolean = false;
-  reloading: boolean = false;
-  setting: boolean = false;
-  spreadsheets: ISpreadsheet[] | undefined;
-  defaultSheet: ISpreadsheet | undefined;
-  unsavedData: boolean = false;
-  showAdvanced: boolean = false;
+  isAuthenticated = signal(false);
+  readonly deletingState = createAsyncOperationState();
+  readonly reloadingState = createAsyncOperationState();
+  readonly settingState = createAsyncOperationState();
+  deleting = this.deletingState.isLoading;
+  reloading = this.reloadingState.isLoading;
+  setting = this.settingState.isLoading;
+  spreadsheets = signal<ISpreadsheet[] | undefined>(undefined);
+  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  unsavedData = signal(false);
+  showAdvanced = signal(false);
 
-  version: string = '';
+  version = signal('');
 
   constructor(
     public dialog: MatDialog,
@@ -91,16 +96,16 @@ export class SetupComponent {
 
 
   async ngOnInit(): Promise<void> {
-    this.isAuthenticated = await this.authService.canSync();
+    this.isAuthenticated.set(await this.authService.canSync());
     await this.load();
     // Load formatted version string (YYYYMMDD.build)
-    this.version = await this.versionService.getFormattedVersion();
+    this.version.set(await this.versionService.getFormattedVersion());
 
     // Append environment suffix for test subdomain installs
     try {
       const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
       if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
-        this.version = `${this.version}-test`;
+        this.version.set(`${this.version()}-test`);
       }
     } catch (e) {
       // ignore
@@ -121,118 +126,153 @@ export class SetupComponent {
   }
 
   public async load() {
-    this.unsavedData = (await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0;
-    this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
-    this.defaultSheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
+    this.unsavedData.set((await this._tripService.getUnsaved()).length > 0 || (await this._shiftService.getUnsavedShifts()).length > 0);
+    this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
+    const defaultSheets = await this._spreadsheetService.querySpreadsheets("default", "true");
+    this.defaultSheet.set(defaultSheets?.[0]);
     this.updateHeader();
   }
 
   public async reload() {
     await this.load();
-    if (!this.defaultSheet?.id) {
+    if (!this.defaultSheet()?.id) {
       return;
     }
 
-    this.reloading = true;
-    await this.loadSheetDialog('load');
-    this.reloading = false;
+    this.reloadingState.setLoading();
+    try {
+      await this.loadSheetDialog('load');
+      this.reloadingState.setSuccess();
+    } catch (error) {
+      this.reloadingState.setError('Reload failed');
+      throw error;
+    }
   }
 
   public async setDefault(spreadsheet: ISpreadsheet) {
-    this.setting = true;
-    // Make current default not default
-    let defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
-    
-    if (defaultSpreadsheet) {
-      defaultSpreadsheet.default = "false";
-      await this._spreadsheetService.update(defaultSpreadsheet);
-    }
+    this.settingState.setLoading();
+    try {
+      // Make current default not default
+      const defaultSheets = await this._spreadsheetService.querySpreadsheets("default", "true");
+      const defaultSpreadsheet = defaultSheets?.[0];
+      
+      if (defaultSpreadsheet) {
+        defaultSpreadsheet.default = "false";
+        await this._spreadsheetService.update(defaultSpreadsheet);
+      }
 
-    spreadsheet.default = "true";
-    await this._spreadsheetService.update(spreadsheet);
-    this.load();
-    this.reload();
-    this.setting = false;
+      spreadsheet.default = "true";
+      await this._spreadsheetService.update(spreadsheet);
+      await this.load();
+      await this.reload();
+      this.settingState.setSuccess();
+    } catch (error) {
+      this.settingState.setError('Set default failed');
+      throw error;
+    }
   }
 
   public async unlinkSpreadsheet(spreadsheet: ISpreadsheet) {
-    this.deleting = true;
-    
-    // Get all spreadsheets
-    const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
-    const isDefaultSheet = spreadsheet.default === "true";
-    const isOnlySheet = allSpreadsheets.length === 1;
+    this.deletingState.setLoading();
+    try {
+      // Get all spreadsheets
+      const allSpreadsheets = await this._spreadsheetService.getSpreadsheets();
+      const isDefaultSheet = spreadsheet.default === "true";
+      const isOnlySheet = allSpreadsheets.length === 1;
 
-    if (isDefaultSheet && isOnlySheet) {
-      // If it's the default and only sheet, clear all data (like Delete Data button)
-      await this.deleteAllData();
-    } else if (isDefaultSheet && !isOnlySheet) {
-      // Cannot unlink default sheet when there are others - user must set another as default first
-        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
-      this.deleting = false;
-      return;
-    } else {
-      // Non-default sheet, just unlink it
-      await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
+      if (isDefaultSheet && isOnlySheet) {
+        // If it's the default and only sheet, clear all data (like Delete Data button)
+        await this.deleteAllData();
+      } else if (isDefaultSheet && !isOnlySheet) {
+        // Cannot unlink default sheet when there are others - user must set another as default first
+          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SET_ANOTHER_DEFAULT, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+        this.deletingState.setSuccess();
+        return;
+      } else {
+        // Non-default sheet, just unlink it
+        await this._spreadsheetService.deleteSpreadsheet(spreadsheet);
+      }
+
+      await this.load();
+      this.deletingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Unlink failed');
+      throw error;
     }
-
-    this.deleting = false;
-    await this.load();
   }
 
   public async deleteAllData() {
-    this.deleting = true;
-    this._spreadsheetService.deleteData();
+    this.deletingState.setLoading();
+    try {
+      this._spreadsheetService.deleteData();
 
-    await this._timerService.delay(1000);
+      await this._timerService.delay(1000);
 
-    this.spreadsheets = [];
-    this.deleting = false;
-
-    await this.load();
+      this.spreadsheets.set([]);
+      await this.load();
+      this.deletingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Delete failed');
+      throw error;
+    }
   }
 
   public async deleteAndReload() {
-    this.deleting = true;
-    this.reloading = true;
-    this.setting = true;
-    
-    // Store current spreadsheets.
-    this.spreadsheets = await this._spreadsheetService.getSpreadsheets();
-    this._spreadsheetService.deleteData();
+    this.deletingState.setLoading();
+    this.reloadingState.setLoading();
+    this.settingState.setLoading();
 
-    // Need a delay to delete DBs and reopen them.
-    await this._timerService.delay(2000);
+    try {
+      // Store current spreadsheets.
+      this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
+      this._spreadsheetService.deleteData();
 
-    // Add spreadsheets back to DB
-    for (const spreadsheet of this.spreadsheets) {
-      this._logger.info(`Adding spreadsheet: ${spreadsheet.name}`);
-      await this._spreadsheetService.update(spreadsheet);
-    };
+      // Need a delay to delete DBs and reopen them.
+      await this._timerService.delay(2000);
 
-    if (!this.defaultSheet?.id) {
-      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.RELOAD_MANUALLY);
-      return;
+      // Add spreadsheets back to DB
+      for (const spreadsheet of this.spreadsheets() ?? []) {
+        this._logger.info(`Adding spreadsheet: ${spreadsheet.name}`);
+        await this._spreadsheetService.update(spreadsheet);
+      };
+
+      if (!this.defaultSheet()?.id) {
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.RELOAD_MANUALLY);
+        this.deletingState.setSuccess();
+        this.reloadingState.setSuccess();
+        this.settingState.setSuccess();
+        return;
+      }
+
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CONNECTING_TO_SPREADSHEET);
+
+      await this.reload();
+
+      this.deletingState.setSuccess();
+      this.reloadingState.setSuccess();
+      this.settingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Delete and reload failed');
+      this.reloadingState.setError('Delete and reload failed');
+      this.settingState.setError('Delete and reload failed');
+      throw error;
     }
-
-    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CONNECTING_TO_SPREADSHEET);
-
-    await this.reload();
-
-    this.deleting = false;
-    this.reloading = false;
-    this.setting = false;
   }
 
   public async deleteLocalData() {
-    this.deleting = true;
-    this._spreadsheetService.deleteLocalData();
-    this.deleting = false;    
-    localStorage.clear();
+    this.deletingState.setLoading();
+    try {
+      this._spreadsheetService.deleteLocalData();
+      localStorage.clear();
 
-    openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
 
-    await this.load();
+      await this.load();
+      this.deletingState.setSuccess();
+    } catch (error) {
+      this.deletingState.setError('Delete local data failed');
+      throw error;
+    }
   }
   public getDataSize() {
     /**
@@ -249,24 +289,22 @@ export class SetupComponent {
   }
 
   async loadSheetDialog(inputValue: string) {
-        const canSync = await this.authService.canSync();
-        if (!canSync) {
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
-          return;
-        }
-
-        let dialogRef = this.dialog.open(DataSyncModalComponent, {
-            panelClass: 'custom-modalbox',
-            data: inputValue
-        });
-  
-        dialogRef.afterClosed().subscribe(async result => {
-  
-            if (result) {
-                await this.load();
-            }
-        });
+    const canSync = await this.authService.canSync();
+    if (!canSync) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOGIN_TO_LOAD_SAVE, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
+      return;
     }
+
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
+      panelClass: 'custom-modalbox',
+      data: inputValue
+    });
+
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.load();
+    }
+  }
 
   async confirmDeleteAndReloadDialog() {
     const canSync = await this.authService.canSync();
@@ -288,11 +326,10 @@ export class SetupComponent {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.deleteAndReload();
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.deleteAndReload();
+    }
   }
 
   async confirmDeleteAllDialog() {
@@ -310,11 +347,10 @@ export class SetupComponent {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.deleteAllData();
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.deleteAllData();
+    }
   }
 
   async confirmUnlinkSpreadsheetDialog(spreadsheet: ISpreadsheet) {
@@ -355,10 +391,9 @@ export class SetupComponent {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if(result) {
-        await this.unlinkSpreadsheet(spreadsheet);
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.unlinkSpreadsheet(spreadsheet);
+    }
   }
 }

@@ -53,11 +53,7 @@ describe('SheetLinkComponent', () => {
 
     spyOn(component.parentReload, 'emit');
 
-    component.openCreateSheetDialog();
-
-    // wait for nested subscriptions
-    await Promise.resolve();
-    await Promise.resolve();
+    await component.openCreateSheetDialog();
 
     expect(dialogSpy.open).toHaveBeenCalledWith(SheetCreateComponent, jasmine.any(Object));
     expect(dialogSpy.open).toHaveBeenCalledWith(DataSyncModalComponent, jasmine.objectContaining({
@@ -80,10 +76,7 @@ describe('SheetLinkComponent', () => {
 
     spyOn(component.parentReload, 'emit');
 
-    component.openCreateSheetDialog();
-
-    await Promise.resolve();
-    await Promise.resolve();
+    await component.openCreateSheetDialog();
 
     expect(loggerSpy.error).toHaveBeenCalled();
     expect(snackBarSpy.open).toHaveBeenCalled();
@@ -131,11 +124,7 @@ describe('SheetLinkComponent', () => {
 
     spyOn(component.parentReload, 'emit');
 
-    component.openListSheetsDialog();
-
-    // allow promise microtasks
-    await Promise.resolve();
-    await Promise.resolve();
+    await component.openListSheetsDialog();
 
     expect(dialogSpy.open).toHaveBeenCalled();
     expect(spreadsheetSpy.add).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'l1' }));
@@ -148,9 +137,7 @@ describe('SheetLinkComponent', () => {
 
     spyOn(component.parentReload, 'emit');
 
-    component.openListSheetsDialog();
-
-    await Promise.resolve();
+    await component.openListSheetsDialog();
 
     expect(dialogSpy.open).toHaveBeenCalled();
     expect(spreadsheetSpy.add).not.toHaveBeenCalled();

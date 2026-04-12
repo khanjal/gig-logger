@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -23,12 +23,10 @@ export class SheetAddFormComponent {
     sheetName: new FormControl('')
   });
 
-  saving: boolean = false;
+  saving = signal(false);
   defaultSpreadsheet: ISpreadsheet | undefined;
 
-  constructor(
-    private _spreadsheetService: SpreadsheetService
-  ) { }
+  constructor(private _spreadsheetService: SpreadsheetService) { }
 
   async ngOnInit(): Promise<void> {
     await this.load();
@@ -38,7 +36,7 @@ export class SheetAddFormComponent {
     this.defaultSpreadsheet = (await this._spreadsheetService.querySpreadsheets("default", "true"))[0];
   }
   public async addSheet() {
-    this.saving = true;
+    this.saving.set(true);
 
     let spreadsheetId: string = this.sheetForm.value.sheetId ?? "";
 
@@ -51,18 +49,21 @@ export class SheetAddFormComponent {
     }
 
     if(!spreadsheetId) {
-      this.saving = false;
+      this.saving.set(false);
       return;
     }
 
-    await this.setupSheet(spreadsheetId);
-
-    this.sheetForm.reset();
-    this.parentReload.emit();
+    try {
+      await this.setupSheet(spreadsheetId);
+      this.sheetForm.reset();
+      this.parentReload.emit();
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   public async addDemo() {
-    this.saving = true;
+    this.saving.set(true);
 
     this.sheetForm.controls.sheetId.setValue(this.demoSheetId);
     this.sheetForm.controls.sheetName.setValue("Demo");

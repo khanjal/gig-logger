@@ -105,17 +105,17 @@ describe('DiagnosticsComponent', () => {
   it('runDiagnostics should populate default diagnostics with zero counts', async () => {
     await component.runDiagnostics();
 
-    expect(component.isLoading).toBeFalse();
-    expect(component.dataDiagnostics.length).toBe(11);
+    expect(component.isLoading()).toBeFalse();
+    expect(component.dataDiagnostics().length).toBe(11);
     expect(component.getTotalIssues()).toBe(0);
   });
 
   it('getCountBySeverity should sum matching severities', () => {
-    component.dataDiagnostics = [
+    component.dataDiagnostics.set([
       { name: 'a', count: 1, severity: 'info', description: '', itemType: 'trip', items: [] },
       { name: 'b', count: 2, severity: 'warning', description: '', itemType: 'trip', items: [] },
       { name: 'c', count: 3, severity: 'warning', description: '', itemType: 'trip', items: [] }
-    ];
+    ]);
 
     expect(component.getCountBySeverity('warning')).toBe(5);
     expect(component.getCountBySeverity('info')).toBe(1);
@@ -149,7 +149,7 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('fixShiftDuration should compute duration, mark fixed, and decrement count', async () => {
-    component.dataDiagnostics = [{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] } as any];
+    component.dataDiagnostics.set([{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] } as any]);
     const shift: IShift = { start: '2024-01-01T00:00:00Z', finish: '2024-01-01T00:30:00Z' } as IShift;
 
     await component.fixShiftDuration(shift);
@@ -160,7 +160,7 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('fixTripDuration should call calculator and decrement count', async () => {
-    component.dataDiagnostics = [{ name: 'Trips Missing Duration', count: 1, severity: 'warning', description: '', itemType: 'trip', items: [] } as any];
+    component.dataDiagnostics.set([{ name: 'Trips Missing Duration', count: 1, severity: 'warning', description: '', itemType: 'trip', items: [] } as any]);
     const trip = { key: 't1' } as ITrip;
 
     await component.fixTripDuration(trip);
@@ -204,7 +204,7 @@ describe('DiagnosticsComponent', () => {
 
   it('createShiftFromTrip should create shift and mark orphaned trip fixed', async () => {
     const trip: ITrip = { key: 'abc', date: '2024-01-01', service: 'Svc', number: 1, region: 'R1', pickupTime: '10:00', total: 0 } as any;
-    component.dataDiagnostics = [{ name: 'Orphaned Trips', count: 1, severity: 'error', description: '', itemType: 'trip', items: [trip] } as any];
+    component.dataDiagnostics.set([{ name: 'Orphaned Trips', count: 1, severity: 'error', description: '', itemType: 'trip', items: [trip] } as any]);
 
     await component.createShiftFromTrip(trip);
 
@@ -212,7 +212,7 @@ describe('DiagnosticsComponent', () => {
     expect(gigWorkflow.calculateShiftTotals).toHaveBeenCalled();
     expect(shiftService.add).toHaveBeenCalled();
     expect((trip as any).fixed).toBeTrue();
-    expect(component.dataDiagnostics[0].count).toBe(0);
+    expect(component.dataDiagnostics()[0].count).toBe(0);
   });
 
   it('hasMarkedForDelete should detect flagged shifts', () => {

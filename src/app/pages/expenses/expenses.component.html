@@ -4,25 +4,25 @@
     <h1 class="text-2xl font-bold flex-1">Expenses</h1>
       <div class="flex gap-2">
       <app-base-fab-button 
-        *ngIf="unsavedData && !(showAddForm || editingExpenseId)" 
+        *ngIf="unsavedData() && !(showAddForm() || editingExpenseId())" 
         fabStyle="mini" 
         variant="primary"
         [icon]="'save'" 
-        [disabled]="saving" 
-        [loading]="saving"
+        [disabled]="saving()" 
+        [loading]="saving()"
         (clicked)="confirmSaveDialog()" 
         title="Save Changes">
       </app-base-fab-button>
       <app-base-fab-button 
-        *ngIf="!showAddForm && !editingExpenseId" 
+        *ngIf="!showAddForm() && !editingExpenseId()" 
         fabStyle="mini" 
         variant="primary"
         [icon]="'add'" 
-        (clicked)="showAddForm = true; resetForm()" 
+        (clicked)="showAddForm.set(true); resetForm()" 
         title="Add Expense">
       </app-base-fab-button>
       <app-base-fab-button 
-        *ngIf="showAddForm && !editingExpenseId" 
+        *ngIf="showAddForm() && !editingExpenseId()" 
         fabStyle="mini" 
         variant="danger"
         [icon]="'close'" 
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div *ngIf="showAddForm || editingExpenseId" class="my-4">
+  <div *ngIf="showAddForm() || editingExpenseId()" class="my-4">
     <form [formGroup]="expenseForm" (ngSubmit)="addExpense()" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-6 rounded-lg shadow mb-4">
       <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-4">
         <div class="w-full">
@@ -81,7 +81,7 @@
       <div class="col-span-1 md:col-span-4 flex flex-row items-center justify-between gap-2 mt-6">
           <div class="flex gap-2">
           <app-base-fab-button 
-            *ngIf="editingExpenseId" 
+            *ngIf="editingExpenseId()" 
             [extended]="true"
             variant="danger" 
             [icon]="'cancel'"
@@ -92,20 +92,20 @@
         </div>
         <div class="flex gap-2">
           <app-base-fab-button 
-            *ngIf="!editingExpenseId" 
+            *ngIf="!editingExpenseId()" 
             [extended]="true"
             variant="primary" 
             [icon]="'add'"
-            type="submit" 
+            type="submit"
             [disabled]="expenseForm.invalid">
             Store
           </app-base-fab-button>
           <app-base-fab-button 
-            *ngIf="editingExpenseId" 
+            *ngIf="editingExpenseId()" 
             [extended]="true"
             variant="primary" 
             [icon]="'save'"
-            type="submit" 
+            type="submit"
             [disabled]="expenseForm.invalid">
             Update
           </app-base-fab-button>
@@ -114,12 +114,12 @@
     </form>
   </div>
 
-  <div *ngIf="!(showAddForm || editingExpenseId)" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
-    <div *ngIf="expenses.length === 0" class="pt-12 text-center">
+  <div *ngIf="!(showAddForm() || editingExpenseId())" class="expenses-list-container w-full max-w-3xl mx-auto px-4 md:px-8 lg:px-12 py-6 flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen">
+    <div *ngIf="expenses().length === 0" class="pt-12 text-center">
       <p class="text-lg text-secondary mb-4">You have no expenses yet. Add your first expense to get started.</p>
-      <app-base-rect-button variant="primary" (clicked)="showAddForm = true; resetForm()" [icon]="'add'" [label]="'Add Expense'"></app-base-rect-button>
+      <app-base-rect-button variant="primary" (clicked)="showAddForm.set(true); resetForm()" [icon]="'add'" [label]="'Add Expense'"></app-base-rect-button>
     </div>
-    <div *ngFor="let year of (groupedExpensesByYear | keyvalue:sortByMonth)">
+    <div *ngFor="let year of (groupedExpensesByYear() | keyvalue:sortByMonth)">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold text-primary">{{ year.key }}</h2>
         <div class="text-right text-lg font-semibold text-primary">

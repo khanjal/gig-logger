@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
@@ -33,20 +33,22 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
     private cdr: ChangeDetectorRef
   ) {}
 
-  async ngOnChanges() {
-    await this.load();
-    this.checkScrollable();
+  ngOnChanges(changes: SimpleChanges): void {
+    // Avoid duplicate initial load; ngOnInit handles first render.
+    if (changes['days'] && !changes['days'].firstChange) {
+      void this.loadAndCheck();
+    }
   }
 
-  async ngOnInit() {
+  ngOnInit(): void {
     this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     this.prefers24Hour = DateHelper.prefers24Hour();
-    await this.load();
-    this.checkScrollable();
+    void this.loadAndCheck();
   }
 
-  ngAfterViewInit() {
-    this.checkScrollable();
+  ngAfterViewInit(): void {
+    // Run after the current render cycle to avoid change-detection re-entrancy.
+    queueMicrotask(() => this.checkScrollable());
   }
 
   checkScrollable() {
@@ -55,7 +57,14 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
       const el = container.nativeElement;
       return el.scrollWidth > el.clientWidth;
     });
-    this.cdr.detectChanges();
+  }
+
+  private async loadAndCheck(): Promise<void> {
+    await this.load();
+    queueMicrotask(() => {
+      this.checkScrollable();
+      this.cdr.markForCheck();
+    });
   }
 
   async load() {

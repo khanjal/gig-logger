@@ -41,6 +41,23 @@ src/app/
 - Example component structure follows `trips.component.ts` pattern
 - **Parent-child communication**: Some components use event emitters and input properties for data flow
 
+### Zoneless Runtime Rules (Required)
+
+This project runs with zoneless change detection at runtime (`provideZonelessChangeDetection`).
+
+- Do **not** add runtime `import 'zone.js'` in app runtime files.
+- Keep UI state signal-first (`signal`, `computed`) for page/component state.
+- Prefer `async/await` + `firstValueFrom(...)` for dialog and user-action async flows.
+- Avoid defaulting to manual CD patching (`markForCheck`) as a state-sync strategy.
+- Avoid template-invoked heavy methods; precompute/map derived values on data change.
+
+Test-time note:
+- `src/test.ts` still uses `zone.js` and `zone.js/testing` for legacy specs. Do not remove test-time zone imports until zone-based tests are migrated.
+
+Enforcement:
+- Run `npm run check:zoneless-runtime` before PRs.
+- Follow existing zoneless examples in page/component files already using signals and async/await patterns.
+
 ### Reusable UI Components
 
 #### Button Components (use specific variants — NOT `app-base-button`)

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
@@ -21,6 +21,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-shifts',
@@ -32,20 +33,20 @@ import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
   protected readonly uiMessages = UI_MESSAGES;
-  shifts: IShift[] = [];
+  shifts = signal<IShift[]>([]);
   actionEnum = ActionEnum;
-  saving: boolean = false;
+  saving = signal(false);
   unsavedShifts: IShift[] = [];
-  unsavedData: boolean = false;
+  unsavedData = signal(false);
   pageSize: number = 20; // Number of shifts to load per request
-  currentPage: number = 0; // Current page index
-  isLoading: boolean = false; // Prevent multiple simultaneous requests
-  noMoreData: boolean = false; // Stop loading if all data is loaded
-  showAddForm = false; // Control the visibility of the add form
-  defaultSheet: ISpreadsheet | undefined;
-  demoSheetAttached: boolean = false;
+  currentPage = signal(0); // Current page index
+  isLoading = signal(false); // Prevent multiple simultaneous requests
+  noMoreData = signal(false); // Stop loading if all data is loaded
+  showAddForm = signal(false); // Control the visibility of the add form
+  defaultSheet = signal<ISpreadsheet | undefined>(undefined);
+  demoSheetAttached = signal(false);
 
-  editId: string | null = null; // ID of the shift being edited, if any
+  editId = signal<string | null>(null); // ID of the shift being edited, if any
 
   constructor(
     public dialog: MatDialog, 
@@ -60,32 +61,35 @@ export class ShiftsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.route.paramMap.subscribe(params => {
-      this.editId = params.get('id');
+      this.editId.set(params.get('id'));
     });
     await this.loadShifts();
   }
 
   async loadShifts(): Promise<void> {
-    if (this.isLoading || this.noMoreData) return;
+    if (this.isLoading() || this.noMoreData()) return;
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     try {
       // Use 'rowId' as the sort field and 'desc' for reverse order
-      const newShifts = await this._shiftService.paginate(this.currentPage, this.pageSize, 'rowId', 'desc');
+      const newShifts = await this._shiftService.paginate(this.currentPage(), this.pageSize, 'rowId', 'desc');
       if (newShifts.length < this.pageSize) {
-        this.noMoreData = true;
+        this.noMoreData.set(true);
       }
-      this.shifts = [...this.shifts, ...newShifts]; // Append new shifts to the list
-      this.currentPage++;
-      this.unsavedData = await this.unsavedDataService.hasUnsavedData();
-      this.defaultSheet = (await this._sheetService.querySpreadsheets('default', 'true'))[0];
-      this.demoSheetAttached = isDemoSheetName(this.defaultSheet?.name);
+      this.shifts.update(current => [...current, ...newShifts]); // Append new shifts to the list
+      this.currentPage.update(page => page + 1);
+      this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
+      this.defaultSheet.set((await this._sheetService.querySpreadsheets('default', 'true'))[0]);
+      this.demoSheetAttached.set(isDemoSheetName(this.defaultSheet()?.name));
       // If there are no shifts at all, open the add form by default so users can create one.
-      if ((this.shifts ?? []).length === 0) {
-        this.showAddForm = true;
+      if (this.shifts().length === 0 && !this.showAddForm() && !this.editId()) {
+        // Defer branch toggle to the next macrotask to avoid NG0100.
+        setTimeout(() => {
+          this.showAddForm.set(true);
+        });
       }
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 
@@ -96,17 +100,17 @@ export class ShiftsComponent implements OnInit {
     const clientHeight = target.clientHeight;
     const threshold = ShiftsComponent.SCROLL_THRESHOLD_PX;
     const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
-    if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading && !this.noMoreData) {
-      this.loadShifts();
+    if ((scrollTop + clientHeight >= scrollHeight - threshold || scrollPercentage >= 0.8) && !this.isLoading() && !this.noMoreData()) {
+      void this.loadShifts();
     }
   }
 
   handleParentReload() {
-    this.shifts = []; // Clear the shifts array
-    this.currentPage = 0; // Reset pagination
-    this.noMoreData = false; // Reset noMoreData flag
-    this.showAddForm = false;
-    this.loadShifts();
+    this.shifts.set([]); // Clear the shifts array
+    this.currentPage.set(0); // Reset pagination
+    this.noMoreData.set(false); // Reset noMoreData flag
+    this.showAddForm.set(false);
+    void this.loadShifts();
   }
 
   async confirmSaveDialog() {
@@ -123,11 +127,10 @@ export class ShiftsComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
-      if(result) {
-        await this.saveSheetDialog('save');
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.saveSheetDialog('save');
+    }
   }
   
   addShift() {
@@ -145,29 +148,28 @@ export class ShiftsComponent implements OnInit {
       return;
     }
 
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
+    const dialogRef = this.dialog.open(DataSyncModalComponent, {
         panelClass: 'custom-modalbox',
         data: inputValue
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
-        if (result) {
-            // Show success message
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
-            
-            // Refresh the page to show updated state
-            this.handleParentReload();
-        }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+        // Show success message
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
+        
+        // Refresh the page to show updated state
+        this.handleParentReload();
+    }
   }
 
   exitEditMode(shiftId?: string) {
-    this.editId = null;
+    this.editId.set(null);
     this.router.navigate(['/shifts']);
     this.handleParentReload();
   }
 
   hideAddForm() {
-    this.showAddForm = false;
+    this.showAddForm.set(false);
   }
 }
