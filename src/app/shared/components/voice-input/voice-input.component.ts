@@ -93,7 +93,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       this.initializeSpeechRecognition();
     }
 
-    if (!this.recognizing) {
+    if (!this.recognizing()) {
       this.startListening();
     } else {
       this.stopListening();

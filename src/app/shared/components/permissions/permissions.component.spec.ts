@@ -45,8 +45,8 @@ describe('PermissionsComponent', () => {
 
   describe('initialization', () => {
     it('sets initial permission states to checking', () => {
-      expect(component.locationPermission.state).toBe('checking');
-      expect(component.microphonePermission.state).toBe('checking');
+      expect(component.locationPermission().state).toBe('checking');
+      expect(component.microphonePermission().state).toBe('checking');
     });
 
     it('subscribes to permission state changes on init', async () => {
@@ -62,32 +62,32 @@ describe('PermissionsComponent', () => {
       await component.ngOnInit();
       locationState$.next('granted');
       
-      expect(component.locationPermission.state).toBe('granted');
-      expect(component.locationPermission.canRequest).toBeFalse();
+      expect(component.locationPermission().state).toBe('granted');
+      expect(component.locationPermission().canRequest).toBeFalse();
     });
 
     it('updates location permission when state changes to prompt', async () => {
       await component.ngOnInit();
       locationState$.next('prompt');
       
-      expect(component.locationPermission.state).toBe('prompt');
-      expect(component.locationPermission.canRequest).toBeTrue();
+      expect(component.locationPermission().state).toBe('prompt');
+      expect(component.locationPermission().canRequest).toBeTrue();
     });
 
     it('updates microphone permission when state changes to granted', async () => {
       await component.ngOnInit();
       microphoneState$.next('granted');
       
-      expect(component.microphonePermission.state).toBe('granted');
-      expect(component.microphonePermission.canRequest).toBeFalse();
+      expect(component.microphonePermission().state).toBe('granted');
+      expect(component.microphonePermission().canRequest).toBeFalse();
     });
 
     it('updates microphone permission when state changes to prompt', async () => {
       await component.ngOnInit();
       microphoneState$.next('prompt');
       
-      expect(component.microphonePermission.state).toBe('prompt');
-      expect(component.microphonePermission.canRequest).toBeTrue();
+      expect(component.microphonePermission().state).toBe('prompt');
+      expect(component.microphonePermission().canRequest).toBeTrue();
     });
   });
 
@@ -97,8 +97,8 @@ describe('PermissionsComponent', () => {
       
       await component.requestLocation();
       
-      expect(component.locationPermission.state).toBe('granted');
-      expect(component.locationPermission.canRequest).toBeFalse();
+      expect(component.locationPermission().state).toBe('granted');
+      expect(component.locationPermission().canRequest).toBeFalse();
     });
 
     it('updates state to denied on error', async () => {
@@ -106,7 +106,7 @@ describe('PermissionsComponent', () => {
       
       await component.requestLocation();
       
-      expect(component.locationPermission.state).toBe('denied');
+      expect(component.locationPermission().state).toBe('denied');
     });
 
     it('logs error when location request throws', async () => {
@@ -125,8 +125,8 @@ describe('PermissionsComponent', () => {
       
       await component.requestMicrophone();
       
-      expect(component.microphonePermission.state).toBe('granted');
-      expect(component.microphonePermission.canRequest).toBeFalse();
+      expect(component.microphonePermission().state).toBe('granted');
+      expect(component.microphonePermission().canRequest).toBeFalse();
     });
 
     it('updates state to denied on error', async () => {
@@ -134,7 +134,7 @@ describe('PermissionsComponent', () => {
       
       await component.requestMicrophone();
       
-      expect(component.microphonePermission.state).toBe('denied');
+      expect(component.microphonePermission().state).toBe('denied');
     });
   });
 
