@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
 import { AppUpdateService } from '@services/app-update.service';
 import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
@@ -13,10 +13,10 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
   templateUrl: './service-worker-status.component.html',
 })
 export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
-  serviceWorkerStatus: string = 'Checking...';
-  isUpdateAvailable: boolean = false;
-  showInstallButton: boolean = false;
-  isOnline: boolean = navigator.onLine;
+  serviceWorkerStatus = signal('Checking...');
+  isUpdateAvailable = signal(false);
+  showInstallButton = signal(false);
+  isOnline = signal(navigator.onLine);
   private updateStatusSubscription: Subscription | undefined;
   private deferredPrompt: any;
 
@@ -29,12 +29,12 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
     // Subscribe to app update status
     this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
       (status: IAppUpdateStatus) => {
-        this.isUpdateAvailable = status.isUpdateAvailable;
+        this.isUpdateAvailable.set(status.isUpdateAvailable);
         
         if (status.isEnabled) {
-          this.serviceWorkerStatus = status.isUpdateAvailable ? 'Update Available' : 'Active';
+          this.serviceWorkerStatus.set(status.isUpdateAvailable ? 'Update Available' : 'Active');
         } else {
-          this.serviceWorkerStatus = 'Not Enabled';
+          this.serviceWorkerStatus.set('Not Enabled');
         }
       }
     );
@@ -43,30 +43,30 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       this.deferredPrompt = e;
-      this.showInstallButton = true;
+      this.showInstallButton.set(true);
       this.logger.info('PWA install prompt available');
     });
 
     // Hide button if already installed
     window.addEventListener('appinstalled', () => {
-      this.showInstallButton = false;
+      this.showInstallButton.set(false);
       this.logger.info('PWA installed successfully');
     });
 
     // Check if the app is offline
     window.addEventListener('offline', () => {
-      this.isOnline = false;
-      this.serviceWorkerStatus = 'Offline';
+      this.isOnline.set(false);
+      this.serviceWorkerStatus.set('Offline');
     });
 
     window.addEventListener('online', () => {
-      this.isOnline = true;
+      this.isOnline.set(true);
       // Restore previous status when coming back online
       const currentStatus = this.appUpdateService.getCurrentStatus();
       if (currentStatus.isEnabled) {
-        this.serviceWorkerStatus = currentStatus.isUpdateAvailable ? 'Update Available' : 'Active';
+        this.serviceWorkerStatus.set(currentStatus.isUpdateAvailable ? 'Update Available' : 'Active');
       } else {
-        this.serviceWorkerStatus = 'Not Enabled';
+        this.serviceWorkerStatus.set('Not Enabled');
       }
     });
   }
@@ -96,7 +96,7 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
         this.logger.info('PWA installation declined');
       }
       this.deferredPrompt = null;
-      this.showInstallButton = false;
+      this.showInstallButton.set(false);
     }
   }
 
