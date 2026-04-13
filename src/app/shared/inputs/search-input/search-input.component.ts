@@ -1,6 +1,6 @@
 // Angular core imports
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
@@ -88,14 +88,14 @@ export class SearchInputComponent implements OnDestroy {
 
   // #region State & Constants
   filteredItems: Observable<ISearchItem[]> | undefined;
-  filteredItemsArray: ISearchItem[] = [];
-  showGoogleMapsIcon = false;
-  hasSelection = false;
-  isGoogleSearching = false;
-  showNoGoogleResults = false;
+  filteredItemsArray = signal<ISearchItem[]>([]);
+  showGoogleMapsIcon = signal(false);
+  hasSelection = signal(false);
+  isGoogleSearching = signal(false);
+  showNoGoogleResults = signal(false);
   private initialValue: string = '';
   // When true skip the next focus handler after a user selection (prevents refocus on mobile)
-  private skipNextFocus: boolean = false;
+  private skipNextFocus = signal(false);
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
   private readonly ITEM_HEIGHT = 48;
   private readonly BLUR_DELAY = 100;
@@ -123,7 +123,7 @@ export class SearchInputComponent implements OnDestroy {
     this.searchForm.controls.searchInput.setValue(normalizedValue, { emitEvent: false });
     this.initialValue = normalizedValue;
     // If value is set externally, treat it as a selection when non-empty
-    this.hasSelection = !!normalizedValue;
+    this.hasSelection.set(!!normalizedValue);
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -193,14 +193,14 @@ export class SearchInputComponent implements OnDestroy {
     
     // Only reset selection state if value actually changed from initial
     if (value !== this.initialValue) {
-      this.hasSelection = false;
+      this.hasSelection.set(false);
     }
-    this.showNoGoogleResults = false;
+    this.showNoGoogleResults.set(false);
     
     // Hide icon if input is cleared
     if (!value) {
-      this.showGoogleMapsIcon = false;
-      this.isGoogleSearching = false;
+      this.showGoogleMapsIcon.set(false);
+      this.isGoogleSearching.set(false);
     }
   }
   
@@ -220,11 +220,11 @@ export class SearchInputComponent implements OnDestroy {
 
   private resetComponentState(): void {
     this.googlePredictionsCache.clear();
-    this.showGoogleMapsIcon = false;
-    this.hasSelection = false;
-    this.filteredItemsArray = [];
-    this.isGoogleSearching = false;
-    this.showNoGoogleResults = false;
+    this.showGoogleMapsIcon.set(false);
+    this.hasSelection.set(false);
+    this.filteredItemsArray.set([]);
+    this.isGoogleSearching.set(false);
+    this.showNoGoogleResults.set(false);
   }
   
   async onInputSelect(selectedItem: ISearchItem): Promise<void> {
@@ -250,19 +250,19 @@ export class SearchInputComponent implements OnDestroy {
 
     this.setInputValue(finalAddress);
     this.initialValue = finalAddress;
-    this.hasSelection = true;
+    this.hasSelection.set(true);
 
     // Clear suggestions and close dropdown so the selected item doesn't reappear
-    this.filteredItemsArray = [];
+    this.filteredItemsArray.set([]);
     if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
       try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
     }
 
     // Blur input after selection
   // Prevent focus handler from immediately re-opening the dropdown on mobile
-  this.skipNextFocus = true;
+  this.skipNextFocus.set(true);
   // Clear the skip flag shortly after to restore normal behavior
-  setTimeout(() => { this.skipNextFocus = false; }, 350);
+  setTimeout(() => { this.skipNextFocus.set(false); }, 350);
   this.blurInputAfterDelay();
   }
 
@@ -294,19 +294,19 @@ export class SearchInputComponent implements OnDestroy {
 
   onFocus(): void {
     // If we just selected an item, skip this focus to avoid re-opening the dropdown on mobile
-    if (this.skipNextFocus) { this.skipNextFocus = false; return; }
+    if (this.skipNextFocus()) { this.skipNextFocus.set(false); return; }
 
     // Don't immediately open dropdown - wait for focus-scroll directive signal
     const value = this.value;
     this._filterItems(value).then(items => {
-      this.filteredItemsArray = items;
+      this.filteredItemsArray.set(items);
       // Don't auto-open dropdown here - let dropdownReady handler do it
     });
   }
 
   onDropdownReady(): void {
     // Called by focus-scroll directive when it's safe to open dropdown
-    if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen && this.filteredItemsArray.length > 0) {
+    if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen && this.filteredItemsArray().length > 0) {
       // Small additional delay to ensure page scroll has fully settled
       setTimeout(() => {
         if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
@@ -320,11 +320,11 @@ export class SearchInputComponent implements OnDestroy {
   // #region Public Methods
   getViewportHeight(items?: ISearchItem[]): number {
     // If showing spinner or no results message, return fixed height
-    if (this.isGoogleSearching || this.showNoGoogleResults) {
+    if (this.isGoogleSearching() || this.showNoGoogleResults()) {
       return this.ITEM_HEIGHT;
     }
     
-    const itemsToUse = items || this.filteredItemsArray;
+    const itemsToUse = items || this.filteredItemsArray();
     if (!itemsToUse || itemsToUse.length === 0) {
       return 0;
     }
@@ -346,14 +346,14 @@ export class SearchInputComponent implements OnDestroy {
     if (!this.value || this.value.length < this.MIN_GOOGLE_SEARCH_LENGTH) return;
     if (!this.isGoogleSearchType()) return;
     
-    this.isGoogleSearching = true;
-    this.showNoGoogleResults = false;
+    this.isGoogleSearching.set(true);
+    this.showNoGoogleResults.set(false);
     
     try {
       const googleResults = await this.getGooglePredictions(this.value);
-      this.filteredItemsArray = googleResults;
-      this.showGoogleMapsIcon = googleResults.length === 0;
-      this.showNoGoogleResults = googleResults.length === 0;
+      this.filteredItemsArray.set(googleResults);
+      this.showGoogleMapsIcon.set(googleResults.length === 0);
+      this.showNoGoogleResults.set(googleResults.length === 0);
       
       // Open the dropdown if closed
       if (this.autocompleteTrigger && !this.autocompleteTrigger.panelOpen) {
@@ -361,10 +361,10 @@ export class SearchInputComponent implements OnDestroy {
       }
     } catch (error) {
       this.logger.warn('Error triggering Google search:', error);
-      this.showGoogleMapsIcon = true;
-      this.showNoGoogleResults = true;
+      this.showGoogleMapsIcon.set(true);
+      this.showNoGoogleResults.set(true);
     } finally {
-      this.isGoogleSearching = false;
+      this.isGoogleSearching.set(false);
     }
   }
   // #endregion
@@ -406,7 +406,7 @@ export class SearchInputComponent implements OnDestroy {
       items = await this.getDropdownFallbackBySearchType('');
     }
     
-    this.showGoogleMapsIcon = false;
+    this.showGoogleMapsIcon.set(false);
     return items;
   }
 
@@ -416,9 +416,9 @@ export class SearchInputComponent implements OnDestroy {
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
         // For Address, do not auto-trigger Google predictions
         if (addressResults.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
-          this.showGoogleMapsIcon = true;
+          this.showGoogleMapsIcon.set(true);
         } else {
-          this.showGoogleMapsIcon = false;
+          this.showGoogleMapsIcon.set(false);
         }
         return addressResults;
       case 'Name':
@@ -431,9 +431,9 @@ export class SearchInputComponent implements OnDestroy {
         placeItems = await this.appendDropdownMatches(placeItems, 'Place', value);
         // For Place, do not auto-trigger Google predictions
         if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
-          this.showGoogleMapsIcon = true;
+          this.showGoogleMapsIcon.set(true);
         } else {
-          this.showGoogleMapsIcon = false;
+          this.showGoogleMapsIcon.set(false);
         }
         return placeItems;
       case 'Region':
@@ -489,7 +489,7 @@ export class SearchInputComponent implements OnDestroy {
     const shouldShowIcon = this.isGoogleSearchType() && 
                           results.length === 0 && 
                           value.length >= this.MIN_GOOGLE_SEARCH_LENGTH;
-    this.showGoogleMapsIcon = shouldShowIcon;
+    this.showGoogleMapsIcon.set(shouldShowIcon);
   }
   // #endregion
 
@@ -520,17 +520,17 @@ export class SearchInputComponent implements OnDestroy {
       distinctUntilChanged(),
       switchMap(async value => {
         const trimmedValue = value?.trim() || '';
-        if (trimmedValue && this.showGoogleMapsIcon) {
-          this.showGoogleMapsIcon = false;
+        if (trimmedValue && this.showGoogleMapsIcon()) {
+          this.showGoogleMapsIcon.set(false);
         }
         // No need to clear address listeners - server-side only now
         return await this._filterItems(trimmedValue);
       })
     );
     this.searchSubscription = this.filteredItems.subscribe(items => {
-      this.filteredItemsArray = items;
+      this.filteredItemsArray.set(items);
     });
-    this.filteredItemsArray = [];
+    this.filteredItemsArray.set([]);
   }
   // #endregion
 
@@ -609,7 +609,7 @@ export class SearchInputComponent implements OnDestroy {
 
   private handleGoogleSearchError(error: any): void {
     if (this.isRateLimitError(error) && this.isGoogleSearchType()) {
-      this.showGoogleMapsIcon = true;
+      this.showGoogleMapsIcon.set(true);
     }
     this.logger.warn('Error getting Google predictions:', error);
   }

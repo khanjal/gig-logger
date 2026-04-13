@@ -24,13 +24,13 @@
   </form>
   
   <!-- Loading indicator -->
-  <div *ngIf="isLoading" class="loading-indicator">
+  <div *ngIf="isLoading()" class="loading-indicator">
     Searching...
   </div>
   
   <!-- Suggestions dropdown -->
-  <div *ngIf="showSuggestions && suggestions.length > 0" class="suggestions-container">
-    <div *ngFor="let suggestion of suggestions" 
+  <div *ngIf="showSuggestions() && suggestions().length > 0" class="suggestions-container">
+    <div *ngFor="let suggestion of suggestions()" 
          class="suggestion-item"
          (click)="selectSuggestion(suggestion)">
       <div class="suggestion-main">{{ suggestion.place }}</div>

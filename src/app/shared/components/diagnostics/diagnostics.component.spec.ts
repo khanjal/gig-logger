@@ -59,19 +59,19 @@ describe('DiagnosticsComponent', () => {
     it('sets loading state while running', fakeAsync(() => {
       component.runDiagnostics();
       
-      expect(component.isLoading).toBeTrue();
+      expect(component.isLoading()).toBeTrue();
       
       tick();
-      expect(component.isLoading).toBeFalse();
+      expect(component.isLoading()).toBeFalse();
     }));
 
     it('clears previous results', async () => {
-      component.dataDiagnostics = [{ name: 'Old', count: 1, severity: 'info', description: 'test' }];
+      component.dataDiagnostics.set([{ name: 'Old', count: 1, severity: 'info', description: 'test' }]);
       
       await component.runDiagnostics();
       
-      expect(component.dataDiagnostics.length).toBeGreaterThan(0);
-      expect(component.dataDiagnostics[0].name).not.toBe('Old');
+      expect(component.dataDiagnostics().length).toBeGreaterThan(0);
+      expect(component.dataDiagnostics()[0].name).not.toBe('Old');
     });
 
     it('calls all service list methods', async () => {
@@ -87,7 +87,7 @@ describe('DiagnosticsComponent', () => {
     it('populates dataDiagnostics array', async () => {
       await component.runDiagnostics();
       
-      expect(component.dataDiagnostics.length).toBeGreaterThan(0);
+      expect(component.dataDiagnostics().length).toBeGreaterThan(0);
     });
   });
 
@@ -102,7 +102,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const duplicateShiftsItem = component.dataDiagnostics.find(d => d.name === 'Duplicate Shifts');
+      const duplicateShiftsItem = component.dataDiagnostics().find(d => d.name === 'Duplicate Shifts');
       expect(duplicateShiftsItem?.count).toBe(2);
     });
 
@@ -115,7 +115,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const duplicateShiftsItem = component.dataDiagnostics.find(d => d.name === 'Duplicate Shifts');
+      const duplicateShiftsItem = component.dataDiagnostics().find(d => d.name === 'Duplicate Shifts');
       expect(duplicateShiftsItem?.count).toBe(0);
     });
   });
@@ -132,7 +132,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const orphanedItem = component.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+      const orphanedItem = component.dataDiagnostics().find(d => d.name === 'Orphaned Trips');
       expect(orphanedItem?.count).toBe(1);
     });
 
@@ -146,7 +146,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const orphanedItem = component.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+      const orphanedItem = component.dataDiagnostics().find(d => d.name === 'Orphaned Trips');
       expect(orphanedItem?.count).toBe(0);
     });
   });
@@ -161,7 +161,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const duplicatePlacesItem = component.dataDiagnostics.find(d => d.name === 'Duplicate Places');
+      const duplicatePlacesItem = component.dataDiagnostics().find(d => d.name === 'Duplicate Places');
       expect(duplicatePlacesItem?.count).toBe(2);
     });
 
@@ -174,7 +174,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const duplicatePlacesItem = component.dataDiagnostics.find(d => d.name === 'Duplicate Places');
+      const duplicatePlacesItem = component.dataDiagnostics().find(d => d.name === 'Duplicate Places');
       expect(duplicatePlacesItem?.count).toBe(0);
     });
   });
@@ -189,7 +189,7 @@ describe('DiagnosticsComponent', () => {
       
       await component.runDiagnostics();
       
-      const duplicateNamesItem = component.dataDiagnostics.find(d => d.name === 'Duplicate Names');
+      const duplicateNamesItem = component.dataDiagnostics().find(d => d.name === 'Duplicate Names');
       expect(duplicateNamesItem?.count).toBe(2);
     });
   });

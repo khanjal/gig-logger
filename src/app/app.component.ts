@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { HeaderComponent } from './shared/header/header.component';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -16,8 +16,8 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'raptor-gig';
-  isLoading = true;
-  hasError = false;
+  isLoading = signal(true);
+  hasError = signal(false);
   private routerSubscription?: Subscription;
 
   constructor(private router: Router) {}
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Hide loading state after a shorter timeout
     setTimeout(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }, 3000); // Reduced to 3 seconds
 
     // Listen for navigation events to hide loading
@@ -34,16 +34,16 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         // Add small delay to ensure smooth transition
         setTimeout(() => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         }, 100);
       });
 
     // Hide loading state immediately if page is already loaded
     if (document.readyState === 'complete') {
-      this.isLoading = false;
+      this.isLoading.set(false);
     } else {
       window.addEventListener('load', () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
       });
     }
   }
@@ -55,8 +55,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onHeaderError() {
-    this.hasError = true;
-    this.isLoading = false;
+    this.hasError.set(true);
+    this.isLoading.set(false);
   }
 
   private _reloadWindow: () => void = () => window.location.reload();

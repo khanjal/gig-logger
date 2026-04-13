@@ -34,35 +34,35 @@ describe('SearchInputComponent', () => {
   it('should track initialValue and hasSelection on writeValue', () => {
     component.writeValue('123 Main St');
     expect((component as any).initialValue).toBe('123 Main St');
-    expect(component.hasSelection).toBeTrue();
+    expect(component.hasSelection()).toBeTrue();
 
     component.writeValue('');
     expect((component as any).initialValue).toBe('');
-    expect(component.hasSelection).toBeFalse();
+    expect(component.hasSelection()).toBeFalse();
 
     component.writeValue(null as any);
     expect((component as any).initialValue).toBe('');
-    expect(component.hasSelection).toBeFalse();
+    expect(component.hasSelection()).toBeFalse();
   });
 
   it('should only reset hasSelection if value changed from initial', () => {
     component.writeValue('Initial Value');
-    expect(component.hasSelection).toBeTrue();
+    expect(component.hasSelection()).toBeTrue();
 
     const event = { target: { value: 'Initial Value' } } as any;
     component.onInputChange(event);
-    expect(component.hasSelection).toBeTrue();
+    expect(component.hasSelection()).toBeTrue();
 
     const changedEvent = { target: { value: 'Changed Value' } } as any;
     component.onInputChange(changedEvent);
-    expect(component.hasSelection).toBeFalse();
+    expect(component.hasSelection()).toBeFalse();
   });
 
   it('should update initialValue on selection', async () => {
     const item = { name: 'Selected Place', placeId: undefined } as any;
     await component.onInputSelect(item);
     expect((component as any).initialValue).toBe('Selected Place');
-    expect(component.hasSelection).toBeTrue();
+    expect(component.hasSelection()).toBeTrue();
   });
 
   it('getItemSize and getViewportHeight behavior', () => {
@@ -70,16 +70,16 @@ describe('SearchInputComponent', () => {
     expect(itemSize).toBeGreaterThan(0);
 
     // No items -> zero height
-    component.filteredItemsArray = [];
+    component.filteredItemsArray.set([]);
     expect(component.getViewportHeight()).toBe(0);
 
     // When searching flags are set -> return single item height
-    component.isGoogleSearching = true;
+    component.isGoogleSearching.set(true);
     expect(component.getViewportHeight()).toBe(itemSize);
-    component.isGoogleSearching = false;
+    component.isGoogleSearching.set(false);
 
     // With a few items - should be items.length * itemSize
-    component.filteredItemsArray = new Array(3).fill({} as any);
+    component.filteredItemsArray.set(new Array(3).fill({} as any));
     expect(component.getViewportHeight()).toBe(Math.min(3, 10) * itemSize);
   });
 
@@ -103,11 +103,11 @@ describe('SearchInputComponent', () => {
     component.searchType = 'Address';
     // short value -> false
     (component as any).updateGoogleMapsIconVisibility([], 'a');
-    expect(component.showGoogleMapsIcon).toBeFalse();
+    expect(component.showGoogleMapsIcon()).toBeFalse();
 
     // long enough and no results -> true
     (component as any).updateGoogleMapsIconVisibility([], 'ab');
-    expect(component.showGoogleMapsIcon).toBeTrue();
+    expect(component.showGoogleMapsIcon()).toBeTrue();
   });
 
   it('openGoogleMaps opens a new window with encoded query', () => {

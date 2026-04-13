@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoggerService } from '@services/logger.service';
 import { ServerGooglePlacesService } from '@services/server-google-places.service';
@@ -29,9 +29,9 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
     address: new FormControl('')
   });
 
-  suggestions: IAutocompleteResult[] = [];
-  isLoading = false;
-  showSuggestions = false;
+  suggestions = signal<IAutocompleteResult[]>([]);
+  isLoading = signal(false);
+  showSuggestions = signal(false);
 
   constructor(
     private serverGooglePlacesService: ServerGooglePlacesService,
@@ -51,8 +51,8 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
         if (value && value.length > 2) {
           await this.searchPlaces(value);
         } else {
-          this.suggestions = [];
-          this.showSuggestions = false;
+          this.suggestions.set([]);
+          this.showSuggestions.set(false);
         }
       });
   }
@@ -62,7 +62,7 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
   }
 
   async searchPlaces(input: string): Promise<void> {
-    this.isLoading = true;
+    this.isLoading.set(true);
     try {
       // Use smart autocomplete that only calls Google API if we have user location
       const results = await this.serverGooglePlacesService.getSmartAutocomplete(
@@ -70,13 +70,13 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
         'address',
         this.componentRestrictions.country
       );
-      this.suggestions = results;
-      this.showSuggestions = true;
+      this.suggestions.set(results);
+      this.showSuggestions.set(true);
     } catch (error) {
       this.logger.error('Error fetching autocomplete suggestions:', error);
-      this.suggestions = [];
+      this.suggestions.set([]);
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 
@@ -90,20 +90,20 @@ export class GoogleAutocompleteComponent implements OnInit, OnDestroy {
     this.addressForm.controls.address.setValue(suggestion.address);
     this.addressChange.emit(suggestion.address);
     this.placeSelected.emit(suggestion);
-    this.showSuggestions = false;
-    this.suggestions = [];
+    this.showSuggestions.set(false);
+    this.suggestions.set([]);
   }
 
   onInputFocus(): void {
-    if (this.suggestions.length > 0) {
-      this.showSuggestions = true;
+    if (this.suggestions().length > 0) {
+      this.showSuggestions.set(true);
     }
   }
 
   onInputBlur(): void {
     // Delay hiding suggestions to allow click on suggestion
     setTimeout(() => {
-      this.showSuggestions = false;
+      this.showSuggestions.set(false);
     }, 200);
   }
 
