@@ -41,6 +41,63 @@ src/app/
 - Example component structure follows `trips.component.ts` pattern
 - **Parent-child communication**: Some components use event emitters and input properties for data flow
 
+### Zoneless Runtime Rules (Required)
+
+This project runs with zoneless change detection at runtime (`provideZonelessChangeDetection`).
+
+- Do **not** add runtime `import 'zone.js'` in app runtime files.
+- Keep UI state signal-first (`signal`, `computed`) for page/component state.
+- Prefer `async/await` + `firstValueFrom(...)` for dialog and user-action async flows.
+- Avoid defaulting to manual CD patching (`markForCheck`) as a state-sync strategy.
+- Avoid template-invoked heavy methods; precompute/map derived values on data change.
+
+Test-time note:
+- `src/test.ts` still uses `zone.js` and `zone.js/testing` for legacy specs. Do not remove test-time zone imports until zone-based tests are migrated.
+
+Enforcement:
+- Run `npm run check:zoneless-runtime` before PRs.
+- Follow existing zoneless examples in page/component files already using signals and async/await patterns.
+
+### Angular + Zoneless Best Practices
+
+Use these as default implementation rules for all new or touched Angular code.
+
+#### 1) Signals first for UI state
+- Prefer `signal` for mutable UI state and `computed` for derived view state.
+- Always invoke signals when reading: `state()` in TypeScript and templates.
+- For object/array signals, update immutably with `.set(...)` or `.update(...)`; avoid in-place mutation.
+- Use `effect(...)` only for side effects (logging, persistence, bridge calls), not as a data transformation layer.
+
+#### 2) Template control flow and loops
+- Prefer `@if`, `@for`, and `@switch` in new or refactored templates.
+- For `@for`, always provide a stable `track` expression (for example `track item.id`).
+- If a legacy template still uses `*ngFor`, keep a `trackBy` function until the block is migrated.
+
+#### 3) Avoid template-invoked heavy work
+- Do not call non-trivial methods from templates.
+- Precompute expensive values when source data changes and bind to plain properties/signals.
+- Use pure pipes for stateless formatting/transforms when appropriate.
+
+#### 4) Forms with signals
+- Do not use two-way binding directly with writable signals.
+- Use explicit one-way + change handler wiring:
+  - `[ngModel]="field()"`
+  - `(ngModelChange)="field.set($event)"`
+
+#### 5) RxJS interop and subscriptions
+- Prefer `async` pipe or signal interop (`toSignal`/`toObservable`) for view state.
+- If manual subscriptions are required, always include teardown (`takeUntil`, `takeUntilDestroyed`, or equivalent).
+- Keep async user actions in `async/await` flows where readability is better than nested subscriptions.
+
+#### 6) Testing expectations for signal-based components
+- In tests, read signal state with invocation (`component.state()`).
+- Set signal state via `.set(...)`/`.update(...)` instead of direct assignment.
+- Add tests for key signal-driven branches when migrating components (for example: disabled/guard paths, operation/status mapping, and error paths).
+
+#### 7) Recommended guardrails
+- Prefer linting rules that discourage template call expressions in performance-sensitive paths.
+- Prefer checks that flag newly introduced legacy control-flow syntax (`*ngIf`, `*ngFor`) in files being actively refactored.
+
 ### Reusable UI Components
 
 #### Button Components (use specific variants — NOT `app-base-button`)

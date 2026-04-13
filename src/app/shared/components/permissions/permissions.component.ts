@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
@@ -25,23 +25,23 @@ interface PermissionStatus {
   imports: [CommonModule, BaseCardComponent, BaseRectButtonComponent, MatIcon, MatDividerModule]
 })
 export class PermissionsComponent implements OnInit {
-  locationPermission: PermissionStatus = {
+  locationPermission = signal<PermissionStatus>({
     name: 'Location',
     icon: 'location_on',
     state: 'checking',
     description: 'Used to search for nearby places and addresses',
     canRequest: false,
     canRevoke: false
-  };
+  });
 
-  microphonePermission: PermissionStatus = {
+  microphonePermission = signal<PermissionStatus>({
     name: 'Microphone',
     icon: 'mic',
     state: 'checking',
     description: 'Used for voice input when adding trips',
     canRequest: false,
     canRevoke: false
-  };
+  });
 
   constructor(private logger: LoggerService, private _permissionService: PermissionService) {}
 
@@ -54,15 +54,11 @@ export class PermissionsComponent implements OnInit {
   }
 
   private updateLocationPermissionState(state: PermissionState) {
-    this.locationPermission.state = state;
-    this.locationPermission.canRequest = state === 'prompt';
-    this.locationPermission.canRevoke = false;
+    this.locationPermission.update(p => ({ ...p, state, canRequest: state === 'prompt', canRevoke: false }));
   }
 
   private updateMicrophonePermissionState(state: PermissionState) {
-    this.microphonePermission.state = state;
-    this.microphonePermission.canRequest = state === 'prompt';
-    this.microphonePermission.canRevoke = false;
+    this.microphonePermission.update(p => ({ ...p, state, canRequest: state === 'prompt', canRevoke: false }));
   }
 
   async requestLocation() {

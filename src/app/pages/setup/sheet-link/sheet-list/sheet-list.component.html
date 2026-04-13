@@ -1,24 +1,24 @@
 <div class="sheet-list-container bg-surface text-primary">
   <div class="content-area">
     <!-- Loading State -->
-    <div *ngIf="loading" class="loading-container">
+    <div *ngIf="loading()" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
       <p class="text-secondary">Loading sheets...</p>
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading && sheets.length === 0" class="empty-state text-center">
+    <div *ngIf="!loading() && sheets().length === 0" class="empty-state text-center">
       <mat-icon class="empty-icon text-secondary">description</mat-icon>
       <h3 class="text-primary">No sheets found</h3>
       <p class="text-secondary">No sheets available to select.</p>
     </div>
 
     <!-- Sheet List -->
-    <div *ngIf="!loading && sheets.length > 0" class="sheets-grid">
+    <div *ngIf="!loading() && sheets().length > 0" class="sheets-grid">
       <mat-card
-        *ngFor="let sheet of sheets; trackBy: trackBySheetId"
+        *ngFor="let sheet of sheets(); trackBy: trackBySheetId"
         class="sheet-card bg-surface-2 border-soft hover:shadow-md transition"
-        [class.selected]="selectedSheet?.id === sheet.id"
+        [class.selected]="selectedSheet()?.id === sheet.id"
         (click)="selectSheet(sheet)">
 
         <mat-card-content>
@@ -30,7 +30,7 @@
           </div>
 
           <!-- Selection indicator -->
-          <div class="selection-indicator" *ngIf="selectedSheet?.id === sheet.id">
+          <div class="selection-indicator" *ngIf="selectedSheet()?.id === sheet.id">
             <mat-icon class="text-primary">check_circle</mat-icon>
           </div>
         </mat-card-content>
@@ -44,7 +44,7 @@
       <app-base-rect-button variant="secondary" [icon]="'refresh'" (clicked)="cancel()">
         Cancel
       </app-base-rect-button>  
-      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!selectedSheet" (clicked)="confirmSelection()">
+      <app-base-rect-button variant="primary" [icon]="'add'" [disabled]="!selectedSheet()" (clicked)="confirmSelection()">
         Select
       </app-base-rect-button>
     </div>

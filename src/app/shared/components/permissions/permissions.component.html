@@ -11,23 +11,23 @@
       <!-- Location Permission -->
       <div class="permission-item">
         <div class="permission-header">
-          <mat-icon [class]="'permission-icon ' + getStateColor(locationPermission.state)">
-            {{ locationPermission.icon }}
+          <mat-icon [class]="'permission-icon ' + getStateColor(locationPermission().state)">
+          {{ locationPermission().icon }}
           </mat-icon>
           <div class="permission-info">
-            <h3 class="permission-name">{{ locationPermission.name }}</h3>
-            <p class="permission-description">{{ locationPermission.description }}</p>
+            <h3 class="permission-name">{{ locationPermission().name }}</h3>
+            <p class="permission-description">{{ locationPermission().description }}</p>
           </div>
         </div>
         
         <div class="permission-status">
-          <div class="status-badge" [class]="getStateColor(locationPermission.state)">
-            <mat-icon class="status-icon">{{ getStateIcon(locationPermission.state) }}</mat-icon>
-            <span>{{ getStateText(locationPermission.state) }}</span>
+          <div class="status-badge" [class]="getStateColor(locationPermission().state)">
+            <mat-icon class="status-icon">{{ getStateIcon(locationPermission().state) }}</mat-icon>
+            <span>{{ getStateText(locationPermission().state) }}</span>
           </div>
           
           <div class="permission-actions flex justify-end">
-            @if (locationPermission.canRequest) {
+            @if (locationPermission().canRequest) {
             <app-base-rect-button 
               variant="primary"
               [icon]="'check'"
@@ -38,13 +38,13 @@
           </div>
         </div>
 
-        @if (locationPermission.state === 'denied') {
+        @if (locationPermission().state === 'denied') {
           <div class="permission-help">
             <mat-icon class="help-icon">info</mat-icon>
             <p>Location access is blocked. Click "Browser Settings" to change this in your browser.</p>
           </div>
         }
-        @if (locationPermission.state === 'unsupported') {
+        @if (locationPermission().state === 'unsupported') {
           <div class="permission-help warning">
             <mat-icon class="help-icon">warning</mat-icon>
             <p>Your browser does not support location services.</p>
@@ -55,23 +55,23 @@
       <!-- Microphone Permission -->
       <div class="permission-item">
         <div class="permission-header">
-          <mat-icon [class]="'permission-icon ' + getStateColor(microphonePermission.state)">
-            {{ microphonePermission.icon }}
+          <mat-icon [class]="'permission-icon ' + getStateColor(microphonePermission().state)">
+          {{ microphonePermission().icon }}
           </mat-icon>
           <div class="permission-info">
-            <h3 class="permission-name">{{ microphonePermission.name }}</h3>
-            <p class="permission-description">{{ microphonePermission.description }}</p>
+            <h3 class="permission-name">{{ microphonePermission().name }}</h3>
+            <p class="permission-description">{{ microphonePermission().description }}</p>
           </div>
         </div>
         
         <div class="permission-status">
-          <div class="status-badge" [class]="getStateColor(microphonePermission.state)">
-            <mat-icon class="status-icon">{{ getStateIcon(microphonePermission.state) }}</mat-icon>
-            <span>{{ getStateText(microphonePermission.state) }}</span>
+          <div class="status-badge" [class]="getStateColor(microphonePermission().state)">
+            <mat-icon class="status-icon">{{ getStateIcon(microphonePermission().state) }}</mat-icon>
+            <span>{{ getStateText(microphonePermission().state) }}</span>
           </div>
           
           <div class="permission-actions flex justify-end">
-            @if (microphonePermission.canRequest) {
+            @if (microphonePermission().canRequest) {
               <app-base-rect-button 
                 variant="primary"
                 [icon]="'check'"
@@ -82,13 +82,13 @@
           </div>
         </div>
 
-        @if (microphonePermission.state === 'denied') {
+        @if (microphonePermission().state === 'denied') {
           <div class="permission-help">
             <mat-icon class="help-icon">info</mat-icon>
             <p>Microphone access is blocked. Click "Browser Settings" to change this in your browser.</p>
           </div>
         }
-        @if (microphonePermission.state === 'unsupported') {
+        @if (microphonePermission().state === 'unsupported') {
           <div class="permission-help warning">
             <mat-icon class="help-icon">warning</mat-icon>
             <p>Your browser does not support microphone access.</p>
@@ -99,8 +99,8 @@
 
     <!-- General Info -->
     @if (
-      locationPermission.state === 'denied' || locationPermission.state === 'granted' ||
-      microphonePermission.state === 'denied' || microphonePermission.state === 'granted'
+      locationPermission().state === 'denied' || locationPermission().state === 'granted' ||
+      microphonePermission().state === 'denied' || microphonePermission().state === 'granted'
     ) {
       <div class="permissions-footer flex justify-end">
       <app-base-rect-button 

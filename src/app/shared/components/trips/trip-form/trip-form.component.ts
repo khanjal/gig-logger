@@ -1,6 +1,6 @@
 // Angular core imports
-import { ViewportScroller, NgFor, NgIf, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
+import { ViewportScroller, NgFor, NgIf, CommonModule } from '@angular/common';
+import { afterNextRender, ChangeDetectorRef, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, runInInjectionContext, signal, ViewChild, inject } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -62,12 +62,21 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 
+interface IShiftSummaryOption {
+  shiftKey: string;
+  rowId: number;
+  dateLabel: string;
+  serviceLabel: string;
+  numberLabel: string;
+  subtitle: string;
+}
+
 @Component({
     selector: 'trip-form',
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, CurrencyPipe, DatePipe, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
@@ -77,7 +86,7 @@ export class TripFormComponent implements OnInit {
 
   // Typed FormGroup for better compile-time safety
   tripForm: FormGroup<{
-    shift: FormControl<IShift | 'new' | null>;
+    shift: FormControl<string | null>;
     service: FormControl<string | null>;
     region: FormControl<string | null>;
     place: FormControl<string | null>;
@@ -99,7 +108,7 @@ export class TripFormComponent implements OnInit {
     note: FormControl<string | null>;
     exclude: FormControl<string | null>;
   }> = new FormGroup({
-    shift: new FormControl<IShift | 'new' | null>(null),
+    shift: new FormControl<string | null>(null),
     service: new FormControl<string | null>(null),
     region: new FormControl<string | null>(null),
     place: new FormControl<string | null>(null),
@@ -144,7 +153,10 @@ export class TripFormComponent implements OnInit {
   
   sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
+  shiftOptions = signal<IShiftSummaryOption[]>([]);
   selectedShift: IShift | undefined;
+  selectedShiftOption: IShiftSummaryOption | undefined;
+  private injector = inject(Injector);
 
   title: string = "Add Trip";
 
@@ -160,14 +172,21 @@ export class TripFormComponent implements OnInit {
       private _shiftService: ShiftService,
       private _timerService: TimerService,
       private _tripService: TripService,
-      private _viewportScroller: ViewportScroller
+      private _viewportScroller: ViewportScroller,
+      private cdr: ChangeDetectorRef
     ) {}
 
   async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
 
-    this.load();
+    // Wait until first render completes before hydrating async options
+    // to avoid NG0100 in dev mode under zoneless change detection.
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        void this.load().finally(() => this.cdr.markForCheck());
+      });
+    });
   }
 
   public async load() {
@@ -189,7 +208,9 @@ export class TripFormComponent implements OnInit {
 
   private async createShift(): Promise<IShift> {
     let shift: IShift = {} as IShift;
-    if (!this.tripForm.value.shift || this.tripForm.value.shift == "new") {
+    const selectedShiftKey = this.tripForm.value.shift;
+
+    if (!selectedShiftKey) {
       let shifts: IShift[] = [];
       let today: string = DateHelper.toISO();
 
@@ -202,7 +223,7 @@ export class TripFormComponent implements OnInit {
       await this._shiftService.add(shift);
     }
     else {
-      shift = <IShift><unknown>this.tripForm.value.shift;
+      shift = this.selectedShift ?? this.shifts.find(existingShift => existingShift.key === selectedShiftKey) ?? ({} as IShift);
     }
 
     return shift;
@@ -244,6 +265,8 @@ export class TripFormComponent implements OnInit {
   
     // Handle dependent logic
     this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
+    this.selectedShiftOption = this.selectedShift ? this.toShiftSummaryOption(this.selectedShift) : undefined;
+    this.tripForm.controls.shift.setValue(this.selectedShift?.key ?? null, { emitEvent: false });
     await this.selectPlace();
     await this.showNameAddresses();
     await this.showAddressNames();
@@ -271,6 +294,8 @@ export class TripFormComponent implements OnInit {
       }
     }
 
+    this.shiftOptions.set(this.shifts.map(shift => this.toShiftSummaryOption(shift)));
+
     if (!this.data?.id) {
       const today = DateHelper.toISO();
       const todaysTrips = await this._tripService.query('date', today);
@@ -282,6 +307,8 @@ export class TripFormComponent implements OnInit {
       }
       if (lastUsedShift) {
         this.selectedShift = lastUsedShift;
+        this.selectedShiftOption = this.toShiftSummaryOption(lastUsedShift);
+        this.tripForm.controls.shift.setValue(lastUsedShift.key, { emitEvent: false });
       }
 
       const places = await this._placeService.list();
@@ -292,7 +319,7 @@ export class TripFormComponent implements OnInit {
     }
 
     const formShift = this.tripForm.value.shift;
-    await this.onShiftSelected(formShift === 'new' ? null : (formShift as IShift | null | undefined));
+    await this.onShiftSelected(formShift);
   }
 
   public async addTrip() {
@@ -390,9 +417,16 @@ export class TripFormComponent implements OnInit {
     this._viewportScroller.scrollToAnchor("addTrip");
   }
 
-  public async onShiftSelected(value: IShift | null | undefined) {
-    if (value) {
+  public async onShiftSelected(shiftKey: string | null | undefined) {
+    if (shiftKey) {
+      const value = this.shifts.find(shift => shift.key === shiftKey);
+      if (!value) {
+        return;
+      }
+
       this.isNewShift = false;
+      this.selectedShift = value;
+      this.selectedShiftOption = this.toShiftSummaryOption(value);
       this.tripForm.controls.service.clearValidators();
       this.tripForm.controls.service.updateValueAndValidity();
       this.tripForm.controls.region.setValue(this.data.region ?? value.region);
@@ -400,6 +434,9 @@ export class TripFormComponent implements OnInit {
     }
 
     this.isNewShift = true;
+    this.selectedShift = undefined;
+    this.selectedShiftOption = undefined;
+    this.tripForm.controls.shift.setValue(null, { emitEvent: false });
     this.tripForm.controls.service.setValidators([Validators.required]);
 
     const shifts = (await this._shiftService.list()).reverse();
@@ -525,9 +562,18 @@ export class TripFormComponent implements OnInit {
   togglePickupAddress() {
     this.toggleSection('showPickupAddress', 'Showing Pickup Address', 'Hiding Pickup Address');
   }
-  
-  compareShifts(o1: IShift, o2: IShift): boolean {
-    return ShiftHelper.compareShifts(o1, o2);
+
+  private toShiftSummaryOption(shift: IShift): IShiftSummaryOption {
+    const shiftNumberSuffix = shift.number === 0 ? '' : ` #${shift.number}`;
+
+    return {
+      shiftKey: shift.key,
+      rowId: shift.rowId,
+      dateLabel: DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10),
+      serviceLabel: shift.service,
+      numberLabel: shiftNumberSuffix,
+      subtitle: `Trips: ${shift.totalTrips || 0} | Total: $${NumberHelper.formatNumber(shift.grandTotal || 0)}`
+    };
   }
 
 

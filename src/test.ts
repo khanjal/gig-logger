@@ -1,5 +1,6 @@
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
+import 'zone.js';
 import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
 import {
@@ -40,6 +41,7 @@ const AUTH_GOOGLE_SERVICE_STUB = {
 };
 
 const SPREADSHEET_SERVICE_STUB = {
+  spreadsheets$: new BehaviorSubject<any[]>([]),
   querySpreadsheets: () => Promise.resolve([]),
   getSpreadsheets: () => Promise.resolve([]),
   getDefaultSheet: () => Promise.resolve(undefined),

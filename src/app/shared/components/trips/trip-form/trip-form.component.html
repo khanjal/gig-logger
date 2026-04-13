@@ -9,21 +9,21 @@
       <div class="flex flex-col mb-3">
         <mat-form-field class="w-full rg-field-shell" appearance="fill">
           <mat-label>Shift/Batch/Group</mat-label>
-          <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)' panelClass="shift-select-panel">
+          <mat-select #shiftSelect name="shift" formControlName="shift" (selectionChange)="onShiftSelected(shiftSelect.value)" panelClass="shift-select-panel">
             <mat-select-trigger>
-              <ng-container *ngIf="selectedShift; else newShiftLabel">
+              <ng-container *ngIf="selectedShiftOption; else newShiftLabel">
                 <div class="flex flex-col leading-tight pt-1.5 pb-0.5">
-                  <span>{{ selectedShift.date | date:'E MMM d' }} - {{ selectedShift.service | truncate:15 }} {{ selectedShift.number == 0 ? '' : '#' + selectedShift.number }}</span>
-                  <span class="text-secondary text-xs">Trips: {{ selectedShift.totalTrips }} | Total: {{ selectedShift.grandTotal | currency }}</span>
+                  <span>{{ selectedShiftOption.dateLabel }} - {{ selectedShiftOption.serviceLabel | truncate:15 }}{{ selectedShiftOption.numberLabel }}</span>
+                  <span class="text-secondary text-xs">{{ selectedShiftOption.subtitle }}</span>
                 </div>
               </ng-container>
               <ng-template #newShiftLabel>New</ng-template>
             </mat-select-trigger>
-            <mat-option value="">New</mat-option>
-            <mat-option *ngFor="let shift of shifts" [value]="shift">
+            <mat-option [value]="null">New</mat-option>
+            <mat-option *ngFor="let shiftOption of shiftOptions()" [value]="shiftOption.shiftKey">
               <div class="flex flex-col leading-tight">
-                <span>{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:15 }} {{ shift.number == 0 ? "" : '#' + shift.number }}</span>
-                <span class="text-secondary text-xs">Trips: {{ shift.totalTrips }} | Total: {{ shift.grandTotal | currency }}</span>
+                <span>{{ shiftOption.dateLabel }} - {{ shiftOption.serviceLabel | truncate:15 }}{{ shiftOption.numberLabel }}</span>
+                <span class="text-secondary text-xs">{{ shiftOption.subtitle }}</span>
               </div>
             </mat-option>
           </mat-select>
@@ -113,7 +113,7 @@
       </div>
       <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="my-5">
         <app-base-accordion>
-          <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
+          <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && !!data?.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
             <div class="flex flex-col gap-1">
               <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
             </div>
@@ -134,7 +134,7 @@
     <!-- Address List/Notes -->
     <div *ngIf="selectedNameDeliveries?.length" class="my-5">
       <app-base-accordion>
-        <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && data.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
+        <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
@@ -163,7 +163,7 @@
     <!-- Name List/Notes -->
     <div *ngIf="selectedAddressDeliveries?.length" class="my-5">
       <app-base-accordion>
-        <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && data.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
+        <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
@@ -176,7 +176,7 @@
     </div>
 
     <!-- Time Inputs -->
-    <div *ngIf="data?.id">
+    <div *ngIf="!!data?.id">
       <div class="flex gap-1 mb-3">
         <app-time-input 
           label="Pickup Time"
@@ -218,9 +218,9 @@
   <div class="flex flex-col gap-4 mt-6">
     <div class="flex w-full items-center justify-between gap-4">
       <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()" [label]="'Reset'"></app-base-rect-button>
-      <app-base-rect-button *ngIf="data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="!!data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>
       <app-base-rect-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid" [label]="'Store'"></app-base-rect-button>
-      <app-base-rect-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid" [label]="'Update'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="!!data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid" [label]="'Update'"></app-base-rect-button>
     </div>
   </div>
 </div>

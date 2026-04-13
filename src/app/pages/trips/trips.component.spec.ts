@@ -51,7 +51,13 @@ describe('TripComponent', () => {
         { provide: ExpensesService, useValue: mockExpensesService },
         { provide: PollingService, useValue: mockPollingService },
         { provide: ViewportScroller, useValue: viewportSpy },
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})) } }
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({}) },
+            paramMap: of(convertToParamMap({}))
+          }
+        }
       ]
     }).compileComponents();
 
@@ -64,17 +70,17 @@ describe('TripComponent', () => {
   });
 
   it('toggles yesterday trips visibility', () => {
-    component.showYesterdayTrips = false;
+    component.showYesterdayTrips.set(false);
     component.toggleYesterdayTrips();
-    expect(component.showYesterdayTrips).toBeTrue();
+    expect(component.showYesterdayTrips()).toBeTrue();
     component.toggleYesterdayTrips();
-    expect(component.showYesterdayTrips).toBeFalse();
+    expect(component.showYesterdayTrips()).toBeFalse();
   });
 
   it('shouldShowUpdateMessage returns correct boolean', () => {
-    component.todaysTrips = [] as any;
+    component.todaysTrips.set([]);
     expect(component.shouldShowUpdateMessage()).toBeTrue();
-    component.todaysTrips = [{ id: 1 } as any];
+    component.todaysTrips.set([{ id: 1 } as any]);
     expect(component.shouldShowUpdateMessage()).toBeFalse();
   });
 
@@ -103,13 +109,13 @@ describe('TripComponent', () => {
     ] as any));
 
     await component.ngOnInit();
-    expect(component.demoSheetAttached).toBeTrue();
+    expect(component.demoSheetAttached()).toBeTrue();
 
     mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
       { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
     ] as any));
 
     await component.reload();
-    expect(component.demoSheetAttached).toBeFalse();
+    expect(component.demoSheetAttached()).toBeFalse();
   });
 });

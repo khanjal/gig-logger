@@ -145,7 +145,7 @@ describe('VoiceInputComponent', () => {
         start: jasmine.createSpy('start'),
         abort: jasmine.createSpy('abort')
       } as any;
-      component.recognizing = false;
+      component.recognizing.set(false);
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
       spyOn(component as any, 'startListening').and.callThrough();
 
@@ -159,7 +159,7 @@ describe('VoiceInputComponent', () => {
         stop: jasmine.createSpy('stop'),
         abort: jasmine.createSpy('abort')
       } as any;
-      component.recognizing = true;
+      component.recognizing.set(true);
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
       spyOn(component as any, 'stopListening').and.callThrough();
 
@@ -407,13 +407,13 @@ describe('VoiceInputComponent', () => {
 
   describe('micButtonColor', () => {
     it('returns red when recognizing', () => {
-      component.recognizing = true;
+      component.recognizing.set(true);
 
       expect(component.micButtonColor).toBe('bg-error');
     });
 
     it('returns blue when not recognizing', () => {
-      component.recognizing = false;
+      component.recognizing.set(false);
 
       expect(component.micButtonColor).toBe('bg-primary');
     });
@@ -421,13 +421,13 @@ describe('VoiceInputComponent', () => {
 
   describe('parsedResultEntries', () => {
     it('returns empty array when no parsed result', () => {
-      component.parsedResult = null;
+      component.parsedResult.set(null);
 
       expect(component.parsedResultEntries).toEqual([]);
     });
 
     it('converts camelCase to Proper Case', () => {
-      component.parsedResult = { pickupAddress: '123 Main St' };
+      component.parsedResult.set({ pickupAddress: '123 Main St' });
 
       const entries = component.parsedResultEntries;
 
@@ -437,13 +437,13 @@ describe('VoiceInputComponent', () => {
 
   describe('hasParsedData', () => {
     it('returns false when no parsed result', () => {
-      component.parsedResult = null;
+      component.parsedResult.set(null);
 
       expect(component.hasParsedData).toBeFalse();
     });
 
     it('returns true when parsed result has data', () => {
-      component.parsedResult = { service: 'DoorDash' };
+      component.parsedResult.set({ service: 'DoorDash' });
 
       expect(component.hasParsedData).toBeTrue();
     });
@@ -454,8 +454,8 @@ describe('VoiceInputComponent', () => {
       spyOn(component.voiceResult, 'emit');
       
       // Directly set parsedResult and emit
-      component.parsedResult = { service: 'DoorDash', place: 'McDonald\'s' };
-      component.voiceResult.emit(component.parsedResult);
+      component.parsedResult.set({ service: 'DoorDash', place: 'McDonald\'s' });
+      component.voiceResult.emit(component.parsedResult()!);
 
       expect(component.voiceResult.emit).toHaveBeenCalledWith(
         jasmine.objectContaining({ service: 'DoorDash' })

@@ -14,10 +14,10 @@ describe('BaseCardComponent', () => {
 
     fixture = TestBed.createComponent(BaseCardComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -90,6 +90,7 @@ describe('BaseCardComponent', () => {
 
   describe('Content Projection', () => {
     it('should project content into card-content slot', () => {
+      fixture.detectChanges();
       const compiled = fixture.nativeElement;
       expect(compiled.querySelector('.card-content')).toBeTruthy();
     });

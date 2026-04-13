@@ -48,8 +48,8 @@ describe('SetupComponent (class-only)', () => {
     const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
     await comp.ngOnInit();
     // authenticated and no sheets -> template condition (show setup) should be true
-    expect(comp.isAuthenticated).toBeTrue();
-    expect((comp.spreadsheets ?? []).length).toBe(0);
+    expect(comp.isAuthenticated()).toBeTrue();
+    expect((comp.spreadsheets() ?? []).length).toBe(0);
   });
 
   it('hides setup card when signed out and no spreadsheets', async () => {
@@ -60,8 +60,8 @@ describe('SetupComponent (class-only)', () => {
     const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
     await comp.ngOnInit();
     // signed out and no sheets -> setup card should be hidden
-    expect(comp.isAuthenticated).toBeFalse();
-    expect((comp.spreadsheets ?? []).length).toBe(0);
+    expect(comp.isAuthenticated()).toBeFalse();
+    expect((comp.spreadsheets() ?? []).length).toBe(0);
   });
 
   it('shows local-only info when signed out but has spreadsheets', async () => {
@@ -71,8 +71,8 @@ describe('SetupComponent (class-only)', () => {
 
     const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
     await comp.ngOnInit();
-    expect(comp.isAuthenticated).toBeFalse();
-    expect((comp.spreadsheets ?? []).length).toBeGreaterThan(0);
+    expect(comp.isAuthenticated()).toBeFalse();
+    expect((comp.spreadsheets() ?? []).length).toBeGreaterThan(0);
   });
 
   it('setDefault sets spreadsheet as default and calls update/load/reload', async () => {

@@ -16,10 +16,10 @@ describe('TripsTableBasicComponent', () => {
 
     fixture = TestBed.createComponent(TripsTableBasicComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 

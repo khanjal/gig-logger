@@ -11,8 +11,8 @@
             <mat-label>Search</mat-label>
             <input 
               matInput 
-              [(ngModel)]="searchTerm"
-              (input)="onSearchInput(searchTerm)"
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearchInput($event)"
               [matAutocomplete]="auto"
               placeholder="Enter a search term..."
               autocomplete="off">
@@ -21,7 +21,7 @@
               matSuffix
               [fab]="true"
               fabStyle="mini"
-              *ngIf="searchTerm"
+              *ngIf="searchTerm()"
               (clicked)="clearSearch()"
               aria-label="Clear search"
               [icon]="'close'"
@@ -39,25 +39,25 @@
         <div class="flex items-end pb-10">
           <div class="filter-toggle-btn">
             <app-base-fab-button
-              [matTooltip]="(showFilters ? 'Hide' : 'Show') + ' Filters (' + getEnabledCount() + '/' + categoryFilters.size + ')'"
+              [matTooltip]="(showFilters() ? 'Hide' : 'Show') + ' Filters (' + enabledCount() + '/' + categories.length + ')'"
               matTooltipPosition="below"
               (clicked)="toggleFilters()"
               variant="primary"
-              [class.bg-primary-soft]="showFilters"
+              [class.bg-primary-soft]="showFilters()"
               [icon]="'filter_list'">
             </app-base-fab-button>
-            <span class="filter-badge">{{ getEnabledCount() }}</span>
+            <span class="filter-badge">{{ enabledCount() }}</span>
           </div>
         </div>
       </div>
 
       <!-- Filter Section (Collapsible) -->
       <div class="overflow-hidden transition-all duration-300" 
-           [class.max-h-0]="!showFilters" 
-           [class.max-h-96]="showFilters"
-           [class.opacity-0]="!showFilters"
-           [class.opacity-100]="showFilters"
-           [class.mt-3]="showFilters">
+         [class.max-h-0]="!showFilters()" 
+         [class.max-h-96]="showFilters()"
+         [class.opacity-0]="!showFilters()"
+         [class.opacity-100]="showFilters()"
+         [class.mt-3]="showFilters()">
         <div class="bg-surface-2 dark:bg-[var(--color-surface-2)] rounded-lg p-4 border border-soft dark:border-[var(--color-border)]">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-primary">Filter Categories</h3>
@@ -95,8 +95,8 @@
               <div class="flex items-center gap-1.5 flex-1 min-w-0">
                 <mat-icon 
                   class="filter-icon"
-                  [ngClass]="getCategoryColor(category)">
-                  {{ getCategoryIcon(category) }}
+                  [ngClass]="categoryMetadata[category].color">
+                  {{ categoryMetadata[category].icon }}
                 </mat-icon>
                 <span class="text-sm font-medium truncate">{{ category }}</span>
               </div>
@@ -108,15 +108,15 @@
         <div class="mt-3 border-t border-soft">
           <div class="flex flex-row flex-wrap items-center justify-center gap-4 exact-options">
             <mat-checkbox 
-              [(ngModel)]="exactMatch"
-              (change)="onExactMatchChange()"
+              [ngModel]="exactMatch()"
+              (ngModelChange)="exactMatch.set($event); onExactMatchChange()"
               color="primary"
               class="text-sm text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
               <span class="text-primary font-medium leading-tight">Exact match only</span>
             </mat-checkbox>
             <mat-checkbox 
-              [(ngModel)]="caseSensitive"
-              (change)="onCaseSensitiveChange()"
+              [ngModel]="caseSensitive()"
+              (ngModelChange)="caseSensitive.set($event); onCaseSensitiveChange()"
               color="primary"
               class="text-sm text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
               <span class="text-primary font-medium leading-tight">Case sensitive</span>
@@ -127,19 +127,19 @@
 
       <!-- Results Summary Bar -->
       <div class="flex items-center justify-between text-sm border-t border-soft" 
-           *ngIf="hasSearched && !isSearching">
+         *ngIf="hasSearched() && !isSearching()">
         <div class="flex items-center gap-4 pl-5">
           <span class="text-secondary">
-            <span class="font-bold text-primary">{{ getTotalResultsCount() }}</span> matches
+            <span class="font-bold text-primary">{{ totalResultsCount() }}</span> matches
           </span>
           <span class="text-secondary">
-            <span class="font-bold text-primary">{{ getTotalTripsCount() }}</span> trips
+            <span class="font-bold text-primary">{{ totalTripsCount() }}</span> trips
           </span>
           <span class="text-secondary">
-            <span class="font-bold text-success">{{ getTotalEarnings() | currency }}</span> total
+            <span class="font-bold text-success">{{ totalEarnings() | currency }}</span> total
           </span>
         </div>
-        <div *ngIf="groupedResults.length > 0">
+        <div *ngIf="groupedResults().length > 0">
           <app-base-fab-button
             fabStyle="mini"
             variant="secondary"
@@ -147,7 +147,7 @@
             (clicked)="toggleAllGroups()"
             [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
             matTooltipPosition="below"
-            [icon]="areAllGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
+            [icon]="allGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
             class="expand-toggle-btn">
           </app-base-fab-button>
         </div>
@@ -156,27 +156,27 @@
   </div>
 
   <!-- Loading Spinner -->
-  <div class="flex justify-center items-center py-20 content-spacing" *ngIf="isSearching">
+  <div class="flex justify-center items-center py-20 content-spacing" *ngIf="isSearching()">
     <mat-spinner diameter="50"></mat-spinner>
   </div>
 
   <!-- Empty State -->
-  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="!hasSearched && !isSearching">
+  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="!hasSearched() && !isSearching()">
     <mat-icon class="text-tertiary text-6xl mb-4">search</mat-icon>
     <h2 class="text-xl font-semibold text-primary mb-2">Start Searching</h2>
     <p class="text-secondary">Enter a search term to find trips by service, place, name, address, region, or type</p>
   </div>
 
   <!-- No Results State -->
-  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="hasSearched && !isSearching && searchResults.length === 0">
+  <div class="max-w-7xl mx-auto px-4 py-20 text-center content-spacing" *ngIf="hasSearched() && !isSearching() && searchResults().length === 0">
     <mat-icon class="text-tertiary text-6xl mb-4">search_off</mat-icon>
     <h2 class="text-xl font-semibold text-primary mb-2">No Results Found</h2>
     <p class="text-secondary">Try a different search term or category filter</p>
   </div>
 
   <!-- Search Results - Grouped by Month -->
-  <div class="max-w-7xl mx-auto px-4 py-4 content-spacing" *ngIf="!isSearching && groupedResults.length > 0">
-    <div *ngFor="let group of groupedResults" class="mb-6">
+  <div class="max-w-7xl mx-auto px-4 py-4 content-spacing" *ngIf="!isSearching() && groupedResults().length > 0">
+    <div *ngFor="let group of groupedResults()" class="mb-6">
       <!-- Month Group Header -->
       <div class="card card-hover" (click)="toggleGroup(group.month)">
         <div class="p-4">
@@ -205,13 +205,13 @@
           <div>
             Avg/trip:
             <span class="font-bold text-primary">
-              {{ getGroupAvgPerTrip(group) }}
+              {{ groupAvgPerTripMap().get(group.month) || '-' }}
             </span>
           </div>
           <div>
             Avg/hr:
             <span class="font-bold text-success">
-              {{ getGroupAvgRate(group) }}
+              {{ groupAvgRateMap().get(group.month) || '-' }}
             </span>
           </div>
         </div>
@@ -223,12 +223,12 @@
           <!-- Result Header -->
           <div 
             class="p-4 card-hover border-l-4"
-            [ngClass]="getCategoryBorderClass(result.type)"
+            [ngClass]="categoryMetadata[result.type].borderClass"
             (click)="toggleResult(getResultKey(result, group.month))">
             <div class="flex-between">
               <div class="flex-start">
-                <mat-icon [ngClass]="getCategoryColor(result.type)">
-                  {{ getCategoryIcon(result.type) }}
+                <mat-icon [ngClass]="categoryMetadata[result.type].color">
+                  {{ categoryMetadata[result.type].icon }}
                 </mat-icon>
                 <div class="flex-1 min-w-0">
                   <div class="font-semibold text-primary text-truncate">{{ result.value }}</div>
@@ -249,17 +249,17 @@
 
           <!-- Sub-result Averages Bar -->
           <div class="flex items-center justify-between px-4 py-2 bg-surface-2 border-t border-soft text-xs text-secondary font-medium" 
-               *ngIf="!isResultSameAsGroup(result, group)">
+               *ngIf="!isResultSameAsGroupByKey(result, group)">
             <div>
               Avg/trip:
               <span class="font-bold text-primary">
-                {{ getResultAvgPerTrip(result) }}
+                {{ getResultMetric(result, group.month, resultAvgPerTripMap()) }}
               </span>
             </div>
             <div>
               Avg/hr:
               <span class="font-bold text-success">
-                {{ getResultAvgRate(result) }}
+                {{ getResultMetric(result, group.month, resultAvgRateMap()) }}
               </span>
             </div>
           </div>
