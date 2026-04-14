@@ -4,13 +4,9 @@ import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from './spreadsheet.service';
 import { UnsavedDataService } from './unsaved-data.service';
-import { TripService } from './sheets/trip.service';
-import { ShiftService } from './sheets/shift.service';
-import { ExpensesService } from './sheets/expenses.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
-import { ISheet } from '@interfaces/sheet.interface';
 import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
@@ -40,9 +36,6 @@ export class PollingService implements OnDestroy {
   constructor(
     private _snackBar: MatSnackBar,
     private _sheetService: SpreadsheetService,
-    private _tripService: TripService,
-    private _shiftService: ShiftService,
-    private _expensesService: ExpensesService,
     private _unsavedDataService: UnsavedDataService,
     private _gigWorkflowService: GigWorkflowService,
     private _syncStatusService: SyncStatusService,
@@ -245,6 +238,9 @@ export class PollingService implements OnDestroy {
       return;
     }
 
+    // Capture the save boundary before any async work so records edited
+    // during the API call are not incorrectly marked as saved.
+    const saveStartedAt = Date.now();
     this.processing = true;
 
     try {
@@ -283,9 +279,11 @@ export class PollingService implements OnDestroy {
 
       this.safeLog('info', `Auto-saving ${counts.trips} trips, ${counts.shifts} shifts, and ${counts.expenses} expenses`);
 
+      // Collect unsaved items once — reused for shift calculation, payload, and synced-ID tracking.
+      const { unsavedTrips, unsavedShifts, unsavedExpenses } = await this._unsavedDataService.collectUnsavedItems();
+
       // Pre-calculate totals for unsaved shifts before saving
-      if (counts.shifts > 0) {
-        const unsavedShifts = await this._shiftService.getUnsavedShifts();
+      if (unsavedShifts.length > 0) {
         try {
           await this._gigWorkflowService.calculateShiftTotals(unsavedShifts);
         } catch (e) {
@@ -293,15 +291,20 @@ export class PollingService implements OnDestroy {
         }
       }
 
+      // Build the IDs that are included in this save cycle so the
+      // post-save cleanup can promote Add→Update for any mid-flight edits.
+      const syncedTripIds = new Set(unsavedTrips.filter(t => t.id !== undefined).map(t => t.id!));
+      const syncedShiftIds = new Set(unsavedShifts.filter(s => s.id !== undefined).map(s => s.id!));
+      const syncedExpenseIds = new Set(unsavedExpenses.filter(e => e.id !== undefined).map(e => e.id!));
+
       // Get actual unsaved data (use save payload wire-format)
       const sheetData = {} as ISheetSavePayload;
       const defaultSheet = (await this._sheetService.querySpreadsheets("default", "true"))[0];
       sheetData.properties = { id: defaultSheet.id, name: "" };
       
       // Apply serialization to convert 0 → null for input fields
-      sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
-      sheetData.shifts = SheetSerializerHelper.serializeShifts(await this._shiftService.getUnsavedShifts());
-      sheetData.expenses = await this._expensesService.getUnsaved();
+      sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
+      sheetData.expenses = unsavedExpenses;
 
       // Start background sync with status updates
       this._syncStatusService.startSync('auto-save', counts.total);
@@ -316,8 +319,9 @@ export class PollingService implements OnDestroy {
       if (result.success) {
         this.safeLog('info', 'Auto-save completed successfully');
         
-        // Mark all items as saved in local database after successful save
-        await this._unsavedDataService.markAllAsSaved();
+        // Mark saved items using the save boundary so records edited during
+        // the API call are not incorrectly cleared.
+        await this._unsavedDataService.commitSavedItems(saveStartedAt, syncedTripIds, syncedShiftIds, syncedExpenseIds);
         
         // Add detailed success messages
         if (counts.trips > 0) {

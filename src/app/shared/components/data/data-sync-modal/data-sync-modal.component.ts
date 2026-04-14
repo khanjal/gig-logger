@@ -19,11 +19,9 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // Application-specific imports - Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
-import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
-import { TripService } from '@services/sheets/trip.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { LoggerService } from '@services/logger.service';
 import { NgFor, NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -102,9 +100,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
         private _gigLoggerService: GigWorkflowService,
         private _sheetService: SpreadsheetService,
-        private _shiftService: ShiftService,
-        private _tripService: TripService,
-        private _expensesService: ExpensesService,
+        private _unsavedDataService: UnsavedDataService,
         private _timerService: TimerService,
         private _logger: LoggerService
     ) { 
@@ -166,8 +162,10 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         let sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
+        // Collect unsaved items once — reused for shift calculation, payload, and synced-ID tracking.
+        const { unsavedTrips, unsavedShifts, unsavedExpenses } = await this._unsavedDataService.collectUnsavedItems();
+
         // Pre-calculate totals for unsaved shifts before saving
-        const unsavedShifts = await this._shiftService.getUnsavedShifts();
         if (unsavedShifts.length > 0) {
             try {
                 await this._gigLoggerService.calculateShiftTotals(unsavedShifts);
@@ -175,11 +173,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
                 this.appendToTerminal('Pre-save shift calculation failed; proceeding with save', 'warning');
             }
         }
-        
+
         // Apply serialization to convert 0 → null for input fields (wire-format)
         sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
-        const unsavedTrips = await this._tripService.getUnsaved();
-        const unsavedExpenses = await this._expensesService.getUnsaved();
         sheetData.trips = SheetSerializerHelper.serializeTrips(unsavedTrips);
         sheetData.expenses = unsavedExpenses;
 
@@ -207,9 +203,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
 
         // Mark all items as saved in local database after successful save
-        await this._tripService.saveUnsaved(saveStartedAt, syncedTripIds);
-        await this._shiftService.saveUnsavedShifts(saveStartedAt, syncedShiftIds);
-        await this._expensesService.saveUnsaved(saveStartedAt, syncedExpenseIds);
+        await this._unsavedDataService.commitSavedItems(saveStartedAt, syncedTripIds, syncedShiftIds, syncedExpenseIds);
 
         this.appendToLastMessage(`SAVED (${this.currentTime() - this.time}s)`);
     }
