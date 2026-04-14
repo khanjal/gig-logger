@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges, Injector, inject, runInInjectionContext, afterNextRender } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
@@ -26,6 +26,7 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
   @ViewChildren('tableContainer') tableContainers!: QueryList<ElementRef>;
   isScrollable: boolean[] = [];
   prefers24Hour: boolean = false;
+  private injector = inject(Injector);
 
   constructor(
     private _tripService: TripService,
@@ -36,14 +37,23 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
   ngOnChanges(changes: SimpleChanges): void {
     // Avoid duplicate initial load; ngOnInit handles first render.
     if (changes['days'] && !changes['days'].firstChange) {
-      void this.loadAndCheck();
+      runInInjectionContext(this.injector, () => {
+        afterNextRender(() => {
+          void this.loadAndCheck();
+        });
+      });
     }
   }
 
   ngOnInit(): void {
     this.displayedColumns = ['service', 'place', 'total', 'name', 'pickup', 'dropoff', 'address'];
     this.prefers24Hour = DateHelper.prefers24Hour();
-    void this.loadAndCheck();
+    // Defer async hydration until after first paint to avoid NG0100 in dev mode.
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        void this.loadAndCheck();
+      });
+    });
   }
 
   ngAfterViewInit(): void {
@@ -73,25 +83,26 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
     
     // Get unique dates in trips and create groups
     let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
-    this.tripGroups = [];
-    
-    for (const date of dates) {
-      let tripGroup = {} as ITripGroup;
-      let trips = sheetTrips.filter(x => x.date === date);
 
+    const groupedResults = await Promise.all(dates.map(async (date) => {
+      const trips = sheetTrips.filter(x => x.date === date);
       if (trips.length === 0) {
-        continue;
+        return null;
       }
 
-      let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
-      let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
+      const dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
+      const weekday = (await this._weekdayService.query('day', dayOfWeek))[0];
+      const orderedTrips = [...trips].reverse();
 
-      tripGroup.date = date;
-      tripGroup.trips = trips.reverse();
-      tripGroup.amount = trips.filter(x => !x.exclude).reduce((acc, trip) => acc + trip.total, 0);
-      tripGroup.average = weekday?.dailyPrevAverage ?? 0;
+      return {
+        date,
+        trips: orderedTrips,
+        amount: orderedTrips.filter(x => !x.exclude).reduce((acc, trip) => acc + trip.total, 0),
+        average: weekday?.dailyPrevAverage ?? 0
+      } as ITripGroup;
+    }));
 
-      this.tripGroups.push(tripGroup);
-    };
+    // Assign once so template bindings do not see intermediate async mutations.
+    this.tripGroups = groupedResults.filter((group): group is ITripGroup => group !== null);
   }
 }

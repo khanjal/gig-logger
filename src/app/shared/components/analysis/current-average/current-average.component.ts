@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Injector, OnInit, afterNextRender, inject, runInInjectionContext } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openSnackbar } from '@utils/snackbar.util';
 import { DateHelper } from '@helpers/date.helper';
@@ -19,6 +19,7 @@ import { MatIcon } from '@angular/material/icon';
 
 export class CurrentAverageComponent implements OnInit {
   @Input() date: string = DateHelper.toISO();
+  private injector = inject(Injector);
 
   currentDayAmount: number = 0;
   currentMonthAmount: number = 0;
@@ -40,8 +41,13 @@ export class CurrentAverageComponent implements OnInit {
     private _weeklyService: WeeklyService
     ) {}
 
-  async ngOnInit() {
-    await this.load();
+  ngOnInit(): void {
+    // Defer async hydration until after first paint to avoid NG0100 in dev mode.
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        void this.load();
+      });
+    });
   }
 
   async load() {
