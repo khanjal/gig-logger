@@ -13,11 +13,28 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
     return (await this.list()).filter(x => !x.saved);
   }
 
-  async saveUnsaved(): Promise<void> {
+  async saveUnsaved(
+    saveStartedAt: number = Date.now(),
+    syncedIds?: ReadonlySet<number>
+  ): Promise<void> {
     const unsaved = await this.getUnsaved();
     let rowId: number | undefined;
     
     for (const item of unsaved) {
+      // Do not clear or delete records touched after this save cycle started.
+      if ((item.actionTime ?? 0) > saveStartedAt) {
+        const wasSyncedInThisSave = !!item.id && !!syncedIds?.has(item.id);
+
+        // If an Add was already sent in this save and the user edited it mid-flight,
+        // keep it unsaved but switch to Update so the next save patches instead of re-adding.
+        if (item.action === ActionEnum.Add && wasSyncedInThisSave) {
+          item.action = ActionEnum.Update;
+          await this.update([item]);
+        }
+
+        continue;
+      }
+
       if (item.action === ActionEnum.Delete) {
         if (!rowId) {
           rowId = item.rowId;
@@ -27,7 +44,8 @@ export class SyncableCrudService<T extends IActionRecord> extends GenericCrudSer
       }
 
       const original = await this.get(item.id!);
-      if (original && original.actionTime === item.actionTime) {
+      const wasEditedAfterSaveStarted = (original?.actionTime ?? 0) > saveStartedAt;
+      if (original && !wasEditedAfterSaveStarted && original.actionTime === item.actionTime) {
         clearAction(item);
         await this.update([item]);
       }

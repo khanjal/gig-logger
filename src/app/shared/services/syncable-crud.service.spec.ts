@@ -84,6 +84,60 @@ describe('SyncableCrudService', () => {
     expect(item).toBeUndefined();
   });
 
+  it('saveUnsaved does not clear records edited after save started', async () => {
+    await table.put({
+      id: 2,
+      rowId: 2,
+      name: 'b-edited-during-save',
+      saved: false,
+      action: ActionEnum.Update,
+      actionTime: 500
+    });
+
+    await service.saveUnsaved(300);
+
+    const updated = await service.get(2);
+    expect(updated?.saved).toBeFalse();
+    expect(updated?.action).toBe(ActionEnum.Update);
+    expect(updated?.actionTime).toBe(500);
+  });
+
+  it('saveUnsaved promotes edited Add to Update when Add was synced in this save', async () => {
+    await table.put({
+      id: 2,
+      rowId: 2,
+      name: 'added-then-edited-during-save',
+      saved: false,
+      action: ActionEnum.Add,
+      actionTime: 500
+    });
+
+    await service.saveUnsaved(300, new Set([2]));
+
+    const updated = await service.get(2);
+    expect(updated?.saved).toBeFalse();
+    expect(updated?.action).toBe(ActionEnum.Update);
+    expect(updated?.actionTime).toBe(500);
+  });
+
+  it('saveUnsaved keeps edited Add as Add when Add was not synced in this save', async () => {
+    await table.put({
+      id: 2,
+      rowId: 2,
+      name: 'new-add-created-after-save-start',
+      saved: false,
+      action: ActionEnum.Add,
+      actionTime: 500
+    });
+
+    await service.saveUnsaved(300, new Set([1]));
+
+    const updated = await service.get(2);
+    expect(updated?.saved).toBeFalse();
+    expect(updated?.action).toBe(ActionEnum.Add);
+    expect(updated?.actionTime).toBe(500);
+  });
+
   it('updateRowIds re-sequences rowIds in batch', async () => {
     await table.add({ id: 4, rowId: 4, name: 'd', saved: true, action: '', actionTime: 0 });
     await service.updateRowIds(1);

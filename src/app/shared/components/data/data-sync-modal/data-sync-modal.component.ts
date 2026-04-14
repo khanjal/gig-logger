@@ -162,6 +162,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     async saveData() {
+        const saveStartedAt = Date.now();
         let sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
@@ -177,8 +178,14 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         
         // Apply serialization to convert 0 → null for input fields (wire-format)
         sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
-        sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
-        sheetData.expenses = await this._expensesService.getUnsaved();
+        const unsavedTrips = await this._tripService.getUnsaved();
+        const unsavedExpenses = await this._expensesService.getUnsaved();
+        sheetData.trips = SheetSerializerHelper.serializeTrips(unsavedTrips);
+        sheetData.expenses = unsavedExpenses;
+
+        const syncedShiftIds = new Set(unsavedShifts.filter(shift => shift.id !== undefined).map(shift => shift.id!));
+        const syncedTripIds = new Set(unsavedTrips.filter(trip => trip.id !== undefined).map(trip => trip.id!));
+        const syncedExpenseIds = new Set(unsavedExpenses.filter(expense => expense.id !== undefined).map(expense => expense.id!));
 
         this.appendToTerminal("Saving changes...");
         let messages = await this._gigLoggerService.saveSheetData(sheetData);
@@ -200,9 +207,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
 
         // Mark all items as saved in local database after successful save
-        await this._tripService.saveUnsaved();
-        await this._shiftService.saveUnsavedShifts();
-        await this._expensesService.saveUnsaved();
+        await this._tripService.saveUnsaved(saveStartedAt, syncedTripIds);
+        await this._shiftService.saveUnsavedShifts(saveStartedAt, syncedShiftIds);
+        await this._expensesService.saveUnsaved(saveStartedAt, syncedExpenseIds);
 
         this.appendToLastMessage(`SAVED (${this.currentTime() - this.time}s)`);
     }
