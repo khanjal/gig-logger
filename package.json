@@ -61,7 +61,7 @@
     "@angular/compiler-cli": "^20.3.18",
     "@types/jasmine": "^5.1.12",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^25.0.9",
+    "@types/node": "^25.6.0",
     "autoprefixer": "^10.4.22",
     "buffer": "^6.0.3",
     "jasmine-core": "^5.12.0",
