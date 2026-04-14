@@ -72,6 +72,7 @@ Use these as default implementation rules for all new or touched Angular code.
 - Prefer `@if`, `@for`, and `@switch` in new or refactored templates.
 - For `@for`, always provide a stable `track` expression (for example `track item.id`).
 - If a legacy template still uses `*ngFor`, keep a `trackBy` function until the block is migrated.
+- Prefer native bindings for classes/styles (for example `[class.active]="isActive()"`, `[style.width.%]="progress"`) over `NgClass`/`NgStyle` when possible for better performance and clearer templates.
 
 #### 3) Avoid template-invoked heavy work
 - Do not call non-trivial methods from templates.
