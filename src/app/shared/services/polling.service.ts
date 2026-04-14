@@ -303,6 +303,7 @@ export class PollingService implements OnDestroy {
       sheetData.properties = { id: defaultSheet.id, name: "" };
       
       // Apply serialization to convert 0 → null for input fields
+      sheetData.trips = SheetSerializerHelper.serializeTrips(unsavedTrips);
       sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
       sheetData.expenses = unsavedExpenses;
 
