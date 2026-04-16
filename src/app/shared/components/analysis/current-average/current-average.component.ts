@@ -40,34 +40,39 @@ export class CurrentAverageComponent {
     private _weeklyService: WeeklyService
     ) {}
 
+  private toFiniteNumber(value: unknown): number {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
   async load() {
     // Current amount
     let dayShifts = await this._shiftService.query("date", this.date);
-    const nextCurrentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+    const nextCurrentDayAmount = dayShifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
 
     let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));
     const weekdayRows = this._weekdayService.query
       ? await this._weekdayService.query("day", dayOfWeek)
       : [];
     let weekday = weekdayRows?.[0];
-    const nextDailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
+    const nextDailyAverage = this.toFiniteNumber(weekday?.dailyPrevAverage);
 
     // Load weekly average
     let mondayISO = DateHelper.toISO(DateHelper.getMonday(new Date()));
     let currentWeekShifts = await this._shiftService.getShiftsByStartDate(mondayISO);
-    const nextCurrentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+    const nextCurrentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
 
     let date = DateHelper.toISO(DateHelper.getDateFromDays(7));
     let weekly = await this._weeklyService.getLastWeekFromDay(date);
-    const nextWeeklyAverage = weekly?.average ?? 0;
+    const nextWeeklyAverage = this.toFiniteNumber(weekly?.average);
 
     // Load monthly average
     let firstDayOfMonth = DateHelper.getFirstDayOfMonth(new Date());
     let currentMonthShifts = await this._shiftService.getShiftsByStartDate(firstDayOfMonth);
-    const nextCurrentMonthAmount = currentMonthShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+    const nextCurrentMonthAmount = currentMonthShifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
     
     let monthly = await this._monthlyService.find("month", DateHelper.getMonthYearString(new Date()));
-    const nextMonthlyAverage = monthly?.average ?? 0;
+    const nextMonthlyAverage = this.toFiniteNumber(monthly?.average);
 
     // Apply after the current change-detection turn to avoid NG0100 when
     // parent components trigger load() during their own render lifecycle.

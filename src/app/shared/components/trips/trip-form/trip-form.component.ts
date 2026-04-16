@@ -413,6 +413,9 @@ export class TripFormComponent implements OnInit {
     if (shiftKey && shiftKey !== NEW_SHIFT_VALUE) {
       const value = this.shifts.find(shift => shift.key === shiftKey);
       if (!value) {
+        // The previously selected shift key may disappear after reactive list updates.
+        // Reset to "new" to keep mat-select selection state stable across CD cycles.
+        this.resetSelectedShiftState();
         return;
       }
 

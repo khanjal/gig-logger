@@ -29,40 +29,32 @@
       'stripe-header-even': isEvenStripe,
       'stripe-header-odd': !isEvenStripe
     }">
-    <!-- Single-Line Header Row -->
-    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
-      <!-- Status Icon -->
-      <mat-icon class="text-xl flex-shrink-0"
-        [ngClass]="{
-          'trip-icon-saved': trip.saved,
-          'trip-icon-add': !trip.saved && trip.action === 'ADD',
-          'trip-icon-update': !trip.saved && trip.action === 'UPDATE',
-          'trip-icon-delete': !trip.saved && trip.action === 'DELETE',
-          'trip-icon-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE'))
-        }">
-        @if (!trip.saved && trip.action === 'ADD') { add }
-        @else if (!trip.saved && trip.action === 'UPDATE') { edit }
-        @else if (!trip.saved && trip.action === 'DELETE') { delete }
-        @else { check_circle }
-      </mat-icon>
-      <!-- Row ID -->
-      <span class="text-xs font-bold text-primary font-mono flex-shrink-0">#{{trip.rowId}}</span>
-      <!-- Service Name and Trip Number (tight, number always visible, service truncates, always a space) -->
-      <span class="font-bold text-primary text-sm sm:text-base flex-shrink min-w-0 max-w-[8rem] sm:max-w-[12rem] inline-flex items-center">
-        <span class="truncate block max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
-      </span>
-      <!-- Time (center) -->
-      <span class="flex-1 flex items-center justify-center gap-1">
-        <span class="font-mono text-sm font-medium"
-              [ngClass]="{
-                'text-tertiary': !trip.pickupTime,
-                'text-primary': trip.pickupTime
-              }">
-          {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
+    <!-- Top Header Row: status/#, centered service, total -->
+    <div class="flex items-center gap-2 min-w-0 w-full">
+      <div class="flex items-center gap-2 flex-shrink-0 min-w-fit">
+        <mat-icon class="text-xl flex-shrink-0"
+          [ngClass]="{
+            'trip-icon-saved': trip.saved,
+            'trip-icon-add': !trip.saved && trip.action === 'ADD',
+            'trip-icon-update': !trip.saved && trip.action === 'UPDATE',
+            'trip-icon-delete': !trip.saved && trip.action === 'DELETE',
+            'trip-icon-other': !trip.saved && (!trip.action || (trip.action !== 'ADD' && trip.action !== 'UPDATE' && trip.action !== 'DELETE'))
+          }">
+          @if (!trip.saved && trip.action === 'ADD') { add }
+          @else if (!trip.saved && trip.action === 'UPDATE') { edit }
+          @else if (!trip.saved && trip.action === 'DELETE') { delete }
+          @else { check_circle }
+        </mat-icon>
+        <span class="text-xs font-bold text-primary font-mono">#{{trip.rowId}}</span>
+      </div>
+
+      <div class="flex-1 min-w-0 text-center px-1">
+        <span class="font-bold text-primary text-sm sm:text-base inline-flex items-center justify-center max-w-full">
+          <span class="truncate max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
         </span>
-      </span>
-      <!-- Total (far right) -->
-      <span class="flex items-center gap-1 flex-shrink-0">
+      </div>
+
+      <div class="flex-shrink-0 min-w-fit text-right">
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
                 'text-tertiary': !(trip.pay || trip.tip || trip.bonus),
@@ -73,22 +65,37 @@
               }">
           {{trip.total | currency}}
         </span>
-      </span>
+      </div>
     </div>
-    <!-- Date/Place/Distance Row (always visible if present) -->
-    <div class="mt-1 text-xs text-secondary truncate text-center flex items-center justify-center gap-2 relative" *ngIf="trip.place || trip.name || trip.date || trip.distance">
-      <!-- Date (left) -->
-      <span *ngIf="trip.date" class="px-2 py-0.5 rounded text-xs text-secondary border border-soft flex-shrink-0">{{ parsedTripDate ? (parsedTripDate | date:dateFormat) : (trip.date | date:dateFormat) }}</span>
-      <!-- Place -> Name (center, inline until overflow) -->
-      <div class="flex-1 flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden">
+
+    <!-- Date/Time/Distance Row -->
+    <div class="mt-1 text-xs text-secondary flex items-center w-full" *ngIf="trip.date || trip.pickupTime || trip.distance">
+      <div class="flex-1 min-w-0 text-left">
+        <span *ngIf="trip.date" class="inline-block px-2 py-0.5 rounded text-xs text-secondary border border-soft">{{ parsedTripDate ? (parsedTripDate | date:dateFormat) : (trip.date | date:dateFormat) }}</span>
+      </div>
+
+      <div class="flex-shrink-0 px-2 text-center">
+        <span class="font-mono text-xs"
+              [ngClass]="{
+                'text-tertiary': !trip.pickupTime,
+                'text-primary': trip.pickupTime
+              }">
+          {{ trip.pickupTime ? (trip.pickupTime | noseconds:prefers24Hour) : '--:--' }}
+        </span>
+      </div>
+
+      <div class="flex-1 min-w-0 text-right">
+        <span *ngIf="trip.distance" class="font-mono text-xs text-primary">{{trip.distance | number:'1.1'}} mi</span>
+      </div>
+    </div>
+
+    <!-- Place -> Name Row -->
+    <div class="mt-1 text-xs text-secondary flex items-center justify-center min-w-0" *ngIf="trip.place || trip.name">
+      <div class="flex flex-row flex-wrap justify-center items-center gap-1 min-w-0 overflow-hidden max-w-full">
         <span *ngIf="trip.place" class="truncate max-w-full">{{trip.place | truncate:40}}</span>
         <span *ngIf="trip.place && trip.name"> → </span>
         <span *ngIf="trip.name" class="truncate max-w-full">{{trip.name | truncate:40}}</span>
       </div>
-      <!-- Distance (right) -->
-      <span *ngIf="trip.distance" class="flex items-center gap-1 flex-shrink-0 ml-2">
-        <span class="font-mono text-xs text-primary">{{trip.distance | number:'1.1'}} mi</span>
-      </span>
     </div>
     <!-- Toggle Button and Chips Row -->
     <div class="flex items-center justify-between gap-2 mt-1"

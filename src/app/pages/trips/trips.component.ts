@@ -133,7 +133,7 @@ export class TripComponent implements OnInit, OnDestroy {
         this.syncTripLists(trips);
         if (!this.isEditMode()) {
           this.scheduleTripsTableReload();
-          void this.tripForm?.load();
+          this.scheduleTripFormReload();
         }
       });
 
@@ -142,7 +142,7 @@ export class TripComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (!this.isEditMode()) {
           this.scheduleAverageReload();
-          void this.tripForm?.load();
+          this.scheduleTripFormReload();
         }
       });
 
@@ -178,7 +178,7 @@ export class TripComponent implements OnInit, OnDestroy {
       await this.refreshUnsavedData();
       this.scheduleAverageReload();
       this.scheduleTripsTableReload();
-      await this.tripForm?.load();
+      this.scheduleTripFormReload();
     } catch (error) {
       this.logger.error('Failed to load trips page data', error);
     } finally {
@@ -201,6 +201,12 @@ export class TripComponent implements OnInit, OnDestroy {
   private scheduleTripsTableReload(): void {
     setTimeout(() => {
       void this.tripsTable?.load();
+    }, 0);
+  }
+
+  private scheduleTripFormReload(): void {
+    setTimeout(() => {
+      void this.tripForm?.load();
     }, 0);
   }
 
@@ -417,13 +423,16 @@ export class TripComponent implements OnInit, OnDestroy {
   }
   
   async exitEditMode(scrollToTripId?: string) {
-    this.isEditMode.set(false);
     this.editingTripId.set(null);
     this._router.navigate(['/trips']);
     if (this.tripForm) {
       await this.tripForm.formReset();
     }
     await this.load(); // This handles the overlay timing
+    this.isEditMode.set(false);
+    this.scheduleAverageReload();
+    this.scheduleTripsTableReload();
+    this.scheduleTripFormReload();
     if (this.pollingEnabled()) {
       await this.startPolling();
     }
