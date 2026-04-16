@@ -43,11 +43,11 @@
         <app-base-input class="min-w-[90px] flex-1" [label]="'Active Duration'" [type]="'text'" [placeholder]="'HH:MM'" formControlName="active"></app-base-input>
         <app-base-input class="min-w-[90px] flex-1" [label]="'Total Time'" [type]="'text'" [placeholder]="'HH:MM'" formControlName="time"></app-base-input>
       </div>
-      <div class="flex gap-2">
-        <app-base-input class="min-w-[90px] flex-1" [label]="'Pay'" [type]="'number'" [placeholder]="'Pay'" formControlName="pay"></app-base-input>
-        <app-base-input class="min-w-[90px] flex-1" [label]="'Tips'" [type]="'number'" [placeholder]="'Tips'" formControlName="tip"></app-base-input>
-        <app-base-input class="min-w-[90px] flex-1" [label]="'Bonus'" [type]="'number'" [placeholder]="'Bonus'" formControlName="bonus"></app-base-input>
-        <app-base-input class="min-w-[90px] flex-1" [label]="'Cash'" [type]="'number'" [placeholder]="'Cash'" formControlName="cash"></app-base-input>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <app-base-input class="w-full" [label]="'Pay'" [type]="'number'" [placeholder]="'Pay'" formControlName="pay"></app-base-input>
+        <app-base-input class="w-full" [label]="'Tips'" [type]="'number'" [placeholder]="'Tips'" formControlName="tip"></app-base-input>
+        <app-base-input class="w-full" [label]="'Bonus'" [type]="'number'" [placeholder]="'Bonus'" formControlName="bonus"></app-base-input>
+        <app-base-input class="w-full" [label]="'Cash'" [type]="'number'" [placeholder]="'Cash'" formControlName="cash"></app-base-input>
       </div>
     </div>
     <!-- Trip Totals only in edit mode -->

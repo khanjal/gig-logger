@@ -53,7 +53,6 @@ import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helpe
 
 export class TripComponent implements OnInit, OnDestroy {
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
-  @ViewChild(CurrentAverageComponent) average:CurrentAverageComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
   clearing = signal(false);
@@ -141,7 +140,6 @@ export class TripComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         if (!this.isEditMode()) {
-          this.scheduleAverageReload();
           this.scheduleTripFormReload();
         }
       });
@@ -176,7 +174,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
     try {
       await this.refreshUnsavedData();
-      this.scheduleAverageReload();
       this.scheduleTripsTableReload();
       this.scheduleTripFormReload();
     } catch (error) {
@@ -188,14 +185,6 @@ export class TripComponent implements OnInit, OnDestroy {
         }, 400);
       }
     }
-  }
-
-  private scheduleAverageReload(): void {
-    // Defer child mutations to the next macrotask to avoid NG0100
-    // when load() is triggered during an in-progress render turn.
-    setTimeout(() => {
-      void this.average?.load();
-    }, 0);
   }
 
   private scheduleTripsTableReload(): void {
@@ -430,7 +419,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
     await this.load(); // This handles the overlay timing
     this.isEditMode.set(false);
-    this.scheduleAverageReload();
     this.scheduleTripsTableReload();
     this.scheduleTripFormReload();
     if (this.pollingEnabled()) {

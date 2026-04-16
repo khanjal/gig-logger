@@ -1,11 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openSnackbar } from '@utils/snackbar.util';
 import { DateHelper } from '@helpers/date.helper';
-import { MonthlyService } from '@services/sheets/monthly.service';
-import { ShiftService } from '@services/sheets/shift.service';
-import { WeekdayService } from '@services/sheets/weekday.service';
-import { WeeklyService } from '@services/sheets/weekly.service';
+import { CurrentAverageStateService } from '@services/current-average-state.service';
 import { NgIf, CurrencyPipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
@@ -14,19 +11,45 @@ import { MatIcon } from '@angular/material/icon';
     templateUrl: './current-average.component.html',
     styleUrls: ['./current-average.component.scss'],
     standalone: true,
-    imports: [NgIf, MatIcon, CurrencyPipe]
+  imports: [NgIf, MatIcon, CurrencyPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class CurrentAverageComponent {
-  @Input() date: string = DateHelper.toISO();
+  private _date: string = DateHelper.toISO();
 
-  currentDayAmount: number = 0;
-  currentMonthAmount: number = 0;
-  currentWeekAmount: number = 0;
-  
-  dailyAverage: number = 0;
-  weeklyAverage: number = 0;
-  monthlyAverage: number = 0;
+  @Input() set date(value: string) {
+    this._date = value || DateHelper.toISO();
+    this.currentAverageState.setDate(this._date);
+  }
+
+  get date(): string {
+    return this._date;
+  }
+
+  get currentDayAmount(): number {
+    return this.currentAverageState.currentDayAmount();
+  }
+
+  get currentMonthAmount(): number {
+    return this.currentAverageState.currentMonthAmount();
+  }
+
+  get currentWeekAmount(): number {
+    return this.currentAverageState.currentWeekAmount();
+  }
+
+  get dailyAverage(): number {
+    return this.currentAverageState.dailyAverage();
+  }
+
+  get weeklyAverage(): number {
+    return this.currentAverageState.weeklyAverage();
+  }
+
+  get monthlyAverage(): number {
+    return this.currentAverageState.monthlyAverage();
+  }
 
   showDailyAverage: boolean = true;
   showWeeklyAverage: boolean = false;
@@ -34,60 +57,10 @@ export class CurrentAverageComponent {
 
   constructor(
     private _snackBar: MatSnackBar,
-    private _monthlyService: MonthlyService,
-    private _shiftService: ShiftService,
-    private _weekdayService: WeekdayService,
-    private _weeklyService: WeeklyService
-    ) {}
-
-  private toFiniteNumber(value: unknown): number {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-
-  async load() {
-    // Current amount
-    let dayShifts = await this._shiftService.query("date", this.date);
-    const nextCurrentDayAmount = dayShifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
-
-    let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));
-    const weekdayRows = this._weekdayService.query
-      ? await this._weekdayService.query("day", dayOfWeek)
-      : [];
-    let weekday = weekdayRows?.[0];
-    const nextDailyAverage = this.toFiniteNumber(weekday?.dailyPrevAverage);
-
-    // Load weekly average
-    let mondayISO = DateHelper.toISO(DateHelper.getMonday(new Date()));
-    let currentWeekShifts = await this._shiftService.getShiftsByStartDate(mondayISO);
-    const nextCurrentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
-
-    let date = DateHelper.toISO(DateHelper.getDateFromDays(7));
-    let weekly = await this._weeklyService.getLastWeekFromDay(date);
-    const nextWeeklyAverage = this.toFiniteNumber(weekly?.average);
-
-    // Load monthly average
-    let firstDayOfMonth = DateHelper.getFirstDayOfMonth(new Date());
-    let currentMonthShifts = await this._shiftService.getShiftsByStartDate(firstDayOfMonth);
-    const nextCurrentMonthAmount = currentMonthShifts.reduce((acc, shift) => acc + this.toFiniteNumber(shift.grandTotal), 0);
-    
-    let monthly = await this._monthlyService.find("month", DateHelper.getMonthYearString(new Date()));
-    const nextMonthlyAverage = this.toFiniteNumber(monthly?.average);
-
-    // Apply after the current change-detection turn to avoid NG0100 when
-    // parent components trigger load() during their own render lifecycle.
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        this.currentDayAmount = nextCurrentDayAmount;
-        this.dailyAverage = nextDailyAverage;
-        this.currentWeekAmount = nextCurrentWeekAmount;
-        this.weeklyAverage = nextWeeklyAverage;
-        this.currentMonthAmount = nextCurrentMonthAmount;
-        this.monthlyAverage = nextMonthlyAverage;
-        resolve();
-      }, 0);
-    });
-  }
+    private currentAverageState: CurrentAverageStateService
+    ) {
+      this.currentAverageState.setDate(this._date);
+    }
 
   toggle() {
     const states = ['Daily', 'Weekly', 'Monthly'];

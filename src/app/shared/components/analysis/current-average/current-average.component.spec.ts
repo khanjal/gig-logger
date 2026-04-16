@@ -1,34 +1,36 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 
 import { CurrentAverageComponent } from './current-average.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MonthlyService } from '@services/sheets/monthly.service';
-import { ShiftService } from '@services/sheets/shift.service';
-import { WeekdayService } from '@services/sheets/weekday.service';
-import { WeeklyService } from '@services/sheets/weekly.service';
+import { CurrentAverageStateService } from '@services/current-average-state.service';
 
 describe('CurrentAverageComponent', () => {
   let component: CurrentAverageComponent;
   let fixture: ComponentFixture<CurrentAverageComponent>;
-  const mockMonthlyService = jasmine.createSpyObj('MonthlyService', ['find']);
-  const mockShiftService = jasmine.createSpyObj('ShiftService', ['query', 'getShiftsByStartDate']);
-  const mockWeekdayService = jasmine.createSpyObj('WeekdayService', ['query']);
-  const mockWeeklyService = jasmine.createSpyObj("WeeklyService", ["getLastWeekFromDay"]);
+  const mockCurrentAverageStateService = {
+    setDate: jasmine.createSpy('setDate'),
+    currentDayAmount: signal(0),
+    currentMonthAmount: signal(0),
+    currentWeekAmount: signal(0),
+    dailyAverage: signal(0),
+    weeklyAverage: signal(0),
+    monthlyAverage: signal(0)
+  };
 
   beforeEach(async () => {
-    mockShiftService.query.and.resolveTo([] as any);
-    mockShiftService.getShiftsByStartDate.and.resolveTo([] as any);
-    mockWeekdayService.query.and.resolveTo([] as any);
-    mockWeeklyService.getLastWeekFromDay.and.resolveTo(undefined as any);
-    mockMonthlyService.find.and.resolveTo(undefined as any);
+    mockCurrentAverageStateService.setDate.calls.reset();
+    mockCurrentAverageStateService.currentDayAmount.set(0);
+    mockCurrentAverageStateService.currentMonthAmount.set(0);
+    mockCurrentAverageStateService.currentWeekAmount.set(0);
+    mockCurrentAverageStateService.dailyAverage.set(0);
+    mockCurrentAverageStateService.weeklyAverage.set(0);
+    mockCurrentAverageStateService.monthlyAverage.set(0);
 
     await TestBed.configureTestingModule({
     imports: [MatSnackBarModule, CurrentAverageComponent],
     providers: [
-        { provide: MonthlyService, useValue: mockMonthlyService },
-        { provide: ShiftService, useValue: mockShiftService },
-        { provide: WeekdayService, useValue: mockWeekdayService },
-        { provide: WeeklyService, useValue: mockWeeklyService }
+        { provide: CurrentAverageStateService, useValue: mockCurrentAverageStateService }
     ]
 })
     .compileComponents();
@@ -42,20 +44,25 @@ describe('CurrentAverageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('normalizes invalid numeric values to zero when loading averages', async () => {
-    mockShiftService.query.and.resolveTo([{ grandTotal: undefined }] as any);
-    mockShiftService.getShiftsByStartDate.and.resolveTo([{ grandTotal: 'bad' }] as any);
-    mockWeekdayService.query.and.resolveTo([{ dailyPrevAverage: NaN }] as any);
-    mockWeeklyService.getLastWeekFromDay.and.resolveTo({ average: 'bad' } as any);
-    mockMonthlyService.find.and.resolveTo({ average: undefined } as any);
+  it('updates selected date in state service when date input changes', () => {
+    component.date = '2026-04-16';
 
-    await component.load();
+    expect(mockCurrentAverageStateService.setDate).toHaveBeenCalledWith('2026-04-16');
+  });
 
-    expect(component.currentDayAmount).toBe(0);
-    expect(component.currentWeekAmount).toBe(0);
-    expect(component.currentMonthAmount).toBe(0);
-    expect(component.dailyAverage).toBe(0);
-    expect(component.weeklyAverage).toBe(0);
-    expect(component.monthlyAverage).toBe(0);
+  it('reads displayed values from the reactive state service', () => {
+    mockCurrentAverageStateService.currentDayAmount.set(120.5);
+    mockCurrentAverageStateService.currentWeekAmount.set(450);
+    mockCurrentAverageStateService.currentMonthAmount.set(980);
+    mockCurrentAverageStateService.dailyAverage.set(100);
+    mockCurrentAverageStateService.weeklyAverage.set(425);
+    mockCurrentAverageStateService.monthlyAverage.set(900);
+
+    expect(component.currentDayAmount).toBe(120.5);
+    expect(component.currentWeekAmount).toBe(450);
+    expect(component.currentMonthAmount).toBe(980);
+    expect(component.dailyAverage).toBe(100);
+    expect(component.weeklyAverage).toBe(425);
+    expect(component.monthlyAverage).toBe(900);
   });
 });
