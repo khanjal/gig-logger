@@ -67,6 +67,8 @@ interface IShiftSummaryOption {
   subtitle: string;
 }
 
+const NEW_SHIFT_VALUE = 'new';
+
 @Component({
     selector: 'trip-form',
     templateUrl: './trip-form.component.html',
@@ -104,7 +106,7 @@ export class TripFormComponent implements OnInit {
     note: FormControl<string | null>;
     exclude: FormControl<string | null>;
   }> = new FormGroup({
-    shift: new FormControl<string | null>(null),
+    shift: new FormControl<string | null>(NEW_SHIFT_VALUE),
     service: new FormControl<string | null>(null),
     region: new FormControl<string | null>(null),
     place: new FormControl<string | null>(null),
@@ -198,7 +200,7 @@ export class TripFormComponent implements OnInit {
     let shift: IShift = {} as IShift;
     const selectedShiftKey = this.tripForm.value.shift;
 
-    if (!selectedShiftKey) {
+    if (!selectedShiftKey || selectedShiftKey === NEW_SHIFT_VALUE) {
       let shifts: IShift[] = [];
       let today: string = DateHelper.toISO();
 
@@ -408,7 +410,7 @@ export class TripFormComponent implements OnInit {
   }
 
   public async onShiftSelected(shiftKey: string | null | undefined) {
-    if (shiftKey) {
+    if (shiftKey && shiftKey !== NEW_SHIFT_VALUE) {
       const value = this.shifts.find(shift => shift.key === shiftKey);
       if (!value) {
         return;
@@ -448,7 +450,7 @@ export class TripFormComponent implements OnInit {
     this.isNewShift = true;
     this.selectedShift = undefined;
     this.selectedShiftOption = undefined;
-    this.tripForm.controls.shift.setValue(null, { emitEvent: false });
+    this.tripForm.controls.shift.setValue(NEW_SHIFT_VALUE, { emitEvent: false });
   }
 
   setPickupAddress(address: string) {

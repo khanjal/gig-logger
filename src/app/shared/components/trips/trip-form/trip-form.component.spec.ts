@@ -149,18 +149,18 @@ describe('TripFormComponent', () => {
     expect(component.tripForm.controls.region.value).toBe('Downtown');
   });
 
-  it('onShiftSelected should add validator and populate from recent shift when null', async () => {
+  it('onShiftSelected should add validator and populate from recent shift when New is selected', async () => {
     const shifts = [
       { key: 'k2', service: 'Uber Eats', region: 'Suburbs' },
       { key: 'k1', service: 'DoorDash', region: 'Downtown' }
     ] as any[];
     shiftService.list.and.returnValue(Promise.resolve(shifts));
 
-    await component.onShiftSelected(null);
+    await component.onShiftSelected('new');
 
     expect(component.isNewShift).toBeTrue();
     expect(component.selectedShiftOption).toBeUndefined();
-    expect(component.tripForm.controls.shift.value).toBeNull();
+    expect(component.tripForm.controls.shift.value).toBe('new');
     expect(component.tripForm.controls.service.value).toBe('DoorDash');
     expect(component.tripForm.controls.region.value).toBe('Downtown');
   });
@@ -184,7 +184,7 @@ describe('TripFormComponent', () => {
 
     await (component as any).setDefaultShift();
 
-    expect(component.tripForm.controls.shift.value).toBeNull();
+    expect(component.tripForm.controls.shift.value).toBe('new');
     expect(component.selectedShiftOption).toBeUndefined();
     expect(component.isNewShift).toBeTrue();
   });
