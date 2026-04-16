@@ -32,7 +32,7 @@ import { TripFormComponent } from '@components/trips/trip-form/trip-form.compone
 import { TripsTableGroupComponent } from '@components/trips/trips-table-group/trips-table-group.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -194,6 +194,10 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   private scheduleTripFormReload(): void {
+    if (this.saving()) {
+      return;
+    }
+
     setTimeout(() => {
       void this.tripForm?.load();
     }, 0);
@@ -277,21 +281,19 @@ export class TripComponent implements OnInit, OnDestroy {
     }
 
     this.saving.set(true);
-    const dialogRef = this.dialog.open(DataSyncModalComponent, {
-        panelClass: 'custom-modalbox',
-        data: inputValue
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      try {
-        if (result) {
-          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
-          this._viewportScroller.scrollToAnchor("todaysTrips");
-        }
-      } finally {
-        this.saving.set(false);
+    try {
+      const dialogRef = this.dialog.open(DataSyncModalComponent, {
+          panelClass: 'custom-modalbox',
+          data: inputValue
+      });
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (result) {
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
+        this._viewportScroller.scrollToAnchor("todaysTrips");
       }
-    });
+    } finally {
+      this.saving.set(false);
+    }
   }
     
   async confirmSaveTripsDialog() {
@@ -308,12 +310,10 @@ export class TripComponent implements OnInit, OnDestroy {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
-        this.saving.set(true);
-        await this.saveSheetDialog('save');
-      }
-    });
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    if (result) {
+      await this.saveSheetDialog('save');
+    }
   }
 
   async confirmLoadTripsDialog() {
