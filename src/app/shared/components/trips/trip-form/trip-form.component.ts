@@ -1,6 +1,6 @@
 // Angular core imports
 import { ViewportScroller, NgFor, NgIf, CommonModule } from '@angular/common';
-import { afterNextRender, ChangeDetectorRef, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, runInInjectionContext, signal, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Optional, Output, signal, ViewChild } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -11,15 +11,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 
-// RxJS imports
-import { Observable } from 'rxjs';
-
 // Application-specific imports - Interfaces
 import { IAddress } from '@interfaces/address.interface';
 import { IDelivery } from '@interfaces/delivery.interface';
 import { IName } from '@interfaces/name.interface';
 import { IPlace } from '@interfaces/place.interface';
-import { IService } from '@interfaces/service.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
@@ -139,24 +135,18 @@ export class TripFormComponent implements OnInit {
   showTimes: boolean = false;
 
   selectedAddress: IAddress | undefined;
-  selectedAddressDeliveries: IDelivery[] | undefined;
-
-  formDestinationAddress: IAddress | undefined;
+  selectedAddressDeliveries: IDelivery[] = [];
   
   selectedName: IName | undefined;
-  selectedNameDeliveries: IDelivery[] | undefined;
+  selectedNameDeliveries: IDelivery[] = [];
   
   selectedPlace: IPlace | undefined;
-  selectedPlaceAddresses: IAddress[] | undefined;
+  selectedPlaceAddresses: IAddress[] = [];
 
-  filteredServices: Observable<IService[]> | undefined;
-  
-  sheetTrips: ITrip[] = [];
   shifts: IShift[] = [];
   shiftOptions = signal<IShiftSummaryOption[]>([]);
   selectedShift: IShift | undefined;
   selectedShiftOption: IShiftSummaryOption | undefined;
-  private injector = inject(Injector);
 
   title: string = "Add Trip";
 
@@ -180,13 +170,11 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
     this.tripForm.controls.service.updateValueAndValidity();
 
-    // Wait until first render completes before hydrating async options
-    // to avoid NG0100 in dev mode under zoneless change detection.
-    runInInjectionContext(this.injector, () => {
-      afterNextRender(() => {
-        void this.load().finally(() => this.cdr.markForCheck());
-      });
-    });
+    // Defer initial hydration one macrotask so template bindings aren't
+    // mutated during the same check cycle in dev mode.
+    setTimeout(() => {
+      void this.load().finally(() => this.cdr.markForCheck());
+    }, 0);
   }
 
   public async load() {
@@ -475,29 +463,61 @@ export class TripFormComponent implements OnInit {
   }
 
   async showAddressNames() {
-    let address = this.tripForm.value.endAddress;
-    if (!address) { this.selectedAddressDeliveries = []; return; }
-    this.selectedAddress = await this._addressService.find('address', address);
-    this.selectedAddressDeliveries = await this._deliveryService.filter("address", address);
-    sort(this.selectedAddressDeliveries, 'name');
+    const address = this.tripForm.value.endAddress;
+    if (!address) {
+      await this.deferListBindingUpdate(() => {
+        this.selectedAddress = undefined;
+        this.selectedAddressDeliveries = [];
+      });
+      return;
+    }
+
+    const nextSelectedAddress = await this._addressService.find('address', address);
+    const nextAddressDeliveries = await this._deliveryService.filter("address", address);
+    sort(nextAddressDeliveries, 'name');
+
+    await this.deferListBindingUpdate(() => {
+      this.selectedAddress = nextSelectedAddress;
+      this.selectedAddressDeliveries = nextAddressDeliveries;
+    });
   }
 
   async showNameAddresses() {
-    let name = this.tripForm.value.name;
-    if (!name) { this.selectedNameDeliveries = []; return; }
-    this.selectedName = await this._nameService.find('name', name);
-    this.selectedNameDeliveries = await this._deliveryService.filter("name", name);
-    sort(this.selectedNameDeliveries, 'address');
+    const name = this.tripForm.value.name;
+    if (!name) {
+      await this.deferListBindingUpdate(() => {
+        this.selectedName = undefined;
+        this.selectedNameDeliveries = [];
+      });
+      return;
+    }
+
+    const nextSelectedName = await this._nameService.find('name', name);
+    const nextNameDeliveries = await this._deliveryService.filter("name", name);
+    sort(nextNameDeliveries, 'address');
+
+    await this.deferListBindingUpdate(() => {
+      this.selectedName = nextSelectedName;
+      this.selectedNameDeliveries = nextNameDeliveries;
+    });
   }
 
   async selectPlace() {
     let place = this.tripForm.value.place;
     if (!place) {
-      this.selectedPlace = undefined;
+      await this.deferListBindingUpdate(() => {
+        this.selectedPlace = undefined;
+        this.selectedPlaceAddresses = [];
+      });
       return;
     }
-    this.selectedPlace = await this._placeService.find('place', place);
-    if (!this.selectedPlace) {
+
+    const nextSelectedPlace = await this._placeService.find('place', place);
+    await this.deferListBindingUpdate(() => {
+      this.selectedPlace = nextSelectedPlace;
+    });
+
+    if (!nextSelectedPlace) {
       if (this.tripForm.controls.type.value) {
         return;
       }
@@ -515,11 +535,15 @@ export class TripFormComponent implements OnInit {
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-    this.selectedPlaceAddresses = this.selectedPlace?.addresses?.filter(address =>
+    const nextSelectedPlaceAddresses = nextSelectedPlace?.addresses?.filter(address =>
       new Date(address.lastTrip) >= oneYearAgo
-    );
+    ) ?? [];
 
-    place = this.selectedPlace.place;
+    await this.deferListBindingUpdate(() => {
+      this.selectedPlaceAddresses = nextSelectedPlaceAddresses;
+    });
+
+    place = nextSelectedPlace.place;
 
     const recentTrips = (await this._tripService.list()).reverse().filter((x: ITrip) => x.place === place && !x.exclude);
     const recentTrip = recentTrips[0];
@@ -540,6 +564,16 @@ export class TripFormComponent implements OnInit {
     if (!this.showPickupAddress) {
       this.togglePickupAddress();
     }
+  }
+
+  private async deferListBindingUpdate(update: () => void): Promise<void> {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        update();
+        this.cdr.markForCheck();
+        resolve();
+      }, 0);
+    });
   }
 
   private toggleSection(section: 'showAdvancedPay' | 'showOdometer' | 'showOrder' | 'showPickupAddress', showMsg: string, hideMsg: string) {

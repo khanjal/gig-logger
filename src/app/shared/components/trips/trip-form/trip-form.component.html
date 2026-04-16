@@ -100,7 +100,7 @@
 
     <!-- Customer Information -->
     <div>
-      <div class="flex items-center gap-1" [ngClass]="(selectedPlaceAddresses?.length || 0) > 0 ? 'mb-1' : 'mb-3'">
+      <div class="flex items-center gap-1" [ngClass]="selectedPlaceAddresses.length > 0 ? 'mb-1' : 'mb-3'">
         <app-search-input 
           class="w-full mr-2"
           fieldName="Name" 
@@ -120,7 +120,7 @@
           </app-base-accordion-item>
         </app-base-accordion>
       </div>
-      <div class="flex flex-col gap-1" [ngClass]="(selectedNameDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
+      <div class="flex flex-col gap-1" [ngClass]="selectedNameDeliveries.length > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
         <app-search-input 
           class="w-full"
           fieldName="Pickup Address" 
@@ -132,7 +132,7 @@
     </div>
 
     <!-- Address List/Notes -->
-    <div *ngIf="selectedNameDeliveries?.length" class="my-5">
+    <div *ngIf="selectedNameDeliveries.length" class="my-5">
       <app-base-accordion>
         <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
@@ -148,7 +148,7 @@
 
     <!-- Destination Address -->
     <div>
-      <div class="flex flex-col gap-1" [ngClass]="(selectedAddressDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'">
+      <div class="flex flex-col gap-1" [ngClass]="selectedAddressDeliveries.length > 0 ? 'mb-1' : 'mb-3'">
         <app-search-input 
           class="w-full"
           fieldName="Destination Address" 
@@ -161,7 +161,7 @@
     </div>
 
     <!-- Name List/Notes -->
-    <div *ngIf="selectedAddressDeliveries?.length" class="my-5">
+    <div *ngIf="selectedAddressDeliveries.length" class="my-5">
       <app-base-accordion>
         <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
