@@ -21,6 +21,7 @@ import { PollingService } from '@services/polling.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { LoggerService } from '@services/logger.service';
@@ -40,6 +41,7 @@ import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { AuthGoogleService } from '@services/auth-google.service';
+import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helper';
 
 @Component({
     selector: 'app-trip',
@@ -82,6 +84,8 @@ export class TripComponent implements OnInit, OnDestroy {
       private _snackBar: MatSnackBar,
       private _sheetService: SpreadsheetService,
       private _tripService: TripService,
+      private _shiftService: ShiftService,
+      private _expensesService: ExpensesService,
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
@@ -123,6 +127,31 @@ export class TripComponent implements OnInit, OnDestroy {
         this.pollingEnabled.set(enabled);
       });
 
+    this._tripService.trips$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(trips => {
+        this.syncTripLists(trips);
+        if (!this.isEditMode()) {
+          this.scheduleTripsTableReload();
+          void this.tripForm?.load();
+        }
+      });
+
+    this._shiftService.shifts$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (!this.isEditMode()) {
+          this.scheduleAverageReload();
+          void this.tripForm?.load();
+        }
+      });
+
+    bindUnsavedStateFromStreams({
+      stop$: this.destroy$,
+      streams: [this._tripService.trips$, this._shiftService.shifts$, this._expensesService.expenses$],
+      refreshUnsavedState: () => this.refreshUnsavedData()
+    });
+
     // Only load if not in edit mode
     if (!this.isEditMode()) {
       await this.load();
@@ -137,13 +166,6 @@ export class TripComponent implements OnInit, OnDestroy {
     if (this.isEditMode() && this.editingTripId()) {
       await this.loadTripForEditing();
     }
-    
-    // Subscribe to parent reload with automatic cleanup
-    this._pollingService.parentReload
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(async () => {
-        await this.reload(undefined, true); // Pass true to indicate this is a parent reload
-      });
   }
 
   public async load(showSpinner: boolean = true) {
@@ -153,11 +175,9 @@ export class TripComponent implements OnInit, OnDestroy {
       this.isLoading.set(true);
     }
     try {
-      this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
-      this.todaysTrips.set((await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse());
-      this.yesterdaysTrips.set(await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
+      await this.refreshUnsavedData();
       this.scheduleAverageReload();
-      await this.tripsTable?.load();
+      this.scheduleTripsTableReload();
       await this.tripForm?.load();
     } catch (error) {
       this.logger.error('Failed to load trips page data', error);
@@ -176,6 +196,31 @@ export class TripComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       void this.average?.load();
     }, 0);
+  }
+
+  private scheduleTripsTableReload(): void {
+    setTimeout(() => {
+      void this.tripsTable?.load();
+    }, 0);
+  }
+
+  private syncTripLists(trips: ITrip[]): void {
+    const today = DateHelper.toISO(DateHelper.getDateFromDays());
+    const yesterday = DateHelper.toISO(DateHelper.getDateFromDays(1));
+
+    const todaysTrips = trips
+      .filter(trip => trip.date === today)
+      .sort((left, right) => (right.rowId ?? 0) - (left.rowId ?? 0));
+    const yesterdaysTrips = trips
+      .filter(trip => trip.date === yesterday)
+      .sort((left, right) => (left.rowId ?? 0) - (right.rowId ?? 0));
+
+    this.todaysTrips.set(todaysTrips);
+    this.yesterdaysTrips.set(yesterdaysTrips);
+  }
+
+  private async refreshUnsavedData(): Promise<void> {
+    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
   }
 
 
@@ -246,7 +291,6 @@ export class TripComponent implements OnInit, OnDestroy {
       try {
         if (result) {
           openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
-          await this.reload("todaysTrips");
           this._viewportScroller.scrollToAnchor("todaysTrips");
         }
       } finally {

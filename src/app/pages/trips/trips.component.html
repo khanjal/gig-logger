@@ -14,7 +14,6 @@
             <app-current-average class="absolute top-0 right-0 z-10 m-4 sm:pr-0 md:pr-10"></app-current-average>
         }
         <trip-form 
-            (parentReload)="load()" 
             (editModeExit)="exitEditMode($event)" 
             [isInEditMode]="isEditMode()" 
             id="tripForm">
@@ -58,7 +57,7 @@
     @if (!isEditMode()) {
         @for (trip of todaysTrips(); track $index) {
             <div [id]="trip.rowId">
-                <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)">
+                <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)">
                 </trips-quick-view>
                 <!-- Info icon for first trip (rowId === 2) -->
                 <ng-container *ngIf="trip.rowId === 2">
@@ -84,7 +83,7 @@
                 <div>
                     @for (trip of yesterdaysTrips(); track $index) {
                         <div [id]="trip.rowId">
-                            <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (parentReload)="load()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
+                            <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>
                     }
                 </div>

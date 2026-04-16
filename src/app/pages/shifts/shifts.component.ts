@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
@@ -12,6 +12,8 @@ import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { NgClass, NgIf } from '@angular/common';
@@ -21,9 +23,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { firstValueFrom, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { PollingService } from '@services/polling.service';
+import { firstValueFrom } from 'rxjs';
+import { DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helper';
 
 @Component({
     selector: 'app-shifts',
@@ -35,6 +38,8 @@ import { PollingService } from '@services/polling.service';
 export class ShiftsComponent implements OnInit {
   private static readonly SCROLL_THRESHOLD_PX = 200;
   protected readonly uiMessages = UI_MESSAGES;
+  private readonly destroyRef = inject(DestroyRef);
+  private allShifts: IShift[] = [];
   shifts = signal<IShift[]>([]);
   actionEnum = ActionEnum;
   saving = signal(false);
@@ -49,13 +54,13 @@ export class ShiftsComponent implements OnInit {
   demoSheetAttached = signal(false);
 
   editId = signal<string | null>(null); // ID of the shift being edited, if any
-  private readonly destroy$ = new Subject<void>();
 
   constructor(
     public dialog: MatDialog, 
     private _shiftService: ShiftService,
+    private _tripService: TripService,
+    private _expensesService: ExpensesService,
     private _sheetService: SpreadsheetService,
-    private _pollingService: PollingService,
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
@@ -64,22 +69,24 @@ export class ShiftsComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       this.editId.set(params.get('id'));
     });
 
-    this._pollingService.parentReload
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.handleParentReload();
+    this._shiftService.shifts$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(shifts => {
+        void this.syncShiftState(shifts);
       });
 
-    await this.loadShifts();
-  }
+    bindUnsavedStateFromStreams({
+      destroyRef: this.destroyRef,
+      streams: [this._shiftService.shifts$, this._tripService.trips$, this._expensesService.expenses$],
+      refreshUnsavedState: () => this.refreshUnsavedData()
+    });
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    await this.refreshDefaultSheetState();
+    await this.loadShifts();
   }
 
   async loadShifts(): Promise<void> {
@@ -87,26 +94,38 @@ export class ShiftsComponent implements OnInit {
 
     this.isLoading.set(true);
     try {
-      // Use 'rowId' as the sort field and 'desc' for reverse order
-      const newShifts = await this._shiftService.paginate(this.currentPage(), this.pageSize, 'rowId', 'desc');
-      if (newShifts.length < this.pageSize) {
-        this.noMoreData.set(true);
-      }
-      this.shifts.update(current => [...current, ...newShifts]); // Append new shifts to the list
       this.currentPage.update(page => page + 1);
-      this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
-      this.defaultSheet.set((await this._sheetService.querySpreadsheets('default', 'true'))[0]);
-      this.demoSheetAttached.set(isDemoSheetName(this.defaultSheet()?.name));
-      // If there are no shifts at all, open the add form by default so users can create one.
-      if (this.shifts().length === 0 && !this.showAddForm() && !this.editId()) {
-        // Defer branch toggle to the next macrotask to avoid NG0100.
-        setTimeout(() => {
-          this.showAddForm.set(true);
-        });
-      }
+      this.updateVisibleShifts();
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  private async syncShiftState(shifts: IShift[]): Promise<void> {
+    this.allShifts = [...shifts].sort((left, right) => (right.rowId ?? 0) - (left.rowId ?? 0));
+    this.updateVisibleShifts();
+
+    if (this.allShifts.length === 0 && !this.showAddForm() && !this.editId()) {
+      setTimeout(() => {
+        this.showAddForm.set(true);
+      });
+    }
+  }
+
+  private updateVisibleShifts(): void {
+    const visiblePages = Math.max(this.currentPage(), 1);
+    const visibleCount = visiblePages * this.pageSize;
+    this.shifts.set(this.allShifts.slice(0, visibleCount));
+    this.noMoreData.set(this.allShifts.length > 0 && visibleCount >= this.allShifts.length);
+  }
+
+  private async refreshUnsavedData(): Promise<void> {
+    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
+  }
+
+  private async refreshDefaultSheetState(): Promise<void> {
+    this.defaultSheet.set((await this._sheetService.querySpreadsheets('default', 'true'))[0]);
+    this.demoSheetAttached.set(isDemoSheetName(this.defaultSheet()?.name));
   }
 
   onScroll(event: Event): void {
@@ -173,9 +192,6 @@ export class ShiftsComponent implements OnInit {
     if (result) {
         // Show success message
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
-        
-        // Refresh the page to show updated state
-        this.handleParentReload();
     }
   }
 

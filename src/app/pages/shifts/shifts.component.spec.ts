@@ -2,30 +2,38 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { ShiftsComponent } from './shifts.component';
 import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { PollingService } from '@services/polling.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { EventEmitter } from '@angular/core';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 describe('ShiftsComponent', () => {
   let component: ShiftsComponent;
   let fixture: ComponentFixture<ShiftsComponent>;
   let shiftSpy: jasmine.SpyObj<ShiftService>;
+  let tripSpy: jasmine.SpyObj<TripService>;
+  let expenseSpy: jasmine.SpyObj<ExpensesService>;
   let unsavedSpy: jasmine.SpyObj<UnsavedDataService>;
   let sheetSpy: jasmine.SpyObj<SpreadsheetService>;
-  let pollingReload$: EventEmitter<void>;
-  let pollingSpy: Pick<PollingService, 'parentReload'>;
+  let shifts$: BehaviorSubject<any[]>;
+  let trips$: BehaviorSubject<any[]>;
+  let expenses$: BehaviorSubject<any[]>;
 
   beforeEach(async () => {
-    shiftSpy = jasmine.createSpyObj('ShiftService', ['paginate']);
+    shifts$ = new BehaviorSubject<any[]>([]);
+    trips$ = new BehaviorSubject<any[]>([]);
+    expenses$ = new BehaviorSubject<any[]>([]);
+    shiftSpy = jasmine.createSpyObj('ShiftService', ['query', 'getMaxRowId', 'getLastShift'], { shifts$: shifts$.asObservable() });
+    tripSpy = jasmine.createSpyObj('TripService', [], { trips$: trips$.asObservable() });
+    expenseSpy = jasmine.createSpyObj('ExpensesService', [], { expenses$: expenses$.asObservable() });
     unsavedSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
     sheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
-    pollingReload$ = new EventEmitter<void>();
-    pollingSpy = { parentReload: pollingReload$ };
 
-    shiftSpy.paginate.and.resolveTo([] as any);
+    shiftSpy.query.and.resolveTo([] as any);
+    shiftSpy.getMaxRowId.and.resolveTo(1 as any);
+    shiftSpy.getLastShift.and.resolveTo(undefined as any);
     unsavedSpy.hasUnsavedData.and.resolveTo(false);
     sheetSpy.querySpreadsheets.and.resolveTo([] as any);
 
@@ -34,9 +42,10 @@ describe('ShiftsComponent', () => {
       providers: [
         ...commonTestingProviders,
         { provide: ShiftService, useValue: shiftSpy },
+        { provide: TripService, useValue: tripSpy },
+        { provide: ExpensesService, useValue: expenseSpy },
         { provide: UnsavedDataService, useValue: unsavedSpy },
         { provide: SpreadsheetService, useValue: sheetSpy },
-        { provide: PollingService, useValue: pollingSpy },
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})), snapshot: { paramMap: convertToParamMap({}) } } }
       ]
     })
@@ -53,49 +62,27 @@ describe('ShiftsComponent', () => {
   });
 
   it('sets demoSheetAttached based on default sheet name format', async () => {
-    component.shifts.set([]);
-    component.currentPage.set(0);
-    component.isLoading.set(false);
-    component.noMoreData.set(false);
     sheetSpy.querySpreadsheets.and.resolveTo([
       { id: 'any-id', name: 'RaptorGig Demo - Apr 5, 2026, 5:20 PM', default: 'true', size: 0 }
     ] as any);
 
-    await component.loadShifts();
+    await component['refreshDefaultSheetState']();
     expect(component.demoSheetAttached()).toBeTrue();
 
     sheetSpy.querySpreadsheets.and.resolveTo([
       { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
     ] as any);
 
-    component.shifts.set([]);
-    component.currentPage.set(0);
-    component.noMoreData.set(false);
-    await component.loadShifts();
+    await component['refreshDefaultSheetState']();
     expect(component.demoSheetAttached()).toBeFalse();
   });
 
-  it('resets isLoading when loadShifts throws', async () => {
-    component.shifts.set([]);
-    component.currentPage.set(0);
-    component.isLoading.set(false);
-    component.noMoreData.set(false);
-    shiftSpy.paginate.and.resolveTo([{ id: '1' }] as any);
-    unsavedSpy.hasUnsavedData.and.rejectWith(new Error('unsaved lookup failed'));
-
-    await expectAsync(component.loadShifts()).toBeRejected();
-
-    expect(component.isLoading()).toBeFalse();
-  });
-
-  it('reloads shifts when autosave emits a parent reload event', async () => {
-    const reloadSpy = spyOn(component, 'handleParentReload');
-
-    pollingReload$.emit();
+  it('reactively updates visible shifts from the shift stream', async () => {
+    shifts$.next([{ id: '1', rowId: 3 }, { id: '2', rowId: 7 }] as any);
     await Promise.resolve();
     await fixture.whenStable();
 
-    expect(reloadSpy).toHaveBeenCalled();
+    expect(component.shifts()).toEqual([{ id: '2', rowId: 7 }, { id: '1', rowId: 3 }] as any);
   });
 
   it('resets pagination state and triggers a reload on handleParentReload', () => {

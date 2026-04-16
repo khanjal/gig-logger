@@ -159,9 +159,10 @@ describe('ExpensesComponent', () => {
       expect(component.customCategories()).not.toContain('Fuel'); // default category
     });
 
-    it('checks for unsaved data', async () => {
+    it('refreshes unsaved data through stream binding on init', async () => {
       expensesServiceSpy.list.and.returnValue(Promise.resolve([]));
 
+      await component.ngOnInit();
       await component.loadExpenses();
 
       expect(unsavedDataServiceSpy.hasUnsavedData).toHaveBeenCalled();

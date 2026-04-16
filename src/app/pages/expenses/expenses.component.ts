@@ -32,6 +32,7 @@ import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
 import { firstValueFrom } from 'rxjs';
 import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from '@helpers/expense-form.helper';
+import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helper';
 import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface';
 
 @Component({
@@ -105,6 +106,12 @@ export class ExpensesComponent implements OnInit {
       .subscribe(expenses => {
         void this.syncExpenseState(expenses);
       });
+
+    bindUnsavedStateFromStreams({
+      destroyRef: this.destroyRef,
+      streams: [this.expensesService.expenses$],
+      refreshUnsavedState: () => this.refreshUnsavedData()
+    });
   }
 
   private getTodayDate(): Date {
@@ -158,11 +165,14 @@ export class ExpensesComponent implements OnInit {
     this.monthTotals.set(monthTotals);
     this.yearTotals.set(yearTotals);
 
-    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
     // If there are no expenses, open the add form by default so users can create one.
     if (normalizedExpenses.length === 0) {
       this.showAddForm.set(true);
     }
+  }
+
+  private async refreshUnsavedData(): Promise<void> {
+    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
   }
 
   async addExpense() {
