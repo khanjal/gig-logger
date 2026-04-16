@@ -123,14 +123,14 @@
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold text-primary">{{ year.key }}</h2>
         <div class="text-right text-lg font-semibold text-primary">
-          Year Total: {{ getYearTotal(year.value) | currency }}
+          Year Total: {{ yearTotals()[year.key] | currency }}
         </div>
       </div>
       <div *ngFor="let month of (year.value | groupByMonth | keyvalue:sortByMonth)">
         <div class="flex items-end justify-between mb-0 py-1">
           <h3 class="text-lg font-bold text-primary pb-0">{{ month.key | date:dateFormats.MONTH_YEAR }}</h3>
           <div class="text-right text-base font-semibold text-primary mb-2">
-            Total: {{ getMonthTotal(month.value) | currency }}
+            Total: {{ monthTotals()[month.key] | currency }}
           </div>
         </div>
         <div class="overflow-x-auto">

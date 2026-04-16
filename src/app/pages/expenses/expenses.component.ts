@@ -1,9 +1,9 @@
 import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
 import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IExpense } from '@interfaces/expense.interface';
 import { CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -62,16 +62,9 @@ import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface
 export class ExpensesComponent implements OnInit {
   dateFormats = DATE_FORMATS;
   groupedExpensesByYear = signal<{ [year: string]: IExpense[] }>({});
-
-  getYearTotal(expenses: IExpense[]): number {
-    return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-  }
+  yearTotals = signal<Record<string, number>>({});
   showAddForm = signal(false);
-
-  getMonthTotal(expenses: IExpense[]): number {
-    return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-  }
-  // ...existing code...
+  monthTotals = signal<Record<string, number>>({});
   expenseForm!: FormGroup;
   expenses = signal<IExpense[]>([]);
   groupedExpenses = signal<{ [month: string]: IExpense[] }>({});
@@ -84,6 +77,7 @@ export class ExpensesComponent implements OnInit {
   saving = signal(false);
   actionEnum = ActionEnum;
   maxRowId = signal(1);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
@@ -106,7 +100,11 @@ export class ExpensesComponent implements OnInit {
       note: ['']
     });
 
-    await this.loadExpenses();
+    this.expensesService.expenses$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(expenses => {
+        void this.syncExpenseState(expenses);
+      });
   }
 
   private getTodayDate(): Date {
@@ -114,29 +112,55 @@ export class ExpensesComponent implements OnInit {
   }
 
   async loadExpenses() {
-    const expenses = (await spreadsheetDB.expenses.toArray()).map(expense => ({
+    const expenses = await this.expensesService.list();
+    await this.syncExpenseState(expenses);
+  }
+
+  private async syncExpenseState(expenses: IExpense[]): Promise<void> {
+    const normalizedExpenses = expenses.map(expense => ({
       ...expense,
       date: normalizeExpenseDate(expense.date as string | Date)
     }));
-    this.expenses.set(expenses);
-    this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
-    this.customCategories.set(Array.from(new Set(expenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c)))));
-    this.groupedExpenses.set(expenses.reduce((groups, expense) => {
-      const month = expense.date.slice(0, 7); // yyyy-mm
-      if (!groups[month]) groups[month] = [];
+
+    const groupedExpenses = normalizedExpenses.reduce((groups, expense) => {
+      const month = expense.date.slice(0, 7);
+      if (!groups[month]) {
+        groups[month] = [];
+      }
       groups[month].push(expense);
       return groups;
-    }, {} as { [month: string]: IExpense[] }));
-    this.groupedExpensesByYear.set(expenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+    }, {} as { [month: string]: IExpense[] });
+
+    const groupedExpensesByYear = normalizedExpenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
       const year = expense.date.slice(0, 4);
-      if (!groups[year]) groups[year] = [];
+      if (!groups[year]) {
+        groups[year] = [];
+      }
       groups[year].push(expense);
       return groups;
-    }, {} as { [year: string]: IExpense[] }));
+    }, {} as { [year: string]: IExpense[] });
+
+    const monthTotals = Object.entries(groupedExpenses).reduce((totals, [month, monthExpenses]) => {
+      totals[month] = monthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+      return totals;
+    }, {} as Record<string, number>);
+
+    const yearTotals = Object.entries(groupedExpensesByYear).reduce((totals, [year, yearExpenses]) => {
+      totals[year] = yearExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+      return totals;
+    }, {} as Record<string, number>);
+
+    this.expenses.set(normalizedExpenses);
+    this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
+    this.customCategories.set(Array.from(new Set(normalizedExpenses.map(e => e.category).filter(c => !this.defaultCategories.includes(c)))));
+    this.groupedExpenses.set(groupedExpenses);
+    this.groupedExpensesByYear.set(groupedExpensesByYear);
+    this.monthTotals.set(monthTotals);
+    this.yearTotals.set(yearTotals);
 
     this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
     // If there are no expenses, open the add form by default so users can create one.
-    if (expenses.length === 0) {
+    if (normalizedExpenses.length === 0) {
       this.showAddForm.set(true);
     }
   }
@@ -170,7 +194,6 @@ export class ExpensesComponent implements OnInit {
     }
     this.expenseForm.reset({ date: this.getTodayDate() });
     this.showAddForm.set(false);
-    await this.loadExpenses();
   }
 
   editExpense(expense: IExpense) {
@@ -235,7 +258,6 @@ export class ExpensesComponent implements OnInit {
       updateAction(expense, ActionEnum.Update);
       expense.saved = false;
       await this.expensesService.update([expense]);
-      await this.loadExpenses();
       this.cancelEdit();
     }
   }
@@ -247,7 +269,6 @@ export class ExpensesComponent implements OnInit {
     updateAction(expense, ActionEnum.Update);
     expense.saved = false;
     await this.expensesService.update([expense]);
-    await this.loadExpenses();
   }
 
   /**
@@ -290,7 +311,6 @@ export class ExpensesComponent implements OnInit {
       expense.saved = false;
       await this.expensesService.update([expense]);
     }
-    await this.loadExpenses();
   }
 
   async confirmSaveDialog() {
@@ -329,9 +349,6 @@ export class ExpensesComponent implements OnInit {
     if (result) {
       // Show success message
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.CHANGES_SAVED_TO_SPREADSHEET, { action: 'Close', duration: 3000 });
-        
-      // Refresh the page to show updated state
-      await this.loadExpenses();
     }
   }
 
