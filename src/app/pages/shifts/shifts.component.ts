@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
@@ -21,7 +21,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { PollingService } from '@services/polling.service';
 
 @Component({
     selector: 'app-shifts',
@@ -47,11 +49,13 @@ export class ShiftsComponent implements OnInit {
   demoSheetAttached = signal(false);
 
   editId = signal<string | null>(null); // ID of the shift being edited, if any
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     public dialog: MatDialog, 
     private _shiftService: ShiftService,
     private _sheetService: SpreadsheetService,
+    private _pollingService: PollingService,
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
     private router: Router, 
@@ -60,10 +64,22 @@ export class ShiftsComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.editId.set(params.get('id'));
     });
+
+    this._pollingService.parentReload
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.handleParentReload();
+      });
+
     await this.loadShifts();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   async loadShifts(): Promise<void> {

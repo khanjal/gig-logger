@@ -4,7 +4,9 @@ import { ShiftsComponent } from './shifts.component';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { PollingService } from '@services/polling.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { EventEmitter } from '@angular/core';
 import { of } from 'rxjs';
 
 describe('ShiftsComponent', () => {
@@ -13,11 +15,15 @@ describe('ShiftsComponent', () => {
   let shiftSpy: jasmine.SpyObj<ShiftService>;
   let unsavedSpy: jasmine.SpyObj<UnsavedDataService>;
   let sheetSpy: jasmine.SpyObj<SpreadsheetService>;
+  let pollingReload$: EventEmitter<void>;
+  let pollingSpy: Pick<PollingService, 'parentReload'>;
 
   beforeEach(async () => {
     shiftSpy = jasmine.createSpyObj('ShiftService', ['paginate']);
     unsavedSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
     sheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
+    pollingReload$ = new EventEmitter<void>();
+    pollingSpy = { parentReload: pollingReload$ };
 
     shiftSpy.paginate.and.resolveTo([] as any);
     unsavedSpy.hasUnsavedData.and.resolveTo(false);
@@ -30,6 +36,7 @@ describe('ShiftsComponent', () => {
         { provide: ShiftService, useValue: shiftSpy },
         { provide: UnsavedDataService, useValue: unsavedSpy },
         { provide: SpreadsheetService, useValue: sheetSpy },
+        { provide: PollingService, useValue: pollingSpy },
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})), snapshot: { paramMap: convertToParamMap({}) } } }
       ]
     })
@@ -79,5 +86,31 @@ describe('ShiftsComponent', () => {
     await expectAsync(component.loadShifts()).toBeRejected();
 
     expect(component.isLoading()).toBeFalse();
+  });
+
+  it('reloads shifts when autosave emits a parent reload event', async () => {
+    const reloadSpy = spyOn(component, 'handleParentReload');
+
+    pollingReload$.emit();
+    await Promise.resolve();
+    await fixture.whenStable();
+
+    expect(reloadSpy).toHaveBeenCalled();
+  });
+
+  it('resets pagination state and triggers a reload on handleParentReload', () => {
+    const loadSpy = spyOn(component, 'loadShifts').and.resolveTo();
+    component.shifts.set([{ id: 'existing-shift' }] as any);
+    component.currentPage.set(3);
+    component.noMoreData.set(true);
+    component.showAddForm.set(true);
+
+    component.handleParentReload();
+
+    expect(component.shifts()).toEqual([] as any);
+    expect(component.currentPage()).toBe(0);
+    expect(component.noMoreData()).toBeFalse();
+    expect(component.showAddForm()).toBeFalse();
+    expect(loadSpy).toHaveBeenCalled();
   });
 });
