@@ -156,7 +156,7 @@ export class TripComponent implements OnInit, OnDestroy {
       this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
       this.todaysTrips.set((await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays()))).reverse());
       this.yesterdaysTrips.set(await this._tripService.getByDate(DateHelper.toISO(DateHelper.getDateFromDays(1))));
-      await this.average?.load();
+      this.scheduleAverageReload();
       await this.tripsTable?.load();
       await this.tripForm?.load();
     } catch (error) {
@@ -168,6 +168,14 @@ export class TripComponent implements OnInit, OnDestroy {
         }, 400);
       }
     }
+  }
+
+  private scheduleAverageReload(): void {
+    // Defer child mutations to the next macrotask to avoid NG0100
+    // when load() is triggered during an in-progress render turn.
+    setTimeout(() => {
+      void this.average?.load();
+    }, 0);
   }
 
 

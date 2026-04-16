@@ -1,4 +1,4 @@
-import { Component, Input, Injector, OnInit, afterNextRender, inject, runInInjectionContext } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openSnackbar } from '@utils/snackbar.util';
 import { DateHelper } from '@helpers/date.helper';
@@ -17,9 +17,8 @@ import { MatIcon } from '@angular/material/icon';
     imports: [NgIf, MatIcon, CurrencyPipe]
 })
 
-export class CurrentAverageComponent implements OnInit {
+export class CurrentAverageComponent {
   @Input() date: string = DateHelper.toISO();
-  private injector = inject(Injector);
 
   currentDayAmount: number = 0;
   currentMonthAmount: number = 0;
@@ -41,46 +40,48 @@ export class CurrentAverageComponent implements OnInit {
     private _weeklyService: WeeklyService
     ) {}
 
-  ngOnInit(): void {
-    // Defer async hydration until after first paint to avoid NG0100 in dev mode.
-    runInInjectionContext(this.injector, () => {
-      afterNextRender(() => {
-        void this.load();
-      });
-    });
-  }
-
   async load() {
-    // Load daily average
-    this.currentDayAmount = 0;
-
     // Current amount
     let dayShifts = await this._shiftService.query("date", this.date);
-    this.currentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+    const nextCurrentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
 
     let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));
     const weekdayRows = this._weekdayService.query
       ? await this._weekdayService.query("day", dayOfWeek)
       : [];
     let weekday = weekdayRows?.[0];
-    this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
+    const nextDailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
 
     // Load weekly average
     let mondayISO = DateHelper.toISO(DateHelper.getMonday(new Date()));
     let currentWeekShifts = await this._shiftService.getShiftsByStartDate(mondayISO);
-    this.currentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+    const nextCurrentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
 
     let date = DateHelper.toISO(DateHelper.getDateFromDays(7));
     let weekly = await this._weeklyService.getLastWeekFromDay(date);
-    this.weeklyAverage = weekly?.average ?? 0;
+    const nextWeeklyAverage = weekly?.average ?? 0;
 
     // Load monthly average
     let firstDayOfMonth = DateHelper.getFirstDayOfMonth(new Date());
     let currentMonthShifts = await this._shiftService.getShiftsByStartDate(firstDayOfMonth);
-    this.currentMonthAmount = currentMonthShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
+    const nextCurrentMonthAmount = currentMonthShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
     
     let monthly = await this._monthlyService.find("month", DateHelper.getMonthYearString(new Date()));
-    this.monthlyAverage = monthly?.average ?? 0;
+    const nextMonthlyAverage = monthly?.average ?? 0;
+
+    // Apply after the current change-detection turn to avoid NG0100 when
+    // parent components trigger load() during their own render lifecycle.
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        this.currentDayAmount = nextCurrentDayAmount;
+        this.dailyAverage = nextDailyAverage;
+        this.currentWeekAmount = nextCurrentWeekAmount;
+        this.weeklyAverage = nextWeeklyAverage;
+        this.currentMonthAmount = nextCurrentMonthAmount;
+        this.monthlyAverage = nextMonthlyAverage;
+        resolve();
+      }, 0);
+    });
   }
 
   toggle() {

@@ -15,7 +15,6 @@ import { ShiftHelper } from '@helpers/shift.helper';
 import { DateHelper } from '@helpers/date.helper';
 import { NumberHelper } from '@helpers/number.helper';
 import { TripService } from '@services/sheets/trip.service';
-import { Router } from '@angular/router';
 import { BaseFabButtonComponent, BaseInputComponent } from '@components/base';
 import { updateAction } from '@utils/action.utils';
 
@@ -74,7 +73,6 @@ export class ShiftFormComponent implements OnInit {
   constructor(
     private shiftService: ShiftService,
     private tripService: TripService,
-    private router: Router,
     private logger: LoggerService
   ) {}
 
