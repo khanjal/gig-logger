@@ -6,6 +6,7 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TimerService } from '@services/timer.service';
 import { LoggerService } from '@services/logger.service';
+import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { Subject } from 'rxjs';
 import { DataSyncModalComponent } from './data-sync-modal.component';
 
@@ -214,6 +215,43 @@ describe('DataSyncModalComponent', () => {
     await component.ngOnInit();
 
     expect(workflowSpy.calculateShiftTotals).toHaveBeenCalled();
+  });
+
+  it('save flow should capture saveStartedAt after shift recalculation', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'save' });
+
+    const defaultSheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 } as any;
+    let recalculationFinishedAt = 0;
+    let apiCallTime = 0;
+    spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
+      success: true,
+      filteredMessages: []
+    } as any);
+
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    unsavedDataSpy.collectUnsavedItems.and.resolveTo({
+      unsavedTrips: [],
+      unsavedShifts: [{ id: 7 } as any],
+      unsavedExpenses: []
+    });
+    workflowSpy.calculateShiftTotals.and.callFake(async () => {
+      await Promise.resolve();
+      recalculationFinishedAt = Date.now();
+    });
+    workflowSpy.saveSheetData.and.callFake(async () => {
+      apiCallTime = Date.now();
+      return [{ level: 'INFO', message: 'Changes saved' }];
+    });
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
+    expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
+    expect(saveStartedAtArg).toBeLessThanOrEqual(apiCallTime);
   });
 
   it('should support new config object format in constructor with all properties', () => {

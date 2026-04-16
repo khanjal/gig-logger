@@ -238,9 +238,6 @@ export class PollingService implements OnDestroy {
       return;
     }
 
-    // Capture the save boundary before any async work so records edited
-    // during the API call are not incorrectly marked as saved.
-    const saveStartedAt = Date.now();
     this.processing = true;
 
     try {
@@ -290,6 +287,10 @@ export class PollingService implements OnDestroy {
           this.safeLog('warn', 'Pre-save shift calculation failed; proceeding with save');
         }
       }
+
+      // Capture the save boundary after pre-save local mutations so records
+      // recalculated for this save can still be marked saved on success.
+      const saveStartedAt = Date.now();
 
       // Build the IDs that are included in this save cycle so the
       // post-save cleanup can promote Add→Update for any mid-flight edits.

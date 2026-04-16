@@ -17,6 +17,7 @@ import { NumberHelper } from '@helpers/number.helper';
 import { TripService } from '@services/sheets/trip.service';
 import { Router } from '@angular/router';
 import { BaseFabButtonComponent, BaseInputComponent } from '@components/base';
+import { updateAction } from '@utils/action.utils';
 
 @Component({
   selector: 'shift-form',
@@ -145,10 +146,11 @@ export class ShiftFormComponent implements OnInit {
     this.computedShiftNumber = ShiftHelper.getNextShiftNumber(service, shifts);
   }
 
-  async calculateTotals() {
+  async calculateTotals(shiftKey?: string) {
     let trips: ITrip[] = [];
-    if (this.shift?.key) {
-      trips = await this.tripService.query("key", this.shift.key);
+    const keyToQuery = shiftKey ?? this.shift?.key;
+    if (keyToQuery) {
+      trips = await this.tripService.query("key", keyToQuery);
     }
     this.computedTotals = {
       totalTrips: trips.length,
@@ -215,15 +217,20 @@ export class ShiftFormComponent implements OnInit {
       const formValue = this.shiftForm.value;
       if (this.shift) {
         this.logger.debug('Editing shift with form value:', formValue);
-        // Store old key for comparison
         const oldKey = this.shift.key;
-        // Update shift fields
+        const updatedDate = formValue.date
+          ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date)
+          : '';
+        const updatedService = formValue.service || '';
+        const currentNumber = this.shift.number ?? 1;
+        const resolvedNumber = await this.resolveShiftNumberForEdit(updatedDate, updatedService, currentNumber);
         const days = DateHelper.getDays(formValue.date ?? new Date());
-        const newKey = `${days}-${formValue.number ?? 0}-${formValue.service}`;
-        this.shift.date = formValue.date ? (formValue.date instanceof Date ? formValue.date.toISOString().slice(0, 10) : formValue.date) : '',
-        this.shift.service = formValue.service || '';
+        const newKey = `${days}-${resolvedNumber}-${updatedService}`;
+
+        this.shift.date = updatedDate;
+        this.shift.service = updatedService;
         this.shift.region = formValue.region || '';
-        this.shift.number = formValue.number ?? 0;
+        this.shift.number = resolvedNumber;
         this.shift.distance = NumberHelper.toNullableNumber(formValue.distance);
         this.shift.active = formValue.active || '';
         this.shift.finish = formValue.finish || '';
@@ -245,9 +252,10 @@ export class ShiftFormComponent implements OnInit {
         this.shift.cash = NumberHelper.toNullableNumber(formValue.cash);
         this.shift.omit = formValue.omit ?? false;
         this.shift.key = newKey;
+        this.computedShiftNumber = resolvedNumber;
 
-        // Calculate totals from trips
-        await this.calculateTotals();
+        // Use the old key so existing linked trips are included before re-keying.
+        await this.calculateTotals(oldKey || newKey);
         this.shift.totalTrips = this.computedTotals.totalTrips + Number(formValue.trips ?? 0);
         this.shift.totalDistance = this.computedTotals.totalDistance + Number(formValue.distance ?? 0);
         this.shift.totalPay = this.computedTotals.totalPay + Number(formValue.pay ?? 0);
@@ -261,16 +269,20 @@ export class ShiftFormComponent implements OnInit {
           this.shift.totalCash
         );
 
-        // If key changed, update all associated trips
+        // If identifying fields changed, update all associated trips.
         if (oldKey && oldKey !== newKey) {
-          let trips: ITrip[] = [];
-          trips = await this.tripService.query("key", oldKey);
-          
+          const trips = await this.tripService.query("key", oldKey);
+
           for (const trip of trips) {
             trip.date = this.shift.date;
+            trip.service = this.shift.service;
             trip.number = this.shift.number;
             trip.key = newKey;
-            await this.tripService.update([trip]);
+            updateAction(trip, ActionEnum.Update);
+          }
+
+          if (trips.length > 0) {
+            await this.tripService.update(trips);
           }
         }
 
@@ -281,6 +293,24 @@ export class ShiftFormComponent implements OnInit {
         this.formReset();
       }
     }
+  }
+
+  private async resolveShiftNumberForEdit(dateISO: string, service: string, fallbackNumber: number): Promise<number> {
+    if (!dateISO || !service || !this.shift) {
+      return fallbackNumber;
+    }
+
+    const sameDateShifts = await this.shiftService.getShiftsByDate(dateISO);
+    const otherShifts = sameDateShifts.filter(shift => shift.rowId !== this.shift?.rowId);
+    const hasNumberCollision = otherShifts.some(
+      shift => shift.service === service && shift.number === fallbackNumber
+    );
+
+    if (!hasNumberCollision) {
+      return fallbackNumber;
+    }
+
+    return ShiftHelper.getNextShiftNumber(service, otherShifts);
   }
 
   formReset() {

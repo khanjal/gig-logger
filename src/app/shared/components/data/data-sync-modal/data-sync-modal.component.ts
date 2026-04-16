@@ -158,7 +158,6 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     async saveData() {
-        const saveStartedAt = Date.now();
         let sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
@@ -173,6 +172,11 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
                 this.appendToTerminal('Pre-save shift calculation failed; proceeding with save', 'warning');
             }
         }
+
+        // Capture the save boundary after local shift recalculation so those
+        // mutations are included in this save cycle instead of being treated
+        // as later edits that should remain unsaved.
+        const saveStartedAt = Date.now();
 
         // Apply serialization to convert 0 → null for input fields (wire-format)
         sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);

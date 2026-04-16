@@ -369,15 +369,15 @@ describe('ShiftFormComponent', () => {
     });
 
     it('updates shift with new values', async () => {
-      const shift = makeShift({ rowId: 5, key: 'old-key' });
+      const shift = makeShift({ rowId: 5, key: 'old-key', number: 3 });
       component.shift = shift;
       component.rowId = '5';
       component.shiftForm.patchValue({
         date: new Date('2024-01-20'),
         service: 'UberEats',
-        number: 3,
         active: '4:00'
       });
+      shiftServiceSpy.getShiftsByDate.and.returnValue(Promise.resolve([shift]));
       shiftServiceSpy.update.and.returnValue(Promise.resolve());
       spyOn(component.parentReload, 'emit');
 
@@ -386,6 +386,86 @@ describe('ShiftFormComponent', () => {
       expect(component.shift.service).toBe('UberEats');
       expect(component.shift.number).toBe(3);
       expect(component.shift.action).toBe(ActionEnum.Update);
+    });
+
+    it('updates linked trips when service changes and key changes', async () => {
+      const shift = makeShift({
+        rowId: 5,
+        key: '19372-1-DoorDash',
+        date: '2024-01-15',
+        service: 'DoorDash',
+        number: 1
+      });
+      const linkedTrips = [
+        makeTrip({ id: 11, key: '19372-1-DoorDash', service: 'DoorDash', number: 1, date: '2024-01-15' }),
+        makeTrip({ id: 12, key: '19372-1-DoorDash', service: 'DoorDash', number: 1, date: '2024-01-15' })
+      ];
+
+      component.shift = shift;
+      component.rowId = '5';
+      component.shiftForm.patchValue({
+        date: new Date('2024-01-20'),
+        service: 'UberEats',
+        region: 'Downtown'
+      });
+
+      shiftServiceSpy.getShiftsByDate.and.returnValue(Promise.resolve([shift]));
+      tripServiceSpy.query.and.callFake(async (field: string, value: any) => {
+        if (field === 'key' && value === '19372-1-DoorDash') {
+          return linkedTrips;
+        }
+        return [];
+      });
+      shiftServiceSpy.update.and.returnValue(Promise.resolve());
+      tripServiceSpy.update.and.returnValue(Promise.resolve());
+      spyOn(component.editModeExit, 'emit');
+
+      await component.editShift();
+
+      expect(tripServiceSpy.update).toHaveBeenCalled();
+      const updatedTrips = tripServiceSpy.update.calls.mostRecent().args[0] as ITrip[];
+      expect(updatedTrips.length).toBe(2);
+      expect(updatedTrips.every(trip => trip.service === 'UberEats')).toBeTrue();
+      expect(updatedTrips.every(trip => trip.number === shift.number)).toBeTrue();
+      expect(updatedTrips.every(trip => trip.key === shift.key)).toBeTrue();
+      expect(updatedTrips.every(trip => trip.action === ActionEnum.Update)).toBeTrue();
+      expect(updatedTrips.every(trip => !trip.saved)).toBeTrue();
+    });
+
+    it('reassigns shift number when service/date number collision exists', async () => {
+      const currentShift = makeShift({
+        id: 1,
+        rowId: 5,
+        key: '19372-1-DoorDash',
+        date: '2024-01-15',
+        service: 'DoorDash',
+        number: 1
+      });
+      const conflictingShift = makeShift({
+        id: 2,
+        rowId: 9,
+        key: '19377-1-UberEats',
+        date: '2024-01-20',
+        service: 'UberEats',
+        number: 1
+      });
+
+      component.shift = currentShift;
+      component.rowId = '5';
+      component.shiftForm.patchValue({
+        date: new Date('2024-01-20'),
+        service: 'UberEats'
+      });
+
+      shiftServiceSpy.getShiftsByDate.and.returnValue(Promise.resolve([currentShift, conflictingShift]));
+      shiftServiceSpy.update.and.returnValue(Promise.resolve());
+      tripServiceSpy.query.and.returnValue(Promise.resolve([]));
+
+      await component.editShift();
+
+      expect(component.shift.number).toBe(2);
+      expect(component.computedShiftNumber).toBe(2);
+      expect(component.shift.key).toContain('-2-UberEats');
     });
 
     it('updates shift and emits reload', async () => {

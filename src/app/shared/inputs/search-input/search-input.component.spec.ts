@@ -65,6 +65,25 @@ describe('SearchInputComponent', () => {
     expect(component.hasSelection()).toBeTrue();
   });
 
+  it('emits valueChanged when an option is selected', async () => {
+    const emitSpy = spyOn(component.valueChanged, 'emit');
+
+    await component.onInputSelect({ name: 'Saved Place', placeId: undefined } as any);
+
+    expect(emitSpy).toHaveBeenCalledWith('Saved Place');
+  });
+
+  it('emits a cleared value when cleared', () => {
+    const emitSpy = spyOn(component.valueChanged, 'emit');
+    component.writeValue('Existing');
+
+    component.onClear();
+
+    expect(emitSpy).toHaveBeenCalledWith('');
+    expect((component as any).initialValue).toBe('');
+    expect(component.hasSelection()).toBeFalse();
+  });
+
   it('getItemSize and getViewportHeight behavior', () => {
     const itemSize = component.getItemSize();
     expect(itemSize).toBeGreaterThan(0);

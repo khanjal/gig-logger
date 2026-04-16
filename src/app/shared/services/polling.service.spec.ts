@@ -400,16 +400,26 @@ describe('PollingService', () => {
       expect(syncStatusSpy.completeSync).toHaveBeenCalled();
     });
 
-    it('should pass saveStartedAt captured before the API call to commitSavedItems', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 1, shifts: 0, expenses: 0 } as any));
-      unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] }));
+    it('should capture saveStartedAt after shift recalculation and before the API call', async () => {
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 0, shifts: 1, expenses: 0 } as any));
+      unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({
+        unsavedTrips: [],
+        unsavedShifts: [{ id: 10 } as any],
+        unsavedExpenses: []
+      }));
       authSpy.canSync.and.returnValue(Promise.resolve(true));
 
       spyOn(SheetSerializerHelper, 'serializeTrips').and.returnValue([]);
       spyOn(SheetSerializerHelper, 'serializeShifts').and.returnValue([]);
 
       const beforeSave = Date.now();
+      let recalculationFinishedAt = 0;
       let apiCallTime = 0;
+
+      gigWorkflowSpy.calculateShiftTotals.and.callFake(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        recalculationFinishedAt = Date.now();
+      });
 
       gigWorkflowSpy.saveSheetData.and.callFake(async () => {
         await new Promise(resolve => setTimeout(resolve, 10));
@@ -422,6 +432,7 @@ describe('PollingService', () => {
 
       const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
       expect(saveStartedAtArg).toBeGreaterThanOrEqual(beforeSave);
+      expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
       expect(saveStartedAtArg).toBeLessThan(apiCallTime);
     });
   });

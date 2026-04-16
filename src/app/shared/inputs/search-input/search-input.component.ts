@@ -216,6 +216,8 @@ export class SearchInputComponent implements OnDestroy {
   public onClear(): void {
     this.setInputValue('');
     this.resetComponentState();
+    this.initialValue = '';
+    this.valueChanged.emit('');
   }
 
   private resetComponentState(): void {
@@ -251,6 +253,7 @@ export class SearchInputComponent implements OnDestroy {
     this.setInputValue(finalAddress);
     this.initialValue = finalAddress;
     this.hasSelection.set(true);
+    this.valueChanged.emit(finalAddress);
 
     // Clear suggestions and close dropdown so the selected item doesn't reappear
     this.filteredItemsArray.set([]);
