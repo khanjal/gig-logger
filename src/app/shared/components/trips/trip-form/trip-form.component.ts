@@ -285,6 +285,8 @@ export class TripFormComponent implements OnInit {
     this.shiftOptions.set(this.shifts.map(shift => this.toShiftSummaryOption(shift)));
 
     if (!this.data?.id) {
+      this.resetSelectedShiftState();
+
       const today = DateHelper.toISO();
       const todaysTrips = await this._tripService.query('date', today);
       sort(todaysTrips, '-id');
@@ -421,16 +423,14 @@ export class TripFormComponent implements OnInit {
       return;
     }
 
-    this.isNewShift = true;
-    this.selectedShift = undefined;
-    this.selectedShiftOption = undefined;
-    this.tripForm.controls.shift.setValue(null, { emitEvent: false });
+    this.resetSelectedShiftState();
     this.tripForm.controls.service.setValidators([Validators.required]);
 
     const shifts = (await this._shiftService.list()).reverse();
     const shift = shifts[0];
 
     if (!shift) {
+      this.tripForm.controls.service.updateValueAndValidity();
       return;
     }
 
@@ -442,6 +442,13 @@ export class TripFormComponent implements OnInit {
     this.tripForm.controls.region.setValue(region);
 
     this.tripForm.controls.service.updateValueAndValidity();
+  }
+
+  private resetSelectedShiftState(): void {
+    this.isNewShift = true;
+    this.selectedShift = undefined;
+    this.selectedShiftOption = undefined;
+    this.tripForm.controls.shift.setValue(null, { emitEvent: false });
   }
 
   setPickupAddress(address: string) {
