@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { merge, from } from 'rxjs';
+import { switchMap, shareReplay } from 'rxjs/operators';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
@@ -19,6 +21,16 @@ export class UnsavedDataService {
     private shiftService: ShiftService,
     private expensesService: ExpensesService
   ) {}
+
+  /** Reactive stream that emits a boolean whenever any entity's unsaved state changes. */
+  readonly unsavedData$ = merge(
+    this.tripService.trips$,
+    this.shiftService.shifts$,
+    this.expensesService.expenses$
+  ).pipe(
+    switchMap(() => from(this.hasUnsavedData())),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
 
   async hasUnsavedData(): Promise<boolean> {
     const [trips, shifts, expenses] = await Promise.all([

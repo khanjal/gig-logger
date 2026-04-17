@@ -129,7 +129,7 @@ export class TripFormComponent implements OnInit {
     exclude: new FormControl<string | null>(null),
   });
 
-  isNewShift: boolean = true;
+  isNewShift = signal<boolean>(true);
   showAdvancedPay: boolean = false;
   showPickupAddress: boolean = false;
   showOdometer: boolean = false;
@@ -148,7 +148,7 @@ export class TripFormComponent implements OnInit {
   shifts: IShift[] = [];
   shiftOptions = signal<IShiftSummaryOption[]>([]);
   selectedShift: IShift | undefined;
-  selectedShiftOption: IShiftSummaryOption | undefined;
+  selectedShiftOption = signal<IShiftSummaryOption | undefined>(undefined);
 
   title: string = "Add Trip";
 
@@ -255,7 +255,7 @@ export class TripFormComponent implements OnInit {
   
     // Handle dependent logic
     this.selectedShift = await this._shiftService.queryShiftByKey(this.data.key);
-    this.selectedShiftOption = this.selectedShift ? this.toShiftSummaryOption(this.selectedShift) : undefined;
+    this.selectedShiftOption.set(this.selectedShift ? this.toShiftSummaryOption(this.selectedShift) : undefined);
     this.tripForm.controls.shift.setValue(this.selectedShift?.key ?? null, { emitEvent: false });
     await this.selectPlace();
     await this.showNameAddresses();
@@ -299,7 +299,7 @@ export class TripFormComponent implements OnInit {
       }
       if (lastUsedShift) {
         this.selectedShift = lastUsedShift;
-        this.selectedShiftOption = this.toShiftSummaryOption(lastUsedShift);
+        this.selectedShiftOption.set(this.toShiftSummaryOption(lastUsedShift));
         this.tripForm.controls.shift.setValue(lastUsedShift.key, { emitEvent: false });
       }
 
@@ -419,9 +419,9 @@ export class TripFormComponent implements OnInit {
         return;
       }
 
-      this.isNewShift = false;
+      this.isNewShift.set(false);
       this.selectedShift = value;
-      this.selectedShiftOption = this.toShiftSummaryOption(value);
+      this.selectedShiftOption.set(this.toShiftSummaryOption(value));
       this.tripForm.controls.service.clearValidators();
       this.tripForm.controls.service.updateValueAndValidity();
       this.tripForm.controls.region.setValue(this.data.region ?? value.region);
@@ -450,9 +450,9 @@ export class TripFormComponent implements OnInit {
   }
 
   private resetSelectedShiftState(): void {
-    this.isNewShift = true;
+    this.isNewShift.set(true);
     this.selectedShift = undefined;
-    this.selectedShiftOption = undefined;
+    this.selectedShiftOption.set(undefined);
     this.tripForm.controls.shift.setValue(NEW_SHIFT_VALUE, { emitEvent: false });
   }
 

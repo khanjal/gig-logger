@@ -16,12 +16,10 @@ import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { ITrip } from '@interfaces/trip.interface';
 
-import { GigWorkflowService } from '@services/gig-workflow.service';
 import { PollingService } from '@services/polling.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { LoggerService } from '@services/logger.service';
@@ -41,7 +39,7 @@ import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { AuthGoogleService } from '@services/auth-google.service';
-import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helper';
+
 
 @Component({
     selector: 'app-trip',
@@ -85,7 +83,6 @@ export class TripComponent implements OnInit, OnDestroy {
       private _sheetService: SpreadsheetService,
       private _tripService: TripService,
       private _shiftService: ShiftService,
-      private _expensesService: ExpensesService,
       private unsavedDataService: UnsavedDataService,
       private _viewportScroller: ViewportScroller,
       private _pollingService: PollingService,
@@ -145,11 +142,9 @@ export class TripComponent implements OnInit, OnDestroy {
         }
       });
 
-    bindUnsavedStateFromStreams({
-      stop$: this.destroy$,
-      streams: [this._tripService.trips$, this._shiftService.shifts$, this._expensesService.expenses$],
-      refreshUnsavedState: () => this.refreshUnsavedData()
-    });
+    this.unsavedDataService.unsavedData$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(hasUnsaved => this.unsavedData.set(hasUnsaved));
 
     // Only load if not in edit mode
     if (!this.isEditMode()) {

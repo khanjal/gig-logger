@@ -12,8 +12,6 @@ import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
-import { TripService } from '@services/sheets/trip.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { NgClass, NgIf } from '@angular/common';
@@ -26,7 +24,6 @@ import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { firstValueFrom } from 'rxjs';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helper';
 
 @Component({
     selector: 'app-shifts',
@@ -58,8 +55,6 @@ export class ShiftsComponent implements OnInit {
   constructor(
     public dialog: MatDialog, 
     private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _expensesService: ExpensesService,
     private _sheetService: SpreadsheetService,
     private unsavedDataService: UnsavedDataService,
     private _snackBar: MatSnackBar,
@@ -79,11 +74,9 @@ export class ShiftsComponent implements OnInit {
         void this.syncShiftState(shifts);
       });
 
-    bindUnsavedStateFromStreams({
-      destroyRef: this.destroyRef,
-      streams: [this._shiftService.shifts$, this._tripService.trips$, this._expensesService.expenses$],
-      refreshUnsavedState: () => this.refreshUnsavedData()
-    });
+    this.unsavedDataService.unsavedData$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(hasUnsaved => this.unsavedData.set(hasUnsaved));
 
     await this.refreshDefaultSheetState();
     await this.loadShifts();
@@ -117,10 +110,6 @@ export class ShiftsComponent implements OnInit {
     const visibleCount = visiblePages * this.pageSize;
     this.shifts.set(this.allShifts.slice(0, visibleCount));
     this.noMoreData.set(this.allShifts.length > 0 && visibleCount >= this.allShifts.length);
-  }
-
-  private async refreshUnsavedData(): Promise<void> {
-    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
   }
 
   private async refreshDefaultSheetState(): Promise<void> {

@@ -32,7 +32,6 @@ import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
 import { firstValueFrom } from 'rxjs';
 import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from '@helpers/expense-form.helper';
-import { bindUnsavedStateFromStreams } from '@helpers/unsaved-state-stream.helper';
 import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface';
 
 @Component({
@@ -107,11 +106,9 @@ export class ExpensesComponent implements OnInit {
         void this.syncExpenseState(expenses);
       });
 
-    bindUnsavedStateFromStreams({
-      destroyRef: this.destroyRef,
-      streams: [this.expensesService.expenses$],
-      refreshUnsavedState: () => this.refreshUnsavedData()
-    });
+    this.unsavedDataService.unsavedData$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(hasUnsaved => this.unsavedData.set(hasUnsaved));
   }
 
   private getTodayDate(): Date {
@@ -169,10 +166,6 @@ export class ExpensesComponent implements OnInit {
     if (normalizedExpenses.length === 0) {
       this.showAddForm.set(true);
     }
-  }
-
-  private async refreshUnsavedData(): Promise<void> {
-    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
   }
 
   async addExpense() {
