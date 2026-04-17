@@ -126,7 +126,10 @@ describe('ShiftFormComponent', () => {
 
   async function initializeComponent(rowId: string | null = 'new') {
     component.rowId = rowId;
-    await component.ngOnInit();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await fixture.whenStable();
   }
 
   it('should create', () => {
@@ -139,7 +142,7 @@ describe('ShiftFormComponent', () => {
       const lastShift = makeShift({ service: 'UberEats', region: 'North' });
       shiftServiceSpy.getLastShift.and.returnValue(Promise.resolve(lastShift));
 
-      await component.ngOnInit();
+      await initializeComponent('new');
 
       expect(component.shiftForm.get('service')?.value).toBe('UberEats');
       expect(component.shiftForm.get('region')?.value).toBe('North');
@@ -155,7 +158,7 @@ describe('ShiftFormComponent', () => {
       component.rowId = '5';
       shiftServiceSpy.getByRowId.and.returnValue(Promise.resolve(shift));
 
-      await component.ngOnInit();
+      await initializeComponent('5');
 
       expect(component.shift).toBeDefined();
       expect(component.shiftForm.get('service')?.value).toBe('DoorDash');
@@ -166,7 +169,7 @@ describe('ShiftFormComponent', () => {
     it('sets maxRowId from service', async () => {
       component.rowId = 'new';
 
-      await component.ngOnInit();
+      await initializeComponent('new');
 
       expect(shiftServiceSpy.getMaxRowId).toHaveBeenCalled();
       expect(component.maxRowId).toBe(10);
@@ -183,7 +186,7 @@ describe('ShiftFormComponent', () => {
       tripServiceSpy.query.and.returnValue(Promise.resolve(trips));
       spyOn(component, 'calculateTotals').and.callThrough();
 
-      await component.ngOnInit();
+      await initializeComponent('5');
 
       expect(component.calculateTotals).toHaveBeenCalled();
     });
