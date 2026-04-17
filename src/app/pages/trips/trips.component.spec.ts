@@ -13,6 +13,7 @@ import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
+import { DateHelper } from '@helpers/date.helper';
 
 describe('TripComponent', () => {
   let component: TripComponent;
@@ -134,10 +135,13 @@ describe('TripComponent', () => {
   it('reactively derives today and yesterday trip lists from the trip stream', async () => {
     await component.ngOnInit();
 
+    const today = DateHelper.toISO(DateHelper.getDateFromDays());
+    const yesterday = DateHelper.toISO(DateHelper.getDateFromDays(1));
+
     trips$.next([
-      { id: 1, rowId: 4, date: new Date().toISOString().slice(0, 10) },
-      { id: 2, rowId: 8, date: new Date().toISOString().slice(0, 10) },
-      { id: 3, rowId: 2, date: new Date(Date.now() - 86400000).toISOString().slice(0, 10) }
+      { id: 1, rowId: 4, date: today },
+      { id: 2, rowId: 8, date: today },
+      { id: 3, rowId: 2, date: yesterday }
     ] as any);
     await Promise.resolve();
 

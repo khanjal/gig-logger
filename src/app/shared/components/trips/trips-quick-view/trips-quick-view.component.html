@@ -30,8 +30,9 @@
       'stripe-header-odd': !isEvenStripe
     }">
     <!-- Top Header Row: status/#, centered service, total -->
-    <div class="flex items-center gap-2 min-w-0 w-full">
-      <div class="flex items-center gap-2 flex-shrink-0 min-w-fit">
+    <div class="mt-1 text-xs text-secondary flex items-center w-full">
+      <div class="flex-1 min-w-0 text-left">
+        <div class="inline-flex items-center gap-2">
         <mat-icon class="text-xl flex-shrink-0"
           [ngClass]="{
             'trip-icon-saved': trip.saved,
@@ -46,15 +47,16 @@
           @else { check_circle }
         </mat-icon>
         <span class="text-xs font-bold text-primary font-mono">#{{trip.rowId}}</span>
+        </div>
       </div>
 
-      <div class="flex-1 min-w-0 text-center px-1">
+      <div class="flex-shrink-0 px-2 text-center">
         <span class="font-bold text-primary text-sm sm:text-base inline-flex items-center justify-center max-w-full">
           <span class="truncate max-w-full">{{trip.service}}</span><span *ngIf="trip.number > 0">&nbsp;#{{trip.number}}</span>
         </span>
       </div>
 
-      <div class="flex-shrink-0 min-w-fit text-right">
+      <div class="flex-1 min-w-0 text-right">
         <span class="font-bold text-sm sm:text-base"
               [ngClass]="{
                 'text-tertiary': !(trip.pay || trip.tip || trip.bonus),
