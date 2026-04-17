@@ -3,11 +3,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchInputComponent } from './search-input.component';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { DropdownDataService } from '@services/dropdown-data.service';
+import { AddressService } from '@services/sheets/address.service';
+import { PlaceService } from '@services/sheets/place.service';
 
 describe('SearchInputComponent', () => {
   let component: SearchInputComponent;
   let fixture: ComponentFixture<SearchInputComponent>;
   let dropdownDataSpy: jasmine.SpyObj<DropdownDataService>;
+  let addressService: AddressService;
+  let placeService: PlaceService;
 
   beforeEach(async () => {
     dropdownDataSpy = jasmine.createSpyObj('DropdownDataService', ['filterDropdown']);
@@ -24,6 +28,8 @@ describe('SearchInputComponent', () => {
     
     fixture = TestBed.createComponent(SearchInputComponent);
     component = fixture.componentInstance;
+    addressService = TestBed.inject(AddressService);
+    placeService = TestBed.inject(PlaceService);
     fixture.detectChanges();
   });
 
@@ -56,6 +62,42 @@ describe('SearchInputComponent', () => {
     const changedEvent = { target: { value: 'Changed Value' } } as any;
     component.onInputChange(changedEvent);
     expect(component.hasSelection()).toBeFalse();
+  });
+
+  it('writeValue sets Place as selected when exact match exists', async () => {
+    component.searchType = 'Place';
+    component.ngOnChanges();
+    spyOn(placeService, 'find').and.returnValue(Promise.resolve({ place: 'Walmart' } as any));
+
+    component.writeValue('Walmart');
+    await fixture.whenStable();
+
+    expect(component.hasSelection()).toBeTrue();
+    expect(component.showGoogleMapsIcon()).toBeFalse();
+  });
+
+  it('writeValue sets Place as unselected when exact match does not exist', async () => {
+    component.searchType = 'Place';
+    component.ngOnChanges();
+    spyOn(placeService, 'find').and.returnValue(Promise.resolve(undefined));
+
+    component.writeValue('Unknown Place');
+    await fixture.whenStable();
+
+    expect(component.hasSelection()).toBeFalse();
+    expect(component.showGoogleMapsIcon()).toBeTrue();
+  });
+
+  it('writeValue sets Address as unselected when exact match does not exist', async () => {
+    component.searchType = 'Address';
+    component.ngOnChanges();
+    spyOn(addressService, 'find').and.returnValue(Promise.resolve(undefined));
+
+    component.writeValue('999 New St');
+    await fixture.whenStable();
+
+    expect(component.hasSelection()).toBeFalse();
+    expect(component.showGoogleMapsIcon()).toBeTrue();
   });
 
   it('should update initialValue on selection', async () => {

@@ -103,6 +103,7 @@ export class SearchInputComponent implements OnDestroy {
   private readonly CACHE_SIZE_LIMIT = 50;
   private googlePredictionsCache = new Map<string, ISearchItem[]>();
   private searchSubscription?: Subscription;
+  private writeValueRequestId = 0;
   // #endregion
 
   // #region ControlValueAccessor
@@ -122,8 +123,7 @@ export class SearchInputComponent implements OnDestroy {
     const normalizedValue = value || '';
     this.searchForm.controls.searchInput.setValue(normalizedValue, { emitEvent: false });
     this.initialValue = normalizedValue;
-    // If value is set externally, treat it as a selection when non-empty
-    this.hasSelection.set(!!normalizedValue);
+    void this.syncSelectionStateForExternalValue(normalizedValue);
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -162,6 +162,10 @@ export class SearchInputComponent implements OnDestroy {
     this.updateValidators();
     this.setGoogleSearchType();
     this.searchForm.controls.searchInput.updateValueAndValidity();
+
+    // Re-evaluate selection/icon state when search type changes.
+    const currentValue = this.searchForm.controls.searchInput.value || '';
+    void this.syncSelectionStateForExternalValue(currentValue);
   }
   ngOnDestroy(): void {
     this.cleanupSubscriptions();
@@ -626,6 +630,43 @@ export class SearchInputComponent implements OnDestroy {
   private setInputValue(val: string): void {
     this.searchForm.controls.searchInput.setValue(val, { emitEvent: false });
     this.onChange(val);
+  }
+
+  private async syncSelectionStateForExternalValue(value: string): Promise<void> {
+    const requestId = ++this.writeValueRequestId;
+
+    if (!value) {
+      this.hasSelection.set(false);
+      this.showGoogleMapsIcon.set(false);
+      return;
+    }
+
+    if (!this.isGoogleSearchType()) {
+      this.hasSelection.set(true);
+      return;
+    }
+
+    const isMatched = await this.hasExistingExactMatch(value);
+
+    // Ignore stale async results from older writeValue/ngOnChanges calls.
+    if (requestId !== this.writeValueRequestId) {
+      return;
+    }
+
+    this.hasSelection.set(isMatched);
+    this.showGoogleMapsIcon.set(!isMatched && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH);
+  }
+
+  private async hasExistingExactMatch(value: string): Promise<boolean> {
+    if (this.searchType === 'Place') {
+      return !!(await this._placeService.find('place', value));
+    }
+
+    if (this.searchType === 'Address') {
+      return !!(await this._addressService.find('address', value));
+    }
+
+    return false;
   }
 
   private mapPlacesToSearchItems(places: IPlace[]): ISearchItem[] {
