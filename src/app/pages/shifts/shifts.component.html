@@ -66,7 +66,7 @@
       </div>
 
       <!-- List of shifts -->
-      @for (shift of shifts(); track $index; let isFirst = $first) {
+      @for (shift of shifts(); track (shift.rowId || shift.key || $index); let isFirst = $first) {
           <div
             [id]="shift.rowId"
             [ngClass]="{
@@ -78,6 +78,7 @@
             <app-shifts-quick-view
               [shift]="shift"
               [index]="$index"
+              [isDuplicate]="!!shift.key && duplicateShiftKeys().has(shift.key)"
             ></app-shifts-quick-view>
           </div>
         }

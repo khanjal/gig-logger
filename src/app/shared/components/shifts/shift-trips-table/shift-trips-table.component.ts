@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject, Injector, Input, OnChanges, OnInit, runInInjectionContext, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core';
 import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { TripService } from '@services/sheets/trip.service';
@@ -31,8 +31,8 @@ export class ShiftTripsTableComponent implements OnInit, OnChanges {
   @Input() tripKey: string = '';
   prefers24Hour: boolean = false;
   displayedColumns: string[] = [];
-  trips: ITrip[] = [];
-  private injector = inject(Injector);
+  trips = signal<ITrip[]>([]);
+  private loadToken = 0;
 
   constructor(
     private tripService: TripService,
@@ -43,33 +43,38 @@ export class ShiftTripsTableComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.prefers24Hour = DateHelper.prefers24Hour();
     this.displayedColumns = ['place', 'total', 'name', 'pickup', 'dropoff', 'address'];
-    this.scheduleLoad();
+    void this.loadTripsForKey(this.tripKey);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tripKey'] && !changes['tripKey'].firstChange) {
-      this.scheduleLoad();
+    if (changes['tripKey']) {
+      void this.loadTripsForKey(this.tripKey);
     }
   }
 
-  private scheduleLoad(): void {
-    runInInjectionContext(this.injector, () => {
-      afterNextRender(() => {
-        void this.getTripsByShiftKey(this.tripKey);
-      });
-    });
-  }
-
-  async getTripsByShiftKey(shiftKey: string) {
+  private async loadTripsForKey(shiftKey: string): Promise<void> {
     try {
+      if (!shiftKey) {
+        this.trips.set([]);
+        return;
+      }
+
+      const requestToken = ++this.loadToken;
+
       // Split the key on dashes
       const keyParts = shiftKey.split('-');
-      let excludedKey = `${keyParts[0]}-X-${keyParts[2]}`;
+      const excludedKey = keyParts.length >= 3 ? `${keyParts[0]}-X-${keyParts[2]}` : '';
 
-      let trips = await this.tripService.query('key', this.tripKey);
-      let excludedTrips = (await this.tripService.query('key', excludedKey)).filter(trip => trip.number.toString() === keyParts[1]); 
+      const trips = await this.tripService.query('key', shiftKey);
+      const excludedTrips = excludedKey
+        ? (await this.tripService.query('key', excludedKey)).filter(trip => trip.number.toString() === keyParts[1])
+        : [];
+
+      if (requestToken !== this.loadToken || this.tripKey !== shiftKey) {
+        return;
+      }
       
-      this.trips = [...trips, ...excludedTrips];
+      this.trips.set([...trips, ...excludedTrips]);
     } catch (error) {
       this._logger.error('Error fetching trips', { error, shiftKey });
     }

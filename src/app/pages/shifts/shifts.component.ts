@@ -21,6 +21,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { ShiftHelper } from '@helpers/shift.helper';
 import { firstValueFrom } from 'rxjs';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -38,6 +39,7 @@ export class ShiftsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private allShifts: IShift[] = [];
   shifts = signal<IShift[]>([]);
+  duplicateShiftKeys = signal<Set<string>>(new Set());
   actionEnum = ActionEnum;
   saving = signal(false);
   unsavedShifts: IShift[] = [];
@@ -95,6 +97,7 @@ export class ShiftsComponent implements OnInit {
 
   private async syncShiftState(shifts: IShift[]): Promise<void> {
     this.allShifts = [...shifts].sort((left, right) => (right.rowId ?? 0) - (left.rowId ?? 0));
+    this.duplicateShiftKeys.set(ShiftHelper.getDuplicateShiftKeys(this.allShifts));
     this.updateVisibleShifts();
 
     if (this.allShifts.length === 0 && !this.showAddForm() && !this.editId()) {

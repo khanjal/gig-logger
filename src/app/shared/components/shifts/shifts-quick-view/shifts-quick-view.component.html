@@ -22,17 +22,17 @@
           <!-- Status Icon -->
           <mat-icon class="text-xl flex-shrink-0"
             [ngClass]="{
-              'text-tertiary': shift.saved && !duplicateShift,
-              'text-success': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
-              'text-info': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
-              'text-error': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
-              'text-warning': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
-              'text-accent': duplicateShift
+              'text-tertiary': shift.saved && !isDuplicate,
+              'text-success': !shift.saved && shift.action === ActionEnum.Add && !isDuplicate,
+              'text-info': !shift.saved && shift.action === ActionEnum.Update && !isDuplicate,
+              'text-error': (!shift.saved && shift.action === ActionEnum.Delete && !isDuplicate),
+              'text-warning': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !isDuplicate),
+              'text-accent': isDuplicate
             }">
-            @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
-            @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }
-            @else if (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift) { delete }
-            @else if (duplicateShift) { content_copy }
+            @if (!shift.saved && shift.action === ActionEnum.Add && !isDuplicate) { add }
+            @else if (!shift.saved && shift.action === ActionEnum.Update && !isDuplicate) { edit }
+            @else if (!shift.saved && shift.action === ActionEnum.Delete && !isDuplicate) { delete }
+            @else if (isDuplicate) { content_copy }
             @else { check_circle }
           </mat-icon>
           <!-- Row ID -->
@@ -74,18 +74,16 @@
         <span class="font-medium whitespace-nowrap">@if (shift.totalTime) { {{shift.totalTime | durationFormat}} }</span>
       </span>
     </div>
-    <!-- Divider for visual separation -->
-    <div class="my-2 border-t border-soft"></div>
     <!-- Info Row: trips (left), distance (center), active (right) -->
     <div class="mt-1 text-xs text-secondary truncate text-center flex items-center w-full relative">
-          @if (shift.totalTrips) {
+      @if (shift.totalTrips) {
         <span class="flex items-center gap-1 flex-1 justify-start">
           <mat-icon class="text-info text-base">route</mat-icon>
           <span class="font-mono text-xs text-primary">{{shift.totalTrips}} trips</span>
         </span>
       }
       @if (shift.totalDistance) {
-        <span class="flex items-center gap-1 flex-1 justify-center">
+        <span class="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 whitespace-nowrap">
           <mat-icon class="text-info text-base">straighten</mat-icon>
           <span class="font-mono text-xs text-primary">{{formatDistance(shift.totalDistance)}}</span>
         </span>
@@ -213,11 +211,11 @@
       variant="primary"
       size="sm"
       [icon]="'edit'"
+      [label]="'Edit'"
       (clicked)="editShift()"
       [disabled]="!canEditShift()"
       [attr.aria-label]="'Edit shift'"
       [attr.title]="'Edit shift'">
-      <span class="hidden sm:inline">Edit</span>
     </app-base-rect-button>
     <!-- Center Action Buttons (none for now) -->
     <div class="flex gap-2"></div>
@@ -226,9 +224,9 @@
       variant="danger"
       size="sm"
       [icon]="'delete'"
+      [label]="'Delete'"
       [disabled]="!canDeleteShift()"
       (clicked)="confirmDeleteShiftDialog(shift)">
-      <span class="hidden sm:inline">Delete</span>
     </app-base-rect-button>
   </div>
 </div>

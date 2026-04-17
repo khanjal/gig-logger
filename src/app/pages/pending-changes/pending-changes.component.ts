@@ -9,6 +9,8 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
+import type { IShift } from '@interfaces/shift.interface';
+import { ShiftHelper } from '@helpers/shift.helper';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,7 +26,8 @@ import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.com
 })
 export class PendingChangesComponent implements OnInit {
   trips = signal<any[]>([]);
-  shifts = signal<any[]>([]);
+  shifts = signal<IShift[]>([]);
+  duplicateShiftKeys = signal<Set<string>>(new Set());
   expandedShifts = signal(false);
   expandedTrips = signal(true);
 
@@ -73,10 +76,13 @@ export class PendingChangesComponent implements OnInit {
   public async load(): Promise<void> {
     try {
       this.trips.set(await this.tripService.getUnsaved());
-      this.shifts.set(await this.shiftService.getUnsavedShifts());
+      const unsavedShifts = await this.shiftService.getUnsavedShifts();
+      this.shifts.set(unsavedShifts);
+      this.duplicateShiftKeys.set(ShiftHelper.getDuplicateShiftKeys(unsavedShifts));
     } catch (err) {
       this.trips.set([]);
       this.shifts.set([]);
+      this.duplicateShiftKeys.set(new Set());
     }
   }
 

@@ -87,4 +87,34 @@ export class ShiftHelper {
 
         return shifts;
     }
+
+    /**
+     * Build a set of shift keys that appear more than once in the provided collection.
+     * Empty keys are ignored.
+     * @param shifts Source shifts to analyze
+     * @returns Set containing duplicate keys
+     * @example
+     * const duplicates = ShiftHelper.getDuplicateShiftKeys([{ key: 'A' }, { key: 'A' }, { key: 'B' }] as IShift[]);
+     * // duplicates has only 'A'
+     */
+    static getDuplicateShiftKeys(shifts: IShift[]): Set<string> {
+        const keyCounts = new Map<string, number>();
+
+        for (const shift of shifts) {
+            if (!shift?.key) {
+                continue;
+            }
+
+            keyCounts.set(shift.key, (keyCounts.get(shift.key) ?? 0) + 1);
+        }
+
+        const duplicates = new Set<string>();
+        for (const [key, count] of keyCounts.entries()) {
+            if (count > 1) {
+                duplicates.add(key);
+            }
+        }
+
+        return duplicates;
+    }
 }

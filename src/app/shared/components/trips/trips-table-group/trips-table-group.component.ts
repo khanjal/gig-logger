@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges, Injector, inject, runInInjectionContext, afterNextRender } from '@angular/core';
+import { ChangeDetectorRef, ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges, Injector, inject, runInInjectionContext, afterNextRender } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
 import { ITripGroup } from '@interfaces/trip-group.interface';
@@ -14,6 +14,7 @@ import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
     templateUrl: './trips-table-group.component.html',
     styleUrls: ['./trips-table-group.component.scss'],
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [MatIcon, NgFor, NgClass, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
 })
 export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewInit {
