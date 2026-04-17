@@ -35,12 +35,12 @@ describe('UpdatesService', () => {
     });
   });
 
-  it('should have weekly entries marked correctly', (done) => {
+  it('should have rollup entries marked correctly', (done) => {
     service.getUpdates().subscribe(updates => {
-      const weeklyEntries = updates.filter(u => u.isWeekly);
-      expect(weeklyEntries.length).toBeGreaterThan(0);
-      weeklyEntries.forEach(entry => {
-        expect(entry.isWeekly).toBe(true);
+      const rollupEntries = updates.filter(u => u.isRollup);
+      expect(rollupEntries.length).toBeGreaterThan(0);
+      rollupEntries.forEach(entry => {
+        expect(entry.isRollup).toBe(true);
         expect(entry.dateLabel).toContain('-');
       });
       done();

@@ -34,7 +34,6 @@ import { BaseRectButtonComponent } from '@components/base';
         BaseRectButtonComponent,
     ],
 })
-export class ShiftsQuickViewComponent {
 export class ShiftsQuickViewComponent implements OnInit {
   ActionEnum = ActionEnum;
   dateFormats = DATE_FORMATS;

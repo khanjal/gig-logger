@@ -64,7 +64,7 @@
   }
 }
 
-.weekly-badge {
+.rollup-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   background-color: var(--color-primary);
@@ -103,6 +103,25 @@
 
 .update-header {
   margin-bottom: 0.5rem;
+}
+
+.update-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.category-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+
+  &.category-feature    { color: var(--primary-600); }
+  &.category-fix        { color: var(--error-600, #dc2626); }
+  &.category-improvement { color: var(--success-600, #16a34a); }
+  &.category-upgrade    { color: var(--warning-600, #d97706); }
+  &.category-maintenance { color: var(--color-text-tertiary); }
 }
 
 .update-title {
@@ -202,12 +221,19 @@
 
 // Dark mode adjustments
 :host-context(html.theme-dark) {
-  .weekly-badge {
+  .rollup-badge {
     background-color: var(--primary-600);
   }
 
   .updates-group {
     border-color: var(--color-border);
+  }
+
+  .category-icon {
+    &.category-feature    { color: var(--primary-400); }
+    &.category-improvement { color: var(--success-400, #4ade80); }
+    &.category-upgrade    { color: var(--warning-400, #fbbf24); }
+    &.category-maintenance { color: var(--color-text-tertiary); }
   }
 
     .page-badge {

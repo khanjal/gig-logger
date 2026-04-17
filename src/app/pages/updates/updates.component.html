@@ -5,39 +5,60 @@
   </div>
 
   <div class="updates-list">
-    <div *ngFor="let entry of updates(); let last = last" class="update-entry">
+    @for (entry of updates(); track entry.date; let last = $last) {
+    <div class="update-entry">
       <div class="update-date">
         <span class="date-label">{{ entry.dateLabel }}</span>
-        <span *ngIf="entry.isWeekly" class="weekly-badge">Weekly Summary</span>
+        @if (entry.isRollup) {
+          <span class="rollup-badge">Rolled Up</span>
+        }
       </div>
 
       <div class="updates-group">
-        <div *ngFor="let update of entry.updates; let lastUpdate = last" class="update-item">
+        @for (update of entry.updates; track update.title; let lastUpdate = $last) {
+        <div class="update-item">
           <div class="update-header">
-            <h3 class="update-title">{{ update.title }}</h3>
-          </div>
-          
-          <ul *ngIf="update.changes && update.changes.length > 0" class="changes-list">
-            <li *ngFor="let change of update.changes" class="change-item">
-              {{ change }}
-            </li>
-          </ul>
-
-          <div *ngIf="update.pagesAffected && update.pagesAffected.length > 0" class="pages-affected">
-            <span class="pages-label">Pages:</span>
-            <div class="page-list">
-              <span *ngFor="let page of update.pagesAffected" class="page-badge">
-                <mat-icon class="page-icon">article</mat-icon>
-                {{ page }}
-              </span>
+            <div class="update-title-row">
+              @if (update.category) {
+                <mat-icon class="category-icon category-{{ update.category }}">{{ getCategoryIcon(update.category) }}</mat-icon>
+              }
+              <h3 class="update-title">{{ update.title }}</h3>
             </div>
           </div>
+          
+          @if (update.changes && update.changes.length > 0) {
+            <ul class="changes-list">
+              @for (change of update.changes; track change) {
+                <li class="change-item">{{ change }}</li>
+              }
+            </ul>
+          }
 
-          <mat-divider *ngIf="!lastUpdate" class="update-divider"></mat-divider>
+          @if (update.pagesAffected && update.pagesAffected.length > 0) {
+            <div class="pages-affected">
+              <span class="pages-label">Pages:</span>
+              <div class="page-list">
+                @for (page of update.pagesAffected; track page) {
+                  <span class="page-badge">
+                    <mat-icon class="page-icon">article</mat-icon>
+                    {{ page }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          @if (!lastUpdate) {
+            <mat-divider class="update-divider"></mat-divider>
+          }
         </div>
+        }
       </div>
 
-      <mat-divider *ngIf="!last" class="entry-divider"></mat-divider>
+      @if (!last) {
+        <mat-divider class="entry-divider"></mat-divider>
+      }
     </div>
+    }
   </div>
 </div>

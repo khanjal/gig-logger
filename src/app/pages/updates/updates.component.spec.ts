@@ -31,7 +31,7 @@ describe('UpdatesComponent', () => {
     {
       date: '2025-10-25-11-01',
       dateLabel: 'October 25 - November 1, 2025',
-      isWeekly: true,
+      isRollup: true,
       updates: [
         {
           title: 'Updated privacy policy',
@@ -103,12 +103,12 @@ describe('UpdatesComponent', () => {
     expect(dateLabels[0].textContent).toContain('January 2, 2026');
   });
 
-  it('should show weekly badge for weekly entries', () => {
+  it('should show rollup badge for rollup entries', () => {
     component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    const weeklyBadge = compiled.querySelectorAll('.weekly-badge');
-    expect(weeklyBadge.length).toBe(1);
+    const rollupBadge = compiled.querySelectorAll('.rollup-badge');
+    expect(rollupBadge.length).toBe(1);
   });
 
   it('should display update items with titles', () => {
