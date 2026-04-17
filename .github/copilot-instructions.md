@@ -814,6 +814,24 @@ Available columns: New, Backlog, Ready, In progress, In review, Done
 - If template/DOM performance-sensitive changes are included, document what was changed to avoid template-invoked heavy functions.
 - For UI-affecting changes, include concise manual validation notes and screenshots/video when available.
 
+### User-Facing Updates Changelog Rules
+- The updates page is for app users, not developers. Prioritize clear user impact language over internal implementation details.
+- File of record: `src/app/shared/services/updates.service.ts`.
+- Add or update an entry whenever changes headed to `main` affect user experience, behavior, reliability, or visible UI.
+- Date policy:
+  - Use the merge-to-main date for `date` and `dateLabel` when known.
+  - For in-flight PR preparation, use the latest date, then confirm/update after merge.
+- Writing style:
+  - Title should be short and benefit-focused (what improved for the user).
+  - Keep 3-5 bullets in `changes`.
+  - Avoid internal-only terms when possible (for example avoid naming internal refactors unless users benefit directly).
+  - Translate technical work into user outcomes (faster, more reliable, clearer, fewer steps).
+- Grouping guidance:
+  - Use a single-date entry by default.
+  - Use rollups (`isRollup: true`) only when many small changes land in a short window and a combined summary is clearer.
+- `pagesAffected` should use page names users recognize (Trips, Shifts, Expenses, Setup, Search, etc.).
+- Skip entries for purely internal changes unless they have clear user-facing impact.
+
 ## Critical Dependencies
 - **@angular/material**: UI component library
 - **dexie**: IndexedDB wrapper for local storage

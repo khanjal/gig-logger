@@ -9,16 +9,33 @@ import type { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
 export class UpdatesService {
   private updatesSubject = new BehaviorSubject<IUpdateEntry[]>([
     {
+      date: '2026-04-17',
+      dateLabel: 'April 17, 2026',
+      updates: [
+        {
+          title: 'Smoother Saving and Faster App Flow',
+          category: 'upgrade',
+          changes: [
+            'Trips, shifts, and expenses now refresh more smoothly while you work',
+            'Reduced interruptions during save and sync actions',
+            'Improved responsiveness across key pages',
+            'General reliability and stability improvements'
+          ],
+          pagesAffected: ['Trips', 'Shifts', 'Expenses', 'Setup']
+        }
+      ]
+    },
+    {
       date: '2026-04-08',
       dateLabel: 'April 8, 2026',
       updates: [
         {
-          title: 'Demo Sheet Sync & Banners',
+          title: 'Better Demo Setup Experience',
           category: 'feature',
           changes: [
-            'Demo sheet creation now routes through sync flow',
-            'Added banners for demo-attached sheet state',
-            'Improved demo onboarding experience'
+            'Starting with a demo sheet is now smoother and more reliable',
+            'Added clearer status banners when a demo sheet is connected',
+            'Improved onboarding flow for first-time users'
           ],
           pagesAffected: ['Setup', 'Dashboard']
         }
@@ -29,13 +46,13 @@ export class UpdatesService {
       dateLabel: 'April 4, 2026',
       updates: [
         {
-          title: 'Semantic Color Token System',
+          title: 'Clearer Colors Across Light and Dark Mode',
           category: 'improvement',
           changes: [
-            'Introduced semantic CSS color tokens across the app',
-            'Consistent light and dark theme color variables',
-            'Replaced scattered hardcoded color values',
-            'Foundation for future theme customization'
+            'Improved color consistency throughout the app',
+            'Made text and UI elements easier to read in both themes',
+            'Reduced visual mismatches across screens',
+            'Set up a stronger base for future visual polish'
           ],
           pagesAffected: ['All Pages']
         }
@@ -46,13 +63,12 @@ export class UpdatesService {
       dateLabel: 'March 16, 2026',
       updates: [
         {
-          title: 'Voice Input Refactor & CI Improvements',
+          title: 'More Reliable Voice Entry',
           category: 'improvement',
           changes: [
-            'Refactored voice input component for reliability',
-            'Added split dialog component tests',
-            'Tightened CI/CD pipeline checks',
-            'Improved test coverage across voice features'
+            'Improved voice input stability when adding trip details',
+            'Reduced edge-case failures during voice entry',
+            'Added stronger quality checks to prevent regressions'
           ],
           pagesAffected: ['Trips']
         }
@@ -63,12 +79,12 @@ export class UpdatesService {
       dateLabel: 'February 5, 2026',
       updates: [
         {
-          title: 'Trip Layout & Sync Text Improvements',
+          title: 'Cleaner Trip Layout and Sync Messages',
           category: 'improvement',
           changes: [
-            'Better text handling and overflow in sync components',
-            'Improved trip card layout and readability',
-            'Various styling refinements'
+            'Made trip details easier to scan and read',
+            'Improved sync message formatting for better clarity',
+            'Polished layout behavior on smaller screens'
           ],
           pagesAffected: ['Trips']
         }
@@ -154,12 +170,12 @@ export class UpdatesService {
       dateLabel: 'October 6, 2025',
       updates: [
         {
-          title: 'UI Table Improvements',
+          title: 'Improved Trips and Shifts Tables',
           category: 'improvement',
           changes: [
-            'Enhanced table layouts',
-            'Better sorting and filtering',
-            'Improved mobile table views'
+            'Tables are easier to read and navigate',
+            'Better sorting and filtering of your data',
+            'Improved table layout on mobile devices'
           ],
           pagesAffected: ['Trips', 'Shifts']
         }
@@ -171,13 +187,12 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'Trip & Shift Page Layout Improvements',
+          title: 'Layout Fixes for Trips and Shifts',
           category: 'improvement',
           changes: [
-            'Better mobile and desktop layouts',
-            'UI adjustments for better usability',
-            'Rate limiting for API calls',
-            'Fixed back-to-top button'
+            'Improved page layouts on both mobile and desktop',
+            'Fixed the back-to-top button',
+            'Various usability tweaks'
           ],
           pagesAffected: ['Trips', 'Shifts']
         }
@@ -189,13 +204,13 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'UI Rework & S3 Download',
+          title: 'App-Wide Visual Redesign',
           category: 'feature',
           changes: [
-            'Major UI redesign',
-            'S3 download for large spreadsheets',
-            'Improved search results with JSON fallback',
-            'Better place/name display'
+            'Refreshed the look and feel across all pages',
+            'Faster loading for large spreadsheets',
+            'Search results are more reliable on slow connections',
+            'Improved display of places and names'
           ],
           pagesAffected: ['All Pages']
         }
@@ -207,12 +222,12 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'Google Authentication',
+          title: 'Sign In with Google',
           category: 'feature',
           changes: [
-            'Integrated Google OAuth',
-            'Token-based spreadsheet access',
-            'Secure authentication flow'
+            'You can now sign in using your Google account',
+            'Spreadsheet access is handled securely via Google sign-in',
+            'Streamlined authentication flow during setup'
           ],
           pagesAffected: ['Setup']
         }
@@ -239,12 +254,12 @@ export class UpdatesService {
       dateLabel: 'May 10, 2025',
       updates: [
         {
-          title: 'Standalone Components Migration',
+          title: 'Under-the-Hood Performance Improvements',
           category: 'upgrade',
           changes: [
-            'Removed NgModules',
-            'Converted all components to standalone',
-            'Modern Angular architecture'
+            'Rebuilt app internals for faster load times',
+            'Reduced memory usage across all pages',
+            'Improved stability on low-end devices'
           ],
           pagesAffected: ['All Pages']
         }
@@ -255,12 +270,11 @@ export class UpdatesService {
       dateLabel: 'May 3, 2025',
       updates: [
         {
-          title: 'Rate Limiter & Refactoring',
+          title: 'Faster and More Stable Data Loading',
           category: 'maintenance',
           changes: [
-            'Added API rate limiting',
-            'Code refactoring for better performance',
-            'Optimized API calls'
+            'Reduced errors from too many data requests at once',
+            'Improved overall data loading performance'
           ]
         }
       ]
@@ -271,13 +285,13 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'Polling & Data Updates',
+          title: 'Real-Time Sync and Address Search Improvements',
           category: 'feature',
           changes: [
-            'Added polling for data sync',
-            'Improved saved data handling',
-            'UI improvements and fixes',
-            'Better Google Places API integration'
+            'App now stays in sync without needing a manual refresh',
+            'Saved data loads more consistently',
+            'Address suggestions are more accurate and responsive',
+            'Various UI fixes and polish'
           ],
           pagesAffected: ['Trips', 'Shifts']
         }
@@ -289,12 +303,11 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'Maintenance & Package Updates',
+          title: 'Stability and Performance Housekeeping',
           category: 'maintenance',
           changes: [
-            'Package dependency updates',
-            'Code refactoring and cleanup',
-            'Performance improvements'
+            'Updated internal libraries for security and performance',
+            'General cleanup to keep the app running smoothly'
           ]
         }
       ]
@@ -305,14 +318,12 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'New Backend & Multi-Sheet Support',
+          title: 'Support for Multiple Spreadsheets',
           category: 'feature',
           changes: [
-            'Created new AWS Lambda backend',
-            'Refactored to support new API',
-            'Support for multiple sheets',
-            'Added Create Sheets functionality',
-            'Sheet-Id in request headers'
+            'You can now create and switch between multiple spreadsheets',
+            'Rebuilt the data backend for better performance and reliability',
+            'Improved how your spreadsheet ID is tracked between sessions'
           ],
           pagesAffected: ['All Pages']
         }
@@ -324,13 +335,12 @@ export class UpdatesService {
       isRollup: true,
       updates: [
         {
-          title: 'Search Input Components',
+          title: 'Smarter Search and Safer Deletes',
           category: 'feature',
           changes: [
-            'Created reusable search-input component',
-            'Google Places autocomplete integration',
-            'Added confirm dialogs for delete actions',
-            'Improved input field styling'
+            'Address search now uses Google Places autocomplete',
+            'Added confirmation prompts before deleting items',
+            'Improved search field styling and usability'
           ],
           pagesAffected: ['Trips', 'Setup']
         }
