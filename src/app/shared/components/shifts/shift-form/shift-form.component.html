@@ -52,31 +52,32 @@
     </div>
     <!-- Trip Totals only in edit mode -->
     <div *ngIf="rowId" class="mb-3">
+      @let tripTotals = (tripTotals$ | async);
       <div class="font-semibold text-primary mb-1">Trip Totals</div>
       <div class="grid grid-cols-2 gap-2 bg-surface-2 rounded p-3 mb-2">
         <div>
           <span class="font-semibold text-primary">Count:</span>
-          <span class="ml-2">{{ computedTotals.totalTrips }}</span>
+          <span class="ml-2">{{ tripTotals?.totalTrips ?? 0 }}</span>
         </div>
         <div>
           <span class="font-semibold text-primary">Pay:</span>
-          <span class="ml-2">{{ computedTotals.totalPay | currency }}</span>
+          <span class="ml-2">{{ (tripTotals?.totalPay ?? 0) | currency }}</span>
         </div>
         <div>
           <span class="font-semibold text-primary">Tips:</span>
-          <span class="ml-2">{{ computedTotals.totalTips | currency }}</span>
+          <span class="ml-2">{{ (tripTotals?.totalTips ?? 0) | currency }}</span>
         </div>
         <div>
           <span class="font-semibold text-primary">Bonus:</span>
-          <span class="ml-2">{{ computedTotals.totalBonus | currency }}</span>
+          <span class="ml-2">{{ (tripTotals?.totalBonus ?? 0) | currency }}</span>
         </div>
         <div>
           <span class="font-semibold text-primary">Cash:</span>
-          <span class="ml-2">{{ computedTotals.totalCash | currency }}</span>
+          <span class="ml-2">{{ (tripTotals?.totalCash ?? 0) | currency }}</span>
         </div>
         <div>
           <span class="font-semibold text-primary">Distance:</span>
-          <span class="ml-2">{{ computedTotals.totalDistance | number:'1.2-2' }} mi</span>
+          <span class="ml-2">{{ (tripTotals?.totalDistance ?? 0) | number:'1.2-2' }} mi</span>
         </div>
       </div>
     </div>

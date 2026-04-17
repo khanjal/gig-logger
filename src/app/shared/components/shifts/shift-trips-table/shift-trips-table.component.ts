@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { afterNextRender, Component, inject, Injector, Input, OnChanges, OnInit, runInInjectionContext, SimpleChanges } from '@angular/core';
 import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
 import { ITrip } from '@interfaces/trip.interface';
 import { TripService } from '@services/sheets/trip.service';
@@ -27,11 +27,12 @@ import { DateHelper } from '@helpers/date.helper';
   styleUrls: ['./shift-trips-table.component.scss'],
 })
 
-export class ShiftTripsTableComponent {
+export class ShiftTripsTableComponent implements OnInit, OnChanges {
   @Input() tripKey: string = '';
   prefers24Hour: boolean = false;
   displayedColumns: string[] = [];
   trips: ITrip[] = [];
+  private injector = inject(Injector);
 
   constructor(
     private tripService: TripService,
@@ -39,10 +40,24 @@ export class ShiftTripsTableComponent {
     private _logger: LoggerService
   ) {}
 
-  async ngOnInit() { 
+  ngOnInit(): void {
     this.prefers24Hour = DateHelper.prefers24Hour();
     this.displayedColumns = ['place', 'total', 'name', 'pickup', 'dropoff', 'address'];
-    await this.getTripsByShiftKey(this.tripKey);
+    this.scheduleLoad();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tripKey'] && !changes['tripKey'].firstChange) {
+      this.scheduleLoad();
+    }
+  }
+
+  private scheduleLoad(): void {
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        void this.getTripsByShiftKey(this.tripKey);
+      });
+    });
   }
 
   async getTripsByShiftKey(shiftKey: string) {

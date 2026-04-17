@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { afterNextRender, Component, EventEmitter, inject, Injector, Input, OnChanges, OnInit, Output, runInInjectionContext, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { IShift } from '@interfaces/shift.interface';
 import { CommonModule } from '@angular/common';
@@ -17,6 +17,16 @@ import { NumberHelper } from '@helpers/number.helper';
 import { TripService } from '@services/sheets/trip.service';
 import { BaseFabButtonComponent, BaseInputComponent } from '@components/base';
 import { updateAction } from '@utils/action.utils';
+import { BehaviorSubject } from 'rxjs';
+
+interface ITripTotalsViewModel {
+  totalTrips: number;
+  totalPay: number;
+  totalCash: number;
+  totalBonus: number;
+  totalTips: number;
+  totalDistance: number;
+}
 
 @Component({
   selector: 'shift-form',
@@ -30,7 +40,7 @@ import { updateAction } from '@utils/action.utils';
     BaseFabButtonComponent, BaseInputComponent
   ]
 })
-export class ShiftFormComponent implements OnInit {
+export class ShiftFormComponent implements OnInit, OnChanges {
   @Input() rowId?: string | null;
   @Output() parentReload = new EventEmitter<any>();
   @Output() editModeExit = new EventEmitter<string>();
@@ -57,18 +67,14 @@ export class ShiftFormComponent implements OnInit {
     omit: new FormControl(false),
   });
 
-  computedTotals = {
-    totalTrips: 0,
-    totalPay: 0,
-    totalCash: 0,
-    totalBonus: 0,
-    totalTips: 0,
-    totalDistance: 0
-  };
+  computedTotals: ITripTotalsViewModel = this.createEmptyTotals();
+  readonly tripTotals$ = new BehaviorSubject<ITripTotalsViewModel>(this.createEmptyTotals());
 
   computedShiftNumber: number = 1;
   shift: IShift | undefined;
   maxRowId: number = 1;
+  private hasNewShiftSubscriptions: boolean = false;
+  private injector = inject(Injector);
 
   constructor(
     private shiftService: ShiftService,
@@ -76,7 +82,30 @@ export class ShiftFormComponent implements OnInit {
     private logger: LoggerService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    this.scheduleInitialization();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['rowId'] && !changes['rowId'].firstChange) {
+      this.scheduleInitialization();
+    }
+  }
+
+  private scheduleInitialization(): void {
+    // Defer async hydration until after first paint to avoid NG0100 in dev mode.
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        void this.initializeFormData();
+      });
+    });
+  }
+
+  private async initializeFormData(): Promise<void> {
+    const emptyTotals = this.createEmptyTotals();
+    this.computedTotals = emptyTotals;
+    this.tripTotals$.next(emptyTotals);
+
     this.maxRowId = await this.shiftService.getMaxRowId() || 1;
     const rowId = this.rowId;
     if (rowId && rowId !== 'new') {
@@ -104,15 +133,18 @@ export class ShiftFormComponent implements OnInit {
           omit: this.shift.omit ?? false,
         });
         this.computedShiftNumber = this.shift.number ?? 1; // Set to existing number
-        await this.calculateTotals();
+        await this.calculateTotals(undefined, true);
       }
     } else {
-      this.shiftForm.get('date')?.valueChanges.subscribe(() => {
-        this.updateComputedShiftNumber();
-      });
-      this.shiftForm.get('service')?.valueChanges.subscribe(() => {
-        this.updateComputedShiftNumber();
-      });
+      if (!this.hasNewShiftSubscriptions) {
+        this.shiftForm.get('date')?.valueChanges.subscribe(() => {
+          this.updateComputedShiftNumber();
+        });
+        this.shiftForm.get('service')?.valueChanges.subscribe(() => {
+          this.updateComputedShiftNumber();
+        });
+        this.hasNewShiftSubscriptions = true;
+      }
       // Initial calculation for new shift only
       this.updateComputedShiftNumber();
       
@@ -144,19 +176,42 @@ export class ShiftFormComponent implements OnInit {
     this.computedShiftNumber = ShiftHelper.getNextShiftNumber(service, shifts);
   }
 
-  async calculateTotals(shiftKey?: string) {
+  async calculateTotals(shiftKey?: string, deferAssignment: boolean = false): Promise<ITripTotalsViewModel> {
     let trips: ITrip[] = [];
     const keyToQuery = shiftKey ?? this.shift?.key;
     if (keyToQuery) {
       trips = await this.tripService.query("key", keyToQuery);
     }
-    this.computedTotals = {
+    const totals: ITripTotalsViewModel = {
       totalTrips: trips.length,
       totalPay: trips.reduce((sum, t) => sum + Number(t.pay ?? 0), 0),
       totalCash: trips.reduce((sum, t) => sum + Number(t.cash ?? 0), 0),
       totalBonus: trips.reduce((sum, t) => sum + Number(t.bonus ?? 0), 0),
       totalTips: trips.reduce((sum, t) => sum + Number(t.tip ?? 0), 0),
       totalDistance: trips.reduce((sum, t) => sum + Number(t.distance ?? 0), 0)
+    };
+
+    if (deferAssignment) {
+      setTimeout(() => {
+        this.computedTotals = totals;
+        this.tripTotals$.next(totals);
+      }, 0);
+    } else {
+      this.computedTotals = totals;
+      this.tripTotals$.next(totals);
+    }
+
+    return totals;
+  }
+
+  private createEmptyTotals(): ITripTotalsViewModel {
+    return {
+      totalTrips: 0,
+      totalPay: 0,
+      totalCash: 0,
+      totalBonus: 0,
+      totalTips: 0,
+      totalDistance: 0
     };
   }
 
@@ -253,13 +308,13 @@ export class ShiftFormComponent implements OnInit {
         this.computedShiftNumber = resolvedNumber;
 
         // Use the old key so existing linked trips are included before re-keying.
-        await this.calculateTotals(oldKey || newKey);
-        this.shift.totalTrips = this.computedTotals.totalTrips + Number(formValue.trips ?? 0);
-        this.shift.totalDistance = this.computedTotals.totalDistance + Number(formValue.distance ?? 0);
-        this.shift.totalPay = this.computedTotals.totalPay + Number(formValue.pay ?? 0);
-        this.shift.totalTips = this.computedTotals.totalTips + Number(formValue.tip ?? 0);
-        this.shift.totalBonus = this.computedTotals.totalBonus + Number(formValue.bonus ?? 0);
-        this.shift.totalCash = this.computedTotals.totalCash + Number(formValue.cash ?? 0);
+        const totals = await this.calculateTotals(oldKey || newKey);
+        this.shift.totalTrips = totals.totalTrips + Number(formValue.trips ?? 0);
+        this.shift.totalDistance = totals.totalDistance + Number(formValue.distance ?? 0);
+        this.shift.totalPay = totals.totalPay + Number(formValue.pay ?? 0);
+        this.shift.totalTips = totals.totalTips + Number(formValue.tip ?? 0);
+        this.shift.totalBonus = totals.totalBonus + Number(formValue.bonus ?? 0);
+        this.shift.totalCash = totals.totalCash + Number(formValue.cash ?? 0);
         this.shift.grandTotal = (
           this.shift.totalPay +
           this.shift.totalTips +

@@ -16,40 +16,48 @@
       'shift-header-primary': index % 2 === 0,
       'shift-header-success': index % 2 === 1
     }">
-    <div class="flex items-center gap-2 sm:gap-4 min-w-0 w-full overflow-x-auto">
-      <!-- Status Icon -->
-      <mat-icon class="text-xl flex-shrink-0"
-        [ngClass]="{
-          'text-tertiary': shift.saved && !duplicateShift,
-          'text-success': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
-          'text-info': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
-          'text-error': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
-          'text-warning': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
-          'text-accent': duplicateShift
-        }">
-        @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
-        @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }
-        @else if (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift) { delete }
-        @else if (duplicateShift) { content_copy }
-        @else { check_circle }
-      </mat-icon>
-      <!-- Row ID -->
-      <span class="text-base font-bold text-info font-mono flex-shrink-0">#{{shift.rowId}}</span>
-      <!-- Service Name, Number (flexible, grows) -->
-      <span class="font-bold text-primary text-sm sm:text-base flex-1 min-w-0 inline-flex items-center">
-        <span class="truncate block">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
-      </span>
-      <!-- Total (far right) -->
-      <span class="flex items-center gap-1 flex-shrink-0 justify-end">
-        @if (!shift.grandTotal) {<mat-icon class="text-tertiary text-base">hourglass_empty</mat-icon>}
-        @if (shift.amountPerTime >= 25) {<mat-icon class="text-success text-base">trending_up</mat-icon>}
-        @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-info text-base">trending_neutral</mat-icon>}
-        @if (shift.amountPerTime < 20) {<mat-icon class="text-error text-base">trending_down</mat-icon>}
+    <div class="flex items-center min-w-0 w-full overflow-x-auto">
+      <div class="flex-1 min-w-0 text-left">
+        <div class="inline-flex items-center gap-2 sm:gap-4">
+          <!-- Status Icon -->
+          <mat-icon class="text-xl flex-shrink-0"
+            [ngClass]="{
+              'text-tertiary': shift.saved && !duplicateShift,
+              'text-success': !shift.saved && shift.action === ActionEnum.Add && !duplicateShift,
+              'text-info': !shift.saved && shift.action === ActionEnum.Update && !duplicateShift,
+              'text-error': (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift),
+              'text-warning': !shift.saved && (!shift.action || (shift.action !== ActionEnum.Add && shift.action !== ActionEnum.Update && shift.action !== ActionEnum.Delete) && !duplicateShift),
+              'text-accent': duplicateShift
+            }">
+            @if (!shift.saved && shift.action === ActionEnum.Add && !duplicateShift) { add }
+            @else if (!shift.saved && shift.action === ActionEnum.Update && !duplicateShift) { edit }
+            @else if (!shift.saved && shift.action === ActionEnum.Delete && !duplicateShift) { delete }
+            @else if (duplicateShift) { content_copy }
+            @else { check_circle }
+          </mat-icon>
+          <!-- Row ID -->
+          <span class="text-base font-bold text-info font-mono">#{{shift.rowId}}</span>
+        </div>
+      </div>
+
+      <div class="flex-shrink-0 px-2 text-center">
+        <span class="font-bold text-primary text-sm sm:text-base inline-flex items-center justify-center max-w-full">
+          <span class="truncate max-w-full">{{shift.service}}</span>@if (shift.number > 0) {&nbsp;#{{shift.number}}}
+        </span>
+      </div>
+
+      <div class="flex-1 min-w-0 text-right">
+        <span class="inline-flex items-center gap-1 justify-end">
+          @if (!shift.grandTotal) {<mat-icon class="text-tertiary text-base">hourglass_empty</mat-icon>}
+          @if (shift.amountPerTime >= 25) {<mat-icon class="text-success text-base">trending_up</mat-icon>}
+          @if (shift.amountPerTime >= 20 && shift.amountPerTime < 25) {<mat-icon class="text-info text-base">trending_neutral</mat-icon>}
+          @if (shift.amountPerTime < 20) {<mat-icon class="text-error text-base">trending_down</mat-icon>}
           <span class="font-bold text-sm sm:text-base"
             [ngClass]="{ 'text-tertiary': !shift.grandTotal, 'text-success': shift.amountPerTime >= 25, 'text-info': shift.amountPerTime >= 20 && shift.amountPerTime < 25, 'text-error': shift.amountPerTime < 20 }">
-          {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
+            {{shift.grandTotal ? (shift.grandTotal | currency) : '$0.00'}}
+          </span>
         </span>
-      </span>
+      </div>
     </div>
     <!-- Second line: Date + Time Range + Duration -->
     <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2">

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
@@ -35,6 +35,7 @@ import { BaseRectButtonComponent } from '@components/base';
     ],
 })
 export class ShiftsQuickViewComponent {
+export class ShiftsQuickViewComponent implements OnInit {
   ActionEnum = ActionEnum;
   dateFormats = DATE_FORMATS;
   @Input() shift: IShift = {} as IShift;
