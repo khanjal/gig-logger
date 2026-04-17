@@ -145,7 +145,7 @@ describe('TripFormComponent', () => {
     component.shifts = [shift];
     await component.onShiftSelected(shift.key);
 
-    expect(component.isNewShift).toBeFalse();
+    expect(component.isNewShift()).toBeFalse();
     expect(component.tripForm.controls.region.value).toBe('Downtown');
   });
 
@@ -158,8 +158,8 @@ describe('TripFormComponent', () => {
 
     await component.onShiftSelected('new');
 
-    expect(component.isNewShift).toBeTrue();
-    expect(component.selectedShiftOption).toBeUndefined();
+    expect(component.isNewShift()).toBeTrue();
+    expect(component.selectedShiftOption()).toBeUndefined();
     expect(component.tripForm.controls.shift.value).toBe('new');
     expect(component.tripForm.controls.service.value).toBe('DoorDash');
     expect(component.tripForm.controls.region.value).toBe('Downtown');
@@ -173,20 +173,20 @@ describe('TripFormComponent', () => {
     ]));
     placeService.list.and.returnValue(Promise.resolve([]));
     component.tripForm.controls.shift.setValue('stale-shift');
-    component.selectedShiftOption = {
+    component.selectedShiftOption.set({
       shiftKey: 'stale-shift',
       rowId: 1,
       dateLabel: 'Mon Jan 01',
       serviceLabel: 'Old',
       numberLabel: '',
       subtitle: 'old'
-    };
+    });
 
     await (component as any).setDefaultShift();
 
     expect(component.tripForm.controls.shift.value).toBe('new');
-    expect(component.selectedShiftOption).toBeUndefined();
-    expect(component.isNewShift).toBeTrue();
+    expect(component.selectedShiftOption()).toBeUndefined();
+    expect(component.isNewShift()).toBeTrue();
   });
 
   it('toggleAdvancedPay should toggle flag and show snack', () => {

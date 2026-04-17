@@ -20,21 +20,22 @@ describe('ShiftsComponent', () => {
   let shifts$: BehaviorSubject<any[]>;
   let trips$: BehaviorSubject<any[]>;
   let expenses$: BehaviorSubject<any[]>;
+  let unsaved$: BehaviorSubject<boolean>;
 
   beforeEach(async () => {
     shifts$ = new BehaviorSubject<any[]>([]);
     trips$ = new BehaviorSubject<any[]>([]);
     expenses$ = new BehaviorSubject<any[]>([]);
+    unsaved$ = new BehaviorSubject<boolean>(false);
     shiftSpy = jasmine.createSpyObj('ShiftService', ['query', 'getMaxRowId', 'getLastShift'], { shifts$: shifts$.asObservable() });
     tripSpy = jasmine.createSpyObj('TripService', [], { trips$: trips$.asObservable() });
     expenseSpy = jasmine.createSpyObj('ExpensesService', [], { expenses$: expenses$.asObservable() });
-    unsavedSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
+    unsavedSpy = jasmine.createSpyObj('UnsavedDataService', [], { unsavedData$: unsaved$.asObservable() });
     sheetSpy = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
 
     shiftSpy.query.and.resolveTo([] as any);
     shiftSpy.getMaxRowId.and.resolveTo(1 as any);
     shiftSpy.getLastShift.and.resolveTo(undefined as any);
-    unsavedSpy.hasUnsavedData.and.resolveTo(false);
     sheetSpy.querySpreadsheets.and.resolveTo([] as any);
 
     await TestBed.configureTestingModule({

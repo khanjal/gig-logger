@@ -146,13 +146,10 @@ export class TripComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(hasUnsaved => this.unsavedData.set(hasUnsaved));
 
-    // Only load if not in edit mode
-    if (!this.isEditMode()) {
-      await this.load();
-      // Start polling if enabled and not in edit mode
-      if (this.pollingEnabled()) {
-        await this.startPolling();
-      }
+    // Start polling if enabled and not in edit mode.
+    // Initial form/table hydration is stream-driven via trips$/shifts$ subscriptions above.
+    if (!this.isEditMode() && this.pollingEnabled()) {
+      await this.startPolling();
     }
     await this.refreshDefaultSheetState();
     
@@ -169,7 +166,6 @@ export class TripComponent implements OnInit, OnDestroy {
       this.isLoading.set(true);
     }
     try {
-      await this.refreshUnsavedData();
       this.scheduleTripsTableReload();
       this.scheduleTripFormReload();
     } catch (error) {
@@ -218,12 +214,6 @@ export class TripComponent implements OnInit, OnDestroy {
     this.yesterdaysTrips.set(yesterdaysTrips);
   }
 
-  private async refreshUnsavedData(): Promise<void> {
-    this.unsavedData.set(await this.unsavedDataService.hasUnsavedData());
-  }
-
-
-
   // Toggle yesterday's trips visibility
   toggleYesterdayTrips(): void {
     this.showYesterdayTrips.update(show => !show);
@@ -269,7 +259,7 @@ export class TripComponent implements OnInit, OnDestroy {
       });
       const result = await firstValueFrom(dialogRef.afterClosed());
       if (result) {
-        await this.reload("todaysTrips");
+        await this.reload();
       }
     } finally {
       this.syncInProgress.set(false);
@@ -293,7 +283,6 @@ export class TripComponent implements OnInit, OnDestroy {
       const result = await firstValueFrom(dialogRef.afterClosed());
       if (result) {
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIPS_SAVED_TO_SPREADSHEET);
-        this._viewportScroller.scrollToAnchor("todaysTrips");
       }
     } finally {
       this.syncInProgress.set(false);
@@ -424,8 +413,6 @@ export class TripComponent implements OnInit, OnDestroy {
     }
     await this.load(); // This handles the overlay timing
     this.isEditMode.set(false);
-    this.scheduleTripsTableReload();
-    this.scheduleTripFormReload();
     if (this.pollingEnabled()) {
       await this.startPolling();
     }

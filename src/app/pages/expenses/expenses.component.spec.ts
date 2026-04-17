@@ -20,6 +20,7 @@ describe('ExpensesComponent', () => {
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let authGoogleServiceMock: Partial<AuthGoogleService>;
   let expensesStream$: BehaviorSubject<IExpense[]>;
+  let unsavedDataStream$: BehaviorSubject<boolean>;
 
   const makeExpense = (overrides: Partial<IExpense> = {}): IExpense => ({
     id: overrides.id ?? 1,
@@ -36,12 +37,13 @@ describe('ExpensesComponent', () => {
 
   beforeEach(async () => {
     expensesStream$ = new BehaviorSubject<IExpense[]>([]);
+    unsavedDataStream$ = new BehaviorSubject<boolean>(false);
     expensesServiceSpy = jasmine.createSpyObj(
       'ExpensesService',
       ['getMaxRowId', 'add', 'update', 'delete', 'list'],
       { expenses$: expensesStream$.asObservable() }
     );
-    unsavedDataServiceSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
+    unsavedDataServiceSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData'], { unsavedData$: unsavedDataStream$.asObservable() });
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     authGoogleServiceMock = {
@@ -159,13 +161,13 @@ describe('ExpensesComponent', () => {
       expect(component.customCategories()).not.toContain('Fuel'); // default category
     });
 
-    it('refreshes unsaved data through stream binding on init', async () => {
-      expensesServiceSpy.list.and.returnValue(Promise.resolve([]));
-
+    it('updates unsavedData from service stream', async () => {
       await component.ngOnInit();
-      await component.loadExpenses();
 
-      expect(unsavedDataServiceSpy.hasUnsavedData).toHaveBeenCalled();
+      unsavedDataStream$.next(true);
+      await Promise.resolve();
+
+      expect(component.unsavedData()).toBeTrue();
     });
 
     it('precomputes month and year totals', async () => {

@@ -79,7 +79,6 @@ export class ShiftsComponent implements OnInit {
       .subscribe(hasUnsaved => this.unsavedData.set(hasUnsaved));
 
     await this.refreshDefaultSheetState();
-    await this.loadShifts();
   }
 
   async loadShifts(): Promise<void> {
