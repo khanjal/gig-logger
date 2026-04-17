@@ -9,7 +9,8 @@ import { MatOptgroup } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
-import { MockLocationService, PresetLocation } from '@services/mock-location.service';
+import { MockLocationService } from '@services/mock-location.service';
+import type { IPresetLocation } from '@interfaces/mock-location.interface';
 import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
 
 @Component({
@@ -41,7 +42,7 @@ export class LocationOverrideComponent implements OnInit {
   longitude = signal(-74.0060);
   radius = signal(25);
   locationName = signal('');
-  selectedPreset = signal<PresetLocation | null>(null);
+  selectedPreset = signal<IPresetLocation | null>(null);
   currentRealLocation = signal<{ lat: number; lng: number } | null>(null);
   gettingLocation = signal(false);
 
@@ -55,11 +56,11 @@ export class LocationOverrideComponent implements OnInit {
     this.getCurrentRealLocation();
   }
 
-  get usPresets(): PresetLocation[] {
+  get usPresets(): IPresetLocation[] {
     return this.getSortedPresets('US');
   }
 
-  get canadaPresets(): PresetLocation[] {
+  get canadaPresets(): IPresetLocation[] {
     return this.getSortedPresets('CA');
   }
 
@@ -86,7 +87,7 @@ export class LocationOverrideComponent implements OnInit {
     }
   }
 
-  onPresetSelect(preset: PresetLocation | null): void {
+  onPresetSelect(preset: IPresetLocation | null): void {
     if (!preset) {
       this.selectedPreset.set(null);
       return;
@@ -205,7 +206,7 @@ export class LocationOverrideComponent implements OnInit {
     }, 100);
   }
 
-  private getSortedPresets(country: 'US' | 'CA'): PresetLocation[] {
+  private getSortedPresets(country: 'US' | 'CA'): IPresetLocation[] {
     return this.mockLocationService.presetLocations
       .filter((preset) => preset.country === country)
       .slice()
