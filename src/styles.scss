@@ -562,10 +562,16 @@ html.theme-dark {
 
 .custom-modalbox {
   max-width: calc(100vw - 2rem) !important;
+
+  .mat-mdc-dialog-container {
+    border-radius: 1rem;
+    overflow: hidden;
+  }
   
   .mat-mdc-dialog-container .mdc-dialog__surface {
     padding: .25rem;
     border-radius: 1rem;
+    overflow: hidden;
     max-height: calc(100vh - 4rem);
     overflow-y: auto;
     background-color: var(--color-surface) !important;
@@ -586,6 +592,16 @@ html.theme-dark {
 
 @media (max-width: 640px) {
   /* Use inset dialog on mobile rather than full-bleed so users see it's a modal */
+  .custom-modalbox .mat-mdc-dialog-container {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .custom-modalbox .mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
   .custom-modalbox.responsive-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
     width: calc(100vw - 48px) !important;
     max-width: calc(100vw - 48px) !important;
