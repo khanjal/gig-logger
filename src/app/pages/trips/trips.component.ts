@@ -58,6 +58,7 @@ export class TripComponent implements OnInit, OnDestroy {
   clearing = signal(false);
   reloading = signal(false);
   saving = signal(false);
+  syncInProgress = signal(false);
   pollingEnabled = signal(false);
   showYesterdayTrips = signal(false); // Controls the visibility of yesterday's trips section
   // Edit mode properties
@@ -188,13 +189,17 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   private scheduleTripsTableReload(): void {
+    if (this.syncInProgress()) {
+      return;
+    }
+
     setTimeout(() => {
       void this.tripsTable?.load();
     }, 0);
   }
 
   private scheduleTripFormReload(): void {
-    if (this.saving()) {
+    if (this.saving() || this.syncInProgress()) {
       return;
     }
 
@@ -261,16 +266,19 @@ export class TripComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let dialogRef = this.dialog.open(DataSyncModalComponent, {
-        panelClass: 'custom-modalbox',
-        data: inputValue
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-        if (result) {
-            await this.reload("todaysTrips");
-        }
-    });
+    this.syncInProgress.set(true);
+    try {
+      const dialogRef = this.dialog.open(DataSyncModalComponent, {
+          panelClass: 'custom-modalbox',
+          data: inputValue
+      });
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (result) {
+        await this.reload("todaysTrips");
+      }
+    } finally {
+      this.syncInProgress.set(false);
+    }
   }
 
   async saveSheetDialog(inputValue: string) {
@@ -281,6 +289,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
 
     this.saving.set(true);
+    this.syncInProgress.set(true);
     try {
       const dialogRef = this.dialog.open(DataSyncModalComponent, {
           panelClass: 'custom-modalbox',
@@ -292,6 +301,7 @@ export class TripComponent implements OnInit, OnDestroy {
         this._viewportScroller.scrollToAnchor("todaysTrips");
       }
     } finally {
+      this.syncInProgress.set(false);
       this.saving.set(false);
     }
   }

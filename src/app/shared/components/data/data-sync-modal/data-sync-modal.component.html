@@ -1,13 +1,13 @@
-<div class="fixed mx-2 inset-0 flex items-center justify-center bg-opacity-50 z-50">
-    <div class="modal-container rounded-lg shadow-lg w-full max-w-md p-6 flex flex-col bg-surface dark:bg-surface-3">
+<div class="modal-shell flex items-center justify-center max-w-full">
+    <div class="modal-container rounded-lg shadow-lg w-full max-w-md p-6 flex flex-col bg-surface dark:bg-surface-3 overflow-x-hidden">
         <div class="sync-terminal bg-surface-2 dark:bg-surface-3 rounded-md p-4 mb-4 text-secondary font-mono text-sm overflow-y-auto h-80" #terminal>
             <div class="flex mb-1 items-start">
                 <span class="text-success whitespace-nowrap w-10">00:00</span>
-                <span class="ml-2 text-success flex-1">Please wait while your data is {{ syncStatusLabel }}.</span>
+                <span class="ml-2 text-success flex-1 break-words">Please wait while your data is {{ syncStatusLabel }}.</span>
             </div>
             <div class="flex mb-1 items-start">
                 <span class="text-success whitespace-nowrap w-10">00:00</span>
-                <span class="ml-2 text-success flex-1">Modal will close when complete.</span>
+                <span class="ml-2 text-success flex-1 break-words">Modal will close when complete.</span>
             </div>
             <ng-container *ngFor="let message of terminalMessages()">
                 <div class="flex mb-1 items-start">
@@ -16,7 +16,7 @@
                         'text-success': message.type === 'info',
                         'text-warning': message.type === 'warning',
                         'text-error': message.type === 'error'
-                    }" class="ml-2 flex-1">{{ message.text }}</span>
+                    }" class="ml-2 flex-1 break-words">{{ message.text }}</span>
                 </div>
             </ng-container>
         </div>

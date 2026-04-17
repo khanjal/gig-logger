@@ -5,6 +5,10 @@
     color: var(--color-text-primary);
 }
 
+.modal-shell {
+    min-height: 0;
+}
+
 /* Terminal area should use a themed elevated surface for contrast */
 .sync-terminal {
     background: var(--terminal-bg) !important;
