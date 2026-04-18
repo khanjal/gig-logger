@@ -14,6 +14,20 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.json">
 
+  <script>
+    // Serve host-specific manifest so installed app names are distinct across environments.
+    (function () {
+      var testHosts = ['gig-test.raptorsheets.com', 'gig-test.reaptorsheets.com'];
+      var host = window.location.hostname.toLowerCase();
+      var manifestHref = testHosts.includes(host) ? 'manifest.test.json' : 'manifest.json';
+      var manifestLink = document.querySelector('link[rel="manifest"]');
+
+      if (manifestLink) {
+        manifestLink.setAttribute('href', manifestHref);
+      }
+    })();
+  </script>
+
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
