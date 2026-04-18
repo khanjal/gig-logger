@@ -20,7 +20,6 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
-    "ignoreDeprecations": "6.0",
     "lib": [
       "es2020",
       "dom"
