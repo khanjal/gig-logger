@@ -11,6 +11,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { ServiceService } from '@services/sheets/service.service';
+import { TypeService } from '@services/sheets/type.service';
 import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
@@ -25,6 +26,7 @@ describe('DiagnosticsComponent', () => {
   let placeService: any;
   let nameService: any;
   let serviceService: any;
+  let typeService: any;
   let regionService: any;
   let loggerService: any;
   let gigCalculator: any;
@@ -37,6 +39,7 @@ describe('DiagnosticsComponent', () => {
     placeService = jasmine.createSpyObj('PlaceService', ['list', 'findDuplicates']);
     nameService = jasmine.createSpyObj('NameService', ['list', 'findDuplicates']);
     serviceService = jasmine.createSpyObj('ServiceService', ['list', 'findDuplicates']);
+    typeService = jasmine.createSpyObj('TypeService', ['findDuplicates']);
     regionService = jasmine.createSpyObj('RegionService', ['findDuplicates']);
     loggerService = jasmine.createSpyObj('LoggerService', ['debug', 'info']);
     gigCalculator = jasmine.createSpyObj('GigCalculatorService', ['updateTripDuration']);
@@ -61,6 +64,7 @@ describe('DiagnosticsComponent', () => {
     nameService.findDuplicates.and.returnValue(Promise.resolve([]));
     serviceService.list.and.returnValue(Promise.resolve([]));
     serviceService.findDuplicates.and.returnValue(Promise.resolve([]));
+    typeService.findDuplicates.and.returnValue(Promise.resolve([]));
     regionService.findDuplicates.and.returnValue(Promise.resolve([]));
 
     loggerService.debug.and.stub();
@@ -84,6 +88,7 @@ describe('DiagnosticsComponent', () => {
         { provide: PlaceService, useValue: placeService },
         { provide: NameService, useValue: nameService },
         { provide: ServiceService, useValue: serviceService },
+        { provide: TypeService, useValue: typeService },
         { provide: RegionService, useValue: regionService },
         { provide: LoggerService, useValue: loggerService },
         { provide: GigCalculatorService, useValue: gigCalculator },
@@ -106,7 +111,7 @@ describe('DiagnosticsComponent', () => {
     await component.runDiagnostics();
 
     expect(component.isLoading()).toBeFalse();
-    expect(component.dataDiagnostics().length).toBe(11);
+    expect(component.dataDiagnostics().length).toBe(12);
     expect(component.getTotalIssues()).toBe(0);
   });
 

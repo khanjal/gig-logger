@@ -23,6 +23,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { ServiceService } from '@services/sheets/service.service';
+import { TypeService } from '@services/sheets/type.service';
 import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
@@ -57,6 +58,7 @@ export class DiagnosticsComponent implements OnInit {
     private _placeService: PlaceService,
     private _nameService: NameService,
     private _serviceService: ServiceService,
+    private _typeService: TypeService,
     private _regionService: RegionService,
     private _logger: LoggerService,
     private _gigCalculator: GigCalculatorService,
@@ -214,6 +216,25 @@ export class DiagnosticsComponent implements OnInit {
       groups: duplicateServicesResult.groups
     });
 
+    // Duplicate types via shared utility (case-insensitive equals + contains)
+    const typeEqualsGroups = await this._typeService.findDuplicates('type', { mode: 'equals', caseInsensitive: true, normalize: true });
+    const typeContainsGroups = await this._typeService.findDuplicates('type', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
+    const duplicateTypesResult = DiagnosticHelper.mergeDuplicateGroups(typeEqualsGroups, typeContainsGroups);
+    // Recompute trip counts per type
+    for (const group of duplicateTypesResult.groups ?? []) {
+      await DiagnosticHelper.recomputeGroupCounts('type', group, this._tripService, this._shiftService);
+    }
+    this._logger.debug('Duplicate types found:', duplicateTypesResult);
+    diagnostics.push({
+      name: 'Duplicate Types',
+      count: duplicateTypesResult.items.length,
+      severity: duplicateTypesResult.items.length > 0 ? 'warning' : 'info',
+      description: 'Types with different casing or variations (e.g., Delivery vs delivery)',
+      itemType: 'type',
+      items: duplicateTypesResult.items,
+      groups: duplicateTypesResult.groups
+    });
+
     // Duplicate regions via shared utility (case-insensitive equals only)
     const regionEqualsGroups = await this._regionService.findDuplicates('region', { mode: 'equals', caseInsensitive: true, normalize: true });
     const duplicateRegionsResult = DiagnosticHelper.mergeDuplicateGroups(regionEqualsGroups, []);
@@ -326,6 +347,8 @@ export class DiagnosticsComponent implements OnInit {
       } else if (itemType === 'region') {
         affectedTrips = trips.filter(t => t.region === item.region);
         affectedShifts = shifts.filter(s => s.region === item.region);
+      } else if (itemType === 'type') {
+        affectedTrips = trips.filter(t => t.type === item.type);
       }
       
       for (const trip of affectedTrips) {
@@ -340,6 +363,8 @@ export class DiagnosticsComponent implements OnInit {
           trip.service = selectedItem.service;
         } else if (itemType === 'region') {
           trip.region = selectedItem.region;
+        } else if (itemType === 'type') {
+          trip.type = selectedItem.type;
         }
         updateAction(trip, ActionEnum.Update);
         tripsToUpdate.push(trip);

@@ -154,6 +154,10 @@ export class DiagnosticHelper {
           item.shifts = shifts.filter((s: IShift) => s.service === item.service).length;
           break;
 
+        case 'type':
+          item.trips = trips.filter((t: ITrip) => t.type === item.type).length;
+          break;
+
         case 'region':
           item.trips = trips.filter((t: ITrip) => t.region === item.region).length;
           item.shifts = shifts.filter((s: IShift) => s.region === item.region).length;
@@ -162,7 +166,7 @@ export class DiagnosticHelper {
 
       // Mark as fixed if all counts are zero
       // For types without shifts (place, name, address), only check trips
-      const allZero = itemType === 'place' || itemType === 'name' || itemType === 'address'
+      const allZero = itemType === 'place' || itemType === 'name' || itemType === 'address' || itemType === 'type'
         ? item.trips === 0
         : item.trips === 0 && item.shifts === 0;
       

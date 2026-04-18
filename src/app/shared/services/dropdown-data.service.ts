@@ -102,11 +102,11 @@ export class DropdownDataService {
     const data = await this.getAllDropdownData();
     switch (type) {
       case 'Service':
-        return data.services;
+        return this.mergeUniqueValues(data.services, this.canonicalServices);
       case 'Type':
-        return data.types;
+        return this.mergeUniqueValues(data.types, this.canonicalTypes);
       case 'Place':
-        return data.places;
+        return this.mergeUniqueValues(data.places, this.canonicalPlaces);
       case 'Address':
         return data.addresses;
       case 'Region':
@@ -116,6 +116,31 @@ export class DropdownDataService {
       default:
         return [];
     }
+  }
+
+  /**
+   * Merges primary and fallback dropdown values while preserving order and removing duplicates.
+   */
+  private mergeUniqueValues(primaryValues: string[], fallbackValues: string[]): string[] {
+    const merged = [...(primaryValues || []), ...(fallbackValues || [])];
+    const seen = new Set<string>();
+    const uniqueValues: string[] = [];
+
+    for (const value of merged) {
+      if (typeof value !== 'string') {
+        continue;
+      }
+
+      const normalizedValue = value.trim().toLowerCase();
+      if (!normalizedValue || seen.has(normalizedValue)) {
+        continue;
+      }
+
+      seen.add(normalizedValue);
+      uniqueValues.push(value);
+    }
+
+    return uniqueValues;
   }
 
   /**

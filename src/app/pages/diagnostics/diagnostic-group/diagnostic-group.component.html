@@ -25,8 +25,8 @@
   <mat-radio-group [(ngModel)]="selectedValue" (ngModelChange)="onValueChange($event)" class="divide-y divide-border">
     <div *ngFor="let problemItem of group" 
          class="p-3 hover:bg-surface-3 transition-colors flex items-center gap-2 item-row" 
-         [class.opacity-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0) || problemItem.markedForDelete" 
-          [class.bg-success-soft]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address') && problemItem.trips === 0)"
+         [class.opacity-50]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address' || itemType === 'type') && problemItem.trips === 0) || problemItem.markedForDelete" 
+          [class.bg-success-soft]="((itemType === 'service' || itemType === 'region') && problemItem.trips === 0 && problemItem.shifts === 0) || ((itemType === 'place' || itemType === 'name' || itemType === 'address' || itemType === 'type') && problemItem.trips === 0)"
           [class.bg-error-soft]="problemItem.markedForDelete">
       <mat-radio-button *ngIf="canMerge" 
                         [value]="problemItem"></mat-radio-button>
@@ -109,6 +109,17 @@
           <div class="text-sm mt-1">
             <span class="item-meta">{{ problemItem.trips }} trips</span>
             <span class="item-meta ml-2">• {{ problemItem.shifts }} shifts</span>
+          </div>
+        </div>
+
+        <!-- Type Item -->
+        <div *ngIf="itemType === 'type'">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ problemItem.id ?? problemItem.rowId }}</span>
+            <span class="font-semibold item-name">{{ problemItem.type || 'No type' }}</span>
+          </div>
+          <div class="text-sm mt-1">
+            <span class="item-meta">{{ problemItem.trips }} trips</span>
           </div>
         </div>
 
