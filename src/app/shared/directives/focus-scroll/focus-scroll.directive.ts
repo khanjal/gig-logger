@@ -39,17 +39,13 @@ export class FocusScrollDirective {
     this.isScrolling = true;
 
     this.initialScrollTimerId = window.setTimeout(() => {
-      this.alignElementIntoView('smooth');
-
       if (useViewportAwareDelay) {
         this.attachViewportListeners();
       }
 
-      // If configured, apply an initial bottom padding to create headroom
+      // Apply bottom padding before the first scroll attempt so bottom-of-page
+      // fields still have room to move upward when the keyboard opens.
       if (this.enableBottomPadding && this.isMobileDevice()) {
-        // attach listeners so updateBottomPadding runs as viewport changes
-        this.attachViewportListeners();
-        // give an immediate conservative padding so dropdowns can position
         try {
           if (this.previousBodyPadding == null) {
             this.previousBodyPadding = document.body.style.paddingBottom || '';
@@ -58,9 +54,12 @@ export class FocusScrollDirective {
           document.documentElement.classList.add('rgv-bottom-padding-active');
           this.bottomPaddingApplied = true;
         } catch (e) { /* ignore */ }
-        // keep updating once visualViewport changes
         this.updateBottomPadding();
-        // ensure overlays get a resize and start the settle window
+      }
+
+      this.alignElementIntoView('smooth');
+
+      if (this.enableBottomPadding && this.isMobileDevice()) {
         try {
           this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
         } catch (e) { /* ignore */ }
