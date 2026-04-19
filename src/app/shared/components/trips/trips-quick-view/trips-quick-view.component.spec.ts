@@ -32,10 +32,10 @@ describe('TripsQuickViewComponent', () => {
 
     fixture = TestBed.createComponent(TripsQuickViewComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -54,6 +54,7 @@ describe('TripsQuickViewComponent', () => {
 
   it('navigates on editTrip', async () => {
     component.trip = { rowId: 123 } as any;
+    fixture.detectChanges();
     await component.editTrip();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/trips/edit', component.trip.rowId]);
   });

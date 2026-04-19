@@ -160,7 +160,7 @@ describe('ShiftService', () => {
 
       await service.saveUnsavedShifts();
 
-      expect(service.saveUnsaved).toHaveBeenCalled();
+      expect(service.saveUnsaved).toHaveBeenCalledWith(undefined, undefined);
     });
   });
 

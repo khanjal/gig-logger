@@ -16,7 +16,7 @@
       <!-- Enable Toggle -->
       <div>
         <mat-slide-toggle 
-          [(ngModel)]="enabled" 
+          [ngModel]="enabled()" (ngModelChange)="enabled.set($event)"
           (change)="onToggleChange()"
           color="primary"
           aria-label="Toggle location override"
@@ -25,7 +25,7 @@
           <span class="mock-toggle-label font-medium mr-1 text-secondary">Enable override</span>
         </mat-slide-toggle>
         
-        <div *ngIf="enabled" class="mock-warning mt-2 flex items-start gap-2 text-sm text-warning bg-warning-soft px-3 py-2 rounded">
+        <div *ngIf="enabled()" class="mock-warning mt-2 flex items-start gap-2 text-sm text-warning bg-warning-soft px-3 py-2 rounded">
           <mat-icon class="!text-base !w-5 !h-5 !leading-5 flex-shrink-0">warning</mat-icon>
           <span class="mock-warning-text text-warning mr-1">Override active - the app will use this location for Google Places and other location-sensitive features</span>
         </div>
@@ -41,25 +41,25 @@
           <app-base-fab-button
             fabStyle="mini"
             [icon]="'refresh'"
-            [loading]="gettingLocation"
-            [disabled]="gettingLocation"
+            [loading]="gettingLocation()"
+            [disabled]="gettingLocation()"
             aria-label="Refresh current location"
             (clicked)="getCurrentRealLocation()"
           ></app-base-fab-button>
         </div>
-        <div *ngIf="currentRealLocation" class="text-sm text-secondary">
+        <div *ngIf="currentRealLocation()" class="text-sm text-secondary">
           <div class="grid grid-cols-2 gap-2">
             <div>
               <span class="text-tertiary">Latitude:</span>
-              <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lat) }}</span>
+              <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation()!.lat) }}</span>
             </div>
             <div>
               <span class="text-tertiary">Longitude:</span>
-              <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation.lng) }}</span>
+              <span class="ml-2 font-mono">{{ formatCoordinate(currentRealLocation()!.lng) }}</span>
             </div>
           </div>
           <app-base-rect-button 
-            *ngIf="enabled"
+            *ngIf="enabled()"
             variant="outlined"
             [icon]="'gps_fixed'"
             iconPosition="left"
@@ -70,12 +70,12 @@
             Use This Location as Override
           </app-base-rect-button>
         </div>
-        <div *ngIf="!currentRealLocation && !gettingLocation" class="text-sm text-tertiary">
+        <div *ngIf="!currentRealLocation() && !gettingLocation()" class="text-sm text-tertiary">
           Location unavailable - click refresh to try again
         </div>
       </div>
 
-      <div *ngIf="enabled" class="space-y-5">
+      <div *ngIf="enabled()" class="space-y-5">
         <!-- Preset Locations -->
         <div>
           <label class="block text-sm font-medium mb-2 text-secondary">Quick Select City</label>
@@ -84,7 +84,7 @@
           </p>
           <mat-form-field class="w-full rg-field-shell" appearance="fill">
             <mat-label>Popular cities</mat-label>
-            <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelect($event.value)">
+            <mat-select [ngModel]="selectedPreset()" (selectionChange)="onPresetSelect($event.value)">
               <mat-option [value]="null">Custom coordinates</mat-option>
               <mat-optgroup label="United States">
                 <mat-option *ngFor="let preset of usPresets" [value]="preset">
@@ -105,16 +105,16 @@
           <h3 class="text-sm font-semibold mb-3 text-secondary">Custom Coordinates</h3>
           <div class="grid grid-cols-3 gap-4">
             <app-base-input
-              [(ngModel)]="latitude"
-              (ngModelChange)="onCoordinatesChange()"
+              [ngModel]="latitude()"
+              (ngModelChange)="onLatitudeChange($event)"
               [label]="'Latitude'"
               [type]="'number'"
               [hint]="'Range: -90 to 90'"
             ></app-base-input>
 
             <app-base-input
-              [(ngModel)]="longitude"
-              (ngModelChange)="onCoordinatesChange()"
+              [ngModel]="longitude()"
+              (ngModelChange)="onLongitudeChange($event)"
               [label]="'Longitude'"
               [type]="'number'"
               [hint]="'Range: -180 to 180'"
@@ -122,7 +122,7 @@
 
               <mat-form-field class="w-full rg-field-shell" appearance="fill">
                 <mat-label>Search Radius (miles)</mat-label>
-                <mat-select [(ngModel)]="radius" (selectionChange)="onRadiusChange()">
+                <mat-select [ngModel]="radius()" (selectionChange)="onRadiusChange($event.value)">
                   <mat-option [value]="5">5 miles</mat-option>
                   <mat-option [value]="15">15 miles</mat-option>
                   <mat-option [value]="30">30 miles</mat-option>
@@ -140,9 +140,9 @@
             Active Override Location
           </h3>
           <div class="text-sm text-secondary space-y-1">
-            <div><strong>Name:</strong> {{ locationName || 'Unnamed' }}</div>
-            <div><strong>Coordinates:</strong> {{ formatCoordinate(latitude) }}, {{ formatCoordinate(longitude) }}</div>
-            <div><strong>Search Radius:</strong> {{ radius }} miles</div>
+            <div><strong>Name:</strong> {{ locationName() || 'Unnamed' }}</div>
+            <div><strong>Coordinates:</strong> {{ formatCoordinate(latitude()) }}, {{ formatCoordinate(longitude()) }}</div>
+            <div><strong>Search Radius:</strong> {{ radius() }} miles</div>
           </div>
         </div>
 

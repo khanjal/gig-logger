@@ -5,11 +5,11 @@
       <span class="status-label text-secondary">User ID:</span>
       <mat-chip 
         [ngClass]="{
-          'chip-success': userId,
-          'chip-error': !userId
+          'chip-success': userId(),
+          'chip-error': !userId()
         }"
         selected>
-        <span class="chip-text">{{ userId || 'Missing' }}</span>
+        <span class="chip-text">{{ userId() || 'Missing' }}</span>
       </mat-chip>
     </div>
 
@@ -18,11 +18,11 @@
       <span class="status-label text-secondary">Local Storage:</span>
       <mat-chip 
         [ngClass]="{
-          'chip-success': localStorageAuth,
-          'chip-error': !localStorageAuth
+          'chip-success': localStorageAuth(),
+          'chip-error': !localStorageAuth()
         }"
         selected>
-        <span class="chip-text">{{ localStorageAuth ? 'TRUE' : 'FALSE' }}</span>
+        <span class="chip-text">{{ localStorageAuth() ? 'TRUE' : 'FALSE' }}</span>
       </mat-chip>
     </div>
 
@@ -31,18 +31,18 @@
       <span class="status-label text-secondary">Access Token:</span>
       <mat-chip 
         [ngClass]="{
-          'chip-success': hasAccessToken,
-          'chip-error': !hasAccessToken
+          'chip-success': hasAccessToken(),
+          'chip-error': !hasAccessToken()
         }"
         selected>
-        <span class="chip-text">{{ hasAccessToken ? 'Present' : 'Missing' }}</span>
+        <span class="chip-text">{{ hasAccessToken() ? 'Present' : 'Missing' }}</span>
       </mat-chip>
     </div>
 
     <!-- Token Preview -->
-    <div class="status-row" *ngIf="hasAccessToken">
+      <div class="status-row" *ngIf="hasAccessToken()">
       <span class="status-label text-secondary">Token Preview:</span>
-      <code class="token-preview">{{ accessTokenPreview }}</code>
+        <code class="token-preview">{{ accessTokenPreview() }}</code>
     </div>
 
     <!-- Overall Status -->
@@ -50,18 +50,18 @@
       <span class="status-label text-secondary">Overall Status:</span>
       <mat-chip 
         [ngClass]="{
-          'chip-success': isAuthenticated,
-          'chip-error': !isAuthenticated
+          'chip-success': isAuthenticated(),
+          'chip-error': !isAuthenticated()
         }"
         selected>
-        <span class="chip-text">{{ isAuthenticated ? 'Authenticated' : 'Not Authenticated' }}</span>
+        <span class="chip-text">{{ isAuthenticated() ? 'Authenticated' : 'Not Authenticated' }}</span>
       </mat-chip>
     </div>
 
     <!-- Last Updated -->
     <div class="status-row">
       <span class="status-label text-secondary">Last Updated:</span>
-      <span class="timestamp text-tertiary">{{ lastUpdated | date:'medium' }}</span>
+      <span class="timestamp text-tertiary">{{ lastUpdated() | date:'medium' }}</span>
     </div>
 
   </div>

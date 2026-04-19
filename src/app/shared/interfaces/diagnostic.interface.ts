@@ -3,7 +3,7 @@ export interface IDiagnosticItem {
   count: number;
   severity: 'info' | 'warning' | 'error';
   description: string;
-  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name' | 'service' | 'region';
+  itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name' | 'service' | 'type' | 'region';
   items?: any[];
   groups?: any[][];
   fixable?: boolean;
@@ -21,4 +21,4 @@ export interface IDuplicateResult<T> {
   groups: T[][];
 }
 
-export type DiagnosticEntityType = 'shift' | 'trip' | 'address' | 'place' | 'name' | 'service' | 'region';
+export type DiagnosticEntityType = 'shift' | 'trip' | 'address' | 'place' | 'name' | 'service' | 'type' | 'region';

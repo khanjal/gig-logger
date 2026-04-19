@@ -6,11 +6,6 @@ import { VOICE_PATTERNS, PatternDefinition } from '@components/voice-input/voice
 import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
 
 /**
- * @deprecated Use IVoiceParseResult from @interfaces/voice-parse-result.interface instead
- */
-export type VoiceParseResult = IVoiceParseResult;
-
-/**
  * Pattern match result with metadata
  */
 interface PatternMatch {

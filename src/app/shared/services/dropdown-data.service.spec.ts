@@ -203,6 +203,23 @@ describe('DropdownDataService', () => {
       const list = await service.getDropdownList('Invalid' as DropdownType);
       expect(list).toEqual([]);
     });
+
+    it('should merge canonical examples for Service without duplicates', async () => {
+      serviceService.list.and.returnValue(Promise.resolve([{ rowId: 1, service: 'DoorDash' } as IService]));
+      typeService.list.and.returnValue(Promise.resolve([]));
+      placeService.list.and.returnValue(Promise.resolve([]));
+      addressService.list.and.returnValue(Promise.resolve([]));
+      regionService.list.and.returnValue(Promise.resolve([]));
+      nameService.list.and.returnValue(Promise.resolve([]));
+
+      await service.getAllDropdownData();
+      service.clearCache();
+      (service as any).canonicalServices = ['DoorDash', 'Uber Eats', 'Lyft'];
+
+      const list = await service.getDropdownList('Service');
+
+      expect(list).toEqual(['DoorDash', 'Uber Eats', 'Lyft']);
+    });
   });
 
   describe('filterDropdown', () => {
@@ -258,6 +275,57 @@ describe('DropdownDataService', () => {
     it('should filter names', async () => {
       const result = await service.filterDropdown('Name', 'ja');
       expect(result).toEqual(['Jane']);
+    });
+
+    it('should return canonical Service examples for fresh sheet when DB is empty', async () => {
+      serviceService.list.and.returnValue(Promise.resolve([]));
+      typeService.list.and.returnValue(Promise.resolve([]));
+      placeService.list.and.returnValue(Promise.resolve([]));
+      addressService.list.and.returnValue(Promise.resolve([]));
+      regionService.list.and.returnValue(Promise.resolve([]));
+      nameService.list.and.returnValue(Promise.resolve([]));
+
+      await service.getAllDropdownData();
+      service.clearCache();
+      (service as any).canonicalServices = ['DoorDash', 'Uber Eats', 'Lyft'];
+
+      const result = await service.filterDropdown('Service', '');
+
+      expect(result).toEqual(['DoorDash', 'Uber Eats', 'Lyft']);
+    });
+
+    it('should filter canonical Type examples for fresh sheet when DB is empty', async () => {
+      serviceService.list.and.returnValue(Promise.resolve([]));
+      typeService.list.and.returnValue(Promise.resolve([]));
+      placeService.list.and.returnValue(Promise.resolve([]));
+      addressService.list.and.returnValue(Promise.resolve([]));
+      regionService.list.and.returnValue(Promise.resolve([]));
+      nameService.list.and.returnValue(Promise.resolve([]));
+
+      await service.getAllDropdownData();
+      service.clearCache();
+      (service as any).canonicalTypes = ['Delivery', 'Pickup', 'Rideshare'];
+
+      const result = await service.filterDropdown('Type', 'pick');
+
+      expect(result).toEqual(['Pickup']);
+    });
+
+    it('should filter canonical Place examples for fresh sheet when DB is empty', async () => {
+      serviceService.list.and.returnValue(Promise.resolve([]));
+      typeService.list.and.returnValue(Promise.resolve([]));
+      placeService.list.and.returnValue(Promise.resolve([]));
+      addressService.list.and.returnValue(Promise.resolve([]));
+      regionService.list.and.returnValue(Promise.resolve([]));
+      nameService.list.and.returnValue(Promise.resolve([]));
+
+      await service.getAllDropdownData();
+      service.clearCache();
+      (service as any).canonicalPlaces = ['Walmart', 'Target', 'Costco'];
+
+      const result = await service.filterDropdown('Place', 'tar');
+
+      expect(result).toEqual(['Target']);
     });
   });
 

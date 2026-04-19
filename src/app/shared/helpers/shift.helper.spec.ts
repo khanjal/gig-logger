@@ -271,6 +271,46 @@ describe('ShiftHelper', () => {
     });
   });
 
+  describe('getDuplicateShiftKeys', () => {
+    it('returns only keys that appear more than once', () => {
+      const shifts = [
+        makeShift({ key: 'k1' }),
+        makeShift({ key: 'k1' }),
+        makeShift({ key: 'k2' }),
+      ];
+
+      const result = ShiftHelper.getDuplicateShiftKeys(shifts);
+
+      expect(result.size).toBe(1);
+      expect(result.has('k1')).toBeTrue();
+      expect(result.has('k2')).toBeFalse();
+    });
+
+    it('ignores empty keys', () => {
+      const shifts = [
+        makeShift({ key: '' }),
+        makeShift({ key: '' }),
+        makeShift({ key: 'k1' }),
+      ];
+
+      const result = ShiftHelper.getDuplicateShiftKeys(shifts);
+
+      expect(result.size).toBe(0);
+    });
+
+    it('returns empty set when all keys are unique', () => {
+      const shifts = [
+        makeShift({ key: 'k1' }),
+        makeShift({ key: 'k2' }),
+        makeShift({ key: 'k3' }),
+      ];
+
+      const result = ShiftHelper.getDuplicateShiftKeys(shifts);
+
+      expect(result.size).toBe(0);
+    });
+  });
+
   describe('getTodaysShifts', () => {
     it('returns empty when no shifts are tracked internally', () => {
       spyOn(DateHelper, 'toISO').and.callThrough();

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
@@ -34,16 +34,16 @@ import { BaseRectButtonComponent } from '@components/base';
         BaseRectButtonComponent,
     ],
 })
-export class ShiftsQuickViewComponent {
+export class ShiftsQuickViewComponent implements OnInit {
   ActionEnum = ActionEnum;
   dateFormats = DATE_FORMATS;
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
   @Input() inlineMode: boolean = false;
+  @Input() isDuplicate: boolean = false;
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
   @Output() edit = new EventEmitter<IShift>();
 
-  duplicateShift: boolean = false;
   isExpanded: boolean = false;
   prefers24Hour: boolean = false;
 
@@ -53,18 +53,12 @@ export class ShiftsQuickViewComponent {
     private _router: Router
   ) {}
 
-  async ngOnInit() {
-    await this.checkForDuplicates();
+  ngOnInit() {
     this.prefers24Hour = DateHelper.prefers24Hour();
   }
 
   toggleExpansion() {
     this.isExpanded = !this.isExpanded;
-  }
-
-  async checkForDuplicates() {
-    let shifts = await this.shiftService.query("key", this.shift.key);
-    this.duplicateShift = shifts.length > 1;
   }
 
   async confirmDeleteShiftDialog(shift: IShift) {
@@ -102,8 +96,8 @@ export class ShiftsQuickViewComponent {
   }
 
   canDeleteShift(): boolean {
-    // Enable delete if duplicateShift is true, or if both grandTotal and totalTrips are 0 or falsy
-    return !!this.duplicateShift || (((this.shift.grandTotal === 0 || !this.shift.grandTotal) && (this.shift.totalTrips === 0 || !this.shift.totalTrips)));
+    // Enable delete if duplicate shift is true, or if both grandTotal and totalTrips are 0 or falsy
+    return !!this.isDuplicate || (((this.shift.grandTotal === 0 || !this.shift.grandTotal) && (this.shift.totalTrips === 0 || !this.shift.totalTrips)));
   }
 
   canEditShift(): boolean {

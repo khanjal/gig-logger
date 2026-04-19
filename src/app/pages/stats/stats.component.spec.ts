@@ -12,12 +12,17 @@ describe('StatsComponent', () => {
   const dailySubject = new BehaviorSubject([]);
 
   beforeEach(async () => {
+    const shiftMock = createShiftServiceMock();
+    shiftMock.getShiftsBetweenDates.and.returnValue(Promise.resolve([]));
+    const tripMock = createTripServiceMock();
+    tripMock.getBetweenDates.and.returnValue(Promise.resolve([]));
+
     await TestBed.configureTestingModule({
       imports: [...commonTestingImports, StatsComponent],
       providers: [
         ...commonTestingProviders,
-        { provide: ShiftService, useValue: createShiftServiceMock() },
-        { provide: TripService, useValue: createTripServiceMock() },
+        { provide: ShiftService, useValue: shiftMock },
+        { provide: TripService, useValue: tripMock },
         { provide: DailyService, useValue: { daily$: dailySubject.asObservable() } }
       ]
     })

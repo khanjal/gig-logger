@@ -6,7 +6,7 @@
       <button (click)="toggleMenu()"
               class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
               aria-label="Toggle menu">
-        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+        <mat-icon>{{ isMenuOpen() ? 'close' : 'menu' }}</mat-icon>
       </button>
     </div>
 
@@ -21,14 +21,14 @@
         <mat-icon>home</mat-icon>
       </a>
 
-      <ng-container *ngIf="defaultSheet">
+      <ng-container *ngIf="defaultSheet()">
         <a routerLink="/trips"
            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
            aria-label="View trips"
            matTooltip="Trips"
            matTooltipPosition="below">
           <mat-icon>navigation</mat-icon>
-          <span *ngIf="unsavedTripsCount > 0" class="notification-badge">{{ unsavedTripsCount }}</span>
+          <span *ngIf="unsavedTripsCount() > 0" class="notification-badge">{{ unsavedTripsCount() }}</span>
         </a>
         <a routerLink="/shifts"
            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
@@ -36,7 +36,7 @@
            matTooltip="Shifts"
            matTooltipPosition="below">
           <mat-icon>today</mat-icon>
-          <span *ngIf="unsavedShiftsCount > 0" class="notification-badge">{{ unsavedShiftsCount }}</span>
+          <span *ngIf="unsavedShiftsCount() > 0" class="notification-badge">{{ unsavedShiftsCount() }}</span>
         </a>
         <a routerLink="/metrics"
            class="relative flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition"
@@ -54,7 +54,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngIf="defaultSheet">
+      <ng-container *ngIf="defaultSheet()">
         <div class="hidden md:flex items-center gap-1">
           <a routerLink="/stats" class="flex h-10 w-10 items-center justify-center rounded-lg text-inverse hover:bg-overlay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-border-focus)] transition" aria-label="View statistics" matTooltip="Statistics" matTooltipPosition="below">
             <mat-icon>table_chart</mat-icon>
@@ -71,7 +71,7 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="defaultSheet">
+      <ng-container *ngIf="defaultSheet()">
         <app-sync-status-indicator></app-sync-status-indicator>
       </ng-container>
 
@@ -81,20 +81,20 @@
          matTooltip="Settings"
          matTooltipPosition="below">
         <mat-icon>settings</mat-icon>
-        <span *ngIf="localOnlyMode" class="notification-dot" title="Signed out / offline — local data only" role="status" aria-label="Signed out or offline; local data only">!</span>
+        <span *ngIf="localOnlyMode()" class="notification-dot" title="Signed out / offline — local data only" role="status" aria-label="Signed out or offline; local data only">!</span>
       </a>
     </div>
   </mat-toolbar>
 
   <div class="fixed inset-0 z-[1001] bg-overlay backdrop-blur-sm opacity-0 pointer-events-none transition"
-       [class.opacity-100]="isMenuOpen"
-       [class.pointer-events-auto]="isMenuOpen"
+      [class.opacity-100]="isMenuOpen()"
+      [class.pointer-events-auto]="isMenuOpen()"
        (click)="closeMenu()"
        role="dialog"
        aria-modal="true"
        aria-labelledby="menu-title">
     <nav class="absolute top-0 left-0 h-full w-64 max-w-[90vw] bg-surface shadow-strong transform -translate-x-full transition-transform duration-300 flex flex-col"
-         [class.translate-x-0]="isMenuOpen"
+          [class.translate-x-0]="isMenuOpen()"
          (click)="$event.stopPropagation()"
          role="navigation"
          aria-label="Main menu">
@@ -116,7 +116,7 @@
           <span class="text-sm font-medium">Home</span>
         </a>
 
-        <ng-container *ngIf="defaultSheet">
+        <ng-container *ngIf="defaultSheet()">
           <div class="mt-3">
             <div class="px-4 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-secondary">Logging</div>
             <a routerLink="/trips" (click)="closeMenu()" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-primary-soft hover:text-primary transition rounded-md" aria-label="View trips">
@@ -173,7 +173,7 @@
     </nav>
   </div>
 
-  <div class="loading-indicator" [class.loading-indicator--visible]="isLoading">
+  <div class="loading-indicator" [class.loading-indicator--visible]="isLoading()">
     <div class="loading-bar"></div>
   </div>
 </header>

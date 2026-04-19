@@ -1,12 +1,12 @@
-<mat-form-field [ngClass]="['rg-field-shell', fieldClass]" appearance="fill">
+<mat-form-field 
+    [ngClass]="['rg-field-shell', fieldClass]" 
+    appearance="fill">
     <mat-label>{{ label }}</mat-label>
     <input 
         matInput 
         [ngxMatTimepicker]="timePicker" 
         [value]="value"
-        (ngModelChange)="onTimeChange($event)"
         [placeholder]="placeholder"
-        [disabled]="disabled"
         readonly>
     <ngx-mat-timepicker #timePicker (timeSet)="onTimeChange($event)"></ngx-mat-timepicker>
     
@@ -16,7 +16,7 @@
             [fab]="true" 
             fabStyle="mini"
             type="button"
-            [icon]="'access_time'"
+            [icon]="'schedule'"
             [iconColor]="'var(--primary-500)'"
             (clicked)="setCurrentTime()"
             [disabled]="disabled"

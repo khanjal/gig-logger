@@ -43,11 +43,8 @@
  */
 
 /***************************************************************************************************
- * Zone JS is required by default for Angular itself.
- */
-import 'zone.js';  // Included with Angular CLI.
-
-
-/***************************************************************************************************
  * APPLICATION IMPORTS
+ *
+ * Runtime zone.js is intentionally omitted on the zoneless migration branch.
+ * Test-time zone support remains in src/test.ts until the test harness is migrated.
  */

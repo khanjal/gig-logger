@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,8 +33,8 @@ interface DiagnosticItem {
   styleUrl: './diagnostics.component.scss'
 })
 export class DiagnosticsComponent implements OnInit {
-  dataDiagnostics: DiagnosticItem[] = [];
-  isLoading = false;
+  dataDiagnostics = signal<DiagnosticItem[]>([]);
+  isLoading = signal(false);
   constructor(
     private _shiftService: ShiftService,
     private _tripService: TripService,
@@ -47,13 +47,16 @@ export class DiagnosticsComponent implements OnInit {
     // Diagnostics will only run when the user clicks the "Run Diagnostics" button
   }
   async runDiagnostics() {
-    this.isLoading = true;
-    this.dataDiagnostics = []; // Clear previous results
+    this.isLoading.set(true);
+    this.dataDiagnostics.set([]); // Clear previous results
     try {
       await this.checkDataIntegrity();
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
+  }
+  private addDiagnostic(item: DiagnosticItem): void {
+    this.dataDiagnostics.update(items => [...items, item]);
   }
     private async checkDataIntegrity() {
     const shifts = await this._shiftService.list();
@@ -65,7 +68,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for duplicate shifts
     const duplicateShiftsResult = this.findDuplicateShifts(shifts);
     this.logger.debug('Duplicate shifts found:', duplicateShiftsResult);
-    this.dataDiagnostics.push({
+    this.addDiagnostic({
       name: 'Duplicate Shifts',
       count: duplicateShiftsResult.items.length,
       severity: duplicateShiftsResult.items.length > 0 ? 'warning' : 'info',
@@ -77,7 +80,7 @@ export class DiagnosticsComponent implements OnInit {
     
     // Check for empty shifts
     const emptyShifts = shifts.filter((s: IShift) => !s.start && !s.finish && s.trips === 0 && s.totalTrips === 0);
-    this.logger.debug('Empty shifts found:', emptyShifts);    this.dataDiagnostics.push({
+    this.logger.debug('Empty shifts found:', emptyShifts);    this.addDiagnostic({
       name: 'Empty Shifts',
       count: emptyShifts.length,
       severity: emptyShifts.length > 0 ? 'warning' : 'info',
@@ -88,7 +91,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Check for orphaned trips
     const orphanedTrips = this.findOrphanedTrips(trips, shifts);
-    this.logger.debug('Orphaned trips found:', orphanedTrips);    this.dataDiagnostics.push({
+    this.logger.debug('Orphaned trips found:', orphanedTrips);    this.addDiagnostic({
       name: 'Orphaned Trips',
       count: orphanedTrips.length,
       severity: orphanedTrips.length > 0 ? 'error' : 'info',
@@ -100,7 +103,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for duplicate places with different casing
     const duplicatePlacesResult = this.findDuplicatePlaces(places);
     this.logger.debug('Duplicate places found:', duplicatePlacesResult);
-    this.dataDiagnostics.push({
+    this.addDiagnostic({
       name: 'Duplicate Places',
       count: duplicatePlacesResult.items.length,
       severity: duplicatePlacesResult.items.length > 0 ? 'warning' : 'info',
@@ -113,7 +116,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for duplicate addresses with different casing/variations
     const duplicateAddressesResult = this.findDuplicateAddresses(addresses);
     this.logger.debug('Duplicate addresses found:', duplicateAddressesResult);
-    this.dataDiagnostics.push({
+    this.addDiagnostic({
       name: 'Duplicate Addresses',
       count: duplicateAddressesResult.items.length,
       severity: duplicateAddressesResult.items.length > 0 ? 'warning' : 'info',
@@ -126,7 +129,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for duplicate names with different casing
     const duplicateNamesResult = this.findDuplicateNames(names);
     this.logger.debug('Duplicate names found:', duplicateNamesResult);
-    this.dataDiagnostics.push({
+    this.addDiagnostic({
       name: 'Duplicate Names',
       count: duplicateNamesResult.items.length,
       severity: duplicateNamesResult.items.length > 0 ? 'warning' : 'info',
@@ -136,7 +139,7 @@ export class DiagnosticsComponent implements OnInit {
       groups: duplicateNamesResult.groups
     });
     
-    this.logger.info('Final dataDiagnostics:', this.dataDiagnostics);
+    this.logger.info('Final dataDiagnostics:', this.dataDiagnostics());
   }
 
   private findDuplicateShifts(shifts: IShift[]): { items: IShift[], groups: IShift[][] } {

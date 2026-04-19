@@ -1,5 +1,5 @@
 // Angular imports
-import { Component, ElementRef, Inject, Input, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, Inject, Input, ViewChild, OnInit, OnDestroy, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
@@ -19,11 +19,9 @@ import { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // Application-specific imports - Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
-import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
-import { TripService } from '@services/sheets/trip.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { LoggerService } from '@services/logger.service';
 import { NgFor, NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -71,29 +69,25 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     
     // Timer related properties
     private timerSubscription: Subscription | null = null;
-    currentTime = 0;
+    currentTime = signal(0);
     time = 0;
     currentTimeString = "";
 
     // Sync state management
-    protected syncState: SyncState = {
+    protected syncState = signal<SyncState>({
         isPaused: false,
         isAutoClose: true,
         canContinue: false,
         forceLoad: false,
         hasNonInfoMessage: false
-    };
+    });
 
     // Terminal messages
-    private messages: TerminalMessage[] = [];
+    terminalMessages = signal<TerminalMessage[]>([]);
     
     // Data management
     protected data: ISheet | null = null;
     protected defaultSheet!: ISpreadsheet;
-    
-    get terminalMessages(): TerminalMessage[] {
-        return this.messages;
-    }
 
     get syncStatusLabel(): string {
         if (this.type === 'save') return 'saved';
@@ -106,9 +100,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         public dialogRef: MatDialogRef<DataSyncModalComponent>,
         private _gigLoggerService: GigWorkflowService,
         private _sheetService: SpreadsheetService,
-        private _shiftService: ShiftService,
-        private _tripService: TripService,
-        private _expensesService: ExpensesService,
+        private _unsavedDataService: UnsavedDataService,
         private _timerService: TimerService,
         private _logger: LoggerService
     ) { 
@@ -161,16 +153,18 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.appendToLastMessage(`ONLINE (${this.currentTime - this.time}s)`);
-        this.time = this.currentTime;
+        this.appendToLastMessage(`ONLINE (${this.currentTime() - this.time}s)`);
+        this.time = this.currentTime();
     }
 
     async saveData() {
         let sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
+        // Collect unsaved items once — reused for shift calculation, payload, and synced-ID tracking.
+        const { unsavedTrips, unsavedShifts, unsavedExpenses } = await this._unsavedDataService.collectUnsavedItems();
+
         // Pre-calculate totals for unsaved shifts before saving
-        const unsavedShifts = await this._shiftService.getUnsavedShifts();
         if (unsavedShifts.length > 0) {
             try {
                 await this._gigLoggerService.calculateShiftTotals(unsavedShifts);
@@ -178,11 +172,20 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
                 this.appendToTerminal('Pre-save shift calculation failed; proceeding with save', 'warning');
             }
         }
-        
+
+        // Capture the save boundary after local shift recalculation so those
+        // mutations are included in this save cycle instead of being treated
+        // as later edits that should remain unsaved.
+        const saveStartedAt = Date.now();
+
         // Apply serialization to convert 0 → null for input fields (wire-format)
         sheetData.shifts = SheetSerializerHelper.serializeShifts(unsavedShifts);
-        sheetData.trips = SheetSerializerHelper.serializeTrips(await this._tripService.getUnsaved());
-        sheetData.expenses = await this._expensesService.getUnsaved();
+        sheetData.trips = SheetSerializerHelper.serializeTrips(unsavedTrips);
+        sheetData.expenses = unsavedExpenses;
+
+        const syncedShiftIds = new Set(unsavedShifts.filter(shift => shift.id !== undefined).map(shift => shift.id!));
+        const syncedTripIds = new Set(unsavedTrips.filter(trip => trip.id !== undefined).map(trip => trip.id!));
+        const syncedExpenseIds = new Set(unsavedExpenses.filter(expense => expense.id !== undefined).map(expense => expense.id!));
 
         this.appendToTerminal("Saving changes...");
         let messages = await this._gigLoggerService.saveSheetData(sheetData);
@@ -204,11 +207,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
 
         // Mark all items as saved in local database after successful save
-        await this._tripService.saveUnsaved();
-        await this._shiftService.saveUnsavedShifts();
-        await this._expensesService.saveUnsaved();
+        await this._unsavedDataService.commitSavedItems(saveStartedAt, syncedTripIds, syncedShiftIds, syncedExpenseIds);
 
-        this.appendToLastMessage(`SAVED (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`SAVED (${this.currentTime() - this.time}s)`);
     }
 
     private async createDemoAndLoad() {
@@ -233,12 +234,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             if (!linked) return;
 
             // Insert demo data (exclusive to demo flow)
-            this.time = this.currentTime;
+            this.time = this.currentTime();
             this.appendToTerminal('Inserting demo data...');
             await this._gigLoggerService.insertDemoData(linked.id);
-            this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+            this.appendToLastMessage(`DONE (${this.currentTime() - this.time}s)`);
 
-            await this.warmup(this.currentTime);
+            await this.warmup(this.currentTime());
             await this.getData();
         } catch (error) {
             this._logger.error('Failed to create and load demo spreadsheet.', error);
@@ -259,7 +260,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             const linked = await this.createFileAndLink(sheetProperties);
             if (!linked) return;
 
-            await this.warmup(this.currentTime);
+            await this.warmup(this.currentTime());
             await this.getData();
         } catch (error) {
             this._logger.error('Failed to create and load spreadsheet.', error);
@@ -279,9 +280,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             await this.processFailure('ERROR');
             return null;
         }
-        this.appendToLastMessage(`CREATED (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`CREATED (${this.currentTime() - this.time}s)`);
 
-        this.time = this.currentTime;
+        this.time = this.currentTime();
         this.appendToTerminal('Linking spreadsheet locally...');
         const existingSheets = await this._sheetService.getSpreadsheets();
         for (const existingSheet of existingSheets) {
@@ -299,12 +300,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         };
         await this._sheetService.add(created);
         this.defaultSheet = created;
-        this.appendToLastMessage(`LINKED (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`LINKED (${this.currentTime() - this.time}s)`);
 
-        this.time = this.currentTime;
+        this.time = this.currentTime();
         this.appendToTerminal('Creating sheets...');
         await this._gigLoggerService.createSheet(createdFile.id);
-        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`DONE (${this.currentTime() - this.time}s)`);
 
         return created;
     }
@@ -317,12 +318,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             this.processFailure("ERROR");
             return;
         }
-        this.appendToLastMessage(`DONE (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`DONE (${this.currentTime() - this.time}s)`);
 
         data.messages.forEach(message => {
             let messageLevel = message.level.toLowerCase() as MessageType;
             if (messageLevel !== 'info') {
-                this.syncState.hasNonInfoMessage = true;
+                this.syncState.update(s => ({ ...s, hasNonInfoMessage: true }));
             }
             this.appendToTerminal(message.message, messageLevel);
         });
@@ -333,7 +334,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             .filter(x => x.default !== "true");
         
         for (const secondarySpreadsheet of secondarySpreadsheets) {
-            this.time = this.currentTime;
+            this.time = this.currentTime();
             this.appendToTerminal("Appending sheet data...");
             let data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
             
@@ -343,23 +344,23 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             }
             
             await this._sheetService.appendSpreadsheetData(data);
-            this.appendToLastMessage(`APPENDED (${this.currentTime - this.time}s)`);
+            this.appendToLastMessage(`APPENDED (${this.currentTime() - this.time}s)`);
         }
 
         // Only disable auto-close if there are non-info messages AND autoCloseOnError is false
-        if (this.syncState.hasNonInfoMessage && !this.autoCloseOnError) {
-            this.syncState.isAutoClose = false;
+        if (this.syncState().hasNonInfoMessage && !this.autoCloseOnError) {
+            this.syncState.update(s => ({ ...s, isAutoClose: false }));
             this.appendToTerminal("Auto-close disabled");
         }
     }
 
     private async loadData(data: ISheet) {
-        this.time = this.currentTime;
+        this.time = this.currentTime();
         this.appendToTerminal("Loading sheet data...");
 
-        if (!this.syncState.forceLoad && 
+        if (!this.syncState().forceLoad && 
             data.messages.filter(x => x.level.toLowerCase() === 'error').length > 0) {
-            this.syncState.canContinue = true;
+            this.syncState.update(s => ({ ...s, canContinue: true }));
             this.data = data;
             this.processFailure("ERROR");
             return;
@@ -375,49 +376,56 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         // Unsubscribe after load completes
         logSubscription.unsubscribe();
         
-        this.appendToLastMessage(`LOADED (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`LOADED (${this.currentTime() - this.time}s)`);
     }
 
     private appendToTerminal(text: string, type: MessageType = 'info') {
-        this.messages.push({
-            time: DateHelper.getMinutesAndSeconds(this.currentTime),
-            text: text,
-            type: type
-        });
+        this.terminalMessages.update(msgs => [
+            ...msgs,
+            { time: DateHelper.getMinutesAndSeconds(this.currentTime()), text, type }
+        ]);
         this.scrollToBottom();
     }
 
     private appendToLastMessage(text: string) {
-        if (this.messages.length > 0) {
-            this.messages[this.messages.length - 1].text += ` ${text}`;
-        }
+        this.terminalMessages.update(msgs => {
+            if (msgs.length === 0) return msgs;
+            const updated = [...msgs];
+            updated[updated.length - 1] = { ...updated[updated.length - 1], text: updated[updated.length - 1].text + ` ${text}` };
+            return updated;
+        });
     }
 
     private updateLastMessageType(type: MessageType) {
-        if (this.messages.length > 0) {
-            this.messages[this.messages.length - 1].type = type;
-        }
+        this.terminalMessages.update(msgs => {
+            if (msgs.length === 0) return msgs;
+            const updated = [...msgs];
+            updated[updated.length - 1] = { ...updated[updated.length - 1], type };
+            return updated;
+        });
     }
 
     private updateLastMessageTime() {
-        if (this.messages.length > 0) {
-            this.messages[this.messages.length - 1].time = 
-                DateHelper.getMinutesAndSeconds(this.currentTime);
-        }
+        this.terminalMessages.update(msgs => {
+            if (msgs.length === 0) return msgs;
+            const updated = [...msgs];
+            updated[updated.length - 1] = { ...updated[updated.length - 1], time: DateHelper.getMinutesAndSeconds(this.currentTime()) };
+            return updated;
+        });
     }
 
     private async processFailure(message: string) {
-        this.appendToLastMessage(`${message} (${this.currentTime - this.time}s)`);
+        this.appendToLastMessage(`${message} (${this.currentTime() - this.time}s)`);
         this.updateLastMessageType('error');
         
         // Check if we should auto-close even on error
         if (this.autoCloseOnError) {
-            this.syncState.isAutoClose = true;
+            this.syncState.update(s => ({ ...s, isAutoClose: true }));
             this.appendToTerminal(`Error detected - Modal will auto-close in ${this.timerDelay / 1000}s`);
         } else {
-            this.syncState.isAutoClose = false;
+            this.syncState.update(s => ({ ...s, isAutoClose: false }));
             
-            if (this.syncState.canContinue) {              
+            if (this.syncState().canContinue) {              
                 this.appendToTerminal("Partial data retrieved - Choose an option:", 'warning');
                 this.appendToTerminal("• Continue with partial data", 'info');
                 this.appendToTerminal("• Retry download", 'info');
@@ -440,22 +448,20 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.syncState.forceLoad = true;
-        this.syncState.isAutoClose = true;
-        this.syncState.canContinue = false;
-        this.startTimer(this.currentTime);
+        this.syncState.update(s => ({ ...s, forceLoad: true, isAutoClose: true, canContinue: false }));
+        this.startTimer(this.currentTime());
         await this.loadData(this.data);
         await this.completeSync();
     }
 
     async retryLoad() {
-        await this.warmup(this.currentTime);
+        await this.warmup(this.currentTime());
         await this.getData();
     }
 
     private async completeSync() {
-        if (this.syncState.isAutoClose) {
-            this.appendToTerminal(`Modal closing @ ${this.currentTime + (this.timerDelay / 1000)}s`);
+        if (this.syncState().isAutoClose) {
+            this.appendToTerminal(`Modal closing @ ${this.currentTime() + (this.timerDelay / 1000)}s`);
             await this._timerService.delay(this.timerDelay);
             this.dialogRef.close(true);
         } else {
@@ -474,12 +480,12 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
                 map((x: number) => x + startFrom)
             )
             .subscribe(t => {
-                this.currentTime = t;
+                this.currentTime.set(t);
                 this.currentTimeString = DateHelper.getMinutesAndSeconds(t);
                 this.updateLastMessageTime();
             });
 
-        this.time = this.currentTime;
+        this.time = this.currentTime();
     }
 
     private stopTimer() {

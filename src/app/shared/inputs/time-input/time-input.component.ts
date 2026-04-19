@@ -35,7 +35,6 @@ export class TimeInputComponent implements ControlValueAccessor {
   @Input() placeholder: string = 'Select time';
   @Input() fieldClass: string = 'field-third-width';
   @Input() disabled: boolean = false;
-  @Input() showCurrentTimeButton: boolean = true;
 
   @Output() timeChanged = new EventEmitter<string>();
 

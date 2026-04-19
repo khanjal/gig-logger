@@ -4,28 +4,28 @@
       <div class="flex flex-wrap gap-3 items-center justify-between">
         <h1 class="text-2xl font-bold flex-1 pt-4">Shifts</h1>
         <div class="flex gap-2">
-          <app-base-fab-button *ngIf="unsavedData && !(showAddForm || editId)"
+          <app-base-fab-button *ngIf="unsavedData() && !(showAddForm() || editId())"
             fabStyle="mini"
             variant="secondary"
             class="!w-10 !h-10"
-            [loading]="saving"
-            [disabled]="saving"
+            [loading]="saving()"
+            [disabled]="saving()"
             (clicked)="confirmSaveDialog()"
             matTooltip="Save Changes"
             [icon]="'save'">
           </app-base-fab-button>
 
-          <app-base-fab-button *ngIf="!showAddForm && !editId"
+          <app-base-fab-button *ngIf="!showAddForm() && !editId()"
             fabStyle="mini"
             variant="primary"
             class="!w-10 !h-10"
-            (clicked)="showAddForm = true"
-            [disabled]="showAddForm"
+            (clicked)="showAddForm.set(true)"
+            [disabled]="showAddForm()"
             matTooltip="Add Shift"
             [icon]="'add'">
           </app-base-fab-button>
 
-          <app-base-fab-button *ngIf="showAddForm && !editId"
+          <app-base-fab-button *ngIf="showAddForm() && !editId()"
             fabStyle="mini"
             variant="danger"
             class="hide-button !w-10 !h-10"
@@ -39,34 +39,34 @@
     </div>
     <div class="h-14"></div>
 
-    @if (!(showAddForm || editId) && demoSheetAttached) {
+    @if (!(showAddForm() || editId()) && demoSheetAttached()) {
       <div class="mx-4 mt-2 rounded-lg border border-info bg-info-soft px-3 py-2 text-center text-sm text-info">
         {{ uiMessages.DEMO_SHEET_ATTACHED }}
       </div>
     }
 
-    <div *ngIf="showAddForm || editId">
+    <div *ngIf="showAddForm() || editId()">
         <shift-form 
-          [rowId]="editId"
+          [rowId]="editId()"
           (parentReload)="handleParentReload()"
           (editModeExit)="exitEditMode($event)">
         </shift-form>
     </div>
 
-    <div *ngIf="!(showAddForm || editId)" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
+    <div *ngIf="!(showAddForm() || editId())" class="shifts-scrollable flex-1 overflow-y-auto space-y-4 pr-2 max-h-screen" (scroll)="onScroll($event)">
       <!-- Empty state: show message and add button when there are no shifts -->
-      <div *ngIf="shifts.length === 0" class="pt-12 text-center">
+      <div *ngIf="shifts().length === 0" class="pt-12 text-center">
         <p class="text-lg text-secondary mb-4">You have no shifts yet. Add your first shift to get started, or add a trip and a shift will be created for it automatically.</p>
         <app-base-rect-button
           variant="primary"
-          (clicked)="showAddForm = true"
+          (clicked)="showAddForm.set(true)"
           [icon]="'add'">
           Add Shift
         </app-base-rect-button>
       </div>
 
       <!-- List of shifts -->
-      @for (shift of shifts; track $index; let isFirst = $first) {
+      @for (shift of shifts(); track (shift.rowId || shift.key || $index); let isFirst = $first) {
           <div
             [id]="shift.rowId"
             [ngClass]="{
@@ -78,7 +78,7 @@
             <app-shifts-quick-view
               [shift]="shift"
               [index]="$index"
-              (parentReload)="handleParentReload()"
+              [isDuplicate]="!!shift.key && duplicateShiftKeys().has(shift.key)"
             ></app-shifts-quick-view>
           </div>
         }

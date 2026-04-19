@@ -16,7 +16,7 @@ import { SheetSourceLabelPipe } from '@pipes/sheet-source-label.pipe';
 export class SheetQuickViewComponent implements OnInit {
   @Input() spreadsheet!: ISpreadsheet;
   size: string | undefined;
-  async ngOnInit() {
+  ngOnInit() {
     this.size = NumberHelper.getDataSize(this.spreadsheet.size);
   }
 }

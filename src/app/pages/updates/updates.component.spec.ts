@@ -31,7 +31,7 @@ describe('UpdatesComponent', () => {
     {
       date: '2025-10-25-11-01',
       dateLabel: 'October 25 - November 1, 2025',
-      isWeekly: true,
+      isRollup: true,
       updates: [
         {
           title: 'Updated privacy policy',
@@ -81,14 +81,14 @@ describe('UpdatesComponent', () => {
   it('should subscribe to updates service', (done) => {
     component.ngOnInit();
     setTimeout(() => {
-      expect(component.updates.length).toBe(2);
-      expect(component.updates[0].dateLabel).toBe('January 2, 2026');
+      expect(component.updates().length).toBe(2);
+      expect(component.updates()[0].dateLabel).toBe('January 2, 2026');
       done();
     }, 100);
   });
 
   it('should display all update entries', () => {
-    component.updates = mockUpdates;
+    component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     const entries = compiled.querySelectorAll('.update-entry');
@@ -96,23 +96,23 @@ describe('UpdatesComponent', () => {
   });
 
   it('should display date labels correctly', () => {
-    component.updates = mockUpdates;
+    component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     const dateLabels = compiled.querySelectorAll('.date-label');
     expect(dateLabels[0].textContent).toContain('January 2, 2026');
   });
 
-  it('should show weekly badge for weekly entries', () => {
-    component.updates = mockUpdates;
+  it('should show rollup badge for rollup entries', () => {
+    component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    const weeklyBadge = compiled.querySelectorAll('.weekly-badge');
-    expect(weeklyBadge.length).toBe(1);
+    const rollupBadge = compiled.querySelectorAll('.rollup-badge');
+    expect(rollupBadge.length).toBe(1);
   });
 
   it('should display update items with titles', () => {
-    component.updates = mockUpdates;
+    component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     const titles = compiled.querySelectorAll('.update-title');
@@ -121,7 +121,7 @@ describe('UpdatesComponent', () => {
   });
 
   it('should display changes as bullet list when available', () => {
-    component.updates = mockUpdates;
+    component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     const changesList = compiled.querySelectorAll('.changes-list');
@@ -131,7 +131,7 @@ describe('UpdatesComponent', () => {
   });
 
   it('should display pages affected when available', () => {
-    component.updates = mockUpdates;
+    component.updates.set(mockUpdates);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     const pageBadges = compiled.querySelectorAll('.page-badge');

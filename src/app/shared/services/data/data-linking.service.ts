@@ -196,7 +196,8 @@ export class DataLinkingService {
                     }
                 }
 
-                await this._addressService.append([address]);
+                // Persist linked metadata only; avoid append() because it re-aggregates numeric totals.
+                await this._addressService.update([address]);
             }
             
             this._logger.info('Address data linked successfully');

@@ -1,11 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { openSnackbar } from '@utils/snackbar.util';
 import { DateHelper } from '@helpers/date.helper';
-import { MonthlyService } from '@services/sheets/monthly.service';
-import { ShiftService } from '@services/sheets/shift.service';
-import { WeekdayService } from '@services/sheets/weekday.service';
-import { WeeklyService } from '@services/sheets/weekly.service';
+import { CurrentAverageStateService } from '@services/current-average-state.service';
 import { NgIf, CurrencyPipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
@@ -14,19 +11,45 @@ import { MatIcon } from '@angular/material/icon';
     templateUrl: './current-average.component.html',
     styleUrls: ['./current-average.component.scss'],
     standalone: true,
-    imports: [NgIf, MatIcon, CurrencyPipe]
+  imports: [NgIf, MatIcon, CurrencyPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class CurrentAverageComponent implements OnInit {
-  @Input() date: string = DateHelper.toISO();
+export class CurrentAverageComponent {
+  private _date: string = DateHelper.toISO();
 
-  currentDayAmount: number = 0;
-  currentMonthAmount: number = 0;
-  currentWeekAmount: number = 0;
-  
-  dailyAverage: number = 0;
-  weeklyAverage: number = 0;
-  monthlyAverage: number = 0;
+  @Input() set date(value: string) {
+    this._date = value || DateHelper.toISO();
+    this.currentAverageState.setDate(this._date);
+  }
+
+  get date(): string {
+    return this._date;
+  }
+
+  get currentDayAmount(): number {
+    return this.currentAverageState.currentDayAmount();
+  }
+
+  get currentMonthAmount(): number {
+    return this.currentAverageState.currentMonthAmount();
+  }
+
+  get currentWeekAmount(): number {
+    return this.currentAverageState.currentWeekAmount();
+  }
+
+  get dailyAverage(): number {
+    return this.currentAverageState.dailyAverage();
+  }
+
+  get weeklyAverage(): number {
+    return this.currentAverageState.weeklyAverage();
+  }
+
+  get monthlyAverage(): number {
+    return this.currentAverageState.monthlyAverage();
+  }
 
   showDailyAverage: boolean = true;
   showWeeklyAverage: boolean = false;
@@ -34,45 +57,10 @@ export class CurrentAverageComponent implements OnInit {
 
   constructor(
     private _snackBar: MatSnackBar,
-    private _monthlyService: MonthlyService,
-    private _shiftService: ShiftService,
-    private _weekdayService: WeekdayService,
-    private _weeklyService: WeeklyService
-    ) {}
-
-  async ngOnInit() {
-    await this.load();
-  }
-
-  async load() {
-    // Load daily average
-    this.currentDayAmount = 0;
-
-    // Current amount
-    let dayShifts = await this._shiftService.query("date", this.date);
-    this.currentDayAmount = dayShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
-
-    let dayOfWeek = DateHelper.getDayOfWeek(DateHelper.getDateFromISO(this.date));
-    let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
-    this.dailyAverage = !weekday || isNaN(weekday.dailyPrevAverage) ? 0 : weekday.dailyPrevAverage;
-
-    // Load weekly average
-    let mondayISO = DateHelper.toISO(DateHelper.getMonday(new Date()));
-    let currentWeekShifts = await this._shiftService.getShiftsByStartDate(mondayISO);
-    this.currentWeekAmount = currentWeekShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
-
-    let date = DateHelper.toISO(DateHelper.getDateFromDays(7));
-    let weekly = await this._weeklyService.getLastWeekFromDay(date);
-    this.weeklyAverage = weekly?.average ?? 0;
-
-    // Load monthly average
-    let firstDayOfMonth = DateHelper.getFirstDayOfMonth(new Date());
-    let currentMonthShifts = await this._shiftService.getShiftsByStartDate(firstDayOfMonth);
-    this.currentMonthAmount = currentMonthShifts.reduce((acc, shift) => acc + shift.grandTotal, 0);
-    
-    let monthly = await this._monthlyService.find("month", DateHelper.getMonthYearString(new Date()));
-    this.monthlyAverage = monthly?.average ?? 0;
-  }
+    private currentAverageState: CurrentAverageStateService
+    ) {
+      this.currentAverageState.setDate(this._date);
+    }
 
   toggle() {
     const states = ['Daily', 'Weekly', 'Monthly'];

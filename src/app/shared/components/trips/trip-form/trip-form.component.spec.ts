@@ -57,7 +57,7 @@ describe('TripFormComponent', () => {
         { provide: GigWorkflowService, useValue: gigSpy },
         { provide: TimerService, useValue: timerSpy },
         { provide: MatDialogRef, useValue: dialogSpy },
-        { provide: MAT_DIALOG_DATA, useValue: null }
+        { provide: MAT_DIALOG_DATA, useValue: {} }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -141,24 +141,52 @@ describe('TripFormComponent', () => {
 
   it('onShiftSelected should remove validator and set region when shift provided', async () => {
     const shift: IShift = { key: '2024-01-01_1', region: 'Downtown', service: 'DoorDash' } as any;
-    await component.onShiftSelected(shift);
+    component.data = {} as any;
+    component.shifts = [shift];
+    await component.onShiftSelected(shift.key);
 
-    expect(component.isNewShift).toBeFalse();
+    expect(component.isNewShift()).toBeFalse();
     expect(component.tripForm.controls.region.value).toBe('Downtown');
   });
 
-  it('onShiftSelected should add validator and populate from recent shift when null', async () => {
+  it('onShiftSelected should add validator and populate from recent shift when New is selected', async () => {
     const shifts = [
       { key: 'k2', service: 'Uber Eats', region: 'Suburbs' },
       { key: 'k1', service: 'DoorDash', region: 'Downtown' }
     ] as any[];
     shiftService.list.and.returnValue(Promise.resolve(shifts));
 
-    await component.onShiftSelected(null);
+    await component.onShiftSelected('new');
 
-    expect(component.isNewShift).toBeTrue();
+    expect(component.isNewShift()).toBeTrue();
+    expect(component.selectedShiftOption()).toBeUndefined();
+    expect(component.tripForm.controls.shift.value).toBe('new');
     expect(component.tripForm.controls.service.value).toBe('DoorDash');
     expect(component.tripForm.controls.region.value).toBe('Downtown');
+  });
+
+  it('setDefaultShift keeps New selected when there are no trips today', async () => {
+    (component as any).setDefaultShift.and.callThrough();
+    tripService.query.and.returnValue(Promise.resolve([]));
+    shiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([
+      { key: 'older-shift', service: 'DoorDash', region: 'Downtown' } as any
+    ]));
+    placeService.list.and.returnValue(Promise.resolve([]));
+    component.tripForm.controls.shift.setValue('stale-shift');
+    component.selectedShiftOption.set({
+      shiftKey: 'stale-shift',
+      rowId: 1,
+      dateLabel: 'Mon Jan 01',
+      serviceLabel: 'Old',
+      numberLabel: '',
+      subtitle: 'old'
+    });
+
+    await (component as any).setDefaultShift();
+
+    expect(component.tripForm.controls.shift.value).toBe('new');
+    expect(component.selectedShiftOption()).toBeUndefined();
+    expect(component.isNewShift()).toBeTrue();
   });
 
   it('toggleAdvancedPay should toggle flag and show snack', () => {
@@ -213,6 +241,7 @@ describe('TripFormComponent', () => {
 
   it('addTrip should use selected previous-day shift when shift control is set and not create a new shift', async () => {
     const oldShift: IShift = { key: '2026-03-25_1', date: '2026-03-25', service: 'DoorDash', rowId: 99 } as any;
+    component.shifts = [oldShift];
 
     // No today's shifts returned
     shiftService.query.and.callFake(async (field: string, value: any) => []);
@@ -222,7 +251,7 @@ describe('TripFormComponent', () => {
     tripService.add.and.returnValue(Promise.resolve());
 
     // Set the form to use an existing (previous-day) shift
-    component.tripForm.controls.shift.setValue(oldShift);
+    component.tripForm.controls.shift.setValue(oldShift.key);
 
     // Reset any previous calls
     shiftService.add.calls.reset();

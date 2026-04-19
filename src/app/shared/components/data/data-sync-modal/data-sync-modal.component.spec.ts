@@ -3,11 +3,10 @@ import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ShiftService } from '@services/sheets/shift.service';
-import { TripService } from '@services/sheets/trip.service';
-import { ExpensesService } from '@services/sheets/expenses.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TimerService } from '@services/timer.service';
 import { LoggerService } from '@services/logger.service';
+import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { Subject } from 'rxjs';
 import { DataSyncModalComponent } from './data-sync-modal.component';
 
@@ -16,9 +15,7 @@ describe('DataSyncModalComponent', () => {
   let fixture: ComponentFixture<DataSyncModalComponent>;
   let workflowSpy: jasmine.SpyObj<GigWorkflowService>;
   let sheetSpy: jasmine.SpyObj<SpreadsheetService>;
-  let shiftSpy: jasmine.SpyObj<ShiftService>;
-  let tripSpy: jasmine.SpyObj<TripService>;
-  let expensesSpy: jasmine.SpyObj<ExpensesService>;
+  let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
   let timerSpy: jasmine.SpyObj<TimerService>;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let dialogRefSpy: jasmine.SpyObj<MatDialogRef<DataSyncModalComponent>>;
@@ -41,9 +38,11 @@ describe('DataSyncModalComponent', () => {
       'loadSpreadsheetData',
       'getDefaultSheet'
     ]);
-    shiftSpy = jasmine.createSpyObj('ShiftService', ['getUnsavedShifts', 'saveUnsavedShifts']);
-    tripSpy = jasmine.createSpyObj('TripService', ['getUnsaved', 'saveUnsaved']);
-    expensesSpy = jasmine.createSpyObj('ExpensesService', ['getUnsaved', 'saveUnsaved']);
+    unsavedDataSpy = jasmine.createSpyObj('UnsavedDataService', [
+      'collectUnsavedItems', 'commitSavedItems'
+    ]);
+    unsavedDataSpy.collectUnsavedItems.and.resolveTo({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] });
+    unsavedDataSpy.commitSavedItems.and.resolveTo();
     timerSpy = jasmine.createSpyObj('TimerService', ['delay']);
     loggerSpy = jasmine.createSpyObj('LoggerService', ['info', 'error', 'debug'], {
       onLog: new Subject<any>()
@@ -60,9 +59,7 @@ describe('DataSyncModalComponent', () => {
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: GigWorkflowService, useValue: workflowSpy },
         { provide: SpreadsheetService, useValue: sheetSpy },
-        { provide: ShiftService, useValue: shiftSpy },
-        { provide: TripService, useValue: tripSpy },
-        { provide: ExpensesService, useValue: expensesSpy },
+        { provide: UnsavedDataService, useValue: unsavedDataSpy },
         { provide: TimerService, useValue: timerSpy },
         { provide: LoggerService, useValue: loggerSpy }
       ]
@@ -204,9 +201,11 @@ describe('DataSyncModalComponent', () => {
     const defaultSheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 } as any;
     sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
     sheetSpy.warmUpLambda.and.resolveTo({});
-    shiftSpy.getUnsavedShifts.and.resolveTo([{ id: 1, shifts: 5 } as any]);
-    tripSpy.getUnsaved.and.resolveTo([]);
-    expensesSpy.getUnsaved.and.resolveTo([]);
+    unsavedDataSpy.collectUnsavedItems.and.resolveTo({
+      unsavedTrips: [],
+      unsavedShifts: [{ id: 1, shifts: 5 } as any],
+      unsavedExpenses: []
+    });
     workflowSpy.calculateShiftTotals.and.resolveTo();
     workflowSpy.saveSheetData.and.resolveTo([{ level: 'INFO', message: 'Changes saved' }]);
 
@@ -216,6 +215,43 @@ describe('DataSyncModalComponent', () => {
     await component.ngOnInit();
 
     expect(workflowSpy.calculateShiftTotals).toHaveBeenCalled();
+  });
+
+  it('save flow should capture saveStartedAt after shift recalculation', async () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: 'save' });
+
+    const defaultSheet = { id: 'sheet-1', name: 'Default', default: 'true', size: 0 } as any;
+    let recalculationFinishedAt = 0;
+    let apiCallTime = 0;
+    spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
+      success: true,
+      filteredMessages: []
+    } as any);
+
+    sheetSpy.getDefaultSheet.and.resolveTo(defaultSheet);
+    sheetSpy.warmUpLambda.and.resolveTo({});
+    unsavedDataSpy.collectUnsavedItems.and.resolveTo({
+      unsavedTrips: [],
+      unsavedShifts: [{ id: 7 } as any],
+      unsavedExpenses: []
+    });
+    workflowSpy.calculateShiftTotals.and.callFake(async () => {
+      await Promise.resolve();
+      recalculationFinishedAt = Date.now();
+    });
+    workflowSpy.saveSheetData.and.callFake(async () => {
+      apiCallTime = Date.now();
+      return [{ level: 'INFO', message: 'Changes saved' }];
+    });
+
+    fixture = TestBed.createComponent(DataSyncModalComponent);
+    component = fixture.componentInstance;
+
+    await component.ngOnInit();
+
+    const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
+    expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
+    expect(saveStartedAtArg).toBeLessThanOrEqual(apiCallTime);
   });
 
   it('should support new config object format in constructor with all properties', () => {

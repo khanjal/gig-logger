@@ -28,7 +28,7 @@ export class DiagnosticGroupComponent {
   @Output() deleteShift = new EventEmitter<{ group: any[], shiftId: number, groupIndex: number }>();
 
   get canMerge(): boolean {
-    return ['place', 'name', 'address', 'service', 'region'].includes(this.itemType);
+    return ['place', 'name', 'address', 'service', 'type', 'region'].includes(this.itemType);
   }
 
   get canDelete(): boolean {

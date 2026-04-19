@@ -13,31 +13,44 @@ import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
+import { DateHelper } from '@helpers/date.helper';
 
 describe('TripComponent', () => {
   let component: TripComponent;
   let fixture: ComponentFixture<TripComponent>;
+  let trips$: BehaviorSubject<any[]>;
+  let shifts$: BehaviorSubject<any[]>;
+  let expenses$: BehaviorSubject<any[]>;
   const mockGigWorkflowService = jasmine.createSpyObj("GigWorkflowService", ["calculateShiftTotals"]);
   const mockSpreadsheetService = jasmine.createSpyObj("SpreadsheetService", ["loadSpreadsheetData", "querySpreadsheets"]);
-  const mockShiftService = jasmine.createSpyObj("ShiftService", ["deleteService", "getUnsavedShifts", "queryShifts", "saveUnsavedShifts", "updateShift"]);
-  const mockTripService = jasmine.createSpyObj("TripService", ["addTrip", "deleteTrip", "getSavedTrips", "getUnsavedTrips", "saveUnsavedTrips", "updateTrip", "getByDate", "getUnsaved"]);
-  const mockExpensesService = jasmine.createSpyObj('ExpensesService', ['getUnsaved', 'saveUnsaved']);
+  let mockShiftService: jasmine.SpyObj<ShiftService>;
+  let mockTripService: jasmine.SpyObj<TripService>;
+  let mockExpensesService: jasmine.SpyObj<ExpensesService>;
 
   beforeEach(async () => {
+    trips$ = new BehaviorSubject<any[]>([]);
+    shifts$ = new BehaviorSubject<any[]>([]);
+    expenses$ = new BehaviorSubject<any[]>([]);
+    mockShiftService = jasmine.createSpyObj("ShiftService", ["getByRowId", "getUnsavedShifts", "getPreviousWeekShifts", "query", "queryShiftByKey"], { shifts$: shifts$.asObservable() });
+    mockTripService = jasmine.createSpyObj("TripService", ["getByRowId", "getUnsaved", "query", "getMaxRowId"], { trips$: trips$.asObservable() });
+    mockExpensesService = jasmine.createSpyObj('ExpensesService', ['getUnsaved', 'saveUnsaved'], { expenses$: expenses$.asObservable() });
     const mockPollingService = jasmine.createSpyObj(
       'PollingService',
       ['startPolling', 'stopPolling', 'isPollingEnabled'],
       {
-        pollingEnabled$: new BehaviorSubject(false).asObservable(),
-        parentReload: new Subject<void>().asObservable()
+        pollingEnabled$: new BehaviorSubject(false).asObservable()
       }
     );
     mockPollingService.isPollingEnabled.and.returnValue(false);
     const viewportSpy = jasmine.createSpyObj('ViewportScroller', ['scrollToAnchor']);
     mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([] as any));
-    mockTripService.getByDate.and.returnValue(Promise.resolve([] as any));
     mockTripService.getUnsaved.and.returnValue(Promise.resolve([] as any));
+    mockTripService.query.and.returnValue(Promise.resolve([] as any));
+    mockTripService.getMaxRowId.and.returnValue(Promise.resolve(1));
     mockShiftService.getUnsavedShifts.and.returnValue(Promise.resolve([] as any));
+    mockShiftService.getPreviousWeekShifts.and.returnValue(Promise.resolve([] as any));
+    mockShiftService.query.and.returnValue(Promise.resolve([] as any));
+    mockShiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined as any));
     mockExpensesService.getUnsaved.and.returnValue(Promise.resolve([] as any));
 
     await TestBed.configureTestingModule({
@@ -51,7 +64,13 @@ describe('TripComponent', () => {
         { provide: ExpensesService, useValue: mockExpensesService },
         { provide: PollingService, useValue: mockPollingService },
         { provide: ViewportScroller, useValue: viewportSpy },
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})) } }
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({}) },
+            paramMap: of(convertToParamMap({}))
+          }
+        }
       ]
     }).compileComponents();
 
@@ -64,17 +83,17 @@ describe('TripComponent', () => {
   });
 
   it('toggles yesterday trips visibility', () => {
-    component.showYesterdayTrips = false;
+    component.showYesterdayTrips.set(false);
     component.toggleYesterdayTrips();
-    expect(component.showYesterdayTrips).toBeTrue();
+    expect(component.showYesterdayTrips()).toBeTrue();
     component.toggleYesterdayTrips();
-    expect(component.showYesterdayTrips).toBeFalse();
+    expect(component.showYesterdayTrips()).toBeFalse();
   });
 
   it('shouldShowUpdateMessage returns correct boolean', () => {
-    component.todaysTrips = [] as any;
+    component.todaysTrips.set([]);
     expect(component.shouldShowUpdateMessage()).toBeTrue();
-    component.todaysTrips = [{ id: 1 } as any];
+    component.todaysTrips.set([{ id: 1 } as any]);
     expect(component.shouldShowUpdateMessage()).toBeFalse();
   });
 
@@ -103,13 +122,30 @@ describe('TripComponent', () => {
     ] as any));
 
     await component.ngOnInit();
-    expect(component.demoSheetAttached).toBeTrue();
+    expect(component.demoSheetAttached()).toBeTrue();
 
     mockSpreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([
       { id: 'any-id', name: 'Production Sheet', default: 'true', size: 0 }
     ] as any));
 
     await component.reload();
-    expect(component.demoSheetAttached).toBeFalse();
+    expect(component.demoSheetAttached()).toBeFalse();
+  });
+
+  it('reactively derives today and yesterday trip lists from the trip stream', async () => {
+    await component.ngOnInit();
+
+    const today = DateHelper.toISO(DateHelper.getDateFromDays());
+    const yesterday = DateHelper.toISO(DateHelper.getDateFromDays(1));
+
+    trips$.next([
+      { id: 1, rowId: 4, date: today },
+      { id: 2, rowId: 8, date: today },
+      { id: 3, rowId: 2, date: yesterday }
+    ] as any);
+    await Promise.resolve();
+
+    expect(component.todaysTrips().map(trip => trip.rowId)).toEqual([8, 4]);
+    expect(component.yesterdaysTrips().map(trip => trip.rowId)).toEqual([2]);
   });
 });

@@ -94,6 +94,13 @@
     <span *ngIf="item.shifts !== undefined" class="text-sm item-meta">{{ item.shifts }} shifts</span>
   </div>
 
+  <!-- Type Item -->
+  <div *ngIf="itemType === 'type'" class="flex flex-wrap items-center gap-2">
+    <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+    <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.type }}</span>
+    <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
+  </div>
+
   <!-- Region Item -->
   <div *ngIf="itemType === 'region'" class="flex flex-wrap items-center gap-2">
     <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>

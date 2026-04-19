@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
@@ -6,7 +7,7 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AppUpdateService } from '@services/app-update.service';
 import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
-import { Subscription } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base';
 
 @Component({
@@ -16,72 +17,68 @@ import { BaseRectButtonComponent } from '@components/base';
     standalone: true,
     imports: [CommonModule, MatIcon, BaseRectButtonComponent]
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   private logger = inject(LoggerService);
   private authService = inject(AuthGoogleService);
   private spreadsheetService = inject(SpreadsheetService);
   private appUpdateService = inject(AppUpdateService);
+  private destroyRef = inject(DestroyRef);
   
-  showInstallButton = false;
-  isAuthenticated = false;
-  hasDefaultSheet = false;
-  showStartLoggingButton = false;
-  isUpdateAvailable = false;
-  showUpdateNotification = false;
+  showInstallButton = signal(false);
+  isAuthenticated = signal(false);
+  hasDefaultSheet = signal(false);
+  showStartLoggingButton = signal(false);
+  isUpdateAvailable = signal(false);
+  showUpdateNotification = signal(false);
   private deferredPrompt: any;
-  private updateStatusSubscription: Subscription | undefined;
 
   async ngOnInit() {
     // Subscribe to app update status
-    this.updateStatusSubscription = this.appUpdateService.updateStatus$.subscribe(
-      (status: IAppUpdateStatus) => {
-        this.isUpdateAvailable = status.isUpdateAvailable;
-        this.showUpdateNotification = status.isUpdateAvailable;
-        
-        // Re-evaluate showing the start logging button when update status changes
+    this.appUpdateService.updateStatus$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((status: IAppUpdateStatus) => {
+        this.isUpdateAvailable.set(status.isUpdateAvailable);
+        this.showUpdateNotification.set(status.isUpdateAvailable);
         this.evaluateStartLoggingButton();
-      }
-    );
+      });
     
     // Check authentication and spreadsheet status
     await this.checkUserStatus();
     
     // Listen for the install prompt
-    window.addEventListener('beforeinstallprompt', (e) => {
+    fromEvent(window as any, 'beforeinstallprompt')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+      const e = event as any;
       e.preventDefault();
       this.deferredPrompt = e;
-      this.showInstallButton = true;
+      this.showInstallButton.set(true);
     });
 
     // Hide button if already installed
-    window.addEventListener('appinstalled', () => {
-      this.showInstallButton = false;
+    fromEvent(window, 'appinstalled')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+      this.showInstallButton.set(false);
     });
-  }
-
-  ngOnDestroy(): void {
-    // Unsubscribe to prevent memory leaks
-    if (this.updateStatusSubscription) {
-      this.updateStatusSubscription.unsubscribe();
-    }
   }
 
   private evaluateStartLoggingButton(): void {
     // Show "Start Logging" button if user is authenticated, has default sheet, and no update is pending
-    this.showStartLoggingButton = this.isAuthenticated && this.hasDefaultSheet && !this.showUpdateNotification;
+    this.showStartLoggingButton.set(this.isAuthenticated() && this.hasDefaultSheet() && !this.showUpdateNotification());
   }
 
   private async checkUserStatus() {
     try {
-      this.isAuthenticated = await this.authService.canSync();
+      this.isAuthenticated.set(await this.authService.canSync());
       
-      if (this.isAuthenticated) {
+      if (this.isAuthenticated()) {
         // Check if user has a default spreadsheet
         try {
           const defaultSheet = await this.spreadsheetService.getDefaultSheet();
-          this.hasDefaultSheet = !!defaultSheet;
+          this.hasDefaultSheet.set(!!defaultSheet);
         } catch (error) {
-          this.hasDefaultSheet = false;
+          this.hasDefaultSheet.set(false);
         }
       }
       
@@ -89,9 +86,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.evaluateStartLoggingButton();
     } catch (error) {
       this.logger.error('Error checking user status', error);
-      this.isAuthenticated = false;
-      this.hasDefaultSheet = false;
-      this.showStartLoggingButton = false;
+      this.isAuthenticated.set(false);
+      this.hasDefaultSheet.set(false);
+      this.showStartLoggingButton.set(false);
     }
   }
 
@@ -104,7 +101,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   dismissUpdate(): void {
-    this.showUpdateNotification = false;
+    this.showUpdateNotification.set(false);
     // Re-evaluate showing the start logging button
     this.evaluateStartLoggingButton();
   }
@@ -118,7 +115,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       
       this.deferredPrompt = null;
-      this.showInstallButton = false;
+      this.showInstallButton.set(false);
     }
   }
 }

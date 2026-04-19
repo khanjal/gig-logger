@@ -38,6 +38,7 @@ npm test -- --watch=false --browsers=ChromeHeadless
 - [ ] I have linted my code
 - [ ] I avoided template-invoked heavy functions (or documented exception)
 - [ ] I used shared constants/interfaces instead of introducing magic strings or duplicate types
+- [ ] I preserved zoneless runtime assumptions (or documented exceptions) and ran `npm run check:zoneless-runtime`
 
 ## Risk and rollback
 - Risk level: [ ] Low [ ] Medium [ ] High

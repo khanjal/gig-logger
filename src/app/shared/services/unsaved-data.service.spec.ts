@@ -209,90 +209,83 @@ describe('UnsavedDataService', () => {
     });
   });
 
-  describe('markAllAsSaved', () => {
-    it('should call saveUnsaved on all services', async () => {
+  describe('collectUnsavedItems', () => {
+    it('should return all three unsaved lists in a single call', async () => {
+      const mockTrips = [{ id: 1 }] as any[];
+      const mockShifts = [{ id: 2 }] as any[];
+      const mockExpenses = [{ id: 3 }] as any[];
+      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockTrips));
+      shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve(mockShifts));
+      expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockExpenses));
+
+      const result = await service.collectUnsavedItems();
+
+      expect(result.unsavedTrips).toEqual(mockTrips);
+      expect(result.unsavedShifts).toEqual(mockShifts);
+      expect(result.unsavedExpenses).toEqual(mockExpenses);
+    });
+
+    it('should return empty arrays when nothing is unsaved', async () => {
+      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
+      shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
+      expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
+
+      const result = await service.collectUnsavedItems();
+
+      expect(result.unsavedTrips).toEqual([]);
+      expect(result.unsavedShifts).toEqual([]);
+      expect(result.unsavedExpenses).toEqual([]);
+    });
+  });
+
+  describe('commitSavedItems', () => {
+    it('should forward saveStartedAt and syncedIds to each domain service', async () => {
       tripServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
       shiftServiceSpy.saveUnsavedShifts.and.returnValue(Promise.resolve());
       expensesServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
 
-      await service.markAllAsSaved();
+      const ts = 1000;
+      const tripIds = new Set([1, 2]);
+      const shiftIds = new Set([3]);
+      const expenseIds = new Set<number>();
 
-      expect(tripServiceSpy.saveUnsaved).toHaveBeenCalled();
-      expect(shiftServiceSpy.saveUnsavedShifts).toHaveBeenCalled();
-      expect(expensesServiceSpy.saveUnsaved).toHaveBeenCalled();
+      await service.commitSavedItems(ts, tripIds, shiftIds, expenseIds);
+
+      expect(tripServiceSpy.saveUnsaved).toHaveBeenCalledWith(ts, tripIds);
+      expect(shiftServiceSpy.saveUnsavedShifts).toHaveBeenCalledWith(ts, shiftIds);
+      expect(expensesServiceSpy.saveUnsaved).toHaveBeenCalledWith(ts, expenseIds);
     });
 
-    it('should call all save methods in parallel', async () => {
+    it('should run all three commits in parallel', async () => {
       let tripResolved = false;
       let shiftResolved = false;
       let expensesResolved = false;
 
       tripServiceSpy.saveUnsaved.and.returnValue(
-        new Promise<void>(resolve => {
-          setTimeout(() => {
-            tripResolved = true;
-            resolve();
-          }, 10);
-        })
+        new Promise<void>(resolve => setTimeout(() => { tripResolved = true; resolve(); }, 10))
       );
-
       shiftServiceSpy.saveUnsavedShifts.and.returnValue(
-        new Promise<void>(resolve => {
-          setTimeout(() => {
-            shiftResolved = true;
-            resolve();
-          }, 10);
-        })
+        new Promise<void>(resolve => setTimeout(() => { shiftResolved = true; resolve(); }, 10))
       );
-
       expensesServiceSpy.saveUnsaved.and.returnValue(
-        new Promise<void>(resolve => {
-          setTimeout(() => {
-            expensesResolved = true;
-            resolve();
-          }, 10);
-        })
+        new Promise<void>(resolve => setTimeout(() => { expensesResolved = true; resolve(); }, 10))
       );
 
-      await service.markAllAsSaved();
+      await service.commitSavedItems(Date.now(), new Set(), new Set(), new Set());
 
       expect(tripResolved).toBe(true);
       expect(shiftResolved).toBe(true);
       expect(expensesResolved).toBe(true);
     });
 
-    it('should handle errors from trip service', async () => {
-      tripServiceSpy.saveUnsaved.and.returnValue(Promise.reject(new Error('Trip save failed')));
+    it('should propagate errors from any domain service', async () => {
+      tripServiceSpy.saveUnsaved.and.returnValue(Promise.reject(new Error('Trip commit failed')));
       shiftServiceSpy.saveUnsavedShifts.and.returnValue(Promise.resolve());
       expensesServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
 
-      try {
-        await service.markAllAsSaved();
-        fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.message).toBe('Trip save failed');
-      }
-    });
-
-    it('should handle errors from shift service', async () => {
-      tripServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
-      shiftServiceSpy.saveUnsavedShifts.and.returnValue(Promise.reject(new Error('Shift save failed')));
-      expensesServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
-
-      try {
-        await service.markAllAsSaved();
-        fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.message).toBe('Shift save failed');
-      }
-    });
-
-    it('should complete successfully when all saves succeed', async () => {
-      tripServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
-      shiftServiceSpy.saveUnsavedShifts.and.returnValue(Promise.resolve());
-      expensesServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
-
-      await expectAsync(service.markAllAsSaved()).toBeResolved();
+      await expectAsync(
+        service.commitSavedItems(Date.now(), new Set(), new Set(), new Set())
+      ).toBeRejectedWithError('Trip commit failed');
     });
   });
 
@@ -313,22 +306,26 @@ describe('UnsavedDataService', () => {
       expect(counts.total).toBe(3);
     });
 
-    it('should mark all as saved after detecting unsaved data', async () => {
-      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve([{ id: 1 } as any]));
+    it('should commit saved items after detecting unsaved data', async () => {
+      const mockTrips = [{ id: 1 }] as any[];
+      tripServiceSpy.getUnsaved.and.returnValue(Promise.resolve(mockTrips));
       shiftServiceSpy.getUnsavedShifts.and.returnValue(Promise.resolve([]));
       expensesServiceSpy.getUnsaved.and.returnValue(Promise.resolve([]));
       tripServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
       shiftServiceSpy.saveUnsavedShifts.and.returnValue(Promise.resolve());
       expensesServiceSpy.saveUnsaved.and.returnValue(Promise.resolve());
 
-      const hasUnsaved = await service.hasUnsavedData();
-      expect(hasUnsaved).toBe(true);
+      const { unsavedTrips, unsavedShifts, unsavedExpenses } = await service.collectUnsavedItems();
+      const ts = Date.now();
+      const tripIds = new Set(unsavedTrips.map((t: any) => t.id as number));
+      const shiftIds = new Set(unsavedShifts.map((s: any) => s.id as number));
+      const expenseIds = new Set(unsavedExpenses.map((e: any) => e.id as number));
 
-      await service.markAllAsSaved();
+      await service.commitSavedItems(ts, tripIds, shiftIds, expenseIds);
 
-      expect(tripServiceSpy.saveUnsaved).toHaveBeenCalled();
-      expect(shiftServiceSpy.saveUnsavedShifts).toHaveBeenCalled();
-      expect(expensesServiceSpy.saveUnsaved).toHaveBeenCalled();
+      expect(tripServiceSpy.saveUnsaved).toHaveBeenCalledWith(ts, tripIds);
+      expect(shiftServiceSpy.saveUnsavedShifts).toHaveBeenCalledWith(ts, shiftIds);
+      expect(expensesServiceSpy.saveUnsaved).toHaveBeenCalledWith(ts, expenseIds);
     });
   });
 });

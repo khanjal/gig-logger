@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewChecked, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { ButtonVariant, ButtonSize, FabStyle } from '@interfaces/button.interface';
@@ -46,7 +46,7 @@ export type { ButtonVariant, ButtonSize, FabStyle };
  *
  * Emits `clicked` when activated (unless `disabled` or `loading`).
  */
-export class BaseButtonComponent {
+export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy {
   /** Button variant style */
   @Input() variant: ButtonVariant = 'primary';
 
@@ -101,15 +101,27 @@ export class BaseButtonComponent {
   private resizeHandler = () => this.updateIconOnlyClass();
 
   constructor(private el: ElementRef, private renderer: Renderer2) {
-    window.addEventListener('resize', this.resizeHandler);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeHandler);
+    }
   }
 
-  ngAfterViewChecked(): void {
-    this.updateIconOnlyClass();
+  ngAfterViewInit(): void {
+    this.scheduleIconOnlyClassUpdate();
+  }
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    this.scheduleIconOnlyClassUpdate();
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeHandler);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeHandler);
+    }
+  }
+
+  private scheduleIconOnlyClassUpdate(): void {
+    queueMicrotask(() => this.updateIconOnlyClass());
   }
 
   private updateIconOnlyClass(): void {

@@ -65,8 +65,8 @@ export class ShiftService extends SyncableCrudService<IShift> {
         return remoteShift;
     }
 
-    public async saveUnsavedShifts(): Promise<void> {
-        await this.saveUnsaved();
+    public async saveUnsavedShifts(saveStartedAt?: number, syncedIds?: ReadonlySet<number>): Promise<void> {
+        await this.saveUnsaved(saveStartedAt, syncedIds);
     }
 
     public async getLastShift(): Promise<IShift | undefined> {
