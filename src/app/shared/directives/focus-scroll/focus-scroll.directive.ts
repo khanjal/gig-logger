@@ -13,7 +13,6 @@ export class FocusScrollDirective {
   @Output() scrollStart = new EventEmitter<void>();
   @Output() dropdownReady = new EventEmitter<void>();
 
-  private scrollTimeoutId: number | undefined;
   private initialScrollTimerId: number | undefined;
   private settleTimerId: number | undefined;
   private rafId: number | undefined;
@@ -67,7 +66,6 @@ export class FocusScrollDirective {
 
       if (useViewportAwareDelay) {
         this.attachViewportListeners();
-        this.scheduleFollowupAlignment();
       }
 
       // If configured, apply an initial bottom padding to create headroom
@@ -85,6 +83,11 @@ export class FocusScrollDirective {
         } catch (e) { /* ignore */ }
         // keep updating once visualViewport changes
         this.updateBottomPadding();
+        // ensure overlays get a resize and start the settle window
+        try {
+          this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
+        } catch (e) { /* ignore */ }
+        this.startSettleWindow();
       }
 
       this.maxScrollWindowTimerId = window.setTimeout(() => {
@@ -141,16 +144,7 @@ export class FocusScrollDirective {
     });
   }
 
-  private scheduleFollowupAlignment(): void {
-    this.scrollTimeoutId = window.setTimeout(() => {
-      this.alignElementIntoView('auto');
-      try {
-        this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
-      } catch (e) { }
-      this.startSettleWindow();
-    }, 120);
-  }
-
+  
   private onViewportChange = (): void => {
     if (!this.isScrolling) {
       return;
@@ -161,12 +155,9 @@ export class FocusScrollDirective {
     }
 
     this.rafId = requestAnimationFrame(() => {
-      this.alignElementIntoView('auto');
-      // Keep bottom padding in sync while the viewport animates
       if (this.enableBottomPadding) {
         this.updateBottomPadding();
       }
-      // Let CDK/Material overlays respond by signaling a global resize
       try {
         this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
       } catch (e) {
@@ -258,10 +249,7 @@ export class FocusScrollDirective {
       this.initialScrollTimerId = undefined;
     }
 
-    if (this.scrollTimeoutId != null) {
-      clearTimeout(this.scrollTimeoutId);
-      this.scrollTimeoutId = undefined;
-    }
+    
 
     if (this.settleTimerId != null) {
       clearTimeout(this.settleTimerId);
@@ -324,7 +312,6 @@ export class FocusScrollDirective {
     this.clearTimers();
     this.detachViewportListeners();
     this.removeBottomPadding();
-
     this.scrollComplete.emit();
     if (!this.suppressDropdownAfterSelection) {
       this.dropdownReady.emit();
