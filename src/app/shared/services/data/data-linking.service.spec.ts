@@ -179,4 +179,43 @@ describe('DataLinkingService', () => {
       expect(linkPlace).toHaveBeenCalled();
     });
   });
+
+  describe('linkAddressData', () => {
+    it('updates addresses with linked names/notes without append re-aggregation', async () => {
+      const address = {
+        id: 10,
+        address: '456 B St',
+        names: [],
+        notes: [],
+        trips: 3,
+        pay: 100,
+        tip: 20,
+        bonus: 0,
+        cash: 0,
+        total: 120,
+        rowId: 10,
+        saved: true,
+      } as any;
+
+      const trip = makeTrip({
+        endAddress: '456 B St',
+        name: 'John',
+        note: 'Leave at door',
+        total: 25,
+      });
+
+      addressSpy.list.and.returnValue(Promise.resolve([address]));
+      tripSpy.list.and.returnValue(Promise.resolve([trip]));
+
+      await (service as any).linkAddressData();
+
+      expect(addressSpy.update).toHaveBeenCalled();
+      expect(addressSpy.append).not.toHaveBeenCalled();
+
+      const updatedAddress = addressSpy.update.calls.mostRecent().args[0][0] as any;
+      expect(updatedAddress.names).toContain('John');
+      expect(updatedAddress.notes.length).toBe(1);
+      expect(updatedAddress.trips).toBe(3);
+    });
+  });
 });
