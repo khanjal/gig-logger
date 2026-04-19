@@ -124,6 +124,9 @@ export class FocusScrollDirective {
   private scheduleFollowupAlignment(): void {
     this.scrollTimeoutId = window.setTimeout(() => {
       this.alignElementIntoView('auto');
+      try {
+        this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
+      } catch (e) { }
       this.startSettleWindow();
     }, 120);
   }
@@ -139,6 +142,12 @@ export class FocusScrollDirective {
 
     this.rafId = requestAnimationFrame(() => {
       this.alignElementIntoView('auto');
+      // Let CDK/Material overlays respond by signaling a global resize
+      try {
+        this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
+      } catch (e) {
+        // ignore if dispatch fails
+      }
       this.startSettleWindow();
     });
   };
