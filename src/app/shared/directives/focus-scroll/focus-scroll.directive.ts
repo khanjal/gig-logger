@@ -237,16 +237,25 @@ export class FocusScrollDirective {
   }
 
   private finishScrolling(): void {
+    const hostElement = this.el.nativeElement as HTMLElement;
+    const isStillFocused = document.activeElement === hostElement;
+    const keepPaddingWhileFocused = this.enableBottomPadding && this.isMobileDevice() && isStillFocused;
+
     if (!this.isScrolling) {
       this.clearTimers();
       this.detachViewportListeners();
+      if (!keepPaddingWhileFocused) {
+        this.removeBottomPadding();
+      }
       return;
     }
 
     this.isScrolling = false;
     this.clearTimers();
     this.detachViewportListeners();
-    this.removeBottomPadding();
+    if (!keepPaddingWhileFocused) {
+      this.removeBottomPadding();
+    }
     this.scrollComplete.emit();
     if (!this.suppressDropdownAfterSelection) {
       this.dropdownReady.emit();
