@@ -34,7 +34,7 @@ export class FocusScrollDirective {
 
     const isMobile = this.isMobileDevice();
     const useViewportAwareDelay = isMobile && this.delayDropdownOnMobile;
-    const initialDelay = isMobile ? 120 : 40;
+    const initialDelay = isMobile ? 180 : 40;
     
     this.isScrolling = true;
 
@@ -101,8 +101,8 @@ export class FocusScrollDirective {
 
     const viewportTop = visualViewport?.offsetTop ?? 0;
     const viewportHeight = visualViewport?.height ?? window.innerHeight;
-    const topPadding = this.isMobileDevice() ? 8 : 16;
-    const preferredTopInViewport = viewportTop + topPadding;
+    const topPadding = this.isMobileDevice() ? 16 : 24;
+    const preferredTopInViewport = viewportTop + Math.max(topPadding, Math.round(viewportHeight * 0.24));
 
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = rect.top + currentPageY - preferredTopInViewport;
@@ -126,6 +126,9 @@ export class FocusScrollDirective {
     }
 
     this.rafId = requestAnimationFrame(() => {
+      if (this.isMobileDevice()) {
+        this.alignElementIntoView('auto');
+      }
       if (this.enableBottomPadding) {
         this.updateBottomPadding();
       }
