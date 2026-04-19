@@ -84,11 +84,6 @@ export class FocusScrollDirective {
   private isMobileDevice(): boolean {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
-
-  private isAndroidDevice(): boolean {
-    return /Android/i.test(navigator.userAgent);
-  }
-
   public isCurrentlyScrolling(): boolean {
     return this.isScrolling;
   }
