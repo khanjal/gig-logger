@@ -5,6 +5,7 @@ import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZon
   standalone: true
 })
 export class FocusScrollDirective {
+  @Input() enableBottomPadding: boolean = false;
   @Input() delayDropdownOnMobile: boolean = true;
   @Input() suppressDropdownAfterSelection: boolean = false;
   
@@ -19,6 +20,8 @@ export class FocusScrollDirective {
   private maxScrollWindowTimerId: number | undefined;
   private preFocusNudgeTimerId: number | undefined;
   private isViewportListenersAttached = false;
+  private bottomPaddingApplied = false;
+  private previousBodyPadding: string | null = null;
   private isScrolling = false;
   private lastPreFocusNudgeAt = 0;
 
@@ -65,6 +68,23 @@ export class FocusScrollDirective {
       if (useViewportAwareDelay) {
         this.attachViewportListeners();
         this.scheduleFollowupAlignment();
+      }
+
+      // If configured, apply an initial bottom padding to create headroom
+      if (this.enableBottomPadding && this.isMobileDevice()) {
+        // attach listeners so updateBottomPadding runs as viewport changes
+        this.attachViewportListeners();
+        // give an immediate conservative padding so dropdowns can position
+        try {
+          if (this.previousBodyPadding == null) {
+            this.previousBodyPadding = document.body.style.paddingBottom || '';
+          }
+          document.body.style.paddingBottom = `${Math.max(280, Math.round((window.innerHeight || 0) * 0.35))}px`;
+          document.documentElement.classList.add('rgv-bottom-padding-active');
+          this.bottomPaddingApplied = true;
+        } catch (e) { /* ignore */ }
+        // keep updating once visualViewport changes
+        this.updateBottomPadding();
       }
 
       this.maxScrollWindowTimerId = window.setTimeout(() => {
@@ -142,6 +162,10 @@ export class FocusScrollDirective {
 
     this.rafId = requestAnimationFrame(() => {
       this.alignElementIntoView('auto');
+      // Keep bottom padding in sync while the viewport animates
+      if (this.enableBottomPadding) {
+        this.updateBottomPadding();
+      }
       // Let CDK/Material overlays respond by signaling a global resize
       try {
         this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
@@ -151,6 +175,44 @@ export class FocusScrollDirective {
       this.startSettleWindow();
     });
   };
+
+  private updateBottomPadding(): void {
+    try {
+      const visualViewport = window.visualViewport;
+      let padding = 0;
+
+      if (visualViewport) {
+        padding = Math.max(0, window.innerHeight - visualViewport.height);
+      } else if (this.isMobileDevice()) {
+        // Fallback: apply a reasonable default for mobile if visualViewport is unavailable
+        padding = 300;
+      }
+
+      if (padding > 0) {
+        if (this.previousBodyPadding == null) {
+          this.previousBodyPadding = document.body.style.paddingBottom || '';
+        }
+        document.body.style.paddingBottom = `${padding}px`;
+        document.documentElement.classList.add('rgv-bottom-padding-active');
+        this.bottomPaddingApplied = true;
+      }
+    } catch (e) {
+      // ignore any DOM exceptions
+    }
+  }
+
+  private removeBottomPadding(): void {
+    try {
+      if (this.bottomPaddingApplied) {
+        document.body.style.paddingBottom = this.previousBodyPadding ?? '';
+        document.documentElement.classList.remove('rgv-bottom-padding-active');
+        this.bottomPaddingApplied = false;
+        this.previousBodyPadding = null;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
 
   private startSettleWindow(): void {
     if (this.settleTimerId != null) {
@@ -261,6 +323,7 @@ export class FocusScrollDirective {
     this.isScrolling = false;
     this.clearTimers();
     this.detachViewportListeners();
+    this.removeBottomPadding();
 
     this.scrollComplete.emit();
     if (!this.suppressDropdownAfterSelection) {

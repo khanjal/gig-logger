@@ -69,6 +69,7 @@ import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType }
 })
 
 export class SearchInputComponent implements OnDestroy {
+  @Input() enableBottomPadding: boolean = false;
   // #region ViewChild, Inputs, Outputs, Form
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;

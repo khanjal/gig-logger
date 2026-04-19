@@ -40,7 +40,8 @@
             fieldName="Service" 
             searchType="Service" 
             formControlName="service"
-            [isRequired]="true">
+            [isRequired]="true"
+            [enableBottomPadding]="isInEditMode">
           </app-search-input>
         </div>
       </div>
@@ -51,7 +52,8 @@
         class="w-full"
         fieldName="Region/Zone" 
         searchType="Region" 
-        formControlName="region">
+        formControlName="region"
+        [enableBottomPadding]="isInEditMode">
       </app-search-input>
     </div>
     <!-- Location Information -->
@@ -64,7 +66,8 @@
           formControlName="place"
           googleSearch="place"
           (valueChanged)="selectPlace()"
-          (auxiliaryData)="setPickupAddress($event)">
+          (auxiliaryData)="setPickupAddress($event)"
+          [enableBottomPadding]="isInEditMode">
         </app-search-input>
       </div>
       <div class="flex flex-col gap-1 mb-3">
@@ -72,7 +75,8 @@
           class="w-full"
           fieldName="Type" 
           searchType="Type" 
-          formControlName="type">
+          formControlName="type"
+          [enableBottomPadding]="isInEditMode">
         </app-search-input>
       </div>
     </div>
@@ -101,13 +105,14 @@
     <!-- Customer Information -->
     <div>
       <div class="flex items-center gap-1" [ngClass]="selectedPlaceAddresses.length > 0 ? 'mb-1' : 'mb-3'">
-        <app-search-input 
-          class="w-full mr-2"
-          fieldName="Name" 
-          searchType="Name" 
-          formControlName="name"
-          (valueChanged)="showNameAddresses()"
-          (auxiliaryData)="setDropoffAddress($event)">
+          <app-search-input 
+            class="w-full mr-2"
+            fieldName="Name" 
+            searchType="Name" 
+            formControlName="name"
+            (valueChanged)="showNameAddresses()"
+            (auxiliaryData)="setDropoffAddress($event)"
+            [enableBottomPadding]="isInEditMode">
         </app-search-input>
         <app-base-toggle-button [active]="showPickupAddress" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-toggle-button>
       </div>
@@ -126,7 +131,8 @@
           fieldName="Pickup Address" 
           searchType="Address" 
           formControlName="startAddress"
-          googleSearch="address">
+          googleSearch="address"
+          [enableBottomPadding]="isInEditMode">
         </app-search-input>
       </div>
     </div>
@@ -156,6 +162,7 @@
           formControlName="endAddress"
           googleSearch="address"
           (valueChanged)="showAddressNames()"
+          [enableBottomPadding]="isInEditMode"
         ></app-search-input>
       </div>
     </div>
