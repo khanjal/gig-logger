@@ -20,6 +20,7 @@ export class FocusScrollDirective {
   private isViewportListenersAttached = false;
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
+  private reducePaddingTemporarily = false;
   private isScrolling = false;
 
   constructor(private el: ElementRef, private ngZone: NgZone) {}
@@ -127,6 +128,10 @@ export class FocusScrollDirective {
         this.alignElementIntoView('auto');
       }
       if (this.enableBottomPadding) {
+        // Reduce padding briefly to avoid blocking user scrolling when keyboard
+        // height changes rapidly (e.g., virtual keyboard 'down' arrow). This
+        // makes the page less jumpy and leaves more visible area for scrolling.
+        this.reducePaddingTemporarily = true;
         this.updateBottomPadding();
       }
 
@@ -160,7 +165,9 @@ export class FocusScrollDirective {
       let padding = 0;
 
       if (visualViewport) {
-        padding = Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
+        const raw = Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
+        const factor = this.reducePaddingTemporarily ? 0.5 : 1;
+        padding = Math.round(raw * factor);
       } else if (this.isMobileDevice()) {
         // Fallback: apply a reasonable default for mobile if visualViewport is unavailable
         padding = 300;
@@ -265,6 +272,9 @@ export class FocusScrollDirective {
     const hostElement = this.el.nativeElement as HTMLElement;
     const isStillFocused = document.activeElement === hostElement;
     const keepPaddingWhileFocused = this.enableBottomPadding && this.isMobileDevice() && isStillFocused;
+
+    // Reset temporary padding reduction when finishing
+    this.reducePaddingTemporarily = false;
 
     if (!this.isScrolling) {
       this.clearTimers();
