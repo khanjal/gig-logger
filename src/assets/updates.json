@@ -1,0 +1,308 @@
+[
+  {
+    "date": "2026-04-17",
+    "dateLabel": "April 17, 2026",
+    "updates": [
+      {
+        "title": "Smoother Saving and Faster App Flow",
+        "category": "upgrade",
+        "changes": [
+          "Trips, shifts, and expenses now refresh more smoothly while you work",
+          "Reduced interruptions during save and sync actions",
+          "Improved responsiveness across key pages",
+          "General reliability and stability improvements"
+        ],
+        "pagesAffected": ["Trips", "Shifts", "Expenses", "Setup"]
+      }
+    ]
+  },
+  {
+    "date": "2026-04-08",
+    "dateLabel": "April 8, 2026",
+    "updates": [
+      {
+        "title": "Better Demo Setup Experience",
+        "category": "feature",
+        "changes": [
+          "Starting with a demo sheet is now smoother and more reliable",
+          "Added clearer status banners when a demo sheet is connected",
+          "Improved onboarding flow for first-time users"
+        ],
+        "pagesAffected": ["Setup", "Dashboard"]
+      }
+    ]
+  },
+  {
+    "date": "2026-04-04",
+    "dateLabel": "April 4, 2026",
+    "updates": [
+      {
+        "title": "Clearer Colors Across Light and Dark Mode",
+        "category": "improvement",
+        "changes": [
+          "Improved color consistency throughout the app",
+          "Made text and UI elements easier to read in both themes",
+          "Reduced visual mismatches across screens",
+          "Set up a stronger base for future visual polish"
+        ],
+        "pagesAffected": ["All Pages"]
+      }
+    ]
+  },
+  {
+    "date": "2026-03-16",
+    "dateLabel": "March 16, 2026",
+    "updates": [
+      {
+        "title": "More Reliable Voice Entry",
+        "category": "improvement",
+        "changes": [
+          "Improved voice input stability when adding trip details",
+          "Reduced edge-case failures during voice entry",
+          "Added stronger quality checks to prevent regressions"
+        ],
+        "pagesAffected": ["Trips"]
+      }
+    ]
+  },
+  {
+    "date": "2026-02-05",
+    "dateLabel": "February 5, 2026",
+    "updates": [
+      {
+        "title": "Cleaner Trip Layout and Sync Messages",
+        "category": "improvement",
+        "changes": [
+          "Made trip details easier to scan and read",
+          "Improved sync message formatting for better clarity",
+          "Polished layout behavior on smaller screens"
+        ],
+        "pagesAffected": ["Trips"]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-02",
+    "dateLabel": "January 2, 2026",
+    "updates": [
+      {
+        "title": "Issues & Refactoring",
+        "category": "maintenance",
+        "changes": [
+          "Code cleanup and bug fixes",
+          "Performance improvements",
+          "Enhanced error handling"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2025-11-27",
+    "dateLabel": "November 27, 2025",
+    "updates": [
+      {
+        "title": "Search with Voice Support",
+        "category": "feature",
+        "changes": [
+          "Added voice command input for trips",
+          "Improved search accuracy with fuzzy matching",
+          "Moved diagnostics to dedicated page",
+          "Enhanced search filters"
+        ],
+        "pagesAffected": ["Search", "Diagnostics"]
+      }
+    ]
+  },
+  {
+    "date": "2025-11-01",
+    "dateLabel": "November 1, 2025",
+    "updates": [
+      {
+        "title": "Privacy Policy & Expense Enhancements",
+        "category": "feature",
+        "changes": [
+          "Updated privacy policy for clarity",
+          "Added expense categories",
+          "Improved expense tracking features"
+        ],
+        "pagesAffected": ["Policy", "Expenses"]
+      }
+    ]
+  },
+  {
+    "date": "2025-10-25-26",
+    "dateLabel": "October 25-26, 2025",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "Demo Spreadsheet Support",
+        "category": "feature",
+        "changes": [
+          "Users can test with demo data",
+          "No Google account required for demo",
+          "Sample trips and shifts included"
+        ],
+        "pagesAffected": ["Setup"]
+      },
+      {
+        "title": "Setup Page Styling Updates",
+        "category": "improvement",
+        "changes": [
+          "Improved setup page layout",
+          "Better mobile responsiveness",
+          "Enhanced visual design"
+        ],
+        "pagesAffected": ["Setup"]
+      }
+    ]
+  },
+  {
+    "date": "2025-10-06",
+    "dateLabel": "October 6, 2025",
+    "updates": [
+      {
+        "title": "Improved Trips and Shifts Tables",
+        "category": "improvement",
+        "changes": [
+          "Tables are easier to read and navigate",
+          "Better sorting and filtering of your data",
+          "Improved table layout on mobile devices"
+        ],
+        "pagesAffected": ["Trips", "Shifts"]
+      }
+    ]
+  },
+  {
+    "date": "2025-07-01-05",
+    "dateLabel": "July 1-5, 2025",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "Layout Fixes for Trips and Shifts",
+        "category": "improvement",
+        "changes": [
+          "Improved page layouts on both mobile and desktop",
+          "Fixed the back-to-top button",
+          "Various usability tweaks"
+        ],
+        "pagesAffected": ["Trips", "Shifts"]
+      }
+    ]
+  },
+  {
+    "date": "2025-06-22-29",
+    "dateLabel": "June 22-29, 2025",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "App-Wide Visual Redesign",
+        "category": "feature",
+        "changes": [
+          "Refreshed the look and feel across all pages",
+          "Faster loading for large spreadsheets",
+          "Search results are more reliable on slow connections",
+          "Improved display of places and names"
+        ],
+        "pagesAffected": ["All Pages"]
+      }
+    ]
+  },
+  {
+    "date": "2025-06-03-08",
+    "dateLabel": "June 3-8, 2025",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "Sign In with Google",
+        "category": "feature",
+        "changes": [
+          "You can now sign in using your Google account",
+          "Spreadsheet access is handled securely via Google sign-in",
+          "Streamlined authentication flow during setup"
+        ],
+        "pagesAffected": ["Setup"]
+      }
+    ]
+  },
+  {
+    "date": "2025-05-29",
+    "dateLabel": "May 29, 2025",
+    "updates": [
+      {
+        "title": "Google Maps Search",
+        "category": "feature",
+        "changes": [
+          "Search for places on Google Maps",
+          "Search for addresses on Google Maps",
+          "Direct map integration from app"
+        ],
+        "pagesAffected": ["Trips"]
+      }
+    ]
+  },
+  {
+    "date": "2025-05-10",
+    "dateLabel": "May 10, 2025",
+    "updates": [
+      {
+        "title": "Under-the-Hood Performance Improvements",
+        "category": "upgrade",
+        "changes": [
+          "Rebuilt app internals for faster load times",
+          "Reduced memory usage across all pages",
+          "Improved stability on low-end devices"
+        ],
+        "pagesAffected": ["All Pages"]
+      }
+    ]
+  },
+  {
+    "date": "2025-05-03",
+    "dateLabel": "May 3, 2025",
+    "updates": [
+      {
+        "title": "Faster and More Stable Data Loading",
+        "category": "maintenance",
+        "changes": [
+          "Reduced errors from too many data requests at once",
+          "Improved overall data loading performance"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2025-04-08-27",
+    "dateLabel": "April 8-27, 2025",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "Real-Time Sync and Address Search Improvements",
+        "category": "feature",
+        "changes": [
+          "App now stays in sync without needing a manual refresh",
+          "Saved data loads more consistently",
+          "Address suggestions are more accurate and responsive",
+          "Various UI fixes and polish"
+        ],
+        "pagesAffected": ["Trips", "Shifts"]
+      }
+    ]
+  },
+  {
+    "date": "2022-08-19-21",
+    "dateLabel": "August 19-21, 2022",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "Initial Project Setup",
+        "category": "feature",
+        "changes": [
+          "Angular app initialization",
+          "Basic project structure",
+          "Git repository setup",
+          "Development environment configured"
+        ]
+      }
+    ]
+  }
+]
