@@ -92,7 +92,6 @@ export class FocusScrollDirective {
     const element = this.el.nativeElement as HTMLElement;
     const rect = element.getBoundingClientRect();
     const visualViewport = window.visualViewport;
-
     const viewportTop = visualViewport?.offsetTop ?? 0;
     const viewportHeight = visualViewport?.height ?? window.innerHeight;
     const topPadding = this.isMobileDevice() ? 16 : 24;
@@ -101,9 +100,13 @@ export class FocusScrollDirective {
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = rect.top + currentPageY - preferredTopInViewport;
 
+    // Clamp targetY so we don't scroll past the end of the document
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
+    const clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
+
     this.ngZone.runOutsideAngular(() => {
       window.scrollTo({
-        top: Math.max(0, targetY),
+        top: clampedTarget,
         behavior
       });
     });
@@ -126,6 +129,22 @@ export class FocusScrollDirective {
       if (this.enableBottomPadding) {
         this.updateBottomPadding();
       }
+
+      // If the keyboard has been dismissed (visual viewport nearly equals innerHeight),
+      // remove the temporary bottom padding even if the field remains focused. This
+      // handles virtual keyboard 'down' action which hides the keyboard but leaves
+      // the input focused and previously-applied padding intact.
+      try {
+        const visualViewport = window.visualViewport;
+        if (visualViewport) {
+          const keyboardHeight = Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
+          if (keyboardHeight < 60) {
+            this.removeBottomPadding();
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
       try {
         this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
       } catch (e) {
@@ -141,7 +160,7 @@ export class FocusScrollDirective {
       let padding = 0;
 
       if (visualViewport) {
-        padding = Math.max(0, window.innerHeight - visualViewport.height);
+        padding = Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
       } else if (this.isMobileDevice()) {
         // Fallback: apply a reasonable default for mobile if visualViewport is unavailable
         padding = 300;
@@ -184,25 +203,37 @@ export class FocusScrollDirective {
   }
 
   private attachViewportListeners(): void {
-    if (this.isViewportListenersAttached || !window.visualViewport) {
+    if (this.isViewportListenersAttached) {
       return;
     }
 
     this.ngZone.runOutsideAngular(() => {
-      window.visualViewport?.addEventListener('resize', this.onViewportChange, { passive: true });
-      window.visualViewport?.addEventListener('scroll', this.onViewportChange, { passive: true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', this.onViewportChange, { passive: true });
+        window.visualViewport.addEventListener('scroll', this.onViewportChange, { passive: true });
+      }
+      // Fallback for browsers without visualViewport support
+      window.addEventListener('resize', this.onViewportChange, { passive: true });
     });
 
     this.isViewportListenersAttached = true;
   }
 
   private detachViewportListeners(): void {
-    if (!this.isViewportListenersAttached || !window.visualViewport) {
+    if (!this.isViewportListenersAttached) {
       return;
     }
 
-    window.visualViewport.removeEventListener('resize', this.onViewportChange);
-    window.visualViewport.removeEventListener('scroll', this.onViewportChange);
+    try {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', this.onViewportChange);
+        window.visualViewport.removeEventListener('scroll', this.onViewportChange);
+      }
+      window.removeEventListener('resize', this.onViewportChange);
+    } catch (e) {
+      // ignore
+    }
+
     this.isViewportListenersAttached = false;
   }
 
