@@ -1,4 +1,6 @@
 import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ViewportService, ViewportSnapshot } from '@services/viewport.service';
 
 @Directive({
   selector: '[focusScroll]',
@@ -21,9 +23,11 @@ export class FocusScrollDirective {
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
   private reducePaddingTemporarily = false;
+  private reducePaddingTimerId: number | undefined;
+  private viewportSub: Subscription | undefined;
   private isScrolling = false;
 
-  constructor(private el: ElementRef, private ngZone: NgZone) {}
+  constructor(private el: ElementRef, private ngZone: NgZone, private viewport: ViewportService) {}
 
   @HostListener('focus', ['$event'])
   onFocus(event: FocusEvent) {
@@ -161,16 +165,26 @@ export class FocusScrollDirective {
 
   private updateBottomPadding(): void {
     try {
-      const visualViewport = window.visualViewport;
       let padding = 0;
-
-      if (visualViewport) {
-        const raw = Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
-        const factor = this.reducePaddingTemporarily ? 0.5 : 1;
-        padding = Math.round(raw * factor);
-      } else if (this.isMobileDevice()) {
-        // Fallback: apply a reasonable default for mobile if visualViewport is unavailable
-        padding = 300;
+      try {
+        const snap = this.viewport?.getSnapshot?.();
+        if (snap) {
+          const raw = Math.max(0, snap.windowInnerHeight - snap.height - snap.offsetTop);
+          const factor = this.reducePaddingTemporarily ? 0.5 : 1;
+          padding = Math.round(raw * factor);
+        } else if (window.visualViewport) {
+          const raw = Math.max(0, (window.innerHeight || 0) - window.visualViewport.height - (window.visualViewport.offsetTop || 0));
+          const factor = this.reducePaddingTemporarily ? 0.5 : 1;
+          padding = Math.round(raw * factor);
+        } else if (this.isMobileDevice()) {
+          // Fallback: apply a reasonable default for mobile if visualViewport is unavailable
+          padding = 300;
+        }
+      } catch (e) {
+        // fall through to forced fallback
+        if (this.isMobileDevice()) {
+          padding = 300;
+        }
       }
 
       if (padding > 0) {
@@ -214,13 +228,51 @@ export class FocusScrollDirective {
       return;
     }
 
-    this.ngZone.runOutsideAngular(() => {
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', this.onViewportChange, { passive: true });
-        window.visualViewport.addEventListener('scroll', this.onViewportChange, { passive: true });
+    this.viewport.start();
+
+    this.viewportSub = this.viewport.viewportChange$.subscribe((snap: ViewportSnapshot) => {
+      if (!this.isScrolling) {
+        return;
       }
-      // Fallback for browsers without visualViewport support
-      window.addEventListener('resize', this.onViewportChange, { passive: true });
+
+      if (this.rafId != null) {
+        cancelAnimationFrame(this.rafId);
+      }
+
+      this.rafId = requestAnimationFrame(() => {
+        if (this.isMobileDevice()) {
+          this.alignElementIntoView('auto');
+        }
+
+        if (this.enableBottomPadding) {
+          this.reducePaddingTemporarily = true;
+          if (this.reducePaddingTimerId != null) {
+            clearTimeout(this.reducePaddingTimerId);
+          }
+          this.reducePaddingTimerId = window.setTimeout(() => {
+            this.reducePaddingTemporarily = false;
+            this.reducePaddingTimerId = undefined;
+            this.updateBottomPadding();
+          }, 250);
+
+          this.updateBottomPadding();
+        }
+
+        try {
+          if (snap.keyboardHeight < 60) {
+            this.removeBottomPadding();
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        try {
+          this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
+        } catch (e) {
+          // ignore if dispatch fails
+        }
+        this.startSettleWindow();
+      });
     });
 
     this.isViewportListenersAttached = true;
@@ -232,13 +284,17 @@ export class FocusScrollDirective {
     }
 
     try {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', this.onViewportChange);
-        window.visualViewport.removeEventListener('scroll', this.onViewportChange);
-      }
-      window.removeEventListener('resize', this.onViewportChange);
+      this.viewportSub?.unsubscribe();
+      this.viewportSub = undefined;
+      this.viewport.stop();
     } catch (e) {
       // ignore
+    }
+
+    if (this.reducePaddingTimerId != null) {
+      clearTimeout(this.reducePaddingTimerId);
+      this.reducePaddingTimerId = undefined;
+      this.reducePaddingTemporarily = false;
     }
 
     this.isViewportListenersAttached = false;

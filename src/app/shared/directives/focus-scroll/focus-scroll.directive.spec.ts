@@ -1,36 +1,65 @@
-// import { Component, ElementRef } from '@angular/core';
-// import { FocusScrollDirective } from './focus-scroll.directive';
-// import { TestBed } from '@angular/core/testing';
-// import { By } from '@angular/platform-browser';
+import { Component, DebugElement } from '@angular/core';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { FocusScrollDirective } from './focus-scroll.directive';
+import { ViewportService } from '@services/viewport.service';
+import { BehaviorSubject } from 'rxjs';
 
-// @Component({
-//   template: `
-//   <h2 highlight="yellow">Something Yellow</h2>
-//   <h2 highlight>The Default (Gray)</h2>
-//   <h2>No Highlight</h2>
-//   <input #box [highlight]="box.value" value="cyan"/>`
-// })
+class MockViewportService {
+	private subj = new BehaviorSubject({ height: 500, offsetTop: 0, keyboardHeight: 200, windowInnerHeight: 800 });
+	public viewportChange$ = this.subj.asObservable();
+	public getSnapshot() {
+		return this.subj.getValue();
+	}
+	start() {}
+	stop() {}
+	emit(v: any) { this.subj.next(v); }
+}
 
-// class TestComponent { }
+@Component({
+	template: `<input focusScroll [enableBottomPadding]="true" />`
+})
+class TestHostComponent {}
 
-// describe('FocusScrollDirective', () => {
-//   beforeEach(() => {
-//     fixture = TestBed.configureTestingModule({
-//       declarations: [ FocusScrollDirective, TestComponent ]
-//     })
-//     .createComponent(TestComponent);
-  
-//     fixture.detectChanges(); // initial binding
-  
-//     // all elements with an attached HighlightDirective
-//     des = fixture.debugElement.queryAll(By.directive(FocusScrollDirective));
-  
-//     // the h2 without the HighlightDirective
-//     bareH2 = fixture.debugElement.query(By.css('h2:not([highlight])'));
-//   });
+describe('FocusScrollDirective (integration)', () => {
+	let fixture: any;
+	let inputDe: DebugElement;
+	let mockViewport: MockViewportService;
 
-//   it('should create an instance', () => {
-//     const directive = new FocusScrollDirective());
-//     expect(directive).toBeTruthy();
-//   });
-// });
+	beforeEach(() => {
+		mockViewport = new MockViewportService();
+
+		TestBed.configureTestingModule({
+			declarations: [TestHostComponent, FocusScrollDirective],
+			providers: [{ provide: ViewportService, useValue: mockViewport }]
+		});
+
+		fixture = TestBed.createComponent(TestHostComponent);
+		fixture.detectChanges();
+		inputDe = fixture.debugElement.query(By.css('input'));
+	});
+
+	it('applies and then removes bottom padding when keyboard hides', fakeAsync(() => {
+		// ensure initial state
+		document.body.style.paddingBottom = '';
+
+		// focus the input
+		inputDe.nativeElement.dispatchEvent(new Event('focus'));
+
+		// allow directive timers to run (initialDelay + settle)
+		tick(300);
+
+		// padding should be applied
+		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeTrue();
+		const appliedPadding = document.body.style.paddingBottom;
+		expect(appliedPadding && appliedPadding.length > 0).toBeTrue();
+
+		// simulate keyboard hide (small keyboardHeight)
+		mockViewport.emit({ height: 800, offsetTop: 0, keyboardHeight: 0, windowInnerHeight: 800 });
+		tick(100);
+
+		// padding should be removed
+		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
+		expect(document.body.style.paddingBottom === '' || document.body.style.paddingBottom === null).toBeTrue();
+	}));
+});
