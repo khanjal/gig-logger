@@ -106,9 +106,28 @@ export class FocusScrollDirective {
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = rect.top + currentPageY - preferredTopInViewport;
 
-    // Clamp targetY so we don't scroll past the end of the document
+    // Determine any visible overlay (autocomplete/dropdown) attached to this
+    // input so we can ensure the overlay/list is visible above the keyboard.
+    const panelHeight = this.getAttachedOverlayHeight(element);
+
+    // Compute keyboard inset (space taken by virtual keyboard) when visualViewport is available
+    const keyboardInset = Math.max(0, (window.innerHeight || 0) - (visualViewport?.height ?? window.innerHeight) - (visualViewport?.offsetTop ?? 0));
+
+    // Ensure element + overlay will be visible above keyboard after scrolling.
+    const bottomSpacing = this.isMobileDevice() ? 12 : 8; // extra breathing room
+    const allowedVisibleBottom = viewportHeight - keyboardInset - panelHeight - bottomSpacing;
+
+    const elementBottomInPage = rect.bottom + currentPageY;
+    const minTargetToExposeBottom = elementBottomInPage - (viewportTop + allowedVisibleBottom);
+
+    let finalTarget = targetY;
+    if (minTargetToExposeBottom > finalTarget) {
+      finalTarget = minTargetToExposeBottom;
+    }
+
+    // Clamp target so we don't scroll past the end of the document
     const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
-    const clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
+    const clampedTarget = Math.min(Math.max(0, finalTarget), maxScroll);
 
     this.ngZone.runOutsideAngular(() => {
       window.scrollTo({
@@ -116,6 +135,31 @@ export class FocusScrollDirective {
         behavior
       });
     });
+  }
+
+  private getAttachedOverlayHeight(host: HTMLElement): number {
+    try {
+      // Common selectors for overlays / autocomplete lists
+      const selectors = ['.mat-autocomplete-panel', '[role="listbox"]', '.cdk-overlay-pane'];
+      const hostRect = host.getBoundingClientRect();
+
+      for (const sel of selectors) {
+        const nodes = Array.from(document.querySelectorAll<HTMLElement>(sel));
+        for (const n of nodes) {
+          if (!n.offsetParent) continue; // not visible
+          const r = n.getBoundingClientRect();
+          // prefer overlays that appear directly below the host or overlap horizontally
+          const isBelow = r.top >= hostRect.bottom - 4;
+          const horizOverlap = !(r.right < hostRect.left || r.left > hostRect.right + 200);
+          if (isBelow && horizOverlap) {
+            return Math.round(r.height || 0);
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return 0;
   }
 
   
