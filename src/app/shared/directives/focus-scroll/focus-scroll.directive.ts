@@ -22,6 +22,7 @@ export class FocusScrollDirective {
   private isViewportListenersAttached = false;
   private userScrollCooldownTimerId: number | undefined;
   private suppressAutoAlignUntil = 0;
+  private manualScrollOverride = false;
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
   private viewportSub: Subscription | undefined;
@@ -42,6 +43,7 @@ export class FocusScrollDirective {
     const initialDelay = isMobile ? 180 : 40;
     
     this.isScrolling = true;
+    this.manualScrollOverride = false;
 
     this.initialScrollTimerId = window.setTimeout(() => {
       if (useViewportAwareDelay) {
@@ -127,7 +129,7 @@ export class FocusScrollDirective {
     }
 
     this.rafId = requestAnimationFrame(() => {
-      const shouldSuppressAutoAlign = Date.now() < this.suppressAutoAlignUntil;
+      const shouldSuppressAutoAlign = this.manualScrollOverride || Date.now() < this.suppressAutoAlignUntil;
 
       if (this.isMobileDevice() && !shouldSuppressAutoAlign) {
         this.alignElementIntoView('auto');
@@ -165,6 +167,7 @@ export class FocusScrollDirective {
 
     // Prevent viewport-driven realignment from fighting manual scrolling.
     this.suppressAutoAlignUntil = Date.now() + 260;
+    this.manualScrollOverride = true;
 
     if (this.userScrollCooldownTimerId != null) {
       clearTimeout(this.userScrollCooldownTimerId);
