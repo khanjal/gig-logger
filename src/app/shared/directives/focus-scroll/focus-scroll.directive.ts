@@ -1,6 +1,5 @@
 import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { ViewportService, ViewportSnapshot } from '@services/viewport.service';
+import { ViewportService } from '@services/viewport.service';
 
 @Directive({
   selector: '[focusScroll]',
@@ -22,10 +21,7 @@ export class FocusScrollDirective {
   private isViewportListenersAttached = false;
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
-  private reducePaddingTemporarily = false;
-  private reducePaddingTimerId: number | undefined;
-  private viewportSub: Subscription | undefined;
-  private lastViewportSnapshot: ViewportSnapshot | undefined;
+  // Simplified: remove temporary-padding heuristics to avoid jumps
   private isScrolling = false;
 
   constructor(private el: ElementRef, private ngZone: NgZone, private viewport: ViewportService) {}
@@ -101,7 +97,9 @@ export class FocusScrollDirective {
     const viewportTop = visualViewport?.offsetTop ?? 0;
     const viewportHeight = visualViewport?.height ?? window.innerHeight;
     const topPadding = this.isMobileDevice() ? 16 : 24;
-    const preferredTopInViewport = viewportTop + Math.max(topPadding, Math.round(viewportHeight * 0.24));
+    // Prefer a position closer to the top of the visible area to avoid
+    // jumping focused inputs to the middle of the screen.
+    const preferredTopInViewport = viewportTop + Math.max(topPadding, Math.round(viewportHeight * 0.12));
 
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = rect.top + currentPageY - preferredTopInViewport;
@@ -167,27 +165,22 @@ export class FocusScrollDirective {
     if (!this.isScrolling) {
       return;
     }
-
     if (this.rafId != null) {
       cancelAnimationFrame(this.rafId);
     }
 
     this.rafId = requestAnimationFrame(() => {
+      // Always align on viewport changes when focused. Use 'auto' to avoid
+      // smooth interruptions while the user is interacting.
       if (this.isMobileDevice()) {
         this.alignElementIntoView('auto');
       }
+
       if (this.enableBottomPadding) {
-        // Reduce padding briefly to avoid blocking user scrolling when keyboard
-        // height changes rapidly (e.g., virtual keyboard 'down' arrow). This
-        // makes the page less jumpy and leaves more visible area for scrolling.
-        this.reducePaddingTemporarily = true;
         this.updateBottomPadding();
       }
 
-      // If the keyboard has been dismissed (visual viewport nearly equals innerHeight),
-      // remove the temporary bottom padding even if the field remains focused. This
-      // handles virtual keyboard 'down' action which hides the keyboard but leaves
-      // the input focused and previously-applied padding intact.
+      // If keyboard hidden, remove padding immediately.
       try {
         const visualViewport = window.visualViewport;
         if (visualViewport) {
@@ -199,6 +192,7 @@ export class FocusScrollDirective {
       } catch (e) {
         // ignore
       }
+
       try {
         this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
       } catch (e) {
@@ -215,12 +209,10 @@ export class FocusScrollDirective {
         const snap = this.viewport?.getSnapshot?.();
         if (snap) {
           const raw = Math.max(0, snap.windowInnerHeight - snap.height - snap.offsetTop);
-          const factor = this.reducePaddingTemporarily ? 0.5 : 1;
-          padding = Math.round(raw * factor);
+          padding = Math.round(raw);
         } else if (window.visualViewport) {
           const raw = Math.max(0, (window.innerHeight || 0) - window.visualViewport.height - (window.visualViewport.offsetTop || 0));
-          const factor = this.reducePaddingTemporarily ? 0.5 : 1;
-          padding = Math.round(raw * factor);
+          padding = Math.round(raw);
         } else if (this.isMobileDevice()) {
           // Fallback: apply a reasonable default for mobile if visualViewport is unavailable
           padding = 300;
@@ -275,62 +267,10 @@ export class FocusScrollDirective {
 
     this.viewport.start();
 
-    this.viewportSub = this.viewport.viewportChange$.subscribe((snap: ViewportSnapshot) => {
-      if (!this.isScrolling) {
-        this.lastViewportSnapshot = snap;
-        return;
-      }
-
-      // compute keyboard-height delta to distinguish keyboard show/hide
-      const prevKeyboard = this.lastViewportSnapshot?.keyboardHeight ?? 0;
-      const deltaKeyboard = Math.abs((snap.keyboardHeight || 0) - prevKeyboard);
-      const keyboardThreshold = 20; // px
-
-      if (this.rafId != null) {
-        cancelAnimationFrame(this.rafId);
-      }
-
-      this.rafId = requestAnimationFrame(() => {
-        // Only realign when keyboard shows/hides significantly; avoid
-        // interfering with user scroll gestures which produce many viewport
-        // events but little keyboard-height change.
-        const shouldRealign = deltaKeyboard > keyboardThreshold && this.isMobileDevice();
-
-        if (shouldRealign) {
-          this.alignElementIntoView('auto');
-        }
-
-        if (this.enableBottomPadding && shouldRealign) {
-          this.reducePaddingTemporarily = true;
-          if (this.reducePaddingTimerId != null) {
-            clearTimeout(this.reducePaddingTimerId);
-          }
-          this.reducePaddingTimerId = window.setTimeout(() => {
-            this.reducePaddingTemporarily = false;
-            this.reducePaddingTimerId = undefined;
-            this.updateBottomPadding();
-          }, 250);
-
-          this.updateBottomPadding();
-        }
-
-        try {
-          if (snap.keyboardHeight < 60) {
-            this.removeBottomPadding();
-          }
-        } catch (e) {
-          // ignore
-        }
-
-        try {
-          this.ngZone.runOutsideAngular(() => window.dispatchEvent(new Event('resize')));
-        } catch (e) {
-          // ignore if dispatch fails
-        }
-        this.startSettleWindow();
-      });
-
-      this.lastViewportSnapshot = snap;
+    // Subscribe and treat any viewport snapshot change as a cue to re-evaluate.
+    this.viewport.viewportChange$.subscribe(() => {
+      if (!this.isScrolling) return;
+      this.onViewportChange();
     });
 
     this.isViewportListenersAttached = true;
@@ -342,19 +282,10 @@ export class FocusScrollDirective {
     }
 
     try {
-      this.viewportSub?.unsubscribe();
-      this.viewportSub = undefined;
       this.viewport.stop();
     } catch (e) {
       // ignore
     }
-
-    if (this.reducePaddingTimerId != null) {
-      clearTimeout(this.reducePaddingTimerId);
-      this.reducePaddingTimerId = undefined;
-      this.reducePaddingTemporarily = false;
-    }
-
     this.isViewportListenersAttached = false;
   }
 
@@ -387,8 +318,7 @@ export class FocusScrollDirective {
     const isStillFocused = document.activeElement === hostElement;
     const keepPaddingWhileFocused = this.enableBottomPadding && this.isMobileDevice() && isStillFocused;
 
-    // Reset temporary padding reduction when finishing
-    this.reducePaddingTemporarily = false;
+    // no temporary padding flags to reset in simplified mode
 
     if (!this.isScrolling) {
       this.clearTimers();
