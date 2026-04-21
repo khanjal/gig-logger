@@ -210,7 +210,7 @@ export class FocusScrollDirective {
         this.previousBodyPadding = null;
       }
     } catch (e) {
-      // ignore
+      // ignore 
     }
   }
 
