@@ -20,6 +20,8 @@ export class FocusScrollDirective {
   private rafId: number | undefined;
   private maxScrollWindowTimerId: number | undefined;
   private isViewportListenersAttached = false;
+  private userScrollCooldownTimerId: number | undefined;
+  private suppressAutoAlignUntil = 0;
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
   private viewportSub: Subscription | undefined;
@@ -125,7 +127,9 @@ export class FocusScrollDirective {
     }
 
     this.rafId = requestAnimationFrame(() => {
-      if (this.isMobileDevice()) {
+      const shouldSuppressAutoAlign = Date.now() < this.suppressAutoAlignUntil;
+
+      if (this.isMobileDevice() && !shouldSuppressAutoAlign) {
         this.alignElementIntoView('auto');
       }
 
@@ -152,6 +156,23 @@ export class FocusScrollDirective {
       }
       this.startSettleWindow();
     });
+  };
+
+  private onUserScrollGesture = (): void => {
+    if (!this.isScrolling) {
+      return;
+    }
+
+    // Prevent viewport-driven realignment from fighting manual scrolling.
+    this.suppressAutoAlignUntil = Date.now() + 260;
+
+    if (this.userScrollCooldownTimerId != null) {
+      clearTimeout(this.userScrollCooldownTimerId);
+    }
+
+    this.userScrollCooldownTimerId = window.setTimeout(() => {
+      this.userScrollCooldownTimerId = undefined;
+    }, 280);
   };
 
   private updateBottomPadding(): void {
@@ -223,6 +244,12 @@ export class FocusScrollDirective {
       this.onViewportChange();
     });
 
+    this.ngZone.runOutsideAngular(() => {
+      window.addEventListener('touchstart', this.onUserScrollGesture, { passive: true });
+      window.addEventListener('touchmove', this.onUserScrollGesture, { passive: true });
+      window.addEventListener('wheel', this.onUserScrollGesture, { passive: true });
+    });
+
     this.isViewportListenersAttached = true;
   }
 
@@ -235,6 +262,9 @@ export class FocusScrollDirective {
       this.viewportSub?.unsubscribe();
       this.viewportSub = undefined;
       this.viewport.stop();
+      window.removeEventListener('touchstart', this.onUserScrollGesture);
+      window.removeEventListener('touchmove', this.onUserScrollGesture);
+      window.removeEventListener('wheel', this.onUserScrollGesture);
     } catch (e) {
       // ignore
     }
@@ -257,6 +287,11 @@ export class FocusScrollDirective {
     if (this.maxScrollWindowTimerId != null) {
       clearTimeout(this.maxScrollWindowTimerId);
       this.maxScrollWindowTimerId = undefined;
+    }
+
+    if (this.userScrollCooldownTimerId != null) {
+      clearTimeout(this.userScrollCooldownTimerId);
+      this.userScrollCooldownTimerId = undefined;
     }
 
     if (this.rafId != null) {
