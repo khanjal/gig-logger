@@ -25,6 +25,7 @@ export class FocusScrollDirective {
   private reducePaddingTemporarily = false;
   private reducePaddingTimerId: number | undefined;
   private viewportSub: Subscription | undefined;
+  private lastViewportSnapshot: ViewportSnapshot | undefined;
   private isScrolling = false;
 
   constructor(private el: ElementRef, private ngZone: NgZone, private viewport: ViewportService) {}
@@ -232,19 +233,30 @@ export class FocusScrollDirective {
 
     this.viewportSub = this.viewport.viewportChange$.subscribe((snap: ViewportSnapshot) => {
       if (!this.isScrolling) {
+        this.lastViewportSnapshot = snap;
         return;
       }
+
+      // compute keyboard-height delta to distinguish keyboard show/hide
+      const prevKeyboard = this.lastViewportSnapshot?.keyboardHeight ?? 0;
+      const deltaKeyboard = Math.abs((snap.keyboardHeight || 0) - prevKeyboard);
+      const keyboardThreshold = 20; // px
 
       if (this.rafId != null) {
         cancelAnimationFrame(this.rafId);
       }
 
       this.rafId = requestAnimationFrame(() => {
-        if (this.isMobileDevice()) {
+        // Only realign when keyboard shows/hides significantly; avoid
+        // interfering with user scroll gestures which produce many viewport
+        // events but little keyboard-height change.
+        const shouldRealign = deltaKeyboard > keyboardThreshold && this.isMobileDevice();
+
+        if (shouldRealign) {
           this.alignElementIntoView('auto');
         }
 
-        if (this.enableBottomPadding) {
+        if (this.enableBottomPadding && shouldRealign) {
           this.reducePaddingTemporarily = true;
           if (this.reducePaddingTimerId != null) {
             clearTimeout(this.reducePaddingTimerId);
@@ -273,6 +285,8 @@ export class FocusScrollDirective {
         }
         this.startSettleWindow();
       });
+
+      this.lastViewportSnapshot = snap;
     });
 
     this.isViewportListenersAttached = true;
