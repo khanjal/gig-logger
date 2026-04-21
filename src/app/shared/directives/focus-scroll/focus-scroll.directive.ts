@@ -1,4 +1,5 @@
 import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ViewportService } from '@services/viewport.service';
 
 @Directive({
@@ -21,7 +22,7 @@ export class FocusScrollDirective {
   private isViewportListenersAttached = false;
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
-  // Simplified: remove temporary-padding heuristics to avoid jumps
+  private viewportSub: Subscription | undefined;
   private isScrolling = false;
 
   constructor(private el: ElementRef, private ngZone: NgZone, private viewport: ViewportService) {}
@@ -97,35 +98,14 @@ export class FocusScrollDirective {
     const viewportTop = visualViewport?.offsetTop ?? 0;
     const viewportHeight = visualViewport?.height ?? window.innerHeight;
     const topPadding = this.isMobileDevice() ? 16 : 24;
-    // Prefer a position closer to the top of the visible area to avoid
-    // jumping focused inputs to the middle of the screen.
-    const preferredTopInViewport = viewportTop + Math.max(topPadding, Math.round(viewportHeight * 0.12));
+    const preferredTopInViewport = viewportTop + Math.max(topPadding, Math.round(viewportHeight * 0.24));
 
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = rect.top + currentPageY - preferredTopInViewport;
 
-    // Determine any visible overlay (autocomplete/dropdown) attached to this
-    // input so we can ensure the overlay/list is visible above the keyboard.
-    const panelHeight = this.getAttachedOverlayHeight(element);
-
-    // Compute keyboard inset (space taken by virtual keyboard) when visualViewport is available
-    const keyboardInset = Math.max(0, (window.innerHeight || 0) - (visualViewport?.height ?? window.innerHeight) - (visualViewport?.offsetTop ?? 0));
-
-    // Ensure element + overlay will be visible above keyboard after scrolling.
-    const bottomSpacing = this.isMobileDevice() ? 12 : 8; // extra breathing room
-    const allowedVisibleBottom = viewportHeight - keyboardInset - panelHeight - bottomSpacing;
-
-    const elementBottomInPage = rect.bottom + currentPageY;
-    const minTargetToExposeBottom = elementBottomInPage - (viewportTop + allowedVisibleBottom);
-
-    let finalTarget = targetY;
-    if (minTargetToExposeBottom > finalTarget) {
-      finalTarget = minTargetToExposeBottom;
-    }
-
     // Clamp target so we don't scroll past the end of the document
     const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
-    const clampedTarget = Math.min(Math.max(0, finalTarget), maxScroll);
+    const clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
 
     this.ngZone.runOutsideAngular(() => {
       window.scrollTo({
@@ -133,31 +113,6 @@ export class FocusScrollDirective {
         behavior
       });
     });
-  }
-
-  private getAttachedOverlayHeight(host: HTMLElement): number {
-    try {
-      // Common selectors for overlays / autocomplete lists
-      const selectors = ['.mat-autocomplete-panel', '[role="listbox"]', '.cdk-overlay-pane'];
-      const hostRect = host.getBoundingClientRect();
-
-      for (const sel of selectors) {
-        const nodes = Array.from(document.querySelectorAll<HTMLElement>(sel));
-        for (const n of nodes) {
-          if (!n.offsetParent) continue; // not visible
-          const r = n.getBoundingClientRect();
-          // prefer overlays that appear directly below the host or overlap horizontally
-          const isBelow = r.top >= hostRect.bottom - 4;
-          const horizOverlap = !(r.right < hostRect.left || r.left > hostRect.right + 200);
-          if (isBelow && horizOverlap) {
-            return Math.round(r.height || 0);
-          }
-        }
-      }
-    } catch (e) {
-      // ignore
-    }
-    return 0;
   }
 
   
@@ -170,8 +125,6 @@ export class FocusScrollDirective {
     }
 
     this.rafId = requestAnimationFrame(() => {
-      // Always align on viewport changes when focused. Use 'auto' to avoid
-      // smooth interruptions while the user is interacting.
       if (this.isMobileDevice()) {
         this.alignElementIntoView('auto');
       }
@@ -180,7 +133,6 @@ export class FocusScrollDirective {
         this.updateBottomPadding();
       }
 
-      // If keyboard hidden, remove padding immediately.
       try {
         const visualViewport = window.visualViewport;
         if (visualViewport) {
@@ -267,9 +219,7 @@ export class FocusScrollDirective {
 
     this.viewport.start();
 
-    // Subscribe and treat any viewport snapshot change as a cue to re-evaluate.
-    this.viewport.viewportChange$.subscribe(() => {
-      if (!this.isScrolling) return;
+    this.viewportSub = this.viewport.viewportChange$.subscribe(() => {
       this.onViewportChange();
     });
 
@@ -282,6 +232,8 @@ export class FocusScrollDirective {
     }
 
     try {
+      this.viewportSub?.unsubscribe();
+      this.viewportSub = undefined;
       this.viewport.stop();
     } catch (e) {
       // ignore
@@ -317,8 +269,6 @@ export class FocusScrollDirective {
     const hostElement = this.el.nativeElement as HTMLElement;
     const isStillFocused = document.activeElement === hostElement;
     const keepPaddingWhileFocused = this.enableBottomPadding && this.isMobileDevice() && isStillFocused;
-
-    // no temporary padding flags to reset in simplified mode
 
     if (!this.isScrolling) {
       this.clearTimers();
