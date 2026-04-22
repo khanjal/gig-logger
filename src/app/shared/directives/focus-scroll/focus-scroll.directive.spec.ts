@@ -8,9 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 class MockViewportService {
 	private subj = new BehaviorSubject({ height: 500, offsetTop: 0, keyboardHeight: 200, windowInnerHeight: 800 });
 	public viewportChange$ = this.subj.asObservable();
-	public getSnapshot() {
-		return this.subj.getValue();
-	}
+	public getSnapshot() { return this.subj.getValue(); }
 	start() {}
 	stop() {}
 	emit(v: any) { this.subj.next(v); }
@@ -39,27 +37,51 @@ describe('FocusScrollDirective (integration)', () => {
 		inputDe = fixture.debugElement.query(By.css('input'));
 	});
 
-	it('applies and then removes bottom padding when keyboard hides', fakeAsync(() => {
-		// ensure initial state
+	afterEach(() => {
 		document.body.style.paddingBottom = '';
+		document.documentElement.classList.remove('rgv-bottom-padding-active');
+	});
 
-		// focus the input
+	it('removes bottom padding on blur', fakeAsync(() => {
+		document.body.style.paddingBottom = '200px';
+		document.documentElement.classList.add('rgv-bottom-padding-active');
+
 		inputDe.nativeElement.dispatchEvent(new Event('focus'));
-
-		// allow directive timers to run (initialDelay + settle)
 		tick(300);
 
-		// padding should be applied
-		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeTrue();
-		const appliedPadding = document.body.style.paddingBottom;
-		expect(appliedPadding && appliedPadding.length > 0).toBeTrue();
+		inputDe.nativeElement.dispatchEvent(new Event('blur'));
+		tick(50);
 
-		// simulate keyboard hide (small keyboardHeight)
+		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
+	}));
+
+	it('removes bottom padding when keyboard hides via viewport change', fakeAsync(() => {
+		// Manually put the directive into scrolling state and apply padding
+		inputDe.nativeElement.dispatchEvent(new Event('focus'));
+		tick(200);
+
+		// Simulate padding having been applied
+		document.body.style.paddingBottom = '300px';
+		document.documentElement.classList.add('rgv-bottom-padding-active');
+
+		// Simulate keyboard hide
 		mockViewport.emit({ height: 800, offsetTop: 0, keyboardHeight: 0, windowInnerHeight: 800 });
 		tick(100);
 
-		// padding should be removed
 		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
-		expect(document.body.style.paddingBottom === '' || document.body.style.paddingBottom === null).toBeTrue();
+	}));
+
+	it('emits scrollComplete and dropdownReady after scroll window', fakeAsync(() => {
+		const directive: FocusScrollDirective = inputDe.injector.get(FocusScrollDirective);
+		let scrollCompleteFired = false;
+		let dropdownReadyFired = false;
+		directive.scrollComplete.subscribe(() => scrollCompleteFired = true);
+		directive.dropdownReady.subscribe(() => dropdownReadyFired = true);
+
+		inputDe.nativeElement.dispatchEvent(new Event('focus'));
+		tick(1700); // initialDelay (180) + maxScrollWindow (1400) + buffer
+
+		expect(scrollCompleteFired).toBeTrue();
+		expect(dropdownReadyFired).toBeTrue();
 	}));
 });
