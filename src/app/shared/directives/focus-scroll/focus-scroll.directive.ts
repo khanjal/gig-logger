@@ -238,6 +238,11 @@ export class FocusScrollDirective implements OnDestroy {
     } catch (e) {
       // ignore
     }
+    try {
+      this.enforceMaxScrollDuringUserScroll();
+    } catch (e) {
+      // ignore
+    }
   };
 
   private getViewportComputedPadding(): number {
@@ -283,6 +288,23 @@ export class FocusScrollDirective implements OnDestroy {
         }
       } catch (e) {
         // ignore DOM exceptions
+      }
+    }
+  }
+
+  private enforceMaxScrollDuringUserScroll(): void {
+    // After trimming padding, make sure the current scroll position isn't past
+    // the new maximum scrollable position (so user can't scroll through blank space).
+    const visualViewport = window.visualViewport;
+    const viewportH = visualViewport?.height ?? window.innerHeight;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportH);
+
+    const currentY = window.pageYOffset || document.documentElement.scrollTop;
+    if (currentY > maxScroll) {
+      try {
+        this.ngZone.runOutsideAngular(() => window.scrollTo({ top: maxScroll, behavior: 'auto' }));
+      } catch (e) {
+        // ignore
       }
     }
   }
