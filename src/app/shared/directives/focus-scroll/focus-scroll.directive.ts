@@ -186,7 +186,7 @@ export class FocusScrollDirective implements OnDestroy {
       const shouldSuppressAutoAlign = this.manualScrollOverride || Date.now() < this.suppressAutoAlignUntil;
 
       if (this.isMobileDevice() && !shouldSuppressAutoAlign) {
-        this.alignElementIntoView('auto');
+        this.alignElementIntoView('smooth');
       }
 
       if (this.enableBottomPadding) {
@@ -230,7 +230,62 @@ export class FocusScrollDirective implements OnDestroy {
     this.userScrollCooldownTimerId = window.setTimeout(() => {
       this.userScrollCooldownTimerId = undefined;
     }, 280);
+
+    // When the user manually scrolls while extra bottom padding exists,
+    // reduce the extra padding so they don't scroll through a large blank area.
+    try {
+      this.trimExtraPaddingForUserScroll();
+    } catch (e) {
+      // ignore
+    }
   };
+
+  private getViewportComputedPadding(): number {
+    try {
+      const snap = this.viewport?.getSnapshot?.();
+      if (snap) {
+        return Math.max(0, snap.windowInnerHeight - snap.height - snap.offsetTop);
+      }
+    } catch (e) {
+      // fall through
+    }
+
+    if (window.visualViewport) {
+      try {
+        return Math.max(0, (window.innerHeight || 0) - window.visualViewport.height - (window.visualViewport.offsetTop || 0));
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    return 0;
+  }
+
+  private trimExtraPaddingForUserScroll(): void {
+    // Only act when we've applied extra padding
+    if (!this.bottomPaddingApplied || this.extraPaddingApplied <= 0) return;
+
+    const viewportPad = Math.round(this.getViewportComputedPadding() || 0);
+    // Desired extra to keep: at least viewportPad minus baselineBodyPadding
+    const desiredExtra = Math.max(0, viewportPad - (this.baselineBodyPadding || 0));
+
+    if (desiredExtra < this.extraPaddingApplied) {
+      try {
+        this.extraPaddingApplied = desiredExtra;
+        const total = Math.max(0, (this.baselineBodyPadding || 0) + this.extraPaddingApplied);
+        document.body.style.paddingBottom = `${total}px`;
+        if (total === 0) {
+          document.documentElement.classList.remove('rgv-bottom-padding-active');
+          this.bottomPaddingApplied = false;
+        } else {
+          document.documentElement.classList.add('rgv-bottom-padding-active');
+          this.bottomPaddingApplied = true;
+        }
+      } catch (e) {
+        // ignore DOM exceptions
+      }
+    }
+  }
 
   private updateBottomPadding(): void {
     try {
