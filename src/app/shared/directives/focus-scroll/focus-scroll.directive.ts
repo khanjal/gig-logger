@@ -32,13 +32,14 @@ export class FocusScrollDirective implements OnDestroy {
 
   @HostListener('focus')
   onFocus() {
+    if (!this.isMobileDevice()) return;
+
     this.scrollStart.emit();
     this.clearTimers();
     this.detachViewportListeners();
 
-    const isMobile = this.isMobileDevice();
-    const useViewportAwareDelay = isMobile && this.delayDropdownOnMobile;
-    const initialDelay = isMobile ? 180 : 40;
+    const useViewportAwareDelay = this.delayDropdownOnMobile;
+    const initialDelay = 180;
 
     this.isScrolling = true;
 
@@ -47,17 +48,11 @@ export class FocusScrollDirective implements OnDestroy {
         this.attachViewportListeners();
 
         if (this.enableBottomPadding) {
-          // Keyboard not open yet — apply speculative padding so the page already
-          // has room when the keyboard finishes opening, then let onViewportChange
-          // do the single precise scroll. Avoids the double-bounce.
           const speculativePad = Math.max(300, Math.round((window.innerHeight || 0) * 0.4));
           this.applyBottomPadding(speculativePad);
         } else if (this.getKeyboardHeight() >= 60) {
-          // Keyboard was already open (user tabbed from another field) —
-          // onViewportChange won't fire, so scroll now.
           this.alignElementIntoView('smooth');
         }
-        // else: keyboard not yet open, no padding needed — onViewportChange will scroll
       } else {
         this.alignElementIntoView('smooth');
       }
@@ -87,28 +82,27 @@ export class FocusScrollDirective implements OnDestroy {
 
   private getKeyboardHeight(): number {
     try {
-      const snap = this.viewport?.getSnapshot?.();
-      if (snap) return Math.max(0, snap.keyboardHeight || 0);
+      const snapshot = this.viewport?.getSnapshot?.();
+      if (snapshot) return Math.max(0, snapshot.keyboardHeight || 0);
     } catch (e) { /* ignore */ }
 
-    const vv = window.visualViewport;
-    if (!vv) return 0;
-    return Math.max(0, (window.innerHeight || 0) - vv.height - (vv.offsetTop || 0));
+    const visualViewport = window.visualViewport;
+    if (!visualViewport) return 0;
+    return Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
   }
 
   private alignElementIntoView(behavior: ScrollBehavior): void {
     const element = this.el.nativeElement as HTMLElement;
-    const vv = window.visualViewport;
-    const viewportTop = vv?.offsetTop ?? 0;
-    const viewportHeight = vv?.height ?? window.innerHeight;
+    const visualViewport = window.visualViewport;
+    const viewportTop = visualViewport?.offsetTop ?? 0;
+    const viewportHeight = visualViewport?.height ?? window.innerHeight;
     const preferredTopInViewport = viewportTop + Math.round(this.topBuffer || 0);
 
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = element.getBoundingClientRect().top + currentPageY - preferredTopInViewport;
 
     // If keyboard is open, ensure we have enough padding for targetY to be reachable.
-    // applyBottomPadding is a no-op if the current padding already covers it.
-    if (this.enableBottomPadding && this.isMobileDevice()) {
+    if (this.enableBottomPadding) {
       const keyboardHeight = this.getKeyboardHeight();
       if (keyboardHeight >= 60) {
         const currentMaxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
@@ -127,29 +121,29 @@ export class FocusScrollDirective implements OnDestroy {
 
   private getAttachedOverlayHeight(): number {
     try {
-      let maxH = 0;
-      for (const sel of ['.mat-autocomplete-panel', '.cdk-overlay-pane', '[role="listbox"]']) {
-        for (const n of Array.from(document.querySelectorAll<HTMLElement>(sel))) {
-          if (!n.offsetParent) continue;
-          const h = Math.round(n.getBoundingClientRect().height);
-          if (h > maxH) maxH = h;
+      let maxHeight = 0;
+      for (const selector of ['.mat-autocomplete-panel', '.cdk-overlay-pane', '[role="listbox"]']) {
+        for (const node of Array.from(document.querySelectorAll<HTMLElement>(selector))) {
+          if (!node.offsetParent) continue;
+          const height = Math.round(node.getBoundingClientRect().height);
+          if (height > maxHeight) maxHeight = height;
         }
       }
-      return maxH;
+      return maxHeight;
     } catch (e) {
       return 0;
     }
   }
 
-  private applyBottomPadding(px: number): void {
-    if (px <= this.paddingApplied) return;
+  private applyBottomPadding(extraPadding: number): void {
+    if (extraPadding <= this.paddingApplied) return;
     try {
       if (this.previousBodyPadding == null) {
         this.previousBodyPadding = document.body.style.paddingBottom || '';
         this.baselineBodyPadding = Math.round(parseFloat(getComputedStyle(document.body).paddingBottom) || 0);
       }
-      this.paddingApplied = px;
-      document.body.style.paddingBottom = `${this.baselineBodyPadding + px}px`;
+      this.paddingApplied = extraPadding;
+      document.body.style.paddingBottom = `${this.baselineBodyPadding + extraPadding}px`;
       document.documentElement.classList.add('rgv-bottom-padding-active');
     } catch (e) { /* ignore */ }
   }
@@ -210,7 +204,7 @@ export class FocusScrollDirective implements OnDestroy {
 
   private finishScrolling(): void {
     const isStillFocused = document.activeElement === this.el.nativeElement;
-    const keepPadding = this.enableBottomPadding && this.isMobileDevice() && isStillFocused && this.getKeyboardHeight() >= 60;
+    const keepPadding = this.enableBottomPadding && isStillFocused && this.getKeyboardHeight() >= 60;
 
     if (!this.isScrolling) {
       this.clearTimers();
