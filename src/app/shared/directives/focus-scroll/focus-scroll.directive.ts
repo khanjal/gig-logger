@@ -85,30 +85,33 @@ export class FocusScrollDirective implements OnDestroy {
 
   private alignElementIntoView(behavior: ScrollBehavior): void {
     const element = this.el.nativeElement as HTMLElement;
-    const rect = element.getBoundingClientRect();
     const vv = window.visualViewport;
     const viewportTop = vv?.offsetTop ?? 0;
     const viewportHeight = vv?.height ?? window.innerHeight;
     const preferredTopInViewport = viewportTop + Math.round(this.topBuffer || 0);
 
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
-    const targetY = rect.top + currentPageY - preferredTopInViewport;
+    const targetY = element.getBoundingClientRect().top + currentPageY - preferredTopInViewport;
 
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
-
-    // Only add padding when the element genuinely can't reach the top without it
-    if (targetY > maxScroll && this.enableBottomPadding && this.isMobileDevice()) {
-      const extraNeeded = Math.ceil(targetY - maxScroll) + 32;
-      const overlayHeight = this.getAttachedOverlayHeight();
-      this.applyBottomPadding(extraNeeded + overlayHeight);
-
-      // Recompute after padding changes document height
-      const newMaxScroll = Math.max(0, document.documentElement.scrollHeight - (vv?.height ?? window.innerHeight));
-      const clampedTarget = Math.min(Math.max(0, targetY), newMaxScroll);
-      this.ngZone.runOutsideAngular(() => window.scrollTo({ top: clampedTarget, behavior }));
-      return;
+    // Pre-apply padding if needed so the document is tall enough before we scroll.
+    // We do this unconditionally when enableBottomPadding is on and the keyboard is up,
+    // because the keyboard may not have fully opened on the first call (180ms delay).
+    if (this.enableBottomPadding && this.isMobileDevice()) {
+      const keyboardHeight = this.getKeyboardHeight();
+      if (keyboardHeight >= 60) {
+        // Estimate how much extra room the page needs so targetY is reachable.
+        // Use the current scrollHeight (before any new padding) as baseline.
+        const currentMaxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
+        if (targetY > currentMaxScroll) {
+          const extraNeeded = Math.ceil(targetY - currentMaxScroll) + 32 + this.getAttachedOverlayHeight();
+          this.applyBottomPadding(extraNeeded);
+        }
+      }
     }
 
+    // Recompute maxScroll after any padding change (browser updates scrollHeight synchronously
+    // when paddingBottom is set via style, so this is safe).
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
     const clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
     this.ngZone.runOutsideAngular(() => window.scrollTo({ top: clampedTarget, behavior }));
   }
@@ -159,13 +162,17 @@ export class FocusScrollDirective implements OnDestroy {
     if (this.rafId != null) cancelAnimationFrame(this.rafId);
 
     this.rafId = requestAnimationFrame(() => {
-      this.alignElementIntoView('smooth');
-
-      // Remove padding if keyboard has been dismissed
       const keyboardHeight = this.getKeyboardHeight();
+
       if (keyboardHeight < 60) {
+        // Keyboard dismissed — clean up and stop
         this.removeBottomPadding();
+        this.finishScrolling();
+        return;
       }
+
+      // Keyboard is open (or still opening) — re-align now that viewport has settled
+      this.alignElementIntoView('smooth');
     });
   };
 
