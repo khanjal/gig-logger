@@ -47,6 +47,15 @@ export class FocusScrollDirective implements OnDestroy {
         this.attachViewportListeners();
       }
 
+      // On mobile with padding enabled, speculatively reserve bottom space before
+      // the keyboard opens so the first scroll attempt already has room to reach
+      // the preferred position. onViewportChange will do a precise re-alignment
+      // once the keyboard height is known.
+      if (isMobile && this.enableBottomPadding) {
+        const speculativePad = Math.max(300, Math.round((window.innerHeight || 0) * 0.4));
+        this.applyBottomPadding(speculativePad);
+      }
+
       this.alignElementIntoView('smooth');
 
       this.maxScrollWindowTimerId = window.setTimeout(() => {
@@ -93,14 +102,11 @@ export class FocusScrollDirective implements OnDestroy {
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = element.getBoundingClientRect().top + currentPageY - preferredTopInViewport;
 
-    // Pre-apply padding if needed so the document is tall enough before we scroll.
-    // We do this unconditionally when enableBottomPadding is on and the keyboard is up,
-    // because the keyboard may not have fully opened on the first call (180ms delay).
+    // If keyboard is open, ensure we have enough padding for targetY to be reachable.
+    // applyBottomPadding is a no-op if the current padding already covers it.
     if (this.enableBottomPadding && this.isMobileDevice()) {
       const keyboardHeight = this.getKeyboardHeight();
       if (keyboardHeight >= 60) {
-        // Estimate how much extra room the page needs so targetY is reachable.
-        // Use the current scrollHeight (before any new padding) as baseline.
         const currentMaxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
         if (targetY > currentMaxScroll) {
           const extraNeeded = Math.ceil(targetY - currentMaxScroll) + 32 + this.getAttachedOverlayHeight();
@@ -109,8 +115,7 @@ export class FocusScrollDirective implements OnDestroy {
       }
     }
 
-    // Recompute maxScroll after any padding change (browser updates scrollHeight synchronously
-    // when paddingBottom is set via style, so this is safe).
+    // scrollHeight updates synchronously after paddingBottom change.
     const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
     const clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
     this.ngZone.runOutsideAngular(() => window.scrollTo({ top: clampedTarget, behavior }));
