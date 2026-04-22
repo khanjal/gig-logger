@@ -6,10 +6,12 @@ import { ViewportService } from '@services/viewport.service';
   selector: '[focusScroll]',
   standalone: true
 })
-export class FocusScrollDirective {
+export class FocusScrollDirective implements OnDestroy {
   @Input() enableBottomPadding: boolean = false;
   @Input() delayDropdownOnMobile: boolean = true;
   @Input() suppressDropdownAfterSelection: boolean = false;
+  // Single consolidated top buffer (px). Set to a reasonable default (header + extra).
+  @Input() topBuffer = 100; // px total top buffer used to align focused fields
   
   @Output() scrollComplete = new EventEmitter<void>();
   @Output() scrollStart = new EventEmitter<void>();
@@ -25,6 +27,8 @@ export class FocusScrollDirective {
   private manualScrollOverride = false;
   private bottomPaddingApplied = false;
   private previousBodyPadding: string | null = null;
+  private baselineBodyPadding = 0; // numeric px value read from computed style
+  private extraPaddingApplied = 0; // numeric px added to allow extra scroll space
   private viewportSub: Subscription | undefined;
   private isScrolling = false;
 
@@ -54,12 +58,8 @@ export class FocusScrollDirective {
       // fields still have room to move upward when the keyboard opens.
       if (this.enableBottomPadding && this.isMobileDevice()) {
         try {
-          if (this.previousBodyPadding == null) {
-            this.previousBodyPadding = document.body.style.paddingBottom || '';
-          }
-          document.body.style.paddingBottom = `${Math.max(280, Math.round((window.innerHeight || 0) * 0.35))}px`;
-          document.documentElement.classList.add('rgv-bottom-padding-active');
-          this.bottomPaddingApplied = true;
+          const initialPad = Math.max(280, Math.round((window.innerHeight || 0) * 0.35));
+          this.ensureExtraBottomPadding(initialPad);
         } catch (e) { /* ignore */ }
         this.updateBottomPadding();
       }
@@ -101,15 +101,30 @@ export class FocusScrollDirective {
     const visualViewport = window.visualViewport;
     const viewportTop = visualViewport?.offsetTop ?? 0;
     const viewportHeight = visualViewport?.height ?? window.innerHeight;
-    const topPadding = this.isMobileDevice() ? 16 : 24;
-    const preferredTopInViewport = viewportTop + Math.max(topPadding, Math.round(viewportHeight * 0.24));
+    // Compute header buffer: use consolidated `topBuffer` value (px)
+    const headerBuffer = Math.round(this.topBuffer || 0);
+    const preferredTopInViewport = viewportTop + headerBuffer;
 
     const currentPageY = window.pageYOffset || document.documentElement.scrollTop;
     const targetY = rect.top + currentPageY - preferredTopInViewport;
 
     // Clamp target so we don't scroll past the end of the document
     const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
-    const clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
+    let clampedTarget = Math.min(Math.max(0, targetY), maxScroll);
+
+    // If the ideal target is beyond the current max scroll (element is at page bottom)
+    // try to add temporary extra bottom padding so the element can be scrolled up to the preferred position.
+    if (targetY > maxScroll) {
+      const extraNeeded = Math.ceil(targetY - maxScroll) + 24; // small safety margin
+      const overlayHeight = this.getAttachedOverlayHeight();
+      const extraToApply = Math.max(0, extraNeeded + (overlayHeight || 0));
+      this.ensureExtraBottomPadding(extraToApply);
+
+      // recompute maxScroll after padding change
+      const newViewportHeight = visualViewport?.height ?? window.innerHeight;
+      const newMaxScroll = Math.max(0, document.documentElement.scrollHeight - newViewportHeight);
+      clampedTarget = Math.min(Math.max(0, targetY), newMaxScroll);
+    }
 
     this.ngZone.runOutsideAngular(() => {
       window.scrollTo({
@@ -117,6 +132,45 @@ export class FocusScrollDirective {
         behavior
       });
     });
+  }
+
+  private getAttachedOverlayHeight(): number {
+    try {
+      const selectors = ['.mat-autocomplete-panel', '.cdk-overlay-pane', '[role="listbox"]'];
+      let maxH = 0;
+      for (const sel of selectors) {
+        const nodes = Array.from(document.querySelectorAll(sel)) as HTMLElement[];
+        for (const n of nodes) {
+          if (!n.offsetParent) continue; // not visible
+          const r = n.getBoundingClientRect();
+          if (r.height > maxH) maxH = Math.round(r.height);
+        }
+      }
+      return maxH;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  private ensureExtraBottomPadding(px: number): void {
+    try {
+      if (this.previousBodyPadding == null) {
+        this.previousBodyPadding = document.body.style.paddingBottom || '';
+        this.baselineBodyPadding = Math.round(parseFloat(getComputedStyle(document.body).paddingBottom) || 0);
+      }
+
+      if (px <= this.extraPaddingApplied) {
+        return;
+      }
+
+      this.extraPaddingApplied = px;
+      const total = Math.max(0, this.baselineBodyPadding + this.extraPaddingApplied);
+      document.body.style.paddingBottom = `${total}px`;
+      document.documentElement.classList.add('rgv-bottom-padding-active');
+      this.bottomPaddingApplied = true;
+    } catch (e) {
+      // ignore DOM exceptions
+    }
   }
 
   
@@ -203,8 +257,13 @@ export class FocusScrollDirective {
       if (padding > 0) {
         if (this.previousBodyPadding == null) {
           this.previousBodyPadding = document.body.style.paddingBottom || '';
+          this.baselineBodyPadding = Math.round(parseFloat(getComputedStyle(document.body).paddingBottom) || 0);
         }
-        document.body.style.paddingBottom = `${padding}px`;
+
+        // combine viewport-driven padding with any extra padding already applied
+        const combined = Math.max(padding, this.extraPaddingApplied || 0);
+        const total = Math.max(0, this.baselineBodyPadding + combined);
+        document.body.style.paddingBottom = `${total}px`;
         document.documentElement.classList.add('rgv-bottom-padding-active');
         this.bottomPaddingApplied = true;
       }
@@ -216,14 +275,35 @@ export class FocusScrollDirective {
   private removeBottomPadding(): void {
     try {
       if (this.bottomPaddingApplied) {
+        // restore original padding
         document.body.style.paddingBottom = this.previousBodyPadding ?? '';
         document.documentElement.classList.remove('rgv-bottom-padding-active');
         this.bottomPaddingApplied = false;
         this.previousBodyPadding = null;
+        this.baselineBodyPadding = 0;
+        this.extraPaddingApplied = 0;
       }
     } catch (e) {
       // ignore
     }
+  }
+
+  private getKeyboardHeight(): number {
+    try {
+      const snap = this.viewport?.getSnapshot?.();
+      if (snap) {
+        return Math.max(0, snap.keyboardHeight || 0);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const visualViewport = window.visualViewport;
+    if (!visualViewport) {
+      return 0;
+    }
+
+    return Math.max(0, (window.innerHeight || 0) - visualViewport.height - (visualViewport.offsetTop || 0));
   }
 
   private startSettleWindow(): void {
@@ -248,9 +328,9 @@ export class FocusScrollDirective {
     });
 
     this.ngZone.runOutsideAngular(() => {
+      // Mobile-only: manual scrolling with virtual keyboard is touch-driven.
       window.addEventListener('touchstart', this.onUserScrollGesture, { passive: true });
       window.addEventListener('touchmove', this.onUserScrollGesture, { passive: true });
-      window.addEventListener('wheel', this.onUserScrollGesture, { passive: true });
     });
 
     this.isViewportListenersAttached = true;
@@ -267,7 +347,6 @@ export class FocusScrollDirective {
       this.viewport.stop();
       window.removeEventListener('touchstart', this.onUserScrollGesture);
       window.removeEventListener('touchmove', this.onUserScrollGesture);
-      window.removeEventListener('wheel', this.onUserScrollGesture);
     } catch (e) {
       // ignore
     }
@@ -306,7 +385,11 @@ export class FocusScrollDirective {
   private finishScrolling(): void {
     const hostElement = this.el.nativeElement as HTMLElement;
     const isStillFocused = document.activeElement === hostElement;
-    const keepPaddingWhileFocused = this.enableBottomPadding && this.isMobileDevice() && isStillFocused;
+    const keepPaddingWhileFocused =
+      this.enableBottomPadding &&
+      this.isMobileDevice() &&
+      isStillFocused &&
+      this.getKeyboardHeight() >= 60;
 
     if (!this.isScrolling) {
       this.clearTimers();
