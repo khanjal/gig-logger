@@ -45,18 +45,22 @@ export class FocusScrollDirective implements OnDestroy {
     this.initialScrollTimerId = window.setTimeout(() => {
       if (useViewportAwareDelay) {
         this.attachViewportListeners();
-      }
 
-      // On mobile with padding enabled, speculatively reserve bottom space before
-      // the keyboard opens so the first scroll attempt already has room to reach
-      // the preferred position. onViewportChange will do a precise re-alignment
-      // once the keyboard height is known.
-      if (isMobile && this.enableBottomPadding) {
-        const speculativePad = Math.max(300, Math.round((window.innerHeight || 0) * 0.4));
-        this.applyBottomPadding(speculativePad);
+        if (this.enableBottomPadding) {
+          // Keyboard not open yet — apply speculative padding so the page already
+          // has room when the keyboard finishes opening, then let onViewportChange
+          // do the single precise scroll. Avoids the double-bounce.
+          const speculativePad = Math.max(300, Math.round((window.innerHeight || 0) * 0.4));
+          this.applyBottomPadding(speculativePad);
+        } else if (this.getKeyboardHeight() >= 60) {
+          // Keyboard was already open (user tabbed from another field) —
+          // onViewportChange won't fire, so scroll now.
+          this.alignElementIntoView('smooth');
+        }
+        // else: keyboard not yet open, no padding needed — onViewportChange will scroll
+      } else {
+        this.alignElementIntoView('smooth');
       }
-
-      this.alignElementIntoView('smooth');
 
       this.maxScrollWindowTimerId = window.setTimeout(() => {
         this.finishScrolling();
