@@ -1,87 +1,146 @@
 import { Component, DebugElement } from '@angular/core';
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { BehaviorSubject } from 'rxjs';
 import { FocusScrollDirective } from './focus-scroll.directive';
 import { ViewportService } from '@services/viewport.service';
-import { BehaviorSubject } from 'rxjs';
 
 class MockViewportService {
-	private subj = new BehaviorSubject({ height: 500, offsetTop: 0, keyboardHeight: 200, windowInnerHeight: 800 });
-	public viewportChange$ = this.subj.asObservable();
-	public getSnapshot() { return this.subj.getValue(); }
-	start() {}
-	stop() {}
-	emit(v: any) { this.subj.next(v); }
+  private subj = new BehaviorSubject({ height: 500, offsetTop: 0, keyboardHeight: 200, windowInnerHeight: 800 });
+  public viewportChange$ = this.subj.asObservable();
+  public start = jasmine.createSpy('start');
+  public stop = jasmine.createSpy('stop');
+  public getSnapshot() { return this.subj.getValue(); }
+  public emit(v: any) { this.subj.next(v); }
 }
 
 @Component({
-	template: `<input focusScroll [enableBottomPadding]="true" />`
+  standalone: true,
+  imports: [FocusScrollDirective],
+  template: `<input focusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
 })
-class TestHostComponent {}
+class HostComponent {
+  enableBottomPadding = false;
+  delay = true;
+  suppress = false;
+}
 
 describe('FocusScrollDirective (integration)', () => {
-	let fixture: any;
-	let inputDe: DebugElement;
-	let mockViewport: MockViewportService;
+  let fixture: ComponentFixture<HostComponent>;
+  let inputDe: DebugElement;
+  let mockViewport: MockViewportService;
+  const originalUserAgent = navigator.userAgent;
 
-	beforeEach(() => {
-		mockViewport = new MockViewportService();
+  beforeEach(() => {
+    mockViewport = new MockViewportService();
 
-		TestBed.configureTestingModule({
-			declarations: [TestHostComponent, FocusScrollDirective],
-			providers: [{ provide: ViewportService, useValue: mockViewport }]
-		});
+    TestBed.configureTestingModule({
+      imports: [HostComponent],
+      providers: [{ provide: ViewportService, useValue: mockViewport }]
+    }).compileComponents();
 
-		fixture = TestBed.createComponent(TestHostComponent);
-		fixture.detectChanges();
-		inputDe = fixture.debugElement.query(By.css('input'));
-	});
+    fixture = TestBed.createComponent(HostComponent);
+    // Do not run initial change detection here; individual tests will
+    // call `fixture.detectChanges()` after they set up host inputs to
+    // avoid ExpressionChangedAfterItHasBeenCheckedError when tests flip
+    // bound boolean inputs mid-flight.
+  });
 
-	afterEach(() => {
-		document.body.style.paddingBottom = '';
-		document.documentElement.classList.remove('rgv-bottom-padding-active');
-	});
+  afterEach(() => {
+    Object.defineProperty(navigator, 'userAgent', { value: originalUserAgent, configurable: true });
+    document.body.style.paddingBottom = '';
+    document.documentElement.classList.remove('rgv-bottom-padding-active');
+  });
 
-	it('removes bottom padding on blur', fakeAsync(() => {
-		document.body.style.paddingBottom = '200px';
-		document.documentElement.classList.add('rgv-bottom-padding-active');
+  it('does nothing on non-mobile focus', fakeAsync(() => {
+    Object.defineProperty(navigator, 'userAgent', { value: 'Mozilla/5.0 (Windows NT)', configurable: true });
+    fixture.detectChanges();
+    inputDe = fixture.debugElement.query(By.css('input'));
+    const dir = inputDe.injector.get(FocusScrollDirective) as FocusScrollDirective;
 
-		inputDe.nativeElement.dispatchEvent(new Event('focus'));
-		tick(300);
+    spyOn(dir.scrollStart, 'emit');
+    inputDe.nativeElement.dispatchEvent(new Event('focus'));
+    tick(500);
+    expect(dir.scrollStart.emit).not.toHaveBeenCalled();
+    expect(dir.isCurrentlyScrolling()).toBeFalse();
+  }));
 
-		inputDe.nativeElement.dispatchEvent(new Event('blur'));
-		tick(50);
+  it('applies and removes bottom padding on mobile focus+blur', fakeAsync(() => {
+    Object.defineProperty(navigator, 'userAgent', { value: 'iPhone', configurable: true });
 
-		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
-	}));
+    fixture.componentInstance.enableBottomPadding = true;
+    fixture.detectChanges();
+    inputDe = fixture.debugElement.query(By.css('input'));
+    const dir = inputDe.injector.get(FocusScrollDirective) as FocusScrollDirective;
 
-	it('removes bottom padding when keyboard hides via viewport change', fakeAsync(() => {
-		// Manually put the directive into scrolling state and apply padding
-		inputDe.nativeElement.dispatchEvent(new Event('focus'));
-		tick(200);
+    spyOn(window, 'scrollTo');
 
-		// Simulate padding having been applied
-		document.body.style.paddingBottom = '300px';
-		document.documentElement.classList.add('rgv-bottom-padding-active');
+    // simulate keyboard opening snapshot
+    mockViewport.emit({ height: 300, offsetTop: 0, keyboardHeight: 100, windowInnerHeight: 800 });
 
-		// Simulate keyboard hide
-		mockViewport.emit({ height: 800, offsetTop: 0, keyboardHeight: 0, windowInnerHeight: 800 });
-		tick(100);
+    fixture.ngZone!.run(() => inputDe.nativeElement.dispatchEvent(new Event('focus')));
+    tick(200);
+    fixture.detectChanges();
+    tick(5); // allow async viewport/raf tasks to settle
+    fixture.detectChanges();
 
-		expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
-	}));
+    expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeTrue();
+    expect(parseInt(document.body.style.paddingBottom || '0', 10)).toBeGreaterThan(0);
 
-	it('emits scrollComplete and dropdownReady after scroll window', fakeAsync(() => {
-		const directive: FocusScrollDirective = inputDe.injector.get(FocusScrollDirective);
-		let scrollCompleteFired = false;
-		let dropdownReadyFired = false;
-		directive.scrollComplete.subscribe(() => scrollCompleteFired = true);
-		directive.dropdownReady.subscribe(() => dropdownReadyFired = true);
+    // blur should finish scrolling and remove padding
+    fixture.ngZone!.run(() => inputDe.nativeElement.dispatchEvent(new Event('blur')));
+    tick(50);
+    fixture.detectChanges();
+    tick(5);
+    fixture.detectChanges();
 
-		inputDe.nativeElement.dispatchEvent(new Event('focus'));
-		tick(1700); // initialDelay (180) + maxScrollWindow (1400) + buffer
+    expect(dir.isCurrentlyScrolling()).toBeFalse();
+    expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
+    expect(window.scrollTo).toHaveBeenCalled();
+  }));
 
-		expect(scrollCompleteFired).toBeTrue();
-		expect(dropdownReadyFired).toBeTrue();
-	}));
+  it('removes bottom padding when viewport reports keyboard hidden', fakeAsync(() => {
+    // start with focus and applied padding
+    Object.defineProperty(navigator, 'userAgent', { value: 'iPhone', configurable: true });
+    fixture.componentInstance.enableBottomPadding = true;
+    fixture.detectChanges();
+    inputDe = fixture.debugElement.query(By.css('input'));
+
+    fixture.ngZone!.run(() => inputDe.nativeElement.dispatchEvent(new Event('focus')));
+    tick(200);
+    fixture.detectChanges();
+    tick(5);
+    fixture.detectChanges();
+
+    // simulate padding having been applied
+    document.body.style.paddingBottom = '300px';
+    document.documentElement.classList.add('rgv-bottom-padding-active');
+
+    // viewport reports keyboard hidden
+    mockViewport.emit({ height: 800, offsetTop: 0, keyboardHeight: 0, windowInnerHeight: 800 });
+    tick(120);
+    fixture.detectChanges();
+    tick(1);
+    fixture.detectChanges();
+
+    expect(document.documentElement.classList.contains('rgv-bottom-padding-active')).toBeFalse();
+  }));
+
+  it('emits scrollComplete and dropdownReady after scroll window', fakeAsync(() => {
+    Object.defineProperty(navigator, 'userAgent', { value: 'iPhone', configurable: true });
+    fixture.detectChanges();
+    inputDe = fixture.debugElement.query(By.css('input'));
+    const dir = inputDe.injector.get(FocusScrollDirective) as FocusScrollDirective;
+    let complete = false;
+    let ready = false;
+    dir.scrollComplete.subscribe(() => complete = true);
+    dir.dropdownReady.subscribe(() => ready = true);
+
+    inputDe.nativeElement.dispatchEvent(new Event('focus'));
+    tick(1700);
+    fixture.detectChanges();
+
+    expect(complete).toBeTrue();
+    expect(ready).toBeTrue();
+  }));
 });

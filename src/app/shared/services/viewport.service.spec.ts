@@ -26,6 +26,7 @@ describe('ViewportService', () => {
     let count = 0;
     service.start();
     let sub: any;
+    let finished = false;
     sub = service.viewportChange$.subscribe(() => {
       count++;
       if (count === 1) {
@@ -33,9 +34,16 @@ describe('ViewportService', () => {
         window.dispatchEvent(new Event('resize'));
       }
       if (count >= 2) {
-        sub.unsubscribe();
-        service.stop();
-        done();
+        if (finished) return;
+        finished = true;
+        // unsubscribe/stop on next tick to avoid race where the
+        // subscription callback runs synchronously before `sub` is
+        // assigned by the caller.
+        setTimeout(() => {
+          try { sub.unsubscribe(); } catch (e) { /* ignore */ }
+          try { service.stop(); } catch (e) { /* ignore */ }
+          done();
+        }, 0);
       }
     });
   });
