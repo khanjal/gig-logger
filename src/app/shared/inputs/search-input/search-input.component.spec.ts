@@ -35,7 +35,7 @@ describe('SearchInputComponent (class-only)', () => {
     serverGoogle.getFullAddressWithZip.and.returnValue(Promise.resolve(null));
     dropdown.filterDropdown.and.returnValue(Promise.resolve([]));
     permission.getLocationState.and.returnValue('granted');
-    mockLoc.getLocation.and.returnValue(null);
+    mockLoc.getLocation.and.returnValue({ lat: 0, lng: 0 });
 
     comp = new SearchInputComponent(
       dialog,
@@ -165,7 +165,7 @@ describe('SearchInputComponent (class-only)', () => {
     // ensure googleSearch mapping is applied
     (comp as any).setGoogleSearchType();
     expect((comp as any).googleSearch).toBe('address');
-    const item: any = { placeId: 'p1' };
+    const item: any = { placeId: 'p1', trips: 0, saved: false };
     expect(comp.isGoogleResult(item)).toBeTrue();
 
     // ensure location permission allows using device location
