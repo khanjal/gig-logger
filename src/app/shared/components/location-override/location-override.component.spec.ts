@@ -61,13 +61,13 @@ describe('LocationOverrideComponent', () => {
   it('should load settings on init', () => {
     fixture.detectChanges();
     
-    expect(component.latitude).toBe(40.7128);
-    expect(component.longitude).toBe(-74.0060);
-    expect(component.radius).toBe(25);
+    expect(component.latitude()).toBe(40.7128);
+    expect(component.longitude()).toBe(-74.0060);
+    expect(component.radius()).toBe(25);
   });
 
   it('should enable override when toggled on', () => {
-    component.enabled = true;
+    component.enabled.set(true);
     mockLocationServiceSpy.isValidLatitude.and.returnValue(true);
     mockLocationServiceSpy.isValidLongitude.and.returnValue(true);
     
@@ -78,7 +78,7 @@ describe('LocationOverrideComponent', () => {
   });
 
   it('should disable override when toggled off', () => {
-    component.enabled = false;
+    component.enabled.set(false);
     
     component.onToggleChange();
     
@@ -93,9 +93,9 @@ describe('LocationOverrideComponent', () => {
     
     component.onPresetSelect(preset);
     
-    expect(component.latitude).toBe(34.0522);
-    expect(component.longitude).toBe(-118.2437);
-    expect(component.locationName).toBe('Los Angeles, CA');
+    expect(component.latitude()).toBe(34.0522);
+    expect(component.longitude()).toBe(-118.2437);
+    expect(component.locationName()).toBe('Los Angeles, CA');
   });
 
   it('should validate coordinates', () => {

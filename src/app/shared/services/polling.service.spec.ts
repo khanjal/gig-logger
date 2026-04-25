@@ -3,9 +3,6 @@ import { PollingService } from './polling.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SpreadsheetService } from './spreadsheet.service';
 import { UnsavedDataService } from './unsaved-data.service';
-import { TripService } from './sheets/trip.service';
-import { ShiftService } from './sheets/shift.service';
-import { ExpensesService } from './sheets/expenses.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
@@ -20,15 +17,14 @@ describe('PollingService', () => {
   let syncStatusSpy: jasmine.SpyObj<SyncStatusService>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let sheetServiceSpy: jasmine.SpyObj<SpreadsheetService>;
-  let tripServiceSpy: jasmine.SpyObj<TripService>;
-  let shiftServiceSpy: jasmine.SpyObj<ShiftService>;
-  let expensesServiceSpy: jasmine.SpyObj<ExpensesService>;
   let gigWorkflowSpy: jasmine.SpyObj<GigWorkflowService>;
   let authSpy: jasmine.SpyObj<AuthGoogleService>;
 
   beforeEach(() => {
     const logger = jasmine.createSpyObj('LoggerService', ['info', 'warn', 'error', 'debug']);
-    const unsaved = jasmine.createSpyObj('UnsavedDataService', ['getUnsavedCounts', 'markAllAsSaved']);
+    const unsaved = jasmine.createSpyObj('UnsavedDataService', [
+      'getUnsavedCounts', 'collectUnsavedItems', 'commitSavedItems'
+    ]);
     const syncStatus = jasmine.createSpyObj('SyncStatusService', [
       'startCountdown',
       'stopCountdown',
@@ -39,9 +35,6 @@ describe('PollingService', () => {
     ]);
     const snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
     const sheetService = jasmine.createSpyObj('SpreadsheetService', ['querySpreadsheets']);
-    const tripService = jasmine.createSpyObj('TripService', ['getUnsaved']);
-    const shiftService = jasmine.createSpyObj('ShiftService', ['getUnsavedShifts']);
-    const expensesService = jasmine.createSpyObj('ExpensesService', ['getUnsaved']);
     const gigWorkflow = jasmine.createSpyObj('GigWorkflowService', [
       'calculateShiftTotals',
       'saveSheetData'
@@ -49,9 +42,9 @@ describe('PollingService', () => {
     const auth = jasmine.createSpyObj('AuthGoogleService', ['canSync']);
     auth.canSync.and.returnValue(Promise.resolve(true));
     sheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'sheet1', name: 'Default' }]));
-    tripService.getUnsaved.and.returnValue(Promise.resolve([]));
-    shiftService.getUnsavedShifts.and.returnValue(Promise.resolve([]));
-    expensesService.getUnsaved.and.returnValue(Promise.resolve([]));
+    unsaved.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 0, trips: 0, shifts: 0, expenses: 0 }));
+    unsaved.collectUnsavedItems.and.returnValue(Promise.resolve({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] }));
+    unsaved.commitSavedItems.and.returnValue(Promise.resolve());
 
     TestBed.configureTestingModule({
       providers: [
@@ -61,11 +54,8 @@ describe('PollingService', () => {
         { provide: SyncStatusService, useValue: syncStatus },
         { provide: MatSnackBar, useValue: snackBar },
         { provide: SpreadsheetService, useValue: sheetService },
-        { provide: TripService, useValue: tripService },
-        { provide: ShiftService, useValue: shiftService },
-        { provide: ExpensesService, useValue: expensesService },
-        { provide: GigWorkflowService, useValue: gigWorkflow }
-        , { provide: AuthGoogleService, useValue: auth }
+        { provide: GigWorkflowService, useValue: gigWorkflow },
+        { provide: AuthGoogleService, useValue: auth }
       ]
     });
 
@@ -75,9 +65,6 @@ describe('PollingService', () => {
     syncStatusSpy = TestBed.inject(SyncStatusService) as jasmine.SpyObj<SyncStatusService>;
     snackBarSpy = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     sheetServiceSpy = TestBed.inject(SpreadsheetService) as jasmine.SpyObj<SpreadsheetService>;
-    tripServiceSpy = TestBed.inject(TripService) as jasmine.SpyObj<TripService>;
-    shiftServiceSpy = TestBed.inject(ShiftService) as jasmine.SpyObj<ShiftService>;
-    expensesServiceSpy = TestBed.inject(ExpensesService) as jasmine.SpyObj<ExpensesService>;
     gigWorkflowSpy = TestBed.inject(GigWorkflowService) as jasmine.SpyObj<GigWorkflowService>;
     authSpy = TestBed.inject(AuthGoogleService) as jasmine.SpyObj<AuthGoogleService>;
   });
@@ -397,20 +384,56 @@ describe('PollingService', () => {
 
     it('should save and mark items as saved when backend returns success', async () => {
       unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 3, trips: 1, shifts: 1, expenses: 1 } as any));
+      unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] }));
       authSpy.canSync.and.returnValue(Promise.resolve(true));
 
-      // Spy serializer to avoid complex transformations
       spyOn(SheetSerializerHelper, 'serializeTrips').and.returnValue([]);
       spyOn(SheetSerializerHelper, 'serializeShifts').and.returnValue([]);
 
-      const fakeMessages: any[] = [];
-      gigWorkflowSpy.saveSheetData.and.returnValue(Promise.resolve(fakeMessages));
+      gigWorkflowSpy.saveSheetData.and.returnValue(Promise.resolve([]));
       spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
 
       await service.forceSave();
 
-      expect(unsavedDataSpy.markAllAsSaved).toHaveBeenCalled();
+      // commitSavedItems is the single shared entry point for all three domain services.
+      expect(unsavedDataSpy.commitSavedItems).toHaveBeenCalled();
       expect(syncStatusSpy.completeSync).toHaveBeenCalled();
+    });
+
+    it('should capture saveStartedAt after shift recalculation and before the API call', async () => {
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 0, shifts: 1, expenses: 0 } as any));
+      unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({
+        unsavedTrips: [],
+        unsavedShifts: [{ id: 10 } as any],
+        unsavedExpenses: []
+      }));
+      authSpy.canSync.and.returnValue(Promise.resolve(true));
+
+      spyOn(SheetSerializerHelper, 'serializeTrips').and.returnValue([]);
+      spyOn(SheetSerializerHelper, 'serializeShifts').and.returnValue([]);
+
+      const beforeSave = Date.now();
+      let recalculationFinishedAt = 0;
+      let apiCallTime = 0;
+
+      gigWorkflowSpy.calculateShiftTotals.and.callFake(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        recalculationFinishedAt = Date.now();
+      });
+
+      gigWorkflowSpy.saveSheetData.and.callFake(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        apiCallTime = Date.now();
+        return [];
+      });
+      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
+
+      await service.forceSave();
+
+      const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
+      expect(saveStartedAtArg).toBeGreaterThanOrEqual(beforeSave);
+      expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
+      expect(saveStartedAtArg).toBeLessThan(apiCallTime);
     });
   });
 });

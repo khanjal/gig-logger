@@ -9,9 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { IExpense } from '@interfaces/expense.interface';
 import { ActionEnum } from '@enums/action.enum';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { spreadsheetDB } from '@data/spreadsheet.db';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;
@@ -21,6 +19,8 @@ describe('ExpensesComponent', () => {
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let authGoogleServiceMock: Partial<AuthGoogleService>;
+  let expensesStream$: BehaviorSubject<IExpense[]>;
+  let unsavedDataStream$: BehaviorSubject<boolean>;
 
   const makeExpense = (overrides: Partial<IExpense> = {}): IExpense => ({
     id: overrides.id ?? 1,
@@ -36,10 +36,14 @@ describe('ExpensesComponent', () => {
   });
 
   beforeEach(async () => {
-    expensesServiceSpy = jasmine.createSpyObj('ExpensesService', [
-      'getMaxRowId', 'add', 'update', 'delete'
-    ]);
-    unsavedDataServiceSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
+    expensesStream$ = new BehaviorSubject<IExpense[]>([]);
+    unsavedDataStream$ = new BehaviorSubject<boolean>(false);
+    expensesServiceSpy = jasmine.createSpyObj(
+      'ExpensesService',
+      ['getMaxRowId', 'add', 'update', 'delete', 'list'],
+      { expenses$: expensesStream$.asObservable() }
+    );
+    unsavedDataServiceSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData'], { unsavedData$: unsavedDataStream$.asObservable() });
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     authGoogleServiceMock = {
@@ -50,6 +54,7 @@ describe('ExpensesComponent', () => {
     };
 
     expensesServiceSpy.getMaxRowId.and.returnValue(Promise.resolve(10));
+  expensesServiceSpy.list.and.returnValue(Promise.resolve([]));
     unsavedDataServiceSpy.hasUnsavedData.and.returnValue(Promise.resolve(false));
 
     await TestBed.configureTestingModule({
@@ -63,15 +68,11 @@ describe('ExpensesComponent', () => {
         { provide: MatSnackBar, useValue: snackBarSpy },
         CurrencyPipe,
         DatePipe
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ExpensesComponent);
     component = fixture.componentInstance;
-    
-    // Mock spreadsheet DB before ngOnInit
-    spyOn(spreadsheetDB.expenses, 'toArray').and.returnValue(Promise.resolve([]) as any);
   });
 
   it('should create', async () => {
@@ -81,8 +82,6 @@ describe('ExpensesComponent', () => {
 
   describe('ngOnInit', () => {
     it('initializes form with default values', async () => {
-      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
-      
       await component.ngOnInit();
 
       expect(component.expenseForm).toBeDefined();
@@ -90,29 +89,30 @@ describe('ExpensesComponent', () => {
       expect(component.expenseForm.get('date')?.value).toBeTruthy();
     });
 
-    it('loads expenses on init', async () => {
-      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
-      
-      await component.ngOnInit();
+    it('subscribes to reactive expenses on init', async () => {
+      const streamedExpense = makeExpense({ id: 7, name: 'Reactive Fuel' });
 
-      expect(component.loadExpenses).toHaveBeenCalled();
+      await component.ngOnInit();
+      expensesStream$.next([streamedExpense]);
+      await Promise.resolve();
+
+      expect(component.expenses()).toEqual([streamedExpense]);
     });
 
     it('sets maxRowId from service', async () => {
-      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
-      
       await component.ngOnInit();
 
       expect(expensesServiceSpy.getMaxRowId).toHaveBeenCalled();
-      expect(component.maxRowId).toBe(10);
+      expect(component.maxRowId()).toBe(10);
     });
   });
 
-  describe('getToday', () => {
-    it('returns today in ISO format', () => {
-      const today = component.getToday();
-      
-      expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  describe('date defaults', () => {
+    it('initializes date control with a Date value', async () => {
+      await component.ngOnInit();
+
+      const dateValue = component.expenseForm.get('date')?.value;
+      expect(dateValue instanceof Date).toBeTrue();
     });
   });
 
@@ -124,13 +124,13 @@ describe('ExpensesComponent', () => {
         makeExpense({ date: '2024-01-20', amount: 30 }),
         makeExpense({ date: '2024-02-10', amount: 40 })
       ];
-      (spreadsheetDB.expenses.toArray as jasmine.Spy).and.returnValue(Promise.resolve(expenses));
+      expensesServiceSpy.list.and.returnValue(Promise.resolve(expenses));
 
       await component.loadExpenses();
 
-      expect(component.groupedExpenses['2024-01']).toBeDefined();
-      expect(component.groupedExpenses['2024-01'].length).toBe(2);
-      expect(component.groupedExpenses['2024-02'].length).toBe(1);
+      expect(component.groupedExpenses()['2024-01']).toBeDefined();
+      expect(component.groupedExpenses()['2024-01'].length).toBe(2);
+      expect(component.groupedExpenses()['2024-02'].length).toBe(1);
     });
 
     it('groups expenses by year', async () => {
@@ -138,12 +138,12 @@ describe('ExpensesComponent', () => {
         makeExpense({ date: '2024-01-15' }),
         makeExpense({ date: '2023-12-20' })
       ];
-      (spreadsheetDB.expenses.toArray as jasmine.Spy).and.returnValue(Promise.resolve(expenses));
+      expensesServiceSpy.list.and.returnValue(Promise.resolve(expenses));
 
       await component.loadExpenses();
 
-      expect(component.groupedExpensesByYear['2024']).toBeDefined();
-      expect(component.groupedExpensesByYear['2023']).toBeDefined();
+      expect(component.groupedExpensesByYear()['2024']).toBeDefined();
+      expect(component.groupedExpensesByYear()['2023']).toBeDefined();
     });
 
     it('extracts custom categories', async () => {
@@ -152,28 +152,43 @@ describe('ExpensesComponent', () => {
         makeExpense({ category: 'CustomCategory' }),
         makeExpense({ category: 'AnotherCustom' })
       ];
-      (spreadsheetDB.expenses.toArray as jasmine.Spy).and.returnValue(Promise.resolve(expenses));
+      expensesServiceSpy.list.and.returnValue(Promise.resolve(expenses));
 
       await component.loadExpenses();
 
-      expect(component.customCategories).toContain('CustomCategory');
-      expect(component.customCategories).toContain('AnotherCustom');
-      expect(component.customCategories).not.toContain('Fuel'); // default category
+      expect(component.customCategories()).toContain('CustomCategory');
+      expect(component.customCategories()).toContain('AnotherCustom');
+      expect(component.customCategories()).not.toContain('Fuel'); // default category
     });
 
-    it('checks for unsaved data', async () => {
-      (spreadsheetDB.expenses.toArray as jasmine.Spy).and.returnValue(Promise.resolve([]));
+    it('updates unsavedData from service stream', async () => {
+      await component.ngOnInit();
+
+      unsavedDataStream$.next(true);
+      await Promise.resolve();
+
+      expect(component.unsavedData()).toBeTrue();
+    });
+
+    it('precomputes month and year totals', async () => {
+      const expenses = [
+        makeExpense({ date: '2024-01-15', amount: 25.50 }),
+        makeExpense({ date: '2024-01-20', amount: 30.25 }),
+        makeExpense({ date: '2024-02-10', amount: 15.00 })
+      ];
+      expensesServiceSpy.list.and.returnValue(Promise.resolve(expenses));
 
       await component.loadExpenses();
 
-      expect(unsavedDataServiceSpy.hasUnsavedData).toHaveBeenCalled();
+      expect(component.monthTotals()['2024-01']).toBeCloseTo(55.75, 2);
+      expect(component.monthTotals()['2024-02']).toBeCloseTo(15.00, 2);
+      expect(component.yearTotals()['2024']).toBeCloseTo(70.75, 2);
     });
   });
 
   describe('addExpense', () => {
     beforeEach(async () => {
       await component.ngOnInit();
-      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
     });
 
     it('does nothing if form is invalid', async () => {
@@ -185,7 +200,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('adds new expense with correct action', async () => {
-      component.maxRowId = 10;
+      component.maxRowId.set(10);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Gas',
@@ -206,8 +221,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('updates existing expense when editing', async () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, rowId: 6 })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, rowId: 6 })]);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Updated Name',
@@ -229,8 +244,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('clears editing state after update', async () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, rowId: 6 })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, rowId: 6 })]);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Gas',
@@ -241,7 +256,7 @@ describe('ExpensesComponent', () => {
 
       await component.addExpense();
 
-      expect(component.editingExpenseId).toBeUndefined();
+      expect(component.editingExpenseId()).toBeUndefined();
     });
 
     it('resets form after add', async () => {
@@ -259,7 +274,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('closes form after add', async () => {
-      component.showAddForm = true;
+      component.showAddForm.set(true);
       component.expenseForm.patchValue({
         date: '2024-01-15',
         name: 'Gas',
@@ -270,7 +285,7 @@ describe('ExpensesComponent', () => {
 
       await component.addExpense();
 
-      expect(component.showAddForm).toBe(false);
+      expect(component.showAddForm()).toBe(false);
     });
   });
 
@@ -293,16 +308,16 @@ describe('ExpensesComponent', () => {
 
       component.editExpense(expense);
 
-      expect(component.editingExpenseId).toBe(5);
+      expect(component.editingExpenseId()).toBe(5);
     });
 
     it('shows add form', () => {
       const expense = makeExpense();
-      component.showAddForm = false;
+      component.showAddForm.set(false);
 
       component.editExpense(expense);
 
-      expect(component.showAddForm).toBe(true);
+      expect(component.showAddForm()).toBe(true);
     });
   });
 
@@ -312,19 +327,19 @@ describe('ExpensesComponent', () => {
     });
 
     it('clears editing state', () => {
-      component.editingExpenseId = 5;
+      component.editingExpenseId.set(5);
 
       component.cancelEdit();
 
-      expect(component.editingExpenseId).toBeUndefined();
+      expect(component.editingExpenseId()).toBeUndefined();
     });
 
     it('closes form', () => {
-      component.showAddForm = true;
+      component.showAddForm.set(true);
 
       component.cancelEdit();
 
-      expect(component.showAddForm).toBe(false);
+      expect(component.showAddForm()).toBe(false);
     });
 
     it('resets form', () => {
@@ -338,7 +353,7 @@ describe('ExpensesComponent', () => {
 
   describe('deleteCurrentExpense', () => {
     it('does nothing if no expense is being edited', async () => {
-      component.editingExpenseId = undefined;
+      component.editingExpenseId.set(undefined);
       spyOn(component, 'confirmDeleteExpenseDialog');
 
       await component.deleteCurrentExpense();
@@ -348,8 +363,8 @@ describe('ExpensesComponent', () => {
 
     it('confirms deletion for editing expense', async () => {
       const expense = makeExpense({ id: 5 });
-      component.editingExpenseId = 5;
-      component.expenses = [expense];
+      component.editingExpenseId.set(5);
+      component.expenses.set([expense]);
       spyOn(component, 'confirmDeleteExpenseDialog').and.returnValue(Promise.resolve());
 
       await component.deleteCurrentExpense();
@@ -360,21 +375,21 @@ describe('ExpensesComponent', () => {
 
   describe('isEditingDeleted', () => {
     it('returns false if not editing', () => {
-      component.editingExpenseId = undefined;
+      component.editingExpenseId.set(undefined);
 
       expect(component.isEditingDeleted()).toBe(false);
     });
 
     it('returns true if editing expense marked for deletion', () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, action: ActionEnum.Delete })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, action: ActionEnum.Delete })]);
 
       expect(component.isEditingDeleted()).toBe(true);
     });
 
     it('returns false if editing expense not deleted', () => {
-      component.editingExpenseId = 5;
-      component.expenses = [makeExpense({ id: 5, action: ActionEnum.Saved })];
+      component.editingExpenseId.set(5);
+      component.expenses.set([makeExpense({ id: 5, action: ActionEnum.Saved })]);
 
       expect(component.isEditingDeleted()).toBe(false);
     });
@@ -382,14 +397,13 @@ describe('ExpensesComponent', () => {
 
   describe('restoreCurrentExpense', () => {
     beforeEach(() => {
-      spyOn(component, 'loadExpenses').and.returnValue(Promise.resolve());
       spyOn(component, 'cancelEdit');
     });
 
     it('restores deleted expense being edited', async () => {
       const expense = makeExpense({ id: 5, action: ActionEnum.Delete });
-      component.editingExpenseId = 5;
-      component.expenses = [expense];
+      component.editingExpenseId.set(5);
+      component.expenses.set([expense]);
       expensesServiceSpy.update.and.returnValue(Promise.resolve());
 
       await component.restoreCurrentExpense();
@@ -406,8 +420,8 @@ describe('ExpensesComponent', () => {
 
     it('cancels edit after restore', async () => {
       const expense = makeExpense({ id: 5, action: ActionEnum.Delete });
-      component.editingExpenseId = 5;
-      component.expenses = [expense];
+      component.editingExpenseId.set(5);
+      component.expenses.set([expense]);
       expensesServiceSpy.update.and.returnValue(Promise.resolve());
 
       await component.restoreCurrentExpense();
@@ -416,43 +430,92 @@ describe('ExpensesComponent', () => {
     });
   });
 
-  describe('getMonthTotal', () => {
-    it('sums expenses amounts', () => {
-      const expenses = [
-        makeExpense({ amount: 25.50 }),
-        makeExpense({ amount: 30.25 }),
-        makeExpense({ amount: 15.00 })
-      ];
-
-      const total = component.getMonthTotal(expenses);
-
-      expect(total).toBeCloseTo(70.75, 2);
+  describe('confirmDeleteExpenseDialog', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
     });
 
-    it('handles null amounts', () => {
-      const expenses = [
-        makeExpense({ amount: 25.50, action: ActionEnum.Saved }),
-        makeExpense({ amount: 0, action: ActionEnum.Saved })
-        // Test getMonthTotal with zero amount
-      ];
+    it('deletes expense and cancels edit when dialog is confirmed', async () => {
+      const expense = makeExpense({ id: 5, action: ActionEnum.Saved });
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      expensesServiceSpy.update.and.returnValue(Promise.resolve());
+      component.editingExpenseId.set(5);
 
-      const total = component.getMonthTotal(expenses);
+      await component.confirmDeleteExpenseDialog(expense);
 
-      expect(total).toBeCloseTo(25.50, 2);
+      expect(expensesServiceSpy.update).toHaveBeenCalledWith(
+        jasmine.arrayContaining([
+          jasmine.objectContaining({ id: 5, action: ActionEnum.Delete })
+        ])
+      );
+      expect(component.editingExpenseId()).toBeUndefined();
+    });
+
+    it('does not delete when dialog is cancelled', async () => {
+      const expense = makeExpense({ id: 5 });
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+
+      await component.confirmDeleteExpenseDialog(expense);
+
+      expect(expensesServiceSpy.delete).not.toHaveBeenCalled();
+      expect(expensesServiceSpy.update).not.toHaveBeenCalled();
     });
   });
 
-  describe('getYearTotal', () => {
-    it('sums expenses amounts for year', () => {
-      const expenses = [
-        makeExpense({ amount: 100 }),
-        makeExpense({ amount: 200 }),
-        makeExpense({ amount: 50 })
-      ];
+  describe('confirmSaveDialog', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
+    });
 
-      const total = component.getYearTotal(expenses);
+    it('calls saveSheetDialog when dialog is confirmed', async () => {
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
 
-      expect(total).toBe(350);
+      await component.confirmSaveDialog();
+
+      expect(saveSpy).toHaveBeenCalledWith('save');
+    });
+
+    it('does not call saveSheetDialog when dialog is cancelled', async () => {
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
+
+      await component.confirmSaveDialog();
+
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('saveSheetDialog', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
+    });
+
+    it('shows login snackbar when canSync is false', async () => {
+      (authGoogleServiceMock as any).canSync = () => Promise.resolve(false);
+
+      await component.saveSheetDialog('save');
+
+      expect(snackBarSpy.open).toHaveBeenCalled();
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+    });
+
+    it('shows success snackbar after successful sync', async () => {
+      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+
+      await component.saveSheetDialog('save');
+
+      expect(snackBarSpy.open).toHaveBeenCalled();
+    });
+
+    it('does not show success snackbar when sync dialog is cancelled', async () => {
+      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+
+      await component.saveSheetDialog('save');
+
+      expect(snackBarSpy.open).not.toHaveBeenCalled();
     });
   });
 });

@@ -43,14 +43,14 @@ describe('SheetListComponent', () => {
     ] as any));
 
     await component.loadSheets();
-    expect(component.sheets.length).toBe(2);
-    expect(component.sheets[0].name.toLowerCase()).toBe('aaa');
+    expect(component.sheets().length).toBe(2);
+    expect(component.sheets()[0].name.toLowerCase()).toBe('aaa');
   });
 
   it('selectSheet and confirmSelection close dialog with selection', () => {
     const sheet = { id: 's1', name: 'one' } as any;
     component.selectSheet(sheet);
-    expect(component.selectedSheet).toBe(sheet);
+    expect(component.selectedSheet()).toEqual(sheet);
     component.confirmSelection();
     expect(dialogRefSpy.close).toHaveBeenCalledWith(sheet);
   });

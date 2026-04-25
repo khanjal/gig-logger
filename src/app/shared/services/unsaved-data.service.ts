@@ -1,7 +1,18 @@
 import { Injectable } from '@angular/core';
+import { merge, from } from 'rxjs';
+import { switchMap, shareReplay } from 'rxjs/operators';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { IExpense } from '@interfaces/expense.interface';
+
+export interface IUnsavedItems {
+  unsavedTrips: ITrip[];
+  unsavedShifts: IShift[];
+  unsavedExpenses: IExpense[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class UnsavedDataService {
@@ -10,6 +21,16 @@ export class UnsavedDataService {
     private shiftService: ShiftService,
     private expensesService: ExpensesService
   ) {}
+
+  /** Reactive stream that emits a boolean whenever any entity's unsaved state changes. */
+  readonly unsavedData$ = merge(
+    this.tripService.trips$,
+    this.shiftService.shifts$,
+    this.expensesService.expenses$
+  ).pipe(
+    switchMap(() => from(this.hasUnsavedData())),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
 
   async hasUnsavedData(): Promise<boolean> {
     const [trips, shifts, expenses] = await Promise.all([
@@ -34,11 +55,31 @@ export class UnsavedDataService {
     };
   }
 
-  async markAllAsSaved(): Promise<void> {
+  /** Fetches all three unsaved item lists in parallel as a single snapshot. */
+  async collectUnsavedItems(): Promise<IUnsavedItems> {
+    const [unsavedTrips, unsavedShifts, unsavedExpenses] = await Promise.all([
+      this.tripService.getUnsaved(),
+      this.shiftService.getUnsavedShifts(),
+      this.expensesService.getUnsaved()
+    ]);
+    return { unsavedTrips, unsavedShifts, unsavedExpenses };
+  }
+
+  /**
+   * Marks the items that were included in a completed save cycle as saved,
+   * using the save-start timestamp and synced-ID sets to protect any records
+   * that were edited after the save payload was collected.
+   */
+  async commitSavedItems(
+    saveStartedAt: number,
+    syncedTripIds: ReadonlySet<number>,
+    syncedShiftIds: ReadonlySet<number>,
+    syncedExpenseIds: ReadonlySet<number>
+  ): Promise<void> {
     await Promise.all([
-      this.tripService.saveUnsaved(),
-      this.shiftService.saveUnsavedShifts(),
-      this.expensesService.saveUnsaved()
+      this.tripService.saveUnsaved(saveStartedAt, syncedTripIds),
+      this.shiftService.saveUnsavedShifts(saveStartedAt, syncedShiftIds),
+      this.expensesService.saveUnsaved(saveStartedAt, syncedExpenseIds)
     ]);
   }
 }

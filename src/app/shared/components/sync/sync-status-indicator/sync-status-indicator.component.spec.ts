@@ -78,14 +78,14 @@ describe('SyncStatusIndicatorComponent', () => {
       await component.toggleAutoSave(true);
 
       expect(uiPreferencesSpy.setPolling).toHaveBeenCalledWith(true);
-      expect(component.autoSaveEnabled).toBeTrue();
+      expect(component.autoSaveEnabled()).toBeTrue();
     });
 
     it('stops polling when toggled off', async () => {
       await component.toggleAutoSave(false);
 
       expect(uiPreferencesSpy.setPolling).toHaveBeenCalledWith(false);
-      expect(component.autoSaveEnabled).toBeFalse();
+      expect(component.autoSaveEnabled()).toBeFalse();
     });
   });
 
@@ -110,7 +110,7 @@ describe('SyncStatusIndicatorComponent', () => {
       component.setTheme('dark');
 
       expect(themeSpy.setTheme).toHaveBeenCalledWith('dark');
-      expect(component.themePreference).toBe('dark');
+      expect(component.themePreference()).toBe('dark');
     });
   });
 
@@ -128,14 +128,14 @@ describe('SyncStatusIndicatorComponent', () => {
     it('subscribes to sync state changes', () => {
       syncState$.next({ status: 'syncing', message: 'Syncing...', progress: 50 });
 
-      expect(component.syncState?.status).toBe('syncing');
+      expect(component.syncState()?.status).toBe('syncing');
     });
 
     it('subscribes to messages', () => {
       const testMessages = [{ type: 'info', text: 'Test', timestamp: new Date() }];
       messages$.next(testMessages);
 
-      expect(component.messages.length).toBe(1);
+      expect(component.messages().length).toBe(1);
     });
 
     it('checks for unsaved changes on init', (done) => {
@@ -163,38 +163,38 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getStatusIcon', () => {
     it('returns sync_disabled when polling disabled and idle', () => {
-      component.syncState = { status: 'idle' } as any;
+      component.syncState.set({ status: 'idle' } as any);
       uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getStatusIcon()).toBe('sync_disabled');
     });
 
     it('returns sync when syncing', () => {
-      component.syncState = { status: 'syncing' } as any;
+      component.syncState.set({ status: 'syncing' } as any);
 
       expect(component.getStatusIcon()).toBe('sync');
     });
 
     it('returns cloud_done when success', () => {
-      component.syncState = { status: 'success' } as any;
+      component.syncState.set({ status: 'success' } as any);
 
       expect(component.getStatusIcon()).toBe('cloud_done');
     });
 
     it('returns cloud_off when error', () => {
-      component.syncState = { status: 'error' } as any;
+      component.syncState.set({ status: 'error' } as any);
 
       expect(component.getStatusIcon()).toBe('cloud_off');
     });
 
     it('returns cloud_queue when idle', () => {
-      component.syncState = { status: 'idle' } as any;
+      component.syncState.set({ status: 'idle' } as any);
 
       expect(component.getStatusIcon()).toBe('cloud_queue');
     });
 
     it('returns cloud_off when no sync state', () => {
-      component.syncState = null;
+      component.syncState.set(null);
 
       expect(component.getStatusIcon()).toBe('cloud_off');
     });
@@ -202,20 +202,20 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getStatusClass', () => {
     it('returns status-disabled when polling disabled', () => {
-      component.syncState = { status: 'idle' } as any;
+      component.syncState.set({ status: 'idle' } as any);
       uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getStatusClass()).toBe('status-disabled');
     });
 
     it('returns status-syncing when syncing', () => {
-      component.syncState = { status: 'syncing' } as any;
+      component.syncState.set({ status: 'syncing' } as any);
 
       expect(component.getStatusClass()).toBe('status-syncing');
     });
 
     it('returns status-idle when no state', () => {
-      component.syncState = null;
+      component.syncState.set(null);
 
       expect(component.getStatusClass()).toBe('status-idle');
     });
@@ -223,29 +223,43 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('getTooltipText', () => {
     it('returns auto-sync disabled message when polling off', () => {
-      component.syncState = { status: 'idle' } as any;
+      component.syncState.set({ status: 'idle' } as any);
       uiPreferencesSpy.pollingEnabledSubject.next(false);
 
       expect(component.getTooltipText()).toBe('Auto-sync disabled');
     });
 
     it('shows progress for syncing state', () => {
-      component.syncState = { status: 'syncing', message: 'Syncing data', progress: 75 } as any;
+      component.syncState.set({ status: 'syncing', message: 'Syncing data', progress: 75 } as any);
 
       expect(component.getTooltipText()).toBe('Syncing data (75%)');
     });
 
     it('shows last sync time for success', () => {
-      component.syncState = { status: 'success', message: 'Sync complete' } as any;
-      component.timeSinceLastSync = '5 min ago';
+      component.syncState.set({ status: 'success', message: 'Sync complete' } as any);
+      component.timeSinceLastSync.set('5 min ago');
 
       expect(component.getTooltipText()).toBe('Sync complete - 5 min ago');
     });
 
     it('shows error message on failure', () => {
-      component.syncState = { status: 'error', error: 'Network error' } as any;
+      component.syncState.set({ status: 'error', error: 'Network error' } as any);
 
       expect(component.getTooltipText()).toBe('Network error');
+    });
+  });
+
+  describe('getOperationText', () => {
+    it('returns empty string when operation is null', () => {
+      component.syncState.set({ status: 'idle', operation: null } as any);
+
+      expect(component.getOperationText()).toBe('');
+    });
+
+    it('returns mapped label when operation exists', () => {
+      component.syncState.set({ status: 'syncing', operation: 'auto-save' } as any);
+
+      expect(component.getOperationText()).toBe('Auto-saving');
     });
   });
 
@@ -276,6 +290,15 @@ describe('SyncStatusIndicatorComponent', () => {
   });
 
   describe('updateFromSpreadsheet', () => {
+    it('shows snackbar and exits when unsaved changes exist', async () => {
+      unsavedDataSpy.hasUnsavedData.and.returnValue(Promise.resolve(true));
+
+      await component.updateFromSpreadsheet();
+
+      expect(dialogSpy.open).not.toHaveBeenCalled();
+      expect(snackBarSpy.open).toHaveBeenCalled();
+    });
+
     it('opens data sync modal with load mode', async () => {
       const dialogRef = { afterClosed: () => new BehaviorSubject(true).asObservable() };
       dialogSpy.open.and.returnValue(dialogRef as any);
@@ -306,13 +329,13 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('toggleDetailedView', () => {
     it('toggles showDetailedView flag', () => {
-      component.showDetailedView = false;
+      component.showDetailedView.set(false);
 
       component.toggleDetailedView();
-      expect(component.showDetailedView).toBeTrue();
+      expect(component.showDetailedView()).toBeTrue();
 
       component.toggleDetailedView();
-      expect(component.showDetailedView).toBeFalse();
+      expect(component.showDetailedView()).toBeFalse();
     });
   });
 

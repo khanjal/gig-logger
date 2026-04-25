@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint } from '@angular/material/form-field';
@@ -9,7 +9,8 @@ import { MatOptgroup } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
-import { MockLocationService, PresetLocation } from '@services/mock-location.service';
+import { MockLocationService } from '@services/mock-location.service';
+import type { IPresetLocation } from '@interfaces/mock-location.interface';
 import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
 
 @Component({
@@ -36,14 +37,14 @@ import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRect
 })
 export class LocationOverrideComponent implements OnInit {
   @ViewChild('mockLocationCard') mockLocationCard?: ElementRef<HTMLElement>;
-  enabled = false;
-  latitude = 40.7128;
-  longitude = -74.0060;
-  radius = 25;
-  locationName = '';
-  selectedPreset: PresetLocation | null = null;
-  currentRealLocation: { lat: number; lng: number } | null = null;
-  gettingLocation = false;
+  enabled = signal(false);
+  latitude = signal(40.7128);
+  longitude = signal(-74.0060);
+  radius = signal(25);
+  locationName = signal('');
+  selectedPreset = signal<IPresetLocation | null>(null);
+  currentRealLocation = signal<{ lat: number; lng: number } | null>(null);
+  gettingLocation = signal(false);
 
   constructor(
     public mockLocationService: MockLocationService,
@@ -55,28 +56,28 @@ export class LocationOverrideComponent implements OnInit {
     this.getCurrentRealLocation();
   }
 
-  get usPresets(): PresetLocation[] {
+  get usPresets(): IPresetLocation[] {
     return this.getSortedPresets('US');
   }
 
-  get canadaPresets(): PresetLocation[] {
+  get canadaPresets(): IPresetLocation[] {
     return this.getSortedPresets('CA');
   }
 
   loadSettings(): void {
     const settings = this.mockLocationService.getMockLocation();
-    this.enabled = settings.enabled;
-    this.latitude = settings.latitude;
-    this.longitude = settings.longitude;
-    this.radius = settings.radius;
-    this.locationName = settings.name || '';
-    this.selectedPreset = this.mockLocationService.presetLocations.find(
+    this.enabled.set(settings.enabled);
+    this.latitude.set(settings.latitude);
+    this.longitude.set(settings.longitude);
+    this.radius.set(settings.radius);
+    this.locationName.set(settings.name || '');
+    this.selectedPreset.set(this.mockLocationService.presetLocations.find(
       (preset) => preset.latitude === settings.latitude && preset.longitude === settings.longitude
-    ) ?? null;
+    ) ?? null);
   }
 
   onToggleChange(): void {
-    if (this.enabled) {
+    if (this.enabled()) {
       this.mockLocationService.enable();
       this.saveSettings();
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LOCATION_OVERRIDE_ENABLED, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
@@ -86,16 +87,16 @@ export class LocationOverrideComponent implements OnInit {
     }
   }
 
-  onPresetSelect(preset: PresetLocation | null): void {
+  onPresetSelect(preset: IPresetLocation | null): void {
     if (!preset) {
-      this.selectedPreset = null;
+      this.selectedPreset.set(null);
       return;
     }
 
-    this.selectedPreset = preset;
-    this.latitude = preset.latitude;
-    this.longitude = preset.longitude;
-    this.locationName = preset.name;
+    this.selectedPreset.set(preset);
+    this.latitude.set(preset.latitude);
+    this.longitude.set(preset.longitude);
+    this.locationName.set(preset.name);
     this.saveSettings();
     openSnackbar(this.snackBar, `Location set to ${preset.name}`, { action: SNACKBAR_DEFAULT_ACTION, duration: 2000 });
   }
@@ -106,20 +107,31 @@ export class LocationOverrideComponent implements OnInit {
     }
   }
 
-  onRadiusChange(): void {
-    if (this.mockLocationService.isValidRadius(this.radius)) {
-      this.mockLocationService.setRadius(this.radius);
+  onLatitudeChange(value: number): void {
+    this.latitude.set(value);
+    this.onCoordinatesChange();
+  }
+
+  onLongitudeChange(value: number): void {
+    this.longitude.set(value);
+    this.onCoordinatesChange();
+  }
+
+  onRadiusChange(value: number): void {
+    if (this.mockLocationService.isValidRadius(value)) {
+      this.radius.set(value);
+      this.mockLocationService.setRadius(value);
     } else {
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.RADIUS_INVALID, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
     }
   }
 
   validateCoordinates(): boolean {
-    if (!this.mockLocationService.isValidLatitude(this.latitude)) {
+    if (!this.mockLocationService.isValidLatitude(this.latitude())) {
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LATITUDE_INVALID, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
       return false;
     }
-    if (!this.mockLocationService.isValidLongitude(this.longitude)) {
+    if (!this.mockLocationService.isValidLongitude(this.longitude())) {
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.LONGITUDE_INVALID, { action: SNACKBAR_DEFAULT_ACTION, duration: 3000 });
       return false;
     }
@@ -128,8 +140,8 @@ export class LocationOverrideComponent implements OnInit {
 
   saveSettings(): void {
     if (this.validateCoordinates()) {
-      this.mockLocationService.setCoordinates(this.latitude, this.longitude, this.locationName);
-      this.mockLocationService.setRadius(this.radius);
+      this.mockLocationService.setCoordinates(this.latitude(), this.longitude(), this.locationName());
+      this.mockLocationService.setRadius(this.radius());
     }
   }
 
@@ -141,17 +153,17 @@ export class LocationOverrideComponent implements OnInit {
   }
 
   async getCurrentRealLocation(): Promise<void> {
-    this.gettingLocation = true;
+    this.gettingLocation.set(true);
     try {
       const position = await this.getRealGeolocation();
-      this.currentRealLocation = {
+      this.currentRealLocation.set({
         lat: position.coords.latitude,
         lng: position.coords.longitude
-      };
+      });
     } catch (error) {
-      this.currentRealLocation = null;
+      this.currentRealLocation.set(null);
     } finally {
-      this.gettingLocation = false;
+      this.gettingLocation.set(false);
     }
   }
 
@@ -175,10 +187,10 @@ export class LocationOverrideComponent implements OnInit {
   }
 
   useCurrentLocation(): void {
-    if (this.currentRealLocation) {
-      this.latitude = this.currentRealLocation.lat;
-      this.longitude = this.currentRealLocation.lng;
-      this.locationName = 'Current Location';
+    if (this.currentRealLocation()) {
+      this.latitude.set(this.currentRealLocation()!.lat);
+      this.longitude.set(this.currentRealLocation()!.lng);
+      this.locationName.set('Current Location');
       this.saveSettings();
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.USING_CURRENT_REAL_LOCATION, { action: SNACKBAR_DEFAULT_ACTION, duration: 2000 });
     }
@@ -194,7 +206,7 @@ export class LocationOverrideComponent implements OnInit {
     }, 100);
   }
 
-  private getSortedPresets(country: 'US' | 'CA'): PresetLocation[] {
+  private getSortedPresets(country: 'US' | 'CA'): IPresetLocation[] {
     return this.mockLocationService.presetLocations
       .filter((preset) => preset.country === country)
       .slice()

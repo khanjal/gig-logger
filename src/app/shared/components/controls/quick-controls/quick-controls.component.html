@@ -29,29 +29,4 @@
     </app-base-rect-button>
   </div>
 
-  <div class="flex flex-wrap items-center gap-2">
-    <app-base-rect-button
-      *ngIf="hasUnsavedChanges"
-      variant="primary"
-      [icon]="'save'"
-      iconPosition="left"
-      [fullWidth]="true"
-      [disabled]="status === 'syncing'"
-        (clicked)="onSaveClick()"
-    >
-      Save
-    </app-base-rect-button>
-
-    <app-base-rect-button
-      *ngIf="!hasUnsavedChanges"
-      variant="primary"
-      [icon]="'cloud_download'"
-      iconPosition="left"
-      [fullWidth]="true"
-      [disabled]="status === 'syncing'"
-        (clicked)="onRefreshClick()"
-    >
-      Update
-    </app-base-rect-button>
-  </div>
 </div>

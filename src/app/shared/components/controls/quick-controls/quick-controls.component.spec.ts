@@ -22,20 +22,16 @@ describe('QuickControlsComponent', () => {
     return buttons.find((button) => button.nativeElement.textContent?.trim().includes(text)) ?? null;
   };
 
-  it('shows and emits save when unsaved changes exist', () => {
-    const saveSpy = spyOn(component.save, 'emit');
+  it('does not render save button when unsaved changes exist', () => {
     component.hasUnsavedChanges = true;
     component.status = 'idle';
     fixture.detectChanges();
 
     const button = getBaseButton('Save');
-    expect(button).not.toBeNull();
-    button?.triggerEventHandler('clicked', null);
-
-    expect(saveSpy).toHaveBeenCalled();
+    expect(button).toBeNull();
   });
 
-  it('hides save when no unsaved changes', () => {
+  it('does not render save button when no unsaved changes', () => {
     component.hasUnsavedChanges = false;
     component.status = 'idle';
     fixture.detectChanges();
@@ -44,30 +40,13 @@ describe('QuickControlsComponent', () => {
     expect(saveButton).toBeNull();
   });
 
-  it('does not emit save when syncing (button disabled)', () => {
-    const saveSpy = spyOn(component.save, 'emit');
-    component.hasUnsavedChanges = true;
+  it('does not render update button', () => {
+    component.hasUnsavedChanges = false;
     component.status = 'syncing';
     fixture.detectChanges();
 
-    const button = getBaseButton('Save');
-    expect(button).not.toBeNull();
-    button?.triggerEventHandler('clicked', null);
-
-    expect(saveSpy).not.toHaveBeenCalled();
-  });
-
-  it('shows and emits refresh when no unsaved changes', () => {
-    const refreshSpy = spyOn(component.refresh, 'emit');
-    component.hasUnsavedChanges = false;
-    component.status = 'idle';
-    fixture.detectChanges();
-
     const refreshButton = getBaseButton('Update');
-    expect(refreshButton).not.toBeNull();
-    refreshButton?.triggerEventHandler('clicked', null);
-
-    expect(refreshSpy).toHaveBeenCalled();
+    expect(refreshButton).toBeNull();
   });
 
   it('emits auto-save toggle value', () => {

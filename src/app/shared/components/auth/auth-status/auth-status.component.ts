@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { getCurrentUserId } from '@utils/user-id.util';
@@ -30,16 +30,16 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   // Authentication status
-  isAuthenticated = false;
-  hasAccessToken = false;
-  localStorageAuth = false;
+  isAuthenticated = signal(false);
+  hasAccessToken = signal(false);
+  localStorageAuth = signal(false);
 
   // User ID
-  userId = '';
+  userId = signal('');
   
   // Token info
-  accessTokenPreview = '';
-  lastUpdated = new Date();
+  accessTokenPreview = signal('');
+  lastUpdated = signal(new Date());
 
   constructor(
     private authService: AuthGoogleService,
@@ -71,24 +71,24 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
 
   async updateStatus() {
     // Check localStorage
-    this.localStorageAuth = localStorage.getItem(SESSION_CONSTANTS.IS_AUTHENTICATED) === 'true';
+    this.localStorageAuth.set(localStorage.getItem(SESSION_CONSTANTS.IS_AUTHENTICATED) === 'true');
     
     // Check access token
     const accessToken = this.secureCookieStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN);
-    this.hasAccessToken = !!accessToken;
+    this.hasAccessToken.set(!!accessToken);
     
     // Create preview of token (first 10 and last 10 characters)
     if (accessToken) {
-      this.accessTokenPreview = `${accessToken.substring(0, 10)}...${accessToken.substring(accessToken.length - 10)}`;
+      this.accessTokenPreview.set(`${accessToken.substring(0, 10)}...${accessToken.substring(accessToken.length - 10)}`);
     } else {
-      this.accessTokenPreview = 'None';
+      this.accessTokenPreview.set('None');
     }
     
     // Check overall authentication (sync capability)
-    this.isAuthenticated = await this.authService.canSync();
+    this.isAuthenticated.set(await this.authService.canSync());
     // Get user ID using shared utility
-    this.userId = getCurrentUserId();
-    this.lastUpdated = new Date();
+    this.userId.set(getCurrentUserId());
+    this.lastUpdated.set(new Date());
   }
 
   onReconnect() {
@@ -97,9 +97,9 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   }
 
   getStatusIcon(): string {
-    if (this.isAuthenticated && this.hasAccessToken && this.localStorageAuth) {
+    if (this.isAuthenticated() && this.hasAccessToken() && this.localStorageAuth()) {
       return 'check_circle';
-    } else if (this.localStorageAuth || this.hasAccessToken) {
+    } else if (this.localStorageAuth() || this.hasAccessToken()) {
       return 'warning';
     } else {
       return 'error';

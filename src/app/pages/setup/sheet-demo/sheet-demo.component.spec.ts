@@ -62,7 +62,7 @@ describe('SheetDemoComponent', () => {
     }));
     expect(component.parentReload.emit).toHaveBeenCalledWith({ mode: 'load-only' });
     expect(snackBarSpy.open).toHaveBeenCalled();
-    expect(component.creatingDemo).toBeFalse();
+    expect(component.creatingDemo()).toBeFalse();
   });
 
   it('createDemoSheet - does not open modal when user is not authenticated', async () => {
@@ -74,7 +74,7 @@ describe('SheetDemoComponent', () => {
 
     expect(dialogSpy.open).not.toHaveBeenCalled();
     expect(snackBarSpy.open).toHaveBeenCalled();
-    expect(component.creatingDemo).toBeFalse();
+    expect(component.creatingDemo()).toBeFalse();
     expect(component.parentReload.emit).not.toHaveBeenCalled();
   });
 
@@ -89,7 +89,7 @@ describe('SheetDemoComponent', () => {
     await component.createDemoSheet();
 
     expect(dialogSpy.open).toHaveBeenCalled();
-    expect(component.creatingDemo).toBeFalse();
+    expect(component.creatingDemo()).toBeFalse();
     expect(component.parentReload.emit).not.toHaveBeenCalled();
   });
 
@@ -106,6 +106,6 @@ describe('SheetDemoComponent', () => {
     expect(loggerSpy.error).toHaveBeenCalled();
     expect(snackBarSpy.open).toHaveBeenCalled();
     expect(component.parentReload.emit).not.toHaveBeenCalled();
-    expect(component.creatingDemo).toBeFalse();
+    expect(component.creatingDemo()).toBeFalse();
   });
 });

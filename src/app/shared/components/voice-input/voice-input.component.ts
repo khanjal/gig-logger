@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, signal } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
@@ -24,12 +24,12 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   placeList: string[] = [];
 
   // Component state
-  transcript: string = '';
-  parsedResult: IVoiceParseResult | null = null;
+  transcript = signal('');
+  parsedResult = signal<IVoiceParseResult | null>(null);
   recognition: any = null;
-  recognizing: boolean = false;
+  recognizing = signal(false);
   private transcriptTimeout: any = null;
-  suggestionPhrase: string = '';
+  suggestionPhrase = signal('');
 
   // Auto-hide delay (in milliseconds)
   private readonly TRANSCRIPT_AUTO_HIDE_DELAY = 3000;
@@ -93,7 +93,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       this.initializeSpeechRecognition();
     }
 
-    if (!this.recognizing) {
+    if (!this.recognizing()) {
       this.startListening();
     } else {
       this.stopListening();
@@ -121,17 +121,17 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     this.recognition.onresult = (event: any) => this.handleRecognitionResult(event);
     this.recognition.onerror = (event: any) => this.handleRecognitionError(event);
     this.recognition.onend = () => {
-      this.recognizing = false;
+      this.recognizing.set(false);
     };
   }
 
   private handleRecognitionResult(event: any): void {
     const result = event.results[0][0].transcript;
-    this.transcript = result;
+    this.transcript.set(result);
     const parsed = this.parseTranscript(result);
-    this.parsedResult = parsed;
+    this.parsedResult.set(parsed);
     this.voiceResult.emit(parsed);
-    this.recognizing = false;
+    this.recognizing.set(false);
     
     // Auto-hide transcript after delay
     this.scheduleTranscriptHide();
@@ -149,24 +149,24 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     
     const message = errorMessages[event.error] || `Speech recognition error: ${event.error}`;
     alert(message);
-    this.recognizing = false;
+    this.recognizing.set(false);
   }
 
   private startListening(): void {
-    this.transcript = '';
-    this.parsedResult = null;
-    this.suggestionPhrase = this._voiceSuggestionService.getRandomSuggestion(
+    this.transcript.set('');
+    this.parsedResult.set(null);
+    this.suggestionPhrase.set(this._voiceSuggestionService.getRandomSuggestion(
       this.serviceList,
       this.typeList,
       this.placeList
-    );
+    ));
     
     try {
       this.recognition.start();
-      this.recognizing = true;
+      this.recognizing.set(true);
     } catch (error) {
       this.logger.error('VoiceInput - Failed to start recognition:', error);
-      this.recognizing = false;
+      this.recognizing.set(false);
     }
   }
 
@@ -174,8 +174,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     if (this.recognition) {
       this.recognition.stop();
     }
-    this.recognizing = false;
-    this.suggestionPhrase = '';
+    this.recognizing.set(false);
+    this.suggestionPhrase.set('');
   }
 
   private scheduleTranscriptHide(): void {
@@ -184,29 +184,27 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
     }
     
     this.transcriptTimeout = setTimeout(() => {
-      this.transcript = '';
-      this.parsedResult = null;
+      this.transcript.set('');
+      this.parsedResult.set(null);
     }, this.TRANSCRIPT_AUTO_HIDE_DELAY);
   }
 
   get micButtonColor(): string {
-    // Always blue when inactive, always red when active, no hover color
-    // Use semantic token-based classes so styles are theme-aware
-    return this.recognizing ? 'bg-error' : 'bg-primary';
+    return this.recognizing() ? 'bg-error' : 'bg-primary';
   }
 
   /**
    * Gets the parsed result as an array of key-value pairs for template iteration
    */
   get parsedResultEntries(): Array<{ key: string; value: string }> {
-    if (!this.parsedResult) return [];
+    if (!this.parsedResult()) return [];
     // Convert camelCase keys to Proper Case with spaces
     const toProperCase = (str: string) =>
       str
         .replace(/([A-Z])/g, ' $1')
         .replace(/^./, s => s.toUpperCase())
         .trim();
-    return Object.entries(this.parsedResult).map(([key, value]) => ({ key: toProperCase(key), value: value || '' }));
+    return Object.entries(this.parsedResult()!).map(([key, value]) => ({ key: toProperCase(key), value: value || '' }));
   }
 
   /**

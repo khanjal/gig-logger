@@ -48,8 +48,8 @@ describe('SetupComponent (class-only)', () => {
     const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
     await comp.ngOnInit();
     // authenticated and no sheets -> template condition (show setup) should be true
-    expect(comp.isAuthenticated).toBeTrue();
-    expect((comp.spreadsheets ?? []).length).toBe(0);
+    expect(comp.isAuthenticated()).toBeTrue();
+    expect((comp.spreadsheets() ?? []).length).toBe(0);
   });
 
   it('hides setup card when signed out and no spreadsheets', async () => {
@@ -60,8 +60,8 @@ describe('SetupComponent (class-only)', () => {
     const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
     await comp.ngOnInit();
     // signed out and no sheets -> setup card should be hidden
-    expect(comp.isAuthenticated).toBeFalse();
-    expect((comp.spreadsheets ?? []).length).toBe(0);
+    expect(comp.isAuthenticated()).toBeFalse();
+    expect((comp.spreadsheets() ?? []).length).toBe(0);
   });
 
   it('shows local-only info when signed out but has spreadsheets', async () => {
@@ -71,8 +71,8 @@ describe('SetupComponent (class-only)', () => {
 
     const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
     await comp.ngOnInit();
-    expect(comp.isAuthenticated).toBeFalse();
-    expect((comp.spreadsheets ?? []).length).toBeGreaterThan(0);
+    expect(comp.isAuthenticated()).toBeFalse();
+    expect((comp.spreadsheets() ?? []).length).toBeGreaterThan(0);
   });
 
   it('setDefault sets spreadsheet as default and calls update/load/reload', async () => {
@@ -210,6 +210,91 @@ describe('SetupComponent (class-only)', () => {
 
     expect(spreadsheetService.deleteSpreadsheet).toHaveBeenCalledWith(nonDefaultSheet);
     expect((comp.load as any)).toHaveBeenCalled();
+  });
+
+  it('handleParentReload calls load for load-only and reload otherwise', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'load').and.returnValue(Promise.resolve());
+    spyOn(comp, 'reload').and.returnValue(Promise.resolve());
+
+    await comp.handleParentReload({ mode: 'load-only' });
+    expect((comp.load as any)).toHaveBeenCalled();
+
+    await comp.handleParentReload({ mode: 'reload' });
+    expect((comp.reload as any)).toHaveBeenCalled();
+  });
+
+  it('getDataSize returns placeholder string and updateHeader calls commonService', () => {
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    expect(comp.getDataSize()).toBe('0 bytes');
+    (comp as any).updateHeader();
+    expect(commonService.updateHeaderLink).toHaveBeenCalled();
+  });
+
+  it('confirmDeleteAllDialog calls deleteAllData when user confirms', (done: DoneFn) => {
+    const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
+    dialogSpy.open.and.returnValue(dialogRefSpyObj);
+
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
+
+    comp.confirmDeleteAllDialog().then(() => {
+      setTimeout(() => {
+        expect((comp.deleteAllData as any)).toHaveBeenCalled();
+        done();
+      }, 20);
+    });
+  });
+
+  it('confirmDeleteAllDialog does nothing when user cancels', async () => {
+    const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(false) });
+    dialogSpy.open.and.returnValue(dialogRefSpyObj);
+
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
+
+    await comp.confirmDeleteAllDialog();
+    expect((comp.deleteAllData as any)).not.toHaveBeenCalled();
+  });
+
+  it('confirmUnlinkSpreadsheetDialog shows snackbar when default and other sheets exist', async () => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([
+      { id: '1', name: 'S1', default: 'true' },
+      { id: '2', name: 'S2', default: 'false' }
+    ]));
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+
+    await comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true' } as any);
+    expect(snackSpy.open).toHaveBeenCalled();
+  });
+
+  it('confirmUnlinkSpreadsheetDialog calls unlinkSpreadsheet when confirmed', (done: DoneFn) => {
+    authService.canSync.and.returnValue(Promise.resolve(true));
+    spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S1', default: 'true' }]));
+
+    const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
+    dialogSpy.open.and.returnValue(dialogRefSpyObj);
+
+    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    spyOn(comp, 'unlinkSpreadsheet').and.returnValue(Promise.resolve());
+
+    comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true' } as any).then(() => {
+      setTimeout(() => {
+        expect((comp.unlinkSpreadsheet as any)).toHaveBeenCalled();
+        done();
+      }, 20);
+    });
   });
 });
 import { ComponentFixture, TestBed } from '@angular/core/testing';

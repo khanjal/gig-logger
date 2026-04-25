@@ -1,11 +1,11 @@
 <!-- Loading indicator -->
-<div *ngIf="isLoading" class="loading-container">
+<div *ngIf="isLoading()" class="loading-container">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
   <p>Loading application...</p>
 </div>
 
 <!-- Error state -->
-<div *ngIf="hasError && !isLoading" class="error-container">
+<div *ngIf="hasError() && !isLoading()" class="error-container">
   <h2>Something went wrong</h2>
   <p>The application failed to load properly. Please try refreshing the page.</p>
   <app-base-rect-button
@@ -16,6 +16,6 @@
 </div>
 
 <!-- Main app content -->
-<div *ngIf="!isLoading && !hasError">
+<div *ngIf="!isLoading() && !hasError()">
   <app-header (error)="onHeaderError()"></app-header>
 </div>

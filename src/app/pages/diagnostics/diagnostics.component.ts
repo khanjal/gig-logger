@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -23,6 +23,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { ServiceService } from '@services/sheets/service.service';
+import { TypeService } from '@services/sheets/type.service';
 import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
@@ -43,9 +44,9 @@ import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.compo
 })
 
 export class DiagnosticsComponent implements OnInit {
-  dataDiagnostics: IDiagnosticItem[] = [];
-  isLoading = false;
-  isBulkFixing = false;
+  dataDiagnostics = signal<IDiagnosticItem[]>([]);
+  isLoading = signal(false);
+  isBulkFixing = signal(false);
   selectedValue: any[] = [];
   selectedAddress: { [key: number]: string } = {};
   selectedShiftToDelete: { [key: number]: number } = {};
@@ -57,6 +58,7 @@ export class DiagnosticsComponent implements OnInit {
     private _placeService: PlaceService,
     private _nameService: NameService,
     private _serviceService: ServiceService,
+    private _typeService: TypeService,
     private _regionService: RegionService,
     private _logger: LoggerService,
     private _gigCalculator: GigCalculatorService,
@@ -70,18 +72,19 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   async runDiagnostics() {
-    this.isLoading = true;
-    this.dataDiagnostics = [];
+    this.isLoading.set(true);
+    this.dataDiagnostics.set([]);
     this.selectedValue = [];
 
     try {
       await this.checkDataIntegrity();
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 
   private async checkDataIntegrity() {
+    const diagnostics: IDiagnosticItem[] = [];
     const shifts = await this._shiftService.list();
     const trips = await this._tripService.list();
     const addresses = await this._addressService.list();
@@ -92,7 +95,7 @@ export class DiagnosticsComponent implements OnInit {
     const shiftGroups = await this._shiftService.findDuplicates('key', { mode: 'equals', caseInsensitive: false, normalize: true });
     const duplicateShiftsResult = { items: shiftGroups.flatMap(g => g.items), groups: shiftGroups.map(g => g.items) };
     this._logger.debug('Duplicate shifts found:', duplicateShiftsResult);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Duplicate Shifts',
       count: duplicateShiftsResult.items.length,
       severity: duplicateShiftsResult.items.length > 0 ? 'warning' : 'info',
@@ -106,7 +109,7 @@ export class DiagnosticsComponent implements OnInit {
     const emptyShifts = shifts.filter((s: IShift) => !s.start && !s.finish && s.trips === 0 && s.totalTrips === 0);
     this._logger.debug('Empty shifts found:', emptyShifts);
 
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Empty Shifts',
       count: emptyShifts.length,
       severity: emptyShifts.length > 0 ? 'warning' : 'info',
@@ -119,7 +122,7 @@ export class DiagnosticsComponent implements OnInit {
     const orphanedTrips = DiagnosticHelper.findOrphanedTrips(trips, shifts);
     this._logger.debug('Orphaned trips found:', orphanedTrips);
 
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Orphaned Trips',
       count: orphanedTrips.length,
       severity: orphanedTrips.length > 0 ? 'error' : 'info',
@@ -137,7 +140,7 @@ export class DiagnosticsComponent implements OnInit {
       await DiagnosticHelper.recomputeGroupCounts('place', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate places found:', duplicatePlacesResult);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Duplicate Places',
       count: duplicatePlacesResult.items.length,
       severity: duplicatePlacesResult.items.length > 0 ? 'warning' : 'info',
@@ -166,7 +169,7 @@ export class DiagnosticsComponent implements OnInit {
       await DiagnosticHelper.recomputeGroupCounts('address', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate addresses found:', duplicateAddressesResult);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Duplicate Addresses',
       count: duplicateAddressesResult.items.length,
       severity: duplicateAddressesResult.items.length > 0 ? 'warning' : 'info',
@@ -184,7 +187,7 @@ export class DiagnosticsComponent implements OnInit {
       await DiagnosticHelper.recomputeGroupCounts('name', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate names found:', duplicateNamesResult);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Duplicate Names',
       count: duplicateNamesResult.items.length,
       severity: duplicateNamesResult.items.length > 0 ? 'warning' : 'info',
@@ -203,7 +206,7 @@ export class DiagnosticsComponent implements OnInit {
       await DiagnosticHelper.recomputeGroupCounts('service', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate services found:', duplicateServicesResult);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Duplicate Services',
       count: duplicateServicesResult.items.length,
       severity: duplicateServicesResult.items.length > 0 ? 'warning' : 'info',
@@ -211,6 +214,25 @@ export class DiagnosticsComponent implements OnInit {
       itemType: 'service',
       items: duplicateServicesResult.items,
       groups: duplicateServicesResult.groups
+    });
+
+    // Duplicate types via shared utility (case-insensitive equals + contains)
+    const typeEqualsGroups = await this._typeService.findDuplicates('type', { mode: 'equals', caseInsensitive: true, normalize: true });
+    const typeContainsGroups = await this._typeService.findDuplicates('type', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
+    const duplicateTypesResult = DiagnosticHelper.mergeDuplicateGroups(typeEqualsGroups, typeContainsGroups);
+    // Recompute trip counts per type
+    for (const group of duplicateTypesResult.groups ?? []) {
+      await DiagnosticHelper.recomputeGroupCounts('type', group, this._tripService, this._shiftService);
+    }
+    this._logger.debug('Duplicate types found:', duplicateTypesResult);
+    diagnostics.push({
+      name: 'Duplicate Types',
+      count: duplicateTypesResult.items.length,
+      severity: duplicateTypesResult.items.length > 0 ? 'warning' : 'info',
+      description: 'Types with different casing or variations (e.g., Delivery vs delivery)',
+      itemType: 'type',
+      items: duplicateTypesResult.items,
+      groups: duplicateTypesResult.groups
     });
 
     // Duplicate regions via shared utility (case-insensitive equals only)
@@ -221,7 +243,7 @@ export class DiagnosticsComponent implements OnInit {
       await DiagnosticHelper.recomputeGroupCounts('region', group, this._tripService, this._shiftService);
     }
     this._logger.debug('Duplicate regions found:', duplicateRegionsResult);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Duplicate Regions',
       count: duplicateRegionsResult.items.length,
       severity: duplicateRegionsResult.items.length > 0 ? 'warning' : 'info',
@@ -234,7 +256,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for shifts with start/end times but no duration
     const shiftsWithoutDuration = DiagnosticHelper.findShiftsWithoutDuration(shifts);
     this._logger.debug('Shifts without duration found:', shiftsWithoutDuration);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Shifts Missing Time Duration',
       count: shiftsWithoutDuration.length,
       severity: shiftsWithoutDuration.length > 0 ? 'warning' : 'info',
@@ -246,7 +268,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for trips with pickup/dropoff times but no duration
     const tripsWithoutDuration = DiagnosticHelper.findTripsWithoutDuration(trips);
     this._logger.debug('Trips without duration found:', tripsWithoutDuration);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Trips Missing Duration',
       count: tripsWithoutDuration.length,
       severity: tripsWithoutDuration.length > 0 ? 'warning' : 'info',
@@ -258,7 +280,7 @@ export class DiagnosticsComponent implements OnInit {
     // Check for trips with place but no start address
     const tripsWithPlaceNoAddress = DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, this.selectedAddress);
     this._logger.debug('Trips with place but no address found:', tripsWithPlaceNoAddress);
-    this.dataDiagnostics.push({
+    diagnostics.push({
       name: 'Trip Places Missing Address',
       count: tripsWithPlaceNoAddress.length,
       severity: tripsWithPlaceNoAddress.length > 0 ? 'warning' : 'info',
@@ -267,7 +289,8 @@ export class DiagnosticsComponent implements OnInit {
       items: tripsWithPlaceNoAddress
     });
 
-    this._logger.info('Final dataDiagnostics:', this.dataDiagnostics);
+    this.dataDiagnostics.set(diagnostics);
+    this._logger.info('Final dataDiagnostics:', diagnostics);
   }
 
 
@@ -289,13 +312,13 @@ export class DiagnosticsComponent implements OnInit {
   }
 
   getCountBySeverity(severity: 'info' | 'warning' | 'error'): number {
-    return this.dataDiagnostics
+    return this.dataDiagnostics()
       .filter(item => item.severity === severity)
       .reduce((sum, item) => sum + item.count, 0);
   }
 
   getTotalIssues(): number {
-    return this.dataDiagnostics.reduce((sum, item) => sum + item.count, 0);
+    return this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0);
   }
 
   async mergeDuplicates(group: any[], selectedItem: any, itemType: DiagnosticEntityType) {
@@ -324,6 +347,8 @@ export class DiagnosticsComponent implements OnInit {
       } else if (itemType === 'region') {
         affectedTrips = trips.filter(t => t.region === item.region);
         affectedShifts = shifts.filter(s => s.region === item.region);
+      } else if (itemType === 'type') {
+        affectedTrips = trips.filter(t => t.type === item.type);
       }
       
       for (const trip of affectedTrips) {
@@ -338,6 +363,8 @@ export class DiagnosticsComponent implements OnInit {
           trip.service = selectedItem.service;
         } else if (itemType === 'region') {
           trip.region = selectedItem.region;
+        } else if (itemType === 'type') {
+          trip.type = selectedItem.type;
         }
         updateAction(trip, ActionEnum.Update);
         tripsToUpdate.push(trip);
@@ -371,6 +398,7 @@ export class DiagnosticsComponent implements OnInit {
 
     // Disable autosave after making data fixes to avoid unintended background syncs
     this.disableAutoSave();
+    this.touchDiagnostics();
   }
 
   async fixShiftDuration(shift: IShift) {
@@ -382,6 +410,7 @@ export class DiagnosticsComponent implements OnInit {
     (shift as any).fixed = true;
     this.decrementDiagnosticCount('Shifts Missing Time Duration');
     this.disableAutoSave();
+    this.touchDiagnostics();
   }
 
   async fixTripDuration(trip: ITrip) {
@@ -390,10 +419,11 @@ export class DiagnosticsComponent implements OnInit {
     (trip as any).fixed = true;
     this.decrementDiagnosticCount('Trips Missing Duration');
     this.disableAutoSave();
+    this.touchDiagnostics();
   }
 
   async bulkFixShiftDurations() {
-    this.isBulkFixing = true;
+    this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled before long-running batch updates
       this.disableAutoSave();
@@ -411,12 +441,12 @@ export class DiagnosticsComponent implements OnInit {
       
       await this.runDiagnostics();
     } finally {
-      this.isBulkFixing = false;
+      this.isBulkFixing.set(false);
     }
   }
 
   async bulkFixTripDurations() {
-    this.isBulkFixing = true;
+    this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled before long-running batch updates
       this.disableAutoSave();
@@ -429,7 +459,7 @@ export class DiagnosticsComponent implements OnInit {
       
       await this.runDiagnostics();
     } finally {
-      this.isBulkFixing = false;
+      this.isBulkFixing.set(false);
     }
   }
 
@@ -439,6 +469,7 @@ export class DiagnosticsComponent implements OnInit {
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
     this.disableAutoSave();
+    this.touchDiagnostics();
   }
 
   async createShiftFromTrip(trip: ITrip) {
@@ -456,7 +487,7 @@ export class DiagnosticsComponent implements OnInit {
   async createShiftsFromTrips(trips: ITrip[]) {
     if (!trips || trips.length === 0) return;
 
-    this.isBulkFixing = true;
+    this.isBulkFixing.set(true);
     try {
       // Ensure autosave is disabled during batch operation
       this.disableAutoSave();
@@ -478,7 +509,7 @@ export class DiagnosticsComponent implements OnInit {
         const existing = await this._shiftService.queryShiftByKey(trip.key);
         if (existing) {
           // mark diagnostic item fixed for this trip
-          const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+          const diagnostic = this.dataDiagnostics().find(d => d.name === 'Orphaned Trips');
           DiagnosticHelper.markOrphanedTripsFixed(diagnostic, [trip.key]);
           continue;
         }
@@ -498,15 +529,16 @@ export class DiagnosticsComponent implements OnInit {
       }
 
       // Update diagnostics: mark orphaned trips as fixed for each created shift
-      const diagnostic = this.dataDiagnostics.find(d => d.name === 'Orphaned Trips');
+      const diagnostic = this.dataDiagnostics().find(d => d.name === 'Orphaned Trips');
       DiagnosticHelper.markOrphanedTripsFixed(diagnostic, newShifts.map(s => s.key));
+      this.touchDiagnostics();
     } finally {
-      this.isBulkFixing = false;
+      this.isBulkFixing.set(false);
     }
   }
 
   private decrementDiagnosticCount(diagnosticName: string) {
-    const diagnostic = this.dataDiagnostics.find(d => d.name === diagnosticName);
+    const diagnostic = this.dataDiagnostics().find(d => d.name === diagnosticName);
     if (diagnostic && diagnostic.count > 0) {
       diagnostic.count--;
     }
@@ -532,6 +564,11 @@ export class DiagnosticsComponent implements OnInit {
     (shift as any).markedForDelete = true;
     this.selectedShiftToDelete[groupIndex] = undefined as any;
     this.disableAutoSave();
+    this.touchDiagnostics();
+  }
+
+  private touchDiagnostics(): void {
+    this.dataDiagnostics.update(items => [...items]);
   }
 
   /**

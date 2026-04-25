@@ -11,6 +11,7 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { ServiceService } from '@services/sheets/service.service';
+import { TypeService } from '@services/sheets/type.service';
 import { RegionService } from '@services/sheets/region.service';
 import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
@@ -25,6 +26,7 @@ describe('DiagnosticsComponent', () => {
   let placeService: any;
   let nameService: any;
   let serviceService: any;
+  let typeService: any;
   let regionService: any;
   let loggerService: any;
   let gigCalculator: any;
@@ -37,6 +39,7 @@ describe('DiagnosticsComponent', () => {
     placeService = jasmine.createSpyObj('PlaceService', ['list', 'findDuplicates']);
     nameService = jasmine.createSpyObj('NameService', ['list', 'findDuplicates']);
     serviceService = jasmine.createSpyObj('ServiceService', ['list', 'findDuplicates']);
+    typeService = jasmine.createSpyObj('TypeService', ['findDuplicates']);
     regionService = jasmine.createSpyObj('RegionService', ['findDuplicates']);
     loggerService = jasmine.createSpyObj('LoggerService', ['debug', 'info']);
     gigCalculator = jasmine.createSpyObj('GigCalculatorService', ['updateTripDuration']);
@@ -61,6 +64,7 @@ describe('DiagnosticsComponent', () => {
     nameService.findDuplicates.and.returnValue(Promise.resolve([]));
     serviceService.list.and.returnValue(Promise.resolve([]));
     serviceService.findDuplicates.and.returnValue(Promise.resolve([]));
+    typeService.findDuplicates.and.returnValue(Promise.resolve([]));
     regionService.findDuplicates.and.returnValue(Promise.resolve([]));
 
     loggerService.debug.and.stub();
@@ -84,6 +88,7 @@ describe('DiagnosticsComponent', () => {
         { provide: PlaceService, useValue: placeService },
         { provide: NameService, useValue: nameService },
         { provide: ServiceService, useValue: serviceService },
+        { provide: TypeService, useValue: typeService },
         { provide: RegionService, useValue: regionService },
         { provide: LoggerService, useValue: loggerService },
         { provide: GigCalculatorService, useValue: gigCalculator },
@@ -105,17 +110,17 @@ describe('DiagnosticsComponent', () => {
   it('runDiagnostics should populate default diagnostics with zero counts', async () => {
     await component.runDiagnostics();
 
-    expect(component.isLoading).toBeFalse();
-    expect(component.dataDiagnostics.length).toBe(11);
+    expect(component.isLoading()).toBeFalse();
+    expect(component.dataDiagnostics().length).toBe(12);
     expect(component.getTotalIssues()).toBe(0);
   });
 
   it('getCountBySeverity should sum matching severities', () => {
-    component.dataDiagnostics = [
+    component.dataDiagnostics.set([
       { name: 'a', count: 1, severity: 'info', description: '', itemType: 'trip', items: [] },
       { name: 'b', count: 2, severity: 'warning', description: '', itemType: 'trip', items: [] },
       { name: 'c', count: 3, severity: 'warning', description: '', itemType: 'trip', items: [] }
-    ];
+    ]);
 
     expect(component.getCountBySeverity('warning')).toBe(5);
     expect(component.getCountBySeverity('info')).toBe(1);
@@ -149,7 +154,7 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('fixShiftDuration should compute duration, mark fixed, and decrement count', async () => {
-    component.dataDiagnostics = [{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] } as any];
+    component.dataDiagnostics.set([{ name: 'Shifts Missing Time Duration', count: 1, severity: 'warning', description: '', itemType: 'shift', items: [] } as any]);
     const shift: IShift = { start: '2024-01-01T00:00:00Z', finish: '2024-01-01T00:30:00Z' } as IShift;
 
     await component.fixShiftDuration(shift);
@@ -160,7 +165,7 @@ describe('DiagnosticsComponent', () => {
   });
 
   it('fixTripDuration should call calculator and decrement count', async () => {
-    component.dataDiagnostics = [{ name: 'Trips Missing Duration', count: 1, severity: 'warning', description: '', itemType: 'trip', items: [] } as any];
+    component.dataDiagnostics.set([{ name: 'Trips Missing Duration', count: 1, severity: 'warning', description: '', itemType: 'trip', items: [] } as any]);
     const trip = { key: 't1' } as ITrip;
 
     await component.fixTripDuration(trip);
@@ -204,7 +209,7 @@ describe('DiagnosticsComponent', () => {
 
   it('createShiftFromTrip should create shift and mark orphaned trip fixed', async () => {
     const trip: ITrip = { key: 'abc', date: '2024-01-01', service: 'Svc', number: 1, region: 'R1', pickupTime: '10:00', total: 0 } as any;
-    component.dataDiagnostics = [{ name: 'Orphaned Trips', count: 1, severity: 'error', description: '', itemType: 'trip', items: [trip] } as any];
+    component.dataDiagnostics.set([{ name: 'Orphaned Trips', count: 1, severity: 'error', description: '', itemType: 'trip', items: [trip] } as any]);
 
     await component.createShiftFromTrip(trip);
 
@@ -212,7 +217,7 @@ describe('DiagnosticsComponent', () => {
     expect(gigWorkflow.calculateShiftTotals).toHaveBeenCalled();
     expect(shiftService.add).toHaveBeenCalled();
     expect((trip as any).fixed).toBeTrue();
-    expect(component.dataDiagnostics[0].count).toBe(0);
+    expect(component.dataDiagnostics()[0].count).toBe(0);
   });
 
   it('hasMarkedForDelete should detect flagged shifts', () => {

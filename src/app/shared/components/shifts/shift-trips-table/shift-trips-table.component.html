@@ -3,16 +3,16 @@
             <div class="flex items-center justify-center w-10 h-10">
             <mat-icon class="text-primary text-2xl">route</mat-icon>
         </div>
-        <h4 class="flex-1 text-lg font-semibold text-primary text-center">Trips ({{ trips.length }})</h4>
+        <h4 class="flex-1 text-lg font-semibold text-primary text-center">Trips ({{ trips().length }})</h4>
         <app-base-fab-button
             class="flex-shrink-0"
             variant="primary"
             fabStyle="mini"
             [icon]="'view_agenda'"
-            (clicked)="viewTrips(trips)">
+            (clicked)="viewTrips(trips())">
         </app-base-fab-button>
     </div>
-    <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface" *ngIf="trips && trips.length > 0">
+    <div class="overflow-x-auto relative rounded-lg border border-soft bg-surface" *ngIf="trips().length > 0">
         <table class="table-theme min-w-full text-sm">
             <thead>
                 <tr>
@@ -25,7 +25,7 @@
                 </tr>
             </thead>
             <tbody>
-                @for (trip of trips; track trip.id || $index; let i = $index) {
+                @for (trip of trips(); track trip.id || $index; let i = $index) {
                     <tr [ngClass]="{ 'line-through text-tertiary': trip.exclude }">
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.place | truncate:15}}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{trip.pickupTime | noseconds:prefers24Hour}}</td>
@@ -38,10 +38,10 @@
             </tbody>
         </table>
     </div>
-    <div class="table-scroll-indicator w-full text-center py-3 text-sm font-medium text-primary bg-surface-2 border-t-2 border-soft rounded-b-lg mt-[-0.5rem]" *ngIf="trips && trips.length > 0">
+    <div class="table-scroll-indicator w-full text-center py-3 text-sm font-medium text-primary bg-surface-2 border-t-2 border-soft rounded-b-lg mt-[-0.5rem]" *ngIf="trips().length > 0">
         ← Scroll horizontally for more columns →
     </div>
-    <div class="no-trips-message flex flex-col items-center justify-center py-8 text-tertiary" *ngIf="!trips || trips.length === 0">
+    <div class="no-trips-message flex flex-col items-center justify-center py-8 text-tertiary" *ngIf="trips().length === 0">
         <mat-icon class="no-trips-icon text-4xl mb-2">info_outline</mat-icon>
         <h3 class="text-lg font-semibold mb-1">No trips to display</h3>
         <p>There are currently no trips available.</p>

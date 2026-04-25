@@ -27,6 +27,7 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.json",
+              "src/manifest.test.json",
               "src/offline.html",
               "src/error.html",
               "src/.htaccess",

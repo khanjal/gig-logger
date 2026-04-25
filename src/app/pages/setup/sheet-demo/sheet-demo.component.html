@@ -4,7 +4,7 @@
     Create a demo spreadsheet pre-populated with sample data to explore the app's features.
   </p>
   
-  @if (creatingDemo) {
+  @if (creatingDemo()) {
     <div class="creating-demo-spinner">
       <mat-spinner diameter="40"></mat-spinner>
       <div class="creating-demo-text">Creating demo spreadsheet...</div>

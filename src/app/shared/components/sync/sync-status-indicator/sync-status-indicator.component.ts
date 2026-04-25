@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -14,7 +14,7 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 
-import type { ISyncMessage, ISyncState } from '@interfaces/sync-status.interface';
+import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync-status.interface';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
 import { BaseFieldButtonComponent, BaseIconButtonComponent } from '@components/base';
@@ -42,15 +42,15 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private intervalId?: number;
   
-  syncState: ISyncState | null = null;
-  messages: ISyncMessage[] = [];
-  timeSinceLastSync = 'Never';
-  showDetailedView = false;
-  hasUnsavedChanges = false;
-  unsavedCounts: { trips: number; shifts: number; expenses: number; total: number } = { trips: 0, shifts: 0, expenses: 0, total: 0 };
-  menuOpen = false;
-  autoSaveEnabled = false;
-  themePreference: ThemePreference = 'system';
+  syncState = signal<ISyncState | null>(null);
+  messages = signal<ISyncMessage[]>([]);
+  timeSinceLastSync = signal('Never');
+  showDetailedView = signal(false);
+  hasUnsavedChanges = signal(false);
+  unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
+  menuOpen = signal(false);
+  autoSaveEnabled = signal(false);
+  themePreference = signal<ThemePreference>('system');
   overlayPositions: ConnectedPosition[] = [
     { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetX: 0, offsetY: 6 },
     { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
@@ -72,9 +72,8 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.syncStatusService.syncState$
       .pipe(takeUntil(this.destroy$))
       .subscribe(state => {
-        this.syncState = state;
+        this.syncState.set(state);
         this.updateTimeSinceLastSync();
-        // Check for unsaved changes when sync state changes
         this.checkUnsavedChanges();
       });
 
@@ -82,20 +81,20 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.syncStatusService.messages$
       .pipe(takeUntil(this.destroy$))
       .subscribe(messages => {
-        this.messages = messages;
+        this.messages.set(messages);
       });
 
     // Track theme preference
-    this.themePreference = this.themeService.currentPreference;
+    this.themePreference.set(this.themeService.currentPreference);
     this.themeService.preferenceChanges
       .pipe(takeUntil(this.destroy$))
-      .subscribe(pref => this.themePreference = pref);
+      .subscribe(pref => this.themePreference.set(pref));
 
     // Subscribe to UI preference for polling/auto-save
     this.uiPreferences.pollingEnabled$
       .pipe(takeUntil(this.destroy$))
       .subscribe(enabled => {
-        this.autoSaveEnabled = enabled;
+        this.autoSaveEnabled.set(enabled);
       });
 
     // Update time display and check for unsaved changes every 5 seconds for better responsiveness
@@ -109,27 +108,27 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   async toggleAutoSave(enabled: boolean): Promise<void> {
-    this.autoSaveEnabled = enabled;
+    this.autoSaveEnabled.set(enabled);
     await this.uiPreferences.setPolling(enabled);
   }
 
   setTheme(preference: ThemePreference): void {
     this.themeService.setTheme(preference);
-    this.themePreference = preference;
+    this.themePreference.set(preference);
   }
 
   toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
+    this.menuOpen.update(v => !v);
   }
 
   closeMenu(): void {
-    this.menuOpen = false;
+    this.menuOpen.set(false);
   }
 
   private async checkUnsavedChanges(): Promise<void> {
-    this.hasUnsavedChanges = await this.unsavedDataService.hasUnsavedData();
+    this.hasUnsavedChanges.set(await this.unsavedDataService.hasUnsavedData());
     try {
-      this.unsavedCounts = await this.unsavedDataService.getUnsavedCounts();
+      this.unsavedCounts.set(await this.unsavedDataService.getUnsavedCounts());
     } catch (err) {
       // ignore errors getting counts
     }
@@ -166,7 +165,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   async updateFromSpreadsheet(): Promise<void> {
     // Safety check: prevent update if there are unsaved changes
     await this.checkUnsavedChanges();
-    if (this.hasUnsavedChanges) {
+    if (this.hasUnsavedChanges()) {
       openSnackbar(this.snackBar, SNACKBAR_MESSAGES.CANNOT_UPDATE_UNSAVED_CHANGES, { action: 'Close', duration: 5000, horizontalPosition: 'center', verticalPosition: 'top', panelClass: ['error-snackbar'] });
       return;
     }
@@ -198,18 +197,18 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   private updateTimeSinceLastSync(): void {
-    this.timeSinceLastSync = this.syncStatusService.getTimeSinceLastSync();
+    this.timeSinceLastSync.set(this.syncStatusService.getTimeSinceLastSync());
   }
 
   getStatusIcon(): string {
-    if (!this.syncState) return 'cloud_off';
+    if (!this.syncState()) return 'cloud_off';
     
     // Check if auto-sync is disabled
-    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'sync_disabled';
     }
     
-    switch (this.syncState.status) {
+    switch (this.syncState()!.status) {
       case 'syncing':
         return 'sync';
       case 'success':
@@ -223,66 +222,67 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   getStatusClass(): string {
-    if (!this.syncState) return 'status-idle';
+    if (!this.syncState()) return 'status-idle';
     
     // Check if auto-sync is disabled
-    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'status-disabled';
     }
     
-    return `status-${this.syncState.status}`;
+    return `status-${this.syncState()!.status}`;
   }
 
   getTooltipText(): string {
-    if (!this.syncState) return 'Sync status unknown';
+    if (!this.syncState()) return 'Sync status unknown';
 
     // Check if auto-sync is disabled
-    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'Auto-sync disabled';
     }
 
-    switch (this.syncState.status) {
+    switch (this.syncState()!.status) {
       case 'syncing':
-        return `${this.syncState.message} (${this.syncState.progress}%)`;
+        return `${this.syncState()!.message} (${this.syncState()!.progress}%)`;
       case 'success':
-        return `${this.syncState.message} - ${this.timeSinceLastSync}`;
+        return `${this.syncState()!.message} - ${this.timeSinceLastSync()}`;
       case 'error':
-        return this.syncState.error || 'Sync failed';
+        return this.syncState()!.error || 'Sync failed';
       case 'idle':
       default:
-        return `Last sync: ${this.timeSinceLastSync}`;
+        return `Last sync: ${this.timeSinceLastSync()}`;
     }
   }
   
   getStatusText(): string {
-    if (!this.syncState) return 'Unknown';
+    if (!this.syncState()) return 'Unknown';
     
     // Check if auto-sync is disabled
-    if (!this.autoSaveEnabled && this.syncState.status === 'idle') {
+    if (!this.autoSaveEnabled() && this.syncState()!.status === 'idle') {
       return 'Disabled';
     }
     
-    return this.syncState.message || 'Ready';
+    return this.syncState()!.message || 'Ready';
   }
 
   getOperationText(): string {
-    if (!this.syncState || !this.syncState.operation) return '';
+    const operation = this.syncState()?.operation;
+    if (!operation) return '';
     
-    const operationLabels = {
+    const operationLabels: Record<SyncOperation, string> = {
       'save': 'Saving',
       'load': 'Loading',
       'auto-save': 'Auto-saving'
     };
     
-    return operationLabels[this.syncState.operation] || '';
+    return operationLabels[operation];
   }
 
   getNextCheckText(): string {
-    if (!this.autoSaveEnabled) {
+    if (!this.autoSaveEnabled()) {
       return '-';
     }
 
-    const next = this.syncState?.nextSyncIn;
+    const next = this.syncState()?.nextSyncIn;
     if (!next || next <= 0) {
       return '-';
     }
@@ -291,7 +291,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   toggleDetailedView(): void {
-    this.showDetailedView = !this.showDetailedView;
+    this.showDetailedView.update(v => !v);
   }
 
   clearMessages(): void {

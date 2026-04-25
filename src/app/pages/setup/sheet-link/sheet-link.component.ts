@@ -11,6 +11,8 @@ import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
+import { firstValueFrom } from 'rxjs';
+import { createAsyncOperationState } from '@helpers/async-operation-state.helper';
 
 @Component({
   selector: 'app-sheet-link',
@@ -24,6 +26,7 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
 })
 export class SheetLinkComponent {
   @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  readonly sheetLinkState = createAsyncOperationState();
 
   constructor(
     private _spreadsheetService: SpreadsheetService,
@@ -32,83 +35,106 @@ export class SheetLinkComponent {
     private _logger: LoggerService
   ) { }
 
-  openCreateSheetDialog() {
-    const dialogRef = this.dialog.open(SheetCreateComponent, {
-      width: '400px',
-      height: '200px',
-      panelClass: 'custom-modalbox',
-      position: {
-        top: '125px' // Adjust this value to position the dialog higher
-      }
-    });
+  async openCreateSheetDialog() {
+    this.sheetLinkState.setLoading();
+    try {
+      const dialogRef = this.dialog.open(SheetCreateComponent, {
+        width: '400px',
+        height: '200px',
+        panelClass: 'custom-modalbox',
+        position: {
+          top: '125px' // Adjust this value to position the dialog higher
+        }
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result?.sheetName) {
-        const syncDialogRef = this.dialog.open(DataSyncModalComponent, {
-          panelClass: 'custom-modalbox',
-          data: {
-            type: 'create-sheet',
-            sheetName: result.sheetName
-          }
-        });
-
-        syncDialogRef.afterClosed().subscribe(syncResult => {
-          if (syncResult) {
-            this._logger.info('Sheet created successfully', { sheetName: result.sheetName });
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
-            // create-sheet flow already loaded data in sync modal; only refresh setup state
-            this.parentReload.emit({ mode: 'load-only' });
-          } else {
-            this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
-            openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
-          }
-        });
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (!result?.sheetName) {
+        this.sheetLinkState.reset();
+        return;
       }
-      // result is null if dialog was cancelled
-    });
+
+      const syncDialogRef = this.dialog.open(DataSyncModalComponent, {
+        panelClass: 'custom-modalbox',
+        data: {
+          type: 'create-sheet',
+          sheetName: result.sheetName
+        }
+      });
+
+      const syncResult = await firstValueFrom(syncDialogRef.afterClosed());
+      if (syncResult) {
+        this._logger.info('Sheet created successfully', { sheetName: result.sheetName });
+        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_CREATED_SUCCESS, { action: 'Close' });
+        // create-sheet flow already loaded data in sync modal; only refresh setup state
+        this.parentReload.emit({ mode: 'load-only' });
+        this.sheetLinkState.setSuccess();
+        return;
+      }
+
+      this._logger.error('Sheet creation failed', { sheetName: result.sheetName });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_CREATING, { action: 'Close' });
+      this.sheetLinkState.setError('Create sheet failed');
+    } catch (error) {
+      this.sheetLinkState.setError('Create sheet failed');
+      throw error;
+    }
   }
 
-  openListSheetsDialog() {
-    const dialogRef = this.dialog.open(SheetListComponent, {
-      width: '400px',
-      height: '400px',
-      panelClass: 'custom-modalbox'
-    });
+  async openListSheetsDialog() {
+    this.sheetLinkState.setLoading();
+    try {
+      const dialogRef = this.dialog.open(SheetListComponent, {
+        width: '400px',
+        height: '400px',
+        panelClass: 'custom-modalbox'
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // User selected a sheet
-        this._logger.info('Selected sheet', { result });
-        
-        let sheetData = {} as ISheet;
-        sheetData.properties = {
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (!result) {
+        this.sheetLinkState.reset();
+        return;
+      }
+
+      // User selected a sheet
+      this._logger.info('Selected sheet', { result });
+
+      const sheetData = {
+        properties: {
           id: result.id,
           name: result.name
-        };
+        }
+      } as ISheet;
 
-        this.linkSheet(sheetData);
-      }
-    });
+      await this.linkSheet(sheetData);
+    } catch (error) {
+      this.sheetLinkState.setError('Link sheet failed');
+      throw error;
+    }
   }
 
-  linkSheet(sheet: ISheet) {
-    this._spreadsheetService.findSheet(sheet.properties.id).then((existingSheet) => {
-        if (existingSheet) {
-        openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ALREADY_LINKED, { action: 'Close' });
-      } else {
-        this._spreadsheetService.add({
-          id: sheet.properties.id,
-          name: sheet.properties.name,
-          default: "true",
-          size: 0
-        }).then(() => {
-          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
-          this.parentReload.emit({ mode: 'reload' });
-        }).catch((error) => {
-          this._logger.error('Error linking sheet', { error });
-          openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });
-        });
-      }
-    });
+  async linkSheet(sheet: ISheet): Promise<void> {
+    this.sheetLinkState.setLoading();
+    const existingSheet = await this._spreadsheetService.findSheet(sheet.properties.id);
+    if (existingSheet) {
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ALREADY_LINKED, { action: 'Close' });
+      this.sheetLinkState.setSuccess();
+      return;
+    }
+
+    try {
+      await this._spreadsheetService.add({
+        id: sheet.properties.id,
+        name: sheet.properties.name,
+        default: "true",
+        size: 0
+      });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_LINKED_SUCCESS, { action: 'Close' });
+      this.parentReload.emit({ mode: 'reload' });
+      this.sheetLinkState.setSuccess();
+    } catch (error) {
+      this._logger.error('Error linking sheet', { error });
+      openSnackbar(this._snackBar, SNACKBAR_MESSAGES.SHEET_ERROR_LINKING, { action: 'Close' });
+      this.sheetLinkState.setError('Link sheet failed');
+    }
   }
 }

@@ -1,9 +1,9 @@
 // Imports
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ThemeService } from '@services/theme.service';
-import { Subscription as DexieSubscription } from 'dexie';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +14,8 @@ import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-he
 import { CommonModule } from '@angular/common';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
-import { Subscription } from 'rxjs';
+import { combineLatest, from, of } from 'rxjs';
+import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
 // Chart.js registration
 Chart.register(...registerables);
@@ -57,18 +58,19 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
   styleUrls: ['./metrics.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class MetricsComponent implements OnInit, OnDestroy {
+export class MetricsComponent implements OnInit {
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  shifts: any[] = [];
-  private dexieSubscriptions: DexieSubscription[] = [];
-  private themeSubscription?: Subscription;
+  shifts = signal<any[]>([]);
+  filteredShifts = signal<any[]>([]);
+  aggregationType = signal<'day' | 'week' | 'month' | 'quarter' | 'year'>('day');
+  private readonly destroyRef = inject(DestroyRef);
 
   // Chart Data
-  tripsData: ChartData<'bar'> = { labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] };
-  distanceData: ChartData<'line'> = { labels: [], datasets: [] };
-  payData: ChartData<'bar'> = { labels: [], datasets: [] };
-  dailyEarningsData: ChartData<'bar'> = { labels: [], datasets: [] };
-  servicePieData: ChartData<'pie'> = { labels: [], datasets: [] };
+  tripsData = signal<ChartData<'bar'>>({ labels: [], datasets: [{ label: 'Total Trips', data: [], backgroundColor: this.cssVar('--color-accent'), borderColor: this.cssVar('--color-accent-variant'), borderWidth: 2, datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } } }] });
+  distanceData = signal<ChartData<'line'>>({ labels: [], datasets: [] });
+  payData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
+  dailyEarningsData = signal<ChartData<'bar'>>({ labels: [], datasets: [] });
+  servicePieData = signal<ChartData<'pie'>>({ labels: [], datasets: [] });
   yoyData: ChartData<'bar'> = { labels: [], datasets: [] };
 
   // Chart Options
@@ -170,7 +172,10 @@ export class MetricsComponent implements OnInit, OnDestroy {
   // Date Range
   range = new FormGroup({ start: new FormControl(), end: new FormControl() });
 
-  constructor(private shiftService: ShiftService, private themeService: ThemeService) {}
+  constructor(
+    private shiftService: ShiftService,
+    private themeService: ThemeService
+  ) {}
 
   private getTextColor(): string {
     // Provide sensible fallbacks depending on the active theme so tests
@@ -223,18 +228,18 @@ export class MetricsComponent implements OnInit, OnDestroy {
       : DateHelper.toISO(new Date(s.date));
   }
 
-  async filterByDate() {
-    // Convert picked dates to YYYY-MM-DD strings (date only, LOCAL time)
-    const startYMD = this.range.value.start ? DateHelper.toISO(new Date(this.range.value.start)) : '';
-    const endYMD = this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '';
-    // Use the same DB query as stats: inclusive between
-    let filtered = this.shifts;
-    
-    if (startYMD || endYMD) {
-      filtered = await this.shiftService.getShiftsBetweenDates(startYMD, endYMD);
-    }
+  private getDateRangeFilter(): { startYMD: string; endYMD: string } {
+    return {
+      startYMD: this.range.value.start ? DateHelper.toISO(new Date(this.range.value.start)) : '',
+      endYMD: this.range.value.end ? DateHelper.toISO(new Date(this.range.value.end)) : '',
+    };
+  }
 
-    let aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day';
+  private getAggregationTypeForFilteredData(
+    filtered: any[],
+    startYMD: string,
+    endYMD: string
+  ): 'day' | 'week' | 'month' | 'quarter' | 'year' {
     let actualStart = startYMD ? DateHelper.getDateFromISO(startYMD) : null;
     let actualEnd = endYMD ? DateHelper.getDateFromISO(endYMD) : null;
 
@@ -245,9 +250,13 @@ export class MetricsComponent implements OnInit, OnDestroy {
     }
 
     if (actualStart && actualEnd) {
-      aggType = getAggregationType(actualStart, actualEnd);
+      return getAggregationType(actualStart, actualEnd);
     }
 
+    return 'day';
+  }
+
+  private applyChartData(filtered: any[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered, aggType);
@@ -285,7 +294,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
     return labels;
   }
 
-  updateCharts(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateCharts(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       // Always use local date for label
@@ -317,7 +326,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
       grouped[label].cash += s.totalCash || 0;
     });
     const labels = this.sortLabels(Object.keys(grouped), aggType);
-    this.tripsData = {
+    this.tripsData.set({
       labels,
       datasets: [{
         label: 'Total Trips',
@@ -327,8 +336,8 @@ export class MetricsComponent implements OnInit, OnDestroy {
         borderWidth: 2,
         datalabels: { color: this.cssVar('--color-accent-variant'), font: { weight: 'bold', size: 14 } }
       }]
-    };
-    this.distanceData = {
+    });
+    this.distanceData.set({
       labels,
       datasets: [{
         label: 'Total Distance',
@@ -336,8 +345,8 @@ export class MetricsComponent implements OnInit, OnDestroy {
         borderColor: this.cssVar('--color-success'),
         fill: false,
       }]
-    };
-    this.payData = {
+    });
+    this.payData.set({
       labels,
       datasets: [
         { label: 'Pay', data: labels.map(l => grouped[l].pay), backgroundColor: this.cssVar('--color-warning') },
@@ -345,10 +354,10 @@ export class MetricsComponent implements OnInit, OnDestroy {
         { label: 'Bonus', data: labels.map(l => grouped[l].bonus), backgroundColor: this.cssVar('--color-accent') },
         { label: 'Cash', data: labels.map(l => grouped[l].cash), backgroundColor: this.cssVar('--color-error') }
       ]
-    };
+    });
   }
 
-  updateDailyEarnings(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateDailyEarnings(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
@@ -377,7 +386,7 @@ export class MetricsComponent implements OnInit, OnDestroy {
     });
     const labels = this.sortLabels(Object.keys(earningsByLabel), aggType);
     const services = Array.from(serviceSet);
-    this.dailyEarningsData = {
+    this.dailyEarningsData.set({
       labels,
       datasets: services.map((service, i) => ({
         label: service,
@@ -395,17 +404,17 @@ export class MetricsComponent implements OnInit, OnDestroy {
           this.cssVar('--color-primary')
         ][i % 10],
       }))
-    };
+    });
   }
 
-  updateServicePie(filteredShifts = this.shifts, aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateServicePie(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
     const serviceCounts: { [service: string]: number } = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
     });
     const labels = Object.keys(serviceCounts);
     const data = labels.map(l => serviceCounts[l]);
-    this.servicePieData = {
+    this.servicePieData.set({
       labels,
       datasets: [{
         data,
@@ -418,10 +427,10 @@ export class MetricsComponent implements OnInit, OnDestroy {
           this.cssVar('--color-primary')
         ],
       }]
-    };
+    });
   }
 
-  updateYearlyComparison(filteredShifts = this.shifts) {
+  updateYearlyComparison(filteredShifts = this.shifts()) {
     const grouped: { [year: string]: { pay: number; tips: number; bonus: number; cash: number } } = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
@@ -444,23 +453,41 @@ export class MetricsComponent implements OnInit, OnDestroy {
     };
   }
 
-  async ngOnInit() {
-    this.dexieSubscriptions.push(
-      this.shiftService.shifts$.subscribe(shifts => {
-        this.shifts = shifts;
-        void this.filterByDate();
-      })
+  ngOnInit() {
+    const dateRange$ = this.range.valueChanges.pipe(
+      startWith(this.range.value),
+      map(() => this.getDateRangeFilter()),
+      distinctUntilChanged((a, b) => a.startYMD === b.startYMD && a.endYMD === b.endYMD)
     );
-    
-    // Rebuild charts on theme changes so dataset colors refresh too.
-    this.themeSubscription = this.themeService.activeTheme$.subscribe(() => {
-      this.updateChartColors();
-      void this.filterByDate();
-    });
-  }
 
-  ngOnDestroy() {
-    this.dexieSubscriptions.forEach(sub => sub.unsubscribe());
-    this.themeSubscription?.unsubscribe();
+    combineLatest([this.shiftService.shifts$, dateRange$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        switchMap(([shifts, { startYMD, endYMD }]) => {
+          this.shifts.set(shifts);
+
+          if (startYMD || endYMD) {
+            return from(this.shiftService.getShiftsBetweenDates(startYMD, endYMD)).pipe(
+              map(filtered => ({ filtered, startYMD, endYMD }))
+            );
+          }
+
+          return of({ filtered: shifts, startYMD, endYMD });
+        })
+      )
+      .subscribe(({ filtered, startYMD, endYMD }) => {
+        const aggType = this.getAggregationTypeForFilteredData(filtered, startYMD, endYMD);
+
+        this.filteredShifts.set(filtered);
+        this.aggregationType.set(aggType);
+        this.applyChartData(filtered, aggType);
+      });
+
+    this.themeService.activeTheme$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateChartColors();
+        this.applyChartData(this.filteredShifts(), this.aggregationType());
+      });
   }
 }

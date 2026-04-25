@@ -9,21 +9,21 @@
       <div class="flex flex-col mb-3">
         <mat-form-field class="w-full rg-field-shell" appearance="fill">
           <mat-label>Shift/Batch/Group</mat-label>
-          <mat-select #shiftSelect name="shift" formControlName="shift" [(value)]="selectedShift" [compareWith]="compareShifts" (selectionChange)='onShiftSelected(shiftSelect.value)' panelClass="shift-select-panel">
+          <mat-select name="shift" formControlName="shift" (selectionChange)="onShiftSelected($event.value)" panelClass="shift-select-panel">
             <mat-select-trigger>
-              <ng-container *ngIf="selectedShift; else newShiftLabel">
+              <ng-container *ngIf="selectedShiftOption(); else newShiftLabel">
                 <div class="flex flex-col leading-tight pt-1.5 pb-0.5">
-                  <span>{{ selectedShift.date | date:'E MMM d' }} - {{ selectedShift.service | truncate:15 }} {{ selectedShift.number == 0 ? '' : '#' + selectedShift.number }}</span>
-                  <span class="text-secondary text-xs">Trips: {{ selectedShift.totalTrips }} | Total: {{ selectedShift.grandTotal | currency }}</span>
+                  <span>{{ selectedShiftOption()!.dateLabel }} - {{ selectedShiftOption()!.serviceLabel | truncate:15 }}{{ selectedShiftOption()!.numberLabel }}</span>
+                  <span class="text-secondary text-xs">{{ selectedShiftOption()!.subtitle }}</span>
                 </div>
               </ng-container>
               <ng-template #newShiftLabel>New</ng-template>
             </mat-select-trigger>
-            <mat-option value="">New</mat-option>
-            <mat-option *ngFor="let shift of shifts" [value]="shift">
+            <mat-option [value]="'new'">New</mat-option>
+            <mat-option *ngFor="let shiftOption of shiftOptions()" [value]="shiftOption.shiftKey">
               <div class="flex flex-col leading-tight">
-                <span>{{ shift.date | date:'E MMM d' }} - {{ shift.service | truncate:15 }} {{ shift.number == 0 ? "" : '#' + shift.number }}</span>
-                <span class="text-secondary text-xs">Trips: {{ shift.totalTrips }} | Total: {{ shift.grandTotal | currency }}</span>
+                <span>{{ shiftOption.dateLabel }} - {{ shiftOption.serviceLabel | truncate:15 }}{{ shiftOption.numberLabel }}</span>
+                <span class="text-secondary text-xs">{{ shiftOption.subtitle }}</span>
               </div>
             </mat-option>
           </mat-select>
@@ -32,7 +32,7 @@
     </div>
 
     <!-- New Shift Fields -->
-    @if (isNewShift) {
+    @if (isNewShift()) {
       <div>
         <div class="flex flex-col mb-3">
           <app-search-input 
@@ -40,7 +40,8 @@
             fieldName="Service" 
             searchType="Service" 
             formControlName="service"
-            [isRequired]="true">
+            [isRequired]="true"
+            [enableBottomPadding]="isInEditMode">
           </app-search-input>
         </div>
       </div>
@@ -51,7 +52,8 @@
         class="w-full"
         fieldName="Region/Zone" 
         searchType="Region" 
-        formControlName="region">
+        formControlName="region"
+        [enableBottomPadding]="isInEditMode">
       </app-search-input>
     </div>
     <!-- Location Information -->
@@ -64,7 +66,8 @@
           formControlName="place"
           googleSearch="place"
           (valueChanged)="selectPlace()"
-          (auxiliaryData)="setPickupAddress($event)">
+          (auxiliaryData)="setPickupAddress($event)"
+          [enableBottomPadding]="isInEditMode">
         </app-search-input>
       </div>
       <div class="flex flex-col gap-1 mb-3">
@@ -72,7 +75,8 @@
           class="w-full"
           fieldName="Type" 
           searchType="Type" 
-          formControlName="type">
+          formControlName="type"
+          [enableBottomPadding]="isInEditMode">
         </app-search-input>
       </div>
     </div>
@@ -100,41 +104,43 @@
 
     <!-- Customer Information -->
     <div>
-      <div class="flex items-center gap-1" [ngClass]="(selectedPlaceAddresses?.length || 0) > 0 ? 'mb-1' : 'mb-3'">
-        <app-search-input 
-          class="w-full mr-2"
-          fieldName="Name" 
-          searchType="Name" 
-          formControlName="name"
-          (valueChanged)="showNameAddresses()"
-          (auxiliaryData)="setDropoffAddress($event)">
+      <div class="flex items-center gap-1" [ngClass]="selectedPlaceAddresses.length > 0 ? 'mb-1' : 'mb-3'">
+          <app-search-input 
+            class="w-full mr-2"
+            fieldName="Name" 
+            searchType="Name" 
+            formControlName="name"
+            (valueChanged)="showNameAddresses()"
+            (auxiliaryData)="setDropoffAddress($event)"
+            [enableBottomPadding]="isInEditMode">
         </app-search-input>
         <app-base-toggle-button [active]="showPickupAddress" [icon]="'contact_mail'" (clicked)="togglePickupAddress()" class="toggle-button mb-1" [class.toggle-button--active]="showPickupAddress"></app-base-toggle-button>
       </div>
       <div *ngIf="showPickupAddress && selectedPlace && selectedPlaceAddresses && selectedPlaceAddresses.length > 0" class="my-5">
         <app-base-accordion>
-          <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && data.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
+          <app-base-accordion-item [expanded]="!(selectedPlaceAddresses.length > 5 && !!data?.id)" [title]="selectedPlaceAddresses.length + ' Previous Addresses for Place'">
             <div class="flex flex-col gap-1">
               <app-base-rect-button *ngFor="let address of selectedPlaceAddresses" variant="outlined" class="address-button" [fullWidth]="true" (clicked)="setPickupAddress(address.address)" [class.address-button--selected]="address.address === tripForm.value.startAddress">{{ address.address | shortaddress:selectedPlace.place | truncate:28 }} ({{ address.trips }})</app-base-rect-button>
             </div>
           </app-base-accordion-item>
         </app-base-accordion>
       </div>
-      <div class="flex flex-col gap-1" [ngClass]="(selectedNameDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
+      <div class="flex flex-col gap-1" [ngClass]="selectedNameDeliveries.length > 0 ? 'mb-1' : 'mb-3'" *ngIf="showPickupAddress">
         <app-search-input 
           class="w-full"
           fieldName="Pickup Address" 
           searchType="Address" 
           formControlName="startAddress"
-          googleSearch="address">
+          googleSearch="address"
+          [enableBottomPadding]="isInEditMode">
         </app-search-input>
       </div>
     </div>
 
     <!-- Address List/Notes -->
-    <div *ngIf="selectedNameDeliveries?.length" class="my-5">
+    <div *ngIf="selectedNameDeliveries.length" class="my-5">
       <app-base-accordion>
-        <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && data.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
+        <app-base-accordion-item [expanded]="selectedNameDeliveries ? !(selectedNameDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedNameDeliveries ? selectedNameDeliveries.length : 0) + ' Previous Addresses for Name'">
           <div *ngFor="let delivery of selectedNameDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.address">
               Unknown Address ({{delivery.visits}})
@@ -148,7 +154,7 @@
 
     <!-- Destination Address -->
     <div>
-      <div class="flex flex-col gap-1" [ngClass]="(selectedAddressDeliveries?.length || 0) > 0 ? 'mb-1' : 'mb-3'">
+      <div class="flex flex-col gap-1" [ngClass]="selectedAddressDeliveries.length > 0 ? 'mb-1' : 'mb-3'">
         <app-search-input 
           class="w-full"
           fieldName="Destination Address" 
@@ -156,14 +162,15 @@
           formControlName="endAddress"
           googleSearch="address"
           (valueChanged)="showAddressNames()"
+          [enableBottomPadding]="isInEditMode"
         ></app-search-input>
       </div>
     </div>
 
     <!-- Name List/Notes -->
-    <div *ngIf="selectedAddressDeliveries?.length" class="my-5">
+    <div *ngIf="selectedAddressDeliveries.length" class="my-5">
       <app-base-accordion>
-        <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && data.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
+        <app-base-accordion-item [expanded]="selectedAddressDeliveries ? !(selectedAddressDeliveries.length > 5 && !!data?.id) : false" [title]="(selectedAddressDeliveries ? selectedAddressDeliveries.length : 0) + ' Previous Names for Destination'">
           <div *ngFor="let delivery of selectedAddressDeliveries" class="flex flex-col gap-1">
             <div class="text-secondary font-medium" *ngIf="!delivery.name">
               Unknown Name ({{delivery.visits}})
@@ -176,7 +183,7 @@
     </div>
 
     <!-- Time Inputs -->
-    <div *ngIf="data?.id">
+    <div *ngIf="!!data?.id">
       <div class="flex gap-1 mb-3">
         <app-time-input 
           label="Pickup Time"
@@ -218,9 +225,9 @@
   <div class="flex flex-col gap-4 mt-6">
     <div class="flex w-full items-center justify-between gap-4">
       <app-base-rect-button *ngIf="!data?.id" variant="danger" [icon]="'refresh'" (clicked)="formReset()" [label]="'Reset'"></app-base-rect-button>
-      <app-base-rect-button *ngIf="data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="!!data?.id" variant="secondary" [icon]="'cancel'" (clicked)="close()" [label]="'Cancel'"></app-base-rect-button>
       <app-base-rect-button *ngIf="!data?.id" variant="primary" [icon]="'add'" (clicked)="addTrip()" [disabled]="tripForm.invalid" [label]="'Store'"></app-base-rect-button>
-      <app-base-rect-button *ngIf="data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid" [label]="'Update'"></app-base-rect-button>
+      <app-base-rect-button *ngIf="!!data?.id" variant="primary" [icon]="'save'" (clicked)="editTrip()" [disabled]="tripForm.invalid" [label]="'Update'"></app-base-rect-button>
     </div>
   </div>
 </div>

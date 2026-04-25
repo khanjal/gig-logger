@@ -1,17 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
-import { IMockLocation, IPresetLocation } from '@interfaces/mock-location.interface';
+import type { IMockLocation, IPresetLocation } from '@interfaces/mock-location.interface';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
-
-/**
- * @deprecated Use IMockLocation from @interfaces/mock-location.interface instead
- */
-export type MockLocation = IMockLocation;
-
-/**
- * @deprecated Use IPresetLocation from @interfaces/mock-location.interface instead
- */
-export type PresetLocation = IPresetLocation;
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +12,7 @@ export class MockLocationService {
   private readonly DEFAULT_RADIUS = 25; // miles
   
   // Preset locations for quick testing
-  readonly presetLocations: PresetLocation[] = [
+  readonly presetLocations: IPresetLocation[] = [
     { name: 'New York, NY', latitude: 40.7128, longitude: -74.0060, country: 'US' },
     { name: 'Los Angeles, CA', latitude: 34.0522, longitude: -118.2437, country: 'US' },
     { name: 'Chicago, IL', latitude: 41.8781, longitude: -87.6298, country: 'US' },
@@ -58,7 +48,7 @@ export class MockLocationService {
   /**
    * Get current mock location settings
    */
-  getMockLocation(): MockLocation {
+  getMockLocation(): IMockLocation {
     // Prefer new RG-prefixed key, but migrate legacy key if present
     let stored = localStorage.getItem(this.STORAGE_KEY);
     if (!stored) {
@@ -96,7 +86,7 @@ export class MockLocationService {
   /**
    * Save mock location settings
    */
-  saveMockLocation(mockLocation: MockLocation): void {
+  saveMockLocation(mockLocation: IMockLocation): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(mockLocation));
       this.logger.info('Mock location saved', mockLocation);
@@ -198,7 +188,7 @@ export class MockLocationService {
    * Reset to default settings
    */
   reset(): void {
-    const defaultSettings: MockLocation = {
+    const defaultSettings: IMockLocation = {
       enabled: false,
       latitude: 40.7128,
       longitude: -74.0060,
