@@ -10,6 +10,7 @@ import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { Subject } from 'rxjs';
 import { DataSyncModalComponent } from './data-sync-modal.component';
 
+
 describe('DataSyncModalComponent', () => {
   let component: DataSyncModalComponent;
   let fixture: ComponentFixture<DataSyncModalComponent>;
