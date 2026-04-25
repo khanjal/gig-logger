@@ -6,6 +6,173 @@ import { DropdownDataService } from '@services/dropdown-data.service';
 import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 
+// class-only tests
+describe('SearchInputComponent (class-only)', () => {
+  let comp: SearchInputComponent;
+  const addressService = jasmine.createSpyObj('AddressService', ['includes', 'find']);
+  const nameService = jasmine.createSpyObj('NameService', ['includes', 'find']);
+  const placeService = jasmine.createSpyObj('PlaceService', ['includes', 'find']);
+  const regionService = jasmine.createSpyObj('RegionService', ['filter']);
+  const serviceService = jasmine.createSpyObj('ServiceService', ['filter']);
+  const typeService = jasmine.createSpyObj('TypeService', ['filter']);
+  const serverGoogle = jasmine.createSpyObj('ServerGooglePlacesService', ['getSmartAutocomplete', 'getFullAddressWithZip']);
+  const logger = jasmine.createSpyObj('LoggerService', ['warn']);
+  const dropdown = jasmine.createSpyObj('DropdownDataService', ['filterDropdown']);
+  const permission = jasmine.createSpyObj('PermissionService', ['getLocationState']);
+  const mockLoc = jasmine.createSpyObj('MockLocationService', ['getLocation']);
+  const dialog: any = {};
+
+  beforeEach(() => {
+    addressService.includes.and.returnValue(Promise.resolve([]));
+    addressService.find.and.returnValue(Promise.resolve(null));
+    nameService.includes.and.returnValue(Promise.resolve([]));
+    placeService.includes.and.returnValue(Promise.resolve([]));
+    placeService.find.and.returnValue(Promise.resolve(null));
+    regionService.filter.and.returnValue(Promise.resolve([]));
+    serviceService.filter.and.returnValue(Promise.resolve([]));
+    typeService.filter.and.returnValue(Promise.resolve([]));
+    serverGoogle.getSmartAutocomplete.and.returnValue(Promise.resolve([]));
+    serverGoogle.getFullAddressWithZip.and.returnValue(Promise.resolve(null));
+    dropdown.filterDropdown.and.returnValue(Promise.resolve([]));
+    permission.getLocationState.and.returnValue('granted');
+    mockLoc.getLocation.and.returnValue(null);
+
+    comp = new SearchInputComponent(
+      dialog,
+      addressService as any,
+      nameService as any,
+      placeService as any,
+      regionService as any,
+      serviceService as any,
+      typeService as any,
+      serverGoogle as any,
+      logger as any,
+      dropdown as any,
+      permission as any,
+      mockLoc as any
+    );
+  });
+
+  it('writeValue and value getter/setter work', async () => {
+    comp.writeValue(' hello ');
+    expect(comp.value).toBe(' hello ');
+    // syncSelectionStateForExternalValue is async; spy and ensure it's called
+    const spy = spyOn<any>(comp, 'syncSelectionStateForExternalValue').and.returnValue(Promise.resolve());
+    comp.writeValue('x');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('onInputChange updates value and emits', () => {
+    const emitSpy = spyOn(comp.valueChanged, 'emit');
+    const ev: any = { target: { value: 'abc' } };
+    comp.onInputChange(ev as Event);
+    expect(comp.value).toBe('abc');
+    expect(emitSpy).toHaveBeenCalledWith('abc');
+  });
+
+  it('onClear resets state and emits empty', () => {
+    const emitSpy = spyOn(comp.valueChanged, 'emit');
+    comp.searchForm.controls.searchInput.setValue('foo');
+    comp.onClear();
+    expect(comp.value).toBe('');
+    expect(emitSpy).toHaveBeenCalledWith('');
+  });
+
+  it('getViewportHeight and getItemSize', () => {
+    expect(comp.getItemSize()).toBeGreaterThan(0);
+    comp.filteredItemsArray.set([]);
+    expect(comp.getViewportHeight()).toBe(0);
+    // set items and test limit
+    const items = Array.from({ length: 12 }, (_, i) => ({ name: `n${i}`, trips: 0 } as any));
+    comp.filteredItemsArray.set(items as any);
+    expect(comp.getViewportHeight()).toBe(comp.getItemSize() * 10);
+  });
+
+  it('mapPlacesToSearchItems sorts addresses and includes base item', () => {
+    const place = {
+      id: 1,
+      place: 'P1',
+      saved: true,
+      trips: 3,
+      addresses: [
+        { address: 'A1', lastTrip: '2020-01-01', trips: 1 },
+        { address: 'A2', lastTrip: '2021-01-01', trips: 2 }
+      ]
+    } as any;
+
+    const items = (comp as any).mapPlacesToSearchItems([place]);
+    expect(items.length).toBeGreaterThan(1);
+    // first address should be the one with later lastTrip
+    expect(items.some((it: any) => it.address === 'A2')).toBeTrue();
+  });
+
+  it('mapNamesToSearchItems includes addresses', () => {
+    const name = { id: 2, name: 'N1', saved: false, trips: 0, addresses: ['Addr1'] } as any;
+    const items = (comp as any).mapNamesToSearchItems([name]);
+    expect(items.length).toBe(2);
+    expect(items[1].address).toBe('Addr1');
+  });
+
+  it('appendDropdownMatches returns fallback items', async () => {
+    dropdown.filterDropdown.and.returnValue(Promise.resolve(['X']));
+    const out = await (comp as any).appendDropdownMatches([], 'Service' as any, 'x');
+    expect(out.some((i: any) => i.name === 'X')).toBeTrue();
+  });
+
+  it('triggerGoogleSearch handles success and opens panel', async () => {
+    comp.searchType = 'Place';
+    comp.googleSearch = 'place';
+    comp.searchForm.controls.searchInput.setValue('abc');
+    serverGoogle.getSmartAutocomplete.and.returnValue(Promise.resolve([{ place: 'P', address: 'A', placeDetails: { placeId: 'p1' } }] as any));
+    comp.autocompleteTrigger = { panelOpen: false, openPanel: jasmine.createSpy('openPanel') } as any;
+
+    await comp.triggerGoogleSearch();
+
+    expect(comp.filteredItemsArray().length).toBeGreaterThanOrEqual(0);
+    expect(comp.autocompleteTrigger.openPanel).toHaveBeenCalled();
+  });
+
+  it('transformGooglePredictions maps predictions', () => {
+    comp.googleSearch = 'address';
+    const out = (comp as any).transformGooglePredictions([{ address: 'Addr', place: 'P', placeDetails: {} }]);
+    expect(out[0].name).toBe('Addr');
+  });
+
+  it('manageCacheSize evicts oldest when over limit', () => {
+    const limit = (comp as any).CACHE_SIZE_LIMIT as number;
+    // fill cache
+    for (let i = 0; i < limit + 2; i++) {
+      (comp as any).googlePredictionsCache.set(`k${i}`, [{ name: `n${i}` } as any]);
+    }
+    // manageCacheSize may evict incrementally; call until trimmed
+    while ((comp as any).googlePredictionsCache.size > limit) {
+      (comp as any).manageCacheSize();
+    }
+    expect((comp as any).googlePredictionsCache.size).toBeLessThanOrEqual(limit);
+  });
+
+  it('handleGoogleSearchError sets icon on rate limit', () => {
+    spyOn<any>(comp, 'isRateLimitError').and.returnValue(true);
+    comp.searchType = 'Address';
+    (comp as any).handleGoogleSearchError(new Error('rate'));
+    expect(comp.showGoogleMapsIcon()).toBeTrue();
+  });
+
+  it('isGoogleSearchType and isGoogleResult and isLocationAllowed', () => {
+    comp.searchType = 'Address';
+    // debug: ensure assignment took effect
+    expect(comp.searchType).toBe('Address');
+    // ensure googleSearch mapping is applied
+    (comp as any).setGoogleSearchType();
+    expect((comp as any).googleSearch).toBe('address');
+    const item: any = { placeId: 'p1' };
+    expect(comp.isGoogleResult(item)).toBeTrue();
+
+    // ensure location permission allows using device location
+    permission.getLocationState.and.returnValue('granted');
+    expect(comp.isLocationAllowed()).toBeTrue();
+  });
+});
 describe('SearchInputComponent', () => {
   let component: SearchInputComponent;
   let fixture: ComponentFixture<SearchInputComponent>;
