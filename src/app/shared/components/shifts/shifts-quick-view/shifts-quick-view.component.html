@@ -60,12 +60,12 @@
       </div>
     </div>
     <!-- Second line: Date + Time Range + Duration -->
-    <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2">
+    <div class="flex items-center justify-between mt-1 text-xs text-primary w-full gap-2 relative">
       <span class="flex items-center gap-1 flex-shrink-0">
         <mat-icon class="text-info text-base">event</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.date) { {{ shift.date | date:dateFormats.SHORT_DATE_WITH_YEAR }} }</span>
       </span>
-      <span class="flex items-center gap-1 flex-shrink-0">
+      <span class="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 whitespace-nowrap">
         <mat-icon class="text-info text-base">schedule</mat-icon>
         <span class="font-medium whitespace-nowrap">@if (shift.start) { {{ shift.start | noseconds:prefers24Hour }}@if (shift.finish) { - {{ shift.finish | noseconds:prefers24Hour }} } }</span>
       </span>

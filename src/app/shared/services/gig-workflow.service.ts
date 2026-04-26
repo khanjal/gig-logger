@@ -7,6 +7,7 @@ import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
 import { DataLinkingService } from "./data/data-linking.service";
 import { GigCalculatorService } from "./calculations/gig-calculator.service";
+import { ChangeNotificationService } from '@services/change-notification.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,8 +18,16 @@ export class GigWorkflowService {
         private _apiService: ApiService,
         private _dataLoader: DataLoaderService,
         private _dataLinking: DataLinkingService,
-        private _calculator: GigCalculatorService
-    ) {}
+        private _calculator: GigCalculatorService,
+        private _changeNotifier: ChangeNotificationService
+    ) {
+        // Subscribe to change notifications and trigger recalculation for affected shift keys
+        this._changeNotifier.tripKeys$.subscribe(keys => {
+            for (const k of keys) {
+                void this.calculateShiftTotalsByKey(k);
+            }
+        });
+    }
 
     // Auth Methods - Delegate to API Service
     public async setRefreshToken(authToken: string) {
