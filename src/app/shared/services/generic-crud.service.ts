@@ -92,12 +92,12 @@ export class GenericCrudService<T> implements ICrudService<T> {
 
     /**
      * Find potential duplicates for a given string field.
-     * Supports case-insensitive equality and substring matching with optional normalization.
+     * Supports case-insensitive equality, substring matching, and separator-normalized matching.
      */
     public async findDuplicates<K extends keyof T>(
         field: K,
         options?: {
-            mode?: 'equals' | 'contains';
+            mode?: 'equals' | 'contains' | 'normalized';
             caseInsensitive?: boolean;
             normalize?: boolean; // trim + collapse whitespace
             minLength?: number; // minimum length to consider when using contains
@@ -122,7 +122,20 @@ export class GenericCrudService<T> implements ICrudService<T> {
 
         const toKey = (s: string): string => (keyNormalizer ? keyNormalizer(s) : s);
 
-        if (mode === 'equals') {
+        if (mode === 'normalized') {
+            const normalizeSeparators = (s: string) => s.toLowerCase().replace(/[-\s]+/g, '');
+            const map = new Map<string, T[]>();
+            for (const item of items) {
+                const raw = normalizeValue(item[field]);
+                const key = normalizeSeparators(raw);
+                const group = map.get(key) || [];
+                group.push(item);
+                map.set(key, group);
+            }
+            return Array.from(map.entries())
+                .filter(([, group]) => group.length > 1)
+                .map(([key, group]) => ({ key, items: group }));
+        } else if (mode === 'equals') {
             const map = new Map<string, T[]>();
             for (const item of items) {
                 const raw = normalizeValue(item[field]);

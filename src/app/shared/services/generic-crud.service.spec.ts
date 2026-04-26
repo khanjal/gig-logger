@@ -150,4 +150,18 @@ describe('GenericCrudService', () => {
     const duplicates = await service.findDuplicates('name', { mode: 'contains', minLength: 3 });
     expect(duplicates.some(d => d.items.length > 1)).toBeTrue();
   });
+
+  it('finds duplicates in normalized mode ignoring hyphens and spaces', async () => {
+    table = new FakeTable<TestEntity>([
+      { id: 1, rowId: 1, name: 'Pickup' },
+      { id: 2, rowId: 2, name: 'Pick-up' },
+      { id: 3, rowId: 3, name: 'pick up' },
+      { id: 4, rowId: 4, name: 'Deals Pickup' },
+    ]);
+    service = new GenericCrudService<TestEntity>(table as any);
+    const duplicates = await service.findDuplicates('name', { mode: 'normalized' });
+    expect(duplicates.length).toBe(1);
+    expect(duplicates[0].items.length).toBe(3);
+    expect(duplicates[0].items.every(i => i.name !== 'Deals Pickup')).toBeTrue();
+  });
 });
