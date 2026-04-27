@@ -6,7 +6,6 @@ import { DateHelper } from '@helpers/date.helper';
 import { TripHelper } from '@helpers/trip.helper';
 import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
-import { ChangeNotificationService } from '@services/change-notification.service';
 import { SyncableCrudService } from '@services/syncable-crud.service';
 import { updateAction } from '@utils/action.utils';
 
@@ -14,7 +13,7 @@ import { updateAction } from '@utils/action.utils';
     providedIn: 'root'
   })
 export class TripService extends SyncableCrudService<ITrip> {
-        constructor(private _changeNotifier: ChangeNotificationService) {
+        constructor() {
             super(spreadsheetDB.trips); // Pass the table reference
         }
 
@@ -165,17 +164,5 @@ export class TripService extends SyncableCrudService<ITrip> {
         return trips;
     }
 
-    // Override update to notify consumers about affected trip keys
-    public override async update(items: ITrip[]): Promise<void> {
-        await super.update(items);
-        try {
-            const keys = Array.from(new Set(items.map((t: any) => t?.key).filter((k: any) => !!k)));
-            if (keys.length) {
-                this._changeNotifier.notifyTripKeys(keys as string[]);
-            }
-        } catch (e) {
-            // swallow notification errors so DB update isn't impacted
-            // (logging can be added if desired)
-        }
-    }
+    
 }
