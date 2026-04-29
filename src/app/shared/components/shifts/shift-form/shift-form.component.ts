@@ -291,7 +291,9 @@ export class ShiftFormComponent implements OnInit, OnChanges {
         this.shift.time = formValue.time || '';
         this.shift.trips = NumberHelper.toNullableNumber(formValue.trips);
         this.shift.totalActive = '';
-        this.shift.totalTime = '';
+        this.shift.totalTime = (!formValue.omit && formValue.start && formValue.finish)
+          ? DateHelper.getDurationString(DateHelper.getDurationSeconds(formValue.start, formValue.finish))
+          : '';
         this.shift.note = formValue.note || '';
         this.shift.action = ActionEnum.Update;
         this.shift.actionTime = Date.now();

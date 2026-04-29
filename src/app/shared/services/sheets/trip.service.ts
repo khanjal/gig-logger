@@ -14,7 +14,7 @@ import { updateAction } from '@utils/action.utils';
   })
 export class TripService extends SyncableCrudService<ITrip> {
     constructor() {
-      super(spreadsheetDB.trips); // Pass the table reference
+        super(spreadsheetDB.trips); // Pass the table reference
     }
 
     trips$ = from(liveQuery(() => spreadsheetDB.trips.toArray()));

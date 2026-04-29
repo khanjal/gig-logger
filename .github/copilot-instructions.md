@@ -1,5 +1,22 @@
 # Raptor Gig - AI Development Guide
 
+## AI Prompt Efficiency & Token Budgeting
+
+To reduce token usage and keep Copilot prompts efficient, follow these concise rules:
+
+- Keep prompts focused: include only necessary context (1–3 short paragraphs).
+- Use file links and line references instead of pasting whole files.
+- Start with a 1–2 line TL;DR of the goal and 2–4 required outputs.
+- Ask one clarifying question if intent is ambiguous before large edits.
+- Request compact, structured outputs (JSON, diffs, or patches) when machine-parsable results are acceptable.
+- Set response length expectations (e.g., “Respond <= 200 tokens” or “Brief summary + patch”).
+- For large updates use chunking: provide a short summary and ask for section-by-section changes.
+- Cache and reuse short summaries of large files rather than resending full contents.
+- Prefer actionable edits (apply_patch-style diffs) over long prose explanations.
+- Use concise tone by default and avoid repeating unchanged documentation.
+
+Tooling note: When integrating with LLM APIs, set an appropriate `max_tokens` budget and prefer incremental interactions (clarify → patch → verify).
+
 ## Project Overview
 Raptor Gig is a mobile-first Angular PWA for gig workers to track trips, shifts, earnings, and expenses. Backend uses AWS Amplify with C# Lambda functions for Google Sheets integration and authentication.
 

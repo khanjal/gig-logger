@@ -216,10 +216,9 @@ export class DiagnosticsComponent implements OnInit {
       groups: duplicateServicesResult.groups
     });
 
-    // Duplicate types via shared utility (case-insensitive equals + contains)
-    const typeEqualsGroups = await this._typeService.findDuplicates('type', { mode: 'equals', caseInsensitive: true, normalize: true });
-    const typeContainsGroups = await this._typeService.findDuplicates('type', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
-    const duplicateTypesResult = DiagnosticHelper.mergeDuplicateGroups(typeEqualsGroups, typeContainsGroups);
+    // Duplicate types via shared utility (normalized: collapses hyphens/spaces before comparing)
+    const typeEqualsGroups = await this._typeService.findDuplicates('type', { mode: 'normalized' });
+    const duplicateTypesResult = DiagnosticHelper.mergeDuplicateGroups(typeEqualsGroups, []);
     // Recompute trip counts per type
     for (const group of duplicateTypesResult.groups ?? []) {
       await DiagnosticHelper.recomputeGroupCounts('type', group, this._tripService, this._shiftService);
