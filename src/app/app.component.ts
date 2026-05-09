@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
     // Hide loading state after a shorter timeout
     setTimeout(() => {
       this.isLoading.set(false);
@@ -48,13 +48,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy(): void {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
     }
   }
 
-  onHeaderError() {
+  public onHeaderError(): void {
     this.hasError.set(true);
     this.isLoading.set(false);
   }
@@ -63,11 +63,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Exposed to tests so we can avoid spying on the non-configurable
   // `window.location.reload` in constrained environments.
-  setReloadFn(fn: () => void) {
+  public setReloadFn(fn: () => void): void {
     this._reloadWindow = fn;
   }
 
-  reload() {
+  public reload(): void {
     this._reloadWindow();
   }
 }

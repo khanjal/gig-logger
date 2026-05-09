@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, signal, computed } from '@angular/core';
 import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -424,8 +424,11 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   shouldShowUpdateMessage(): boolean {
-    return this.todaysTrips().length === 0;
+    return this.showUpdateMessage();
   }
+
+  // Cached computed used by templates to avoid repeated work
+  public readonly showUpdateMessage = computed(() => this.todaysTrips().length === 0);
 
   private async refreshDefaultSheetState(): Promise<void> {
     this.defaultSheet.set((await this._sheetService.querySpreadsheets("default", "true"))[0]);
