@@ -1,6 +1,13 @@
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
+// Test harness migrated toward zoneless testing. Runtime zone.js imports
+// are intentionally omitted. Test-time zone helpers previously imported
+// here (zone.js, zone.js/testing) are removed as part of GH #461.
+import { provideZonelessChangeDetection } from '@angular/core';
+// Provide Zone runtime for the testing helpers that expect global `Zone`.
 import 'zone.js';
+// Keep `zone.js/testing` for now to support legacy helpers like `fakeAsync()`
+// until tests are migrated away from zone-dependent utilities (see GH #461).
 import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
 import {
@@ -66,6 +73,7 @@ getTestBed().configureTestingModule({
     MatDatepickerModule
   ],
   providers: [
+    provideZonelessChangeDetection(),
     provideNativeDateAdapter(),
     { provide: MAT_DIALOG_DATA, useValue: {} },
     { provide: MatDialogRef, useValue: { close: () => {} } },
