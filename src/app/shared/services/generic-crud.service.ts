@@ -1,5 +1,5 @@
-import { ICrudService } from "@interfaces/crud-service.interface";
-import { Table } from "dexie";
+import type { ICrudService } from "@interfaces/crud-service.interface";
+import type { Table } from "dexie";
 
 export class GenericCrudService<T> implements ICrudService<T> {
   constructor(private table: Table<T, number>) {}

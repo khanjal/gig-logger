@@ -81,7 +81,7 @@
           
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             <div 
-              *ngFor="let category of getCategoriesArray()"
+              *ngFor="let category of getCategoriesArray(); trackBy: trackByCategory"
               class="flex items-center p-2 rounded border transition-colors cursor-pointer bg-[var(--color-surface)] dark:bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] dark:hover:bg-[var(--color-surface-tertiary)] border-[var(--color-border-light)] dark:border-[var(--color-border)]"
               [ngClass]="{ 'border-primary': isCategoryEnabled(category) }"
               (click)="toggleCategory(category)">
@@ -176,7 +176,7 @@
 
   <!-- Search Results - Grouped by Month -->
   <div class="max-w-7xl mx-auto px-4 py-4 content-spacing" *ngIf="!isSearching() && groupedResults().length > 0">
-    <div *ngFor="let group of groupedResults()" class="mb-6">
+    <div *ngFor="let group of groupedResults(); trackBy: trackByGroup" class="mb-6">
       <!-- Month Group Header -->
       <div class="card card-hover" (click)="toggleGroup(group.month)">
         <div class="p-4">
@@ -219,7 +219,7 @@
 
       <!-- Results within this month -->
       <div class="mt-2 space-y-2" *ngIf="isGroupExpanded(group.month)">
-        <div *ngFor="let result of group.results" class="card">
+      <div *ngFor="let result of group.results; trackBy: trackByResult" class="card">
           <!-- Result Header -->
           <div 
             class="p-4 card-hover border-l-4"
@@ -269,7 +269,7 @@
             <div class="p-2">
               <div class="space-y-2">
                 <trips-quick-view 
-                  *ngFor="let trip of result.trips; let i = index" 
+                  *ngFor="let trip of result.trips; let i = index; trackBy: trackByTrip" 
                   [trip]="trip"
                   [stripeEven]="i % 2 === 0"
                   [showActions]="false"

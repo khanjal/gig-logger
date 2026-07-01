@@ -448,6 +448,25 @@ export class SearchComponent implements OnInit, OnDestroy {
     return metricMap.get(this.getResultKey(result, monthKey)) || '-';
   }
 
+  /*
+   * TrackBy helpers to improve ngFor rendering performance
+   */
+  trackByCategory(index: number, category: SearchCategory): string {
+    return String(category);
+  }
+
+  trackByGroup(index: number, group: ISearchResultGroup): string {
+    return group?.month || String(index);
+  }
+
+  trackByResult(index: number, result: ISearchResult): string {
+    return `${result.type}|${result.value}`;
+  }
+
+  trackByTrip(index: number, trip: any): number | string {
+    return typeof trip?.id === 'number' ? trip.id : index;
+  }
+
   isResultSameAsGroupByKey(result: ISearchResult, group: ISearchResultGroup): boolean {
     return this.resultSameAsGroupMap().get(this.getResultKey(result, group.month)) || false;
   }
