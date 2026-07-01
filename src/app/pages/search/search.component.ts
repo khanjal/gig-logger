@@ -67,6 +67,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   isSearching = this.searchState.isLoading;
   hasSearched = this.searchState.hasCompleted;
   showFilters = signal(false);
+  /** Collapse state for the entire search form (keeps summary visible) */
+  isSearchCollapsed = signal(false);
   exactMatch = signal(false);
   caseSensitive = signal(false);
 
@@ -205,6 +207,18 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   toggleFilters(): void {
     this.showFilters.update(show => !show);
+  }
+
+  /**
+   * Toggle the collapsed state of the search form. When collapsed the input
+   * and filter sections are hidden but the bottom summary remains visible.
+   */
+  toggleSearchCollapsed(): void {
+    this.isSearchCollapsed.update(v => !v);
+    // When collapsing, also hide the filters to keep UI tidy
+    if (this.isSearchCollapsed()) {
+      this.showFilters.set(false);
+    }
   }
 
   /**

@@ -15,7 +15,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "serve:ssl": "ng serve --host gig-local.raptorsheets.com --ssl",
+    "serve:ssl": "ng serve --host gig-local.raptorsheets.com --ssl --proxy-config src/proxy.empty.json",
     "build": "ng build",
     "build:dev": "ng build --configuration development",
     "build:stage": "ng build --configuration staging",
