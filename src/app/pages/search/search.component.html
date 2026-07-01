@@ -66,18 +66,18 @@
             <h3 class="text-sm font-semibold text-primary">Filter</h3>
             <div class="flex gap-2">
               <app-base-rect-button
-                color="primary"
                 (clicked)="selectAllCategories()"
-                class="text-xs font-semibold px-3 py-1 rounded-md bg-surface text-primary hover:bg-surface-2 all-btn">
-                <mat-icon class="text-sm">check_box</mat-icon>
-                &nbsp;All
+                [noBackground]="true"
+                class="text-xs font-semibold all-btn px-1">
+                <mat-icon class="text-sm text-primary">check_box</mat-icon>
+                <span class="ml-1">All</span>
               </app-base-rect-button>
               <app-base-rect-button
-                color="primary"
                 (clicked)="deselectAllCategories()"
-                class="text-xs font-semibold px-3 py-1 rounded-md bg-surface-2 dark:bg-surface-3 text-secondary dark:text-secondary hover:bg-surface-2 dark:hover:bg-surface-2 none-btn">
-                <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
-                &nbsp;None
+                [noBackground]="true"
+                class="text-xs font-semibold none-btn px-1 text-secondary">
+                <mat-icon class="text-sm text-secondary">check_box_outline_blank</mat-icon>
+                <span class="ml-1">None</span>
               </app-base-rect-button>
             </div>
           </div>
