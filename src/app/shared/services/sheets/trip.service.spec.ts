@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { TripService } from './trip.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { DateHelper } from '@helpers/date.helper';
 

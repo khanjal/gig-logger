@@ -1,5 +1,5 @@
 import { liveQuery } from 'dexie';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { localDB } from '@data/local.db';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,7 +7,7 @@ import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
-import { ISheet } from '@interfaces/sheet.interface';
+import type { ISheet } from '@interfaces/sheet.interface';
 import { Injectable } from '@angular/core';
 
 @Injectable({
