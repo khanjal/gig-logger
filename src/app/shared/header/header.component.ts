@@ -15,8 +15,6 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { NgIf } from '@angular/common';
 import { interval, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { ShiftService } from '@services/sheets/shift.service';
-import { TripService } from '@services/sheets/trip.service';
 import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indicator/sync-status-indicator.component';
 
 @Component({
