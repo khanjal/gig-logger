@@ -52,6 +52,14 @@ export class PendingChangesComponent implements OnInit {
     });
   }
 
+  trackByShift(index: number, s: any): any {
+    return s?.rowId ?? s?.key ?? index;
+  }
+
+  trackByTrip(index: number, t: any): any {
+    return t?.rowId ?? t?.key ?? index;
+  }
+
   async ngOnInit(): Promise<void> {
     await this.load();
   }

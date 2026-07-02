@@ -1,3 +1,22 @@
+describe('ShiftsComponent trackByShift', () => {
+  it('returns rowId when present', () => {
+    const s = { rowId: 10 } as any;
+    const res = (ShiftsComponent.prototype as any).trackByShift.call(null, 0, s);
+    expect(res).toBe(10);
+  });
+
+  it('returns key when rowId absent', () => {
+    const s = { key: 'k' } as any;
+    const res = (ShiftsComponent.prototype as any).trackByShift.call(null, 2, s);
+    expect(res).toBe('k');
+  });
+
+  it('falls back to index', () => {
+    const s = {} as any;
+    const res = (ShiftsComponent.prototype as any).trackByShift.call(null, 5, s);
+    expect(res).toBe(5);
+  });
+});
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { ShiftsComponent } from './shifts.component';

@@ -65,6 +65,10 @@ export class ShiftsComponent implements OnInit {
     protected authService: AuthGoogleService
   ) { }
 
+  trackByShift(index: number, shift: IShift): any {
+    return shift?.rowId ?? shift?.key ?? index;
+  }
+
   async ngOnInit(): Promise<void> {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       this.editId.set(params.get('id'));

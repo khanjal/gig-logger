@@ -64,7 +64,7 @@
 
   <!-- Diagnostic Items as Expansion Panels -->
   <mat-accordion class="diagnostics-accordion" *ngIf="!isLoading() && getTotalIssues() > 0">
-    <mat-expansion-panel *ngFor="let item of dataDiagnostics()" [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
+    <mat-expansion-panel *ngFor="let item of dataDiagnostics(); trackBy: trackByDiagnostic" [disabled]="item.count === 0" [class.opacity-50]="item.count === 0">
       <mat-expansion-panel-header>
         <mat-panel-title>
           <mat-icon [class.text-error]="item.severity === 'error'"
@@ -154,7 +154,7 @@
           </div>
 
           <app-diagnostic-group
-            *ngFor="let group of item.groups; let groupIndex = index"
+            *ngFor="let group of item.groups; let groupIndex = index; trackBy: trackByGroup"
             [group]="group"
             [groupIndex]="groupIndex"
             [itemType]="item.itemType!"
@@ -168,7 +168,7 @@
 
         <div *ngIf="!item.groups || item.groups.length === 0" class="space-y-2">
           <div
-            *ngFor="let problemItem of item.items"
+            *ngFor="let problemItem of item.items; trackBy: trackByProblemItem"
             class="bg-surface-2 rounded-lg border border-soft p-3 hover:bg-surface-3 transition-colors"
             [class.opacity-50]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed"
             [class.bg-success-soft]="(problemItem.trips === 0 && (item.itemType === 'place' || item.itemType === 'name' || item.itemType === 'address')) || problemItem.fixed"

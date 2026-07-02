@@ -1,6 +1,20 @@
+import { TripsTableBasicComponent } from './trips-table-basic.component';
+
+describe('TripsTableBasicComponent trackByTrip', () => {
+  it('returns id when present', () => {
+    const trip = { id: 5 } as any;
+    const res = (TripsTableBasicComponent.prototype as any).trackByTrip.call(null, 0, trip);
+    expect(res).toBe(5);
+  });
+
+  it('falls back to index', () => {
+    const trip = {} as any;
+    const res = (TripsTableBasicComponent.prototype as any).trackByTrip.call(null, 8, trip);
+    expect(res).toBe(8);
+  });
+});
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TripsTableBasicComponent } from './trips-table-basic.component';
 import { DateHelper } from '@helpers/date.helper';
 import { ITrip } from '@interfaces/trip.interface';
 

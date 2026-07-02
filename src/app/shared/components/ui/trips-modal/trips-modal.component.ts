@@ -34,4 +34,8 @@ export class TripsModalComponent {
     // Close the dialog when edit is clicked
     this.dialogRef.close();
   }
+
+  trackByTrip(index: number, trip: ITrip): any {
+    return trip?.rowId ?? trip?.id ?? index;
+  }
 }

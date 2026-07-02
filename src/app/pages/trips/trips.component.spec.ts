@@ -1,3 +1,22 @@
+describe('TripComponent trackByTrip', () => {
+  it('returns rowId when present', () => {
+    const trip = { rowId: 123 } as any;
+    const res = (TripComponent.prototype as any).trackByTrip.call(null, 0, trip);
+    expect(res).toBe(123);
+  });
+
+  it('returns key when rowId absent', () => {
+    const trip = { key: 'abc' } as any;
+    const res = (TripComponent.prototype as any).trackByTrip.call(null, 1, trip);
+    expect(res).toBe('abc');
+  });
+
+  it('falls back to index', () => {
+    const trip = {} as any;
+    const res = (TripComponent.prototype as any).trackByTrip.call(null, 7, trip);
+    expect(res).toBe(7);
+  });
+});
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { TripComponent } from './trips.component';

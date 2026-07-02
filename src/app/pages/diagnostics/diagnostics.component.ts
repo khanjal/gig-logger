@@ -66,6 +66,20 @@ export class DiagnosticsComponent implements OnInit {
     private _uiPreferences: UiPreferencesService
   ) { }
 
+  trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
+    return item.name ?? index;
+  }
+
+  trackByGroup(index: number, group: any[]): string {
+    // Groups are arrays of items; use a stable composite key if available
+    return `${index}-${group.length}`;
+  }
+
+  trackByProblemItem(index: number, item: any): any {
+    // Prefer rowId, id, key, or fallback to index
+    return item?.rowId ?? item?.id ?? item?.key ?? index;
+  }
+
   ngOnInit() {
     // Automatically run diagnostics on page load
     this.runDiagnostics();

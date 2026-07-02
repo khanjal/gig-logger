@@ -77,6 +77,9 @@ export class TripComponent implements OnInit, OnDestroy {
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
 
+  trackByTrip(index: number, trip: any): any {
+    return trip?.rowId ?? trip?.key ?? index;
+  }
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,

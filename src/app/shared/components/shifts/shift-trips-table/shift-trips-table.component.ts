@@ -40,6 +40,10 @@ export class ShiftTripsTableComponent implements OnInit, OnChanges {
     private _logger: LoggerService
   ) {}
 
+  trackByTrip(index: number, t: ITrip): any {
+    return t?.id ?? t?.rowId ?? index;
+  }
+
   ngOnInit(): void {
     this.prefers24Hour = DateHelper.prefers24Hour();
     this.displayedColumns = ['place', 'total', 'name', 'pickup', 'dropoff', 'address'];
