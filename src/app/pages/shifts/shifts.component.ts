@@ -10,7 +10,7 @@ import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sy
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
 import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';

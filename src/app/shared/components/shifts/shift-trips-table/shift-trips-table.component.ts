@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges, OnInit, signal, SimpleChanges } from '@angular/core';
 import { CommonModule, NgIf, NgClass, CurrencyPipe } from '@angular/common';
-import { ITrip } from '@interfaces/trip.interface';
 import { TripService } from '@services/sheets/trip.service';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
@@ -10,6 +9,7 @@ import { NoSecondsPipe as NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { TruncatePipe as TruncatePipe } from '@pipes/truncate.pipe';
 import { LoggerService } from '@services/logger.service';
 import { DateHelper } from '@helpers/date.helper';
+import type { ITrip } from '@interfaces/trip.interface';
 
 @Component({
   selector: 'app-shift-trips-table',

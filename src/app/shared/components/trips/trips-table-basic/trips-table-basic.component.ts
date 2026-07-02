@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ITrip } from '@interfaces/trip.interface';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf, CurrencyPipe, DatePipe } from '@angular/common';
 import { DateHelper } from '@helpers/date.helper';
+import type { ITrip } from '@interfaces/trip.interface';
+
 
 @Component({
     selector: 'app-trips-table-basic',
