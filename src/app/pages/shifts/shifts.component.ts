@@ -9,7 +9,7 @@ import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-di
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
 import type { IShift } from '@interfaces/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';

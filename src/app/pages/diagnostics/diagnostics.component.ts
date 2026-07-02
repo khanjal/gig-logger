@@ -29,9 +29,9 @@ import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 import { DiagnosticGroupComponent } from './diagnostic-group/diagnostic-group.component';
 import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.component';
 

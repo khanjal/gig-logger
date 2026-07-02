@@ -16,7 +16,7 @@ import { CurrencyPipe } from '@angular/common';
 import { SearchService } from '@services/search.service';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
-import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
+import type { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
 import type { DropdownType } from '@interfaces/dropdown-data.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';

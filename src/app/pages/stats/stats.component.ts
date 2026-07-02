@@ -5,9 +5,9 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
 import { DateHelper } from '@helpers/date.helper';
-import { IShift } from '@interfaces/shift.interface';
-import { IStatItem } from '@interfaces/stat-item.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { IStatItem } from '@interfaces/stat-item.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';

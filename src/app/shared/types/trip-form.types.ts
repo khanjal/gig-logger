@@ -1,4 +1,4 @@
-import { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 
 /**
  * Form value type for the trip form component.

@@ -6,12 +6,12 @@ import { AddressService } from '@services/sheets/address.service';
 import { RegionService } from '@services/sheets/region.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import { IService } from '@interfaces/service.interface';
-import { IType } from '@interfaces/type.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IAddress } from '@interfaces/address.interface';
-import { IRegion } from '@interfaces/region.interface';
-import { IName } from '@interfaces/name.interface';
+import type { IService } from '@interfaces/service.interface';
+import type { IType } from '@interfaces/type.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IAddress } from '@interfaces/address.interface';
+import type { IRegion } from '@interfaces/region.interface';
+import type { IName } from '@interfaces/name.interface';
 import type { DropdownType, IDropdownData } from '@interfaces/dropdown-data.interface';
 
 @Injectable({

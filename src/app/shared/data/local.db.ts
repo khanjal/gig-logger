@@ -1,6 +1,6 @@
-import { IShift } from '@interfaces/shift.interface';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 import Dexie, { Table } from 'dexie';
 
 
