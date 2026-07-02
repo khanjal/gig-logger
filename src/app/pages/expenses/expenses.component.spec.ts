@@ -7,9 +7,9 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { IExpense } from '@interfaces/expense.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { BehaviorSubject, of } from 'rxjs';
+import type { IExpense } from '@interfaces/expense.interface';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;

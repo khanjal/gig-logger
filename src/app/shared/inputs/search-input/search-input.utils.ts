@@ -1,5 +1,5 @@
-import { ISearchItem } from '@interfaces/search-item.interface';
 import { LoggerService } from '@services/logger.service';
+import type { ISearchItem } from '@interfaces/search-item.interface';
 
 // Module-level logger for utility functions (no DI available here)
 const logger = new LoggerService();

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { IStatItem } from '@interfaces/stat-item.interface';
 import { MatIcon } from '@angular/material/icon';
 import { DecimalPipe, CurrencyPipe, NgIf, NgFor, NgClass } from '@angular/common';
+import type { IStatItem } from '@interfaces/stat-item.interface';
 
 @Component({
     selector: 'app-stats-table',

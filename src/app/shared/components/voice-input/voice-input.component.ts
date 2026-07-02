@@ -4,9 +4,9 @@ import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { VoiceSuggestionService } from '@services/voice-suggestion.service';
 import { VoicePatternProcessorService } from '@services/voice-pattern-processor.service';
-import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
 
 @Component({
   selector: 'voice-input',

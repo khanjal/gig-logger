@@ -1,4 +1,4 @@
-import { ITrip } from "./trip.interface";
+import type { ITrip } from "./trip.interface";
 
 export type SearchCategory = 'Service' | 'Place' | 'Name' | 'Address' | 'Region' | 'Type' | 'All';
 

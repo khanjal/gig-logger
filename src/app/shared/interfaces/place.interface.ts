@@ -1,7 +1,7 @@
-import { IAddress } from "./address.interface";
-import { IAmount } from "./amount.interface";
-import { IType } from "./type.interface";
-import { IRowState } from "./row-state.interface";
+import type { IAddress } from "./address.interface";
+import type { IAmount } from "./amount.interface";
+import type { IType } from "./type.interface";
+import type { IRowState } from "./row-state.interface";
 
 export interface IPlace extends IAmount, IRowState {
     id?: number;
