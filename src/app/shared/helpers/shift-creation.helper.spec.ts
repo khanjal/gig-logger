@@ -1,6 +1,6 @@
 import { ShiftCreationHelper } from './shift-creation.helper';
 import { DateHelper } from '@helpers/date.helper';
-import { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/shift.interface';
 
 describe('ShiftCreationHelper', () => {
   describe('createDefaultShift', () => {

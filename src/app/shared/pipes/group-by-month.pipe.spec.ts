@@ -1,5 +1,5 @@
 import { GroupByMonthPipe } from './group-by-month.pipe';
-import { IExpense } from '@interfaces/expense.interface';
+import type { IExpense } from '@interfaces/expense.interface';
 
 describe('GroupByMonthPipe', () => {
   let pipe: GroupByMonthPipe;

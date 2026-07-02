@@ -11,11 +11,7 @@ import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { SHEET_CONSTANTS } from '@constants/sheet.constants';
 
-// Application-specific imports - Interfaces
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ISheet } from '@interfaces/sheet.interface';
-import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import { ISheetProperties } from '@interfaces/sheet-properties.interface';
+// Application-specific imports - Interfaces (type-only)
 
 // Application-specific imports - Services
 import { GigWorkflowService } from '@services/gig-workflow.service';
@@ -25,6 +21,10 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { LoggerService } from '@services/logger.service';
 import { NgFor, NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ISheet } from '@interfaces/sheet.interface';
+import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
+import type { ISheetProperties } from '@interfaces/sheet-properties.interface';
 
 // Define types for better type safety
 type SyncType = 'save' | 'load' | 'create-demo' | 'create-sheet';
