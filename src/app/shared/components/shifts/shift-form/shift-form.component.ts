@@ -1,11 +1,11 @@
 import { afterNextRender, Component, EventEmitter, inject, Injector, Input, OnChanges, OnInit, Output, runInInjectionContext, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/shift.interface';
 import { CommonModule } from '@angular/common';
 import { ShiftService } from '@services/sheets/shift.service';
 import { LoggerService } from '@services/logger.service';
 import { ActionEnum } from '@enums/action.enum';
-import { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { MatNativeDateModule } from '@angular/material/core';

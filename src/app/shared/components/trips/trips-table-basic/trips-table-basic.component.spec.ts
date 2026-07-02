@@ -16,7 +16,7 @@ describe('TripsTableBasicComponent trackByTrip', () => {
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DateHelper } from '@helpers/date.helper';
-import { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 
 describe('TripsTableBasicComponent', () => {
   let component: TripsTableBasicComponent;

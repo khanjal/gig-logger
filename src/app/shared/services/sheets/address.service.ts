@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IAddress } from '@interfaces/address.interface';
+import type { IAddress } from '@interfaces/address.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
 import { Injectable } from '@angular/core';
 

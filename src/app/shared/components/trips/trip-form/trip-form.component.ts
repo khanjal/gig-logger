@@ -12,12 +12,12 @@ import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.
 import { openSnackbar } from '@utils/snackbar.util';
 
 // Application-specific imports - Interfaces
-import { IAddress } from '@interfaces/address.interface';
-import { IDelivery } from '@interfaces/delivery.interface';
-import { IName } from '@interfaces/name.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import type { IAddress } from '@interfaces/address.interface';
+import type { IDelivery } from '@interfaces/delivery.interface';
+import type { IName } from '@interfaces/name.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
