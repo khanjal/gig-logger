@@ -1,5 +1,44 @@
 [
   {
+    "date": "2026-07-06",
+    "dateLabel": "July 6, 2026",
+    "isRollup": true,
+    "updates": [
+      {
+        "title": "Search & list performance",
+        "category": "improvement",
+        "changes": [
+          "Added trackBy functions for key lists to reduce DOM churn",
+          "Collapsible search header with summary bar for faster scanning",
+          "Improved quick-view layout and show computed duration in trip list"
+        ],
+        "pagesAffected": ["Search", "Trips", "Diagnostics"]
+      },
+      {
+        "title": "UI component updates & cleanup",
+        "category": "refactor",
+        "changes": [
+          "Added noBackground support to app-base-rect buttons",
+          "Removed legacy Calculator UI and related routes",
+          "Highlight active routes in the header navigation",
+          "Updated login view layout and header behavior"
+        ],
+        "pagesAffected": ["Header", "Login", "Trips", "Shifts"]
+      },
+      {
+        "title": "Code modernization & tests",
+        "category": "maintenance",
+        "changes": [
+          "Converted interface imports to type-only imports across the codebase",
+          "Applied type-only imports to services and components",
+          "Added unit tests and test harness improvements (e.g., search-input.utils.spec.ts)",
+          "Refreshed Angular build dependencies and updated package-lock.json"
+        ],
+        "pagesAffected": ["All Pages"]
+      }
+    ]
+  },
+  {
     "date": "2026-04-17",
     "dateLabel": "April 17, 2026",
     "updates": [
