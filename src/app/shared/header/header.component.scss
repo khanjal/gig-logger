@@ -116,3 +116,27 @@ nav button:not([mat-button]):not([mat-raised-button]):not([mat-fab]) {
   border-radius: 0.35rem;
   box-shadow: 0 2px 6px var(--shadow-medium);
 }
+
+/* Persisted active state for header icons and menu links */
+.mat-toolbar a.active,
+.mat-toolbar a.active:hover,
+.mat-toolbar a.active:focus {
+  background-color: var(--color-overlay);
+}
+
+.mat-toolbar a.active mat-icon,
+.mat-toolbar a.active:hover mat-icon {
+  color: var(--color-text-inverse);
+}
+
+/* Active state for menu items in the navigation drawer */
+nav a.active,
+nav a.active:hover,
+nav a.active:focus {
+  background: var(--color-primary-overlay-10);
+  color: var(--color-primary);
+}
+
+nav a.active mat-icon {
+  color: inherit;
+}

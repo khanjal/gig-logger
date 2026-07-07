@@ -8,7 +8,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import type { ThemePreference } from '@interfaces/theme.interface';
-import { RouterLink, RouterOutlet, NavigationEnd, Router } from '@angular/router';
+import { RouterLink, RouterOutlet, RouterLinkActive, NavigationEnd, Router } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -25,6 +25,7 @@ import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indic
     imports: [
       MatToolbar, 
       RouterLink, 
+      RouterLinkActive,
       MatIcon, 
       MatTooltip,
       RouterOutlet,
