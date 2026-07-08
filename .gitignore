@@ -81,3 +81,8 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 /amplify-backup
+ 
+# Ignore dotnet publish output for Lambda function
+/amplify/backend/function/GigRaptorService/src/GigRaptorService/publish/
+/amplify/backend/function/GigRaptorService/src/GigRaptorService/deployment-package.zip
+/amplify/backend/function/GigRaptorService/src/deployment-package.zip
