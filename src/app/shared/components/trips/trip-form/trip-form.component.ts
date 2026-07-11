@@ -618,7 +618,7 @@ export class TripFormComponent implements OnInit {
       dateLabel: DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10),
       serviceLabel: shift.service,
       numberLabel: shiftNumberSuffix,
-      subtitle: `Trips: ${shift.totalTrips || 0} | Total: $${NumberHelper.formatNumber(shift.grandTotal || 0)}`
+      subtitle: `Trips: ${shift.totalTrips || 0} | Pay: $${NumberHelper.formatNumber(shift.totalPay || 0)} | Tips: $${NumberHelper.formatNumber(shift.totalTips || 0)} | Total: $${NumberHelper.formatNumber(shift.grandTotal || 0)}`
     };
   }
 
