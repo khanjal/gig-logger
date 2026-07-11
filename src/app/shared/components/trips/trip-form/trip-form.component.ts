@@ -611,6 +611,13 @@ export class TripFormComponent implements OnInit {
 
   private toShiftSummaryOption(shift: IShift): IShiftSummaryOption {
     const shiftNumberSuffix = shift.number === 0 ? '' : ` #${shift.number}`;
+    const trips = shift.totalTrips || 0;
+    const pay = NumberHelper.formatNumber(shift.totalPay || 0);
+    const tips = NumberHelper.formatNumber(shift.totalTips || 0);
+    const total = NumberHelper.formatNumber(shift.grandTotal || 0);
+
+    // Slim subtitle for compact display
+    const slim = `${trips} trips · $${pay} + $${tips} = $${total}`;
 
     return {
       shiftKey: shift.key,
@@ -618,7 +625,7 @@ export class TripFormComponent implements OnInit {
       dateLabel: DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10),
       serviceLabel: shift.service,
       numberLabel: shiftNumberSuffix,
-      subtitle: `Trips: ${shift.totalTrips || 0} | Pay: $${NumberHelper.formatNumber(shift.totalPay || 0)} | Tips: $${NumberHelper.formatNumber(shift.totalTips || 0)} | Total: $${NumberHelper.formatNumber(shift.grandTotal || 0)}`
+      subtitle: slim
     };
   }
 
