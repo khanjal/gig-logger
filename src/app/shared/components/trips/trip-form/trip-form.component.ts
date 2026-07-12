@@ -617,7 +617,7 @@ export class TripFormComponent implements OnInit {
     const total = NumberHelper.formatNumber(shift.grandTotal || 0);
 
     // Slim subtitle for compact display
-    const slim = `${trips} trips · $${pay} + $${tips} = $${total}`;
+    const slim = `Trips: ${trips} · Tips: $${tips} · Total: $${total}`;
 
     return {
       shiftKey: shift.key,
