@@ -101,11 +101,20 @@ describe('SyncStatusIndicatorComponent', () => {
       expect(component.getNextCheckText()).toBe('-');
     });
 
-    it('returns formatted seconds when next sync available', () => {
+    it('returns formatted seconds when next sync available and changes pending', () => {
       uiPreferencesSpy.pollingEnabledSubject.next(true);
+      component.hasUnsavedChanges.set(true);
       syncState$.next({ status: 'idle', nextSyncIn: 45 });
 
       expect(component.getNextCheckText()).toBe('in 45s');
+    });
+
+    it('returns Idle when polling enabled but no pending changes', () => {
+      uiPreferencesSpy.pollingEnabledSubject.next(true);
+      component.hasUnsavedChanges.set(false);
+      syncState$.next({ status: 'idle', nextSyncIn: 45 });
+
+      expect(component.getNextCheckText()).toBe('Idle');
     });
   });
 
