@@ -45,8 +45,8 @@ describe('StringHelper', () => {
     });
 
     it('should handle null or undefined text', () => {
-      expect(StringHelper.truncate(null as any, 10)).toBeFalsy();
-      expect(StringHelper.truncate(undefined as any, 10)).toBeFalsy();
+      expect(StringHelper.truncate(null as unknown as string, 10)).toBeFalsy();
+      expect(StringHelper.truncate(undefined as unknown as string, 10)).toBeFalsy();
     });
 
     it('should handle empty string', () => {

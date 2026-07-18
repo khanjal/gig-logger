@@ -92,7 +92,7 @@ describe('AuthGuardService', () => {
       });
 
       it('should return true when unauthenticated but local spreadsheets exist', async () => {
-        const fakeSheet = { id: 1, name: 'My Sheet' } as any;
+        const fakeSheet = { id: 1, name: 'My Sheet' } as unknown as ISpreadsheet;
         spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([fakeSheet]));
 
         const result = await service.canActivate();

@@ -11,6 +11,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActionEnum } from '@enums/action.enum';
 import { BehaviorSubject, of } from 'rxjs';
 import type { IExpense } from '@interfaces/entities/expense.interface';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
+import { MatDialogRef } from '@angular/material/dialog';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;
@@ -51,7 +53,7 @@ describe('ExpensesComponent', () => {
       canSync: () => Promise.resolve(false),
       isAuthenticated: () => Promise.resolve(false),
       isAuthenticatedSync: () => false,
-      profile$: new BehaviorSubject<any>(null)
+      profile$: new BehaviorSubject<UserProfile | null>(null)
     };
 
     expensesServiceSpy.getMaxRowId.and.returnValue(Promise.resolve(10));
@@ -439,7 +441,7 @@ describe('ExpensesComponent', () => {
 
     it('deletes expense and cancels edit when dialog is confirmed', async () => {
       const expense = makeExpense({ id: 5, action: ActionEnum.Saved });
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>);
       expensesServiceSpy.update.and.returnValue(Promise.resolve());
       component.editingExpenseId.set(5);
 
@@ -455,7 +457,7 @@ describe('ExpensesComponent', () => {
 
     it('does not delete when dialog is cancelled', async () => {
       const expense = makeExpense({ id: 5 });
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
 
       await component.confirmDeleteExpenseDialog(expense);
 
@@ -470,7 +472,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('calls saveSheetDialog when dialog is confirmed', async () => {
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>);
       const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
 
       await component.confirmSaveDialog();
@@ -479,7 +481,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('does not call saveSheetDialog when dialog is cancelled', async () => {
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
       const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
 
       await component.confirmSaveDialog();
@@ -494,7 +496,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('shows login snackbar when canSync is false', async () => {
-      (authGoogleServiceMock as any).canSync = () => Promise.resolve(false);
+      authGoogleServiceMock.canSync = () => Promise.resolve(false);
 
       await component.saveSheetDialog('save');
 
@@ -503,8 +505,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('shows success snackbar after successful sync', async () => {
-      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      authGoogleServiceMock.canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>);
 
       await component.saveSheetDialog('save');
 
@@ -512,8 +514,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('does not show success snackbar when sync dialog is cancelled', async () => {
-      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      authGoogleServiceMock.canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
 
       await component.saveSheetDialog('save');
 

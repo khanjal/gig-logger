@@ -42,7 +42,7 @@ describe('RegionService', () => {
       startsWithAnyOfIgnoreCase: jasmine.createSpy('startsWithAnyOfIgnoreCase').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo([])
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.regions.where>);
   });
 
   it('should be created', () => {
@@ -68,7 +68,7 @@ describe('RegionService', () => {
       equals: jasmine.createSpy('equals').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(region)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.regions.where>);
 
     const result = await service.get(5);
 

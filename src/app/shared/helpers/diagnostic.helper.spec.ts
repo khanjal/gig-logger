@@ -106,7 +106,7 @@ describe('DiagnosticHelper', () => {
     const trips = [makeTrip({ place: 'Store A', startAddress: '' })];
     const places = [makePlace({ place: 'Store A' })];
 
-    expect(() => DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, null as any))
+    expect(() => DiagnosticHelper.findTripsWithPlaceNoAddress(trips, places, null as unknown as Record<number, string>))
       .toThrowError('selectedAddress parameter must be a valid object');
   });
 
@@ -140,10 +140,10 @@ describe('DiagnosticHelper', () => {
   });
 
   it('merges duplicate groups without duplication', () => {
-    const primary: IDuplicateGroup<any>[] = [
+    const primary: IDuplicateGroup<{ id: number }>[] = [
       { key: 'group1', items: [{ id: 1 }, { id: 2 }] },
     ];
-    const secondary: IDuplicateGroup<any>[] = [
+    const secondary: IDuplicateGroup<{ id: number }>[] = [
       { key: 'group2', items: [{ id: 2 }, { id: 1 }] },
       { key: 'group3', items: [{ id: 3 }] },
     ];

@@ -41,8 +41,8 @@ describe('WeeklyService', () => {
   it('query() uses where().equals().toArray()', async () => {
     const items = [makeWeekly({ year: 2025 })];
     spyOn(spreadsheetDB.weekly, 'where').and.returnValue({
-      equals: (_value: any) => ({ toArray: () => Promise.resolve(items) })
-    } as any);
+      equals: (_value: string | number) => ({ toArray: () => Promise.resolve(items) })
+    } as unknown as ReturnType<typeof spreadsheetDB.weekly.where>);
     const result = await service.query('year', 2025);
     expect(result).toEqual(items);
   });
@@ -51,7 +51,7 @@ describe('WeeklyService', () => {
     const last = makeWeekly({ begin: '2025-11-17', end: '2025-11-23', number: 47 });
     spyOn(spreadsheetDB.weekly, 'where').and.returnValue({
       below: (_day: string) => ({ last: () => Promise.resolve(last) })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.weekly.where>);
 
     const result = await service.getLastWeekFromDay('2025-11-24');
     expect(result).toEqual(last);
@@ -61,7 +61,7 @@ describe('WeeklyService', () => {
     const item = makeWeekly({ week: '2025-W48' });
     spyOn(spreadsheetDB.weekly, 'where').and.returnValue({
       anyOfIgnoreCase: (_value: string) => ({ first: () => Promise.resolve(item) })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.weekly.where>);
     const result = await service.find('week', '2025-W48');
     expect(result).toEqual(item);
   });

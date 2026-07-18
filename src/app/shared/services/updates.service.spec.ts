@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { filter, take } from 'rxjs/operators';
 
 import { UpdatesService } from '@services/updates.service';
+import type { IUpdateEntry } from '@interfaces/sync/update.interface';
 
 describe('UpdatesService', () => {
   let service: UpdatesService;
@@ -37,7 +38,7 @@ describe('UpdatesService', () => {
   });
 
   it('should return updates as observable', (done) => {
-    service.getUpdates().pipe(filter((u: any[]) => u.length > 0), take(1)).subscribe(updates => {
+    service.getUpdates().pipe(filter((u: IUpdateEntry[]) => u.length > 0), take(1)).subscribe(updates => {
       expect(updates).toBeTruthy();
       expect(Array.isArray(updates)).toBe(true);
       expect(updates.length).toBeGreaterThan(0);
@@ -46,7 +47,7 @@ describe('UpdatesService', () => {
   });
 
   it('should have update entries with required properties', (done) => {
-    service.getUpdates().pipe(filter((u: any[]) => u.length > 0), take(1)).subscribe(updates => {
+    service.getUpdates().pipe(filter((u: IUpdateEntry[]) => u.length > 0), take(1)).subscribe(updates => {
       updates.forEach(entry => {
         expect(entry.date).toBeTruthy();
         expect(entry.dateLabel).toBeTruthy();
@@ -58,10 +59,10 @@ describe('UpdatesService', () => {
   });
 
   it('should have rollup entries marked correctly', (done) => {
-    service.getUpdates().pipe(filter((u: any[]) => u.length > 0), take(1)).subscribe(updates => {
-      const rollupEntries = updates.filter((u: any) => u.isRollup);
+    service.getUpdates().pipe(filter((u: IUpdateEntry[]) => u.length > 0), take(1)).subscribe(updates => {
+      const rollupEntries = updates.filter((u: IUpdateEntry) => u.isRollup);
       expect(rollupEntries.length).toBeGreaterThan(0);
-      rollupEntries.forEach((entry: any) => {
+      rollupEntries.forEach((entry: IUpdateEntry) => {
         expect(entry.isRollup).toBeTrue();
         expect(entry.dateLabel).toContain('-');
       });
@@ -70,8 +71,8 @@ describe('UpdatesService', () => {
   });
 
   it('should include the initial commit', (done) => {
-    service.getUpdates().pipe(filter((u: any[]) => u.length > 0), take(1)).subscribe(updates => {
-      const hasInitialCommit = updates.some((u: any) => u.date === '2022-08-19-21');
+    service.getUpdates().pipe(filter((u: IUpdateEntry[]) => u.length > 0), take(1)).subscribe(updates => {
+      const hasInitialCommit = updates.some((u: IUpdateEntry) => u.date === '2022-08-19-21');
       expect(hasInitialCommit).toBeTrue();
       done();
     });

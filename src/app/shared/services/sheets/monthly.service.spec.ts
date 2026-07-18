@@ -40,7 +40,7 @@ describe('MonthlyService', () => {
     const filtered = [makeMonthly({ month: '2025-12' })];
     spyOn(spreadsheetDB.monthly, 'where').and.returnValue({
       startsWithAnyOfIgnoreCase: (_value: string) => ({ toArray: () => Promise.resolve(filtered) })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.monthly.where>);
     const result = await service.filter('month', '2025');
     expect(result).toEqual(filtered);
   });
@@ -49,7 +49,7 @@ describe('MonthlyService', () => {
     const item = makeMonthly({ month: '2025-12' });
     spyOn(spreadsheetDB.monthly, 'where').and.returnValue({
       anyOfIgnoreCase: (_value: string) => ({ first: () => Promise.resolve(item) })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.monthly.where>);
     const result = await service.find('month', '2025-12');
     expect(result).toEqual(item);
   });

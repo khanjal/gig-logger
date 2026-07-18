@@ -1,7 +1,6 @@
 import { WeekdayService } from './weekday.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 import { IWeekday } from '@interfaces/sheets/weekday.interface';
-
 const makeWeekday = (overrides: Partial<IWeekday> = {}): IWeekday => ({
   id: overrides.id ?? 1,
   rowId: overrides.rowId ?? 1,
@@ -42,30 +41,30 @@ describe('WeekdayService', () => {
 
   it('getCurrentTotal() sums currentAmount via each()', async () => {
     const items = [makeWeekday({ currentAmount: 5 }), makeWeekday({ currentAmount: 7 })];
-    spyOn(spreadsheetDB.weekdays, 'each').and.callFake((fn: any) => {
-      for (const w of items) fn(w, { key: w.id, primaryKey: w.id } as any);
-      return Promise.resolve(undefined) as any;
-    });
+    spyOn(spreadsheetDB.weekdays, 'each').and.callFake(((fn: Parameters<typeof spreadsheetDB.weekdays.each>[0]) => {
+      for (const w of items) fn(w, { key: w.id ?? null, primaryKey: w.id ?? 0 });
+      return Promise.resolve();
+    }) as typeof spreadsheetDB.weekdays.each);
     const total = await service.getCurrentTotal();
     expect(total).toBe(12);
   });
 
   it('getDailyTotal() sums dailyAverage via each()', async () => {
     const items = [makeWeekday({ dailyAverage: 3 }), makeWeekday({ dailyAverage: 4 })];
-    spyOn(spreadsheetDB.weekdays, 'each').and.callFake((fn: any) => {
-      for (const w of items) fn(w, { key: w.id, primaryKey: w.id } as any);
-      return Promise.resolve(undefined) as any;
-    });
+    spyOn(spreadsheetDB.weekdays, 'each').and.callFake(((fn: Parameters<typeof spreadsheetDB.weekdays.each>[0]) => {
+      for (const w of items) fn(w, { key: w.id ?? null, primaryKey: w.id ?? 0 });
+      return Promise.resolve();
+    }) as typeof spreadsheetDB.weekdays.each);
     const total = await service.getDailyTotal();
     expect(total).toBe(7);
   });
 
   it('getPreviousTotal() sums dailyPrevAverage via each()', async () => {
     const items = [makeWeekday({ dailyPrevAverage: 6 }), makeWeekday({ dailyPrevAverage: 1 })];
-    spyOn(spreadsheetDB.weekdays, 'each').and.callFake((fn: any) => {
-      for (const w of items) fn(w, { key: w.id, primaryKey: w.id } as any);
-      return Promise.resolve(undefined) as any;
-    });
+    spyOn(spreadsheetDB.weekdays, 'each').and.callFake(((fn: Parameters<typeof spreadsheetDB.weekdays.each>[0]) => {
+      for (const w of items) fn(w, { key: w.id ?? null, primaryKey: w.id ?? 0 });
+      return Promise.resolve();
+    }) as typeof spreadsheetDB.weekdays.each);
     const total = await service.getPreviousTotal();
     expect(total).toBe(7);
   });

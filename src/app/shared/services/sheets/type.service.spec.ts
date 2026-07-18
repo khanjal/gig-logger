@@ -42,7 +42,7 @@ describe('TypeService', () => {
       startsWithAnyOfIgnoreCase: jasmine.createSpy('startsWithAnyOfIgnoreCase').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo([])
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.types.where>);
   });
 
   it('should be created', () => {
@@ -68,7 +68,7 @@ describe('TypeService', () => {
       equals: jasmine.createSpy('equals').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(type)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.types.where>);
 
     const result = await service.get(5);
 

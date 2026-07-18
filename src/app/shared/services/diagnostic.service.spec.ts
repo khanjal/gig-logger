@@ -3,6 +3,13 @@ import { DiagnosticService } from './diagnostic.service';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
+interface DiagnosticServicePrivates {
+  checkBrowserEnvironment(): void;
+  checkLocalStorage(): void;
+  checkServiceWorker(): void;
+  checkNetworkConnectivity(): void;
+}
+
 interface ILoggedErrorDetails {
   component: string;
   error: string;
@@ -43,10 +50,10 @@ describe('DiagnosticService', () => {
 
   describe('runStartupDiagnostics', () => {
     it('should run all diagnostic checks successfully', () => {
-      spyOn<any>(service, 'checkBrowserEnvironment');
-      spyOn<any>(service, 'checkLocalStorage');
-      spyOn<any>(service, 'checkServiceWorker');
-      spyOn<any>(service, 'checkNetworkConnectivity');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkBrowserEnvironment');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkLocalStorage');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkServiceWorker');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkNetworkConnectivity');
 
       service.runStartupDiagnostics();
 
@@ -60,7 +67,7 @@ describe('DiagnosticService', () => {
 
     it('should log error when diagnostics fail', () => {
       const testError = new Error('Test diagnostic failure');
-      spyOn<any>(service, 'checkBrowserEnvironment').and.throwError(testError);
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkBrowserEnvironment').and.throwError(testError);
 
       service.runStartupDiagnostics();
 
@@ -68,10 +75,10 @@ describe('DiagnosticService', () => {
     });
 
     it('should continue with other checks even if one fails', () => {
-      spyOn<any>(service, 'checkBrowserEnvironment').and.throwError('Browser check failed');
-      spyOn<any>(service, 'checkLocalStorage');
-      spyOn<any>(service, 'checkServiceWorker');
-      spyOn<any>(service, 'checkNetworkConnectivity');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkBrowserEnvironment').and.throwError('Browser check failed');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkLocalStorage');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkServiceWorker');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkNetworkConnectivity');
 
       service.runStartupDiagnostics();
 

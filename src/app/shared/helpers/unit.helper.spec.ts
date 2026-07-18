@@ -11,8 +11,8 @@ describe('UnitHelper', () => {
 
   describe('convertDistance', () => {
     it('should return 0 for null or undefined values', () => {
-      expect(UnitHelper.convertDistance(null as any)).toBe(0);
-      expect(UnitHelper.convertDistance(undefined as any)).toBe(0);
+      expect(UnitHelper.convertDistance(null as unknown as number)).toBe(0);
+      expect(UnitHelper.convertDistance(undefined as unknown as number)).toBe(0);
       expect(UnitHelper.convertDistance(0)).toBe(0);
     });
 
@@ -43,8 +43,8 @@ describe('UnitHelper', () => {
 
   describe('formatDistance', () => {
     it('should return "-- mi" for null or undefined values', () => {
-      expect(UnitHelper.formatDistance(null as any)).toBe('-- mi');
-      expect(UnitHelper.formatDistance(undefined as any)).toBe('-- mi');
+      expect(UnitHelper.formatDistance(null as unknown as number)).toBe('-- mi');
+      expect(UnitHelper.formatDistance(undefined as unknown as number)).toBe('-- mi');
       expect(UnitHelper.formatDistance(0)).toBe('-- mi');
     });
 

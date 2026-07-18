@@ -11,6 +11,13 @@ import { DeliveryService } from '../delivery.service';
 import { LoggerService } from '../logger.service';
 import { ITrip } from '@interfaces/entities/trip.interface';
 import { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
+
+interface DataLinkingServicePrivates {
+  linkNameData(): Promise<void>;
+  linkAddressData(): Promise<void>;
+  linkPlaceData(): Promise<void>;
+}
 
 const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
   id: overrides.id ?? 1,
@@ -168,9 +175,9 @@ describe('DataLinkingService', () => {
 
   describe('linkAllData', () => {
     it('runs linkNameData, linkAddressData, and linkPlaceData', async () => {
-      const linkName = spyOn<any>(service, 'linkNameData').and.returnValue(Promise.resolve());
-      const linkAddr = spyOn<any>(service, 'linkAddressData').and.returnValue(Promise.resolve());
-      const linkPlace = spyOn<any>(service, 'linkPlaceData').and.returnValue(Promise.resolve());
+      const linkName = spyOn(service as unknown as DataLinkingServicePrivates, 'linkNameData').and.returnValue(Promise.resolve());
+      const linkAddr = spyOn(service as unknown as DataLinkingServicePrivates, 'linkAddressData').and.returnValue(Promise.resolve());
+      const linkPlace = spyOn(service as unknown as DataLinkingServicePrivates, 'linkPlaceData').and.returnValue(Promise.resolve());
 
       await service.linkAllData();
 
@@ -195,7 +202,7 @@ describe('DataLinkingService', () => {
         total: 120,
         rowId: 10,
         saved: true,
-      } as any;
+      } as unknown as IAddress;
 
       const trip = makeTrip({
         endAddress: '456 B St',
@@ -207,12 +214,12 @@ describe('DataLinkingService', () => {
       addressSpy.list.and.returnValue(Promise.resolve([address]));
       tripSpy.list.and.returnValue(Promise.resolve([trip]));
 
-      await (service as any).linkAddressData();
+      await (service as unknown as DataLinkingServicePrivates).linkAddressData();
 
       expect(addressSpy.update).toHaveBeenCalled();
       expect(addressSpy.append).not.toHaveBeenCalled();
 
-      const updatedAddress = addressSpy.update.calls.mostRecent().args[0][0] as any;
+      const updatedAddress = addressSpy.update.calls.mostRecent().args[0][0] as IAddress;
       expect(updatedAddress.names).toContain('John');
       expect(updatedAddress.notes.length).toBe(1);
       expect(updatedAddress.trips).toBe(3);

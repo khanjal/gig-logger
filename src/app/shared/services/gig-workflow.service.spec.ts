@@ -8,6 +8,8 @@ import { ISheet } from '@interfaces/sheets/sheet.interface';
 import { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 import { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 import { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IAuthTokenResponse } from '@interfaces/auth/auth-token-response.interface';
 
 describe('GigWorkflowService', () => {
   let service: GigWorkflowService;
@@ -64,7 +66,7 @@ describe('GigWorkflowService', () => {
 
   describe('Auth Methods', () => {
     it('delegates setRefreshToken to ApiService', async () => {
-      mockApiService.setRefreshToken.and.returnValue(Promise.resolve({ accessToken: 'token' } as any));
+      mockApiService.setRefreshToken.and.returnValue(Promise.resolve({ accessToken: 'token' } as unknown as IAuthTokenResponse));
 
       await service.setRefreshToken('auth-code');
 
@@ -80,7 +82,7 @@ describe('GigWorkflowService', () => {
     });
 
     it('delegates refreshAuthToken to ApiService', async () => {
-      mockApiService.refreshAuthToken.and.returnValue(Promise.resolve({ accessToken: 'new-token' } as any));
+      mockApiService.refreshAuthToken.and.returnValue(Promise.resolve({ accessToken: 'new-token' } as unknown as IAuthTokenResponse));
 
       await service.refreshAuthToken();
 
@@ -138,7 +140,7 @@ describe('GigWorkflowService', () => {
         trips: [],
         shifts: [],
         expenses: []
-      } as any;
+      } as unknown as ISheetSavePayload;
       mockApiService.saveSheetData.and.returnValue(Promise.resolve([]));
 
       await service.saveSheetData(sheetData);
@@ -223,7 +225,7 @@ describe('GigWorkflowService', () => {
         endAddress: '', endUnit: '', endOdometer: 0,
         exclude: false, dropoffTime: '', duration: '', key: 'k', name: '', note: '', number: 1, orderNumber: '', pickupTime: '', place: '', region: '', service: '', startAddress: '', startOdometer: 0, type: '', amountPerDistance: 0, amountPerTime: 0,
         action: '', actionTime: 0, pay: 0, tip: 0, bonus: 0, cash: 0, total: 0, saved: true
-      } as any;
+      } as ITrip;
       mockCalculator.updateTripDuration.and.returnValue(Promise.resolve());
 
       await service.updateTripDuration(trip);

@@ -116,8 +116,8 @@ describe('GigCalculatorService', () => {
       makeTrip({ pay: 15, tip: 3 }),
     ];
 
-    const totalPay = (service as any).sumTripField(trips, 'pay');
-    const totalTip = (service as any).sumTripField(trips, 'tip');
+    const totalPay = (service as unknown as { sumTripField(trips: ITrip[], field: keyof ITrip): number }).sumTripField(trips, 'pay');
+    const totalTip = (service as unknown as { sumTripField(trips: ITrip[], field: keyof ITrip): number }).sumTripField(trips, 'tip');
 
     expect(totalPay).toBe(25);
     expect(totalTip).toBe(5);

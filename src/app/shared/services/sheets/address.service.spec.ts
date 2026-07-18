@@ -48,7 +48,7 @@ describe('AddressService', () => {
       startsWithAnyOfIgnoreCase: jasmine.createSpy('startsWithAnyOfIgnoreCase').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo([])
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
   });
 
   it('should be created', () => {
@@ -74,7 +74,7 @@ describe('AddressService', () => {
       equals: jasmine.createSpy('equals').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(address)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
 
     const result = await service.get(5);
 
@@ -88,7 +88,7 @@ describe('AddressService', () => {
       anyOfIgnoreCase: jasmine.createSpy('anyOfIgnoreCase').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(address)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
 
     const result = await service.find('address', '789 Elm St');
 
@@ -101,7 +101,7 @@ describe('AddressService', () => {
       startsWithAnyOfIgnoreCase: jasmine.createSpy('startsWithAnyOfIgnoreCase').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo(addresses)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
 
     const result = await service.filter('address', '123');
 
@@ -192,7 +192,7 @@ describe('AddressService', () => {
       anyOfIgnoreCase: jasmine.createSpy('anyOfIgnoreCase').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(undefined)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
 
     await service.append([newAddress]);
 
@@ -211,7 +211,7 @@ describe('AddressService', () => {
       anyOfIgnoreCase: jasmine.createSpy('anyOfIgnoreCase').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(undefined)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
 
     await service.append([addr1, addr2, addr3]);
 
@@ -250,7 +250,7 @@ describe('AddressService', () => {
       equals: jasmine.createSpy('equals').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo(addresses)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.addresses.where>);
 
     const result = await service.query('rowId', 10);
 

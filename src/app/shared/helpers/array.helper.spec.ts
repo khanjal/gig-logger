@@ -20,7 +20,7 @@ describe('Array Helper', () => {
     });
 
     it('should handle empty array', () => {
-      const items: any[] = [];
+      const items: { key: string }[] = [];
       const grouped = groupBy(items, item => item.key);
 
       expect(grouped.size).toBe(0);

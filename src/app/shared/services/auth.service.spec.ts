@@ -45,7 +45,7 @@ describe('AuthService', () => {
 
     it('returns true when token exists and is not expired', () => {
       sessionStorage.setItem(SESSION_CONSTANTS.AUTH_TOKEN, 'valid-token');
-      jwtHelperSpy.isTokenExpired.and.returnValue(false as any);
+      jwtHelperSpy.isTokenExpired.and.returnValue(false as unknown as Promise<boolean>);
 
       const result = service.isAuthenticated();
 
@@ -56,7 +56,7 @@ describe('AuthService', () => {
 
     it('returns false when token is expired', () => {
       sessionStorage.setItem(SESSION_CONSTANTS.AUTH_TOKEN, 'expired-token');
-      jwtHelperSpy.isTokenExpired.and.returnValue(true as any);
+      jwtHelperSpy.isTokenExpired.and.returnValue(true as unknown as Promise<boolean>);
 
       const result = service.isAuthenticated();
 
@@ -67,7 +67,7 @@ describe('AuthService', () => {
 
     it('logs token expiration status', () => {
       sessionStorage.setItem(SESSION_CONSTANTS.AUTH_TOKEN, 'test-token');
-        jwtHelperSpy.isTokenExpired.and.returnValue(false as any);
+        jwtHelperSpy.isTokenExpired.and.returnValue(false as unknown as Promise<boolean>);
 
       service.isAuthenticated();
 

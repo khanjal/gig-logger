@@ -10,7 +10,7 @@ describe('ApiMessageHelper', () => {
 
   describe('processApiMessages', () => {
     it('returns failure when messages is null', () => {
-      const result = ApiMessageHelper.processApiMessages(null as any);
+      const result = ApiMessageHelper.processApiMessages(null as unknown as ApiMessage[]);
       
       expect(result.success).toBeFalse();
       expect(result.errorMessage).toBe('No response messages received');
@@ -18,7 +18,7 @@ describe('ApiMessageHelper', () => {
     });
 
     it('returns failure when messages is not an array', () => {
-      const result = ApiMessageHelper.processApiMessages({} as any);
+      const result = ApiMessageHelper.processApiMessages({} as unknown as ApiMessage[]);
       
       expect(result.success).toBeFalse();
       expect(result.errorMessage).toBe('No response messages received');
@@ -90,7 +90,7 @@ describe('ApiMessageHelper', () => {
 
   describe('processSheetSaveResponse', () => {
     it('returns failure when no messages provided', () => {
-      const result = ApiMessageHelper.processSheetSaveResponse(null as any);
+      const result = ApiMessageHelper.processSheetSaveResponse(null as unknown as ApiMessage[]);
       
       expect(result.success).toBeFalse();
       expect(result.errorMessage).toBe('No response messages received');

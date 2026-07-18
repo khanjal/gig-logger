@@ -118,8 +118,8 @@ describe('CommonService', () => {
 
   describe('Observable Behavior', () => {
     it('should support multiple subscribers', () => {
-      const emissions1: any[] = [];
-      const emissions2: any[] = [];
+      const emissions1: unknown[] = [];
+      const emissions2: unknown[] = [];
 
       service.onHeaderLinkUpdate.subscribe(msg => emissions1.push(msg));
       service.onHeaderLinkUpdate.subscribe(msg => emissions2.push(msg));
@@ -157,7 +157,7 @@ describe('CommonService', () => {
     });
 
     it('should allow unsubscribing', () => {
-      const emissions: any[] = [];
+      const emissions: unknown[] = [];
       const subscription: Subscription = service.onHeaderLinkUpdate.subscribe(
         msg => emissions.push(msg)
       );
@@ -171,7 +171,7 @@ describe('CommonService', () => {
     });
 
     it('should handle rapid updates', () => {
-      const emissions: any[] = [];
+      const emissions: unknown[] = [];
       service.onHeaderLinkUpdate.subscribe(msg => emissions.push(msg));
 
       for (let i = 0; i < 100; i++) {
@@ -191,7 +191,8 @@ describe('CommonService', () => {
         icon: 'directions_car'
       };
 
-      service.onHeaderLinkUpdate.subscribe((message: any) => {
+      service.onHeaderLinkUpdate.subscribe((raw) => {
+        const message = raw as typeof navigationLink;
         if (message.url === '/trips') {
           expect(message.url).toBe('/trips');
           expect(message.label).toBe('Trips');
@@ -262,7 +263,8 @@ describe('CommonService', () => {
         }
       };
 
-      service.onHeaderLinkUpdate.subscribe((message: any) => {
+      service.onHeaderLinkUpdate.subscribe((raw) => {
+        const message = raw as typeof complexObject;
         if (message.navigation) {
           expect(message.navigation.main.link).toBe('/home');
           expect(message.navigation.sub.length).toBe(2);
@@ -288,7 +290,7 @@ describe('CommonService', () => {
     });
 
     it('should handle sequential updates without losing data', () => {
-      const messages: any[] = [];
+      const messages: unknown[] = [];
       service.onHeaderLinkUpdate.subscribe(msg => messages.push(msg));
 
       service.updateHeaderLink('link1');
@@ -297,8 +299,8 @@ describe('CommonService', () => {
       service.updateHeaderLink(null);
 
       expect(messages).toContain('link1');
-      expect(messages.some((m: any) => m?.url === '/page2')).toBe(true);
-      expect(messages.some((m: any) => Array.isArray(m))).toBe(true);
+      expect(messages.some((m) => (m as { url?: string })?.url === '/page2')).toBe(true);
+      expect(messages.some((m) => Array.isArray(m))).toBe(true);
       expect(messages).toContain(null);
     });
   });

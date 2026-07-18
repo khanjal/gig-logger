@@ -1,4 +1,5 @@
 import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
+import type { ISearchItem } from '@interfaces/search/search-item.interface';
 
 describe('search-input.utils', () => {
   beforeEach(() => {
@@ -11,7 +12,7 @@ describe('search-input.utils', () => {
     });
 
     it('returns coerced values when name property is not a string', () => {
-      const item: any = { id: 5, name: 123, saved: 1, trips: '2' };
+      const item: Record<string, unknown> = { id: 5, name: 123, saved: 1, trips: '2' };
       const res = createSearchItem(item, 'name');
 
       expect(res.id).toBe(5);
@@ -22,7 +23,7 @@ describe('search-input.utils', () => {
     });
 
     it('returns expected ISearchItem when name is a string', () => {
-      const item: any = { id: 9, name: 'Alice', saved: 0, trips: 3 };
+      const item: Record<string, unknown> = { id: 9, name: 'Alice', saved: 0, trips: 3 };
       const res = createSearchItem(item, 'name');
 
       expect(res.id).toBe(9);
@@ -56,7 +57,7 @@ describe('search-input.utils', () => {
 
   describe('isGoogleResult', () => {
     it('identifies google result items', () => {
-      const item: any = { id: undefined, trips: 0, saved: false };
+      const item = { id: undefined, trips: 0, saved: false } as unknown as ISearchItem;
       expect(isGoogleResult(item)).toBeTrue();
     });
 

@@ -101,7 +101,7 @@ describe('OrdinalPipe', () => {
     });
 
     it('should handle undefined', () => {
-      expect(pipe.transform(undefined as any)).toBe('');
+      expect(pipe.transform(undefined as unknown as null)).toBe('');
     });
 
     it('should handle invalid strings', () => {

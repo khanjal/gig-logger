@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthGoogleService } from './auth-google.service';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService, OAuthSuccessEvent } from 'angular-oauth2-oidc';
+import type { IAuthTokenResponse } from '@interfaces/auth/auth-token-response.interface';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { GigWorkflowService } from './gig-workflow.service';
@@ -22,7 +23,7 @@ describe('AuthGoogleService', () => {
     storageSpy = jasmine.createSpyObj('SecureCookieStorageService', ['getItem', 'setItem', 'removeItem']);
     workflowSpy = jasmine.createSpyObj('GigWorkflowService', ['setRefreshToken', 'clearRefreshToken', 'refreshAuthToken']);
 
-    oauthSpy.loadDiscoveryDocument.and.returnValue(Promise.resolve({} as any));
+    oauthSpy.loadDiscoveryDocument.and.returnValue(Promise.resolve({} as unknown as OAuthSuccessEvent));
     oauthSpy.configure.and.stub();
 
     TestBed.configureTestingModule({
@@ -61,7 +62,7 @@ describe('AuthGoogleService', () => {
   describe('refreshToken', () => {
     it('stores token, loads profile, and sets auth state', async () => {
       const token = 'token123';
-      workflowSpy.refreshAuthToken.and.returnValue(Promise.resolve({ accessToken: token } as any));
+      workflowSpy.refreshAuthToken.and.returnValue(Promise.resolve({ accessToken: token } as unknown as IAuthTokenResponse));
       storageSpy.getItem.and.returnValue(token);
 
       const promise = service.refreshToken();
