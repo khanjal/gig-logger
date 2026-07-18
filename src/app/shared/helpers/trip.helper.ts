@@ -61,7 +61,7 @@ export class TripHelper {
         existingTrip: ITrip | undefined,
         maxRowId?: number
     ): Promise<ITrip> {
-        let trip: ITrip = existingTrip ?? ({} as ITrip);
+        const trip: ITrip = existingTrip ?? ({} as ITrip);
 
         // Set shift-derived properties
         trip.key = shift.key;

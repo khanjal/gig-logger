@@ -18,7 +18,7 @@ export class RegionService extends GenericCrudService<IRegion> {
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
     
     public async deleteUnsaved() {
-        let regions = await this.getUnsaved();
+        const regions = await this.getUnsaved();
         regions.forEach(async region => {
             await spreadsheetDB.regions.delete(region.id!);
         });

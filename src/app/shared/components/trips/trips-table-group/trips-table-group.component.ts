@@ -18,15 +18,15 @@ import type { ITripGroup } from '@interfaces/trip-group.interface';
     imports: [MatIcon, NgFor, NgClass, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
 })
 export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewInit {
-  @Input() title: string = "";
-  @Input() link: string = "";
-  @Input() days: number = 6;
+  @Input() title = "";
+  @Input() link = "";
+  @Input() days = 6;
   
   displayedColumns: string[] = [];
   tripGroups: ITripGroup[] = [];
   @ViewChildren('tableContainer') tableContainers!: QueryList<ElementRef>;
   isScrollable: boolean[] = [];
-  prefers24Hour: boolean = false;
+  prefers24Hour = false;
   private injector = inject(Injector);
 
   constructor(
@@ -79,11 +79,11 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   async load() {
-    let sheetTrips = await this._tripService.getPreviousDays(this.days);
+    const sheetTrips = await this._tripService.getPreviousDays(this.days);
     sort(sheetTrips, '-id');
     
     // Get unique dates in trips and create groups
-    let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
+    const dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
 
     const groupedResults = await Promise.all(dates.map(async (date) => {
       const trips = sheetTrips.filter(x => x.date === date);

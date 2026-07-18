@@ -66,13 +66,13 @@ export class BaseButtonComponent implements AfterViewInit, OnChanges, OnDestroy 
   /**
    * Render as a floating action button (circular). Use `[fab]="true"`.
    */
-  @Input() fab: boolean = false;
+  @Input() fab = false;
 
   /** Fab style: regular or mini */
   @Input() fabStyle: FabStyle = 'regular';
 
   /** Extended fab shows label next to icon */
-  @Input() extended: boolean = false;
+  @Input() extended = false;
 
   /** Disabled state */
   @Input() disabled = false;

@@ -140,7 +140,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   private handleRecognitionError(event: any): void {
     this.logger.error('VoiceInput - Speech recognition error:', event.error);
     
-    const errorMessages: { [key: string]: string } = {
+    const errorMessages: Record<string, string> = {
       'no-speech': 'No speech detected. Please try again.',
       'audio-capture': 'No microphone detected. Please check your device settings.',
       'not-allowed': 'Microphone access denied. Please enable microphone permissions.',
@@ -196,7 +196,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   /**
    * Gets the parsed result as an array of key-value pairs for template iteration
    */
-  get parsedResultEntries(): Array<{ key: string; value: string }> {
+  get parsedResultEntries(): { key: string; value: string }[] {
     if (!this.parsedResult()) return [];
     // Convert camelCase keys to Proper Case with spaces
     const toProperCase = (str: string) =>

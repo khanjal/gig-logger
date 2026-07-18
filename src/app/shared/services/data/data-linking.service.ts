@@ -53,7 +53,7 @@ export class DataLinkingService {
 
     public async linkDeliveries(trips: ITrip[]) {
         try {
-            let deliveries: IDelivery[] = await this._deliveryService.list();
+            const deliveries: IDelivery[] = await this._deliveryService.list();
             // Build quick lookup for existing deliveries to avoid O(n*m) finds
             const keyFor = (addr?: string, name?: string) => `${addr || ''}::${name || ''}`;
             const deliveryMap = new Map<string, IDelivery>(deliveries.map(d => [keyFor(d.address, d.name), d]));
@@ -129,8 +129,8 @@ export class DataLinkingService {
         try {
             this._logger.info('Linking name data');
             
-            let names = await this._nameService.list();
-            let trips = await this._tripService.list();
+            const names = await this._nameService.list();
+            const trips = await this._tripService.list();
 
             // group trips by name for single-pass updates
             const tripsByName = groupBy(trips.filter((x: ITrip) => !!x.endAddress && !!x.name), x => x.name as string);
@@ -170,8 +170,8 @@ export class DataLinkingService {
         try {
             this._logger.info('Linking address data');
             
-            let addresses = await this._addressService.list();
-            let trips = await this._tripService.list();
+            const addresses = await this._addressService.list();
+            const trips = await this._tripService.list();
 
             const tripsByAddress = groupBy(trips.filter((x: ITrip) => !!x.endAddress && !!x.name), x => x.endAddress as string);
 
@@ -211,8 +211,8 @@ export class DataLinkingService {
         try {
             this._logger.info('Linking place data');
             
-            let trips = await this._tripService.list();
-            let places = await this._placeService.list();
+            const trips = await this._tripService.list();
+            const places = await this._placeService.list();
 
             // Group trips by place for efficient per-place processing
             const tripsByPlace = groupBy(trips.filter((x: ITrip) => !!x.place), x => x.place as string);
@@ -283,9 +283,9 @@ export class DataLinkingService {
                 this._typeService.deleteUnsaved()
             ]);
 
-            let trips = await this._tripService.getPreviousDays(2);
+            const trips = await this._tripService.getPreviousDays(2);
 
-            for (let trip of trips) {
+            for (const trip of trips) {
                 await Promise.all([
                     this.addIfNotExists('endAddress', trip.endAddress, this._addressService),
                     this.addIfNotExists('name', trip.name, this._nameService),
@@ -306,7 +306,7 @@ export class DataLinkingService {
     private async addIfNotExists(field: string, value: any, service: any) {
         if (!value) return;
 
-        const fieldMap: { [key: string]: string } = {
+        const fieldMap: Record<string, string> = {
             'endAddress': 'address',
             'startAddress': 'address',
             'name': 'name',

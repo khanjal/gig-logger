@@ -51,9 +51,9 @@ export class CurrentAverageComponent {
     return this.currentAverageState.monthlyAverage();
   }
 
-  showDailyAverage: boolean = true;
-  showWeeklyAverage: boolean = false;
-  showMonthlyAverage: boolean = false;
+  showDailyAverage = true;
+  showWeeklyAverage = false;
+  showMonthlyAverage = false;
 
   constructor(
     private _snackBar: MatSnackBar,

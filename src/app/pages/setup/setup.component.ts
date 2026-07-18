@@ -1,5 +1,5 @@
 // Angular Core
-import { Component, signal, ViewChild } from '@angular/core';
+import { Component, signal, ViewChild, OnInit } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 // Angular Material
@@ -64,7 +64,7 @@ import { createAsyncOperationState } from '@helpers/async-operation-state.helper
       BaseCardComponent
   ]
 })
-export class SetupComponent {
+export class SetupComponent implements OnInit {
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
   isAuthenticated = signal(false);
@@ -315,7 +315,7 @@ export class SetupComponent {
 
     const message = `Reloading will fetch data from the spreadsheet and <strong>WILL NOT</strong> preserve any unsaved local changes. Please ensure all your data is saved before proceeding.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete & Reload";
     dialogData.message = message;
     dialogData.trueText = "Delete & Reload";
@@ -335,7 +335,7 @@ export class SetupComponent {
   async confirmDeleteAllDialog() {
     const message = `This will delete everything except for what is saved in your spreadsheet. Are you sure?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
@@ -380,7 +380,7 @@ export class SetupComponent {
       confirmText = "Unlink";
     }
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;

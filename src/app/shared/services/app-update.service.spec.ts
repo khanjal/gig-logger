@@ -11,7 +11,7 @@ describe('AppUpdateService', () => {
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let versionSubject: Subject<any>;
 
-  const setup = async (isEnabled: boolean = true) => {
+  const setup = async (isEnabled = true) => {
     versionSubject = new Subject();
     swUpdateMock = {
       isEnabled,

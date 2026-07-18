@@ -117,7 +117,7 @@ export class CustomRangePanelComponent<D> {
   }
 
   private calculateWeek(forDay: D): [start: D, end: D] {
-    const deltaStart = DateHelper.getFirstDayOfWeek() - DateHelper.getDayOfWeek(<Date>forDay);
+    const deltaStart = DateHelper.getFirstDayOfWeek() - DateHelper.getDayOfWeek((forDay as Date));
     const start = this.dateAdapter.addCalendarDays(forDay, deltaStart);
     const end = this.dateAdapter.addCalendarDays(start, 6);
     return [start, end];

@@ -26,7 +26,7 @@ import { firstValueFrom } from 'rxjs';
 })
 
 export class SheetDemoComponent {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Output() parentReload = new EventEmitter<any>();
 
   creatingDemo = signal(false);
 

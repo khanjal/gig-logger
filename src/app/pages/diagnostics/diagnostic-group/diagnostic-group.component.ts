@@ -17,7 +17,7 @@ import { BaseFabButtonComponent } from '@components/base';
 })
 export class DiagnosticGroupComponent {
   @Input() group: any[] = [];
-  @Input() groupIndex: number = 0;
+  @Input() groupIndex = 0;
   @Input() itemType: DiagnosticEntityType = 'trip';
   @Input() selectedValue: any;
   @Input() selectedShiftToDelete: number | undefined;

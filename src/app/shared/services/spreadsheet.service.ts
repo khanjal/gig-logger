@@ -78,35 +78,35 @@ export class SpreadsheetService {
     }    public async warmUpLambda() {
         // Wake up lambda
         this._logger.debug("Warming up lambda");
-        let defaultSheet = await this.getDefaultSheet();
+        const defaultSheet = await this.getDefaultSheet();
         return await this._gigLoggerService.healthCheck(defaultSheet.id);
     }
 
     public async getSpreadsheetData(spreadsheet: ISpreadsheet) : Promise<ISheet | null>{
-        let data: any = await this._gigLoggerService.getSheetData(spreadsheet.id);
+        const data: any = await this._gigLoggerService.getSheetData(spreadsheet.id);
         if (!data) {
             return null;
         }
 
         await this.updateSheetInfo(spreadsheet.id, data);
-        return <ISheet>data;
+        return data as ISheet;
     }
 
     public async loadSpreadsheetData(data: ISheet) {
         openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADING_PRIMARY_SPREADSHEET);
         
-            await this._gigLoggerService.loadData(<ISheet>data);
+            await this._gigLoggerService.loadData((data as ISheet));
                 openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADED_PRIMARY_SPREADSHEET);
     }
 
     public async appendSpreadsheetData(data: ISheet) {
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADING_SECONDARY_SPREADSHEET);
-            await this._gigLoggerService.appendData(<ISheet>data);
+            await this._gigLoggerService.appendData((data as ISheet));
             openSnackbar(this._snackBar, SNACKBAR_MESSAGES.LOADED_SECONDARY_SPREADSHEET);
     }
 
     private async updateSheetInfo(sheetId: string, data: any){
-        let sheet = await this.findSheet(sheetId);
+        const sheet = await this.findSheet(sheetId);
         if (!sheet) return;
         sheet.size = new TextEncoder().encode(JSON.stringify(data)).length;
         sheet.name = `${sheetId.substring(0, 10)}...`;

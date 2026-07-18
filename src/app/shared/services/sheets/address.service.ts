@@ -15,7 +15,7 @@ export class AddressService extends GenericCrudService<IAddress> {
     addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
     public async deleteUnsaved() {
-        let addresses = await this.getUnsaved();
+        const addresses = await this.getUnsaved();
         addresses.forEach(async address => {
             await this.delete(address.id!);
         });

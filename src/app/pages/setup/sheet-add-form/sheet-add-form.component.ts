@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Output, signal, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -14,8 +14,8 @@ import { BaseInputComponent } from '@components/base/base-input/base-input.compo
     standalone: true,
     imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseRectButtonComponent, BaseInputComponent]
 })
-export class SheetAddFormComponent {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+export class SheetAddFormComponent implements OnInit {
+  @Output() parentReload = new EventEmitter<any>();
   private demoSheetId = environment.demoSheet;
   
   sheetForm = new FormGroup({
@@ -41,7 +41,7 @@ export class SheetAddFormComponent {
     let spreadsheetId: string = this.sheetForm.value.sheetId ?? "";
 
     if(spreadsheetId.includes("/")) {
-      let spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
+      const spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
 
       if(spreadsheetGroups && spreadsheetGroups?.length > 0) {
         spreadsheetId = spreadsheetGroups[1];
@@ -74,7 +74,7 @@ export class SheetAddFormComponent {
   public async setupSheet(id: string) {
     await this.load();
   
-    let spreadsheet = {} as ISpreadsheet;
+    const spreadsheet = {} as ISpreadsheet;
     spreadsheet.id = id;
     spreadsheet.default = "false";
 

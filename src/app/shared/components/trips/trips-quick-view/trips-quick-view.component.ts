@@ -41,17 +41,17 @@ import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
   @Input() trip: ITrip = {} as ITrip;
-  @Input() showActions: boolean = true;
-  @Input() inlineMode: boolean = false;
-  @Input() index: number = 0;
+  @Input() showActions = true;
+  @Input() inlineMode = false;
+  @Input() index = 0;
   @Input() stripeEven?: boolean;
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
-  @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
-  @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
-  @Output("editClicked") editClicked: EventEmitter<ITrip> = new EventEmitter();
+  @Output() parentReload = new EventEmitter<any>();
+  @Output() pollingToggle = new EventEmitter<boolean>();
+  @Output() scrollToTrip = new EventEmitter<string | undefined>();
+  @Output() editClicked = new EventEmitter<ITrip>();
   actionEnum = ActionEnum;
-  isExpanded: boolean = false;
-  prefers24Hour: boolean = false;
+  isExpanded = false;
+  prefers24Hour = false;
   // Parsed date and computed format for display
   parsedTripDate: Date | null = null;
   dateFormat: string = DATE_FORMATS.SHORT_DATE;
@@ -171,7 +171,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   confirmDeleteTripDialog() {
     const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
@@ -221,9 +221,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
 
   async setDropoffTime() {
-    let dropOffTime = DateHelper.getTimeString(new Date);
+    const dropOffTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.query("key", this.trip.key))[0];
+    const shift = (await this._shiftService.query("key", this.trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
       updateAction(shift, ActionEnum.Update);
@@ -242,9 +242,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
 
   async setPickupTime() {
-    let pickupTime = DateHelper.getTimeString(new Date);
+    const pickupTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.query("key", this.trip.key))[0];
+    const shift = (await this._shiftService.query("key", this.trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
       updateAction(shift, ActionEnum.Update);

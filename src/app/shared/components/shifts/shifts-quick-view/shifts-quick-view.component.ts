@@ -39,13 +39,13 @@ export class ShiftsQuickViewComponent implements OnInit {
   dateFormats = DATE_FORMATS;
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
-  @Input() inlineMode: boolean = false;
-  @Input() isDuplicate: boolean = false;
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Input() inlineMode = false;
+  @Input() isDuplicate = false;
+  @Output() parentReload = new EventEmitter<any>();
   @Output() edit = new EventEmitter<IShift>();
 
-  isExpanded: boolean = false;
-  prefers24Hour: boolean = false;
+  isExpanded = false;
+  prefers24Hour = false;
 
   constructor(
     public dialog: MatDialog,
@@ -64,7 +64,7 @@ export class ShiftsQuickViewComponent implements OnInit {
   async confirmDeleteShiftDialog(shift: IShift) {
     const message = `Shift will be deleted from your spreadsheet. Associated trips will not be deleted. Are you sure you want to delete this?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";

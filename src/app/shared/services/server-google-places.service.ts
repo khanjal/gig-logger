@@ -39,8 +39,8 @@ export class ServerGooglePlacesService {
    */
   async getAutocomplete(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US',
+    searchType = 'address',
+    country = 'US',
     userLat?: number,
     userLng?: number,
     radiusMeters?: number
@@ -295,10 +295,10 @@ export class ServerGooglePlacesService {
    */
   async getAutocompleteWithLocation(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US',
-    useLocationBias: boolean = false,
-    forceWithoutLocation: boolean = false
+    searchType = 'address',
+    country = 'US',
+    useLocationBias = false,
+    forceWithoutLocation = false
   ): Promise<IAutocompleteResult[]> {
     let userLocation = null;
     
@@ -329,8 +329,8 @@ export class ServerGooglePlacesService {
    */
   async getSmartAutocomplete(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US'
+    searchType = 'address',
+    country = 'US'
   ): Promise<IAutocompleteResult[]> {
     // Only try to get location-based results
     try {
@@ -412,8 +412,8 @@ export class ServerGooglePlacesService {
    */
   async getLocationBasedAutocomplete(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US'
+    searchType = 'address',
+    country = 'US'
   ): Promise<IAutocompleteResult[]> {
     const canGetLocation = await this.canGetUserLocation();
     

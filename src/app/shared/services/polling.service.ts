@@ -19,7 +19,7 @@ const DEFAULT_INTERVAL = 60000; // 1 minute
   providedIn: 'root'
 })
 export class PollingService implements OnDestroy {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Output() parentReload = new EventEmitter<any>();
 
   private worker: Worker | null = null;
   private fallbackTimer: number | null = null;

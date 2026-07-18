@@ -31,14 +31,14 @@ import { BaseFieldButtonComponent } from '@components/base/base-field-button/bas
   ]
 })
 export class TimeInputComponent implements ControlValueAccessor {
-  @Input() label: string = 'Time';
-  @Input() placeholder: string = 'Select time';
-  @Input() fieldClass: string = 'field-third-width';
-  @Input() disabled: boolean = false;
+  @Input() label = 'Time';
+  @Input() placeholder = 'Select time';
+  @Input() fieldClass = 'field-third-width';
+  @Input() disabled = false;
 
   @Output() timeChanged = new EventEmitter<string>();
 
-  value: string = '';
+  value = '';
   
   private onChange = (value: string) => {};
   private onTouched = () => {};

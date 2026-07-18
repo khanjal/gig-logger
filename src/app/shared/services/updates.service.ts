@@ -21,7 +21,7 @@ export class UpdatesService {
       (err) => {
         // If loading fails, keep the subject empty and log a warning
         // Consumers can handle empty state as "no updates"
-        // eslint-disable-next-line no-console
+         
         console.warn('Failed to load updates.json', err);
       }
     );

@@ -46,7 +46,7 @@ export class DiagnosticHelper {
   static findTripsWithPlaceNoAddress(
     trips: ITrip[], 
     places: IPlace[], 
-    selectedAddress: { [key: number]: string }
+    selectedAddress: Record<number, string>
   ): any[] {
     // Validate selectedAddress parameter
     if (!selectedAddress || typeof selectedAddress !== 'object') {

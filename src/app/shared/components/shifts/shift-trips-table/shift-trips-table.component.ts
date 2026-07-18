@@ -28,8 +28,8 @@ import type { ITrip } from '@interfaces/trip.interface';
 })
 
 export class ShiftTripsTableComponent implements OnInit, OnChanges {
-  @Input() tripKey: string = '';
-  prefers24Hour: boolean = false;
+  @Input() tripKey = '';
+  prefers24Hour = false;
   displayedColumns: string[] = [];
   trips = signal<ITrip[]>([]);
   private loadToken = 0;

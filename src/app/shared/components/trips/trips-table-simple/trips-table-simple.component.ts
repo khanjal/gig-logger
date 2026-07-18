@@ -15,8 +15,8 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
     imports: [NgIf, MatIcon, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe]
 })
 export class TripsTableSimpleComponent implements OnInit {
-  @Input() title: string = "";
-  @Input() link: string = "";
+  @Input() title = "";
+  @Input() link = "";
   @Input() trips: ITrip[] = [];
   
   /**

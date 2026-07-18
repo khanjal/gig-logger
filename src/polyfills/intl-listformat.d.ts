@@ -4,14 +4,14 @@
 declare namespace Intl {
   type ListFormatType = 'conjunction' | 'disjunction' | 'unit';
   type ListFormatStyle = 'long' | 'short' | 'narrow';
-  type ListFormatOptions = {
+  interface ListFormatOptions {
     localeMatcher?: 'best fit' | 'lookup';
     type?: ListFormatType;
     style?: ListFormatStyle;
-  };
+  }
   interface ListFormat {
     format(list: string[]): string;
-    formatToParts(list: string[]): Array<{ type: string; value: string }>;
+    formatToParts(list: string[]): { type: string; value: string }[];
     resolvedOptions(): ListFormatOptions;
   }
 }

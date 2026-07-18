@@ -295,7 +295,7 @@ export class MetricsComponent implements OnInit {
   }
 
   updateCharts(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
+    const grouped: Record<string, { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number }> = {};
     filteredShifts.forEach(s => {
       // Always use local date for label
       const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
@@ -358,7 +358,7 @@ export class MetricsComponent implements OnInit {
   }
 
   updateDailyEarnings(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
+    const earningsByLabel: Record<string, Record<string, number>> = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
       // Always use local date for label
@@ -408,7 +408,7 @@ export class MetricsComponent implements OnInit {
   }
 
   updateServicePie(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    const serviceCounts: { [service: string]: number } = {};
+    const serviceCounts: Record<string, number> = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
     });
@@ -431,7 +431,7 @@ export class MetricsComponent implements OnInit {
   }
 
   updateYearlyComparison(filteredShifts = this.shifts()) {
-    const grouped: { [year: string]: { pay: number; tips: number; bonus: number; cash: number } } = {};
+    const grouped: Record<string, { pay: number; tips: number; bonus: number; cash: number }> = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       const year = d.getFullYear().toString();

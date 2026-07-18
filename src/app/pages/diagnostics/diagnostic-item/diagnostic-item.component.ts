@@ -17,7 +17,7 @@ import { BaseFabButtonComponent } from '@components/base';
 export class DiagnosticItemComponent {
   @Input() item: any = {};
   @Input() itemType: DiagnosticEntityType = 'trip';
-  @Input() diagnosticName: string = '';
+  @Input() diagnosticName = '';
   @Input() selectedAddress: string | undefined;
   
   @Output() selectedAddressChange = new EventEmitter<string>();

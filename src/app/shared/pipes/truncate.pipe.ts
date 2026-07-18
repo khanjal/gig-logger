@@ -7,7 +7,7 @@ import { StringHelper } from '@helpers/string.helper';
 })
 export class TruncatePipe implements PipeTransform {
 
-  transform(text: string, length: number = 20, suffix: string = '...'): string {
+  transform(text: string, length = 20, suffix = '...'): string {
     text = StringHelper.truncate(text, length, suffix);
 
     return text;

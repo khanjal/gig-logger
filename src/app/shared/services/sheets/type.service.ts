@@ -18,7 +18,7 @@ export class TypeService extends GenericCrudService<IType> {
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
    
     public async deleteUnsaved() {
-        let types = await this.getUnsaved();
+        const types = await this.getUnsaved();
         types.forEach(async type => {
             await spreadsheetDB.types.delete(type.id!);
         });

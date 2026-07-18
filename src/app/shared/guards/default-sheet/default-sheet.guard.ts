@@ -20,7 +20,7 @@ export class DefaultSheetGuard {
   }
 
     private async isDefaultSheet(): Promise<boolean> {
-        let sheet = await this._sheetService.getDefaultSheet();
+        const sheet = await this._sheetService.getDefaultSheet();
 
         if (sheet) {
             return true;

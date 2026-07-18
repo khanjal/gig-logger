@@ -61,13 +61,13 @@ import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface
 
 export class ExpensesComponent implements OnInit {
   dateFormats = DATE_FORMATS;
-  groupedExpensesByYear = signal<{ [year: string]: IExpense[] }>({});
+  groupedExpensesByYear = signal<Record<string, IExpense[]>>({});
   yearTotals = signal<Record<string, number>>({});
   showAddForm = signal(false);
   monthTotals = signal<Record<string, number>>({});
   expenseForm!: FormGroup;
   expenses = signal<IExpense[]>([]);
-  groupedExpenses = signal<{ [month: string]: IExpense[] }>({});
+  groupedExpenses = signal<Record<string, IExpense[]>>({});
   defaultCategories = [
     'Fuel', 'Food', 'Parking', 'Maintenance', 'Tolls', 'Supplies', 'Other'
   ];
@@ -133,16 +133,16 @@ export class ExpensesComponent implements OnInit {
       }
       groups[month].push(expense);
       return groups;
-    }, {} as { [month: string]: IExpense[] });
+    }, {} as Record<string, IExpense[]>);
 
-    const groupedExpensesByYear = normalizedExpenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+    const groupedExpensesByYear = normalizedExpenses.reduce((groups: Record<string, IExpense[]>, expense: IExpense) => {
       const year = expense.date.slice(0, 4);
       if (!groups[year]) {
         groups[year] = [];
       }
       groups[year].push(expense);
       return groups;
-    }, {} as { [year: string]: IExpense[] });
+    }, {} as Record<string, IExpense[]>);
 
     const monthTotals = Object.entries(groupedExpenses).reduce((totals, [month, monthExpenses]) => {
       totals[month] = monthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
@@ -173,7 +173,7 @@ export class ExpensesComponent implements OnInit {
     const now = Date.now();
     const formValue = this.expenseForm.value as IExpenseFormValue;
     const draft = mapExpenseFormValueToDraft(formValue);
-    let expense: IExpense = {
+    const expense: IExpense = {
       ...draft,
       rowId: Number(formValue.rowId) || this.maxRowId() + 1,
       action: ActionEnum.Add,
@@ -280,7 +280,7 @@ export class ExpensesComponent implements OnInit {
   async confirmDeleteExpenseDialog(expense: IExpense) {
     const message = `This expense will be deleted from your spreadsheet. Are you sure you want to delete this?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
@@ -319,7 +319,7 @@ export class ExpensesComponent implements OnInit {
   async confirmSaveDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
     dialogData.message = message;
     dialogData.trueText = "Save";

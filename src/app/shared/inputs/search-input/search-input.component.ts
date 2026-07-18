@@ -1,6 +1,6 @@
 // Angular core imports
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal, OnInit, OnChanges } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
@@ -70,16 +70,16 @@ import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType }
   ]
 })
 
-export class SearchInputComponent implements OnDestroy {
-  @Input() enableBottomPadding: boolean = false;
+export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
+  @Input() enableBottomPadding = false;
   // #region ViewChild, Inputs, Outputs, Form
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
-  @Input() fieldName: string = '';
-  @Input() searchType: string = '';
+  @Input() fieldName = '';
+  @Input() searchType = '';
   @Input() googleSearch: string | undefined;
-  @Input() isRequired: boolean = false;
-  @Input() scrollOffset: number = 100; // Default offset, can be overridden
+  @Input() isRequired = false;
+  @Input() scrollOffset = 100; // Default offset, can be overridden
 
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
@@ -96,7 +96,7 @@ export class SearchInputComponent implements OnDestroy {
   hasSelection = signal(false);
   isGoogleSearching = signal(false);
   showNoGoogleResults = signal(false);
-  private initialValue: string = '';
+  private initialValue = '';
   // When true skip the next focus handler after a user selection (prevents refocus on mobile)
   private skipNextFocus = signal(false);
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
@@ -432,11 +432,11 @@ export class SearchInputComponent implements OnDestroy {
         }
         return addressResults;
       case 'Name':
-        let names = await this._filterName(value);
-        let nameItems = this.mapNamesToSearchItems(names);
+        const names = await this._filterName(value);
+        const nameItems = this.mapNamesToSearchItems(names);
         return nameItems;
       case 'Place':
-        let places = await this._filterPlace(value);
+        const places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
         placeItems = await this.appendDropdownMatches(placeItems, 'Place', value);
         // For Place, do not auto-trigger Google predictions
@@ -691,7 +691,7 @@ export class SearchInputComponent implements OnDestroy {
           return dateB - dateA;
         });
         for (const address of sortedAddresses) {
-          let trips = typeof address.trips === 'number' ? address.trips : place.trips;
+          const trips = typeof address.trips === 'number' ? address.trips : place.trips;
           items.push({
             id: place.id,
             name: place.place,

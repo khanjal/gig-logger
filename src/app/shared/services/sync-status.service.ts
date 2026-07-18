@@ -36,7 +36,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Start a new sync operation
    */
-  startSync(operation: SyncOperation, totalItems: number = 0): void {
+  startSync(operation: SyncOperation, totalItems = 0): void {
     this.syncStateSubject.next({
       status: 'syncing',
       operation,

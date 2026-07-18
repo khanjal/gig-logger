@@ -25,7 +25,7 @@ import { createAsyncOperationState } from '@helpers/async-operation-state.helper
   styleUrl: './sheet-link.component.scss'
 })
 export class SheetLinkComponent {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Output() parentReload = new EventEmitter<any>();
   readonly sheetLinkState = createAsyncOperationState();
 
   constructor(

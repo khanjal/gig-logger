@@ -9,7 +9,7 @@ type sortArg<T> = keyof T | `-${string & keyof T}`;
  * @param sortBy - the names of the properties to sort by, in precedence order.
  *                 Prefix any name with `-` to sort it in descending order.
  */
-export function byPropertiesOf<T extends object> (sortBy: Array<sortArg<T>>) {
+export function byPropertiesOf<T extends object> (sortBy: sortArg<T>[]) {
     function compareByProperty (arg: sortArg<T>) {
         let key: keyof T
         let sortOrder = 1
@@ -48,6 +48,6 @@ export function byPropertiesOf<T extends object> (sortBy: Array<sortArg<T>>) {
  * @param sortBy - the names of the properties to sort by, in precedence order.
  *                 Prefix any name with `-` to sort it in descending order.
  */
-export function sort<T extends object> (arr: T[], ...sortBy: Array<sortArg<T>>) {
+export function sort<T extends object> (arr: T[], ...sortBy: sortArg<T>[]) {
     arr.sort(byPropertiesOf<T>(sortBy))
 }

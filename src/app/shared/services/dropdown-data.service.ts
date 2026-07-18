@@ -24,7 +24,7 @@ export class DropdownDataService {
   private canonicalServices: string[] = [];
   private canonicalTypes: string[] = [];
   private canonicalPlaces: string[] = [];
-  private canonicalLoaded: boolean = false;
+  private canonicalLoaded = false;
 
   constructor(
     private _serviceService: ServiceService,

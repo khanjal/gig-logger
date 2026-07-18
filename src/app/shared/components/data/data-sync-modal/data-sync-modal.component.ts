@@ -143,11 +143,11 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         await this.completeSync();
     }
 
-    async warmup(startFrom: number = 0) {
+    async warmup(startFrom = 0) {
         this.startTimer(startFrom);
         this.appendToTerminal("Checking service status...");
         
-        let response = await this._sheetService.warmUpLambda();
+        const response = await this._sheetService.warmUpLambda();
         if (!response) {
             this.processFailure("OFFLINE");
             return;
@@ -158,7 +158,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     async saveData() {
-        let sheetData = {} as ISheetSavePayload;
+        const sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
         // Collect unsaved items once — reused for shift calculation, payload, and synced-ID tracking.
@@ -188,7 +188,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         const syncedExpenseIds = new Set(unsavedExpenses.filter(expense => expense.id !== undefined).map(expense => expense.id!));
 
         this.appendToTerminal("Saving changes...");
-        let messages = await this._gigLoggerService.saveSheetData(sheetData);
+        const messages = await this._gigLoggerService.saveSheetData(sheetData);
         
         // Process the response using the helper
         const result = ApiMessageHelper.processSheetSaveResponse(messages);
@@ -312,7 +312,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
     private async getData() {
         this.appendToTerminal("Getting sheet data...");
-        let data = await this._sheetService.getSpreadsheetData(this.defaultSheet);
+        const data = await this._sheetService.getSpreadsheetData(this.defaultSheet);
 
         if (!data) {
             this.processFailure("ERROR");
@@ -321,7 +321,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         this.appendToLastMessage(`DONE (${this.currentTime() - this.time}s)`);
 
         data.messages.forEach(message => {
-            let messageLevel = message.level.toLowerCase() as MessageType;
+            const messageLevel = message.level.toLowerCase() as MessageType;
             if (messageLevel !== 'info') {
                 this.syncState.update(s => ({ ...s, hasNonInfoMessage: true }));
             }
@@ -330,13 +330,13 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
         await this.loadData(data);
 
-        let secondarySpreadsheets = (await this._sheetService.getSpreadsheets())
+        const secondarySpreadsheets = (await this._sheetService.getSpreadsheets())
             .filter(x => x.default !== "true");
         
         for (const secondarySpreadsheet of secondarySpreadsheets) {
             this.time = this.currentTime();
             this.appendToTerminal("Appending sheet data...");
-            let data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
+            const data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
             
             if (!data) {
                 this.processFailure("ERROR");
@@ -469,7 +469,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
     }
 
-    private startTimer(startFrom: number = 0) {
+    private startTimer(startFrom = 0) {
         if (this.timerSubscription) {
             this.timerSubscription.unsubscribe();
             this.timerSubscription = null;

@@ -70,10 +70,10 @@ export class ShiftFormComponent implements OnInit, OnChanges {
   computedTotals: ITripTotalsViewModel = this.createEmptyTotals();
   readonly tripTotals$ = new BehaviorSubject<ITripTotalsViewModel>(this.createEmptyTotals());
 
-  computedShiftNumber: number = 1;
+  computedShiftNumber = 1;
   shift: IShift | undefined;
-  maxRowId: number = 1;
-  private hasNewShiftSubscriptions: boolean = false;
+  maxRowId = 1;
+  private hasNewShiftSubscriptions = false;
   private injector = inject(Injector);
 
   constructor(
@@ -176,7 +176,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     this.computedShiftNumber = ShiftHelper.getNextShiftNumber(service, shifts);
   }
 
-  async calculateTotals(shiftKey?: string, deferAssignment: boolean = false): Promise<ITripTotalsViewModel> {
+  async calculateTotals(shiftKey?: string, deferAssignment = false): Promise<ITripTotalsViewModel> {
     let trips: ITrip[] = [];
     const keyToQuery = shiftKey ?? this.shift?.key;
     if (keyToQuery) {

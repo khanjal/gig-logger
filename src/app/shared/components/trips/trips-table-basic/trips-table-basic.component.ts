@@ -17,7 +17,7 @@ export class TripsTableBasicComponent implements OnInit {
   
   displayedColumns: string[] = [];
 
-  prefers24Hour: boolean = false;
+  prefers24Hour = false;
   ngOnInit() { 
     this.displayedColumns = ['date', 'service', 'place', 'tips'];
     this.prefers24Hour = DateHelper.prefers24Hour();

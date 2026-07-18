@@ -170,7 +170,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async load(showSpinner: boolean = true) {
+  public async load(showSpinner = true) {
     // Prevent reload if editing form
     if (this.editingTripId()) return;
     if (showSpinner) {
@@ -304,7 +304,7 @@ export class TripComponent implements OnInit, OnDestroy {
   async confirmSaveTripsDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
     dialogData.message = message;
     dialogData.trueText = "Save";
@@ -326,7 +326,7 @@ export class TripComponent implements OnInit, OnDestroy {
     this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Load";
     dialogData.message = message;
     dialogData.trueText = "Load";
@@ -348,9 +348,9 @@ export class TripComponent implements OnInit, OnDestroy {
     });
   }
 
-  async reload(anchor?: string, isParentReload: boolean = false) {
+  async reload(anchor?: string, isParentReload = false) {
     await this.refreshDefaultSheetState();
-    let sheetId = this.defaultSheet()?.id;
+    const sheetId = this.defaultSheet()?.id;
     if (!sheetId) {
       return;
     }

@@ -6,7 +6,7 @@ import type { IExpense } from '@interfaces/expense.interface';
   standalone: true
 })
 export class GroupByMonthPipe implements PipeTransform {
-  transform(expenses: IExpense[]): { [month: string]: IExpense[] } {
+  transform(expenses: IExpense[]): Record<string, IExpense[]> {
     return expenses.reduce((groups, expense) => {
       let month: string;
       if (typeof expense.date === 'string' && expense.date.length >= 7) {
@@ -17,6 +17,6 @@ export class GroupByMonthPipe implements PipeTransform {
       if (!groups[month]) groups[month] = [];
       groups[month].push(expense);
       return groups;
-    }, {} as { [month: string]: IExpense[] });
+    }, {} as Record<string, IExpense[]>);
   }
 }

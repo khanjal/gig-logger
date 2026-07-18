@@ -37,7 +37,7 @@ export class UnitHelper {
      * @param decimals Number of decimal places (default: 1)
      * @returns Formatted distance string with unit
      */
-    static formatDistance(distanceInMiles: number, decimals: number = 1): string {
+    static formatDistance(distanceInMiles: number, decimals = 1): string {
         if (!distanceInMiles) {
             return `-- ${this.getPreferredDistanceUnit()}`;
         }

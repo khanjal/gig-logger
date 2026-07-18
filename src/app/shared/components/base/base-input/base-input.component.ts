@@ -25,8 +25,8 @@ export class BaseInputComponent implements ControlValueAccessor {
 
   // --- visual inputs ---
   @Input() label?: string;
-  @Input() type: string = 'text';
-  @Input() placeholder: string = '';
+  @Input() type = 'text';
+  @Input() placeholder = '';
   @Input() hint?: string;
   @Input() error?: string;
   @Input() icon?: string;

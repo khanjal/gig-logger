@@ -68,7 +68,7 @@ export class SearchService {
    * @param caseSensitive Whether to use case-sensitive matching
    * @returns Promise of search results
    */
-  async searchMultipleCategories(searchTerm: string, categories: SearchCategory[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  async searchMultipleCategories(searchTerm: string, categories: SearchCategory[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     if (!searchTerm || searchTerm.trim().length === 0 || categories.length === 0) {
       return [];
     }
@@ -115,7 +115,7 @@ export class SearchService {
   /**
    * Search services and return matching results with associated trips
    */
-  private async searchServices(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  private async searchServices(searchTerm: string, allTrips: ITrip[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     const services = await spreadsheetDB.services.toArray();
     const matchingServices = services
       .filter(s => {
@@ -134,7 +134,7 @@ export class SearchService {
   /**
    * Search places and return matching results with associated trips
    */
-  private async searchPlaces(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  private async searchPlaces(searchTerm: string, allTrips: ITrip[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     const places = await spreadsheetDB.places.toArray();
     const matchingPlaces = places
       .filter(p => {
@@ -153,7 +153,7 @@ export class SearchService {
   /**
    * Search names and return matching results with associated trips
    */
-  private async searchNames(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  private async searchNames(searchTerm: string, allTrips: ITrip[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     const names = await spreadsheetDB.names.toArray();
     const matchingNames = names
       .filter(n => {
@@ -172,7 +172,7 @@ export class SearchService {
   /**
    * Search addresses (both start and end) and return matching results
    */
-  private async searchAddresses(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  private async searchAddresses(searchTerm: string, allTrips: ITrip[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     const addresses = await spreadsheetDB.addresses.toArray();
     const matchingAddresses = addresses
       .filter(a => {
@@ -200,7 +200,7 @@ export class SearchService {
   /**
    * Search regions and return matching results with associated trips
    */
-  private async searchRegions(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  private async searchRegions(searchTerm: string, allTrips: ITrip[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     const regions = await spreadsheetDB.regions.toArray();
     const matchingRegions = regions
       .filter(r => {
@@ -219,7 +219,7 @@ export class SearchService {
   /**
    * Search types and return matching results with associated trips
    */
-  private async searchTypes(searchTerm: string, allTrips: ITrip[], exactMatch: boolean = false, caseSensitive: boolean = false): Promise<ISearchResult[]> {
+  private async searchTypes(searchTerm: string, allTrips: ITrip[], exactMatch = false, caseSensitive = false): Promise<ISearchResult[]> {
     const types = await spreadsheetDB.types.toArray();
     const matchingTypes = types
       .filter(t => {

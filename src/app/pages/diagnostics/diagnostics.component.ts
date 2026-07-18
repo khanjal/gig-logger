@@ -48,8 +48,8 @@ export class DiagnosticsComponent implements OnInit {
   isLoading = signal(false);
   isBulkFixing = signal(false);
   selectedValue: any[] = [];
-  selectedAddress: { [key: number]: string } = {};
-  selectedShiftToDelete: { [key: number]: number } = {};
+  selectedAddress: Record<number, string> = {};
+  selectedShiftToDelete: Record<number, number> = {};
 
   constructor(
     private _shiftService: ShiftService,

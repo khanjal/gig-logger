@@ -15,7 +15,7 @@ export class NameService extends GenericCrudService<IName> {
     names$ = liveQuery(() => spreadsheetDB.names.toArray());
     
     public async deleteUnsaved() {
-        let names = await this.getUnsaved();
+        const names = await this.getUnsaved();
         names.forEach(async name => {
             await spreadsheetDB.names.delete(name.id!);
         });

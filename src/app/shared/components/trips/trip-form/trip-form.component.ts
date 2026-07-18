@@ -77,13 +77,13 @@ const NEW_SHIFT_VALUE = 'new';
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
-  @Output("editModeExit") editModeExit: EventEmitter<string | undefined> = new EventEmitter();
-  @Input() isInEditMode: boolean = false;
+  @Output() parentReload = new EventEmitter<any>();
+  @Output() editModeExit = new EventEmitter<string | undefined>();
+  @Input() isInEditMode = false;
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
   // Typed FormGroup for better compile-time safety
-  tripForm: FormGroup<{
+  tripForm = new FormGroup<{
     shift: FormControl<string | null>;
     service: FormControl<string | null>;
     region: FormControl<string | null>;
@@ -105,7 +105,7 @@ export class TripFormComponent implements OnInit {
     orderNumber: FormControl<string | null>;
     note: FormControl<string | null>;
     exclude: FormControl<string | null>;
-  }> = new FormGroup({
+  }>({
     shift: new FormControl<string | null>(NEW_SHIFT_VALUE),
     service: new FormControl<string | null>(null),
     region: new FormControl<string | null>(null),
@@ -130,11 +130,11 @@ export class TripFormComponent implements OnInit {
   });
 
   isNewShift = signal<boolean>(true);
-  showAdvancedPay: boolean = false;
-  showPickupAddress: boolean = false;
-  showOdometer: boolean = false;
-  showOrder: boolean = false;
-  showTimes: boolean = false;
+  showAdvancedPay = false;
+  showPickupAddress = false;
+  showOdometer = false;
+  showOrder = false;
+  showTimes = false;
 
   selectedAddress: IAddress | undefined;
   selectedAddressDeliveries: IDelivery[] = [];
@@ -150,7 +150,7 @@ export class TripFormComponent implements OnInit {
   selectedShift: IShift | undefined;
   selectedShiftOption = signal<IShiftSummaryOption | undefined>(undefined);
 
-  title: string = "Add Trip";
+  title = "Add Trip";
 
   constructor(
       @Optional() public dialogRef: MatDialogRef<TripFormComponent>,
@@ -201,8 +201,8 @@ export class TripFormComponent implements OnInit {
     const selectedShiftKey = this.tripForm.value.shift;
 
     if (!selectedShiftKey || selectedShiftKey === NEW_SHIFT_VALUE) {
-      let shifts: IShift[] = [];
-      let today: string = DateHelper.toISO();
+      const shifts: IShift[] = [];
+      const today: string = DateHelper.toISO();
 
       shifts.push(...await this._shiftService.query("date", today));
       
@@ -649,14 +649,14 @@ export class TripFormComponent implements OnInit {
   }
 
   // Remove keyboard handling - now handled by focus-scroll directive
-  keyboardPadding: boolean = false;
+  keyboardPadding = false;
 
   // --- Voice input result handler ---
   async onVoiceResult(result: any) {
     if (!result) return;
 
     // Mapping of voice fields to form controls and their handlers
-    const fieldMap: Array<{key: string, handler: (val: any) => void | Promise<void>}> = [
+    const fieldMap: {key: string, handler: (val: any) => void | Promise<void>}[] = [
       { key: 'service', handler: (v) => this.tripForm.controls.service.setValue(v) },
       { key: 'pay', handler: (v) => this.tripForm.controls.pay.setValue(v) },
       { key: 'tip', handler: (v) => this.tripForm.controls.tip.setValue(v) },

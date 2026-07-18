@@ -20,7 +20,7 @@ export class StatHelper {
     }
 
     static getTripsTotal(trips: ITrip[] = []): IStatItem {
-        let item = {} as IStatItem;
+        const item = {} as IStatItem;
         
         item.trips = trips.length;
 

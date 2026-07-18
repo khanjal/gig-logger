@@ -21,38 +21,38 @@ export class ShiftService extends SyncableCrudService<IShift> {
     }
     
     public async getPreviousWeekShifts(): Promise<IShift[]> {
-        let shifts = [...await this.getShiftsPreviousDays(7)];
+        const shifts = [...await this.getShiftsPreviousDays(7)];
 
         return shifts;
     }
 
     public async getShiftsPreviousDays(days: number): Promise<IShift[]> {
-        let dates = DateHelper.getDatesArray(days);
-        let shifts = await spreadsheetDB.shifts.where("date").anyOf(dates).toArray();
+        const dates = DateHelper.getDatesArray(days);
+        const shifts = await spreadsheetDB.shifts.where("date").anyOf(dates).toArray();
 
         return shifts;
     }
 
     public async getShiftsByDate(date: string): Promise<IShift[]> {
-        let shifts = [...(await spreadsheetDB.shifts.where("date").equals(date).toArray())];
+        const shifts = [...(await spreadsheetDB.shifts.where("date").equals(date).toArray())];
 
         return shifts;
     }
 
     public async getShiftsByStartDate(date: string): Promise<IShift[]> {
-        let shifts = [...(await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray())];
+        const shifts = [...(await spreadsheetDB.shifts.where("date").aboveOrEqual(date).toArray())];
 
         return shifts;
     }
 
     public async getRemoteShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
-        let shifts = await spreadsheetDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
+        const shifts = await spreadsheetDB.shifts.where("date").between(startDate, endDate, true, true).toArray();
 
         return shifts;
     }
 
     public async getShiftsBetweenDates(startDate: string, endDate: string): Promise<IShift[]> {
-        let shifts = [...await this.getRemoteShiftsBetweenDates(startDate, endDate)];
+        const shifts = [...await this.getRemoteShiftsBetweenDates(startDate, endDate)];
 
         return shifts;
     }
@@ -60,7 +60,7 @@ export class ShiftService extends SyncableCrudService<IShift> {
 
 
     public async queryShiftByKey(key: string): Promise<IShift> {
-        let remoteShift = (await spreadsheetDB.shifts.where('key').equals(key).toArray())[0];
+        const remoteShift = (await spreadsheetDB.shifts.where('key').equals(key).toArray())[0];
 
         return remoteShift;
     }

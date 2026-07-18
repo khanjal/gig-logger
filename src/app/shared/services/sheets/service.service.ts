@@ -18,7 +18,7 @@ export class ServiceService extends GenericCrudService<IService> {
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
 
     public async deleteUnsaved() {
-        let services = await this.getUnsaved();
+        const services = await this.getUnsaved();
         services.forEach(async service => {
             await spreadsheetDB.services.delete(service.id!);
         });

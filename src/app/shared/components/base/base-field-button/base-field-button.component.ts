@@ -10,11 +10,11 @@ import { BaseButtonComponent } from '@components/base/base-button/base-button.co
 })
 export class BaseFieldButtonComponent {
   @Input() icon?: string;
-  @Input() iconColor: string = 'var(--color-text-primary)';
+  @Input() iconColor = 'var(--color-text-primary)';
   @Input() size: 'sm' | 'md' | 'lg' = 'sm';
   @Input() disabled = false;
   @Input() loading = false;
-  @Input() fab: boolean = false;
+  @Input() fab = false;
   @Input() fabStyle: 'regular' | 'mini' = 'regular';
   @Input() color?: string;
   @Input('aria-label') ariaLabel?: string;

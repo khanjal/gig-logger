@@ -7,9 +7,9 @@ import { ViewportService } from '@services/viewport.service';
   standalone: true
 })
 export class FocusScrollDirective implements OnDestroy {
-  @Input() enableBottomPadding: boolean = false;
-  @Input() delayDropdownOnMobile: boolean = true;
-  @Input() suppressDropdownAfterSelection: boolean = false;
+  @Input() enableBottomPadding = false;
+  @Input() delayDropdownOnMobile = true;
+  @Input() suppressDropdownAfterSelection = false;
   @Input() topBuffer = 100;
 
   @Output() scrollComplete = new EventEmitter<void>();

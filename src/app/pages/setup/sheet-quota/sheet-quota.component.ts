@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
 import { LoggerService } from '@services/logger.service';
 
@@ -7,7 +7,7 @@ import { LoggerService } from '@services/logger.service';
     templateUrl: './sheet-quota.component.html',
     standalone: true
 })
-export class SheetQuotaComponent {
+export class SheetQuotaComponent implements OnInit {
 
   quota = signal<string | undefined>(undefined);
   usage = signal<string | undefined>(undefined);

@@ -44,7 +44,7 @@ export class ShiftsComponent implements OnInit {
   saving = signal(false);
   unsavedShifts: IShift[] = [];
   unsavedData = signal(false);
-  pageSize: number = 20; // Number of shifts to load per request
+  pageSize = 20; // Number of shifts to load per request
   currentPage = signal(0); // Current page index
   isLoading = signal(false); // Prevent multiple simultaneous requests
   noMoreData = signal(false); // Stop loading if all data is loaded
@@ -146,7 +146,7 @@ export class ShiftsComponent implements OnInit {
   async confirmSaveDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
     dialogData.message = message;
     dialogData.trueText = "Save";

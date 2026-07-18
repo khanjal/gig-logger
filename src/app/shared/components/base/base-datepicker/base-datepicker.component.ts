@@ -68,7 +68,7 @@ export class BaseDatepickerComponent implements ControlValueAccessor {
   @Input() error?: string;
 
   /** Tailwind width class (e.g., 'w-full', 'w-1/2', 'w-[250px]') */
-  @Input() widthClass: string = 'w-full';
+  @Input() widthClass = 'w-full';
 
   /** Disabled state */
   @Input() disabled = false;
