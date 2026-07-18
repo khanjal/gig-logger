@@ -188,7 +188,7 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
-  exitEditMode(shiftId?: string) {
+  exitEditMode() {
     this.editId.set(null);
     this.router.navigate(['/shifts']);
     this.handleParentReload();

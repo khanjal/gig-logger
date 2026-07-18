@@ -340,7 +340,7 @@ export class TripFormComponent implements OnInit {
 
       await this._timerService.delay(1000);
       this._viewportScroller.scrollToAnchor('todaysTrips');
-    } catch (error) {
+    } catch {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_STORE_FAILED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     }
   }
@@ -379,7 +379,7 @@ export class TripFormComponent implements OnInit {
       } else if (this.dialogRef) {
         this.dialogRef.close();
       }
-    } catch (error) {
+    } catch {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_UPDATE_FAILED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     }
   }
@@ -608,7 +608,6 @@ export class TripFormComponent implements OnInit {
   private toShiftSummaryOption(shift: IShift): IShiftSummaryOption {
     const shiftNumberSuffix = shift.number === 0 ? '' : ` #${shift.number}`;
     const trips = shift.totalTrips || 0;
-    const pay = NumberHelper.formatNumber(shift.totalPay || 0);
     const tips = NumberHelper.formatNumber(shift.totalTips || 0);
     const total = NumberHelper.formatNumber(shift.grandTotal || 0);
 

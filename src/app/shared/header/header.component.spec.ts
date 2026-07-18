@@ -38,7 +38,7 @@ describe('HeaderComponent', () => {
     routerEvents = new Subject<any>();
     const routerSpy: any = {
       events: routerEvents.asObservable(),
-      createUrlTree: (...args: any[]) => ({}),
+      createUrlTree: () => ({}),
       navigate: jasmine.createSpy('navigate'),
       serializeUrl: (_: any) => ''
     };
@@ -70,7 +70,7 @@ describe('HeaderComponent', () => {
     // behavior should call `await component.ngOnInit()` themselves.
     // Tear down any subscriptions started in the constructor so the test
     // environment doesn't remain unstable.
-    try { component.ngOnDestroy(); } catch (e) { /* ignore */ }
+    try { component.ngOnDestroy(); } catch { /* ignore */ }
   });
 
   it('toggles menu open/close', () => {

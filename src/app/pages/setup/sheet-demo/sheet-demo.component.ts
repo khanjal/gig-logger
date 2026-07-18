@@ -1,4 +1,3 @@
-
 import { Component, EventEmitter, Output, signal, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';

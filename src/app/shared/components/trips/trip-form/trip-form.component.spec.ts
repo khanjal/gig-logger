@@ -19,7 +19,6 @@ import { DateHelper } from '@helpers/date.helper';
 describe('TripFormComponent', () => {
   let component: TripFormComponent;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
-  let viewportScroller: jasmine.SpyObj<ViewportScroller>;
   let shiftService: jasmine.SpyObj<ShiftService>;
   let tripService: jasmine.SpyObj<TripService>;
   let placeService: jasmine.SpyObj<PlaceService>;
@@ -62,7 +61,6 @@ describe('TripFormComponent', () => {
     }).compileComponents();
 
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    viewportScroller = TestBed.inject(ViewportScroller) as jasmine.SpyObj<ViewportScroller>;
     shiftService = TestBed.inject(ShiftService) as jasmine.SpyObj<ShiftService>;
     tripService = TestBed.inject(TripService) as jasmine.SpyObj<TripService>;
     placeService = TestBed.inject(PlaceService) as jasmine.SpyObj<PlaceService>;
@@ -243,7 +241,7 @@ describe('TripFormComponent', () => {
     component.shifts = [oldShift];
 
     // No today's shifts returned
-    shiftService.query.and.callFake(async (field: string, value: any) => []);
+    shiftService.query.and.callFake(async () => []);
 
     // Ensure tripService will accept adds
     tripService.getMaxRowId.and.returnValue(Promise.resolve(100));

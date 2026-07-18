@@ -16,7 +16,6 @@ describe('PollingService', () => {
   let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
   let syncStatusSpy: jasmine.SpyObj<SyncStatusService>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
-  let sheetServiceSpy: jasmine.SpyObj<SpreadsheetService>;
   let gigWorkflowSpy: jasmine.SpyObj<GigWorkflowService>;
   let authSpy: jasmine.SpyObj<AuthGoogleService>;
 
@@ -64,7 +63,6 @@ describe('PollingService', () => {
     unsavedDataSpy = TestBed.inject(UnsavedDataService) as jasmine.SpyObj<UnsavedDataService>;
     syncStatusSpy = TestBed.inject(SyncStatusService) as jasmine.SpyObj<SyncStatusService>;
     snackBarSpy = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    sheetServiceSpy = TestBed.inject(SpreadsheetService) as jasmine.SpyObj<SpreadsheetService>;
     gigWorkflowSpy = TestBed.inject(GigWorkflowService) as jasmine.SpyObj<GigWorkflowService>;
     authSpy = TestBed.inject(AuthGoogleService) as jasmine.SpyObj<AuthGoogleService>;
   });
@@ -73,7 +71,7 @@ describe('PollingService', () => {
     // Clean up any active polling
     try {
       service.stopPolling();
-    } catch (e) {
+    } catch {
       // Ignore errors during cleanup
     }
     service.ngOnDestroy();

@@ -11,7 +11,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
-
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
 import { combineLatest, from, of } from 'rxjs';
@@ -20,25 +19,6 @@ import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
 // Chart.js registration
 Chart.register(...registerables);
 Chart.register(ChartDataLabels);
-
-// Utility Functions
-function formatDate(date: Date, type: 'day' | 'week' | 'month' | 'quarter' | 'year') {
-  if (type === 'year') return date.getFullYear().toString();
-  if (type === 'quarter') {
-    const year = date.getFullYear();
-    const quarter = Math.floor(date.getMonth() / 3) + 1;
-    return `Q${quarter} ${year}`;
-  }
-  if (type === 'month') return date.toLocaleString('default', { month: 'short', year: 'numeric' });
-  if (type === 'week') {
-    const first = new Date(date);
-    first.setDate(date.getDate() - date.getDay() + 1); // Monday
-    const last = new Date(first);
-    last.setDate(first.getDate() + 6); // Sunday
-    return `${first.toLocaleDateString()} - ${last.toLocaleDateString()}`;
-  }
-  return date.toLocaleDateString();
-}
 
 function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 'quarter' | 'year' {
   const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
@@ -104,9 +84,9 @@ export class MetricsComponent implements OnInit {
           }
           return true;
         },
-        color: (ctx) => this.getTextColor(),
+        color: () => this.getTextColor(),
         font: { weight: 'bold', size: 14 },
-        formatter: (value, ctx) => Math.round(value),
+        formatter: (value) => Math.round(value),
       },
       tooltip: {
         callbacks: {
@@ -115,8 +95,8 @@ export class MetricsComponent implements OnInit {
       }
     },
     scales: {
-      x: { stacked: true, grid: { display: false }, ticks: { color: (ctx) => this.getTextColor() } },
-      y: { stacked: true, grid: { color: (ctx) => this.getGridColor() }, ticks: { color: (ctx) => this.getTextColor() } }
+      x: { stacked: true, grid: { display: false }, ticks: { color: () => this.getTextColor() } },
+      y: { stacked: true, grid: { color: () => this.getGridColor() }, ticks: { color: () => this.getTextColor() } }
     }
   };
 
@@ -136,9 +116,9 @@ export class MetricsComponent implements OnInit {
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
         },
-        color: (ctx) => this.getTextColor(),
+        color: () => this.getTextColor(),
         font: { weight: 'bold', size: 14 },
-        formatter: (value, ctx) => Math.round(value),
+        formatter: (value) => Math.round(value),
       },
       tooltip: {
         callbacks: {
@@ -147,8 +127,8 @@ export class MetricsComponent implements OnInit {
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: (ctx) => this.getTextColor() } },
-      y: { grid: { color: (ctx) => this.getGridColor() }, ticks: { color: (ctx) => this.getTextColor() } }
+      x: { grid: { display: false }, ticks: { color: () => this.getTextColor() } },
+      y: { grid: { color: () => this.getGridColor() }, ticks: { color: () => this.getTextColor() } }
     }
   };
 
@@ -166,7 +146,7 @@ export class MetricsComponent implements OnInit {
         font: { weight: 'bold', size: 16 },
         textShadowColor: this.cssVar('--color-text-primary'),
         textShadowBlur: 6,
-        formatter: (value: number, ctx: any) => value > 0 ? value : '',
+        formatter: (value: number) => value > 0 ? value : '',
         display: (ctx: any) => ctx.dataset.data[ctx.dataIndex] > 0,
       }
     }
@@ -257,7 +237,7 @@ export class MetricsComponent implements OnInit {
   private applyChartData(filtered: any[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
-    this.updateServicePie(filtered, aggType);
+    this.updateServicePie(filtered);
     this.updateYearlyComparison(filtered);
   }
 
@@ -405,7 +385,7 @@ export class MetricsComponent implements OnInit {
     });
   }
 
-  updateServicePie(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
+  updateServicePie(filteredShifts = this.shifts()) {
     const serviceCounts: Record<string, number> = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);

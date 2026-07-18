@@ -76,7 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Subscribe to header updates with automatic cleanup on destroy
     this._commonService.onHeaderLinkUpdate
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
+      .subscribe(() => {
         this.load();
       });
     
@@ -147,7 +147,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     try {
       const sheets = (await this._spreadsheetService.getSpreadsheets()) || [];
       this.localOnlyMode.set(!this.isAuthenticated() && sheets.length > 0);
-    } catch (e) {
+    } catch {
       this.localOnlyMode.set(false);
     }
 
@@ -155,7 +155,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     try {
       const defaultSheets = (await this._spreadsheetService.querySpreadsheets('default', 'true')) || [];
       this.defaultSheet.set(defaultSheets[0]);
-    } catch (e) {
+    } catch {
       // ignore - defaultSheet remains whatever it was
     }
 

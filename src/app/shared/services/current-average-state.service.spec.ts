@@ -27,7 +27,7 @@ describe('CurrentAverageStateService', () => {
       // handle monday vs selected date by checking day
       return d.getDate() === 1 ? '2024-01-01' : '2024-01-02';
     });
-    spyOn(DateHelper, 'parseLocalDate').and.callFake((s: string) => new Date(2024, 0, 2));
+    spyOn(DateHelper, 'parseLocalDate').and.callFake(() => new Date(2024, 0, 2));
     spyOn(DateHelper, 'getDayOfWeek').and.returnValue(2);
     spyOn(DateHelper, 'getMonthYearString').and.returnValue('1-2024');
 

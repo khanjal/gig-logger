@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, SimpleChanges, inject } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, inject } from '@angular/core';
 
 @Directive({
   selector: '[appBaseButton]',
@@ -24,7 +24,7 @@ export class BaseButtonDirective implements OnChanges, OnDestroy {
     this.renderer.addClass(this.host, 'app-base-button');
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.updateClasses();
     this.updateDisabled();
   }

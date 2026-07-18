@@ -143,7 +143,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  setDisabledState?(isDisabled: boolean): void {}
+  setDisabledState?(): void {}
 
   async ngOnInit(): Promise<void> {
     this.validateSearchType();
@@ -261,7 +261,7 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
     // Clear suggestions and close dropdown so the selected item doesn't reappear
     this.filteredItemsArray.set([]);
     if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
-      try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+      try { this.autocompleteTrigger.closePanel(); } catch { /* ignore */ }
     }
 
     // Blur input after selection
@@ -279,12 +279,12 @@ export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
       Promise.resolve().then(async () => {
         try {
           await this.onInputSelect(item);
-        } catch (e) {
+        } catch {
           // ignore selection errors
         }
         // Ensure the autocomplete panel is closed after selection (extra guard for mobile)
         if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
-          try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+          try { this.autocompleteTrigger.closePanel(); } catch { /* ignore */ }
         }
       });
     }

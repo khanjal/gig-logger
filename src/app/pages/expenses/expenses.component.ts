@@ -1,5 +1,4 @@
 import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
-import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

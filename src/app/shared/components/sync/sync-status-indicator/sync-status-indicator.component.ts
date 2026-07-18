@@ -99,7 +99,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     // Track auth state (immediate sync-capable check + profile updates)
     try {
       this.isSignedIn.set(this.authService.isAuthenticatedSync());
-    } catch (err) {
+    } catch {
       this.isSignedIn.set(false);
     }
 
@@ -158,7 +158,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     this.hasUnsavedChanges.set(await this.unsavedDataService.hasUnsavedData());
     try {
       this.unsavedCounts.set(await this.unsavedDataService.getUnsavedCounts());
-    } catch (err) {
+    } catch {
       // ignore errors getting counts
     }
   }

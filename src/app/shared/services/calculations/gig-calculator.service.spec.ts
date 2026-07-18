@@ -14,7 +14,6 @@ describe('GigCalculatorService', () => {
   let shiftService: jasmine.SpyObj<ShiftService>;
   let tripService: jasmine.SpyObj<TripService>;
   let weekdayService: jasmine.SpyObj<WeekdayService>;
-  let loggerService: jasmine.SpyObj<LoggerService>;
 
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
     id: overrides.id ?? 1,
@@ -105,7 +104,6 @@ describe('GigCalculatorService', () => {
     shiftService = TestBed.inject(ShiftService) as jasmine.SpyObj<ShiftService>;
     tripService = TestBed.inject(TripService) as jasmine.SpyObj<TripService>;
     weekdayService = TestBed.inject(WeekdayService) as jasmine.SpyObj<WeekdayService>;
-    loggerService = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
   });
 
   it('should be created', () => {

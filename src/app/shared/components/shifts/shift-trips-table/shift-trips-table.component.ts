@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, signal, SimpleChanges, inject } from '@angular/core';
-import { CommonModule, NgClass, CurrencyPipe } from '@angular/common';
+import { NgClass, CurrencyPipe } from '@angular/common';
 import { TripService } from '@services/sheets/trip.service';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';

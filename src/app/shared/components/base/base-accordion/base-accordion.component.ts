@@ -1,4 +1,4 @@
-import { Component, AfterContentInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 
 @Component({
@@ -12,9 +12,5 @@ import { Component, AfterContentInit } from '@angular/core';
   `,
   styleUrls: ['./base-accordion.component.scss']
 })
-export class BaseAccordionComponent implements AfterContentInit {
-  ngAfterContentInit() {
-    // ensure only one open by default — items manage their own state but this
-    // provides a hook for future single-open behavior.
-  }
+export class BaseAccordionComponent {
 }

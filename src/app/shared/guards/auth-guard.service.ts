@@ -32,7 +32,7 @@ export class AuthGuardService {
             if (hasLocal) {
                 return true;
             }
-        } catch (e) {
+        } catch {
             // If the spreadsheet service fails, fall back to redirecting to setup
             this.router.navigate(['setup']);
             return false;
@@ -48,6 +48,6 @@ export class AuthGuardService {
     }
 }
 
-export const canActivateAuth: CanActivateFn = async (route, state) => {
+export const canActivateAuth: CanActivateFn = async () => {
     return await inject(AuthGuardService).canActivate();
 };

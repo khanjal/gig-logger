@@ -66,7 +66,7 @@ describe('ApiService (focused tests)', () => {
 
   it('getSheetData follows S3 flow when response indicates isStoredInS3', async () => {
     // First call returns a payload indicating S3 link
-    httpSpy.get.and.callFake((url: string, options?: any) => {
+    httpSpy.get.and.callFake((url: string) => {
       if (url && url.indexOf('/sheets/all') !== -1) {
         return of({ isStoredInS3: true, s3Link: 'http://s3/link' });
       }

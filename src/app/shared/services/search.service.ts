@@ -8,8 +8,6 @@ import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/s
 })
 export class SearchService {
 
-  constructor() { }
-
   /**
    * Search across all database tables for a given search term
    * @param searchTerm The term to search for

@@ -354,7 +354,6 @@ describe('SearchInputComponent', () => {
   it('openGoogleMaps opens a new window with encoded query', () => {
     const orig = window.open;
     let openedUrl = '' as any;
-    // @ts-ignore - spy on window.open
     (window as any).open = ((url: string) => { openedUrl = url; return null; }) as any;
 
     component.fieldName = 'FieldName';

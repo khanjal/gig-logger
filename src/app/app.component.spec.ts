@@ -26,7 +26,7 @@ describe('AppComponent', () => {
   afterEach(() => {
     try {
       Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true });
-    } catch (e) {
+    } catch {
       // ignore in constrained environments
     }
   });

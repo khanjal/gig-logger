@@ -105,9 +105,9 @@ describe('DailyService', () => {
 
   it('paginate() with sortField uses orderBy chain', async () => {
     const paged = [makeDaily({ day: 3 }), makeDaily({ day: 4 })];
-    spyOn(spreadsheetDB.daily, 'orderBy').and.callFake((field: string) => ({
-      reverse: () => ({ offset: (o: number) => ({ limit: (l: number) => ({ toArray: () => Promise.resolve(paged) }) }) }),
-      offset: (o: number) => ({ limit: (l: number) => ({ toArray: () => Promise.resolve(paged) }) }),
+    spyOn(spreadsheetDB.daily, 'orderBy').and.callFake(() => ({
+      reverse: () => ({ offset: () => ({ limit: () => ({ toArray: () => Promise.resolve(paged) }) }) }),
+      offset: () => ({ limit: () => ({ toArray: () => Promise.resolve(paged) }) }),
       toArray: () => Promise.resolve(paged)
     }) as any);
 

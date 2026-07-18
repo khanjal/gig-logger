@@ -1,7 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
-
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -77,7 +76,7 @@ export class HomeComponent implements OnInit {
         try {
           const defaultSheet = await this.spreadsheetService.getDefaultSheet();
           this.hasDefaultSheet.set(!!defaultSheet);
-        } catch (error) {
+        } catch {
           this.hasDefaultSheet.set(false);
         }
       }

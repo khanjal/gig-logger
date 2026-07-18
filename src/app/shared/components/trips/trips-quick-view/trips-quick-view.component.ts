@@ -125,7 +125,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
       const tripYear = this.parsedTripDate.getFullYear();
       const now = new Date();
       this.dateFormat = tripYear === now.getFullYear() ? DATE_FORMATS.SHORT_DATE : DATE_FORMATS.SHORT_DATE_WITH_YEAR;
-    } catch (e) {
+    } catch {
       this.parsedTripDate = null;
       this.dateFormat = DATE_FORMATS.SHORT_DATE;
     }

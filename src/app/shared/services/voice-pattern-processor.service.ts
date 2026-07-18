@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { NumberHelper } from '@helpers/number.helper';
 import { AddressHelper } from '@helpers/address.helper';
-import { VOICE_PATTERNS, PatternDefinition } from '@components/voice-input/voice-patterns.config';
+import { VOICE_PATTERNS } from '@components/voice-input/voice-patterns.config';
 import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
 
 /**

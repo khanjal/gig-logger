@@ -46,7 +46,7 @@ export class PermissionService {
           this.microphoneState$.next(status.state as PermissionState);
         };
       }
-    } catch (e) {
+    } catch {
       if ((navigator as any).mediaDevices && typeof (navigator as any).mediaDevices.getUserMedia === 'function') {
         this.microphoneState$.next('prompt');
       } else {
@@ -73,7 +73,7 @@ export class PermissionService {
           this.locationState$.next(status.state as PermissionState);
         };
       }
-    } catch (e) {
+    } catch {
       if ('geolocation' in navigator) {
         this.locationState$.next('prompt');
       } else {
@@ -105,7 +105,7 @@ export class PermissionService {
       stream.getTracks().forEach(t => t.stop());
       this.microphoneState$.next('granted');
       return 'granted';
-    } catch (e) {
+    } catch {
       this.microphoneState$.next('denied');
       return 'denied';
     }
@@ -126,7 +126,7 @@ export class PermissionService {
       });
       this.locationState$.next('granted');
       return 'granted';
-    } catch (e) {
+    } catch {
       this.locationState$.next('denied');
       return 'denied';
     }

@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import type { ISyncMessage, ISyncState, SyncOperation, SyncStatus } from '@interfaces/sync-status.interface';
+import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync-status.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +26,6 @@ export class SyncStatusService implements OnDestroy {
   public readonly syncState$: Observable<ISyncState> = this.syncStateSubject.asObservable();
   public readonly messages$: Observable<ISyncMessage[]> = this.messagesSubject.asObservable();
   public readonly lastSuccessfulSync$: Observable<Date | null> = this.lastSuccessfulSyncSubject.asObservable();
-
-  constructor() {}
 
   ngOnDestroy(): void {
     this.stopCountdown();

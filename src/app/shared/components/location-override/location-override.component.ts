@@ -157,7 +157,7 @@ export class LocationOverrideComponent implements OnInit {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       });
-    } catch (error) {
+    } catch {
       this.currentRealLocation.set(null);
     } finally {
       this.gettingLocation.set(false);

@@ -33,6 +33,6 @@ export class DefaultSheetGuard {
   
 }
 
-export const canActivateSheet: CanActivateFn = (route, state) => {
+export const canActivateSheet: CanActivateFn = () => {
     return inject(DefaultSheetGuard).canActivate();
 };

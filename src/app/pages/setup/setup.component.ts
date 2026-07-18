@@ -1,7 +1,6 @@
 // Angular Core
 import { Component, signal, ViewChild, OnInit, inject } from '@angular/core';
 
-
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
@@ -102,7 +101,7 @@ export class SetupComponent implements OnInit {
       if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
         this.version.set(`${this.version()}-test`);
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   }

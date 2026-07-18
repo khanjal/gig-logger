@@ -86,7 +86,7 @@ export class FocusScrollDirective implements OnDestroy {
     try {
       const snapshot = this.viewport?.getSnapshot?.();
       if (snapshot) return Math.max(0, snapshot.keyboardHeight || 0);
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
 
     const visualViewport = window.visualViewport;
     if (!visualViewport) return 0;
@@ -132,7 +132,7 @@ export class FocusScrollDirective implements OnDestroy {
         }
       }
       return maxHeight;
-    } catch (e) {
+    } catch {
       return 0;
     }
   }
@@ -147,7 +147,7 @@ export class FocusScrollDirective implements OnDestroy {
       this.paddingApplied = extraPadding;
       document.body.style.paddingBottom = `${this.baselineBodyPadding + extraPadding}px`;
       document.documentElement.classList.add('rgv-bottom-padding-active');
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
   }
 
   private removeBottomPadding(): void {
@@ -155,7 +155,7 @@ export class FocusScrollDirective implements OnDestroy {
     try {
       document.body.style.paddingBottom = this.previousBodyPadding;
       document.documentElement.classList.remove('rgv-bottom-padding-active');
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
     this.previousBodyPadding = null;
     this.baselineBodyPadding = 0;
     this.paddingApplied = 0;
@@ -194,7 +194,7 @@ export class FocusScrollDirective implements OnDestroy {
       this.viewportSub?.unsubscribe();
       this.viewportSub = undefined;
       this.viewport.stop();
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
     this.isViewportListenersAttached = false;
   }
 

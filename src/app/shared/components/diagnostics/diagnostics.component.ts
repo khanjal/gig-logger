@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,7 +32,7 @@ interface DiagnosticItem {
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
-export class DiagnosticsComponent implements OnInit {
+export class DiagnosticsComponent {
   private _shiftService = inject(ShiftService);
   private _tripService = inject(TripService);
   private _addressService = inject(AddressService);
@@ -42,9 +42,6 @@ export class DiagnosticsComponent implements OnInit {
 
   dataDiagnostics = signal<DiagnosticItem[]>([]);
   isLoading = signal(false);
-  ngOnInit() {
-    // Diagnostics will only run when the user clicks the "Run Diagnostics" button
-  }
   async runDiagnostics() {
     this.isLoading.set(true);
     this.dataDiagnostics.set([]); // Clear previous results
@@ -156,7 +153,7 @@ export class DiagnosticsComponent implements OnInit {
     }
 
     // Find all shifts that have duplicates (groups with more than 1 shift)
-    for (const [key, shiftGroup] of keyMap) {
+    for (const shiftGroup of keyMap.values()) {
       if (shiftGroup.length > 1) {
         duplicates.push(...shiftGroup);
         duplicateGroups.push(shiftGroup);

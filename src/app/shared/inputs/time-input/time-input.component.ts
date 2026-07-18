@@ -40,7 +40,7 @@ export class TimeInputComponent implements ControlValueAccessor {
 
   value = '';
   
-  private onChange = (value: string) => {};
+  private onChange = (_value: string) => {};
   private onTouched = () => {};
 
   setCurrentTime() {

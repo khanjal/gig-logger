@@ -212,8 +212,9 @@ describe('LoggerService', () => {
 
       service.onLog.subscribe(() => {
         subscriber2Called = true;
-        
+
         if (subscriber1Called) {
+          expect(subscriber2Called).toBeTrue();
           done();
         }
       });

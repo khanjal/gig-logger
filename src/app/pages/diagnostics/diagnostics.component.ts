@@ -99,9 +99,7 @@ export class DiagnosticsComponent implements OnInit {
     const diagnostics: IDiagnosticItem[] = [];
     const shifts = await this._shiftService.list();
     const trips = await this._tripService.list();
-    const addresses = await this._addressService.list();
     const places = await this._placeService.list();
-    const names = await this._nameService.list();
 
     // Duplicate shifts via shared utility (same key)
     const shiftGroups = await this._shiftService.findDuplicates('key', { mode: 'equals', caseInsensitive: false, normalize: true });

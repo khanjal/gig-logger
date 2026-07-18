@@ -29,7 +29,7 @@ export class TripsModalComponent {
     this.dialogRef.close();
   }
 
-  onEditClicked(trip: ITrip): void {
+  onEditClicked(): void {
     // Close the dialog when edit is clicked
     this.dialogRef.close();
   }

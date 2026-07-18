@@ -303,7 +303,7 @@ export class ServerGooglePlacesService {
     if (useLocationBias) {
       try {
         userLocation = await this.getUserLocation();
-      } catch (error) {
+      } catch {
         // Silently handle location errors
       }
     }
@@ -342,7 +342,7 @@ export class ServerGooglePlacesService {
       if (locationResults.length > 0) {
         return locationResults;
       }
-    } catch (error) {
+    } catch {
       // Silently handle location-based errors
     }
     // No fallback: just return empty
@@ -367,7 +367,7 @@ export class ServerGooglePlacesService {
     try {
       const result = await navigator.permissions.query({ name: 'geolocation' });
       return result.state;
-    } catch (error) {
+    } catch {
       return 'prompt';
     }
   }

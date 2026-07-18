@@ -4,7 +4,6 @@ import { LoggerService } from './logger.service';
 
 describe('MockLocationService', () => {
   let service: MockLocationService;
-  let loggerSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(() => {
     const logger = jasmine.createSpyObj('LoggerService', ['info', 'warn', 'error']);
@@ -17,8 +16,7 @@ describe('MockLocationService', () => {
     });
     
     service = TestBed.inject(MockLocationService);
-    loggerSpy = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
-    
+
     // Clear localStorage before each test
     localStorage.clear();
   });

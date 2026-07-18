@@ -39,8 +39,8 @@ describe('ViewportService', () => {
         // subscription callback runs synchronously before `sub` is
         // assigned by the caller.
         setTimeout(() => {
-          try { sub.unsubscribe(); } catch (e) { /* ignore */ }
-          try { service.stop(); } catch (e) { /* ignore */ }
+          try { sub.unsubscribe(); } catch { /* ignore */ }
+          try { service.stop(); } catch { /* ignore */ }
           done();
         }, 0);
       }

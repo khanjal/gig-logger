@@ -60,7 +60,7 @@ describe('CustomCalendarHeaderComponent', () => {
     };
 
     const mockDateAdapter: any = {
-      format: (date: Date, fmt: any) => {
+      format: (date: Date) => {
         // mimic 'MMM YYYY' formatting
         const m = date.toLocaleString('en-US', { month: 'short' });
         const y = date.getFullYear();
@@ -99,7 +99,7 @@ describe('CustomCalendarHeaderComponent', () => {
       stateChanges: state$.asObservable(),
       activeDate: new Date()
     };
-    const mockDateAdapter: any = { format: () => '', addCalendarMonths: (d: any, a: any) => d, addCalendarYears: (d: any, a: any) => d };
+    const mockDateAdapter: any = { format: () => '', addCalendarMonths: (d: any) => d, addCalendarYears: (d: any) => d };
     const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } } as any;
     const mockCdr: any = { markForCheck: jasmine.createSpy('markForCheck') };
 

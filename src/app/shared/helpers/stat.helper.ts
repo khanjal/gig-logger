@@ -1,4 +1,3 @@
-import type { IShift } from "@interfaces/shift.interface";
 import type { IStatItem } from "@interfaces/stat-item.interface";
 import type { ITrip } from "@interfaces/trip.interface";
 import type { IDaily } from "@interfaces/daily.interface";
@@ -24,9 +23,6 @@ export class StatHelper {
         
         item.trips = trips.length;
 
-        trips.forEach(trip => {
-            
-        })
         item.distance = trips.filter(x => x.distance).map(x => x.distance).reduce((acc, value) => acc + value, 0);
         item.pay = trips.filter(x => x.pay).map(x => x.pay).reduce((acc, value) => acc + value, 0);
         item.tip = trips.filter(x => x.tip).map(x => x.tip).reduce((acc, value) => acc + value, 0);

@@ -1,5 +1,5 @@
 // Angular imports
-import { Component, ElementRef, Input, ViewChild, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
@@ -170,7 +170,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         if (unsavedShifts.length > 0) {
             try {
                 await this._gigLoggerService.calculateShiftTotals(unsavedShifts);
-            } catch (e) {
+            } catch {
                 this.appendToTerminal('Pre-save shift calculation failed; proceeding with save', 'warning');
             }
         }

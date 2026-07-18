@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import type { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
+import type { IUpdateEntry } from '@interfaces/update.interface';
 
 @Injectable({
   providedIn: 'root'

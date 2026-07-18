@@ -54,7 +54,7 @@ export class PollingService implements OnDestroy {
         fn.apply(this._logger, args);
         return;
       }
-    } catch (e) {
+    } catch {
       // fall through to console fallback
     }
 
@@ -262,7 +262,7 @@ export class PollingService implements OnDestroy {
               this.lastSnackbarTime = now;
               openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED);
             }
-          } catch (e) {
+          } catch {
             // swallow snackbar errors to avoid breaking autosave
           }
           this._syncStatusService.failSync('Not authenticated');
@@ -283,7 +283,7 @@ export class PollingService implements OnDestroy {
       if (unsavedShifts.length > 0) {
         try {
           await this._gigWorkflowService.calculateShiftTotals(unsavedShifts);
-        } catch (e) {
+        } catch {
           this.safeLog('warn', 'Pre-save shift calculation failed; proceeding with save');
         }
       }

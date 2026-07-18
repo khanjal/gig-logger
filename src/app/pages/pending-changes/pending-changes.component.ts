@@ -1,5 +1,4 @@
 import { Component, OnInit, effect, signal, inject } from '@angular/core';
-
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -87,7 +86,7 @@ export class PendingChangesComponent implements OnInit {
       const unsavedShifts = await this.shiftService.getUnsavedShifts();
       this.shifts.set(unsavedShifts);
       this.duplicateShiftKeys.set(ShiftHelper.getDuplicateShiftKeys(unsavedShifts));
-    } catch (err) {
+    } catch {
       this.trips.set([]);
       this.shifts.set([]);
       this.duplicateShiftKeys.set(new Set());
