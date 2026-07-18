@@ -24,6 +24,7 @@ describe('ViewportService', () => {
 
   it('emits on resize when started', (done) => {
     let count = 0;
+    let finished = false;
     service.start();
     const sub = service.viewportChange$.subscribe(() => {
       count++;

@@ -17,7 +17,7 @@ class MockViewportService {
 @Component({
   standalone: true,
   imports: [FocusScrollDirective],
-  template: `<input focusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
+  template: `<input appFocusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
 })
 class HostComponent {
   enableBottomPadding = false;

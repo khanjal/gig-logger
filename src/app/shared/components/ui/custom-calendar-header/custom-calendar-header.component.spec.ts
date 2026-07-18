@@ -1,9 +1,23 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { CustomCalendarHeaderComponent } from './custom-calendar-header.component';
 import { MatCalendar } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+
+function createHeader(mockCalendar: any, mockDateAdapter: any, mockFormats: any, mockCdr: any): CustomCalendarHeaderComponent<any> {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: MatCalendar, useValue: mockCalendar },
+      { provide: DateAdapter, useValue: mockDateAdapter },
+      { provide: MAT_DATE_FORMATS, useValue: mockFormats },
+      { provide: ChangeDetectorRef, useValue: mockCdr }
+    ]
+  });
+  return TestBed.runInInjectionContext(() => new CustomCalendarHeaderComponent<any>());
+}
 
 describe('CustomCalendarHeaderComponent', () => {
   let component: CustomCalendarHeaderComponent<any>;
@@ -59,7 +73,7 @@ describe('CustomCalendarHeaderComponent', () => {
     const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } } as any;
     const mockCdr: any = { markForCheck: jasmine.createSpy('markForCheck') };
 
-    const hdr = new CustomCalendarHeaderComponent<any>(mockCalendar as MatCalendar<any>, mockDateAdapter as DateAdapter<any>, mockFormats, mockCdr);
+    const hdr = createHeader(mockCalendar, mockDateAdapter, mockFormats, mockCdr);
 
     // periodLabel should be uppercase
     const label = hdr.periodLabel;
@@ -89,7 +103,7 @@ describe('CustomCalendarHeaderComponent', () => {
     const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } } as any;
     const mockCdr: any = { markForCheck: jasmine.createSpy('markForCheck') };
 
-    const hdr = new CustomCalendarHeaderComponent<any>(mockCalendar as MatCalendar<any>, mockDateAdapter as DateAdapter<any>, mockFormats, mockCdr);
+    const hdr = createHeader(mockCalendar, mockDateAdapter, mockFormats, mockCdr);
 
     // Emitting state change should call markForCheck
     state$.next();

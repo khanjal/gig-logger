@@ -1,5 +1,9 @@
 import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { ApiService } from './api.service';
+import { SecureCookieStorageService } from './secure-cookie-storage.service';
+import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 describe('ApiService (focused tests)', () => {
@@ -15,7 +19,14 @@ describe('ApiService (focused tests)', () => {
 
     localStorage.setItem(SESSION_CONSTANTS.USER_ID, 'user-123');
 
-    service = new ApiService(httpSpy, secureCookieSpy, loggerSpy);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: HttpClient, useValue: httpSpy },
+        { provide: SecureCookieStorageService, useValue: secureCookieSpy },
+        { provide: LoggerService, useValue: loggerSpy }
+      ]
+    });
+    service = TestBed.runInInjectionContext(() => new ApiService());
   });
 
   afterEach(() => {

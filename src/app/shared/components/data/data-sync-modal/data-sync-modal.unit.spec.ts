@@ -1,6 +1,13 @@
 import { of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DateHelper } from '@helpers/date.helper';
 import { DataSyncModalComponent } from './data-sync-modal.component';
+import { GigWorkflowService } from '@services/gig-workflow.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
+import { UnsavedDataService } from '@services/unsaved-data.service';
+import { TimerService } from '@services/timer.service';
+import { LoggerService } from '@services/logger.service';
 
 describe('DataSyncModalComponent (lightunit)', () => {
   let component: DataSyncModalComponent;
@@ -10,6 +17,22 @@ describe('DataSyncModalComponent (lightunit)', () => {
   let mockUnsaved: any;
   let mockTimer: any;
   let mockLogger: any;
+
+  function createComponent(config: any): DataSyncModalComponent {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: config },
+        { provide: MatDialogRef, useValue: dialogRef },
+        { provide: GigWorkflowService, useValue: mockGigService },
+        { provide: SpreadsheetService, useValue: mockSheetService },
+        { provide: UnsavedDataService, useValue: mockUnsaved },
+        { provide: TimerService, useValue: mockTimer },
+        { provide: LoggerService, useValue: mockLogger }
+      ]
+    });
+    return TestBed.runInInjectionContext(() => new DataSyncModalComponent());
+  }
 
   beforeEach(() => {
     dialogRef = { close: jasmine.createSpy('close') };
@@ -42,19 +65,11 @@ describe('DataSyncModalComponent (lightunit)', () => {
     // stable time formatting
     spyOn(DateHelper, 'getMinutesAndSeconds').and.returnValue('00:00');
 
-    component = new DataSyncModalComponent(
-      'save',
-      dialogRef,
-      mockGigService,
-      mockSheetService,
-      mockUnsaved,
-      mockTimer,
-      mockLogger
-    );
+    component = createComponent('save');
   });
 
   it('syncStatusLabel returns saved for save type', () => {
-    component = new DataSyncModalComponent('save' as any, dialogRef, mockGigService, mockSheetService, mockUnsaved, mockTimer, mockLogger);
+    component = createComponent('save');
     expect(component.syncStatusLabel).toBe('saved');
   });
 
@@ -80,7 +95,7 @@ describe('DataSyncModalComponent (lightunit)', () => {
 
   it('processFailure sets error type and respects autoCloseOnError when true', async () => {
     // set autoCloseOnError true via constructor config
-    component = new DataSyncModalComponent({ type: 'save', autoCloseOnError: true } as any, dialogRef, mockGigService, mockSheetService, mockUnsaved, mockTimer, mockLogger);
+    component = createComponent({ type: 'save', autoCloseOnError: true });
     await (component as any).warmup(0); // ensure timer started then stopped internally
     await (component as any).processFailure('ERROR');
     expect(component.terminalMessages().some(m => /auto-close/i.test(m.text))).toBeTrue();

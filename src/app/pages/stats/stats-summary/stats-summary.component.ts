@@ -50,8 +50,8 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   summaryCards = signal<ISummaryCard[]>([]);
 
   // Memoized computed properties
-  private _cachedBusiestDay: { date: string; trips: number } | null = null;
-  private _cachedHighestEarningDay: { date: string; total: number } | null = null;
+  private _cachedBusiestDay: { label: string; count: number; date: string } | null = null;
+  private _cachedHighestEarningDay: { label: string; total: number; date: string } | null = null;
   private _cachedBestWeekdayPerTrip: { label: string; value: number; dayIndex: number } | null = null;
   private _cachedBestWeekdayPerTime: { label: string; value: number; dayIndex: number } | null = null;
 
@@ -291,15 +291,15 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
       },
       {
         label: 'Busiest Day',
-        value: this.busiestDay.count > 0 ? `${this.busiestDay.count} trips` : '—',
-        subValue: this.busiestDay.count > 0 ? this.busiestDay.label : undefined,
-        action: this.busiestDay.count > 0 ? () => this.showBusiestDayTrips() : undefined
+        value: this.busiestDay && this.busiestDay.count > 0 ? `${this.busiestDay.count} trips` : '—',
+        subValue: this.busiestDay && this.busiestDay.count > 0 ? this.busiestDay.label : undefined,
+        action: this.busiestDay && this.busiestDay.count > 0 ? () => this.showBusiestDayTrips() : undefined
       },
       {
         label: 'Top Earning Day',
-        value: this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)}` : '—',
-        subValue: this.highestEarningDay.total > 0 ? this.highestEarningDay.label : undefined,
-        action: this.highestEarningDay.total > 0 ? () => this.showHighestEarningDayTrips() : undefined
+        value: this.highestEarningDay && this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)}` : '—',
+        subValue: this.highestEarningDay && this.highestEarningDay.total > 0 ? this.highestEarningDay.label : undefined,
+        action: this.highestEarningDay && this.highestEarningDay.total > 0 ? () => this.showHighestEarningDayTrips() : undefined
       },
       {
         label: 'Top Weekday $/Trip',
@@ -419,6 +419,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   showBusiestDayTrips(): void {
+    if (!this.busiestDay) return;
     const { label, date } = this.busiestDay;
     this.openTripsModal(
       `Busiest Day (${label})`,
@@ -427,6 +428,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   showHighestEarningDayTrips(): void {
+    if (!this.highestEarningDay) return;
     const { label, total, date } = this.highestEarningDay;
     this.openTripsModal(
       `Top Earning Day ($${NumberHelper.formatNumber(total)}) - ${label}`,

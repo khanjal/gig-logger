@@ -1,6 +1,15 @@
 import { SetupComponent } from './setup.component';
+import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonService } from '@services/common.service';
+import { LoggerService } from '@services/logger.service';
+import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ShiftService } from '@services/sheets/shift.service';
+import { TripService } from '@services/sheets/trip.service';
+import { TimerService } from '@services/timer.service';
+import { AuthGoogleService } from '@services/auth-google.service';
+import { VersionService } from '@services/version.service';
 import { of } from 'rxjs';
 
 describe('SetupComponent (class-only)', () => {
@@ -14,6 +23,24 @@ describe('SetupComponent (class-only)', () => {
   let versionService: any;
   let commonService: any;
   let logger: any;
+
+  function createComponent(): SetupComponent {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: MatDialog, useValue: dialogSpy },
+        { provide: MatSnackBar, useValue: snackSpy },
+        { provide: CommonService, useValue: commonService },
+        { provide: LoggerService, useValue: logger },
+        { provide: SpreadsheetService, useValue: spreadsheetService },
+        { provide: ShiftService, useValue: shiftService },
+        { provide: TripService, useValue: tripService },
+        { provide: TimerService, useValue: timerService },
+        { provide: AuthGoogleService, useValue: authService },
+        { provide: VersionService, useValue: versionService }
+      ]
+    });
+    return TestBed.runInInjectionContext(() => new SetupComponent());
+  }
 
   beforeEach(() => {
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -45,7 +72,7 @@ describe('SetupComponent (class-only)', () => {
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
     spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     await comp.ngOnInit();
     // authenticated and no sheets -> template condition (show setup) should be true
     expect(comp.isAuthenticated()).toBeTrue();
@@ -57,7 +84,7 @@ describe('SetupComponent (class-only)', () => {
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
     spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     await comp.ngOnInit();
     // signed out and no sheets -> setup card should be hidden
     expect(comp.isAuthenticated()).toBeFalse();
@@ -69,7 +96,7 @@ describe('SetupComponent (class-only)', () => {
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
     spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     await comp.ngOnInit();
     expect(comp.isAuthenticated()).toBeFalse();
     expect((comp.spreadsheets() ?? []).length).toBeGreaterThan(0);
@@ -81,7 +108,7 @@ describe('SetupComponent (class-only)', () => {
     spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([defaultSheet]));
     spreadsheetService.update.and.returnValue(Promise.resolve());
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     await comp.ngOnInit();
 
     const sheetToSet = { id: 's2', name: 'Other', default: 'false' } as any;
@@ -102,7 +129,7 @@ describe('SetupComponent (class-only)', () => {
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
     spreadsheetService.querySpreadsheets.and.returnValue(Promise.resolve([{ id: '1', name: 'S', default: 'true' }]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
 
     await comp.unlinkSpreadsheet({ id: '1', name: 'S', default: 'true' } as any);
@@ -117,7 +144,7 @@ describe('SetupComponent (class-only)', () => {
       { id: '2', name: 'S2', default: 'false' }
     ]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
 
     await comp.unlinkSpreadsheet({ id: '1', name: 'S1', default: 'true' } as any);
 
@@ -128,7 +155,7 @@ describe('SetupComponent (class-only)', () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
 
     spyOn(comp, 'load').and.returnValue(Promise.resolve());
     const clearSpy = spyOn(localStorage, 'clear');
@@ -144,7 +171,7 @@ describe('SetupComponent (class-only)', () => {
     authService.canSync.and.returnValue(Promise.resolve(false));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
 
     await comp.loadSheetDialog('load');
 
@@ -155,7 +182,7 @@ describe('SetupComponent (class-only)', () => {
     authService.canSync.and.returnValue(Promise.resolve(false));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
 
     await comp.confirmDeleteAndReloadDialog();
 
@@ -168,7 +195,7 @@ describe('SetupComponent (class-only)', () => {
     const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(false) });
     dialogSpy.open.and.returnValue(dialogRefSpyObj);
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
 
     comp.confirmDeleteAndReloadDialog().then(() => {
       expect(dialogSpy.open).toHaveBeenCalled();
@@ -182,7 +209,7 @@ describe('SetupComponent (class-only)', () => {
     const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
     dialogSpy.open.and.returnValue(dialogRefSpyObj);
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'deleteAndReload').and.returnValue(Promise.resolve());
 
     comp.confirmDeleteAndReloadDialog().then(() => {
@@ -202,7 +229,7 @@ describe('SetupComponent (class-only)', () => {
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve(allSheets));
     spreadsheetService.deleteSpreadsheet.and.returnValue(Promise.resolve());
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'load').and.returnValue(Promise.resolve());
 
     const nonDefaultSheet = { id: '1', name: 'S1', default: 'false' };
@@ -216,7 +243,7 @@ describe('SetupComponent (class-only)', () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'load').and.returnValue(Promise.resolve());
     spyOn(comp, 'reload').and.returnValue(Promise.resolve());
 
@@ -228,7 +255,7 @@ describe('SetupComponent (class-only)', () => {
   });
 
   it('getDataSize returns placeholder string and updateHeader calls commonService', () => {
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     expect(comp.getDataSize()).toBe('0 bytes');
     (comp as any).updateHeader();
     expect(commonService.updateHeaderLink).toHaveBeenCalled();
@@ -241,7 +268,7 @@ describe('SetupComponent (class-only)', () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
 
     comp.confirmDeleteAllDialog().then(() => {
@@ -259,7 +286,7 @@ describe('SetupComponent (class-only)', () => {
     authService.canSync.and.returnValue(Promise.resolve(true));
     spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'deleteAllData').and.returnValue(Promise.resolve());
 
     await comp.confirmDeleteAllDialog();
@@ -273,7 +300,7 @@ describe('SetupComponent (class-only)', () => {
       { id: '2', name: 'S2', default: 'false' }
     ]));
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
 
     await comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true' } as any);
     expect(snackSpy.open).toHaveBeenCalled();
@@ -286,7 +313,7 @@ describe('SetupComponent (class-only)', () => {
     const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of(true) });
     dialogSpy.open.and.returnValue(dialogRefSpyObj);
 
-    const comp = new SetupComponent(dialogSpy as any, snackSpy as any, commonService, logger, spreadsheetService, shiftService, tripService, timerService, authService, versionService);
+    const comp = createComponent();
     spyOn(comp, 'unlinkSpreadsheet').and.returnValue(Promise.resolve());
 
     comp.confirmUnlinkSpreadsheetDialog({ id: '1', name: 'S1', default: 'true' } as any).then(() => {
@@ -297,13 +324,9 @@ describe('SetupComponent (class-only)', () => {
     });
   });
 });
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CommonService } from '@services/common.service';
-import { SpreadsheetService } from '@services/spreadsheet.service';
-import { TimerService } from '@services/timer.service';
 
 describe('SheetSetupComponent', () => {
   let component: SetupComponent;

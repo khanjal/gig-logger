@@ -76,23 +76,33 @@ export const createSpreadsheetServiceMock = () => {
   } as any;
 };
 
-export const createShiftServiceMock = () => jasmine.createSpyObj('ShiftService', [
-  'getAll',
-  'getById',
-  'add',
-  'update',
-  'delete',
-  'getShiftsBetweenDates'
-]);
+export const createShiftServiceMock = () => {
+  const mock = jasmine.createSpyObj('ShiftService', [
+    'getAll',
+    'getById',
+    'add',
+    'update',
+    'delete',
+    'getShiftsBetweenDates',
+    'getUnsavedShifts'
+  ]);
+  mock.getUnsavedShifts.and.returnValue(Promise.resolve([]));
+  return mock;
+};
 
-export const createTripServiceMock = () => jasmine.createSpyObj('TripService', [
-  'getAll',
-  'getById',
-  'add',
-  'update',
-  'delete',
-  'getBetweenDates'
-]);
+export const createTripServiceMock = () => {
+  const mock = jasmine.createSpyObj('TripService', [
+    'getAll',
+    'getById',
+    'add',
+    'update',
+    'delete',
+    'getBetweenDates',
+    'getUnsaved'
+  ]);
+  mock.getUnsaved.and.returnValue(Promise.resolve([]));
+  return mock;
+};
 
 export const commonTestingImports = [
   HttpClientTestingModule,

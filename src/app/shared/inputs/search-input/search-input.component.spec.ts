@@ -1,10 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 
 import { SearchInputComponent } from './search-input.component';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { AddressService } from '@services/sheets/address.service';
+import { NameService } from '@services/sheets/name.service';
 import { PlaceService } from '@services/sheets/place.service';
+import { RegionService } from '@services/sheets/region.service';
+import { ServiceService } from '@services/sheets/service.service';
+import { TypeService } from '@services/sheets/type.service';
+import { ServerGooglePlacesService } from '@services/server-google-places.service';
+import { LoggerService } from '@services/logger.service';
+import { PermissionService } from '@services/permission.service';
+import { MockLocationService } from '@services/mock-location.service';
 
 // class-only tests
 describe('SearchInputComponent (class-only)', () => {
@@ -37,20 +46,24 @@ describe('SearchInputComponent (class-only)', () => {
     permission.getLocationState.and.returnValue('granted');
     mockLoc.getLocation.and.returnValue({ lat: 0, lng: 0 });
 
-    comp = new SearchInputComponent(
-      dialog,
-      addressService as any,
-      nameService as any,
-      placeService as any,
-      regionService as any,
-      serviceService as any,
-      typeService as any,
-      serverGoogle as any,
-      logger as any,
-      dropdown as any,
-      permission as any,
-      mockLoc as any
-    );
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: MatDialog, useValue: dialog },
+        { provide: AddressService, useValue: addressService },
+        { provide: NameService, useValue: nameService },
+        { provide: PlaceService, useValue: placeService },
+        { provide: RegionService, useValue: regionService },
+        { provide: ServiceService, useValue: serviceService },
+        { provide: TypeService, useValue: typeService },
+        { provide: ServerGooglePlacesService, useValue: serverGoogle },
+        { provide: LoggerService, useValue: logger },
+        { provide: DropdownDataService, useValue: dropdown },
+        { provide: PermissionService, useValue: permission },
+        { provide: MockLocationService, useValue: mockLoc }
+      ]
+    });
+
+    comp = TestBed.runInInjectionContext(() => new SearchInputComponent());
   });
 
   it('writeValue and value getter/setter work', async () => {
