@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +20,9 @@ import { QuickControlsComponent } from '@components/controls/quick-controls/quic
 import { BaseFieldButtonComponent, BaseIconButtonComponent } from '@components/base';
 import { ThemeService } from '@services/theme.service';
 import type { ThemePreference } from '@interfaces/ui/theme.interface';
+
+/** Savable data types surfaced in the pending-changes breakdown. */
+type PendingSection = 'trips' | 'shifts' | 'expenses';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -57,6 +60,27 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   showDetailedView = signal(false);
   hasUnsavedChanges = signal(false);
   unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
+
+  // Definitions for the pending-changes breakdown. Add a new savable type here
+  // (plus its count in UnsavedDataService) and it flows into the widget + deep
+  // link automatically — no template changes needed.
+  private readonly sectionDefs: { key: PendingSection; singular: string; plural: string }[] = [
+    { key: 'trips', singular: 'trip', plural: 'trips' },
+    { key: 'shifts', singular: 'shift', plural: 'shifts' },
+    { key: 'expenses', singular: 'expense', plural: 'expenses' }
+  ];
+
+  /** Non-empty pending sections, ready to render as deep-link chips. */
+  pendingSections = computed(() => {
+    const counts = this.unsavedCounts();
+    return this.sectionDefs
+      .map(def => {
+        const count = counts[def.key];
+        return { key: def.key, count, label: count === 1 ? def.singular : def.plural };
+      })
+      .filter(section => section.count > 0);
+  });
+
   menuOpen = signal(false);
   isPendingRoute = signal(false);
   autoSaveEnabled = signal(false);
@@ -172,7 +196,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  openPendingChanges(section?: 'trips' | 'shifts'): void {
+  openPendingChanges(section?: PendingSection): void {
     this.closeMenu();
     const extras: NavigationExtras = {};
     if (section) extras.queryParams = { section };

@@ -86,6 +86,36 @@
   border-radius: 6px;
 }
 
+// Deep-link chips for each non-empty pending section. Flex-wrap in the template
+// lets any number of sections wrap gracefully in the narrow dropdown.
+.pending-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  background: color-mix(in srgb, var(--primary-600) 6%, transparent);
+  border: 1px solid var(--color-border-light);
+  border-radius: 9999px;
+  padding: 3px 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.pending-chip:hover,
+.pending-chip:focus {
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--primary-600) 12%, transparent);
+  border-color: var(--primary-600);
+  outline: none;
+}
+
+.pending-chip:focus-visible {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-600) 12%, transparent);
+}
+
 // Progress bar
 .progress-bar {
   width: 100%;
