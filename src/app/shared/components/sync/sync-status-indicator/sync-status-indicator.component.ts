@@ -188,9 +188,10 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   private async checkUnsavedChanges(): Promise<void> {
-    this.hasUnsavedChanges.set(await this.unsavedDataService.hasUnsavedData());
     try {
-      this.unsavedCounts.set(await this.unsavedDataService.getUnsavedCounts());
+      const counts = await this.unsavedDataService.getUnsavedCounts();
+      this.unsavedCounts.set(counts);
+      this.hasUnsavedChanges.set(counts.total > 0);
     } catch {
       // ignore errors getting counts
     }

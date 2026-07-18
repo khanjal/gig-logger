@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, signal, inject } from '@angular/core';
+import { Component, OnInit, effect, signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -19,11 +19,28 @@ import { ExpensesQuickViewComponent } from '@components/expenses/expenses-quick-
 import { MatDialog } from '@angular/material/dialog';
 import { TripFormComponent } from '@components/trips/trip-form/trip-form.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
+import { BaseRectButtonComponent } from '@components/base';
+
+/** A pending-changes entity type. Add a new one here, to `SECTION_LABELS`, and to `itemsFor()`. */
+type PendingSectionKey = 'trips' | 'shifts' | 'expenses';
+
+interface IPendingSection {
+  key: PendingSectionKey;
+  label: string;
+  count: number;
+}
+
+const SECTION_KEYS: PendingSectionKey[] = ['trips', 'shifts', 'expenses'];
+const SECTION_LABELS: Record<PendingSectionKey, string> = {
+  trips: 'Trips',
+  shifts: 'Shifts',
+  expenses: 'Expenses'
+};
 
 @Component({
   selector: 'app-pending-changes',
   standalone: true,
-  imports: [MatExpansionModule, MatListModule, MatButtonModule, MatIconModule, RouterModule, TripsQuickViewComponent, ShiftsQuickViewComponent, ExpensesQuickViewComponent],
+  imports: [MatExpansionModule, MatListModule, MatButtonModule, MatIconModule, RouterModule, TripsQuickViewComponent, ShiftsQuickViewComponent, ExpensesQuickViewComponent, BaseRectButtonComponent],
   templateUrl: './pending-changes.component.html',
   styleUrls: ['./pending-changes.component.scss']
 })
@@ -40,9 +57,21 @@ export class PendingChangesComponent implements OnInit {
   shifts = signal<IShift[]>([]);
   expenses = signal<IExpense[]>([]);
   duplicateShiftKeys = signal<Set<string>>(new Set());
-  expandedShifts = signal(false);
-  expandedTrips = signal(false);
-  expandedExpenses = signal(false);
+
+  /** Which single section is currently expanded (accordion is single-select). */
+  expandedSection = signal<PendingSectionKey | null>(null);
+  /** Which section types are visible; empty means "show all". */
+  private typeFilter = signal<Set<PendingSectionKey>>(new Set(SECTION_KEYS));
+
+  sections = computed<IPendingSection[]>(() =>
+    SECTION_KEYS.map(key => ({ key, label: SECTION_LABELS[key], count: this.itemsFor(key).length }))
+  );
+
+  visibleSections = computed(() =>
+    this.sections().filter(section => section.count > 0 && this.typeFilter().has(section.key))
+  );
+
+  hasAnyPending = computed(() => this.sections().some(section => section.count > 0));
 
   private queryParams = toSignal(this.route.queryParams, { initialValue: {} as Record<string, string> });
   private lastHandledSection: string | undefined;
@@ -59,6 +88,10 @@ export class PendingChangesComponent implements OnInit {
     });
   }
 
+  trackBySection(index: number, section: IPendingSection): PendingSectionKey {
+    return section.key;
+  }
+
   trackByShift(index: number, s: IShift): string | number {
     return s?.rowId ?? s?.key ?? index;
   }
@@ -71,25 +104,44 @@ export class PendingChangesComponent implements OnInit {
     return e?.id ?? e?.rowId ?? index;
   }
 
+  itemsFor(key: PendingSectionKey): (ITrip | IShift | IExpense)[] {
+    switch (key) {
+      case 'trips':
+        return this.trips();
+      case 'shifts':
+        return this.shifts();
+      case 'expenses':
+        return this.expenses();
+    }
+  }
+
+  isFilterActive(key: PendingSectionKey): boolean {
+    return this.typeFilter().has(key);
+  }
+
+  toggleFilter(key: PendingSectionKey): void {
+    const next = new Set(this.typeFilter());
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
+    // Never leave the filter empty - that reads as "nothing pending" when it isn't.
+    this.typeFilter.set(next.size > 0 ? next : new Set(SECTION_KEYS));
+  }
+
   async ngOnInit(): Promise<void> {
     await this.load();
   }
 
+  private isSectionKey(value: string | undefined): value is PendingSectionKey {
+    return !!value && (SECTION_KEYS as string[]).includes(value);
+  }
+
   private handleSection(section?: string): void {
-    if (!section) return;
-    if (section === 'shifts') {
-      this.expandedShifts.set(true);
-      this.expandedTrips.set(false);
-      this.expandedExpenses.set(false);
-    } else if (section === 'trips') {
-      this.expandedTrips.set(true);
-      this.expandedShifts.set(false);
-      this.expandedExpenses.set(false);
-    } else if (section === 'expenses') {
-      this.expandedExpenses.set(true);
-      this.expandedTrips.set(false);
-      this.expandedShifts.set(false);
-    }
+    if (!this.isSectionKey(section)) return;
+
+    this.expandedSection.set(section);
 
     // Wait a tick for panels to expand/collapse, then scroll
     setTimeout(() => {
@@ -120,13 +172,9 @@ export class PendingChangesComponent implements OnInit {
    */
   private applyDefaultExpansion(): void {
     const section = this.route.snapshot.queryParams['section'];
-    if (section === 'shifts' || section === 'trips' || section === 'expenses') return;
+    if (this.isSectionKey(section)) return;
 
-    const hasTrips = this.trips().length > 0;
-    const hasShifts = this.shifts().length > 0;
-    this.expandedTrips.set(hasTrips);
-    this.expandedShifts.set(!hasTrips && hasShifts);
-    this.expandedExpenses.set(!hasTrips && !hasShifts && this.expenses().length > 0);
+    this.expandedSection.set(this.sections().find(s => s.count > 0)?.key ?? null);
   }
 
   openTripEditor(t: ITrip): void {

@@ -31,21 +31,23 @@ export class UnsavedDataService {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  async hasUnsavedData(): Promise<boolean> {
+  /** Fetches all three unsaved item lists in parallel as a single snapshot. */
+  private async fetchUnsaved(): Promise<{ trips: ITrip[]; shifts: IShift[]; expenses: IExpense[] }> {
     const [trips, shifts, expenses] = await Promise.all([
       this.tripService.getUnsaved(),
       this.shiftService.getUnsavedShifts(),
       this.expensesService.getUnsaved()
     ]);
-    return trips.length > 0 || shifts.length > 0 || expenses.length > 0;
+    return { trips, shifts, expenses };
+  }
+
+  async hasUnsavedData(): Promise<boolean> {
+    const { total } = await this.getUnsavedCounts();
+    return total > 0;
   }
 
   async getUnsavedCounts(): Promise<{ trips: number; shifts: number; expenses: number; total: number }> {
-    const [trips, shifts, expenses] = await Promise.all([
-      this.tripService.getUnsaved(),
-      this.shiftService.getUnsavedShifts(),
-      this.expensesService.getUnsaved()
-    ]);
+    const { trips, shifts, expenses } = await this.fetchUnsaved();
     return {
       trips: trips.length,
       shifts: shifts.length,
@@ -54,14 +56,9 @@ export class UnsavedDataService {
     };
   }
 
-  /** Fetches all three unsaved item lists in parallel as a single snapshot. */
   async collectUnsavedItems(): Promise<IUnsavedItems> {
-    const [unsavedTrips, unsavedShifts, unsavedExpenses] = await Promise.all([
-      this.tripService.getUnsaved(),
-      this.shiftService.getUnsavedShifts(),
-      this.expensesService.getUnsaved()
-    ]);
-    return { unsavedTrips, unsavedShifts, unsavedExpenses };
+    const { trips, shifts, expenses } = await this.fetchUnsaved();
+    return { unsavedTrips: trips, unsavedShifts: shifts, unsavedExpenses: expenses };
   }
 
   /**

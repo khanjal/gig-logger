@@ -51,8 +51,8 @@ describe('SyncStatusIndicatorComponent', () => {
       setPolling: jasmine.createSpy('setPolling').and.returnValue(Promise.resolve())
     };
 
-    unsavedDataSpy = jasmine.createSpyObj('UnsavedDataService', ['hasUnsavedData']);
-    unsavedDataSpy.hasUnsavedData.and.returnValue(Promise.resolve(false));
+    unsavedDataSpy = jasmine.createSpyObj('UnsavedDataService', ['getUnsavedCounts']);
+    unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ trips: 0, shifts: 0, expenses: 0, total: 0 }));
 
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
 
@@ -160,7 +160,7 @@ describe('SyncStatusIndicatorComponent', () => {
 
     it('checks for unsaved changes on init', (done) => {
       setTimeout(() => {
-        expect(unsavedDataSpy.hasUnsavedData).toHaveBeenCalled();
+        expect(unsavedDataSpy.getUnsavedCounts).toHaveBeenCalled();
         done();
       }, 100);
     });
@@ -300,10 +300,10 @@ describe('SyncStatusIndicatorComponent', () => {
       dialogSpy.open.and.returnValue(dialogRef as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
       
       // Reset spy call count from ngOnInit
-      unsavedDataSpy.hasUnsavedData.calls.reset();
+      unsavedDataSpy.getUnsavedCounts.calls.reset();
 
       component.forceSync().then(() => {
-        expect(unsavedDataSpy.hasUnsavedData).toHaveBeenCalled();
+        expect(unsavedDataSpy.getUnsavedCounts).toHaveBeenCalled();
         done();
       });
     });
@@ -311,7 +311,7 @@ describe('SyncStatusIndicatorComponent', () => {
 
   describe('updateFromSpreadsheet', () => {
     it('shows snackbar and exits when unsaved changes exist', async () => {
-      unsavedDataSpy.hasUnsavedData.and.returnValue(Promise.resolve(true));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ trips: 1, shifts: 0, expenses: 0, total: 1 }));
 
       await component.updateFromSpreadsheet();
 

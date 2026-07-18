@@ -7,7 +7,7 @@ import { UnsavedDataService } from './unsaved-data.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
-import { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { BehaviorSubject, Subscription } from 'rxjs';

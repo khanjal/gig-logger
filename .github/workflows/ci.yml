@@ -9,20 +9,9 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Ensure npm v10 (compatible with Node 20)
-        run: npm install -g npm@10
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - uses: ./.github/actions/setup-node-env
       - name: Zoneless runtime guard
         run: npm run check:zoneless-runtime
       - name: Build
@@ -31,40 +20,18 @@ jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Ensure npm v10 (compatible with Node 20)
-        run: npm install -g npm@10
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - uses: ./.github/actions/setup-node-env
       - name: Lint
         run: npm run lint --if-present
 
   test:
     name: test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Ensure npm v10 (compatible with Node 20)
-        run: npm install -g npm@10
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - uses: ./.github/actions/setup-node-env
       - name: Run tests
         run: npm test -- --watch=false --code-coverage --browsers=ChromeHeadless
       - name: Upload coverage reports
