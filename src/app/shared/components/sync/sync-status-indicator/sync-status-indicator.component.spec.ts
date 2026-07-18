@@ -61,7 +61,7 @@ describe('SyncStatusIndicatorComponent', () => {
     themeSpy = jasmine.createSpyObj('ThemeService', ['setTheme'], { currentPreference: 'system', preferenceChanges: preference$.asObservable() });
     // Auth mock - start signed-in by default
     profile$ = new BehaviorSubject<UserProfile | null>({ sub: 'test-user' });
-    authSpy = jasmine.createSpyObj<AuthGoogleService>('AuthGoogleService', ['canSync', 'isAuthenticated', 'isAuthenticatedSync'], { profile$: profile$.asObservable() });
+    authSpy = jasmine.createSpyObj<AuthGoogleService>('AuthGoogleService', ['canSync', 'isAuthenticated', 'isAuthenticatedSync'], { profile$ });
     authSpy.canSync.and.returnValue(Promise.resolve(true));
     authSpy.isAuthenticated.and.returnValue(Promise.resolve(true));
     authSpy.isAuthenticatedSync.and.returnValue(true);
@@ -152,7 +152,7 @@ describe('SyncStatusIndicatorComponent', () => {
     });
 
     it('subscribes to messages', () => {
-      const testMessages = [{ type: 'info', text: 'Test', timestamp: new Date() }];
+      const testMessages: ISyncMessage[] = [{ type: 'info', text: 'Test', timestamp: new Date() }];
       messages$.next(testMessages);
 
       expect(component.messages().length).toBe(1);

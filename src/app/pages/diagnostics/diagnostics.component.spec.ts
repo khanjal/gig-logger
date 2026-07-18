@@ -52,7 +52,7 @@ describe('DiagnosticsComponent', () => {
     shiftService.getMaxRowId.and.returnValue(Promise.resolve(0));
     shiftService.add.and.returnValue(Promise.resolve());
     shiftService.delete.and.returnValue(Promise.resolve());
-    shiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined));
+    shiftService.queryShiftByKey.and.returnValue(Promise.resolve(undefined as unknown as IShift));
 
     tripService.list.and.returnValue(Promise.resolve([]));
     tripService.update.and.returnValue(Promise.resolve());
@@ -205,7 +205,7 @@ describe('DiagnosticsComponent', () => {
 
     expect(trip.startAddress).toBe('123 Main');
     expect(trip.addressApplied).toBeTrue();
-    expect(tripService.update).toHaveBeenCalledWith([trip]);
+    expect(tripService.update).toHaveBeenCalledWith([trip as unknown as ITrip]);
   });
 
   it('createShiftFromTrip should create shift and mark orphaned trip fixed', async () => {

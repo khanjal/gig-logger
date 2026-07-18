@@ -20,7 +20,7 @@ describe('CustomRangePanelComponent', () => {
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CustomRangePanelComponent);
+    fixture = TestBed.createComponent(CustomRangePanelComponent<Date>);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

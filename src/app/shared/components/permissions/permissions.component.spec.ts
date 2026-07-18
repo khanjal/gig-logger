@@ -14,8 +14,8 @@ describe('PermissionsComponent', () => {
 
   beforeEach(async () => {
     loggerSpy = jasmine.createSpyObj('LoggerService', ['error', 'info', 'warn']);
-    locationState$ = new BehaviorSubject('checking');
-    microphoneState$ = new BehaviorSubject('checking');
+    locationState$ = new BehaviorSubject<PermissionState>('checking');
+    microphoneState$ = new BehaviorSubject<PermissionState>('checking');
     
     permissionServiceSpy = jasmine.createSpyObj('PermissionService', 
       ['getLocationState', 'getMicrophoneState', 'requestLocation', 'requestMicrophone'],
