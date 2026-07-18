@@ -12,7 +12,7 @@
     }"
       (click)="card.action ? executeAction(i) : null"
       (keydown.enter)="card.action ? executeAction(i) : null"
-      (keydown.space)="card.action ? (executeAction(i), $event.preventDefault()) : null"
+      (keydown.space)="$event.preventDefault(); card.action ? executeAction(i) : null"
       [attr.role]="card.action ? 'button' : null"
       [attr.tabindex]="card.action ? 0 : null"
       >
