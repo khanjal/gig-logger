@@ -1,0 +1,17 @@
+name: 'Setup .NET environment'
+description: 'Install the .NET 8 SDK and restore the GigRaptorService solution'
+inputs:
+  solution-path:
+    description: 'Path to the .sln file to restore'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore dependencies
+      shell: bash
+      run: dotnet restore ${{ inputs.solution-path }}

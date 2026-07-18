@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { DecimalPipe, CurrencyPipe, NgIf, NgFor, NgClass } from '@angular/common';
-import type { IStatItem } from '@interfaces/stat-item.interface';
+import { DecimalPipe, CurrencyPipe, NgClass } from '@angular/common';
+import type { IStatItem } from '@interfaces/stats/stat-item.interface';
 
 @Component({
     selector: 'app-stats-table',
@@ -9,7 +9,7 @@ import type { IStatItem } from '@interfaces/stat-item.interface';
     styleUrls: ['./stats-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [MatIcon, DecimalPipe, CurrencyPipe, NgIf, NgFor, NgClass]
+    imports: [MatIcon, DecimalPipe, CurrencyPipe, NgClass]
 })
 export class StatsTableComponent implements OnInit, OnChanges {
   @Input() items: IStatItem[] = [];

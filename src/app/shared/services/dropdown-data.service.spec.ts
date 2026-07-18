@@ -7,13 +7,19 @@ import { AddressService } from '@services/sheets/address.service';
 import { RegionService } from '@services/sheets/region.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import { IService } from '@interfaces/service.interface';
-import { IType } from '@interfaces/type.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IAddress } from '@interfaces/address.interface';
-import { IRegion } from '@interfaces/region.interface';
-import { IName } from '@interfaces/name.interface';
-import type { DropdownType } from '@interfaces/dropdown-data.interface';
+import { IService } from '@interfaces/entities/service.interface';
+import { IType } from '@interfaces/entities/type.interface';
+import { IPlace } from '@interfaces/entities/place.interface';
+import { IAddress } from '@interfaces/entities/address.interface';
+import { IRegion } from '@interfaces/entities/region.interface';
+import { IName } from '@interfaces/entities/name.interface';
+import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
+
+interface DropdownDataServicePrivates {
+  canonicalServices: string[];
+  canonicalTypes: string[];
+  canonicalPlaces: string[];
+}
 
 describe('DropdownDataService', () => {
   let service: DropdownDataService;
@@ -214,7 +220,7 @@ describe('DropdownDataService', () => {
 
       await service.getAllDropdownData();
       service.clearCache();
-      (service as any).canonicalServices = ['DoorDash', 'Uber Eats', 'Lyft'];
+      (service as unknown as DropdownDataServicePrivates).canonicalServices = ['DoorDash', 'Uber Eats', 'Lyft'];
 
       const list = await service.getDropdownList('Service');
 
@@ -287,7 +293,7 @@ describe('DropdownDataService', () => {
 
       await service.getAllDropdownData();
       service.clearCache();
-      (service as any).canonicalServices = ['DoorDash', 'Uber Eats', 'Lyft'];
+      (service as unknown as DropdownDataServicePrivates).canonicalServices = ['DoorDash', 'Uber Eats', 'Lyft'];
 
       const result = await service.filterDropdown('Service', '');
 
@@ -304,7 +310,7 @@ describe('DropdownDataService', () => {
 
       await service.getAllDropdownData();
       service.clearCache();
-      (service as any).canonicalTypes = ['Delivery', 'Pickup', 'Rideshare'];
+      (service as unknown as DropdownDataServicePrivates).canonicalTypes = ['Delivery', 'Pickup', 'Rideshare'];
 
       const result = await service.filterDropdown('Type', 'pick');
 
@@ -321,7 +327,7 @@ describe('DropdownDataService', () => {
 
       await service.getAllDropdownData();
       service.clearCache();
-      (service as any).canonicalPlaces = ['Walmart', 'Target', 'Costco'];
+      (service as unknown as DropdownDataServicePrivates).canonicalPlaces = ['Walmart', 'Target', 'Costco'];
 
       const result = await service.filterDropdown('Place', 'tar');
 

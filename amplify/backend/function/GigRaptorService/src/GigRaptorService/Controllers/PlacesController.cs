@@ -45,34 +45,34 @@ public class PlacesController : ControllerBase
             }
 
             var results = await _placesService.GetAutocompleteAsync(
-                request.Query, 
+                request.Query,
                 userId,
-                request.SearchType, 
+                request.SearchType,
                 request.Country,
                 request.UserLatitude,
                 request.UserLongitude,
                 request.RadiusMeters);
 
             _logger.LogInformation("📍 Places search completed, query: '{Query}', results: {ResultCount}", request.Query, results.Count);
-            
+
             return Ok(results);
         }
         catch (QuotaExceededException ex)
         {
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request?.UserId;
             _logger.LogWarning("Quota exceeded for user {UserId}: {Message}", userId, ex.Message);
-            
+
             await _metricsService.TrackErrorAsync("QuotaExceeded", "places-autocomplete");
-            
+
             return StatusCode(429, new { error = "API quota exceeded", message = ex.Message });
         }
         catch (Exception ex)
         {
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request?.UserId;
             _logger.LogError(ex, "Error processing autocomplete request for user {UserId}", userId);
-            
+
             await _metricsService.TrackErrorAsync("GeneralError", "places-autocomplete");
-            
+
             return StatusCode(500, new { error = "Internal server error", message = ex.Message });
         }
     }
@@ -110,18 +110,18 @@ public class PlacesController : ControllerBase
         {
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
             _logger.LogWarning("Quota exceeded for user {UserId}: {Message}", userId, ex.Message);
-            
+
             await _metricsService.TrackErrorAsync("QuotaExceeded", "places-details");
-            
+
             return StatusCode(429, new { error = "API quota exceeded", message = ex.Message });
         }
         catch (Exception ex)
         {
             var userId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? request.UserId;
             _logger.LogError(ex, "Error processing place details request for user {UserId}", userId);
-            
+
             await _metricsService.TrackErrorAsync("GeneralError", "places-details");
-            
+
             return StatusCode(500, new { error = "Internal server error", message = ex.Message });
         }
     }
@@ -161,9 +161,9 @@ public class PlacesController : ControllerBase
         {
             var effectiveUserId = HttpContext.Items["AuthenticatedUserId"]?.ToString() ?? userId;
             _logger.LogError(ex, "Error getting usage for user {UserId}", effectiveUserId);
-            
+
             await _metricsService.TrackErrorAsync("GeneralError", "places-usage");
-            
+
             return StatusCode(500, new { error = "Internal server error", message = ex.Message });
         }
     }

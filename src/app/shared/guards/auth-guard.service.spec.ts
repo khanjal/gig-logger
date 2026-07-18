@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthGuardService } from './auth-guard.service';
 import { AuthGoogleService } from '../services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 describe('AuthGuardService', () => {
   let service: AuthGuardService;
@@ -91,7 +92,7 @@ describe('AuthGuardService', () => {
       });
 
       it('should return true when unauthenticated but local spreadsheets exist', async () => {
-        const fakeSheet = { id: 1, name: 'My Sheet' } as any;
+        const fakeSheet = { id: 1, name: 'My Sheet' } as unknown as ISpreadsheet;
         spreadsheetService.getSpreadsheets.and.returnValue(Promise.resolve([fakeSheet]));
 
         const result = await service.canActivate();

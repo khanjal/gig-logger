@@ -1,17 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import type { IUpdateDetail, IUpdateEntry } from '@interfaces/update.interface';
+import type { IUpdateEntry } from '@interfaces/sync/update.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UpdatesService {
+  private http = inject(HttpClient);
+
   private readonly url = 'assets/updates.json';
   private updatesSubject = new BehaviorSubject<IUpdateEntry[]>([]);
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.loadUpdates();
   }
 
@@ -21,7 +23,7 @@ export class UpdatesService {
       (err) => {
         // If loading fails, keep the subject empty and log a warning
         // Consumers can handle empty state as "no updates"
-        // eslint-disable-next-line no-console
+         
         console.warn('Failed to load updates.json', err);
       }
     );

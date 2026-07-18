@@ -1,6 +1,6 @@
 import { StatHelper } from './stat.helper';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IDaily } from '@interfaces/daily.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IDaily } from '@interfaces/sheets/daily.interface';
 
 describe('StatHelper', () => {
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({

@@ -3,7 +3,7 @@
     <!-- User ID Status -->
     <div class="status-row">
       <span class="status-label text-secondary">User ID:</span>
-      <mat-chip 
+      <mat-chip
         [ngClass]="{
           'chip-success': userId(),
           'chip-error': !userId()
@@ -16,7 +16,7 @@
     <!-- localStorage Status -->
     <div class="status-row">
       <span class="status-label text-secondary">Local Storage:</span>
-      <mat-chip 
+      <mat-chip
         [ngClass]="{
           'chip-success': localStorageAuth(),
           'chip-error': !localStorageAuth()
@@ -29,7 +29,7 @@
     <!-- Access Token Status -->
     <div class="status-row">
       <span class="status-label text-secondary">Access Token:</span>
-      <mat-chip 
+      <mat-chip
         [ngClass]="{
           'chip-success': hasAccessToken(),
           'chip-error': !hasAccessToken()
@@ -40,15 +40,17 @@
     </div>
 
     <!-- Token Preview -->
-      <div class="status-row" *ngIf="hasAccessToken()">
-      <span class="status-label text-secondary">Token Preview:</span>
+    @if (hasAccessToken()) {
+      <div class="status-row">
+        <span class="status-label text-secondary">Token Preview:</span>
         <code class="token-preview">{{ accessTokenPreview() }}</code>
-    </div>
+      </div>
+    }
 
     <!-- Overall Status -->
     <div class="status-row">
       <span class="status-label text-secondary">Overall Status:</span>
-      <mat-chip 
+      <mat-chip
         [ngClass]="{
           'chip-success': isAuthenticated(),
           'chip-error': !isAuthenticated()

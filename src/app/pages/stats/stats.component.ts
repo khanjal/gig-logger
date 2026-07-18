@@ -1,13 +1,12 @@
 import { Component, DestroyRef, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
 import { ActionEnum } from '@enums/action.enum';
 import { DateHelper } from '@helpers/date.helper';
-import type { IShift } from '@interfaces/shift.interface';
-import type { IStatItem } from '@interfaces/stat-item.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IStatItem } from '@interfaces/stats/stat-item.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
@@ -23,9 +22,12 @@ import { StatsSummaryComponent } from './stats-summary/stats-summary.component';
     styleUrls: ['./stats.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [CommonModule, MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
+    imports: [MatFormField, MatLabel, MatDateRangeInput, FormsModule, ReactiveFormsModule, MatStartDate, MatEndDate, MatDatepickerToggle, MatSuffix, MatDateRangePicker, StatsTableComponent, StatsSummaryComponent]
 })
 export class StatsComponent implements OnInit {
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
   private readonly destroyRef = inject(DestroyRef);
   places = signal<IStatItem[]>([]);
@@ -41,11 +43,6 @@ export class StatsComponent implements OnInit {
     start: new FormControl(),
     end: new FormControl(),
   });
-
-  constructor(
-    private _shiftService: ShiftService,
-    private _tripService: TripService
-  ) {}
 
   ngOnInit(): void {
     this.range.valueChanges
@@ -97,14 +94,14 @@ export class StatsComponent implements OnInit {
     return { startDate, endDate };
   }
 
-  getTripList(trips: ITrip[], name: string): IStatItem[] {
-    let itemList = trips.map((x:any) => x[name]);
+  getTripList(trips: ITrip[], name: 'place' | 'type'): IStatItem[] {
+    let itemList = trips.map((x) => x[name]);
     itemList = [...new Set(itemList)].sort();
-    let items: IStatItem[] = [];
+    const items: IStatItem[] = [];
 
     itemList.forEach(itemName => {
-      let item = {} as IStatItem;
-      let tripFilter = trips.filter((x:any) => x[name] === itemName);
+      const item = {} as IStatItem;
+      const tripFilter = trips.filter((x) => x[name] === itemName);
 
       item.name = itemName;
       item.trips = tripFilter.length;
@@ -125,14 +122,14 @@ export class StatsComponent implements OnInit {
     return items;
   }
 
-  getShiftList(shifts: IShift[], name: string): IStatItem[] {
-    let itemList = shifts.map((x:any) => x[name]);
+  getShiftList(shifts: IShift[], name: 'service' | 'region'): IStatItem[] {
+    let itemList = shifts.map((x) => x[name]);
     itemList = [...new Set(itemList)].sort();
-    let items: IStatItem[] = [];
+    const items: IStatItem[] = [];
 
     itemList.forEach(itemName => {
-      let item = {} as IStatItem;
-      let shiftFilter = shifts.filter((x:any) => x[name] === itemName);
+      const item = {} as IStatItem;
+      const shiftFilter = shifts.filter((x) => x[name] === itemName);
 
       item.name = itemName;
       item.trips = shiftFilter.map(x => x.totalTrips || 0).reduce((acc, value) => acc + value, 0);

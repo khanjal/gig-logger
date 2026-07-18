@@ -3,6 +3,7 @@ import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { ThemeService } from '@services/theme.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -11,8 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
-import { CommonModule } from '@angular/common';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels, { Context as DataLabelsContext } from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
 import { combineLatest, from, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -20,25 +20,6 @@ import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
 // Chart.js registration
 Chart.register(...registerables);
 Chart.register(ChartDataLabels);
-
-// Utility Functions
-function formatDate(date: Date, type: 'day' | 'week' | 'month' | 'quarter' | 'year') {
-  if (type === 'year') return date.getFullYear().toString();
-  if (type === 'quarter') {
-    const year = date.getFullYear();
-    const quarter = Math.floor(date.getMonth() / 3) + 1;
-    return `Q${quarter} ${year}`;
-  }
-  if (type === 'month') return date.toLocaleString('default', { month: 'short', year: 'numeric' });
-  if (type === 'week') {
-    const first = new Date(date);
-    first.setDate(date.getDate() - date.getDay() + 1); // Monday
-    const last = new Date(first);
-    last.setDate(first.getDate() + 6); // Sunday
-    return `${first.toLocaleDateString()} - ${last.toLocaleDateString()}`;
-  }
-  return date.toLocaleDateString();
-}
 
 function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 'quarter' | 'year' {
   const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
@@ -52,16 +33,19 @@ function getAggregationType(start: Date, end: Date): 'day' | 'week' | 'month' | 
 @Component({
   selector: 'app-metrics',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
+  imports: [BaseChartDirective, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatInputModule, MatNativeDateModule],
   providers: [ShiftService],
   templateUrl: './metrics.component.html',
   styleUrls: ['./metrics.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class MetricsComponent implements OnInit {
+  private shiftService = inject(ShiftService);
+  private themeService = inject(ThemeService);
+
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  shifts = signal<any[]>([]);
-  filteredShifts = signal<any[]>([]);
+  shifts = signal<IShift[]>([]);
+  filteredShifts = signal<IShift[]>([]);
   aggregationType = signal<'day' | 'week' | 'month' | 'quarter' | 'year'>('day');
   private readonly destroyRef = inject(DestroyRef);
 
@@ -89,8 +73,8 @@ export class MetricsComponent implements OnInit {
           const chart = ctx.chart;
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           if (labelCount > 20 || ctx.dataset.data[ctx.dataIndex] === 0) return false;
-          const config: any = chart.config;
-          const scales: any = chart.options.scales;
+          const config = chart.config as { type?: string };
+          const scales = chart.options.scales as Record<string, { stacked?: boolean }> | undefined;
           if (config && config.type === 'bar' && scales && scales['x'] && scales['x'].stacked) {
             const dataIndex = ctx.dataIndex;
             const datasets = chart.data.datasets;
@@ -101,9 +85,9 @@ export class MetricsComponent implements OnInit {
           }
           return true;
         },
-        color: (ctx) => this.getTextColor(),
+        color: () => this.getTextColor(),
         font: { weight: 'bold', size: 14 },
-        formatter: (value, ctx) => Math.round(value),
+        formatter: (value) => Math.round(value),
       },
       tooltip: {
         callbacks: {
@@ -112,8 +96,8 @@ export class MetricsComponent implements OnInit {
       }
     },
     scales: {
-      x: { stacked: true, grid: { display: false }, ticks: { color: (ctx) => this.getTextColor() } },
-      y: { stacked: true, grid: { color: (ctx) => this.getGridColor() }, ticks: { color: (ctx) => this.getTextColor() } }
+      x: { stacked: true, grid: { display: false }, ticks: { color: () => this.getTextColor() } },
+      y: { stacked: true, grid: { color: () => this.getGridColor() }, ticks: { color: () => this.getTextColor() } }
     }
   };
 
@@ -133,9 +117,9 @@ export class MetricsComponent implements OnInit {
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           return labelCount <= 20 && ctx.dataset.data[ctx.dataIndex] !== 0;
         },
-        color: (ctx) => this.getTextColor(),
+        color: () => this.getTextColor(),
         font: { weight: 'bold', size: 14 },
-        formatter: (value, ctx) => Math.round(value),
+        formatter: (value) => Math.round(value),
       },
       tooltip: {
         callbacks: {
@@ -144,8 +128,8 @@ export class MetricsComponent implements OnInit {
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: (ctx) => this.getTextColor() } },
-      y: { grid: { color: (ctx) => this.getGridColor() }, ticks: { color: (ctx) => this.getTextColor() } }
+      x: { grid: { display: false }, ticks: { color: () => this.getTextColor() } },
+      y: { grid: { color: () => this.getGridColor() }, ticks: { color: () => this.getTextColor() } }
     }
   };
 
@@ -163,19 +147,14 @@ export class MetricsComponent implements OnInit {
         font: { weight: 'bold', size: 16 },
         textShadowColor: this.cssVar('--color-text-primary'),
         textShadowBlur: 6,
-        formatter: (value: number, ctx: any) => value > 0 ? value : '',
-        display: (ctx: any) => ctx.dataset.data[ctx.dataIndex] > 0,
+        formatter: (value: number) => value > 0 ? value : '',
+        display: (ctx: DataLabelsContext) => Number(ctx.dataset.data[ctx.dataIndex]) > 0,
       }
     }
   };
 
   // Date Range
   range = new FormGroup({ start: new FormControl(), end: new FormControl() });
-
-  constructor(
-    private shiftService: ShiftService,
-    private themeService: ThemeService
-  ) {}
 
   private getTextColor(): string {
     // Provide sensible fallbacks depending on the active theme so tests
@@ -212,7 +191,7 @@ export class MetricsComponent implements OnInit {
     // Update pie datalabel colors to theme-aware values
     if (this.pieOptions.plugins?.datalabels) {
       this.pieOptions.plugins.datalabels.color = this.cssVar('--color-text-inverse');
-      (this.pieOptions.plugins.datalabels as any).textShadowColor = this.cssVar('--color-text-primary');
+      this.pieOptions.plugins.datalabels.textShadowColor = this.cssVar('--color-text-primary');
     }
     
     // Trigger chart refresh by reassigning options
@@ -222,7 +201,7 @@ export class MetricsComponent implements OnInit {
   }
 
   // Helper to get YMD string from a shift
-  private getShiftYMD(s: any): string {
+  private getShiftYMD(s: IShift): string {
     return (typeof s.date === 'string' && s.date.length === 10)
       ? s.date
       : DateHelper.toISO(new Date(s.date));
@@ -236,7 +215,7 @@ export class MetricsComponent implements OnInit {
   }
 
   private getAggregationTypeForFilteredData(
-    filtered: any[],
+    filtered: IShift[],
     startYMD: string,
     endYMD: string
   ): 'day' | 'week' | 'month' | 'quarter' | 'year' {
@@ -256,10 +235,10 @@ export class MetricsComponent implements OnInit {
     return 'day';
   }
 
-  private applyChartData(filtered: any[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
+  private applyChartData(filtered: IShift[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
-    this.updateServicePie(filtered, aggType);
+    this.updateServicePie(filtered);
     this.updateYearlyComparison(filtered);
   }
 
@@ -295,11 +274,11 @@ export class MetricsComponent implements OnInit {
   }
 
   updateCharts(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    const grouped: { [label: string]: { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number } } = {};
+    const grouped: Record<string, { trips: number; distance: number; pay: number; tips: number; bonus: number; cash: number }> = {};
     filteredShifts.forEach(s => {
       // Always use local date for label
       const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
-      let label = '';
+      let label: string;
       if (aggType === 'year') label = d.getFullYear().toString();
       else if (aggType === 'quarter') {
         const year = d.getFullYear();
@@ -358,12 +337,12 @@ export class MetricsComponent implements OnInit {
   }
 
   updateDailyEarnings(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    const earningsByLabel: { [label: string]: { [service: string]: number } } = {};
+    const earningsByLabel: Record<string, Record<string, number>> = {};
     const serviceSet = new Set<string>();
     filteredShifts.forEach(s => {
       // Always use local date for label
       const d = DateHelper.getDateFromISO(this.getShiftYMD(s));
-      let label = '';
+      let label: string;
       if (aggType === 'year') label = d.getFullYear().toString();
       else if (aggType === 'quarter') {
         const year = d.getFullYear();
@@ -407,8 +386,8 @@ export class MetricsComponent implements OnInit {
     });
   }
 
-  updateServicePie(filteredShifts = this.shifts(), aggType: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day') {
-    const serviceCounts: { [service: string]: number } = {};
+  updateServicePie(filteredShifts = this.shifts()) {
+    const serviceCounts: Record<string, number> = {};
     filteredShifts.forEach(s => {
       serviceCounts[s.service] = (serviceCounts[s.service] || 0) + (s.totalTrips || 0);
     });
@@ -431,7 +410,7 @@ export class MetricsComponent implements OnInit {
   }
 
   updateYearlyComparison(filteredShifts = this.shifts()) {
-    const grouped: { [year: string]: { pay: number; tips: number; bonus: number; cash: number } } = {};
+    const grouped: Record<string, { pay: number; tips: number; bonus: number; cash: number }> = {};
     filteredShifts.forEach(s => {
       const d = new Date(s.date);
       const year = d.getFullYear().toString();

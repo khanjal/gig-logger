@@ -1,5 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ISheetProperties } from '@interfaces/sheet-properties.interface';
+import { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
 import { TruncatePipe } from "@pipes/truncate.pipe";
@@ -18,7 +17,6 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
   selector: 'app-sheet-list',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatCardModule,
     MatIconModule,
@@ -33,15 +31,13 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
   styleUrl: './sheet-list.component.scss'
 })
 export class SheetListComponent implements OnInit {
+  private _gigLoggerService = inject(GigWorkflowService);
+  private _logger = inject(LoggerService);
+  private dialogRef = inject<MatDialogRef<SheetListComponent>>(MatDialogRef);
+
   sheets = signal<ISheetProperties[]>([]);
   selectedSheet = signal<ISheetProperties | null>(null);
   loading = signal(true);
-
-  constructor(
-    private _gigLoggerService: GigWorkflowService,
-    private _logger: LoggerService,
-    private dialogRef: MatDialogRef<SheetListComponent>
-  ) { }
   
   ngOnInit() {
     this.loadSheets();

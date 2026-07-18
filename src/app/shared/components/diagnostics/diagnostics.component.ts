@@ -1,5 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, inject } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -9,11 +8,31 @@ import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IAddress } from '@interfaces/address.interface';
-import type { IPlace } from '@interfaces/place.interface';
-import type { IName } from '@interfaces/name.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IName } from '@interfaces/entities/name.interface';
+
+interface DiagnosticRecord {
+  rowId?: number;
+  date?: string;
+  key?: string;
+  place?: string;
+  name?: string;
+  address?: string;
+  trips?: number;
+  totalTrips?: number;
+  start?: string;
+  finish?: string;
+  exclude?: boolean;
+  startLocation?: string;
+  endLocation?: string;
+  pickup?: string;
+  dropoff?: string;
+  names?: string[];
+  addresses?: unknown[];
+}
 
 interface DiagnosticItem {
   name: string;
@@ -21,31 +40,27 @@ interface DiagnosticItem {
   severity: 'info' | 'warning' | 'error';
   description: string;
   itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name'; // Type of items in the array
-  items?: any[]; // Array of problematic shifts/trips/addresses/places/names
-  groups?: any[][]; // Grouped duplicates for better display
+  items?: DiagnosticRecord[]; // Array of problematic shifts/trips/addresses/places/names
+  groups?: DiagnosticRecord[][]; // Grouped duplicates for better display
 }
 
 @Component({
   selector: 'app-diagnostics',
   standalone: true,
-  imports: [CommonModule, MatListModule, MatIconModule, BaseRectButtonComponent],
+  imports: [MatListModule, MatIconModule, BaseRectButtonComponent],
   templateUrl: './diagnostics.component.html',
   styleUrl: './diagnostics.component.scss'
 })
-export class DiagnosticsComponent implements OnInit {
+export class DiagnosticsComponent {
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+  private _addressService = inject(AddressService);
+  private _placeService = inject(PlaceService);
+  private _nameService = inject(NameService);
+  private logger = inject(LoggerService);
+
   dataDiagnostics = signal<DiagnosticItem[]>([]);
   isLoading = signal(false);
-  constructor(
-    private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _addressService: AddressService,
-    private _placeService: PlaceService,
-    private _nameService: NameService,
-    private logger: LoggerService
-  ) {}
-  ngOnInit() {
-    // Diagnostics will only run when the user clicks the "Run Diagnostics" button
-  }
   async runDiagnostics() {
     this.isLoading.set(true);
     this.dataDiagnostics.set([]); // Clear previous results
@@ -157,7 +172,7 @@ export class DiagnosticsComponent implements OnInit {
     }
 
     // Find all shifts that have duplicates (groups with more than 1 shift)
-    for (const [key, shiftGroup] of keyMap) {
+    for (const shiftGroup of keyMap.values()) {
       if (shiftGroup.length > 1) {
         duplicates.push(...shiftGroup);
         duplicateGroups.push(shiftGroup);

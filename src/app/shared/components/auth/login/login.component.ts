@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Type, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGoogleService } from '@services/auth-google.service';
-import { SESSION_CONSTANTS } from '@constants/session.constants';
 import { BaseRectButtonComponent, BaseCardComponent } from '@components/base';
 
-const MODULES: any[] = [
+const MODULES: Type<unknown>[] = [
   CommonModule,
   FormsModule,
   ReactiveFormsModule,
@@ -20,10 +19,10 @@ const MODULES: any[] = [
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
-  isAuthenticated = false;
+export class LoginComponent implements OnInit {
+  protected authService = inject(AuthGoogleService);
 
-  constructor(protected authService: AuthGoogleService) {}
+  isAuthenticated = false;
 
   async ngOnInit() {
     // Check authentication state (this may trigger a refresh)

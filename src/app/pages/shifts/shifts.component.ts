@@ -9,18 +9,18 @@ import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-di
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
 import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { firstValueFrom } from 'rxjs';
 import { DestroyRef, inject } from '@angular/core';
@@ -31,9 +31,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './shifts.component.html',
     styleUrls: ['./shifts.component.scss'],
     standalone: true,
-    imports: [NgClass, NgIf, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent, BaseRectButtonComponent]
+    imports: [NgClass, ShiftsQuickViewComponent, ShiftFormComponent, BaseFabButtonComponent, BaseRectButtonComponent]
 })
 export class ShiftsComponent implements OnInit {
+  dialog = inject(MatDialog);
+  private _shiftService = inject(ShiftService);
+  private _sheetService = inject(SpreadsheetService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private _snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  protected authService = inject(AuthGoogleService);
+
   private static readonly SCROLL_THRESHOLD_PX = 200;
   protected readonly uiMessages = UI_MESSAGES;
   private readonly destroyRef = inject(DestroyRef);
@@ -44,7 +53,7 @@ export class ShiftsComponent implements OnInit {
   saving = signal(false);
   unsavedShifts: IShift[] = [];
   unsavedData = signal(false);
-  pageSize: number = 20; // Number of shifts to load per request
+  pageSize = 20; // Number of shifts to load per request
   currentPage = signal(0); // Current page index
   isLoading = signal(false); // Prevent multiple simultaneous requests
   noMoreData = signal(false); // Stop loading if all data is loaded
@@ -52,20 +61,9 @@ export class ShiftsComponent implements OnInit {
   defaultSheet = signal<ISpreadsheet | undefined>(undefined);
   demoSheetAttached = signal(false);
 
-  editId = signal<string | null>(null); // ID of the shift being edited, if any
+  editId = signal<string | null>(null);
 
-  constructor(
-    public dialog: MatDialog, 
-    private _shiftService: ShiftService,
-    private _sheetService: SpreadsheetService,
-    private unsavedDataService: UnsavedDataService,
-    private _snackBar: MatSnackBar,
-    private router: Router, 
-    private route: ActivatedRoute,
-    protected authService: AuthGoogleService
-  ) { }
-
-  trackByShift(index: number, shift: IShift): any {
+  trackByShift(index: number, shift: IShift): string | number {
     return shift?.rowId ?? shift?.key ?? index;
   }
 
@@ -146,7 +144,7 @@ export class ShiftsComponent implements OnInit {
   async confirmSaveDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
     dialogData.message = message;
     dialogData.trueText = "Save";
@@ -190,7 +188,7 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
-  exitEditMode(shiftId?: string) {
+  exitEditMode() {
     this.editId.set(null);
     this.router.navigate(['/shifts']);
     this.handleParentReload();

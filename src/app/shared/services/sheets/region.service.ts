@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IRegion } from '@interfaces/region.interface';
+import { IRegion } from '@interfaces/entities/region.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
 import { LoggerService } from '../logger.service';
 import { Injectable } from '@angular/core';
@@ -18,7 +18,7 @@ export class RegionService extends GenericCrudService<IRegion> {
     services$ = liveQuery(() => spreadsheetDB.services.toArray());
     
     public async deleteUnsaved() {
-        let regions = await this.getUnsaved();
+        const regions = await this.getUnsaved();
         regions.forEach(async region => {
             await spreadsheetDB.regions.delete(region.id!);
         });

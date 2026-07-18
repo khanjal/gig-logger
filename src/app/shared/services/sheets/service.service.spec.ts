@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ServiceService } from './service.service';
-import { IService } from '@interfaces/service.interface';
+import { IService } from '@interfaces/entities/service.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('ServiceService', () => {
@@ -42,7 +42,7 @@ describe('ServiceService', () => {
       startsWithAnyOfIgnoreCase: jasmine.createSpy('startsWithAnyOfIgnoreCase').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo([])
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.services.where>);
   });
 
   it('should be created', () => {
@@ -68,7 +68,7 @@ describe('ServiceService', () => {
       equals: jasmine.createSpy('equals').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(svc)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.services.where>);
 
     const result = await service.get(5);
 

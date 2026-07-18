@@ -5,7 +5,13 @@ import { SearchService } from '@services/search.service';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { ViewportScroller } from '@angular/common';
-import type { ISearchResult, ISearchResultGroup } from '@interfaces/search-result.interface';
+import type { ISearchResult, ISearchResultGroup } from '@interfaces/search/search-result.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
+
+interface SearchComponentPrivates {
+  getFilteredAutocompleteOptions(value: string): Promise<string[]>;
+}
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -104,7 +110,7 @@ describe('SearchComponent', () => {
   });
 
   it('getFilteredAutocompleteOptions aggregates unique sorted values across enabled categories', async () => {
-    dropdownDataSpy.filterDropdown.and.callFake((type: any, _value: string) => {
+    dropdownDataSpy.filterDropdown.and.callFake((type: DropdownType, _value: string) => {
       if (type === 'Service') return Promise.resolve(['DoorDash', 'Uber Eats']);
       if (type === 'Type') return Promise.resolve(['Food Delivery', 'Uber Eats']);
       return Promise.resolve([]);
@@ -114,7 +120,7 @@ describe('SearchComponent', () => {
       All: false, Address: false, Name: false, Place: false, Region: false, Service: true, Type: true
     });
 
-    const result = await (component as any).getFilteredAutocompleteOptions('u');
+    const result = await (component as unknown as SearchComponentPrivates).getFilteredAutocompleteOptions('u');
 
     expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Service', 'u');
     expect(dropdownDataSpy.filterDropdown).toHaveBeenCalledWith('Type', 'u');
@@ -126,7 +132,7 @@ describe('SearchComponent', () => {
       All: false, Address: false, Name: false, Place: false, Region: false, Service: false, Type: false
     });
 
-    const result = await (component as any).getFilteredAutocompleteOptions('u');
+    const result = await (component as unknown as SearchComponentPrivates).getFilteredAutocompleteOptions('u');
 
     expect(result).toEqual([]);
   });
@@ -165,7 +171,7 @@ describe('SearchComponent', () => {
     const makeResult = (value: string, tripId: number, total: number): ISearchResult => ({
       type: 'Service',
       value,
-      trips: [{ id: tripId, total, exclude: false } as any],
+      trips: [{ id: tripId, total, exclude: false } as unknown as ITrip],
       totalTrips: 1,
       totalEarnings: total
     });
@@ -238,7 +244,7 @@ describe('SearchComponent', () => {
     it('resets searchTerm and all derived metrics', async () => {
       const results: ISearchResult[] = [{
         type: 'Service', value: 'Uber',
-        trips: [{ id: 1, total: 30, exclude: false } as any],
+        trips: [{ id: 1, total: 30, exclude: false } as unknown as ITrip],
         totalTrips: 1, totalEarnings: 30
       }];
       searchServiceSpy.searchMultipleCategories.and.returnValue(Promise.resolve(results));

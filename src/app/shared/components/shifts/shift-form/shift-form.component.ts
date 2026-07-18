@@ -1,11 +1,11 @@
 import { afterNextRender, Component, EventEmitter, inject, Injector, Input, OnChanges, OnInit, Output, runInInjectionContext, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { CommonModule } from '@angular/common';
 import { ShiftService } from '@services/sheets/shift.service';
 import { LoggerService } from '@services/logger.service';
 import { ActionEnum } from '@enums/action.enum';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { BaseDatepickerComponent } from '@components/base/base-datepicker/base-datepicker.component';
 import { TimeInputComponent } from '@inputs/time-input/time-input.component';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -29,7 +29,7 @@ interface ITripTotalsViewModel {
 }
 
 @Component({
-  selector: 'shift-form',
+  selector: 'app-shift-form',
   templateUrl: './shift-form.component.html',
   styleUrls: ['./shift-form.component.scss'],
   standalone: true,
@@ -41,8 +41,12 @@ interface ITripTotalsViewModel {
   ]
 })
 export class ShiftFormComponent implements OnInit, OnChanges {
+  private shiftService = inject(ShiftService);
+  private tripService = inject(TripService);
+  private logger = inject(LoggerService);
+
   @Input() rowId?: string | null;
-  @Output() parentReload = new EventEmitter<any>();
+  @Output() parentReload = new EventEmitter<void>();
   @Output() editModeExit = new EventEmitter<string>();
 
   shiftForm = new FormGroup({
@@ -70,17 +74,11 @@ export class ShiftFormComponent implements OnInit, OnChanges {
   computedTotals: ITripTotalsViewModel = this.createEmptyTotals();
   readonly tripTotals$ = new BehaviorSubject<ITripTotalsViewModel>(this.createEmptyTotals());
 
-  computedShiftNumber: number = 1;
+  computedShiftNumber = 1;
   shift: IShift | undefined;
-  maxRowId: number = 1;
-  private hasNewShiftSubscriptions: boolean = false;
+  maxRowId = 1;
+  private hasNewShiftSubscriptions = false;
   private injector = inject(Injector);
-
-  constructor(
-    private shiftService: ShiftService,
-    private tripService: TripService,
-    private logger: LoggerService
-  ) {}
 
   ngOnInit(): void {
     this.scheduleInitialization();
@@ -176,7 +174,7 @@ export class ShiftFormComponent implements OnInit, OnChanges {
     this.computedShiftNumber = ShiftHelper.getNextShiftNumber(service, shifts);
   }
 
-  async calculateTotals(shiftKey?: string, deferAssignment: boolean = false): Promise<ITripTotalsViewModel> {
+  async calculateTotals(shiftKey?: string, deferAssignment = false): Promise<ITripTotalsViewModel> {
     let trips: ITrip[] = [];
     const keyToQuery = shiftKey ?? this.shift?.key;
     if (keyToQuery) {

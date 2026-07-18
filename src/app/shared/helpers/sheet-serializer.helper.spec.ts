@@ -1,4 +1,6 @@
 import { SheetSerializerHelper } from './sheet-serializer.helper';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 
 describe('SheetSerializerHelper', () => {
   it('converts zero input fields to null for a trip and preserves calculated fields', () => {
@@ -14,7 +16,7 @@ describe('SheetSerializerHelper', () => {
       total: 100, // calculated
       amountPerDistance: 2, // calculated
       amountPerTime: 0 // calculated - intentionally zero but preserved
-    } as any;
+    } as unknown as ITrip;
 
     const serialized = SheetSerializerHelper.serializeTrip(trip);
 
@@ -33,11 +35,11 @@ describe('SheetSerializerHelper', () => {
 
   it('serializes arrays of trips', () => {
     const trips = [
-      { id: 1, pay: 0, tip: 1 } as any,
-      { id: 2, pay: 3, tip: 0 } as any
+      { id: 1, pay: 0, tip: 1 } as unknown as ITrip,
+      { id: 2, pay: 3, tip: 0 } as unknown as ITrip
     ];
 
-    const out = SheetSerializerHelper.serializeTrips(trips as any);
+    const out = SheetSerializerHelper.serializeTrips(trips);
     expect(out.length).toBe(2);
     expect(out[0].pay).toBeNull();
     expect(out[0].tip).toBe(1);
@@ -53,7 +55,7 @@ describe('SheetSerializerHelper', () => {
       bonus: 0,
       cash: 0,
       total: 50
-    } as any;
+    } as unknown as IShift;
 
     const s = SheetSerializerHelper.serializeShift(shift);
     expect(s.pay).toBeNull();
@@ -61,7 +63,7 @@ describe('SheetSerializerHelper', () => {
     expect(s.bonus).toBeNull();
     expect(s.cash).toBeNull();
 
-    const arr = SheetSerializerHelper.serializeShifts([shift as any, { id: 2, pay: 10, tip: 0 } as any]);
+    const arr = SheetSerializerHelper.serializeShifts([shift, { id: 2, pay: 10, tip: 0 } as unknown as IShift]);
     expect(arr.length).toBe(2);
     expect(arr[0].pay).toBeNull();
     expect(arr[1].tip).toBeNull();

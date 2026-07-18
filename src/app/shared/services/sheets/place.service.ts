@@ -1,7 +1,7 @@
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import type { IPlace } from '@interfaces/place.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
 import { Injectable } from '@angular/core';
 
@@ -16,7 +16,7 @@ export class PlaceService extends GenericCrudService<IPlace> {
     places$ = from(liveQuery(() => spreadsheetDB.places.toArray()));
 
     public async deleteUnsaved() {
-        let places = await this.getUnsaved();
+        const places = await this.getUnsaved();
         places.forEach(async place => {
             await spreadsheetDB.places.delete(place.id!);
         });
@@ -27,10 +27,10 @@ export class PlaceService extends GenericCrudService<IPlace> {
     }
 
     public async append(places: IPlace[]) {
-        let existingPlaces = await this.list();
+        const existingPlaces = await this.list();
 
         places.forEach(place => {
-            let remotePlace = existingPlaces.find(x => x.place === place.place);
+            const remotePlace = existingPlaces.find(x => x.place === place.place);
 
             if (remotePlace) {
                 place.id = remotePlace.id;

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
 import { AppUpdateService } from '@services/app-update.service';
 import { Subscription } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
+import type { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
+import type { IBeforeInstallPromptEvent } from '@interfaces/external/before-install-prompt-event.interface';
 
 @Component({
   selector: 'app-service-worker-status',
@@ -13,17 +14,15 @@ import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
   templateUrl: './service-worker-status.component.html',
 })
 export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
+  private appUpdateService = inject(AppUpdateService);
+  private logger = inject(LoggerService);
+
   serviceWorkerStatus = signal('Checking...');
   isUpdateAvailable = signal(false);
   showInstallButton = signal(false);
   isOnline = signal(navigator.onLine);
   private updateStatusSubscription: Subscription | undefined;
-  private deferredPrompt: any;
-
-  constructor(
-    private appUpdateService: AppUpdateService,
-    private logger: LoggerService
-  ) {}
+  private deferredPrompt: IBeforeInstallPromptEvent | null = null;
   
   async ngOnInit(): Promise<void> {
     // Subscribe to app update status
@@ -40,12 +39,12 @@ export class ServiceWorkerStatusComponent implements OnInit, OnDestroy {
     );
 
     // Listen for the install prompt
-    window.addEventListener('beforeinstallprompt', (e) => {
+    window.addEventListener('beforeinstallprompt', ((e: IBeforeInstallPromptEvent) => {
       e.preventDefault();
       this.deferredPrompt = e;
       this.showInstallButton.set(true);
       this.logger.info('PWA install prompt available');
-    });
+    }) as EventListener);
 
     // Hide button if already installed
     window.addEventListener('appinstalled', () => {

@@ -1,21 +1,22 @@
-import { Component, Input, Optional, Self } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormGroupDirective } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
-
 import { firstErrorMessage, controlHasError } from './base-input.helpers';
 
 @Component({
   selector: 'app-base-input',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix, MatInput, MatIcon, BaseFieldButtonComponent],
+  imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix, MatInput, MatIcon, BaseFieldButtonComponent],
   templateUrl: './base-input.component.html',
   styleUrl: './base-input.component.scss'
 })
 export class BaseInputComponent implements ControlValueAccessor {
+  ngControl = inject(NgControl, { optional: true, self: true });
+  private parentForm = inject(FormGroupDirective, { optional: true });
+
 
   private _disabled = false;
   @Input() get disabled(): boolean { return this._disabled; }
@@ -25,8 +26,8 @@ export class BaseInputComponent implements ControlValueAccessor {
 
   // --- visual inputs ---
   @Input() label?: string;
-  @Input() type: string = 'text';
-  @Input() placeholder: string = '';
+  @Input() type = 'text';
+  @Input() placeholder = '';
   @Input() hint?: string;
   @Input() error?: string;
   @Input() icon?: string;
@@ -48,7 +49,7 @@ export class BaseInputComponent implements ControlValueAccessor {
    * Reusable form input implementing ControlValueAccessor.
    * Works with template-driven and reactive forms.
    */
-  constructor(@Optional() @Self() public ngControl: NgControl, @Optional() private parentForm?: FormGroupDirective) {
+  constructor() {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }

@@ -1,111 +1,177 @@
 <div class="flex flex-col gap-1">
   <!-- Shift Item -->
-  <div *ngIf="itemType === 'shift'">
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
-      <span class="font-semibold item-date" [class.line-through]="item.markedForDelete">{{ item.date }}</span>
-      <span class="item-key text-sm">({{ item.key }})</span>
-      <span *ngIf="item.markedForDelete" class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">MARKED FOR DELETE</span>
-    </div>
-    <div class="flex items-center justify-between gap-2 mt-1">
-      <div class="flex flex-wrap items-center gap-2 text-sm item-meta">
-        <span *ngIf="item.totalTrips !== undefined">{{ item.totalTrips }} trips</span>
-        <span *ngIf="item.start" class="item-time">{{ item.start }} - {{ item.finish }}</span>
+  @if (itemType === 'shift') {
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+        <span class="font-semibold item-date" [class.line-through]="item.markedForDelete">{{ item.date }}</span>
+        <span class="item-key text-sm">({{ item.key }})</span>
+        @if (item.markedForDelete) {
+          <span class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">MARKED FOR DELETE</span>
+        }
       </div>
-      <app-base-fab-button *ngIf="diagnosticName === 'Shifts Missing Time Duration' && !item.fixed"
-        fabStyle="mini"
-        variant="primary"
-        (clicked)="onFixShiftDuration()"
-        matTooltip="Fix duration"
-        [icon]="'build'">
-      </app-base-fab-button>
+      <div class="flex items-center justify-between gap-2 mt-1">
+        <div class="flex flex-wrap items-center gap-2 text-sm item-meta">
+          @if (item.totalTrips !== undefined) {
+            <span>{{ item.totalTrips }} trips</span>
+          }
+          @if (item.start) {
+            <span class="item-time">{{ item.start }} - {{ item.finish }}</span>
+          }
+        </div>
+        @if (diagnosticName === 'Shifts Missing Time Duration' && !item.fixed) {
+          <app-base-fab-button
+            fabStyle="mini"
+            variant="primary"
+            (clicked)="onFixShiftDuration()"
+            matTooltip="Fix duration"
+            [icon]="'build'">
+          </app-base-fab-button>
+        }
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Trip Item -->
-  <div *ngIf="itemType === 'trip'">
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-success-soft rounded text-xs font-mono badge-success">ID: {{ item.rowId }}</span>
-      <span class="font-semibold item-date">{{ item.date }}</span>
-      <span class="item-key text-sm">({{ item.key }})</span>
-    </div>
-    <div class="flex items-center justify-between gap-2 mt-1">
-      <div class="flex flex-wrap items-center gap-2 text-sm">
-        <span *ngIf="item.place" class="px-2 py-0.5 bg-accent-soft rounded text-xs badge-purple">{{ item.place }}</span>
-        <span *ngIf="item.name" class="px-2 py-0.5 bg-accent-variant-soft rounded text-xs badge-indigo">{{ item.name }}</span>
-        <span *ngIf="item.exclude" class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">EXCLUDED</span>
+  @if (itemType === 'trip') {
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-success-soft rounded text-xs font-mono badge-success">ID: {{ item.rowId }}</span>
+        <span class="font-semibold item-date">{{ item.date }}</span>
+        <span class="item-key text-sm">({{ item.key }})</span>
       </div>
-      <app-base-fab-button *ngIf="diagnosticName === 'Trips Missing Duration' && !item.fixed"
-        fabStyle="mini"
-        variant="primary"
-        (clicked)="onFixTripDuration()"
-        matTooltip="Fix duration"
-        [icon]="'build'">
-      </app-base-fab-button>
+      <div class="flex items-center justify-between gap-2 mt-1">
+        <div class="flex flex-wrap items-center gap-2 text-sm">
+          @if (item.place) {
+            <span class="px-2 py-0.5 bg-accent-soft rounded text-xs badge-purple">{{ item.place }}</span>
+          }
+          @if (item.name) {
+            <span class="px-2 py-0.5 bg-accent-variant-soft rounded text-xs badge-indigo">{{ item.name }}</span>
+          }
+          @if (item.exclude) {
+            <span class="px-2 py-0.5 bg-error-soft rounded text-xs badge-delete">EXCLUDED</span>
+          }
+        </div>
+        @if (diagnosticName === 'Trips Missing Duration' && !item.fixed) {
+          <app-base-fab-button
+            fabStyle="mini"
+            variant="primary"
+            (clicked)="onFixTripDuration()"
+            matTooltip="Fix duration"
+            [icon]="'build'">
+          </app-base-fab-button>
+        }
+      </div>
+      @if (diagnosticName === 'Trips Missing Duration') {
+        <div class="flex items-center gap-2 text-sm mt-1">
+          @if (item.pickupTime) {
+            <span class="item-time">{{ item.pickupTime }}</span>
+          }
+          @if (item.pickupTime && item.dropoffTime) {
+            <span class="item-time">-</span>
+          }
+          @if (item.dropoffTime) {
+            <span class="item-time">{{ item.dropoffTime }}</span>
+          }
+          @if (item.duration) {
+            <span class="px-2 py-0.5 bg-primary-soft rounded text-xs badge-id">{{ item.duration | durationFormat }}</span>
+          }
+        </div>
+      }
     </div>
-    <div *ngIf="diagnosticName === 'Trips Missing Duration'" class="flex items-center gap-2 text-sm mt-1">
-      <span *ngIf="item.pickupTime" class="item-time">{{ item.pickupTime }}</span>
-      <span *ngIf="item.pickupTime && item.dropoffTime" class="item-time">-</span>
-      <span *ngIf="item.dropoffTime" class="item-time">{{ item.dropoffTime }}</span>
-      <span *ngIf="item.duration" class="px-2 py-0.5 bg-primary-soft rounded text-xs badge-id">{{ item.duration | durationFormat }}</span>
-    </div>
-  </div>
+  }
 
   <!-- Address Item -->
-  <div *ngIf="itemType === 'address'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-warning-soft rounded text-xs font-mono badge-warning">ID: {{ item.rowId }}</span>
-    <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.address }}</span>
-    <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
-    <span *ngIf="item.names && item.names.length > 0" class="text-sm item-meta-light">Names: {{ item.names.join(', ') }}</span>
-  </div>
+  @if (itemType === 'address') {
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="px-2 py-0.5 bg-warning-soft rounded text-xs font-mono badge-warning">ID: {{ item.rowId }}</span>
+      <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.address }}</span>
+      @if (item.trips !== undefined) {
+        <span class="text-sm item-meta">{{ item.trips }} trips</span>
+      }
+      @if (item.names && item.names.length > 0) {
+        <span class="text-sm item-meta-light">Names: {{ item.names.join(', ') }}</span>
+      }
+    </div>
+  }
 
   <!-- Place Item -->
-  <div *ngIf="itemType === 'place'">
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-accent-soft rounded text-xs font-mono badge-purple">ID: {{ item.rowId }}</span>
-      <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.place }}</span>
-    </div>
-    <div class="flex flex-wrap items-center gap-2 mt-1 text-sm item-meta">
-      <span *ngIf="item.trips !== undefined">{{ item.trips }} trips</span>
-      <span *ngIf="item.addresses && item.addresses.length > 0">{{ item.addresses.length }} addresses</span>
-    </div>
-  </div>
-
-  <!-- Name Item -->
-  <div *ngIf="itemType === 'name'">
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="px-2 py-0.5 bg-accent-variant-soft rounded text-xs font-mono badge-indigo">ID: {{ item.rowId }}</span>
-      <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.name }}</span>
-    </div>
-    <div class="flex flex-col gap-1 mt-1 text-sm">
-      <span *ngIf="item.trips !== undefined" class="item-meta">{{ item.trips }} trips</span>
-      <div *ngIf="item.addresses && item.addresses.length > 0">
-        <span class="font-medium item-meta-header">Addresses:</span>
-        <div *ngFor="let address of item.addresses" class="item-meta">• {{ address }}</div>
+  @if (itemType === 'place') {
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-accent-soft rounded text-xs font-mono badge-purple">ID: {{ item.rowId }}</span>
+        <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.place }}</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-1 text-sm item-meta">
+        @if (item.trips !== undefined) {
+          <span>{{ item.trips }} trips</span>
+        }
+        @if (item.addresses && item.addresses.length > 0) {
+          <span>{{ item.addresses.length }} addresses</span>
+        }
       </div>
     </div>
-  </div>
+  }
+
+  <!-- Name Item -->
+  @if (itemType === 'name') {
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 bg-accent-variant-soft rounded text-xs font-mono badge-indigo">ID: {{ item.rowId }}</span>
+        <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.name }}</span>
+      </div>
+      <div class="flex flex-col gap-1 mt-1 text-sm">
+        @if (item.trips !== undefined) {
+          <span class="item-meta">{{ item.trips }} trips</span>
+        }
+        @if (item.addresses && item.addresses.length > 0) {
+          <div>
+            <span class="font-medium item-meta-header">Addresses:</span>
+            @for (address of item.addresses; track address) {
+              <div class="item-meta">• {{ address }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
 
   <!-- Service Item -->
-  <div *ngIf="itemType === 'service'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
-    <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.service }}</span>
-    <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
-    <span *ngIf="item.shifts !== undefined" class="text-sm item-meta">{{ item.shifts }} shifts</span>
-  </div>
+  @if (itemType === 'service') {
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+      <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.service }}</span>
+      @if (item.trips !== undefined) {
+        <span class="text-sm item-meta">{{ item.trips }} trips</span>
+      }
+      @if (item.shifts !== undefined) {
+        <span class="text-sm item-meta">{{ item.shifts }} shifts</span>
+      }
+    </div>
+  }
 
   <!-- Type Item -->
-  <div *ngIf="itemType === 'type'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
-    <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.type }}</span>
-    <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
-  </div>
+  @if (itemType === 'type') {
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+      <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.type }}</span>
+      @if (item.trips !== undefined) {
+        <span class="text-sm item-meta">{{ item.trips }} trips</span>
+      }
+    </div>
+  }
 
   <!-- Region Item -->
-  <div *ngIf="itemType === 'region'" class="flex flex-wrap items-center gap-2">
-    <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
-    <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.region }}</span>
-    <span *ngIf="item.trips !== undefined" class="text-sm item-meta">{{ item.trips }} trips</span>
-    <span *ngIf="item.shifts !== undefined" class="text-sm item-meta">{{ item.shifts }} shifts</span>
-  </div>
+  @if (itemType === 'region') {
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="px-2 py-0.5 bg-primary-soft rounded text-xs font-mono badge-id">ID: {{ item.rowId }}</span>
+      <span class="font-semibold item-name" [class.line-through]="item.trips === 0">{{ item.region }}</span>
+      @if (item.trips !== undefined) {
+        <span class="text-sm item-meta">{{ item.trips }} trips</span>
+      }
+      @if (item.shifts !== undefined) {
+        <span class="text-sm item-meta">{{ item.shifts }} shifts</span>
+      }
+    </div>
+  }
 </div>

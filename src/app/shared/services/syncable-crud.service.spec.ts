@@ -1,6 +1,7 @@
 import { SyncableCrudService } from './syncable-crud.service';
 import { ActionEnum } from '@enums/action.enum';
-import { IActionRecord } from '@interfaces/action-record.interface';
+import { IActionRecord } from '@interfaces/sheets/action-record.interface';
+import type { Table } from 'dexie';
 
 interface SyncEntity extends IActionRecord {
   id?: number;
@@ -36,9 +37,10 @@ class FakeTable<T extends { id?: number }> {
   toArray = async () => [...this.items];
 
   where(field: string) {
+    const get = (item: T) => (item as Record<string, unknown>)[field];
     return {
-      equals: (value: any) => {
-        const matches = this.items.filter((i: any) => i[field] === value);
+      equals: (value: unknown) => {
+        const matches = this.items.filter(i => get(i) === value);
         return {
           toArray: async () => [...matches],
           first: async () => matches[0],
@@ -58,7 +60,7 @@ describe('SyncableCrudService', () => {
       { id: 2, rowId: 2, name: 'b', saved: false, action: ActionEnum.Update, actionTime: 200 },
       { id: 3, rowId: 3, name: 'c', saved: false, action: ActionEnum.Delete, actionTime: 300 },
     ]);
-    service = new SyncableCrudService<SyncEntity>(table as any);
+    service = new SyncableCrudService<SyncEntity>(table as unknown as Table<SyncEntity, number>);
   });
 
   it('getUnsaved returns only unsaved records', async () => {

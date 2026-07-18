@@ -4,8 +4,8 @@ describe('AddressHelper', () => {
 
   describe('getShortAddress', () => {
     it('should return empty string for null or undefined', () => {
-      expect(AddressHelper.getShortAddress(null as any)).toBe('');
-      expect(AddressHelper.getShortAddress(undefined as any)).toBe('');
+      expect(AddressHelper.getShortAddress(null as unknown as string)).toBe('');
+      expect(AddressHelper.getShortAddress(undefined as unknown as string)).toBe('');
       expect(AddressHelper.getShortAddress('')).toBe('');
     });
 
@@ -57,8 +57,8 @@ describe('AddressHelper', () => {
 
   describe('abbrvAddress', () => {
     it('should return empty string for null or undefined', () => {
-      expect(AddressHelper.abbrvAddress(null as any)).toBe('');
-      expect(AddressHelper.abbrvAddress(undefined as any)).toBe('');
+      expect(AddressHelper.abbrvAddress(null as unknown as string)).toBe('');
+      expect(AddressHelper.abbrvAddress(undefined as unknown as string)).toBe('');
       expect(AddressHelper.abbrvAddress('')).toBe('');
     });
 
@@ -163,14 +163,14 @@ describe('AddressHelper', () => {
 
   describe('removePlaceFromAddress', () => {
     it('should return empty string for null or undefined address', () => {
-      expect(AddressHelper.removePlaceFromAddress(null as any, 'Place')).toBe('');
+      expect(AddressHelper.removePlaceFromAddress(null as unknown as string, 'Place')).toBe('');
       expect(AddressHelper.removePlaceFromAddress('', 'Place')).toBe('');
     });
 
     it('should return original address if place is empty', () => {
       const address = '123 Main Street, Springfield';
       expect(AddressHelper.removePlaceFromAddress(address, '')).toBe(address);
-      expect(AddressHelper.removePlaceFromAddress(address, null as any)).toBe(address);
+      expect(AddressHelper.removePlaceFromAddress(address, null as unknown as string)).toBe(address);
     });
 
     it('should remove exact matching place name', () => {

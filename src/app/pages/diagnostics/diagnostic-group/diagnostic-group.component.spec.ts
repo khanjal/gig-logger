@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DiagnosticGroupComponent } from './diagnostic-group.component';
+import { DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
 
 describe('DiagnosticGroupComponent', () => {
   let component: DiagnosticGroupComponent;
@@ -26,7 +27,7 @@ describe('DiagnosticGroupComponent', () => {
     it('should return true for mergeable item types', () => {
       const mergeableTypes = ['place', 'name', 'address', 'service', 'region'];
       mergeableTypes.forEach(type => {
-        component.itemType = type as any;
+        component.itemType = type as DiagnosticEntityType;
         expect(component.canMerge).toBe(true);
       });
     });
@@ -48,7 +49,7 @@ describe('DiagnosticGroupComponent', () => {
     it('should return false for non-shift item types', () => {
       const nonShiftTypes = ['trip', 'place', 'name', 'address', 'service', 'region'];
       nonShiftTypes.forEach(type => {
-        component.itemType = type as any;
+        component.itemType = type as DiagnosticEntityType;
         expect(component.canDelete).toBe(false);
       });
     });

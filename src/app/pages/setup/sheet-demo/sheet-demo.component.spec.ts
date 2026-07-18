@@ -3,7 +3,7 @@ import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { of } from 'rxjs';
 import { SheetDemoComponent } from './sheet-demo.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { LoggerService } from '@services/logger.service';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
@@ -49,7 +49,7 @@ describe('SheetDemoComponent', () => {
     authSpy.canSync.and.resolveTo(true);
     dialogSpy.open.and.returnValue({
       afterClosed: () => of(true)
-    } as any);
+    } as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
 
     spyOn(component.parentReload, 'emit');
 
@@ -82,7 +82,7 @@ describe('SheetDemoComponent', () => {
     authSpy.canSync.and.resolveTo(true);
     dialogSpy.open.and.returnValue({
       afterClosed: () => of(false)
-    } as any);
+    } as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
 
     spyOn(component.parentReload, 'emit');
 
@@ -97,7 +97,7 @@ describe('SheetDemoComponent', () => {
     authSpy.canSync.and.resolveTo(true);
     dialogSpy.open.and.returnValue({
       afterClosed: () => throwError(() => new Error('dialog failed'))
-    } as any);
+    } as Partial<MatDialogRef<DataSyncModalComponent>> as MatDialogRef<DataSyncModalComponent>);
 
     spyOn(component.parentReload, 'emit');
 

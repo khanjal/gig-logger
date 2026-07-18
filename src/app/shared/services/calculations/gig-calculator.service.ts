@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
-import type { IShift } from "@interfaces/shift.interface";
-import type { ITrip } from "@interfaces/trip.interface";
-import type { IWeekday } from "@interfaces/weekday.interface";
+import { Injectable, inject } from "@angular/core";
+import type { IShift } from "@interfaces/entities/shift.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IWeekday } from "@interfaces/sheets/weekday.interface";
 import { ActionEnum } from "@enums/action.enum";
 import { DateHelper } from "@helpers/date.helper";
 import { updateAction } from "@utils/action.utils";
@@ -14,13 +14,11 @@ import { LoggerService } from "../logger.service";
     providedIn: 'root'
 })
 export class GigCalculatorService {
+    private _shiftService = inject(ShiftService);
+    private _tripService = inject(TripService);
+    private _weekdayService = inject(WeekdayService);
+    private _logger = inject(LoggerService);
 
-    constructor(
-        private _shiftService: ShiftService,
-        private _tripService: TripService,
-        private _weekdayService: WeekdayService,
-        private _logger: LoggerService
-    ) {}
 
     // ============================================================================
     // TRIP CALCULATIONS
@@ -66,7 +64,7 @@ export class GigCalculatorService {
             }
 
             for (let shift of shifts) {
-                let trips = (await this._tripService.query("key", shift.key))
+                const trips = (await this._tripService.query("key", shift.key))
                     .filter(x => x.action !== ActionEnum.Delete && !x.exclude);
 
                 shift.totalTrips = +(shift.trips ?? 0) + trips.length;
@@ -84,7 +82,7 @@ export class GigCalculatorService {
                 await this._shiftService.update([shift]);
             }
 
-            let dates = [... new Set(shifts.map(x => x?.date))];
+            const dates = [... new Set(shifts.map(x => x?.date))];
             await this.calculateDailyTotal(dates);
             
             this._logger.info('Shift totals calculated successfully');
@@ -222,7 +220,7 @@ export class GigCalculatorService {
         try {
             this._logger.info('Calculating daily totals');
             
-            let currentDate = DateHelper.getStartOfWeekDate(new Date);
+            const currentDate = DateHelper.getStartOfWeekDate(new Date);
             let individualDates = true;
             let shifts: IShift[] = [];
 
@@ -241,12 +239,12 @@ export class GigCalculatorService {
                     shifts = await this._shiftService.getShiftsByDate(date);
                 }
 
-                let shiftTotal = shifts
+                const shiftTotal = shifts
                     .filter(x => x.date === date)
                     .map(x => x.grandTotal)
                     .reduce((acc, value) => acc + value, 0);
                     
-                let dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
+                const dayOfWeek = DateHelper.getDayOfWeek(new Date(DateHelper.getDateFromISO(date)));
                 let weekday = (await this._weekdayService.query("day", dayOfWeek))[0];
 
                 if (!weekday) {
@@ -278,9 +276,10 @@ export class GigCalculatorService {
             .reduce((acc, value) => acc + value, 0);
     }
 
-    private handleError(operation: string, error: any): void {
+    private handleError(operation: string, error: unknown): void {
+        const err = error as { message?: string } | null | undefined;
         this._logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
+            message: err?.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
         });

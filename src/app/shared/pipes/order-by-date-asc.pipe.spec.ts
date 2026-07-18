@@ -112,14 +112,14 @@ describe('OrderByPipe', () => {
 
   describe('Edge cases', () => {
     it('should return same array if not an array', () => {
-      const notArray = 'not an array' as any;
+      const notArray = 'not an array' as unknown as { value: number }[];
       const result = pipe.transform(notArray, 'value');
       expect(result).toBe(notArray);
     });
 
     it('should return same array if property is not provided', () => {
       const array = [{ value: 2 }, { value: 1 }];
-      const result = pipe.transform(array, '' as any);
+      const result = pipe.transform(array, '' as unknown as keyof (typeof array)[number]);
       expect(result).toEqual(array);
     });
 

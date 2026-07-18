@@ -1,14 +1,13 @@
-// @ts-nocheck
-import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef, signal } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, DestroyRef, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IDaily } from '@interfaces/daily.interface';
-import type { ITripStatistics } from '@interfaces/trip-statistics.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IDaily } from '@interfaces/sheets/daily.interface';
+import type { ITripStatistics } from '@interfaces/stats/trip-statistics.interface';
 import { TripsModalComponent } from '@components/ui/trips-modal/trips-modal.component';
 import { NumberHelper } from '@helpers/number.helper';
 import { StatHelper } from '@helpers/stat.helper';
@@ -31,6 +30,10 @@ interface ISummaryCard {
   imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule, MatTooltipModule]
 })
 export class StatsSummaryComponent implements OnChanges, OnInit {
+  private dialog = inject(MatDialog);
+  private dailyService = inject(DailyService);
+  private destroyRef = inject(DestroyRef);
+
   private stats: ITripStatistics = this.createEmptyStats();
   dailyData = signal<IDaily[]>([]);
 
@@ -47,16 +50,10 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   summaryCards = signal<ISummaryCard[]>([]);
 
   // Memoized computed properties
-  private _cachedBusiestDay: { date: string; trips: number } | null = null;
-  private _cachedHighestEarningDay: { date: string; total: number } | null = null;
+  private _cachedBusiestDay: { label: string; count: number; date: string } | null = null;
+  private _cachedHighestEarningDay: { label: string; total: number; date: string } | null = null;
   private _cachedBestWeekdayPerTrip: { label: string; value: number; dayIndex: number } | null = null;
   private _cachedBestWeekdayPerTime: { label: string; value: number; dayIndex: number } | null = null;
-
-  constructor(
-    private dialog: MatDialog,
-    private dailyService: DailyService,
-    private destroyRef: DestroyRef
-  ) {}
 
   ngOnInit(): void {
     this.dailyService.daily$
@@ -294,15 +291,15 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
       },
       {
         label: 'Busiest Day',
-        value: this.busiestDay.count > 0 ? `${this.busiestDay.count} trips` : '—',
-        subValue: this.busiestDay.count > 0 ? this.busiestDay.label : undefined,
-        action: this.busiestDay.count > 0 ? () => this.showBusiestDayTrips() : undefined
+        value: this.busiestDay && this.busiestDay.count > 0 ? `${this.busiestDay.count} trips` : '—',
+        subValue: this.busiestDay && this.busiestDay.count > 0 ? this.busiestDay.label : undefined,
+        action: this.busiestDay && this.busiestDay.count > 0 ? () => this.showBusiestDayTrips() : undefined
       },
       {
         label: 'Top Earning Day',
-        value: this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)}` : '—',
-        subValue: this.highestEarningDay.total > 0 ? this.highestEarningDay.label : undefined,
-        action: this.highestEarningDay.total > 0 ? () => this.showHighestEarningDayTrips() : undefined
+        value: this.highestEarningDay && this.highestEarningDay.total > 0 ? `$${NumberHelper.formatNumber(this.highestEarningDay.total)}` : '—',
+        subValue: this.highestEarningDay && this.highestEarningDay.total > 0 ? this.highestEarningDay.label : undefined,
+        action: this.highestEarningDay && this.highestEarningDay.total > 0 ? () => this.showHighestEarningDayTrips() : undefined
       },
       {
         label: 'Top Weekday $/Trip',
@@ -422,6 +419,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   showBusiestDayTrips(): void {
+    if (!this.busiestDay) return;
     const { label, date } = this.busiestDay;
     this.openTripsModal(
       `Busiest Day (${label})`,
@@ -430,6 +428,7 @@ export class StatsSummaryComponent implements OnChanges, OnInit {
   }
 
   showHighestEarningDayTrips(): void {
+    if (!this.highestEarningDay) return;
     const { label, total, date } = this.highestEarningDay;
     this.openTripsModal(
       `Top Earning Day ($${NumberHelper.formatNumber(total)}) - ${label}`,

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, inject } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 import { DateHelper } from '@helpers/date.helper';
-import { NgFor, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 const customPresets = [
     'Today',
@@ -26,9 +26,12 @@ type CustomPreset = typeof customPresets[number];
     styleUrls: ['./custom-range-panel.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [CommonModule, NgFor],
+    imports: [CommonModule],
 })
 export class CustomRangePanelComponent<D> {
+  private dateAdapter = inject<DateAdapter<D>>(DateAdapter);
+  private picker = inject<MatDateRangePicker<D>>(MatDateRangePicker);
+
   // list of range presets we want to provide:
   readonly customPresets = customPresets;
   selectedPreset: string | null = null;
@@ -38,11 +41,6 @@ export class CustomRangePanelComponent<D> {
     acc[preset] = this.calculateDateRange(preset);
     return acc;
   }, {} as Record<CustomPreset, [start: D, end: D]>);
-
-  constructor(
-    private dateAdapter: DateAdapter<D>,
-    private picker: MatDateRangePicker<D>
-  ) {}
 
   // called when user selects a range preset:
   selectRange(rangeName: CustomPreset): void {
@@ -117,7 +115,7 @@ export class CustomRangePanelComponent<D> {
   }
 
   private calculateWeek(forDay: D): [start: D, end: D] {
-    const deltaStart = DateHelper.getFirstDayOfWeek() - DateHelper.getDayOfWeek(<Date>forDay);
+    const deltaStart = DateHelper.getFirstDayOfWeek() - DateHelper.getDayOfWeek((forDay as Date));
     const start = this.dateAdapter.addCalendarDays(forDay, deltaStart);
     const end = this.dateAdapter.addCalendarDays(start, 6);
     return [start, end];

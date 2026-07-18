@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BaseDatepickerComponent } from './base-datepicker.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 describe('BaseDatepickerComponent', () => {
   let component: BaseDatepickerComponent;
@@ -45,7 +46,7 @@ describe('BaseDatepickerComponent', () => {
     component.registerOnChange(onChangeSpy);
     
     const testDate = new Date('2026-02-07');
-    component.onDateChange({ value: testDate });
+    component.onDateChange({ value: testDate } as MatDatepickerInputEvent<Date>);
     
     expect(onChangeSpy).toHaveBeenCalledWith(testDate);
   });

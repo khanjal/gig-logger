@@ -28,7 +28,7 @@ public class MetricsMiddleware
         catch (Exception ex)
         {
             success = false;
-            
+
             // Track specific error types
             var errorType = ex.GetType().Name;
             _ = Task.Run(async () =>
@@ -42,16 +42,16 @@ public class MetricsMiddleware
                     _logger.LogError(metricsEx, "Failed to track error metric for {ErrorType}", errorType);
                 }
             });
-            
+
             throw;
         }
         finally
         {
             stopwatch.Stop();
-            
-            _logger.LogInformation("🎯 API Call: {Endpoint} took {Duration}ms, success: {Success}", 
+
+            _logger.LogInformation("🎯 API Call: {Endpoint} took {Duration}ms, success: {Success}",
                 endpoint, stopwatch.ElapsedMilliseconds, success);
-            
+
             // Track API call metrics (fire and forget to not impact performance)
             _ = Task.Run(async () =>
             {
@@ -77,7 +77,7 @@ public class MetricsMiddleware
         // For paths like /auth/token, return "auth-token"
         if (segments.Length >= 2)
             return $"{segments[0]}-{segments[1]}";
-        
+
         return segments[0];
     }
 }

@@ -95,7 +95,7 @@ public class FilesController : ControllerBase
 
             await _metricsService.TrackCustomMetricAsync("Files.Create.Success", 1);
 
-            _logger.LogInformation("📄 Sheet created successfully: {SheetName} with ID: {SheetId}", 
+            _logger.LogInformation("📄 Sheet created successfully: {SheetName} with ID: {SheetId}",
                 createdSheet.Name, createdSheet.Id);
 
             return Ok(createdSheet);

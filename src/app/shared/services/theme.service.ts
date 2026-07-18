@@ -1,10 +1,10 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
-import type { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
+import type { ThemePreference, ResolvedTheme } from '@interfaces/ui/theme.interface';
 // Compute meta theme colors at runtime from CSS variables so we avoid
 // inline hex literals in source. Falls back to legacy values if not present.
 const getComputedCssVar = (name: string, fallback: string) => {
@@ -22,12 +22,16 @@ const DARK_THEME_COLOR = '#0b1221';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
+  private logger = inject(LoggerService);
+
   private readonly preference$ = new BehaviorSubject<ThemePreference>('system');
   private readonly resolved$ = new BehaviorSubject<ResolvedTheme>('light');
   private mediaQuery: MediaQueryList | null = null;
   private readonly documentRef: Document;
 
-  constructor(@Inject(DOCUMENT) documentRef: Document, private logger: LoggerService) {
+  constructor() {
+    const documentRef = inject<Document>(DOCUMENT);
+
     this.documentRef = documentRef;
     const initialPreference = this.getStoredPreference() ?? 'system';
     this.applyTheme(initialPreference, false);

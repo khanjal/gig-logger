@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { LoggerService } from './logger.service';
@@ -11,12 +11,16 @@ import type {
   IUserApiUsage, 
   IPlacesAutocompleteRequest, 
   IPlaceDetailsRequest 
-} from '@interfaces/google-places.interface';
+} from '@interfaces/external/google-places.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServerGooglePlacesService {
+  private http = inject(HttpClient);
+  private logger = inject(LoggerService);
+  private mockLocationService = inject(MockLocationService);
+
   private baseUrl = environment.gigLoggerApi;
   private cachedLocation: { lat: number; lng: number; timestamp: number } | null = null;
   private locationCacheDuration = 5 * 60 * 1000; // 5 minutes
@@ -25,13 +29,7 @@ export class ServerGooglePlacesService {
   private autocompleteCache = new Map<string, { results: IAutocompleteResult[]; timestamp: number }>();
   private placeDetailsCache = new Map<string, { details: IPlaceDetails; timestamp: number }>();
   private autocompleteCacheDuration = 2 * 60 * 1000; // 2 minutes
-  private placeDetailsCacheDuration = 5 * 60 * 1000; // 5 minutes
-
-  constructor(
-    private http: HttpClient,
-    private logger: LoggerService,
-    private mockLocationService: MockLocationService
-  ) {}
+  private placeDetailsCacheDuration = 5 * 60 * 1000;
 
   /**
    * Get autocomplete suggestions from server-side Google Places API
@@ -39,8 +37,8 @@ export class ServerGooglePlacesService {
    */
   async getAutocomplete(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US',
+    searchType = 'address',
+    country = 'US',
     userLat?: number,
     userLng?: number,
     radiusMeters?: number
@@ -295,17 +293,17 @@ export class ServerGooglePlacesService {
    */
   async getAutocompleteWithLocation(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US',
-    useLocationBias: boolean = false,
-    forceWithoutLocation: boolean = false
+    searchType = 'address',
+    country = 'US',
+    useLocationBias = false,
+    forceWithoutLocation = false
   ): Promise<IAutocompleteResult[]> {
     let userLocation = null;
     
     if (useLocationBias) {
       try {
         userLocation = await this.getUserLocation();
-      } catch (error) {
+      } catch {
         // Silently handle location errors
       }
     }
@@ -329,8 +327,8 @@ export class ServerGooglePlacesService {
    */
   async getSmartAutocomplete(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US'
+    searchType = 'address',
+    country = 'US'
   ): Promise<IAutocompleteResult[]> {
     // Only try to get location-based results
     try {
@@ -344,7 +342,7 @@ export class ServerGooglePlacesService {
       if (locationResults.length > 0) {
         return locationResults;
       }
-    } catch (error) {
+    } catch {
       // Silently handle location-based errors
     }
     // No fallback: just return empty
@@ -369,7 +367,7 @@ export class ServerGooglePlacesService {
     try {
       const result = await navigator.permissions.query({ name: 'geolocation' });
       return result.state;
-    } catch (error) {
+    } catch {
       return 'prompt';
     }
   }
@@ -412,8 +410,8 @@ export class ServerGooglePlacesService {
    */
   async getLocationBasedAutocomplete(
     query: string, 
-    searchType: string = 'address',
-    country: string = 'US'
+    searchType = 'address',
+    country = 'US'
   ): Promise<IAutocompleteResult[]> {
     const canGetLocation = await this.canGetUserLocation();
     
@@ -430,7 +428,7 @@ export class ServerGooglePlacesService {
     );
   }
 
-  private handleError(error: any): void {
+  private handleError(error: unknown): void {
     this.logger.error('Server Google Places API Error:', error);
     
     if (error instanceof HttpErrorResponse) {

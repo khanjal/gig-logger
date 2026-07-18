@@ -192,8 +192,8 @@ describe('DateHelper', () => {
     });
 
     it('should handle null/undefined', () => {
-      expect(DateHelper.removeSeconds(null as any)).toBe('');
-      expect(DateHelper.removeSeconds(undefined as any)).toBe('');
+      expect(DateHelper.removeSeconds(null as unknown as string)).toBe('');
+      expect(DateHelper.removeSeconds(undefined as unknown as string)).toBe('');
     });
   });
 

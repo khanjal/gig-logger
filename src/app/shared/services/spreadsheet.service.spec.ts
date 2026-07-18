@@ -4,8 +4,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import { localDB } from '@data/local.db';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ISheet } from '@interfaces/sheet.interface';
+import { spreadsheetDB } from '@data/spreadsheet.db';
+import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('SpreadsheetService', () => {
   let service: SpreadsheetService;
@@ -132,6 +134,49 @@ describe('SpreadsheetService', () => {
 
       const result = await localDB.spreadsheets.get('sheet-delete');
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('deleteLocalData', () => {
+    it('deletes all local data and leaves the database usable afterward', async () => {
+      await localDB.spreadsheets.add({ id: 'sheet-1', name: 'Test' } as ISpreadsheet);
+
+      await service.deleteLocalData();
+
+      expect(await localDB.spreadsheets.count()).toBe(0);
+      expect(mockLogger.info).toHaveBeenCalledWith('Local Database successfully deleted');
+
+      // The db must be usable again after delete() + open().
+      await localDB.spreadsheets.add({ id: 'sheet-2', name: 'After delete' } as ISpreadsheet);
+      expect(await localDB.spreadsheets.get('sheet-2')).toBeTruthy();
+    });
+  });
+
+  describe('deleteRemoteData', () => {
+    it('deletes all spreadsheet data and leaves the database usable afterward', async () => {
+      await spreadsheetDB.trips.add({ date: '2024-01-01' } as ITrip);
+
+      await service.deleteRemoteData();
+
+      expect(await spreadsheetDB.trips.count()).toBe(0);
+      expect(mockLogger.info).toHaveBeenCalledWith('Spreadsheet Database successfully deleted');
+
+      // The db must be usable again after delete() + open().
+      await spreadsheetDB.trips.add({ date: '2024-02-01' } as ITrip);
+      expect(await spreadsheetDB.trips.count()).toBe(1);
+      await spreadsheetDB.trips.clear();
+    });
+  });
+
+  describe('deleteData', () => {
+    it('deletes both local and remote data', async () => {
+      await localDB.spreadsheets.add({ id: 'sheet-1', name: 'Test' } as ISpreadsheet);
+      await spreadsheetDB.trips.add({ date: '2024-01-01' } as ITrip);
+
+      await service.deleteData();
+
+      expect(await localDB.spreadsheets.count()).toBe(0);
+      expect(await spreadsheetDB.trips.count()).toBe(0);
     });
   });
 

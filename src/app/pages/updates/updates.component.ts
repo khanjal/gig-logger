@@ -2,7 +2,7 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UpdatesService } from '@services/updates.service';
 
-import type { IUpdateEntry, UpdateCategory } from '@interfaces/update.interface';
+import type { IUpdateDetail, IUpdateEntry, UpdateCategory } from '@interfaces/sync/update.interface';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,10 +15,10 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './updates.component.scss'
 })
 export class UpdatesComponent implements OnInit {
+  private updatesService = inject(UpdatesService);
+
   updates = signal<IUpdateEntry[]>([]);
   private destroyRef = inject(DestroyRef);
-
-  constructor(private updatesService: UpdatesService) { }
 
   ngOnInit(): void {
     this.updatesService.getUpdates()
@@ -39,19 +39,19 @@ export class UpdatesComponent implements OnInit {
     return icons[category];
   }
 
-  trackByEntryDate(index: number, entry: IUpdateEntry): any {
+  trackByEntryDate(index: number, entry: IUpdateEntry): string | number {
     return entry?.date ?? index;
   }
 
-  trackByUpdateTitle(index: number, update: any): any {
+  trackByUpdateTitle(index: number, update: IUpdateDetail): string | number {
     return update?.title ?? index;
   }
 
-  trackByChange(index: number, change: any): any {
+  trackByChange(index: number, change: string): string | number {
     return change ?? index;
   }
 
-  trackByPage(index: number, page: any): any {
+  trackByPage(index: number, page: string): string | number {
     return page ?? index;
   }
 }

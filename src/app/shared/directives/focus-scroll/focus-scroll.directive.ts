@@ -1,15 +1,19 @@
-import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, Output, EventEmitter, HostListener, Input, NgZone, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ViewportService } from '@services/viewport.service';
 
 @Directive({
-  selector: '[focusScroll]',
+  selector: '[appFocusScroll]',
   standalone: true
 })
 export class FocusScrollDirective implements OnDestroy {
-  @Input() enableBottomPadding: boolean = false;
-  @Input() delayDropdownOnMobile: boolean = true;
-  @Input() suppressDropdownAfterSelection: boolean = false;
+  private el = inject(ElementRef);
+  private ngZone = inject(NgZone);
+  private viewport = inject(ViewportService);
+
+  @Input() enableBottomPadding = false;
+  @Input() delayDropdownOnMobile = true;
+  @Input() suppressDropdownAfterSelection = false;
   @Input() topBuffer = 100;
 
   @Output() scrollComplete = new EventEmitter<void>();
@@ -27,8 +31,6 @@ export class FocusScrollDirective implements OnDestroy {
   private previousBodyPadding: string | null = null;
   private baselineBodyPadding = 0;
   private paddingApplied = 0;
-
-  constructor(private el: ElementRef, private ngZone: NgZone, private viewport: ViewportService) {}
 
   @HostListener('focus')
   onFocus() {
@@ -84,7 +86,7 @@ export class FocusScrollDirective implements OnDestroy {
     try {
       const snapshot = this.viewport?.getSnapshot?.();
       if (snapshot) return Math.max(0, snapshot.keyboardHeight || 0);
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
 
     const visualViewport = window.visualViewport;
     if (!visualViewport) return 0;
@@ -130,7 +132,7 @@ export class FocusScrollDirective implements OnDestroy {
         }
       }
       return maxHeight;
-    } catch (e) {
+    } catch {
       return 0;
     }
   }
@@ -145,7 +147,7 @@ export class FocusScrollDirective implements OnDestroy {
       this.paddingApplied = extraPadding;
       document.body.style.paddingBottom = `${this.baselineBodyPadding + extraPadding}px`;
       document.documentElement.classList.add('rgv-bottom-padding-active');
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
   }
 
   private removeBottomPadding(): void {
@@ -153,7 +155,7 @@ export class FocusScrollDirective implements OnDestroy {
     try {
       document.body.style.paddingBottom = this.previousBodyPadding;
       document.documentElement.classList.remove('rgv-bottom-padding-active');
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
     this.previousBodyPadding = null;
     this.baselineBodyPadding = 0;
     this.paddingApplied = 0;
@@ -192,7 +194,7 @@ export class FocusScrollDirective implements OnDestroy {
       this.viewportSub?.unsubscribe();
       this.viewportSub = undefined;
       this.viewport.stop();
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
     this.isViewportListenersAttached = false;
   }
 

@@ -2,17 +2,29 @@ import { TestBed } from '@angular/core/testing';
 import { AppUpdateService } from './app-update.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { LoggerService } from '@services/logger.service';
-import { Subject } from 'rxjs';
-import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
+import { Subject, BehaviorSubject, Subscription } from 'rxjs';
+import { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
+
+interface SwUpdateMock {
+  isEnabled: boolean;
+  checkForUpdate: jasmine.Spy;
+  activateUpdate: jasmine.Spy;
+  versionUpdates: unknown;
+}
+
+interface AppUpdateServicePrivates {
+  updateStatusSubject: BehaviorSubject<IAppUpdateStatus>;
+  versionUpdateSubscription: Subscription | undefined;
+}
 
 describe('AppUpdateService', () => {
   let service: AppUpdateService;
-  let swUpdateMock: any;
+  let swUpdateMock: SwUpdateMock;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
-  let versionSubject: Subject<any>;
+  let versionSubject: Subject<VersionReadyEvent>;
 
-  const setup = async (isEnabled: boolean = true) => {
-    versionSubject = new Subject();
+  const setup = async (isEnabled = true) => {
+    versionSubject = new Subject<VersionReadyEvent>();
     swUpdateMock = {
       isEnabled,
       checkForUpdate: jasmine.createSpy('checkForUpdate').and.resolveTo(false),
@@ -69,10 +81,10 @@ describe('AppUpdateService', () => {
     document.location.reload = reloadSpy;
 
     // Simulate update available
-    (service as any).updateStatusSubject.next({
+    (service as unknown as AppUpdateServicePrivates).updateStatusSubject.next({
       isUpdateAvailable: true,
       isEnabled: true,
-    });
+    } as IAppUpdateStatus);
 
     await service.activateUpdate();
 
@@ -91,7 +103,7 @@ describe('AppUpdateService', () => {
 
   it('cleans up subscriptions on destroy', async () => {
     await setup(true);
-    const sub = (service as any).versionUpdateSubscription as { unsubscribe: () => void };
+    const sub = (service as unknown as AppUpdateServicePrivates).versionUpdateSubscription as Subscription;
     const unsubscribeSpy = spyOn(sub, 'unsubscribe');
 
     service.destroy();

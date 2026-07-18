@@ -24,10 +24,9 @@ describe('ViewportService', () => {
 
   it('emits on resize when started', (done) => {
     let count = 0;
-    service.start();
-    let sub: any;
     let finished = false;
-    sub = service.viewportChange$.subscribe(() => {
+    service.start();
+    const sub = service.viewportChange$.subscribe(() => {
       count++;
       if (count === 1) {
         // initial emission, trigger resize
@@ -40,8 +39,8 @@ describe('ViewportService', () => {
         // subscription callback runs synchronously before `sub` is
         // assigned by the caller.
         setTimeout(() => {
-          try { sub.unsubscribe(); } catch (e) { /* ignore */ }
-          try { service.stop(); } catch (e) { /* ignore */ }
+          try { sub.unsubscribe(); } catch { /* ignore */ }
+          try { service.stop(); } catch { /* ignore */ }
           done();
         }, 0);
       }

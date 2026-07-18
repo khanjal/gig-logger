@@ -1,30 +1,29 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DurationFormatPipe } from '@pipes/duration-format.pipe';
-import { DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-diagnostic-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseFabButtonComponent],
+  imports: [FormsModule, MatIconModule, MatTooltipModule, DurationFormatPipe, BaseFabButtonComponent],
   templateUrl: './diagnostic-item.component.html',
   styleUrl: './diagnostic-item.component.scss'
 })
 export class DiagnosticItemComponent {
-  @Input() item: any = {};
+  @Input() item: IDiagnosticRecord = {};
   @Input() itemType: DiagnosticEntityType = 'trip';
-  @Input() diagnosticName: string = '';
+  @Input() diagnosticName = '';
   @Input() selectedAddress: string | undefined;
-  
+
   @Output() selectedAddressChange = new EventEmitter<string>();
-  @Output() fixShiftDuration = new EventEmitter<any>();
-  @Output() fixTripDuration = new EventEmitter<any>();
-  @Output() applyAddress = new EventEmitter<{ item: any, address: string }>();
-  @Output() createShift = new EventEmitter<any>();
+  @Output() fixShiftDuration = new EventEmitter<IDiagnosticRecord>();
+  @Output() fixTripDuration = new EventEmitter<IDiagnosticRecord>();
+  @Output() applyAddress = new EventEmitter<{ item: IDiagnosticRecord, address: string }>();
+  @Output() createShift = new EventEmitter<IDiagnosticRecord>();
 
   onFixShiftDuration(): void {
     this.fixShiftDuration.emit(this.item);

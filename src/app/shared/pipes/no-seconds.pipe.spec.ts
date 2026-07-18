@@ -71,11 +71,11 @@ describe('NoSecondsPipe', () => {
     });
 
     it('should handle null', () => {
-      expect(pipe.transform(null as any)).toBe('');
+      expect(pipe.transform(null as unknown as string)).toBe('');
     });
 
     it('should handle undefined', () => {
-      expect(pipe.transform(undefined as any)).toBe('');
+      expect(pipe.transform(undefined as unknown as string)).toBe('');
     });
 
     it('should handle times with milliseconds', () => {

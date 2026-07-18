@@ -1,11 +1,10 @@
 import { Component, Input, Output, EventEmitter, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-base-accordion-item',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
   template: `
     <div class="accordion-item">
       <button class="accordion-header" (click)="toggle()" [attr.aria-expanded]="expanded">

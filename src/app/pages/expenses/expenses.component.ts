@@ -1,10 +1,10 @@
 import { GroupByMonthPipe } from '@pipes/group-by-month.pipe';
-import { OrdinalPipe } from '@pipes/ordinal.pipe';
 import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import type { IExpense } from '@interfaces/expense.interface';
+import { ActivatedRoute } from '@angular/router';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 import { CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -27,12 +27,12 @@ import { openSnackbar } from '@utils/snackbar.util';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
 import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
 import { firstValueFrom } from 'rxjs';
 import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from '@helpers/expense-form.helper';
-import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface';
+import type { IExpenseFormValue } from '@interfaces/ui/expense-form-value.interface';
 
 @Component({
   selector: 'app-expenses',
@@ -60,14 +60,22 @@ import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface
 })
 
 export class ExpensesComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private expensesService = inject(ExpensesService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private route = inject(ActivatedRoute);
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  protected authService = inject(AuthGoogleService);
+
   dateFormats = DATE_FORMATS;
-  groupedExpensesByYear = signal<{ [year: string]: IExpense[] }>({});
+  groupedExpensesByYear = signal<Record<string, IExpense[]>>({});
   yearTotals = signal<Record<string, number>>({});
   showAddForm = signal(false);
   monthTotals = signal<Record<string, number>>({});
   expenseForm!: FormGroup;
   expenses = signal<IExpense[]>([]);
-  groupedExpenses = signal<{ [month: string]: IExpense[] }>({});
+  groupedExpenses = signal<Record<string, IExpense[]>>({});
   defaultCategories = [
     'Fuel', 'Food', 'Parking', 'Maintenance', 'Tolls', 'Supplies', 'Other'
   ];
@@ -77,18 +85,16 @@ export class ExpensesComponent implements OnInit {
   saving = signal(false);
   actionEnum = ActionEnum;
   maxRowId = signal(1);
+  private pendingEditRowId?: number;
   private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private fb: FormBuilder,
-    private expensesService: ExpensesService,
-    private unsavedDataService: UnsavedDataService,
-    public dialog: MatDialog,
-    private _snackBar: MatSnackBar,
-    protected authService: AuthGoogleService
-  ) {}
-
   async ngOnInit() {
+    // Deep link from the pending-changes page: open a specific expense for edit.
+    const editParam = this.route.snapshot.queryParams['edit'];
+    if (editParam !== undefined && editParam !== null && editParam !== '' && !Number.isNaN(Number(editParam))) {
+      this.pendingEditRowId = Number(editParam);
+    }
+
     this.maxRowId.set(await this.expensesService.getMaxRowId() || 1);
     const nextRowId = this.maxRowId() + 1;
     this.expenseForm = this.fb.group({
@@ -133,16 +139,16 @@ export class ExpensesComponent implements OnInit {
       }
       groups[month].push(expense);
       return groups;
-    }, {} as { [month: string]: IExpense[] });
+    }, {} as Record<string, IExpense[]>);
 
-    const groupedExpensesByYear = normalizedExpenses.reduce((groups: { [year: string]: IExpense[] }, expense: IExpense) => {
+    const groupedExpensesByYear = normalizedExpenses.reduce((groups: Record<string, IExpense[]>, expense: IExpense) => {
       const year = expense.date.slice(0, 4);
       if (!groups[year]) {
         groups[year] = [];
       }
       groups[year].push(expense);
       return groups;
-    }, {} as { [year: string]: IExpense[] });
+    }, {} as Record<string, IExpense[]>);
 
     const monthTotals = Object.entries(groupedExpenses).reduce((totals, [month, monthExpenses]) => {
       totals[month] = monthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
@@ -166,6 +172,24 @@ export class ExpensesComponent implements OnInit {
     if (normalizedExpenses.length === 0) {
       this.showAddForm.set(true);
     }
+
+    this.maybeOpenPendingEdit();
+  }
+
+  /**
+   * If the page was opened with an `?edit=<rowId>` deep link (from pending
+   * changes), open that expense in the inline editor once it has loaded.
+   */
+  private maybeOpenPendingEdit(): void {
+    if (this.pendingEditRowId === undefined) return;
+    const match = this.expenses().find(e => e.rowId === this.pendingEditRowId);
+    if (!match) return;
+
+    this.pendingEditRowId = undefined;
+    this.editExpense(match);
+    setTimeout(() => {
+      document.getElementById('expenses-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 
   async addExpense() {
@@ -173,7 +197,7 @@ export class ExpensesComponent implements OnInit {
     const now = Date.now();
     const formValue = this.expenseForm.value as IExpenseFormValue;
     const draft = mapExpenseFormValueToDraft(formValue);
-    let expense: IExpense = {
+    const expense: IExpense = {
       ...draft,
       rowId: Number(formValue.rowId) || this.maxRowId() + 1,
       action: ActionEnum.Add,
@@ -280,7 +304,7 @@ export class ExpensesComponent implements OnInit {
   async confirmDeleteExpenseDialog(expense: IExpense) {
     const message = `This expense will be deleted from your spreadsheet. Are you sure you want to delete this?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
@@ -319,7 +343,7 @@ export class ExpensesComponent implements OnInit {
   async confirmSaveDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
     dialogData.message = message;
     dialogData.trueText = "Save";

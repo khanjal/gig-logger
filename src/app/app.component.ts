@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { HeaderComponent } from './shared/header/header.component';
-import { CommonModule } from '@angular/common';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { Subscription } from 'rxjs';
@@ -10,17 +9,17 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, CommonModule, MatProgressSpinner, BaseRectButtonComponent],
+  imports: [HeaderComponent, MatProgressSpinner, BaseRectButtonComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+
   title = 'raptor-gig';
   isLoading = signal(true);
   hasError = signal(false);
   private routerSubscription?: Subscription;
-
-  constructor(private router: Router) {}
 
   public ngOnInit(): void {
     // Hide loading state after a shorter timeout

@@ -64,9 +64,9 @@ describe('QuickControlsComponent', () => {
     component.autoSaveEnabled = true;
     fixture.detectChanges();
 
-    const input = fixture.debugElement.query(By.css('input.mat-slide-toggle-input'));
-    expect(input).not.toBeNull();
-    expect(input.nativeElement.disabled).toBeTrue();
+    const toggle = fixture.debugElement.query(By.css('button.mdc-switch'));
+    expect(toggle).not.toBeNull();
+    expect(toggle.nativeElement.disabled).toBeTrue();
   });
 
   it('cycles theme on single button', () => {

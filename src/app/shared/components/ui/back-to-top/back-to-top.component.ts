@@ -1,11 +1,10 @@
 import { Component, HostListener, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-back-to-top',
   standalone: true,
-  imports: [CommonModule, BaseFabButtonComponent],
+  imports: [BaseFabButtonComponent],
   template: `
     <app-base-fab-button
       [icon]="'arrow_upward'"

@@ -9,14 +9,17 @@ import { SyncStatusService } from './sync-status.service';
 import { AuthGoogleService } from './auth-google.service';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
+import { BehaviorSubject } from 'rxjs';
+import type { IShift } from '@interfaces/entities/shift.interface';
 
 describe('PollingService', () => {
   let service: PollingService;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
   let unsavedDataSpy: jasmine.SpyObj<UnsavedDataService>;
+  // Drives the event-driven timer: true = unsaved data present (timer runs).
+  let unsavedData$: BehaviorSubject<boolean>;
   let syncStatusSpy: jasmine.SpyObj<SyncStatusService>;
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
-  let sheetServiceSpy: jasmine.SpyObj<SpreadsheetService>;
   let gigWorkflowSpy: jasmine.SpyObj<GigWorkflowService>;
   let authSpy: jasmine.SpyObj<AuthGoogleService>;
 
@@ -25,6 +28,9 @@ describe('PollingService', () => {
     const unsaved = jasmine.createSpyObj('UnsavedDataService', [
       'getUnsavedCounts', 'collectUnsavedItems', 'commitSavedItems'
     ]);
+    // Default to "dirty" so arming activates the timer (matches most assertions).
+    unsavedData$ = new BehaviorSubject<boolean>(true);
+    (unsaved as { unsavedData$: unknown }).unsavedData$ = unsavedData$;
     const syncStatus = jasmine.createSpyObj('SyncStatusService', [
       'startCountdown',
       'stopCountdown',
@@ -64,7 +70,6 @@ describe('PollingService', () => {
     unsavedDataSpy = TestBed.inject(UnsavedDataService) as jasmine.SpyObj<UnsavedDataService>;
     syncStatusSpy = TestBed.inject(SyncStatusService) as jasmine.SpyObj<SyncStatusService>;
     snackBarSpy = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    sheetServiceSpy = TestBed.inject(SpreadsheetService) as jasmine.SpyObj<SpreadsheetService>;
     gigWorkflowSpy = TestBed.inject(GigWorkflowService) as jasmine.SpyObj<GigWorkflowService>;
     authSpy = TestBed.inject(AuthGoogleService) as jasmine.SpyObj<AuthGoogleService>;
   });
@@ -73,7 +78,7 @@ describe('PollingService', () => {
     // Clean up any active polling
     try {
       service.stopPolling();
-    } catch (e) {
+    } catch {
       // Ignore errors during cleanup
     }
     service.ngOnDestroy();
@@ -151,6 +156,60 @@ describe('PollingService', () => {
 
       expect(service['lastPollTime']).toBeGreaterThanOrEqual(beforeTime);
       expect(service['lastPollTime']).toBeLessThanOrEqual(Date.now());
+    });
+  });
+
+  describe('Event-driven activation', () => {
+    it('arms but does not run the timer when there is no unsaved data', async () => {
+      unsavedData$.next(false);
+
+      await service.startPolling();
+
+      expect(service['armed']).toBe(true);
+      expect(service['enabled']).toBe(false);
+      expect(syncStatusSpy.startCountdown).not.toHaveBeenCalled();
+    });
+
+    it('activates the timer when unsaved data appears after arming', async () => {
+      unsavedData$.next(false);
+      await service.startPolling();
+      expect(service['enabled']).toBe(false);
+
+      unsavedData$.next(true);
+
+      expect(service['enabled']).toBe(true);
+      expect(syncStatusSpy.startCountdown).toHaveBeenCalled();
+    });
+
+    it('deactivates the timer when unsaved data is cleared but stays armed', async () => {
+      await service.startPolling(); // dirty by default -> active
+      expect(service['enabled']).toBe(true);
+
+      unsavedData$.next(false);
+
+      expect(service['enabled']).toBe(false);
+      expect(service['armed']).toBe(true);
+      expect(syncStatusSpy.stopCountdown).toHaveBeenCalled();
+    });
+
+    it('resumes the timer when data goes dirty -> clean -> dirty', async () => {
+      await service.startPolling();
+      unsavedData$.next(false);
+      expect(service['enabled']).toBe(false);
+
+      unsavedData$.next(true);
+
+      expect(service['enabled']).toBe(true);
+    });
+
+    it('ignores dirty-state changes once disarmed', async () => {
+      await service.startPolling();
+      service.stopPolling();
+      expect(service['enabled']).toBe(false);
+
+      unsavedData$.next(true);
+
+      expect(service['enabled']).toBe(false);
     });
   });
 
@@ -365,7 +424,7 @@ describe('PollingService', () => {
     });
 
     it('should skip save when there is no unsaved data', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 0, trips: 0, shifts: 0, expenses: 0 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 0, trips: 0, shifts: 0, expenses: 0 }));
 
       await service.forceSave();
 
@@ -373,7 +432,7 @@ describe('PollingService', () => {
     });
 
     it('should show snackbar when not authenticated', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 2, trips: 1, shifts: 1, expenses: 0 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 2, trips: 1, shifts: 1, expenses: 0 }));
       authSpy.canSync.and.returnValue(Promise.resolve(false));
 
       await service.forceSave();
@@ -383,7 +442,7 @@ describe('PollingService', () => {
     });
 
     it('should save and mark items as saved when backend returns success', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 3, trips: 1, shifts: 1, expenses: 1 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 3, trips: 1, shifts: 1, expenses: 1 }));
       unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({ unsavedTrips: [], unsavedShifts: [], unsavedExpenses: [] }));
       authSpy.canSync.and.returnValue(Promise.resolve(true));
 
@@ -391,7 +450,11 @@ describe('PollingService', () => {
       spyOn(SheetSerializerHelper, 'serializeShifts').and.returnValue([]);
 
       gigWorkflowSpy.saveSheetData.and.returnValue(Promise.resolve([]));
-      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
+      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
+        success: true,
+        filteredMessages: [],
+        allMessages: []
+      });
 
       await service.forceSave();
 
@@ -401,10 +464,10 @@ describe('PollingService', () => {
     });
 
     it('should capture saveStartedAt after shift recalculation and before the API call', async () => {
-      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 0, shifts: 1, expenses: 0 } as any));
+      unsavedDataSpy.getUnsavedCounts.and.returnValue(Promise.resolve({ total: 1, trips: 0, shifts: 1, expenses: 0 }));
       unsavedDataSpy.collectUnsavedItems.and.returnValue(Promise.resolve({
         unsavedTrips: [],
-        unsavedShifts: [{ id: 10 } as any],
+        unsavedShifts: [{ id: 10 } as Partial<IShift> as IShift],
         unsavedExpenses: []
       }));
       authSpy.canSync.and.returnValue(Promise.resolve(true));
@@ -426,11 +489,15 @@ describe('PollingService', () => {
         apiCallTime = Date.now();
         return [];
       });
-      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({ success: true } as any);
+      spyOn(ApiMessageHelper, 'processSheetSaveResponse').and.returnValue({
+        success: true,
+        filteredMessages: [],
+        allMessages: []
+      });
 
       await service.forceSave();
 
-      const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as [number, ...any[]];
+      const [saveStartedAtArg] = unsavedDataSpy.commitSavedItems.calls.mostRecent().args as Parameters<UnsavedDataService['commitSavedItems']>;
       expect(saveStartedAtArg).toBeGreaterThanOrEqual(beforeSave);
       expect(saveStartedAtArg).toBeGreaterThanOrEqual(recalculationFinishedAt);
       expect(saveStartedAtArg).toBeLessThan(apiCallTime);

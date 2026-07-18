@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NumberHelper } from '@helpers/number.helper';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { TruncatePipe } from "@pipes/truncate.pipe";

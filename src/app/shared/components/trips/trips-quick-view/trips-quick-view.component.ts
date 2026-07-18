@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { NgClass, NgIf, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { NgClass, DecimalPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
@@ -14,8 +14,8 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 import { BaseButtonDirective } from '@directives/base-button.directive';
 
 import { ActionEnum } from '@enums/action.enum';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DateHelper } from '@helpers/date.helper';
 import { DATE_FORMATS } from '@constants/date.constants';
@@ -32,26 +32,33 @@ import { TruncatePipe } from '@pipes/truncate.pipe';
 import { AddressLineBreakPipe } from '@pipes/address-line-break.pipe';
 
 @Component({
-    selector: 'trips-quick-view',
+    selector: 'app-trips-quick-view',
     templateUrl: './trips-quick-view.component.html',
     styleUrls: ['./trips-quick-view.component.scss'],
     standalone: true,
-    imports: [MatIcon, NgClass, NgIf, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
+    imports: [MatIcon, NgClass, MatMenuTrigger, MatMenu, MatMenuItem, DecimalPipe, CurrencyPipe, DatePipe, NoSecondsPipe, ShortAddressPipe, TruncatePipe, DurationFormatPipe, MatChipsModule, BaseRectButtonComponent, BaseButtonDirective, AddressLineBreakPipe]
 })
 
 export class TripsQuickViewComponent implements OnInit, OnChanges {
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _gigLoggerService = inject(GigWorkflowService);
+  private _tripService = inject(TripService);
+  private _shiftService = inject(ShiftService);
+  private _router = inject(Router);
+
   @Input() trip: ITrip = {} as ITrip;
-  @Input() showActions: boolean = true;
-  @Input() inlineMode: boolean = false;
-  @Input() index: number = 0;
+  @Input() showActions = true;
+  @Input() inlineMode = false;
+  @Input() index = 0;
   @Input() stripeEven?: boolean;
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
-  @Output("pollingToggle") pollingToggle: EventEmitter<boolean> = new EventEmitter();
-  @Output("scrollToTrip") scrollToTrip: EventEmitter<string | undefined> = new EventEmitter();
-  @Output("editClicked") editClicked: EventEmitter<ITrip> = new EventEmitter();
+  @Output() parentReload = new EventEmitter<void>();
+  @Output() pollingToggle = new EventEmitter<boolean>();
+  @Output() scrollToTrip = new EventEmitter<string | undefined>();
+  @Output() editClicked = new EventEmitter<ITrip>();
   actionEnum = ActionEnum;
-  isExpanded: boolean = false;
-  prefers24Hour: boolean = false;
+  isExpanded = false;
+  prefers24Hour = false;
   // Parsed date and computed format for display
   parsedTripDate: Date | null = null;
   dateFormat: string = DATE_FORMATS.SHORT_DATE;
@@ -64,15 +71,6 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   get distanceDisplay(): string {
     return UnitHelper.formatDistance(this.trip.distance);
   }
-  
-  constructor(
-        public dialog: MatDialog,
-        private _snackBar: MatSnackBar,
-        private _gigLoggerService: GigWorkflowService,
-        private _tripService: TripService,
-        private _shiftService: ShiftService,
-        private _router: Router,
-      ) { }
       
   /**
    * Convert distance value based on unit preference
@@ -127,7 +125,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
       const tripYear = this.parsedTripDate.getFullYear();
       const now = new Date();
       this.dateFormat = tripYear === now.getFullYear() ? DATE_FORMATS.SHORT_DATE : DATE_FORMATS.SHORT_DATE_WITH_YEAR;
-    } catch (e) {
+    } catch {
       this.parsedTripDate = null;
       this.dateFormat = DATE_FORMATS.SHORT_DATE;
     }
@@ -171,7 +169,7 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   confirmDeleteTripDialog() {
     const message = `Trip may not be saved to your spreadsheet. Are you sure you want to delete this?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";
@@ -221,9 +219,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
 
   async setDropoffTime() {
-    let dropOffTime = DateHelper.getTimeString(new Date);
+    const dropOffTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.query("key", this.trip.key))[0];
+    const shift = (await this._shiftService.query("key", this.trip.key))[0];
     if (shift) {
       shift.finish = dropOffTime;
       updateAction(shift, ActionEnum.Update);
@@ -242,9 +240,9 @@ export class TripsQuickViewComponent implements OnInit, OnChanges {
   }
 
   async setPickupTime() {
-    let pickupTime = DateHelper.getTimeString(new Date);
+    const pickupTime = DateHelper.getTimeString(new Date);
 
-    let shift = (await this._shiftService.query("key", this.trip.key))[0];
+    const shift = (await this._shiftService.query("key", this.trip.key))[0];
     if (shift) {
       shift.finish = pickupTime;
       updateAction(shift, ActionEnum.Update);

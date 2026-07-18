@@ -2,19 +2,19 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
 import { AppComponent } from './app.component';
 import { Subject } from 'rxjs';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, Event as RouterEvent, UrlTree } from '@angular/router';
 
 describe('AppComponent', () => {
-  let routerEvents$: Subject<any>;
+  let routerEvents$: Subject<RouterEvent>;
   let routerMock: Partial<Router>;
 
   beforeEach(async () => {
-    routerEvents$ = new Subject<any>();
+    routerEvents$ = new Subject<RouterEvent>();
     routerMock = {
       events: routerEvents$.asObservable(),
-      createUrlTree: (..._args: any[]) => ({} as any),
-      serializeUrl: (_: any) => '',
-      navigateByUrl: (..._args: any[]) => Promise.resolve(true)
+      createUrlTree: (..._args: unknown[]) => ({} as UrlTree),
+      serializeUrl: (_: UrlTree) => '',
+      navigateByUrl: (..._args: unknown[]) => Promise.resolve(true)
     };
 
     await TestBed.configureTestingModule({
@@ -26,13 +26,13 @@ describe('AppComponent', () => {
   afterEach(() => {
     try {
       Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true });
-    } catch (e) {
+    } catch {
       // ignore in constrained environments
     }
   });
 
   it('should create the app and have initial values', () => {
-    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.componentInstance;
@@ -51,7 +51,7 @@ describe('AppComponent', () => {
   });
 
   it('should hide loading after the initial timeout', fakeAsync(() => {
-    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.componentInstance;
@@ -62,7 +62,7 @@ describe('AppComponent', () => {
   }));
 
   it('should hide loading when window load fires', () => {
-    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.componentInstance;
@@ -74,7 +74,7 @@ describe('AppComponent', () => {
   });
 
   it('should hide loading after NavigationEnd event', fakeAsync(() => {
-    try { Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true }); } catch {}
+    try { Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true }); } catch { /* ignore in constrained environments */ }
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     app.ngOnInit();
@@ -106,7 +106,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
 
     const reloadSpy = jasmine.createSpy('reload');
-    (app as any).setReloadFn(reloadSpy);
+    app.setReloadFn(reloadSpy);
     app.reload();
     expect(reloadSpy).toHaveBeenCalled();
   });
@@ -114,10 +114,10 @@ describe('AppComponent', () => {
   it('ngOnDestroy should unsubscribe from router events', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const app: any = fixture.componentInstance;
+    const app = fixture.componentInstance;
 
-    expect(app.routerSubscription).toBeDefined();
-    const unsubSpy = spyOn(app.routerSubscription, 'unsubscribe').and.callThrough();
+    expect(app['routerSubscription']).toBeDefined();
+    const unsubSpy = spyOn(app['routerSubscription']!, 'unsubscribe').and.callThrough();
     app.ngOnDestroy();
     expect(unsubSpy).toHaveBeenCalled();
   });

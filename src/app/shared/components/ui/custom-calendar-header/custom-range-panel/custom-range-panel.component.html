@@ -1,20 +1,21 @@
 <div class="grid grid-cols-2 gap-2 px-2 py-2">
+  @for (item of customPresets; track item; let i = $index) {
     <div
-        *ngFor="let item of customPresets; let i = index"
         class="rounded border shadow-sm cursor-pointer px-3 py-2 text-sm font-semibold flex items-center justify-center select-none transition active:scale-95
         border-soft bg-surface-2 text-primary
         hover:bg-primary-soft hover:border-strong focus:bg-primary-soft focus:border-strong focus:outline-none focus:ring-2 focus:ring-primary-500"
-        [class.bg-primary]="selectedPreset === item"
-        [ngClass]="{ 'dark:bg-primary': selectedPreset === item, 'dark:border-primary': selectedPreset === item }"
-        [class.text-inverse]="selectedPreset === item"
-        [class.border-primary]="selectedPreset === item"
-        (click)="selectRange(item)"
-        (keydown.enter)="selectRange(item)"
-        (keydown.space)="selectRange(item)"
-        tabindex="0"
-        role="button"
-        [attr.aria-label]="'Select ' + item + ' date range'"
-    >
-        {{ item }}
+      [class.bg-primary]="selectedPreset === item"
+      [ngClass]="{ 'dark:bg-primary': selectedPreset === item, 'dark:border-primary': selectedPreset === item }"
+      [class.text-inverse]="selectedPreset === item"
+      [class.border-primary]="selectedPreset === item"
+      (click)="selectRange(item)"
+      (keydown.enter)="selectRange(item)"
+      (keydown.space)="selectRange(item)"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="'Select ' + item + ' date range'"
+      >
+      {{ item }}
     </div>
+  }
 </div>

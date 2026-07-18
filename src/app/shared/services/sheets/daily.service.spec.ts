@@ -1,6 +1,6 @@
 import { DailyService } from './daily.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IDaily } from '@interfaces/daily.interface';
+import { IDaily } from '@interfaces/sheets/daily.interface';
 
 const makeDaily = (overrides: Partial<IDaily> = {}): IDaily => ({
   rowId: overrides.rowId ?? 1,
@@ -30,7 +30,7 @@ describe('DailyService', () => {
   });
 
   it('add() calls table.add', async () => {
-    spyOn(spreadsheetDB.daily, 'add').and.resolveTo(1 as any);
+    spyOn(spreadsheetDB.daily, 'add').and.resolveTo(1);
     const item = makeDaily();
     await service.add(item);
     expect(spreadsheetDB.daily.add).toHaveBeenCalledWith(item);
@@ -55,7 +55,7 @@ describe('DailyService', () => {
       startsWithAnyOfIgnoreCase: (_value: string) => ({
         toArray: () => Promise.resolve(filtered)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.daily.where>);
 
     const result = await service.filter('month', '2025');
     expect(result).toEqual(filtered);
@@ -67,7 +67,7 @@ describe('DailyService', () => {
       anyOfIgnoreCase: (_value: string) => ({
         first: () => Promise.resolve(item)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.daily.where>);
 
     const result = await service.find('date', '2025-12-01');
     expect(result).toEqual(item);
@@ -79,7 +79,7 @@ describe('DailyService', () => {
       equals: (_value: number) => ({
         first: () => Promise.resolve(existing)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.daily.where>);
 
     const result = await service.get(1);
     expect(result).toEqual(existing);
@@ -105,11 +105,11 @@ describe('DailyService', () => {
 
   it('paginate() with sortField uses orderBy chain', async () => {
     const paged = [makeDaily({ day: 3 }), makeDaily({ day: 4 })];
-    spyOn(spreadsheetDB.daily, 'orderBy').and.callFake((field: string) => ({
-      reverse: () => ({ offset: (o: number) => ({ limit: (l: number) => ({ toArray: () => Promise.resolve(paged) }) }) }),
-      offset: (o: number) => ({ limit: (l: number) => ({ toArray: () => Promise.resolve(paged) }) }),
+    spyOn(spreadsheetDB.daily, 'orderBy').and.callFake(() => ({
+      reverse: () => ({ offset: () => ({ limit: () => ({ toArray: () => Promise.resolve(paged) }) }) }),
+      offset: () => ({ limit: () => ({ toArray: () => Promise.resolve(paged) }) }),
       toArray: () => Promise.resolve(paged)
-    }) as any);
+    }) as unknown as ReturnType<typeof spreadsheetDB.daily.orderBy>);
 
     const result = await service.paginate(0, 2, 'date', 'asc');
     expect(result).toEqual(paged);

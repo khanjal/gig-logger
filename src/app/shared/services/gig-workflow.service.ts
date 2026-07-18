@@ -1,24 +1,24 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
 import { DataLinkingService } from "./data/data-linking.service";
 import { GigCalculatorService } from "./calculations/gig-calculator.service";
-import type { ISheet } from "@interfaces/sheet.interface";
-import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
-import type { ISheetSavePayload } from "@interfaces/sheet-save-payload.interface";
-import type { IShift } from "@interfaces/shift.interface";
+import type { ISheet } from "@interfaces/sheets/sheet.interface";
+import type { ISheetProperties } from "@interfaces/sheets/sheet-properties.interface";
+import type { ISheetSavePayload } from "@interfaces/sheets/sheet-save-payload.interface";
+import type { IShift } from "@interfaces/entities/shift.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IMessage } from "@interfaces/sheets/message.interface";
 
 @Injectable({
     providedIn: 'root'
 })
 export class GigWorkflowService {
+    private _apiService = inject(ApiService);
+    private _dataLoader = inject(DataLoaderService);
+    private _dataLinking = inject(DataLinkingService);
+    private _calculator = inject(GigCalculatorService);
 
-    constructor(
-        private _apiService: ApiService,
-        private _dataLoader: DataLoaderService,
-        private _dataLinking: DataLinkingService,
-        private _calculator: GigCalculatorService
-    ) {}
 
     // Auth Methods - Delegate to API Service
     public async setRefreshToken(authToken: string) {
@@ -55,7 +55,7 @@ export class GigWorkflowService {
         return this._apiService.getSecondarySheetData(sheetId);
     }
 
-    public async saveSheetData(sheetData: ISheetSavePayload): Promise<any> {
+    public async saveSheetData(sheetData: ISheetSavePayload): Promise<IMessage[]> {
         return this._apiService.saveSheetData(sheetData);
     }
 
@@ -63,7 +63,7 @@ export class GigWorkflowService {
         return this._apiService.createSheet(sheetId);
     }
 
-    public async warmupLambda(sheetId: string): Promise<any> {
+    public async warmupLambda(sheetId: string): Promise<unknown> {
         return this._apiService.warmupLambda(sheetId);
     }
 
@@ -71,7 +71,7 @@ export class GigWorkflowService {
         return this._apiService.healthCheck(sheetId);
     }
 
-    public async insertDemoData(sheetId: string): Promise<any> {
+    public async insertDemoData(sheetId: string): Promise<unknown> {
         return this._apiService.insertDemoData(sheetId);
     }
 
@@ -101,7 +101,7 @@ export class GigWorkflowService {
         return this._calculator.calculateDurationsByKey(key);
     }
 
-    public async updateTripDuration(trip: any) {
+    public async updateTripDuration(trip: ITrip) {
         return this._calculator.updateTripDuration(trip);
     }
 

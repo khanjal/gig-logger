@@ -1,4 +1,5 @@
 import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from './expense-form.helper';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 describe('expense-form.helper', () => {
   describe('normalizeExpenseDate', () => {
@@ -46,7 +47,7 @@ describe('expense-form.helper', () => {
         date: '2024-02-20',
         amount: 10,
         category: 'Food',
-      } as any);
+      } as unknown as IExpense);
 
       expect(result.date instanceof Date).toBeTrue();
       expect((result.date as Date).getFullYear()).toBe(2024);

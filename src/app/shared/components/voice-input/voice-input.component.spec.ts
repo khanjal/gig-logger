@@ -5,6 +5,19 @@ import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
 import { VoiceSuggestionService } from '@services/voice-suggestion.service';
 import { VoicePatternProcessorService } from '@services/voice-pattern-processor.service';
+import type { ISpeechRecognition } from '@interfaces/external/speech-recognition.interface';
+
+interface WindowWithSpeechRecognition {
+  webkitSpeechRecognition?: unknown;
+  SpeechRecognition?: unknown;
+}
+
+interface VoiceInputComponentPrivates {
+  cleanup(): void;
+  initializeSpeechRecognition(): void;
+  startListening(): void;
+  stopListening(): void;
+}
 
 describe('VoiceInputComponent', () => {
   let component: VoiceInputComponent;
@@ -57,7 +70,7 @@ describe('VoiceInputComponent', () => {
       onresult: null,
       onerror: null,
       onend: null
-    } as any;
+    } as unknown as ISpeechRecognition;
   });
 
   afterEach(() => {
@@ -79,43 +92,43 @@ describe('VoiceInputComponent', () => {
 
   describe('ngOnDestroy', () => {
     it('cleans up timers and recognition', () => {
-      spyOn(component as any, 'cleanup');
+      spyOn(component as unknown as VoiceInputComponentPrivates, 'cleanup');
 
       component.ngOnDestroy();
 
-      expect((component as any).cleanup).toHaveBeenCalled();
+      expect((component as unknown as VoiceInputComponentPrivates).cleanup).toHaveBeenCalled();
     });
   });
 
   describe('isSpeechRecognitionSupported', () => {
     it('returns true when webkitSpeechRecognition exists', () => {
-      (window as any).webkitSpeechRecognition = function() {};
+      (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition = function() {};
       permissionSpy.getMicrophoneState.and.returnValue('granted');
 
       expect(component.isSpeechRecognitionSupported()).toBeTrue();
 
-      delete (window as any).webkitSpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
     });
 
     it('returns false when speech recognition unavailable', () => {
-      const original = (window as any).webkitSpeechRecognition;
-      delete (window as any).webkitSpeechRecognition;
-      delete (window as any).SpeechRecognition;
+      const original = (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).SpeechRecognition;
       permissionSpy.isSpeechRecognitionSupported.and.returnValue(false);
 
       expect(component.isSpeechRecognitionSupported()).toBeFalse();
 
-      if (original) (window as any).webkitSpeechRecognition = original;
+      if (original) (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition = original;
     });
 
     it('returns false when microphone is denied', () => {
-      (window as any).webkitSpeechRecognition = function() {};
+      (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition = function() {};
       permissionSpy.isSpeechRecognitionSupported.and.returnValue(true);
       permissionSpy.getMicrophoneState.and.returnValue('denied');
 
       expect(component.isSpeechRecognitionSupported()).toBeFalse();
 
-      delete (window as any).webkitSpeechRecognition;
+      delete (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition;
     });
   });
 
@@ -132,40 +145,40 @@ describe('VoiceInputComponent', () => {
     it('initializes recognition on first click', async () => {
       component.recognition = null;
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
-      spyOn(component as any, 'initializeSpeechRecognition');
-      spyOn(component as any, 'startListening');
+      spyOn(component as unknown as VoiceInputComponentPrivates, 'initializeSpeechRecognition');
+      spyOn(component as unknown as VoiceInputComponentPrivates, 'startListening');
 
       await component.onMicClick();
 
-      expect((component as any).initializeSpeechRecognition).toHaveBeenCalled();
+      expect((component as unknown as VoiceInputComponentPrivates).initializeSpeechRecognition).toHaveBeenCalled();
     });
 
     it('starts listening when not recognizing', async () => {
-      component.recognition = { 
+      component.recognition = {
         start: jasmine.createSpy('start'),
         abort: jasmine.createSpy('abort')
-      } as any;
+      } as unknown as ISpeechRecognition;
       component.recognizing.set(false);
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
-      spyOn(component as any, 'startListening').and.callThrough();
+      spyOn(component as unknown as VoiceInputComponentPrivates, 'startListening').and.callThrough();
 
       await component.onMicClick();
 
-      expect((component as any).startListening).toHaveBeenCalled();
+      expect((component as unknown as VoiceInputComponentPrivates).startListening).toHaveBeenCalled();
     });
 
     it('stops listening when already recognizing', async () => {
-      component.recognition = { 
+      component.recognition = {
         stop: jasmine.createSpy('stop'),
         abort: jasmine.createSpy('abort')
-      } as any;
+      } as unknown as ISpeechRecognition;
       component.recognizing.set(true);
       spyOn(component, 'isSpeechRecognitionSupported').and.returnValue(true);
-      spyOn(component as any, 'stopListening').and.callThrough();
+      spyOn(component as unknown as VoiceInputComponentPrivates, 'stopListening').and.callThrough();
 
       await component.onMicClick();
 
-      expect((component as any).stopListening).toHaveBeenCalled();
+      expect((component as unknown as VoiceInputComponentPrivates).stopListening).toHaveBeenCalled();
     });
   });
 

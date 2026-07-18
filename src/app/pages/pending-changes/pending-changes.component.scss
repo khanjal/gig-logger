@@ -41,7 +41,7 @@ mat-expansion-panel {
 }
 
 /* Quick view spacing */
-app-shifts-quick-view, trips-quick-view {
+app-shifts-quick-view, app-trips-quick-view, app-expenses-quick-view {
   display: block;
   margin-bottom: 0.5rem;
 }
@@ -50,6 +50,14 @@ app-shifts-quick-view, trips-quick-view {
 .no-pending {
   padding: 1rem;
   color: var(--color-text-tertiary);
+}
+
+/* Large icon for the all-caught-up empty state */
+.all-caught-up-icon {
+  width: 4rem;
+  height: 4rem;
+  font-size: 4rem;
+  line-height: 4rem;
 }
 
 /* Dark theme tweaks */

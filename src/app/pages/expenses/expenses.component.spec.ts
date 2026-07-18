@@ -6,10 +6,14 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActionEnum } from '@enums/action.enum';
 import { BehaviorSubject, of } from 'rxjs';
-import type { IExpense } from '@interfaces/expense.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
+import { MatDialogRef } from '@angular/material/dialog';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;
@@ -50,7 +54,7 @@ describe('ExpensesComponent', () => {
       canSync: () => Promise.resolve(false),
       isAuthenticated: () => Promise.resolve(false),
       isAuthenticatedSync: () => false,
-      profile$: new BehaviorSubject<any>(null)
+      profile$: new BehaviorSubject<UserProfile | null>(null)
     };
 
     expensesServiceSpy.getMaxRowId.and.returnValue(Promise.resolve(10));
@@ -66,6 +70,7 @@ describe('ExpensesComponent', () => {
         { provide: AuthGoogleService, useValue: authGoogleServiceMock },
         { provide: MatDialog, useValue: dialogSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParams: {} } } },
         CurrencyPipe,
         DatePipe
       ]
@@ -437,7 +442,7 @@ describe('ExpensesComponent', () => {
 
     it('deletes expense and cancels edit when dialog is confirmed', async () => {
       const expense = makeExpense({ id: 5, action: ActionEnum.Saved });
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>);
       expensesServiceSpy.update.and.returnValue(Promise.resolve());
       component.editingExpenseId.set(5);
 
@@ -453,7 +458,7 @@ describe('ExpensesComponent', () => {
 
     it('does not delete when dialog is cancelled', async () => {
       const expense = makeExpense({ id: 5 });
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
 
       await component.confirmDeleteExpenseDialog(expense);
 
@@ -468,7 +473,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('calls saveSheetDialog when dialog is confirmed', async () => {
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>);
       const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
 
       await component.confirmSaveDialog();
@@ -477,7 +482,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('does not call saveSheetDialog when dialog is cancelled', async () => {
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
       const saveSpy = spyOn(component, 'saveSheetDialog').and.resolveTo();
 
       await component.confirmSaveDialog();
@@ -492,7 +497,7 @@ describe('ExpensesComponent', () => {
     });
 
     it('shows login snackbar when canSync is false', async () => {
-      (authGoogleServiceMock as any).canSync = () => Promise.resolve(false);
+      authGoogleServiceMock.canSync = () => Promise.resolve(false);
 
       await component.saveSheetDialog('save');
 
@@ -501,8 +506,8 @@ describe('ExpensesComponent', () => {
     });
 
     it('shows success snackbar after successful sync', async () => {
-      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      authGoogleServiceMock.canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(true) } as unknown as MatDialogRef<unknown>);
 
       await component.saveSheetDialog('save');
 
@@ -510,12 +515,70 @@ describe('ExpensesComponent', () => {
     });
 
     it('does not show success snackbar when sync dialog is cancelled', async () => {
-      (authGoogleServiceMock as any).canSync = () => Promise.resolve(true);
-      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as any);
+      authGoogleServiceMock.canSync = () => Promise.resolve(true);
+      dialogSpy.open.and.returnValue({ afterClosed: () => of(false) } as unknown as MatDialogRef<unknown>);
 
       await component.saveSheetDialog('save');
 
       expect(snackBarSpy.open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deep-link edit query param', () => {
+    async function createComponentWithEditParam(editParam: string): Promise<ExpensesComponent> {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [ExpensesComponent, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          { provide: ExpensesService, useValue: expensesServiceSpy },
+          { provide: UnsavedDataService, useValue: unsavedDataServiceSpy },
+          { provide: AuthGoogleService, useValue: authGoogleServiceMock },
+          { provide: MatDialog, useValue: dialogSpy },
+          { provide: MatSnackBar, useValue: snackBarSpy },
+          { provide: ActivatedRoute, useValue: { snapshot: { queryParams: { edit: editParam } } } },
+          CurrencyPipe,
+          DatePipe,
+          provideNativeDateAdapter()
+        ]
+      }).compileComponents();
+
+      const editFixture = TestBed.createComponent(ExpensesComponent);
+      return editFixture.componentInstance;
+    }
+
+    it('opens the matching expense for edit once it appears in the stream', async () => {
+      const comp = await createComponentWithEditParam('2');
+      await comp.ngOnInit();
+      const editSpy = spyOn(comp, 'editExpense');
+
+      expensesStream$.next([makeExpense({ rowId: 2 })]);
+      await Promise.resolve();
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      expect(editSpy).toHaveBeenCalledWith(jasmine.objectContaining({ rowId: 2 }));
+    });
+
+    it('does nothing when no expense matches the requested rowId', async () => {
+      const comp = await createComponentWithEditParam('999');
+      await comp.ngOnInit();
+      const editSpy = spyOn(comp, 'editExpense');
+
+      expensesStream$.next([makeExpense({ rowId: 2 })]);
+      await Promise.resolve();
+
+      expect(editSpy).not.toHaveBeenCalled();
+    });
+
+    it('ignores a non-numeric edit param', async () => {
+      const comp = await createComponentWithEditParam('not-a-number');
+      const editSpy = spyOn(comp, 'editExpense');
+
+      await comp.ngOnInit();
+      expensesStream$.next([makeExpense({ rowId: 2 })]);
+      await Promise.resolve();
+
+      expect(editSpy).not.toHaveBeenCalled();
     });
   });
 });

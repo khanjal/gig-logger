@@ -1,3 +1,4 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { commonTestingImports, commonTestingProviders } from '@test-harness';
@@ -5,9 +6,22 @@ import { CustomCalendarHeaderComponent } from './custom-calendar-header.componen
 import { MatCalendar } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 
+function createHeader(mockCalendar: unknown, mockDateAdapter: unknown, mockFormats: unknown, mockCdr: unknown): CustomCalendarHeaderComponent<Date> {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: MatCalendar, useValue: mockCalendar },
+      { provide: DateAdapter, useValue: mockDateAdapter },
+      { provide: MAT_DATE_FORMATS, useValue: mockFormats },
+      { provide: ChangeDetectorRef, useValue: mockCdr }
+    ]
+  });
+  return TestBed.runInInjectionContext(() => new CustomCalendarHeaderComponent<Date>());
+}
+
 describe('CustomCalendarHeaderComponent', () => {
-  let component: CustomCalendarHeaderComponent<any>;
-  let fixture: ComponentFixture<CustomCalendarHeaderComponent<any>>;
+  let component: CustomCalendarHeaderComponent<Date>;
+  let fixture: ComponentFixture<CustomCalendarHeaderComponent<Date>>;
   const mockStateChanges = new Subject();
   const mockMatCalendar = {
     updateTodaysDate: jasmine.createSpy('updateTodaysDate'),
@@ -31,7 +45,7 @@ describe('CustomCalendarHeaderComponent', () => {
 
   xit('should create', () => {
     // Skipped - CustomRangePanelComponent requires MatDateRangePicker which needs ViewContainerRef and other complex setup
-    fixture = TestBed.createComponent(CustomCalendarHeaderComponent);
+    fixture = TestBed.createComponent(CustomCalendarHeaderComponent<Date>);
     component = fixture.componentInstance;
     fixture.detectChanges();
     expect(component).toBeTruthy();
@@ -40,13 +54,13 @@ describe('CustomCalendarHeaderComponent', () => {
   it('periodLabel returns formatted uppercase label and changeDate navigates months/years', () => {
     // Create lightweight mocks for constructor dependencies
     const state$ = new Subject<void>();
-    const mockCalendar: any = {
+    const mockCalendar = {
       stateChanges: state$.asObservable(),
       activeDate: new Date(2020, 8, 15) // Sept 15, 2020
     };
 
-    const mockDateAdapter: any = {
-      format: (date: Date, fmt: any) => {
+    const mockDateAdapter = {
+      format: (date: Date) => {
         // mimic 'MMM YYYY' formatting
         const m = date.toLocaleString('en-US', { month: 'short' });
         const y = date.getFullYear();
@@ -56,10 +70,10 @@ describe('CustomCalendarHeaderComponent', () => {
       addCalendarYears: (date: Date, amt: number) => new Date(date.getFullYear() + amt, date.getMonth(), date.getDate())
     };
 
-    const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } } as any;
-    const mockCdr: any = { markForCheck: jasmine.createSpy('markForCheck') };
+    const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } };
+    const mockCdr = { markForCheck: jasmine.createSpy('markForCheck') };
 
-    const hdr = new CustomCalendarHeaderComponent<any>(mockCalendar as MatCalendar<any>, mockDateAdapter as DateAdapter<any>, mockFormats, mockCdr);
+    const hdr = createHeader(mockCalendar, mockDateAdapter, mockFormats, mockCdr);
 
     // periodLabel should be uppercase
     const label = hdr.periodLabel;
@@ -81,15 +95,15 @@ describe('CustomCalendarHeaderComponent', () => {
 
   it('constructor subscribes to calendar.stateChanges and ngOnDestroy unsubscribes', () => {
     const state$ = new Subject<void>();
-    const mockCalendar: any = {
+    const mockCalendar = {
       stateChanges: state$.asObservable(),
       activeDate: new Date()
     };
-    const mockDateAdapter: any = { format: () => '', addCalendarMonths: (d: any, a: any) => d, addCalendarYears: (d: any, a: any) => d };
-    const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } } as any;
-    const mockCdr: any = { markForCheck: jasmine.createSpy('markForCheck') };
+    const mockDateAdapter = { format: () => '', addCalendarMonths: (d: Date) => d, addCalendarYears: (d: Date) => d };
+    const mockFormats = { display: { monthYearLabel: 'MMM YYYY' } };
+    const mockCdr = { markForCheck: jasmine.createSpy('markForCheck') };
 
-    const hdr = new CustomCalendarHeaderComponent<any>(mockCalendar as MatCalendar<any>, mockDateAdapter as DateAdapter<any>, mockFormats, mockCdr);
+    const hdr = createHeader(mockCalendar, mockDateAdapter, mockFormats, mockCdr);
 
     // Emitting state change should call markForCheck
     state$.next();

@@ -1,7 +1,7 @@
 import { DateHelper } from '@helpers/date.helper';
 import { NumberHelper } from '@helpers/number.helper';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { TripFormValue } from '@form-types/trip-form.types';
@@ -61,7 +61,7 @@ export class TripHelper {
         existingTrip: ITrip | undefined,
         maxRowId?: number
     ): Promise<ITrip> {
-        let trip: ITrip = existingTrip ?? ({} as ITrip);
+        const trip: ITrip = existingTrip ?? ({} as ITrip);
 
         // Set shift-derived properties
         trip.key = shift.key;

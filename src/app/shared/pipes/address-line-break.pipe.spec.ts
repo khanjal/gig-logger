@@ -29,7 +29,7 @@ describe('AddressLineBreakPipe', () => {
 
   it('should handle empty or null addresses', () => {
     expect(pipe.transform('')).toBe('');
-    expect(pipe.transform(null as any)).toBeFalsy();
+    expect(pipe.transform(null as unknown as string)).toBeFalsy();
   });
 
   it('should handle addresses with multiple commas', () => {

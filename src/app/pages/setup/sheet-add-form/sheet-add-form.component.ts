@@ -1,21 +1,22 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Output, signal, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { environment } from "src/environments/environment";
-import { CommonModule } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { BaseInputComponent } from '@components/base/base-input/base-input.component';
 
 @Component({
-    selector: 'sheet-add-form',
+    selector: 'app-sheet-add-form',
     templateUrl: './sheet-add-form.component.html',
     styleUrls: ['./sheet-add-form.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, CommonModule, BaseRectButtonComponent, BaseInputComponent]
+    imports: [FormsModule, ReactiveFormsModule, BaseRectButtonComponent, BaseInputComponent]
 })
-export class SheetAddFormComponent {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+export class SheetAddFormComponent implements OnInit {
+  private _spreadsheetService = inject(SpreadsheetService);
+
+  @Output() parentReload = new EventEmitter<void>();
   private demoSheetId = environment.demoSheet;
   
   sheetForm = new FormGroup({
@@ -25,8 +26,6 @@ export class SheetAddFormComponent {
 
   saving = signal(false);
   defaultSpreadsheet: ISpreadsheet | undefined;
-
-  constructor(private _spreadsheetService: SpreadsheetService) { }
 
   async ngOnInit(): Promise<void> {
     await this.load();
@@ -41,7 +40,7 @@ export class SheetAddFormComponent {
     let spreadsheetId: string = this.sheetForm.value.sheetId ?? "";
 
     if(spreadsheetId.includes("/")) {
-      let spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
+      const spreadsheetGroups = new RegExp("/spreadsheets/d/([a-zA-Z0-9-_]+)").exec(spreadsheetId);
 
       if(spreadsheetGroups && spreadsheetGroups?.length > 0) {
         spreadsheetId = spreadsheetGroups[1];
@@ -74,7 +73,7 @@ export class SheetAddFormComponent {
   public async setupSheet(id: string) {
     await this.load();
   
-    let spreadsheet = {} as ISpreadsheet;
+    const spreadsheet = {} as ISpreadsheet;
     spreadsheet.id = id;
     spreadsheet.default = "false";
 

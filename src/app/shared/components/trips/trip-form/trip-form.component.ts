@@ -1,6 +1,6 @@
 // Angular core imports
-import { ViewportScroller, NgFor, NgIf, CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Optional, Output, signal, ViewChild } from '@angular/core';
+import { ViewportScroller, CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, signal, ViewChild, inject } from '@angular/core';
 import { VoiceInputComponent } from '@components/voice-input/voice-input.component';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -12,12 +12,13 @@ import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.
 import { openSnackbar } from '@utils/snackbar.util';
 
 // Application-specific imports - Interfaces
-import type { IAddress } from '@interfaces/address.interface';
-import type { IDelivery } from '@interfaces/delivery.interface';
-import type { IName } from '@interfaces/name.interface';
-import type { IPlace } from '@interfaces/place.interface';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
+import type { IDelivery } from '@interfaces/entities/delivery.interface';
+import type { IName } from '@interfaces/entities/name.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
@@ -70,20 +71,34 @@ interface IShiftSummaryOption {
 const NEW_SHIFT_VALUE = 'new';
 
 @Component({
-    selector: 'trip-form',
+    selector: 'app-trip-form',
     templateUrl: './trip-form.component.html',
     styleUrls: ['./trip-form.component.scss'],
     standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, NgFor, SearchInputComponent, NgIf, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSelect, MatSelectTrigger, MatOption, SearchInputComponent, TripsTableBasicComponent, MatSlideToggle, ShortAddressPipe, TruncatePipe, TimeInputComponent, VoiceInputComponent, BaseInputComponent, BaseToggleButtonComponent, BaseRectButtonComponent, BaseAccordionComponent, BaseAccordionItemComponent]
 })
 export class TripFormComponent implements OnInit {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
-  @Output("editModeExit") editModeExit: EventEmitter<string | undefined> = new EventEmitter();
-  @Input() isInEditMode: boolean = false;
+  dialogRef = inject<MatDialogRef<TripFormComponent>>(MatDialogRef, { optional: true });
+  data = inject(MAT_DIALOG_DATA, { optional: true });
+  private _snackBar = inject(MatSnackBar);
+  private _addressService = inject(AddressService);
+  private _deliveryService = inject(DeliveryService);
+  private _gigLoggerService = inject(GigWorkflowService);
+  private _nameService = inject(NameService);
+  private _placeService = inject(PlaceService);
+  private _shiftService = inject(ShiftService);
+  private _timerService = inject(TimerService);
+  private _tripService = inject(TripService);
+  private _viewportScroller = inject(ViewportScroller);
+  private cdr = inject(ChangeDetectorRef);
+
+  @Output() parentReload = new EventEmitter<void>();
+  @Output() editModeExit = new EventEmitter<string | undefined>();
+  @Input() isInEditMode = false;
   @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger | undefined;
 
   // Typed FormGroup for better compile-time safety
-  tripForm: FormGroup<{
+  tripForm = new FormGroup<{
     shift: FormControl<string | null>;
     service: FormControl<string | null>;
     region: FormControl<string | null>;
@@ -105,7 +120,7 @@ export class TripFormComponent implements OnInit {
     orderNumber: FormControl<string | null>;
     note: FormControl<string | null>;
     exclude: FormControl<string | null>;
-  }> = new FormGroup({
+  }>({
     shift: new FormControl<string | null>(NEW_SHIFT_VALUE),
     service: new FormControl<string | null>(null),
     region: new FormControl<string | null>(null),
@@ -130,11 +145,11 @@ export class TripFormComponent implements OnInit {
   });
 
   isNewShift = signal<boolean>(true);
-  showAdvancedPay: boolean = false;
-  showPickupAddress: boolean = false;
-  showOdometer: boolean = false;
-  showOrder: boolean = false;
-  showTimes: boolean = false;
+  showAdvancedPay = false;
+  showPickupAddress = false;
+  showOdometer = false;
+  showOrder = false;
+  showTimes = false;
 
   selectedAddress: IAddress | undefined;
   selectedAddressDeliveries: IDelivery[] = [];
@@ -150,23 +165,7 @@ export class TripFormComponent implements OnInit {
   selectedShift: IShift | undefined;
   selectedShiftOption = signal<IShiftSummaryOption | undefined>(undefined);
 
-  title: string = "Add Trip";
-
-  constructor(
-      @Optional() public dialogRef: MatDialogRef<TripFormComponent>,
-      @Optional() @Inject(MAT_DIALOG_DATA) public data: any,
-      private _snackBar: MatSnackBar,
-      private _addressService: AddressService,
-      private _deliveryService: DeliveryService,
-      private _gigLoggerService: GigWorkflowService,
-      private _nameService: NameService,
-      private _placeService: PlaceService,
-      private _shiftService: ShiftService,
-      private _timerService: TimerService,
-      private _tripService: TripService,
-      private _viewportScroller: ViewportScroller,
-      private cdr: ChangeDetectorRef
-    ) {}
+  title = "Add Trip";
 
   async ngOnInit(): Promise<void> {
     this.tripForm.controls.service.setValidators([Validators.required]); // Add validation for service
@@ -197,12 +196,12 @@ export class TripFormComponent implements OnInit {
   }
 
   private async createShift(): Promise<IShift> {
-    let shift: IShift = {} as IShift;
+    let shift: IShift;
     const selectedShiftKey = this.tripForm.value.shift;
 
     if (!selectedShiftKey || selectedShiftKey === NEW_SHIFT_VALUE) {
-      let shifts: IShift[] = [];
-      let today: string = DateHelper.toISO();
+      const shifts: IShift[] = [];
+      const today: string = DateHelper.toISO();
 
       shifts.push(...await this._shiftService.query("date", today));
       
@@ -265,8 +264,9 @@ export class TripFormComponent implements OnInit {
   private setFormValues(values: Partial<TripFormValue>): void {
     Object.keys(values).forEach(key => {
       const controlKey = key as keyof typeof this.tripForm.controls;
-      if (this.tripForm.controls[controlKey]) {
-        (this.tripForm.controls[controlKey] as FormControl<any>).setValue((values as any)[key]);
+      const control = this.tripForm.controls[controlKey];
+      if (control) {
+        (control as FormControl<string | number | null>).setValue(values[key as keyof TripFormValue] as string | number | null);
       }
     });
   }
@@ -342,14 +342,14 @@ export class TripFormComponent implements OnInit {
 
       await this._timerService.delay(1000);
       this._viewportScroller.scrollToAnchor('todaysTrips');
-    } catch (error) {
+    } catch {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_STORE_FAILED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     }
   }
 
   public async editTrip() {
     try {
-      let shifts: IShift[] = [];
+      const shifts: IShift[] = [];
 
       if (this.selectedShift) {
         shifts.push(this.selectedShift);
@@ -367,13 +367,11 @@ export class TripFormComponent implements OnInit {
 
       shifts.push(shift);
 
-      if (shifts.length > 1) {
-        shifts = [...new Set(shifts)];
-      }
+      const uniqueShifts = shifts.length > 1 ? [...new Set(shifts)] : shifts;
 
       await this._tripService.update([trip]);
 
-      await this._gigLoggerService.calculateShiftTotals(shifts);
+      await this._gigLoggerService.calculateShiftTotals(uniqueShifts);
       await this._gigLoggerService.updateAncillaryInfo();
 
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_UPDATED);
@@ -383,7 +381,7 @@ export class TripFormComponent implements OnInit {
       } else if (this.dialogRef) {
         this.dialogRef.close();
       }
-    } catch (error) {
+    } catch {
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.TRIP_UPDATE_FAILED, { action: SNACKBAR_DEFAULT_ACTION, duration: 5000 });
     }
   }
@@ -443,8 +441,8 @@ export class TripFormComponent implements OnInit {
     const service = getValueOrFallback(shift, shifts, 'service');
     const region = getValueOrFallback(shift, shifts, 'region');
     
-    this.tripForm.controls.service.setValue(service);
-    this.tripForm.controls.region.setValue(region);
+    this.tripForm.controls.service.setValue(service ?? null);
+    this.tripForm.controls.region.setValue(region ?? null);
 
     this.tripForm.controls.service.updateValueAndValidity();
   }
@@ -567,11 +565,11 @@ export class TripFormComponent implements OnInit {
     // Use helper to get values with fallback
     if (!this.tripForm.controls.startAddress.value) {
       const startAddress = getValueOrFallback(recentTrip, recentTrips, 'startAddress');
-      this.tripForm.controls.startAddress.setValue(startAddress);
+      this.tripForm.controls.startAddress.setValue(startAddress ?? null);
     }
 
     const type = getValueOrFallback(recentTrip, recentTrips, 'type');
-    this.tripForm.controls.type.setValue(type);
+    this.tripForm.controls.type.setValue(type ?? null);
 
     if (!this.showPickupAddress) {
       this.togglePickupAddress();
@@ -612,7 +610,6 @@ export class TripFormComponent implements OnInit {
   private toShiftSummaryOption(shift: IShift): IShiftSummaryOption {
     const shiftNumberSuffix = shift.number === 0 ? '' : ` #${shift.number}`;
     const trips = shift.totalTrips || 0;
-    const pay = NumberHelper.formatNumber(shift.totalPay || 0);
     const tips = NumberHelper.formatNumber(shift.totalTips || 0);
     const total = NumberHelper.formatNumber(shift.grandTotal || 0);
 
@@ -649,35 +646,36 @@ export class TripFormComponent implements OnInit {
   }
 
   // Remove keyboard handling - now handled by focus-scroll directive
-  keyboardPadding: boolean = false;
+  keyboardPadding = false;
 
   // --- Voice input result handler ---
-  async onVoiceResult(result: any) {
+  async onVoiceResult(result: IVoiceParseResult) {
     if (!result) return;
 
     // Mapping of voice fields to form controls and their handlers
-    const fieldMap: Array<{key: string, handler: (val: any) => void | Promise<void>}> = [
-      { key: 'service', handler: (v) => this.tripForm.controls.service.setValue(v) },
+    const fieldMap: { key: keyof IVoiceParseResult; handler: (val: string | number) => void | Promise<void> }[] = [
+      { key: 'service', handler: (v) => this.tripForm.controls.service.setValue(String(v)) },
       { key: 'pay', handler: (v) => this.tripForm.controls.pay.setValue(v) },
       { key: 'tip', handler: (v) => this.tripForm.controls.tip.setValue(v) },
       { key: 'distance', handler: (v) => this.tripForm.controls.distance.setValue(v) },
-      { key: 'type', handler: (v) => this.tripForm.controls.type.setValue(v) },
-      { key: 'place', handler: async (v) => { this.tripForm.controls.place.setValue(v); await this.selectPlace(); }},
-      { key: 'name', handler: (v) => this.setName(v) },
+      { key: 'type', handler: (v) => this.tripForm.controls.type.setValue(String(v)) },
+      { key: 'place', handler: async (v) => { this.tripForm.controls.place.setValue(String(v)); await this.selectPlace(); }},
+      { key: 'name', handler: (v) => this.setName(String(v)) },
       { key: 'bonus', handler: (v) => this.tripForm.controls.bonus.setValue(v) },
       { key: 'cash', handler: (v) => this.tripForm.controls.cash.setValue(v) },
-      { key: 'pickupAddress', handler: (v) => this.setPickupAddress(v) },
-      { key: 'dropoffAddress', handler: (v) => this.setDestinationAddress(v) },
+      { key: 'pickupAddress', handler: (v) => this.setPickupAddress(String(v)) },
+      { key: 'dropoffAddress', handler: (v) => this.setDestinationAddress(String(v)) },
       { key: 'startOdometer', handler: (v) => this.tripForm.controls.startOdometer.setValue(v) },
       { key: 'endOdometer', handler: (v) => this.tripForm.controls.endOdometer.setValue(v) },
-      { key: 'unitNumber', handler: (v) => this.tripForm.controls.endUnit.setValue(v) },
-      { key: 'orderNumber', handler: (v) => this.tripForm.controls.orderNumber.setValue(v) },
+      { key: 'unitNumber', handler: (v) => this.tripForm.controls.endUnit.setValue(String(v)) },
+      { key: 'orderNumber', handler: (v) => this.tripForm.controls.orderNumber.setValue(String(v)) },
     ];
 
     // Apply all fields from result that exist in the map
     for (const { key, handler } of fieldMap) {
-      if (result[key] !== undefined) {
-        await handler(result[key]);
+      const val = result[key];
+      if (val !== undefined) {
+        await handler(val);
       }
     }
 

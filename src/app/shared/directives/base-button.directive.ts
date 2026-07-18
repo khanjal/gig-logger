@@ -1,27 +1,30 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, inject } from '@angular/core';
 
 @Directive({
   selector: '[appBaseButton]',
   standalone: true
 })
 export class BaseButtonDirective implements OnChanges, OnDestroy {
-  @Input('appBaseButtonVariant') variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
-  @Input('appBaseButtonFab') fab = false;
-  @Input('appBaseButtonFabStyle') fabStyle: 'regular' | 'mini' = 'regular';
-  @Input('appBaseButtonLoading') loading = false;
-  @Input('appBaseButtonDisabled') disabled = false;
-  @Input('appBaseButtonClass') extraClass = '';
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
 
-  @Output('appBaseButtonClicked') clicked = new EventEmitter<void>();
+  @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
+  @Input() fab = false;
+  @Input() fabStyle: 'regular' | 'mini' = 'regular';
+  @Input() loading = false;
+  @Input() disabled = false;
+  @Input() extraClass = '';
+
+  @Output() clicked = new EventEmitter<void>();
 
   private host: HTMLElement;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
+  constructor() {
     this.host = this.el.nativeElement as HTMLElement;
     this.renderer.addClass(this.host, 'app-base-button');
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.updateClasses();
     this.updateDisabled();
   }

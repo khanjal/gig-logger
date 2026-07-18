@@ -119,9 +119,9 @@ describe('BaseButtonComponent', () => {
       fixture.detectChanges();
       const contentEl = fixture.nativeElement.querySelector('.btn-text') as HTMLElement;
       // Simulate visible rendering by providing a non-empty client rects
-      (contentEl as any).getClientRects = () => [{ width: 10 }];
+      contentEl.getClientRects = () => [{ width: 10 }] as unknown as DOMRectList;
       // call update directly to avoid timing issues
-      (component as any).updateIconOnlyClass();
+      component['updateIconOnlyClass']();
       const btn = fixture.nativeElement.querySelector('button') as HTMLElement;
       expect(btn.classList.contains('btn-icon-only')).toBeFalse();
     });
@@ -133,8 +133,8 @@ describe('BaseButtonComponent', () => {
       // Ensure no projected text exists
       const contentEl = fixture.nativeElement.querySelector('.btn-text') as HTMLElement;
       // Simulate hidden by returning empty rects
-      (contentEl as any).getClientRects = () => [];
-      (component as any).updateIconOnlyClass();
+      contentEl.getClientRects = () => [] as unknown as DOMRectList;
+      component['updateIconOnlyClass']();
       const btn = fixture.nativeElement.querySelector('button') as HTMLElement;
       expect(btn.classList.contains('btn-icon-only')).toBeTrue();
     });

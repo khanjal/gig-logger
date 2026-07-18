@@ -41,7 +41,7 @@ export class DateHelper {
      * Format an ISO date string (YYYY-MM-DD) to a locale-specific date string.
      * Avoids timezone issues by parsing components directly.
      */
-    static formatLocaleDateString(dateString: string, locale: string = 'en-US', options?: Intl.DateTimeFormatOptions): string {
+    static formatLocaleDateString(dateString: string, locale = 'en-US', options?: Intl.DateTimeFormatOptions): string {
         const date = this.parseLocalDate(dateString);
         if (isNaN(date.getTime())) return 'Unknown date';
         return date.toLocaleDateString(locale, options);
@@ -61,14 +61,14 @@ export class DateHelper {
         return dayNumber;
     }
 
-    static getDateFromDays(days: number = 0): Date {
-        let currentDate = new Date();
-        let date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - days);
+    static getDateFromDays(days = 0): Date {
+        const currentDate = new Date();
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - days);
         return date;
     }
 
-    static getDatesArray(days: number = 0): string[] {
-        let dates: string[] = [];
+    static getDatesArray(days = 0): string[] {
+        const dates: string[] = [];
         for (let index = 0; index < days; index++) {
             dates.push(DateHelper.toISO(this.getDateFromDays(index)));
         }
@@ -90,8 +90,8 @@ export class DateHelper {
 
     static removeSeconds(time: string): string {
         if (!time) return '';
-        let splitSpaces = time.split(' ');
-        let splittedString = splitSpaces[0].split(':');
+        const splitSpaces = time.split(' ');
+        const splittedString = splitSpaces[0].split(':');
         if (splittedString.length < 3) return time;
         time = splittedString.slice(0, -1).join(':');
         if (splitSpaces[1]) time = `${time} ${splitSpaces[1]}`;
@@ -105,7 +105,7 @@ export class DateHelper {
     }
 
     static getFirstDayOfMonth(date: Date) {
-        let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         return this.toISO(firstDay);
     }
 
@@ -115,14 +115,14 @@ export class DateHelper {
 
     static getStartOfWeekDate(date: Date): string {
         const deltaStart = this.getFirstDayOfWeek() - this.getDayOfWeek(date);
-        let startDate = new Date();
+        const startDate = new Date();
         startDate.setDate(startDate.getDate() + deltaStart);
         return this.toISO(startDate);
     }
 
     static getDayOfWeek(date: Date = new Date()) {
         // Use local getDay() with properly parsed dates to avoid timezone issues
-        let dayOfWeek = new Date(date).getDay();
+        const dayOfWeek = new Date(date).getDay();
         return dayOfWeek === 0 ? 7 : dayOfWeek;
     }
 
@@ -131,17 +131,17 @@ export class DateHelper {
     static getDurationSeconds(start: string, end: string): number {
         if (!start || !end) return 0;
         let startDate = Date.parse(new Date().toDateString() + ' ' + start) / 1000;
-        let endDate = Date.parse(new Date().toDateString() + ' ' + end) / 1000;
+        const endDate = Date.parse(new Date().toDateString() + ' ' + end) / 1000;
         if (endDate < startDate) startDate -= 86400;
         return endDate - startDate;
     }
 
     static getTimeNumber(time: string): number {
         if (!time) return 0;
-        let timeParts = time.split(':');
-        let hours = parseInt(timeParts[0]);
-        let minutes = parseInt(timeParts[1]);
-        let seconds = parseInt(timeParts[2]);
+        const timeParts = time.split(':');
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        const seconds = parseInt(timeParts[2]);
         return (hours * 3600) + (minutes * 60) + seconds;
     }
 
@@ -150,7 +150,7 @@ export class DateHelper {
         const [hoursMinutes, period] = time.split(' ');
         const [hours, minutes] = hoursMinutes.split(':').map(Number);
         if (!period) return hours * 60 + minutes;
-        let totalHours = hours % 12 + (period.toLowerCase() === 'pm' ? 12 : 0);
+        const totalHours = hours % 12 + (period.toLowerCase() === 'pm' ? 12 : 0);
         return totalHours * 60 + minutes;
     }
 
@@ -228,7 +228,7 @@ export class DateHelper {
     // --- Miscellaneous ---
 
     static getMonday(date: Date = new Date()) {
-        var day = date.getDay() || 7;
+        const day = date.getDay() || 7;
         if (day !== 1) date.setHours(-24 * (day - 1));
         return date;
     }

@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { merge, from } from 'rxjs';
 import { switchMap, shareReplay } from 'rxjs/operators';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IShift } from '@interfaces/shift.interface';
-import type { IExpense } from '@interfaces/expense.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 export interface IUnsavedItems {
   unsavedTrips: ITrip[];
@@ -16,11 +16,10 @@ export interface IUnsavedItems {
 
 @Injectable({ providedIn: 'root' })
 export class UnsavedDataService {
-  constructor(
-    private tripService: TripService,
-    private shiftService: ShiftService,
-    private expensesService: ExpensesService
-  ) {}
+  private tripService = inject(TripService);
+  private shiftService = inject(ShiftService);
+  private expensesService = inject(ExpensesService);
+
 
   /** Reactive stream that emits a boolean whenever any entity's unsaved state changes. */
   readonly unsavedData$ = merge(
@@ -32,21 +31,23 @@ export class UnsavedDataService {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  async hasUnsavedData(): Promise<boolean> {
+  /** Fetches all three unsaved item lists in parallel as a single snapshot. */
+  private async fetchUnsaved(): Promise<{ trips: ITrip[]; shifts: IShift[]; expenses: IExpense[] }> {
     const [trips, shifts, expenses] = await Promise.all([
       this.tripService.getUnsaved(),
       this.shiftService.getUnsavedShifts(),
       this.expensesService.getUnsaved()
     ]);
-    return trips.length > 0 || shifts.length > 0 || expenses.length > 0;
+    return { trips, shifts, expenses };
+  }
+
+  async hasUnsavedData(): Promise<boolean> {
+    const { total } = await this.getUnsavedCounts();
+    return total > 0;
   }
 
   async getUnsavedCounts(): Promise<{ trips: number; shifts: number; expenses: number; total: number }> {
-    const [trips, shifts, expenses] = await Promise.all([
-      this.tripService.getUnsaved(),
-      this.shiftService.getUnsavedShifts(),
-      this.expensesService.getUnsaved()
-    ]);
+    const { trips, shifts, expenses } = await this.fetchUnsaved();
     return {
       trips: trips.length,
       shifts: shifts.length,
@@ -55,14 +56,9 @@ export class UnsavedDataService {
     };
   }
 
-  /** Fetches all three unsaved item lists in parallel as a single snapshot. */
   async collectUnsavedItems(): Promise<IUnsavedItems> {
-    const [unsavedTrips, unsavedShifts, unsavedExpenses] = await Promise.all([
-      this.tripService.getUnsaved(),
-      this.shiftService.getUnsavedShifts(),
-      this.expensesService.getUnsaved()
-    ]);
-    return { unsavedTrips, unsavedShifts, unsavedExpenses };
+    const { trips, shifts, expenses } = await this.fetchUnsaved();
+    return { unsavedTrips: trips, unsavedShifts: shifts, unsavedExpenses: expenses };
   }
 
   /**

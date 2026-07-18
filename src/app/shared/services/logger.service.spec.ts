@@ -184,7 +184,7 @@ describe('LoggerService', () => {
     });
 
     it('should emit multiple log events in sequence', (done) => {
-      const logs: any[] = [];
+      const logs: { level: string; message: string }[] = [];
       
       service.onLog.subscribe((log) => {
         logs.push(log);
@@ -212,8 +212,9 @@ describe('LoggerService', () => {
 
       service.onLog.subscribe(() => {
         subscriber2Called = true;
-        
+
         if (subscriber1Called) {
+          expect(subscriber2Called).toBeTrue();
           done();
         }
       });

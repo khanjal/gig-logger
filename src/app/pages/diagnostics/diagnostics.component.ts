@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -29,9 +29,9 @@ import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IDiagnosticItem, IDiagnosticRecord, DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
 import { DiagnosticGroupComponent } from './diagnostic-group/diagnostic-group.component';
 import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.component';
 
@@ -44,38 +44,36 @@ import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.compo
 })
 
 export class DiagnosticsComponent implements OnInit {
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+  private _addressService = inject(AddressService);
+  private _placeService = inject(PlaceService);
+  private _nameService = inject(NameService);
+  private _serviceService = inject(ServiceService);
+  private _typeService = inject(TypeService);
+  private _regionService = inject(RegionService);
+  private _logger = inject(LoggerService);
+  private _gigCalculator = inject(GigCalculatorService);
+  private _gigWorkflow = inject(GigWorkflowService);
+  private _uiPreferences = inject(UiPreferencesService);
+
   dataDiagnostics = signal<IDiagnosticItem[]>([]);
   isLoading = signal(false);
   isBulkFixing = signal(false);
-  selectedValue: any[] = [];
-  selectedAddress: { [key: number]: string } = {};
-  selectedShiftToDelete: { [key: number]: number } = {};
-
-  constructor(
-    private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _addressService: AddressService,
-    private _placeService: PlaceService,
-    private _nameService: NameService,
-    private _serviceService: ServiceService,
-    private _typeService: TypeService,
-    private _regionService: RegionService,
-    private _logger: LoggerService,
-    private _gigCalculator: GigCalculatorService,
-    private _gigWorkflow: GigWorkflowService,
-    private _uiPreferences: UiPreferencesService
-  ) { }
+  selectedValue: (IDiagnosticRecord | undefined)[] = [];
+  selectedAddress: Record<number, string> = {};
+  selectedShiftToDelete: Record<number, number | undefined> = {};
 
   trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
     return item.name ?? index;
   }
 
-  trackByGroup(_index: number, group: any[]): string | number {
+  trackByGroup(_index: number, group: IDiagnosticRecord[]): string | number {
     const first = group?.[0];
     return first?.rowId ?? first?.id ?? first?.key ?? first?.name ?? group.length;
   }
 
-  trackByProblemItem(index: number, item: any): any {
+  trackByProblemItem(index: number, item: IDiagnosticRecord): string | number {
     // Prefer rowId, id, key, or fallback to index
     return item?.rowId ?? item?.id ?? item?.key ?? index;
   }
@@ -101,9 +99,7 @@ export class DiagnosticsComponent implements OnInit {
     const diagnostics: IDiagnosticItem[] = [];
     const shifts = await this._shiftService.list();
     const trips = await this._tripService.list();
-    const addresses = await this._addressService.list();
     const places = await this._placeService.list();
-    const names = await this._nameService.list();
 
     // Duplicate shifts via shared utility (same key)
     const shiftGroups = await this._shiftService.findDuplicates('key', { mode: 'equals', caseInsensitive: false, normalize: true });
@@ -334,20 +330,20 @@ export class DiagnosticsComponent implements OnInit {
     return this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0);
   }
 
-  async mergeDuplicates(group: any[], selectedItem: any, itemType: DiagnosticEntityType) {
+  async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {
     const trips = await this._tripService.list();
     const shifts = await this._shiftService.list();
-    
+
     // Collect all updates in batches
     const tripsToUpdate: ITrip[] = [];
     const shiftsToUpdate: IShift[] = [];
-    
+
     for (const item of group) {
       if (item === selectedItem) continue;
-      
+
       let affectedTrips: ITrip[] = [];
       let affectedShifts: IShift[] = [];
-      
+
       if (itemType === 'place') {
         affectedTrips = trips.filter(t => t.place === item.place);
       } else if (itemType === 'name') {
@@ -363,36 +359,36 @@ export class DiagnosticsComponent implements OnInit {
       } else if (itemType === 'type') {
         affectedTrips = trips.filter(t => t.type === item.type);
       }
-      
+
       for (const trip of affectedTrips) {
         if (itemType === 'place') {
-          trip.place = selectedItem.place;
+          trip.place = selectedItem.place ?? '';
         } else if (itemType === 'name') {
-          trip.name = selectedItem.name;
+          trip.name = selectedItem.name ?? '';
         } else if (itemType === 'address') {
-          if (trip.startAddress === item.address) trip.startAddress = selectedItem.address;
-          if (trip.endAddress === item.address) trip.endAddress = selectedItem.address;
+          if (trip.startAddress === item.address) trip.startAddress = selectedItem.address ?? '';
+          if (trip.endAddress === item.address) trip.endAddress = selectedItem.address ?? '';
         } else if (itemType === 'service') {
-          trip.service = selectedItem.service;
+          trip.service = selectedItem.service ?? '';
         } else if (itemType === 'region') {
-          trip.region = selectedItem.region;
+          trip.region = selectedItem.region ?? '';
         } else if (itemType === 'type') {
-          trip.type = selectedItem.type;
+          trip.type = selectedItem.type ?? '';
         }
         updateAction(trip, ActionEnum.Update);
         tripsToUpdate.push(trip);
       }
-      
+
       for (const shift of affectedShifts) {
         if (itemType === 'service') {
-          shift.service = selectedItem.service;
+          shift.service = selectedItem.service ?? '';
         } else if (itemType === 'region') {
-          shift.region = selectedItem.region;
+          shift.region = selectedItem.region ?? '';
         }
         updateAction(shift, ActionEnum.Update);
         shiftsToUpdate.push(shift);
       }
-      
+
       item.trips = 0;
       if (itemType === 'service' || itemType === 'region') {
         item.shifts = 0;
@@ -414,22 +410,24 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async fixShiftDuration(shift: IShift) {
+  async fixShiftDuration(record: IDiagnosticRecord) {
+    const shift = record as unknown as IShift;
     if (!shift.start || !shift.finish) return;
     const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
     shift.time = DateHelper.getDurationString(duration);
     updateAction(shift, ActionEnum.Update);
     await this._shiftService.update([shift]);
-    (shift as any).fixed = true;
+    record.fixed = true;
     this.decrementDiagnosticCount('Shifts Missing Time Duration');
     this.disableAutoSave();
     this.touchDiagnostics();
   }
 
-  async fixTripDuration(trip: ITrip) {
+  async fixTripDuration(record: IDiagnosticRecord) {
+    const trip = record as unknown as ITrip;
     await this._gigCalculator.updateTripDuration(trip);
-    
-    (trip as any).fixed = true;
+
+    record.fixed = true;
     this.decrementDiagnosticCount('Trips Missing Duration');
     this.disableAutoSave();
     this.touchDiagnostics();
@@ -476,18 +474,19 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  async applyAddressToTrip(trip: any, address: string) {
-    trip.startAddress = address;
-    trip.addressApplied = true;
+  async applyAddressToTrip(record: IDiagnosticRecord, address: string) {
+    record.startAddress = address;
+    record.addressApplied = true;
+    const trip = record as unknown as ITrip;
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
     this.disableAutoSave();
     this.touchDiagnostics();
   }
 
-  async createShiftFromTrip(trip: ITrip) {
+  async createShiftFromTrip(record: IDiagnosticRecord) {
     // Delegate to the batch flow so single-create reuses same logic
-    await this.createShiftsFromTrips([trip]);
+    await this.createShiftsFromTrips([record]);
   }
 
   /**
@@ -497,8 +496,9 @@ export class DiagnosticsComponent implements OnInit {
    * - Persists all new shifts, then calls `calculateShiftTotals` once with the array
    * - Marks matching orphaned trips as fixed in diagnostics
    */
-  async createShiftsFromTrips(trips: ITrip[]) {
-    if (!trips || trips.length === 0) return;
+  async createShiftsFromTrips(records: IDiagnosticRecord[]) {
+    if (!records || records.length === 0) return;
+    const trips = records as unknown as ITrip[];
 
     this.isBulkFixing.set(true);
     try {
@@ -529,7 +529,7 @@ export class DiagnosticsComponent implements OnInit {
 
         const shift = ShiftHelper.createShiftFromTrip(trip);
         shift.rowId = nextRowId++;
-        delete (shift as any).id;
+        delete shift.id;
         await this._shiftService.add(shift);
         newShifts.push(shift);
       }
@@ -557,25 +557,26 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  hasMarkedForDelete(group: IShift[]): boolean {
-    return group.some(s => (s as any).markedForDelete);
+  hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
+    return group.some(s => s.markedForDelete);
   }
 
 
 
-  async markShiftForDelete(group: IShift[], rowId: number, groupIndex: number) {
-    const shift = group.find(s => s.rowId === rowId);
-    if (!shift) return;
-    
+  async markShiftForDelete(group: IDiagnosticRecord[], rowId: number, groupIndex: number) {
+    const record = group.find(s => s.rowId === rowId);
+    if (!record) return;
+    const shift = record as unknown as IShift;
+
     if (shift.action === ActionEnum.Add) {
       await this._shiftService.delete(shift.id!);
     } else {
       updateAction(shift, ActionEnum.Delete);
       await this._shiftService.update([shift]);
     }
-    
-    (shift as any).markedForDelete = true;
-    this.selectedShiftToDelete[groupIndex] = undefined as any;
+
+    record.markedForDelete = true;
+    this.selectedShiftToDelete[groupIndex] = undefined;
     this.disableAutoSave();
     this.touchDiagnostics();
   }
@@ -590,7 +591,7 @@ export class DiagnosticsComponent implements OnInit {
   private disableAutoSave(): void {
     try {
       // setPolling may be async; handle rejection explicitly
-      this._uiPreferences.setPolling(false).catch((err: any) => {
+      this._uiPreferences.setPolling(false).catch((err: unknown) => {
         this._logger.warn('Failed to persist/stop polling when disabling autosave', err);
       });
     } catch (e) {

@@ -128,8 +128,8 @@ describe('TimerService', () => {
           throw new Error('Test error');
         });
         fail('Should have thrown');
-      } catch (error: any) {
-        expect(error.message).toBe('Test error');
+      } catch (error) {
+        expect((error as Error).message).toBe('Test error');
       }
     });
   });

@@ -27,7 +27,7 @@ export function uniquePush<T>(arr: T[] | undefined, value: T): void {
  * const service = getValueOrFallback(shift, shifts, 'service');
  * // Returns shift.service if truthy, otherwise finds first shift with service property
  */
-export function getValueOrFallback<T>(item: T | undefined, fallbackArray: T[], propertyName: keyof T): any {
+export function getValueOrFallback<T, K extends keyof T>(item: T | undefined, fallbackArray: T[], propertyName: K): T[K] | undefined {
     if (item && item[propertyName]) {
         return item[propertyName];
     }

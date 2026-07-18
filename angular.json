@@ -57,7 +57,7 @@
                   "maximumError": "3mb"
                 },
                 {
-                  "type": "anyComponentStyle", 
+                  "type": "anyComponentStyle",
                   "maximumWarning": "40kb",
                   "maximumError": "60kb"
                 }
@@ -86,7 +86,7 @@
                   "maximumError": "3.5mb"
                 },
                 {
-                  "type": "anyComponentStyle", 
+                  "type": "anyComponentStyle",
                   "maximumWarning": "60kb",
                   "maximumError": "80kb"
                 }
@@ -160,11 +160,23 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }

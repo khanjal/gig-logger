@@ -1,9 +1,9 @@
 import { DateHelper } from "@helpers/date.helper";
-import type { IShift } from "@interfaces/shift.interface";
+import type { IShift } from "@interfaces/entities/shift.interface";
 import { sort } from "./sort.helper";
 import { ActionEnum } from "@enums/action.enum";
 import { updateAction } from "@utils/action.utils";
-import type { ITrip } from "@interfaces/trip.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
 
 export class ShiftHelper {
     static compareShifts(o1: IShift, o2: IShift): boolean {
@@ -11,11 +11,11 @@ export class ShiftHelper {
     }
 
     static getUniqueShifts(shifts: IShift[]): IShift[] {
-        let uniqueShifts: IShift[] = [];
+        const uniqueShifts: IShift[] = [];
 
         shifts.forEach(shift => {
 
-            let foundShift = uniqueShifts.find(x => x.date == shift.date && x.service == shift.service && x.number == shift.number);
+            const foundShift = uniqueShifts.find(x => x.date == shift.date && x.service == shift.service && x.number == shift.number);
 
             if (foundShift) {
                 return;
@@ -30,15 +30,15 @@ export class ShiftHelper {
     static getNextShiftNumber(service: string, shifts: IShift[]): number {
         shifts = this.getUniqueShifts(shifts);
 
-        let serviceShifts = shifts.filter(shift => shift.service == service);
+        const serviceShifts = shifts.filter(shift => shift.service == service);
         sort(serviceShifts, '-number');
 
         return serviceShifts.length > 0 ? serviceShifts[0].number+1 : 1;
     }
 
     static getTodaysShifts():  IShift[] {
-        let shifts: IShift[] = [];
-        let todaysShifts: IShift[] = [];
+        const shifts: IShift[] = [];
+        const todaysShifts: IShift[] = [];
 
         shifts.forEach(shift => {
             if (DateHelper.toISO(new Date(shift.date)) == DateHelper.toISO()) {
@@ -51,11 +51,11 @@ export class ShiftHelper {
     }
 
     static createNewShift(service: string, shifts: IShift[]): IShift {
-        let shift: IShift = {} as IShift;
+        const shift: IShift = {} as IShift;
 
         shift.service = service;
 
-        let shiftNumber = this.getNextShiftNumber(service, shifts);
+        const shiftNumber = this.getNextShiftNumber(service, shifts);
 
         shift.key = `${DateHelper.getDays()}-${shiftNumber}-${service}`;
         shift.date = DateHelper.toISO(DateHelper.getDateFromDays());
@@ -68,7 +68,7 @@ export class ShiftHelper {
     }
 
     static createShiftFromTrip(trip: ITrip): IShift {
-        let shift: IShift = {} as IShift;
+        const shift: IShift = {} as IShift;
 
         shift.key = trip.key;
         shift.date = trip.date;

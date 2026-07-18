@@ -1,6 +1,5 @@
 // Angular Core
-import { Component, signal, ViewChild } from '@angular/core';
-import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { Component, signal, ViewChild, OnInit, inject } from '@angular/core';
 
 // Angular Material
 import { MatDialog } from '@angular/material/dialog';
@@ -21,8 +20,8 @@ import { PermissionsComponent } from '@components/permissions/permissions.compon
 import { LocationOverrideComponent } from '@components/location-override/location-override.component';
 
 // App Interfaces
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';
@@ -33,7 +32,6 @@ import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.
 import { openSnackbar } from '@utils/snackbar.util';
 import { ShiftService } from '@services/sheets/shift.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { AuthStatusComponent } from "@components/auth/auth-status/auth-status.component";
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -47,24 +45,31 @@ import { createAsyncOperationState } from '@helpers/async-operation-state.helper
     styleUrls: ['./setup.component.scss'],
     standalone: true,
     imports: [
-      CommonModule,
-      NgIf,
-      NgFor,
-      MatIcon,
-      LoginComponent,
-      ServiceWorkerStatusComponent,
-      SheetLinkComponent,
-      SheetDemoComponent,
-      SheetQuickViewComponent,
-      SheetQuotaComponent,
-      AuthStatusComponent,
-      PermissionsComponent,
-      LocationOverrideComponent,
-      BaseRectButtonComponent,
-      BaseCardComponent
-  ]
+    MatIcon,
+    LoginComponent,
+    ServiceWorkerStatusComponent,
+    SheetLinkComponent,
+    SheetDemoComponent,
+    SheetQuickViewComponent,
+    SheetQuotaComponent,
+    AuthStatusComponent,
+    PermissionsComponent,
+    LocationOverrideComponent,
+    BaseRectButtonComponent,
+    BaseCardComponent
+]
 })
-export class SetupComponent {
+export class SetupComponent implements OnInit {
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _commonService = inject(CommonService);
+  private _logger = inject(LoggerService);
+  private _spreadsheetService = inject(SpreadsheetService);
+  private _shiftService = inject(ShiftService);
+  private _tripService = inject(TripService);
+  protected authService = inject(AuthGoogleService);
+  private versionService = inject(VersionService);
+
   @ViewChild(SheetAddFormComponent) form:SheetAddFormComponent | undefined;
 
   isAuthenticated = signal(false);
@@ -81,19 +86,6 @@ export class SetupComponent {
 
   version = signal('');
 
-  constructor(
-    public dialog: MatDialog,
-    private _snackBar: MatSnackBar,
-    private _commonService: CommonService,
-    private _logger: LoggerService,
-    private _spreadsheetService: SpreadsheetService,
-    private _shiftService: ShiftService,
-    private _tripService: TripService,
-    private _timerService: TimerService,
-    protected authService: AuthGoogleService,
-    private versionService: VersionService
-  ) { }
-
 
   async ngOnInit(): Promise<void> {
     this.isAuthenticated.set(await this.authService.canSync());
@@ -107,7 +99,7 @@ export class SetupComponent {
       if (host && (host.indexOf('gig-test') !== -1 || host.indexOf('test.gig') !== -1 || host.indexOf('test') !== -1)) {
         this.version.set(`${this.version()}-test`);
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -204,9 +196,7 @@ export class SetupComponent {
   public async deleteAllData() {
     this.deletingState.setLoading();
     try {
-      this._spreadsheetService.deleteData();
-
-      await this._timerService.delay(1000);
+      await this._spreadsheetService.deleteData();
 
       this.spreadsheets.set([]);
       await this.load();
@@ -225,10 +215,7 @@ export class SetupComponent {
     try {
       // Store current spreadsheets.
       this.spreadsheets.set(await this._spreadsheetService.getSpreadsheets());
-      this._spreadsheetService.deleteData();
-
-      // Need a delay to delete DBs and reopen them.
-      await this._timerService.delay(2000);
+      await this._spreadsheetService.deleteData();
 
       // Add spreadsheets back to DB
       for (const spreadsheet of this.spreadsheets() ?? []) {
@@ -262,7 +249,7 @@ export class SetupComponent {
   public async deleteLocalData() {
     this.deletingState.setLoading();
     try {
-      this._spreadsheetService.deleteLocalData();
+      await this._spreadsheetService.deleteLocalData();
       localStorage.clear();
 
       openSnackbar(this._snackBar, SNACKBAR_MESSAGES.ALL_DATA_DELETED);
@@ -315,7 +302,7 @@ export class SetupComponent {
 
     const message = `Reloading will fetch data from the spreadsheet and <strong>WILL NOT</strong> preserve any unsaved local changes. Please ensure all your data is saved before proceeding.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete & Reload";
     dialogData.message = message;
     dialogData.trueText = "Delete & Reload";
@@ -335,7 +322,7 @@ export class SetupComponent {
   async confirmDeleteAllDialog() {
     const message = `This will delete everything except for what is saved in your spreadsheet. Are you sure?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete All";
     dialogData.message = message;
     dialogData.trueText = "Delete All";
@@ -364,9 +351,9 @@ export class SetupComponent {
       return;
     }
 
-    let message = '';
-    let title = '';
-    let confirmText = '';
+    let message: string;
+    let title: string;
+    let confirmText: string;
 
     if (isDefaultSheet && isOnlySheet) {
       // Last remaining sheet - will clear all data
@@ -380,7 +367,7 @@ export class SetupComponent {
       confirmText = "Unlink";
     }
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = title;
     dialogData.message = message;
     dialogData.trueText = confirmText;

@@ -5,8 +5,8 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { LoggerService } from '@services/logger.service';
 import { Router } from '@angular/router';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import { IShift } from '@interfaces/entities/shift.interface';
+import { ITrip } from '@interfaces/entities/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -413,7 +413,7 @@ describe('ShiftFormComponent', () => {
       });
 
       shiftServiceSpy.getShiftsByDate.and.returnValue(Promise.resolve([shift]));
-      tripServiceSpy.query.and.callFake(async (field: string, value: any) => {
+      tripServiceSpy.query.and.callFake(async (field: string, value: string | number) => {
         if (field === 'key' && value === '19372-1-DoorDash') {
           return linkedTrips;
         }

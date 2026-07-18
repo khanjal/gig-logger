@@ -1,5 +1,5 @@
 import { computed, signal } from '@angular/core';
-import type { IAsyncOperationState } from '@interfaces/async-operation-state.interface';
+import type { IAsyncOperationState } from '@interfaces/sync/async-operation-state.interface';
 
 /**
  * Creates a reusable async operation state model for loading/success/error transitions.

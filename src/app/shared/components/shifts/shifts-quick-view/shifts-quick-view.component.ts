@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { ActionEnum } from '@enums/action.enum';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';
@@ -35,23 +35,21 @@ import { BaseRectButtonComponent } from '@components/base';
     ],
 })
 export class ShiftsQuickViewComponent implements OnInit {
+  dialog = inject(MatDialog);
+  private shiftService = inject(ShiftService);
+  private _router = inject(Router);
+
   ActionEnum = ActionEnum;
   dateFormats = DATE_FORMATS;
   @Input() shift: IShift = {} as IShift;
   @Input() index!: number;
-  @Input() inlineMode: boolean = false;
-  @Input() isDuplicate: boolean = false;
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  @Input() inlineMode = false;
+  @Input() isDuplicate = false;
+  @Output() parentReload = new EventEmitter<void>();
   @Output() edit = new EventEmitter<IShift>();
 
-  isExpanded: boolean = false;
-  prefers24Hour: boolean = false;
-
-  constructor(
-    public dialog: MatDialog,
-    private shiftService: ShiftService,
-    private _router: Router
-  ) {}
+  isExpanded = false;
+  prefers24Hour = false;
 
   ngOnInit() {
     this.prefers24Hour = DateHelper.prefers24Hour();
@@ -64,7 +62,7 @@ export class ShiftsQuickViewComponent implements OnInit {
   async confirmDeleteShiftDialog(shift: IShift) {
     const message = `Shift will be deleted from your spreadsheet. Associated trips will not be deleted. Are you sure you want to delete this?`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Delete";
     dialogData.message = message;
     dialogData.trueText = "Delete";

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { FocusScrollDirective } from './focus-scroll.directive';
-import { ViewportService } from '@services/viewport.service';
+import { ViewportService, ViewportSnapshot } from '@services/viewport.service';
 
 class MockViewportService {
   private subj = new BehaviorSubject({ height: 500, offsetTop: 0, keyboardHeight: 200, windowInnerHeight: 800 });
@@ -11,13 +11,13 @@ class MockViewportService {
   public start = jasmine.createSpy('start');
   public stop = jasmine.createSpy('stop');
   public getSnapshot() { return this.subj.getValue(); }
-  public emit(v: any) { this.subj.next(v); }
+  public emit(v: ViewportSnapshot) { this.subj.next(v); }
 }
 
 @Component({
   standalone: true,
   imports: [FocusScrollDirective],
-  template: `<input focusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
+  template: `<input appFocusScroll [enableBottomPadding]="enableBottomPadding" [delayDropdownOnMobile]="delay" [suppressDropdownAfterSelection]="suppress">`
 })
 class HostComponent {
   enableBottomPadding = false;

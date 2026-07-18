@@ -3,35 +3,53 @@
     <h2 class="text-lg font-semibold">Pending Changes</h2>
   </div>
 
-  <mat-accordion multi="false">
-    <mat-expansion-panel id="shifts-panel" [expanded]="expandedShifts()">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Shifts ({{ shifts().length || 0 }})</mat-panel-title>
-      </mat-expansion-panel-header>
+  @if (hasAnyPending()) {
+    <div class="flex flex-wrap gap-2 mb-3">
+      @for (section of sections(); track trackBySection($index, section)) {
+        <app-base-rect-button
+          size="sm"
+          [variant]="isFilterActive(section.key) ? 'primary' : 'secondary'"
+          [disabled]="section.count === 0"
+          [label]="section.label + ' (' + section.count + ')'"
+          (clicked)="toggleFilter(section.key)">
+        </app-base-rect-button>
+      }
+    </div>
 
-      <div *ngIf="shifts().length > 0; else noShifts">
-        @for (s of shifts(); track (trackByShift($index, s)); let i = $index) {
-          <app-shifts-quick-view [shift]="s" [index]="i" [isDuplicate]="!!s.key && duplicateShiftKeys().has(s.key)" [inlineMode]="true" (parentReload)="load()" (edit)="openShiftEditor($event)"></app-shifts-quick-view>
-        }
-      </div>
-      <ng-template #noShifts>
-        <div class="p-4 text-sm no-pending">No pending shifts</div>
-      </ng-template>
-    </mat-expansion-panel>
+    <mat-accordion multi="false">
+      @for (section of visibleSections(); track trackBySection($index, section)) {
+        <mat-expansion-panel [id]="section.key + '-panel'" [expanded]="expandedSection() === section.key" (opened)="expandedSection.set(section.key)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ section.label }} ({{ section.count }})</mat-panel-title>
+          </mat-expansion-panel-header>
 
-    <mat-expansion-panel id="trips-panel" [expanded]="expandedTrips()">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Trips ({{ trips().length || 0 }})</mat-panel-title>
-      </mat-expansion-panel-header>
-
-      <div *ngIf="trips().length > 0; else noTrips">
-        @for (t of trips(); track (trackByTrip($index, t)); let i = $index) {
-          <trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></trips-quick-view>
-        }
-      </div>
-      <ng-template #noTrips>
-        <div class="p-4 text-sm no-pending">No pending trips</div>
-      </ng-template>
-    </mat-expansion-panel>
-  </mat-accordion>
+          <div>
+            @switch (section.key) {
+              @case ('shifts') {
+                @for (s of shifts(); track trackByShift($index, s); let i = $index) {
+                  <app-shifts-quick-view [shift]="s" [index]="i" [isDuplicate]="!!s.key && duplicateShiftKeys().has(s.key)" [inlineMode]="true" (parentReload)="load()" (edit)="openShiftEditor($event)"></app-shifts-quick-view>
+                }
+              }
+              @case ('trips') {
+                @for (t of trips(); track trackByTrip($index, t); let i = $index) {
+                  <app-trips-quick-view [trip]="t" [index]="i" [showActions]="true" [inlineMode]="true" (parentReload)="load()" (editClicked)="openTripEditor($event)"></app-trips-quick-view>
+                }
+              }
+              @case ('expenses') {
+                @for (e of expenses(); track trackByExpense($index, e); let i = $index) {
+                  <app-expenses-quick-view [expense]="e" [index]="i" [inlineMode]="true" (parentReload)="load()" (edit)="openExpenseEditor($event)"></app-expenses-quick-view>
+                }
+              }
+            }
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  } @else {
+    <div class="flex flex-col items-center justify-center text-center py-16 px-4 no-pending">
+      <mat-icon class="text-success mb-3 all-caught-up-icon">check_circle</mat-icon>
+      <p class="text-lg font-semibold text-primary">You're all caught up</p>
+      <p class="text-sm text-secondary mt-1">No pending changes to save.</p>
+    </div>
+  }
 </div>

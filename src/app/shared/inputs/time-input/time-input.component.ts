@@ -31,16 +31,16 @@ import { BaseFieldButtonComponent } from '@components/base/base-field-button/bas
   ]
 })
 export class TimeInputComponent implements ControlValueAccessor {
-  @Input() label: string = 'Time';
-  @Input() placeholder: string = 'Select time';
-  @Input() fieldClass: string = 'field-third-width';
-  @Input() disabled: boolean = false;
+  @Input() label = 'Time';
+  @Input() placeholder = 'Select time';
+  @Input() fieldClass = 'field-third-width';
+  @Input() disabled = false;
 
   @Output() timeChanged = new EventEmitter<string>();
 
-  value: string = '';
+  value = '';
   
-  private onChange = (value: string) => {};
+  private onChange = (_value: string) => {};
   private onTouched = () => {};
 
   setCurrentTime() {
@@ -64,18 +64,19 @@ export class TimeInputComponent implements ControlValueAccessor {
     this.timeChanged.emit('');
   }
 
-  onTimeChange(event: any) {
+  onTimeChange(event: unknown) {
     // Handle different event types from ngx-mat-timepicker
     let timeValue: string;
-    
-    if (event?.target?.value) {
-      timeValue = event.target.value;
+
+    const eventObj = event as { target?: { value?: string }; value?: string } | null | undefined;
+    if (eventObj?.target?.value) {
+      timeValue = eventObj.target.value;
     } else if (typeof event === 'string') {
       timeValue = event;
-    } else if (event && typeof event === 'object' && event.value) {
-      timeValue = event.value;
+    } else if (eventObj && typeof eventObj === 'object' && eventObj.value) {
+      timeValue = eventObj.value;
     } else {
-      timeValue = event || '';
+      timeValue = (event as string) || '';
     }
     
     this.value = timeValue;

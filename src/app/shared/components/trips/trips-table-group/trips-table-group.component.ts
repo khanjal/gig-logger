@@ -4,10 +4,10 @@ import { sort } from '@helpers/sort.helper';
 import { TripService } from '@services/sheets/trip.service';
 import { WeekdayService } from '@services/sheets/weekday.service';
 import { MatIcon } from '@angular/material/icon';
-import { NgFor, NgClass, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
-import type { ITripGroup } from '@interfaces/trip-group.interface';
+import type { ITripGroup } from '@interfaces/stats/trip-group.interface';
 
 @Component({
     selector: 'app-trips-table-group',
@@ -15,25 +15,23 @@ import type { ITripGroup } from '@interfaces/trip-group.interface';
     styleUrls: ['./trips-table-group.component.scss'],
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [MatIcon, NgFor, NgClass, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
+    imports: [MatIcon, NgClass, CurrencyPipe, DatePipe, TruncatePipe, NoSecondsPipe]
 })
 export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewInit {
-  @Input() title: string = "";
-  @Input() link: string = "";
-  @Input() days: number = 6;
+  private _tripService = inject(TripService);
+  private _weekdayService = inject(WeekdayService);
+  private cdr = inject(ChangeDetectorRef);
+
+  @Input() title = "";
+  @Input() link = "";
+  @Input() days = 6;
   
   displayedColumns: string[] = [];
   tripGroups: ITripGroup[] = [];
   @ViewChildren('tableContainer') tableContainers!: QueryList<ElementRef>;
   isScrollable: boolean[] = [];
-  prefers24Hour: boolean = false;
+  prefers24Hour = false;
   private injector = inject(Injector);
-
-  constructor(
-    private _tripService: TripService,
-    private _weekdayService: WeekdayService,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     // Avoid duplicate initial load; ngOnInit handles first render.
@@ -79,11 +77,11 @@ export class TripsTableGroupComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   async load() {
-    let sheetTrips = await this._tripService.getPreviousDays(this.days);
+    const sheetTrips = await this._tripService.getPreviousDays(this.days);
     sort(sheetTrips, '-id');
     
     // Get unique dates in trips and create groups
-    let dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
+    const dates: string[] = [... new Set(sheetTrips.map(trip => trip.date))];
 
     const groupedResults = await Promise.all(dates.map(async (date) => {
       const trips = sheetTrips.filter(x => x.date === date);

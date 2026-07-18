@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnDestroy, Output } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, Output, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
@@ -7,10 +7,10 @@ import { UnsavedDataService } from './unsaved-data.service';
 import { LoggerService } from './logger.service';
 import { GigWorkflowService } from './gig-workflow.service';
 import { SyncStatusService } from './sync-status.service';
-import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { AuthGoogleService } from './auth-google.service';
 
 const DEFAULT_INTERVAL = 60000; // 1 minute
@@ -19,11 +19,21 @@ const DEFAULT_INTERVAL = 60000; // 1 minute
   providedIn: 'root'
 })
 export class PollingService implements OnDestroy {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
+  private _snackBar = inject(MatSnackBar);
+  private _sheetService = inject(SpreadsheetService);
+  private _unsavedDataService = inject(UnsavedDataService);
+  private _gigWorkflowService = inject(GigWorkflowService);
+  private _syncStatusService = inject(SyncStatusService);
+  private _logger = inject(LoggerService);
+  protected authService = inject(AuthGoogleService);
+
+  @Output() parentReload = new EventEmitter<void>();
 
   private worker: Worker | null = null;
   private fallbackTimer: number | null = null;
-  private enabled = false;
+  private armed = false;      // user wants auto-save on
+  private enabled = false;    // timer actively ticking (armed AND unsaved data present)
+  private unsavedSub?: Subscription;
   private processing = false;
   private currentInterval = DEFAULT_INTERVAL;
   private lastPollTime = 0;
@@ -33,28 +43,20 @@ export class PollingService implements OnDestroy {
 
   pollingEnabled$ = this.enabledState.asObservable();
 
-  constructor(
-    private _snackBar: MatSnackBar,
-    private _sheetService: SpreadsheetService,
-    private _unsavedDataService: UnsavedDataService,
-    private _gigWorkflowService: GigWorkflowService,
-    private _syncStatusService: SyncStatusService,
-    private _logger: LoggerService,
-    protected authService: AuthGoogleService
-  ) {
+  constructor() {
     this.initializeWorker();
     this.setupVisibilityChangeListener();
   }
 
   // Use safe logging in case tests provide a partial/mock logger without all methods
-  private safeLog(level: 'info' | 'warn' | 'error' | 'debug', ...args: any[]) {
+  private safeLog(level: 'info' | 'warn' | 'error' | 'debug', ...args: unknown[]) {
     try {
-      const fn = (this._logger as any)?.[level];
+      const fn = this._logger[level];
       if (typeof fn === 'function') {
-        fn.apply(this._logger, args);
+        fn.apply(this._logger, args as [message: string, ...optionalParams: unknown[]]);
         return;
       }
-    } catch (e) {
+    } catch {
       // fall through to console fallback
     }
 
@@ -133,7 +135,11 @@ export class PollingService implements OnDestroy {
   }
 
   private resumePolling(initialDelay: number) {
-    this.stopPolling();
+    // Only relevant while armed and there is still work queued.
+    if (!this.armed) {
+      return;
+    }
+    this.deactivate();
     this.enabled = true;
     this.enabledState.next(true);
 
@@ -168,46 +174,92 @@ export class PollingService implements OnDestroy {
     this.startPolling(this.currentInterval);
   }
 
+  /**
+   * Arms auto-save. The save timer itself only runs while there is unsaved
+   * data: we subscribe to `unsavedData$` (which replays its latest value) and
+   * activate/deactivate the timer as the dirty state changes. This keeps the
+   * app idle — no timer, no repeated IndexedDB scans — when nothing is pending.
+   */
   async startPolling(interval: number = DEFAULT_INTERVAL) {
     // Guard against multiple starts
-    if (this.enabled) {
+    if (this.armed) {
       this.safeLog('warn', 'Polling already enabled, skipping start');
       return;
     }
 
-    this.enabled = true;
+    this.armed = true;
     this.currentInterval = interval;
     this.lastPollTime = Date.now();
-    this.enabledState.next(true);
     this.safeLog('info', `Starting polling with interval: ${interval}ms`);
 
-    if (this.worker) {
-      this.worker.postMessage({
-        type: 'START_POLLING',
-        data: { interval }
-      });
-      this.startCountdown(interval);
-    } else {
-      // Fallback to setInterval
-      this.fallbackTimer = window.setInterval(() => {
-        if (this.enabled && !this.processing) {
-          this.saveData();
-        }
-      }, interval);
-      this.startCountdown(interval);
-    }
+    this.unsavedSub?.unsubscribe();
+    this.unsavedSub = this._unsavedDataService.unsavedData$
+      .subscribe(hasUnsaved => this.onDirtyChange(hasUnsaved));
   }
 
   stopPolling() {
     // Guard against multiple stops
-    if (!this.enabled) {
+    if (!this.armed && !this.enabled) {
       this.safeLog('warn', 'Polling already disabled, skipping stop');
+      return;
+    }
+
+    this.armed = false;
+    this.unsavedSub?.unsubscribe();
+    this.unsavedSub = undefined;
+    this.safeLog('info', 'Stopping polling');
+
+    this.deactivate();
+  }
+
+  /** Reacts to unsaved-data transitions while armed: run the timer only when dirty. */
+  private onDirtyChange(hasUnsaved: boolean) {
+    if (!this.armed) {
+      return;
+    }
+    if (hasUnsaved) {
+      this.activate();
+    } else {
+      this.deactivate();
+    }
+  }
+
+  /** Starts the worker/fallback timer and countdown (no-op if already running). */
+  private activate() {
+    if (this.enabled) {
+      return;
+    }
+
+    this.enabled = true;
+    this.lastPollTime = Date.now();
+    this.enabledState.next(true);
+    this.safeLog('info', 'Unsaved changes detected, activating auto-save timer');
+
+    if (this.worker) {
+      this.worker.postMessage({
+        type: 'START_POLLING',
+        data: { interval: this.currentInterval }
+      });
+    } else {
+      this.fallbackTimer = window.setInterval(() => {
+        if (this.enabled && !this.processing) {
+          this.saveData();
+        }
+      }, this.currentInterval);
+    }
+
+    this.startCountdown(this.currentInterval);
+  }
+
+  /** Stops the worker/fallback timer and countdown (no-op if already stopped). */
+  private deactivate() {
+    if (!this.enabled) {
       return;
     }
 
     this.enabled = false;
     this.enabledState.next(false);
-    this.safeLog('info', 'Stopping polling');
+    this.safeLog('info', 'No unsaved changes, pausing auto-save timer');
 
     if (this.worker) {
       this.worker.postMessage({ type: 'STOP_POLLING' });
@@ -262,7 +314,7 @@ export class PollingService implements OnDestroy {
               this.lastSnackbarTime = now;
               openSnackbar(this._snackBar, SNACKBAR_MESSAGES.AUTO_SAVE_SKIPPED_NOT_AUTHENTICATED);
             }
-          } catch (e) {
+          } catch {
             // swallow snackbar errors to avoid breaking autosave
           }
           this._syncStatusService.failSync('Not authenticated');
@@ -283,7 +335,7 @@ export class PollingService implements OnDestroy {
       if (unsavedShifts.length > 0) {
         try {
           await this._gigWorkflowService.calculateShiftTotals(unsavedShifts);
-        } catch (e) {
+        } catch {
           this.safeLog('warn', 'Pre-save shift calculation failed; proceeding with save');
         }
       }
@@ -365,7 +417,14 @@ export class PollingService implements OnDestroy {
   }
 
   // Public methods
+
+  /** True when auto-save is armed (regardless of whether the timer is currently ticking). */
   isPollingEnabled(): boolean {
+    return this.armed;
+  }
+
+  /** True when the save timer is actively running (armed AND unsaved data present). */
+  isPollingActive(): boolean {
     return this.enabled;
   }
 
@@ -381,7 +440,9 @@ export class PollingService implements OnDestroy {
 
   ngOnDestroy() {
     this.stopPolling();
-    
+    this.unsavedSub?.unsubscribe();
+    this.unsavedSub = undefined;
+
     if (this.visibilityChangeListener) {
       document.removeEventListener('visibilitychange', this.visibilityChangeListener);
       this.visibilityChangeListener = null;

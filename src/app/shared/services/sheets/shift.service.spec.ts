@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ShiftService } from './shift.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 
 describe('ShiftService', () => {

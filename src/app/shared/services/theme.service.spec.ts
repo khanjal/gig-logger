@@ -22,7 +22,7 @@ describe('ThemeService', () => {
   };
 
   const mockMatchMedia = (isDark: boolean): MockMediaQuery => {
-    const listeners: Array<(event: MediaQueryListEvent) => void> = [];
+    const listeners: ((event: MediaQueryListEvent) => void)[] = [];
     const mediaQuery: MockMediaQuery = {
       matches: isDark,
       media: '(prefers-color-scheme: dark)',

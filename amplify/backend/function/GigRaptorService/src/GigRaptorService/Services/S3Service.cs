@@ -13,12 +13,12 @@ public interface IS3Service
     /// Uploads a SheetEntity to S3 and returns the URL
     /// </summary>
     Task<string> UploadSheetEntityToS3Async(string jsonContent, string sheetId, string requestType);
-    
+
     /// <summary>
     /// Gets the byte size of a SheetEntity
     /// </summary>
     long GetSheetEntitySize(string jsonContent);
-    
+
     /// <summary>
     /// Checks if a SheetEntity exceeds the size threshold
     /// </summary>
@@ -31,22 +31,22 @@ public interface IS3Service
 public class LazyS3Service : IS3Service
 {
     private readonly Lazy<S3Service> _lazyS3Service;
-    
+
     public LazyS3Service(IConfiguration configuration)
     {
         _lazyS3Service = new Lazy<S3Service>(() => new S3Service(configuration), LazyThreadSafetyMode.ExecutionAndPublication);
     }
-    
+
     public Task<string> UploadSheetEntityToS3Async(string jsonContent, string sheetId, string requestType)
     {
         return _lazyS3Service.Value.UploadSheetEntityToS3Async(jsonContent, sheetId, requestType);
     }
-    
+
     public long GetSheetEntitySize(string jsonContent)
     {
         return _lazyS3Service.Value.GetSheetEntitySize(jsonContent);
     }
-    
+
     public bool ExceedsSizeThreshold(string jsonContent)
     {
         return _lazyS3Service.Value.ExceedsSizeThreshold(jsonContent);
@@ -68,9 +68,9 @@ public class S3Service : IS3Service
     {
         _configuration = configuration;
         _logger = logger;
-        
+
         // Get bucket name from configuration, throw if not found
-        _bucketName = _configuration["AWS:S3:BucketName"] 
+        _bucketName = _configuration["AWS:S3:BucketName"]
             ?? throw new InvalidOperationException("S3 bucket name not configured. Please set AWS:S3:BucketName in configuration.");
 
         // Get size threshold from configuration with default of 5MB
@@ -78,17 +78,17 @@ public class S3Service : IS3Service
         {
             configuredThreshold = DefaultSizeThresholdInMB;
         }
-        
+
         // Convert MB to bytes
         _sizeThresholdInBytes = configuredThreshold * 1024 * 1024;
-        
+
         // Configure S3 client with explicit region
         var s3Config = new AmazonS3Config
         {
             RegionEndpoint = Amazon.RegionEndpoint.USEast1,
             ForcePathStyle = true
         };
-        
+
         // Initialize S3 client
         _s3Client = new AmazonS3Client(s3Config);
     }
@@ -102,7 +102,7 @@ public class S3Service : IS3Service
         {
             // Create a unique key for the object
             string key = $"sheets/{sheetId}/{requestType}/{Guid.NewGuid()}.json";
-            
+
             // Upload to S3
             var putRequest = new PutObjectRequest
             {
@@ -111,9 +111,9 @@ public class S3Service : IS3Service
                 ContentBody = jsonContent,
                 ContentType = "application/json"
             };
-            
+
             await _s3Client.PutObjectAsync(putRequest);
-            
+
             // Generate a presigned URL that's valid for 10 minutes
             var urlRequest = new GetPreSignedUrlRequest
             {
@@ -121,7 +121,7 @@ public class S3Service : IS3Service
                 Key = key,
                 Expires = DateTime.UtcNow.AddMinutes(10)
             };
-            
+
             return _s3Client.GetPreSignedURL(urlRequest);
         }
         catch (AmazonS3Exception ex)
@@ -143,7 +143,7 @@ public class S3Service : IS3Service
     {
         return Encoding.UTF8.GetByteCount(jsonContent);
     }
-    
+
     /// <summary>
     /// Checks if a SheetEntity exceeds the size threshold
     /// </summary>

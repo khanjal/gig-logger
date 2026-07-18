@@ -7,7 +7,7 @@ import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';
 import { updateAction } from '@utils/action.utils';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +20,7 @@ export class TripService extends SyncableCrudService<ITrip> {
     trips$ = from(liveQuery(() => spreadsheetDB.trips.toArray()));
     
     public async addNext(trip: ITrip) {
-        let nextTrip = {} as ITrip;
+        const nextTrip = {} as ITrip;
         updateAction(nextTrip, ActionEnum.Add);
         nextTrip.rowId = await this.getMaxRowId() + 1;
         nextTrip.key = trip.key;
@@ -52,7 +52,7 @@ export class TripService extends SyncableCrudService<ITrip> {
     }
 
     async clone(trip: ITrip) {
-        let cloneTrip = trip;
+        const cloneTrip = trip;
         delete cloneTrip.id;
         cloneTrip.rowId = await this.getMaxRowId() + 1;
         updateAction(cloneTrip, ActionEnum.Add);
@@ -146,20 +146,20 @@ export class TripService extends SyncableCrudService<ITrip> {
     }
 
     public async getBetweenDates(startDate: string, endDate: string): Promise<ITrip[]> {
-        let trips = await spreadsheetDB.trips.where("date").between(startDate, endDate, true, true).toArray();
+        const trips = await spreadsheetDB.trips.where("date").between(startDate, endDate, true, true).toArray();
 
         return trips;
     }
 
     public async getByDate(date: string): Promise<ITrip[]> {
-        let trips = await spreadsheetDB.trips.where("date").equals(date).toArray();
+        const trips = await spreadsheetDB.trips.where("date").equals(date).toArray();
 
         return trips;
     }
 
     public async getPreviousDays(days: number): Promise<ITrip[]> {
-        let date = DateHelper.toISO(DateHelper.getDateFromDays(days));
-        let trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
+        const date = DateHelper.toISO(DateHelper.getDateFromDays(days));
+        const trips = await spreadsheetDB.trips.where("date").aboveOrEqual(date).toArray();
 
         return trips;
     }

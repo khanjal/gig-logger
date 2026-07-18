@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { ISheet } from "@interfaces/sheet.interface";
+import { Injectable, inject } from "@angular/core";
+import { ISheet } from "@interfaces/sheets/sheet.interface";
 import { AddressService } from "../sheets/address.service";
 import { DailyService } from "../sheets/daily.service";
 import { MonthlyService } from "../sheets/monthly.service";
@@ -22,30 +22,29 @@ import { ExpensesService } from "@services/sheets/expenses.service";
     providedIn: 'root'
 })
 export class DataLoaderService {
+    private _addressService = inject(AddressService);
+    private _dailyService = inject(DailyService);
+    private _deliveryService = inject(DeliveryService);
+    private _expenseService = inject(ExpensesService);
+    private _monthlyService = inject(MonthlyService);
+    private _nameService = inject(NameService);
+    private _placeService = inject(PlaceService);
+    private _regionService = inject(RegionService);
+    private _serviceService = inject(ServiceService);
+    private _shiftService = inject(ShiftService);
+    private _tripService = inject(TripService);
+    private _typeService = inject(TypeService);
+    private _weekdayService = inject(WeekdayService);
+    private _weeklyService = inject(WeeklyService);
+    private _yearlyService = inject(YearlyService);
+    private _dataLinking = inject(DataLinkingService);
+    private _logger = inject(LoggerService);
 
-    constructor(
-        private _addressService: AddressService,
-        private _dailyService: DailyService,
-        private _deliveryService: DeliveryService,
-        private _expenseService: ExpensesService,
-        private _monthlyService: MonthlyService,
-        private _nameService: NameService,
-        private _placeService: PlaceService,
-        private _regionService: RegionService,
-        private _serviceService: ServiceService,
-        private _shiftService: ShiftService,
-        private _tripService: TripService,
-        private _typeService: TypeService,
-        private _weekdayService: WeekdayService,
-        private _weeklyService: WeeklyService,
-        private _yearlyService: YearlyService,
-        private _dataLinking: DataLinkingService,
-        private _logger: LoggerService
-    ) {}
 
-    private handleError(operation: string, error: any): void {
+    private handleError(operation: string, error: unknown): void {
+        const err = error as { message?: string } | null | undefined;
         this._logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
+            message: err?.message || 'Unknown error',
             timestamp: new Date().toISOString(),
             operation
         });

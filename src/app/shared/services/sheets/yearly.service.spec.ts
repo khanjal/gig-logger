@@ -1,6 +1,6 @@
 import { YearlyService } from './yearly.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IYearly } from '@interfaces/yearly.interface';
+import { IYearly } from '@interfaces/sheets/yearly.interface';
 
 const makeYearly = (overrides: Partial<IYearly> = {}): IYearly => ({
   rowId: overrides.rowId ?? 1,
@@ -36,8 +36,8 @@ describe('YearlyService', () => {
   it('query() uses equals().toArray()', async () => {
     const items = [makeYearly({ year: 2025 })];
     spyOn(spreadsheetDB.yearly, 'where').and.returnValue({
-      equals: (_value: any) => ({ toArray: () => Promise.resolve(items) })
-    } as any);
+      equals: (_value: string | number) => ({ toArray: () => Promise.resolve(items) })
+    } as unknown as ReturnType<typeof spreadsheetDB.yearly.where>);
     const result = await service.query('year', 2025);
     expect(result).toEqual(items);
   });

@@ -1,31 +1,30 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-diagnostic-group',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatRadioModule, MatButtonModule, MatIconModule, MatTooltipModule, BaseFabButtonComponent],
+  imports: [FormsModule, MatRadioModule, MatButtonModule, MatIconModule, MatTooltipModule, BaseFabButtonComponent],
   templateUrl: './diagnostic-group.component.html',
   styleUrl: './diagnostic-group.component.scss'
 })
 export class DiagnosticGroupComponent {
-  @Input() group: any[] = [];
-  @Input() groupIndex: number = 0;
+  @Input() group: IDiagnosticRecord[] = [];
+  @Input() groupIndex = 0;
   @Input() itemType: DiagnosticEntityType = 'trip';
-  @Input() selectedValue: any;
+  @Input() selectedValue: IDiagnosticRecord | undefined;
   @Input() selectedShiftToDelete: number | undefined;
-  
-  @Output() selectedValueChange = new EventEmitter<any>();
+
+  @Output() selectedValueChange = new EventEmitter<IDiagnosticRecord>();
   @Output() selectedShiftToDeleteChange = new EventEmitter<number>();
-  @Output() merge = new EventEmitter<{ group: any[], value: any, itemType: DiagnosticEntityType }>();
-  @Output() deleteShift = new EventEmitter<{ group: any[], shiftId: number, groupIndex: number }>();
+  @Output() merge = new EventEmitter<{ group: IDiagnosticRecord[], value: IDiagnosticRecord, itemType: DiagnosticEntityType }>();
+  @Output() deleteShift = new EventEmitter<{ group: IDiagnosticRecord[], shiftId: number, groupIndex: number }>();
 
   get canMerge(): boolean {
     return ['place', 'name', 'address', 'service', 'type', 'region'].includes(this.itemType);
@@ -35,7 +34,7 @@ export class DiagnosticGroupComponent {
     return this.itemType === 'shift';
   }
 
-  hasMarkedForDelete(group: any[]): boolean {
+  hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
     return group.some(item => item.markedForDelete);
   }
 
@@ -51,7 +50,7 @@ export class DiagnosticGroupComponent {
     }
   }
 
-  onValueChange(value: any): void {
+  onValueChange(value: IDiagnosticRecord): void {
     this.selectedValueChange.emit(value);
   }
 

@@ -1,16 +1,14 @@
 import { Component, Input, forwardRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepicker, MatDatepickerModule, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatDatepickerToggle } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-base-datepicker',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
@@ -21,7 +19,7 @@ import { MatDatepickerToggle } from '@angular/material/datepicker';
     MatDatepickerModule,
     MatDatepicker,
     MatDatepickerToggle
-  ],
+],
   templateUrl: './base-datepicker.component.html',
   styleUrl: './base-datepicker.component.scss',
   providers: [
@@ -68,7 +66,7 @@ export class BaseDatepickerComponent implements ControlValueAccessor {
   @Input() error?: string;
 
   /** Tailwind width class (e.g., 'w-full', 'w-1/2', 'w-[250px]') */
-  @Input() widthClass: string = 'w-full';
+  @Input() widthClass = 'w-full';
 
   /** Disabled state */
   @Input() disabled = false;
@@ -99,7 +97,7 @@ export class BaseDatepickerComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  onDateChange(event: any): void {
+  onDateChange(event: MatDatepickerInputEvent<Date>): void {
     this.value = event.value;
     this.onChange(this.value);
   }

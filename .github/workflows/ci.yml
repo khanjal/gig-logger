@@ -1,34 +1,44 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
 
 jobs:
-  build-and-lint:
-    name: Build and Lint
+  build:
+    name: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Ensure npm v10 (compatible with Node 20)
-        run: npm install -g npm@10
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-
-      - run: npm ci --legacy-peer-deps
+      - uses: ./.github/actions/setup-node-env
       - name: Zoneless runtime guard
         run: npm run check:zoneless-runtime
       - name: Build
         run: npm run build --if-present
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-env
       - name: Lint
         run: npm run lint --if-present
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-env
+      - name: Run tests
+        run: npm test -- --watch=false --code-coverage --browsers=ChromeHeadless
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/raptor-gig/lcov.info
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false

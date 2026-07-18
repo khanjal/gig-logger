@@ -7,8 +7,10 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
   providedIn: 'root'
 })
 export class AuthGuardService {
+    private authService = inject(AuthGoogleService);
+    private router = inject(Router);
+    private _sheetService = inject(SpreadsheetService);
 
-    constructor(private authService: AuthGoogleService, private router: Router, private _sheetService: SpreadsheetService) {}
 
     /**
      * Route guard flow:
@@ -30,7 +32,7 @@ export class AuthGuardService {
             if (hasLocal) {
                 return true;
             }
-        } catch (e) {
+        } catch {
             // If the spreadsheet service fails, fall back to redirecting to setup
             this.router.navigate(['setup']);
             return false;
@@ -46,6 +48,6 @@ export class AuthGuardService {
     }
 }
 
-export const canActivateAuth: CanActivateFn = async (route, state) => {
+export const canActivateAuth: CanActivateFn = async () => {
     return await inject(AuthGuardService).canActivate();
 };

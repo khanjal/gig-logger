@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { NameService } from './name.service';
-import { IName } from '@interfaces/name.interface';
+import { IName } from '@interfaces/entities/name.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('NameService', () => {
@@ -46,7 +46,7 @@ describe('NameService', () => {
       startsWithAnyOfIgnoreCase: jasmine.createSpy('startsWithAnyOfIgnoreCase').and.returnValue({
         toArray: jasmine.createSpy('toArray').and.resolveTo([])
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.names.where>);
   });
 
   it('should be created', () => {
@@ -72,7 +72,7 @@ describe('NameService', () => {
       equals: jasmine.createSpy('equals').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(name)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.names.where>);
 
     const result = await service.get(5);
 
@@ -85,7 +85,7 @@ describe('NameService', () => {
       anyOfIgnoreCase: jasmine.createSpy('anyOfIgnoreCase').and.returnValue({
         first: jasmine.createSpy('first').and.resolveTo(name)
       })
-    } as any);
+    } as unknown as ReturnType<typeof spreadsheetDB.names.where>);
 
     const result = await service.find('name', 'John Doe');
 

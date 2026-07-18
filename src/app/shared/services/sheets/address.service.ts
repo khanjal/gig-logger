@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import type { IAddress } from '@interfaces/address.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
 import { Injectable } from '@angular/core';
 
@@ -15,7 +15,7 @@ export class AddressService extends GenericCrudService<IAddress> {
     addresses$ = liveQuery(() => spreadsheetDB.addresses.toArray());
 
     public async deleteUnsaved() {
-        let addresses = await this.getUnsaved();
+        const addresses = await this.getUnsaved();
         addresses.forEach(async address => {
             await this.delete(address.id!);
         });

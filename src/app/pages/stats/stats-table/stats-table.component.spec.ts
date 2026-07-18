@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SimpleChange } from '@angular/core';
 
 import { StatsTableComponent } from './stats-table.component';
+import { IStatItem } from '@interfaces/stats/stat-item.interface';
 
 describe('ServiceStatsComponent', () => {
   let component: StatsTableComponent;
@@ -26,6 +28,7 @@ describe('ServiceStatsComponent', () => {
     component.items = [
       {
         name: 'A',
+        time: '',
         trips: 2,
         distance: 10,
         pay: 20,
@@ -36,9 +39,10 @@ describe('ServiceStatsComponent', () => {
         amountPerTime: 12,
         amountPerTrip: 12,
         amountPerDistance: 2.4,
-      } as any,
+      } as IStatItem,
       {
         name: 'B',
+        time: '',
         trips: 3,
         distance: 8,
         pay: 15,
@@ -49,10 +53,10 @@ describe('ServiceStatsComponent', () => {
         amountPerTime: 8,
         amountPerTrip: 0,
         amountPerDistance: 2.125,
-      } as any
+      } as IStatItem
     ];
 
-    component.ngOnChanges({ items: {} as any, name: {} as any });
+    component.ngOnChanges({ items: {} as SimpleChange, name: {} as SimpleChange });
 
     expect(component.lowerCaseName).toBe('services');
     expect(component.totals.trips).toBe(5);

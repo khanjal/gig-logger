@@ -23,7 +23,7 @@ public class MetricsService : IMetricsService
         {
             // Sanitize metric name for CloudWatch requirements
             var sanitizedName = SanitizeMetricName(metricName);
-            
+
             var request = new PutMetricDataRequest
             {
                 Namespace = NAMESPACE,
@@ -91,7 +91,7 @@ public class MetricsService : IMetricsService
         {
             // Hash userId for privacy
             var hashedUserId = HashUserId(userId);
-            
+
             var tasks = new List<Task>
             {
                 TrackCustomMetricAsync($"User.{action}", 1),
@@ -99,7 +99,7 @@ public class MetricsService : IMetricsService
             };
 
             await Task.WhenAll(tasks);
-            
+
             _logger.LogInformation("User activity: {HashedUserId} performed {Action}", hashedUserId, action);
         }
         catch (Exception ex)
@@ -122,7 +122,7 @@ public class MetricsService : IMetricsService
     public async Task TrackRateLimitHitAsync(string sheetId)
     {
         var hashedSheetId = HashUserId(sheetId); // Reuse hashing for sheet IDs
-        
+
         await TrackCustomMetricAsync("RateLimit.Hit", 1);
         _logger.LogWarning("Rate limit hit for sheet: {HashedSheetId}", hashedSheetId);
     }
@@ -165,7 +165,7 @@ public class MetricsService : IMetricsService
     private string SanitizeMetricName(string name)
     {
         if (string.IsNullOrEmpty(name)) return "Unknown";
-        
+
         // CloudWatch metric names: alphanumeric, periods, hyphens, underscores, forward slashes, hash symbols, colons
         // But we'll keep it simple: replace problematic characters
         return name.Replace(" ", "_")

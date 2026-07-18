@@ -92,14 +92,14 @@ public class TokenEncryptionHelperTests
         // Arrange
         var token = "test-token";
         var encrypted = TokenEncryptionHelper.Encrypt(token, _testKey);
-        
+
         // Generate a different key
         var wrongKey = new byte[32];
         RandomNumberGenerator.Fill(wrongKey);
         var wrongKeyBase64 = Convert.ToBase64String(wrongKey);
 
         // Act & Assert
-        Assert.ThrowsAny<Exception>(() => 
+        Assert.ThrowsAny<Exception>(() =>
             TokenEncryptionHelper.Decrypt(encrypted, wrongKeyBase64));
     }
 
@@ -110,7 +110,7 @@ public class TokenEncryptionHelperTests
         var invalidEncrypted = "not-valid-base64!@#$";
 
         // Act & Assert
-        Assert.ThrowsAny<Exception>(() => 
+        Assert.ThrowsAny<Exception>(() =>
             TokenEncryptionHelper.Decrypt(invalidEncrypted, _testKey));
     }
 }

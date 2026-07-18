@@ -5,16 +5,15 @@ import { TripService } from '../sheets/trip.service';
 import { WeekdayService } from '../sheets/weekday.service';
 import { LoggerService } from '../logger.service';
 import { DateHelper } from '@helpers/date.helper';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IWeekday } from '@interfaces/weekday.interface';
+import { IShift } from '@interfaces/entities/shift.interface';
+import { ITrip } from '@interfaces/entities/trip.interface';
+import { IWeekday } from '@interfaces/sheets/weekday.interface';
 
 describe('GigCalculatorService', () => {
   let service: GigCalculatorService;
   let shiftService: jasmine.SpyObj<ShiftService>;
   let tripService: jasmine.SpyObj<TripService>;
   let weekdayService: jasmine.SpyObj<WeekdayService>;
-  let loggerService: jasmine.SpyObj<LoggerService>;
 
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
     id: overrides.id ?? 1,
@@ -105,7 +104,6 @@ describe('GigCalculatorService', () => {
     shiftService = TestBed.inject(ShiftService) as jasmine.SpyObj<ShiftService>;
     tripService = TestBed.inject(TripService) as jasmine.SpyObj<TripService>;
     weekdayService = TestBed.inject(WeekdayService) as jasmine.SpyObj<WeekdayService>;
-    loggerService = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
   });
 
   it('should be created', () => {
@@ -118,8 +116,8 @@ describe('GigCalculatorService', () => {
       makeTrip({ pay: 15, tip: 3 }),
     ];
 
-    const totalPay = (service as any).sumTripField(trips, 'pay');
-    const totalTip = (service as any).sumTripField(trips, 'tip');
+    const totalPay = (service as unknown as { sumTripField(trips: ITrip[], field: keyof ITrip): number }).sumTripField(trips, 'pay');
+    const totalTip = (service as unknown as { sumTripField(trips: ITrip[], field: keyof ITrip): number }).sumTripField(trips, 'tip');
 
     expect(totalPay).toBe(25);
     expect(totalTip).toBe(5);

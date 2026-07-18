@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import type { ISyncMessage, ISyncState, SyncOperation, SyncStatus } from '@interfaces/sync-status.interface';
+import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync/sync-status.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -20,14 +20,12 @@ export class SyncStatusService implements OnDestroy {
   private syncStateSubject = new BehaviorSubject<ISyncState>(this.DEFAULT_STATE);
   private messagesSubject = new BehaviorSubject<ISyncMessage[]>([]);
   private lastSuccessfulSyncSubject = new BehaviorSubject<Date | null>(null);
-  private countdownTimer: any = null;
+  private countdownTimer: ReturnType<typeof setInterval> | null = null;
 
   // Public observables
   public readonly syncState$: Observable<ISyncState> = this.syncStateSubject.asObservable();
   public readonly messages$: Observable<ISyncMessage[]> = this.messagesSubject.asObservable();
   public readonly lastSuccessfulSync$: Observable<Date | null> = this.lastSuccessfulSyncSubject.asObservable();
-
-  constructor() {}
 
   ngOnDestroy(): void {
     this.stopCountdown();
@@ -36,7 +34,7 @@ export class SyncStatusService implements OnDestroy {
   /**
    * Start a new sync operation
    */
-  startSync(operation: SyncOperation, totalItems: number = 0): void {
+  startSync(operation: SyncOperation, totalItems = 0): void {
     this.syncStateSubject.next({
       status: 'syncing',
       operation,

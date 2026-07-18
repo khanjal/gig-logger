@@ -4,7 +4,7 @@ import { LoggerService } from './logger.service';
 import { MockLocationService } from './mock-location.service';
 import { ServerGooglePlacesService } from './server-google-places.service';
 
-import type { IAutocompleteResult, IPlaceDetails } from '@interfaces/google-places.interface';
+import type { IAutocompleteResult, IPlaceDetails } from '@interfaces/external/google-places.interface';
 
 describe('ServerGooglePlacesService', () => {
   let service: ServerGooglePlacesService;
@@ -75,7 +75,8 @@ describe('ServerGooglePlacesService', () => {
       ]
     };
     // Seed cache to avoid HTTP
-    (service as any).placeDetailsCache.set('pid', { details, timestamp: Date.now() });
+    (service as unknown as { placeDetailsCache: Map<string, { details: IPlaceDetails; timestamp: number }> })
+      .placeDetailsCache.set('pid', { details, timestamp: Date.now() });
     const full = await service.getFullAddressWithZip('pid');
     expect(full).toContain('94105');
   });
@@ -100,8 +101,8 @@ describe('ServerGooglePlacesService', () => {
 
   it('getUserLocation caches location on success', async () => {
     const mockGeo = {
-      getCurrentPosition: (success: any, _error: any) => {
-        success({ coords: { latitude: 1, longitude: 2 } });
+      getCurrentPosition: (success: PositionCallback, _error?: PositionErrorCallback) => {
+        success({ coords: { latitude: 1, longitude: 2 } } as GeolocationPosition);
       }
     } as Geolocation;
     const originalGeo = navigator.geolocation;
@@ -133,7 +134,7 @@ describe('ServerGooglePlacesService', () => {
   });
 
   it('checkLocationPermission returns states based on Permissions API', async () => {
-    const originalPermissions = (navigator as any).permissions;
+    const originalPermissions = (navigator as unknown as { permissions: unknown }).permissions;
     Object.defineProperty(navigator, 'permissions', { value: { query: async () => ({ state: 'granted' }) }, configurable: true });
     expect(await service.checkLocationPermission()).toBe('granted');
 
@@ -146,12 +147,13 @@ describe('ServerGooglePlacesService', () => {
   });
 
   it('canGetUserLocation true when cached location fresh', async () => {
-    (service as any).cachedLocation = { lat: 1, lng: 2, timestamp: Date.now() };
+    (service as unknown as { cachedLocation: { lat: number; lng: number; timestamp: number } | null })
+      .cachedLocation = { lat: 1, lng: 2, timestamp: Date.now() };
     expect(await service.canGetUserLocation()).toBeTrue();
   });
 
   it('canGetUserLocation respects permission states', async () => {
-    const originalPermissions = (navigator as any).permissions;
+    const originalPermissions = (navigator as unknown as { permissions: unknown }).permissions;
     Object.defineProperty(navigator, 'permissions', { value: { query: async () => ({ state: 'denied' }) }, configurable: true });
     expect(await service.canGetUserLocation()).toBeFalse();
 
@@ -165,7 +167,7 @@ describe('ServerGooglePlacesService', () => {
 
   it('getLocationBasedAutocomplete returns results when location is available', async () => {
     spyOn(service, 'canGetUserLocation').and.returnValue(Promise.resolve(true));
-    spyOn(service, 'getUserLocation').and.returnValue(Promise.resolve({ lat: 1, lng: 2 } as any));
+    spyOn(service, 'getUserLocation').and.returnValue(Promise.resolve({ lat: 1, lng: 2 }));
     spyOn(service, 'getAutocomplete').and.returnValue(Promise.resolve([{ place: 'Main St', address: '123 Main St' } as IAutocompleteResult]));
 
     const result = await service.getLocationBasedAutocomplete('Main', 'address', 'US');

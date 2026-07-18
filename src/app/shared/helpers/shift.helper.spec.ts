@@ -1,6 +1,6 @@
 import { ShiftHelper } from './shift.helper';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { DateHelper } from './date.helper';
 import { ActionEnum } from '@enums/action.enum';
 

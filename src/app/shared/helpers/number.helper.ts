@@ -5,7 +5,7 @@ export class NumberHelper {
      * @returns The numeric value or NaN if not matched
      */
     static convertWordToNumber(word: string): number {
-        const wordMap: { [key: string]: string } = {
+        const wordMap: Record<string, string> = {
             'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
             'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9',
             'ten': '10', 'eleven': '11', 'twelve': '12', 'thirteen': '13', 'fourteen': '14',
@@ -23,17 +23,17 @@ export class NumberHelper {
         return NaN;
     }
     
-    static getNumberFromString(numberString: string = ""): number {
-        let number = Number(numberString.replace(/[^0-9.-]+/g,""));
+    static getNumberFromString(numberString = ""): number {
+        const number = Number(numberString.replace(/[^0-9.-]+/g,""));
         return isNaN(number) ? 0 : number;
     }
 
-    static getDataSize(bytes: number = 0, decimals = 2) {
+    static getDataSize(bytes = 0, decimals = 2) {
         if (!bytes) {
             return "0B";
         }
 
-        let units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+        const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
         let i = 0
         
@@ -50,7 +50,7 @@ export class NumberHelper {
      * @param value The form field value that could be a number, empty string, null, or undefined
      * @returns null if the value is empty/null/undefined, otherwise returns the original value
      */
-    static toNullableNumber(value: any): any {
+    static toNullableNumber<T>(value: T): T | null {
         return (value === '' || value === null || value === undefined) ? null : value;
     }
 
@@ -59,7 +59,7 @@ export class NumberHelper {
      * @param value The value to convert
      * @returns A number, or 0 if conversion fails
      */
-    static toNumber(value: any): number {
+    static toNumber(value: unknown): number {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
     }
@@ -93,7 +93,7 @@ export class NumberHelper {
     /**
      * Formats a number with locale grouping and two-decimal rounding.
      */
-    static formatNumber(value: number, locale: string = 'en-US'): string {
+    static formatNumber(value: number, locale = 'en-US'): string {
         const rounded = this.roundToTwo(value);
         return new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(rounded);
     }

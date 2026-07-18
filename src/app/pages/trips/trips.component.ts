@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild, signal, computed } from '@angular/core';
-import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, ViewChild, signal, computed, inject } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 
 // Angular Material + Router
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,9 +44,9 @@ import { firstValueFrom, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 // Type-only imports
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 
 @Component({
@@ -54,10 +54,24 @@ import type { ITrip } from '@interfaces/trip.interface';
     templateUrl: './trips.component.html',
     styleUrls: ['./trips.component.scss'],
     standalone: true,
-    imports: [CommonModule, CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, NgIf, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseRectButtonComponent]
+    imports: [CurrentAverageComponent, TripFormComponent, MatIcon, MatSlideToggle, TripsQuickViewComponent, TripsTableGroupComponent, TruncatePipe, BackToTopComponent, MatDialogModule, BaseRectButtonComponent]
 })
 
 export class TripComponent implements OnInit, OnDestroy {
+  dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
+  private _sheetService = inject(SpreadsheetService);
+  private _tripService = inject(TripService);
+  private _shiftService = inject(ShiftService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private _viewportScroller = inject(ViewportScroller);
+  private _pollingService = inject(PollingService);
+  private _uiPreferences = inject(UiPreferencesService);
+  private logger = inject(LoggerService);
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router);
+  protected authService = inject(AuthGoogleService);
+
   @ViewChild(TripFormComponent) tripForm:TripFormComponent | undefined;
   @ViewChild(TripsTableGroupComponent) tripsTable:TripsTableGroupComponent | undefined;
 
@@ -85,24 +99,9 @@ export class TripComponent implements OnInit, OnDestroy {
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
 
-  trackByTrip(index: number, trip: any): any {
+  trackByTrip(index: number, trip: ITrip): string | number {
     return trip?.rowId ?? trip?.key ?? index;
   }
-  constructor(
-      public dialog: MatDialog,
-      private _snackBar: MatSnackBar,
-      private _sheetService: SpreadsheetService,
-      private _tripService: TripService,
-      private _shiftService: ShiftService,
-      private unsavedDataService: UnsavedDataService,
-      private _viewportScroller: ViewportScroller,
-      private _pollingService: PollingService,
-      private _uiPreferences: UiPreferencesService,
-      private logger: LoggerService,
-      private _route: ActivatedRoute,
-      private _router: Router,
-      protected authService: AuthGoogleService
-    ) { }
   ngOnDestroy(): void {
     // Complete the destroy subject to trigger takeUntil in all subscriptions
     this.destroy$.next();
@@ -170,7 +169,7 @@ export class TripComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async load(showSpinner: boolean = true) {
+  public async load(showSpinner = true) {
     // Prevent reload if editing form
     if (this.editingTripId()) return;
     if (showSpinner) {
@@ -304,7 +303,7 @@ export class TripComponent implements OnInit, OnDestroy {
   async confirmSaveTripsDialog() {
     const message = `This will save all changes to your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Save";
     dialogData.message = message;
     dialogData.trueText = "Save";
@@ -326,7 +325,7 @@ export class TripComponent implements OnInit, OnDestroy {
     this.stopPolling();
     const message = `This will load all changes from your spreadsheet. This process will take less than a minute.`;
 
-    let dialogData: IConfirmDialog = {} as IConfirmDialog;
+    const dialogData: IConfirmDialog = {} as IConfirmDialog;
     dialogData.title = "Confirm Load";
     dialogData.message = message;
     dialogData.trueText = "Load";
@@ -348,9 +347,9 @@ export class TripComponent implements OnInit, OnDestroy {
     });
   }
 
-  async reload(anchor?: string, isParentReload: boolean = false) {
+  async reload(anchor?: string, isParentReload = false) {
     await this.refreshDefaultSheetState();
-    let sheetId = this.defaultSheet()?.id;
+    const sheetId = this.defaultSheet()?.id;
     if (!sheetId) {
       return;
     }

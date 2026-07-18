@@ -4,10 +4,16 @@ import { SheetLinkComponent } from './sheet-link.component';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from '@services/logger.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+
+function fakeDialogRef<T>(value: T): MatDialogRef<unknown> {
+  return { afterClosed: () => of(value) } as unknown as MatDialogRef<unknown>;
+}
 
 describe('SheetLinkComponent', () => {
   let component: SheetLinkComponent;
@@ -47,8 +53,8 @@ describe('SheetLinkComponent', () => {
 
   it('openCreateSheetDialog - success should run create-sheet sync flow and emit', async () => {
     dialogSpy.open.and.returnValues(
-      { afterClosed: () => of({ sheetName: 'Sheet 1' }) } as any,
-      { afterClosed: () => of(true) } as any
+      fakeDialogRef({ sheetName: 'Sheet 1' }),
+      fakeDialogRef(true)
     );
 
     spyOn(component.parentReload, 'emit');
@@ -70,8 +76,8 @@ describe('SheetLinkComponent', () => {
 
   it('openCreateSheetDialog - sync failure should log and show error snackbar', async () => {
     dialogSpy.open.and.returnValues(
-      { afterClosed: () => of({ sheetName: 'Sheet 1' }) } as any,
-      { afterClosed: () => of(false) } as any
+      fakeDialogRef({ sheetName: 'Sheet 1' }),
+      fakeDialogRef(false)
     );
 
     spyOn(component.parentReload, 'emit');
@@ -84,8 +90,8 @@ describe('SheetLinkComponent', () => {
   });
 
   it('linkSheet - when sheet exists should show already linked snackbar', async () => {
-    const sheet = { properties: { id: 's2', name: 'Existing' } } as any;
-    spreadsheetSpy.findSheet.and.returnValue(Promise.resolve({ id: 's2' } as any));
+    const sheet = { properties: { id: 's2', name: 'Existing' } } as unknown as ISheet;
+    spreadsheetSpy.findSheet.and.returnValue(Promise.resolve({ id: 's2' } as unknown as ISpreadsheet));
 
     spyOn(component.parentReload, 'emit');
 
@@ -99,7 +105,7 @@ describe('SheetLinkComponent', () => {
   });
 
   it('linkSheet - add failure should log and show error snackbar', async () => {
-    const sheet = { properties: { id: 's3', name: 'New' } } as any;
+    const sheet = { properties: { id: 's3', name: 'New' } } as unknown as ISheet;
     spreadsheetSpy.findSheet.and.returnValue(Promise.resolve(undefined));
     spreadsheetSpy.add.and.returnValue(Promise.reject(new Error('fail')));
 
@@ -117,8 +123,8 @@ describe('SheetLinkComponent', () => {
   });
 
   it('openListSheetsDialog - success should link selected sheet', async () => {
-    const dialogResult = { id: 'l1', name: 'List Item' } as any;
-    dialogSpy.open.and.returnValue({ afterClosed: () => of(dialogResult) } as any);
+    const dialogResult = { id: 'l1', name: 'List Item' } as unknown as ISpreadsheet;
+    dialogSpy.open.and.returnValue(fakeDialogRef(dialogResult));
     spreadsheetSpy.findSheet.and.returnValue(Promise.resolve(undefined));
     spreadsheetSpy.add.and.returnValue(Promise.resolve());
 
@@ -133,7 +139,7 @@ describe('SheetLinkComponent', () => {
   });
 
   it('openListSheetsDialog - canceled should not link', async () => {
-    dialogSpy.open.and.returnValue({ afterClosed: () => of(null) } as any);
+    dialogSpy.open.and.returnValue(fakeDialogRef(null));
 
     spyOn(component.parentReload, 'emit');
 

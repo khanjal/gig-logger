@@ -12,7 +12,7 @@ export class NoSecondsPipe implements PipeTransform {
             return "";
         }
         // Remove seconds
-        let time = DateHelper.removeSeconds(text);
+        const time = DateHelper.removeSeconds(text);
         // Format as 24hr or 12hr
         if (use24Hour) {
             // Convert to 24hr if needed

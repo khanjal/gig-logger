@@ -1,11 +1,17 @@
 import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { ApiService } from './api.service';
+import { SecureCookieStorageService } from './secure-cookie-storage.service';
+import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
 
 describe('ApiService (focused tests)', () => {
-  let httpSpy: any;
-  let secureCookieSpy: any;
-  let loggerSpy: any;
+  let httpSpy: { get: jasmine.Spy; post: jasmine.Spy; put: jasmine.Spy };
+  let secureCookieSpy: jasmine.SpyObj<SecureCookieStorageService>;
+  let loggerSpy: jasmine.SpyObj<LoggerService>;
   let service: ApiService;
 
   beforeEach(() => {
@@ -15,7 +21,14 @@ describe('ApiService (focused tests)', () => {
 
     localStorage.setItem(SESSION_CONSTANTS.USER_ID, 'user-123');
 
-    service = new ApiService(httpSpy, secureCookieSpy, loggerSpy);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: HttpClient, useValue: httpSpy },
+        { provide: SecureCookieStorageService, useValue: secureCookieSpy },
+        { provide: LoggerService, useValue: loggerSpy }
+      ]
+    });
+    service = TestBed.runInInjectionContext(() => new ApiService());
   });
 
   afterEach(() => {
@@ -39,8 +52,8 @@ describe('ApiService (focused tests)', () => {
       return null;
     });
 
-    let capturedOptions: any = null;
-    httpSpy.get.and.callFake((url: string, options: any) => {
+    let capturedOptions!: { headers: { get(name: string): string | null } };
+    httpSpy.get.and.callFake((url: string, options: { headers: { get(name: string): string | null } }) => {
       capturedOptions = options;
       return of([{ name: 'file1' }]);
     });
@@ -55,7 +68,7 @@ describe('ApiService (focused tests)', () => {
 
   it('getSheetData follows S3 flow when response indicates isStoredInS3', async () => {
     // First call returns a payload indicating S3 link
-    httpSpy.get.and.callFake((url: string, options?: any) => {
+    httpSpy.get.and.callFake((url: string) => {
       if (url && url.indexOf('/sheets/all') !== -1) {
         return of({ isStoredInS3: true, s3Link: 'http://s3/link' });
       }
@@ -66,14 +79,14 @@ describe('ApiService (focused tests)', () => {
     });
 
     const result = await service.getSheetData('sheet-id');
-    expect(result as any).toEqual(jasmine.objectContaining({ sheetData: 42 }));
+    expect(result).toEqual(jasmine.objectContaining({ sheetData: 42 }));
     // service tags S3 responses with _source = 's3'
-    expect((result as any)._source).toBe('s3');
+    expect((result as ISheet & { _source?: string })._source).toBe('s3');
     expect(loggerSpy.debug).toHaveBeenCalled();
   });
 
   it('saveSheetData returns error message array when http.put fails', async () => {
-    const sheet = { properties: { id: 's1', name: 'MySheet' } } as any;
+    const sheet = { properties: { id: 's1', name: 'MySheet' } } as unknown as ISheetSavePayload;
     httpSpy.put.and.returnValue(throwError({ message: 'network fail' }));
 
     const res = await service.saveSheetData(sheet);

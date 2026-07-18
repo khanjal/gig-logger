@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 import { DiagnosticService } from './diagnostic.service';
@@ -7,13 +7,11 @@ import { DiagnosticService } from './diagnostic.service';
   providedIn: 'root'
 })
 export class AppInitializerService {
+  private logger = inject(LoggerService);
+  private diagnosticService = inject(DiagnosticService);
+
   private initializationComplete = false;
   private initializationPromise: Promise<void> | null = null;
-
-  constructor(
-    private logger: LoggerService,
-    private diagnosticService: DiagnosticService
-  ) {}
 
   async initialize(): Promise<void> {
     if (this.initializationComplete) {
@@ -57,7 +55,7 @@ export class AppInitializerService {
       localStorage.setItem(SESSION_CONSTANTS.APP_TEST_KEY, 'test');
       localStorage.removeItem(SESSION_CONSTANTS.APP_TEST_KEY);
     } catch (error) {
-      throw new Error('localStorage is not available');
+      throw new Error('localStorage is not available', { cause: error });
     }
 
     // Check if document is ready

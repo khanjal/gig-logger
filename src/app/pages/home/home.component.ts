@@ -1,12 +1,12 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
 import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AppUpdateService } from '@services/app-update.service';
-import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
+import type { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
+import type { IBeforeInstallPromptEvent } from '@interfaces/external/before-install-prompt-event.interface';
 import { fromEvent } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base';
 
@@ -15,7 +15,7 @@ import { BaseRectButtonComponent } from '@components/base';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [CommonModule, MatIcon, BaseRectButtonComponent]
+    imports: [MatIcon, BaseRectButtonComponent]
 })
 export class HomeComponent implements OnInit {
   private logger = inject(LoggerService);
@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
   showStartLoggingButton = signal(false);
   isUpdateAvailable = signal(false);
   showUpdateNotification = signal(false);
-  private deferredPrompt: any;
+  private deferredPrompt: IBeforeInstallPromptEvent | null = null;
 
   async ngOnInit() {
     // Subscribe to app update status
@@ -46,12 +46,11 @@ export class HomeComponent implements OnInit {
     await this.checkUserStatus();
     
     // Listen for the install prompt
-    fromEvent(window as any, 'beforeinstallprompt')
+    fromEvent<IBeforeInstallPromptEvent>(window, 'beforeinstallprompt')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
-      const e = event as any;
-      e.preventDefault();
-      this.deferredPrompt = e;
+      event.preventDefault();
+      this.deferredPrompt = event;
       this.showInstallButton.set(true);
     });
 
@@ -77,7 +76,7 @@ export class HomeComponent implements OnInit {
         try {
           const defaultSheet = await this.spreadsheetService.getDefaultSheet();
           this.hasDefaultSheet.set(!!defaultSheet);
-        } catch (error) {
+        } catch {
           this.hasDefaultSheet.set(false);
         }
       }

@@ -1,6 +1,6 @@
 // Angular core imports
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild, OnDestroy, signal, OnInit, OnChanges, inject } from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material imports
@@ -40,17 +40,17 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
 // RxJS imports
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import type { DropdownType } from '@interfaces/dropdown-data.interface';
+import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
 
 // Type-only interface imports (after runtime/service imports)
-import type { IAddress } from '@interfaces/address.interface';
-import type { IAutocompleteResult } from '@interfaces/google-places.interface';
-import type { IName } from '@interfaces/name.interface';
-import type { IPlace } from '@interfaces/place.interface';
-import type { IRegion } from '@interfaces/region.interface';
-import type { ISearchItem } from '@interfaces/search-item.interface';
-import type { IService } from '@interfaces/service.interface';
-import type { IType } from '@interfaces/type.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
+import type { IAutocompleteResult } from '@interfaces/external/google-places.interface';
+import type { IName } from '@interfaces/entities/name.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IRegion } from '@interfaces/entities/region.interface';
+import type { ISearchItem } from '@interfaces/search/search-item.interface';
+import type { IService } from '@interfaces/entities/service.interface';
+import type { IType } from '@interfaces/entities/type.interface';
 
 // Utility imports
 import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';
@@ -70,16 +70,29 @@ import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType }
   ]
 })
 
-export class SearchInputComponent implements OnDestroy {
-  @Input() enableBottomPadding: boolean = false;
+export class SearchInputComponent implements OnDestroy, OnInit, OnChanges {
+  dialog = inject(MatDialog);
+  private _addressService = inject(AddressService);
+  private _nameService = inject(NameService);
+  private _placeService = inject(PlaceService);
+  private _regionService = inject(RegionService);
+  private _serviceService = inject(ServiceService);
+  private _typeService = inject(TypeService);
+  private _serverGooglePlacesService = inject(ServerGooglePlacesService);
+  private logger = inject(LoggerService);
+  private _dropdownDataService = inject(DropdownDataService);
+  private _permissionService = inject(PermissionService);
+  private _mockLocationService = inject(MockLocationService);
+
+  @Input() enableBottomPadding = false;
   // #region ViewChild, Inputs, Outputs, Form
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('searchInput') inputElement!: ElementRef;
-  @Input() fieldName: string = '';
-  @Input() searchType: string = '';
+  @Input() fieldName = '';
+  @Input() searchType = '';
   @Input() googleSearch: string | undefined;
-  @Input() isRequired: boolean = false;
-  @Input() scrollOffset: number = 100; // Default offset, can be overridden
+  @Input() isRequired = false;
+  @Input() scrollOffset = 100; // Default offset, can be overridden
 
   @Output() auxiliaryData: EventEmitter<string> = new EventEmitter<string>();
   @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
@@ -96,7 +109,7 @@ export class SearchInputComponent implements OnDestroy {
   hasSelection = signal(false);
   isGoogleSearching = signal(false);
   showNoGoogleResults = signal(false);
-  private initialValue: string = '';
+  private initialValue = '';
   // When true skip the next focus handler after a user selection (prevents refocus on mobile)
   private skipNextFocus = signal(false);
   private readonly MIN_GOOGLE_SEARCH_LENGTH = 2;
@@ -130,24 +143,7 @@ export class SearchInputComponent implements OnDestroy {
   }
   registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  setDisabledState?(isDisabled: boolean): void {}
-  // #endregion
-
-  // #region Lifecycle
-  constructor(
-    public dialog: MatDialog,
-    private _addressService: AddressService,
-    private _nameService: NameService,
-    private _placeService: PlaceService,
-    private _regionService: RegionService,
-    private _serviceService: ServiceService,
-    private _typeService: TypeService,
-    private _serverGooglePlacesService: ServerGooglePlacesService,
-    private logger: LoggerService,
-    private _dropdownDataService: DropdownDataService,
-    private _permissionService: PermissionService,
-    private _mockLocationService: MockLocationService
-  ) { }
+  setDisabledState?(): void {}
 
   async ngOnInit(): Promise<void> {
     this.validateSearchType();
@@ -265,7 +261,7 @@ export class SearchInputComponent implements OnDestroy {
     // Clear suggestions and close dropdown so the selected item doesn't reappear
     this.filteredItemsArray.set([]);
     if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
-      try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+      try { this.autocompleteTrigger.closePanel(); } catch { /* ignore */ }
     }
 
     // Blur input after selection
@@ -283,12 +279,12 @@ export class SearchInputComponent implements OnDestroy {
       Promise.resolve().then(async () => {
         try {
           await this.onInputSelect(item);
-        } catch (e) {
+        } catch {
           // ignore selection errors
         }
         // Ensure the autocomplete panel is closed after selection (extra guard for mobile)
         if (this.autocompleteTrigger && this.autocompleteTrigger.panelOpen) {
-          try { this.autocompleteTrigger.closePanel(); } catch (e) { /* ignore */ }
+          try { this.autocompleteTrigger.closePanel(); } catch { /* ignore */ }
         }
       });
     }
@@ -422,30 +418,30 @@ export class SearchInputComponent implements OnDestroy {
 
   private async getFilteredResults(value: string): Promise<ISearchItem[]> {
     switch (this.searchType) {
-      case 'Address':
+      case 'Address': {
         const addressResults = (await this._filterAddress(value)).map(item => createSearchItem(item, 'address'));
-        // For Address, do not auto-trigger Google predictions
         if (addressResults.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon.set(true);
         } else {
           this.showGoogleMapsIcon.set(false);
         }
         return addressResults;
-      case 'Name':
-        let names = await this._filterName(value);
-        let nameItems = this.mapNamesToSearchItems(names);
-        return nameItems;
-      case 'Place':
-        let places = await this._filterPlace(value);
+      }
+      case 'Name': {
+        const names = await this._filterName(value);
+        return this.mapNamesToSearchItems(names);
+      }
+      case 'Place': {
+        const places = await this._filterPlace(value);
         let placeItems = this.mapPlacesToSearchItems(places);
         placeItems = await this.appendDropdownMatches(placeItems, 'Place', value);
-        // For Place, do not auto-trigger Google predictions
         if (placeItems.length === 0 && value && value.length >= this.MIN_GOOGLE_SEARCH_LENGTH) {
           this.showGoogleMapsIcon.set(true);
         } else {
           this.showGoogleMapsIcon.set(false);
         }
         return placeItems;
+      }
       case 'Region':
         return (await this._filterRegion(value)).map(item => createSearchItem(item, 'region'));
       case 'Service':
@@ -590,7 +586,7 @@ export class SearchInputComponent implements OnDestroy {
       this.googlePredictionsCache.set(cacheKey, results);
       
       return results;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.handleGoogleSearchError(error);
       return [];
     }
@@ -617,14 +613,14 @@ export class SearchInputComponent implements OnDestroy {
     }
   }
 
-  private handleGoogleSearchError(error: any): void {
+  private handleGoogleSearchError(error: unknown): void {
     if (this.isRateLimitError(error) && this.isGoogleSearchType()) {
       this.showGoogleMapsIcon.set(true);
     }
     this.logger.warn('Error getting Google predictions:', error);
   }
 
-  private isRateLimitError(error: any): boolean {
+  private isRateLimitError(error: unknown): boolean {
     return isRateLimitError(error);
   }
   // #endregion
@@ -691,7 +687,7 @@ export class SearchInputComponent implements OnDestroy {
           return dateB - dateA;
         });
         for (const address of sortedAddresses) {
-          let trips = typeof address.trips === 'number' ? address.trips : place.trips;
+          const trips = typeof address.trips === 'number' ? address.trips : place.trips;
           items.push({
             id: place.id,
             name: place.place,

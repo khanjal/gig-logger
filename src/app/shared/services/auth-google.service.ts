@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { authConfig } from './auth.config';
 import { LoggerService } from './logger.service';
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
-import { UserProfile } from '../interfaces/user-profile.interface';
+import { UserProfile } from '@interfaces/auth/user-profile.interface';
 import { GigWorkflowService } from './gig-workflow.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AUTH_CONSTANTS } from '@constants/auth.constants';
@@ -14,17 +14,17 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
   providedIn: 'root',
 })
 export class AuthGoogleService {
+  private oAuthService = inject(OAuthService);
+  private logger = inject(LoggerService);
+  private secureCookieStorage = inject(SecureCookieStorageService);
+  private gigWorkflowService = inject(GigWorkflowService);
+  private http = inject(HttpClient);
+
   public profile$ = new BehaviorSubject<UserProfile | null>(null);
   private isInitialized = false;
   private readonly IS_AUTHENTICATED_KEY = SESSION_CONSTANTS.IS_AUTHENTICATED;
 
-  constructor(
-    private oAuthService: OAuthService,
-    private logger: LoggerService,
-    private secureCookieStorage: SecureCookieStorageService,
-    private gigWorkflowService: GigWorkflowService,
-    private http: HttpClient
-  ) {    
+  constructor() {    
     this.oAuthService.setStorage(this.secureCookieStorage);
     this.initConfiguration().catch(error => {
       this.logger.error('Failed to initialize auth configuration', error);
@@ -98,8 +98,9 @@ export class AuthGoogleService {
     this.oAuthService.initCodeFlow();
   }
 
-  private extractStatusCode(error: any): number | undefined {
-    return error?.status || error?.response?.status;
+  private extractStatusCode(error: unknown): number | undefined {
+    const err = error as { status?: number; response?: { status?: number } } | null | undefined;
+    return err?.status || err?.response?.status;
   }
 
   private clearAuthState(): void {
@@ -122,7 +123,7 @@ export class AuthGoogleService {
       this.storeUserId(profile);
       this.setAuthenticationState(true);
       this.logger.info('Access token refreshed and validated successfully');
-    } catch (error: any) {
+    } catch (error: unknown) {
       const status = this.extractStatusCode(error);
       if (status === 401 || status === 403) {
         this.logger.error('Refresh token invalid or expired, logging out', error);
@@ -185,7 +186,7 @@ export class AuthGoogleService {
       if (refreshedToken) return true;
       this.setAuthenticationState(false);
       return false;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const status = this.extractStatusCode(error);
       if (status === 401 || status === 403) {
         this.logger.info('Token refresh failed due to invalid/expired token, clearing authentication state');

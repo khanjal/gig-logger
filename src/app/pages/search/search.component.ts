@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, computed, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,8 +16,9 @@ import { CurrencyPipe } from '@angular/common';
 import { SearchService } from '@services/search.service';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
-import type { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
-import type { DropdownType } from '@interfaces/dropdown-data.interface';
+import type { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search/search-result.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseFabButtonComponent, BaseRectButtonComponent, BaseFieldButtonComponent } from '@components/base';
@@ -52,6 +53,11 @@ import { Subject, debounceTime, distinctUntilChanged, Observable, from, startWit
   providers: [CurrencyPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
+  private searchService = inject(SearchService);
+  private dropdownDataService = inject(DropdownDataService);
+  private currencyPipe = inject(CurrencyPipe);
+  private logger = inject(LoggerService);
+
   readonly categories: SearchCategory[] = ['Address', 'Name', 'Place', 'Region', 'Service', 'Type'];
   readonly searchState = createAsyncOperationState();
   readonly allGroupsExpanded = computed(() => {
@@ -111,12 +117,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   expandedGroups = signal(new Set<string>());
   expandedResults = signal(new Set<string>());
 
-  constructor(
-    private searchService: SearchService,
-    private dropdownDataService: DropdownDataService,
-    private currencyPipe: CurrencyPipe,
-    private logger: LoggerService
-  ) {
+  constructor() {
     this.categoryMetadata = this.categories.reduce((acc, category) => {
       acc[category] = {
         icon: this.searchService.getCategoryIcon(category),
@@ -477,7 +478,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     return `${result.type}|${result.value}`;
   }
 
-  trackByTrip(index: number, trip: any): number | string {
+  trackByTrip(index: number, trip: ITrip): number | string {
     return typeof trip?.id === 'number' ? trip.id : index;
   }
 
@@ -486,7 +487,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   private updateDerivedMetrics(searchResults: ISearchResult[], groupedResults: ISearchResultGroup[]): void {
-    const uniqueTrips = new Map<number, any>();
+    const uniqueTrips = new Map<number, ITrip>();
     searchResults.forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
@@ -541,7 +542,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private computeGroupAvgPerTrip(group: ISearchResultGroup): string {
     if (!group || !group.results) return '-';
-    const uniqueTrips = new Map<number, any>();
+    const uniqueTrips = new Map<number, ITrip>();
     group.results.forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
@@ -557,7 +558,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private computeGroupAvgRate(group: ISearchResultGroup): string {
     if (!group || !group.results) return '-';
-    const uniqueTrips = new Map<number, any>();
+    const uniqueTrips = new Map<number, ITrip>();
     group.results.forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
@@ -641,7 +642,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    * Get total earnings across all results
    */
   getTotalEarnings(): number {
-    const uniqueTrips = new Map<number, any>();
+    const uniqueTrips = new Map<number, ITrip>();
     this.searchResults().forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
@@ -692,7 +693,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   getGroupAvgPerTrip(group: ISearchResultGroup): string {
     if (!group || !group.results) return '-';
     // Collect unique, non-excluded trips
-    const uniqueTrips = new Map<number, any>();
+    const uniqueTrips = new Map<number, ITrip>();
     group.results.forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {
@@ -709,7 +710,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   getGroupAvgRate(group: ISearchResultGroup): string {
     if (!group || !group.results) return '-';
     // Collect unique, non-excluded trips
-    const uniqueTrips = new Map<number, any>();
+    const uniqueTrips = new Map<number, ITrip>();
     group.results.forEach(result => {
       result.trips.forEach(trip => {
         if (typeof trip.id === 'number' && !trip.exclude && !uniqueTrips.has(trip.id)) {

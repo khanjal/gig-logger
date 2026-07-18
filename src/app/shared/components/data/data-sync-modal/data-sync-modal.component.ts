@@ -1,5 +1,5 @@
 // Angular imports
-import { Component, ElementRef, Inject, Input, ViewChild, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 // RxJS imports
@@ -8,6 +8,7 @@ import { map, Subscription, timer } from 'rxjs';
 // Application-specific imports - Helpers
 import { DateHelper } from '@helpers/date.helper';
 import { ApiMessageHelper } from '@helpers/api-message.helper';
+import type { ApiMessage } from '@helpers/api-message.helper';
 import { SheetSerializerHelper } from '@helpers/sheet-serializer.helper';
 import { SHEET_CONSTANTS } from '@constants/sheet.constants';
 
@@ -19,12 +20,12 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { TimerService } from '@services/timer.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { LoggerService } from '@services/logger.service';
-import { NgFor, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import type { ISheet } from '@interfaces/sheet.interface';
-import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import type { ISheetProperties } from '@interfaces/sheet-properties.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 
 // Define types for better type safety
 type SyncType = 'save' | 'load' | 'create-demo' | 'create-sheet';
@@ -56,9 +57,17 @@ interface DataSyncConfig {
     templateUrl: './data-sync-modal.component.html',
     styleUrls: ['./data-sync-modal.component.scss'],
     standalone: true,
-    imports: [NgFor, NgClass, BaseRectButtonComponent]
+    imports: [NgClass, BaseRectButtonComponent]
 })
 export class DataSyncModalComponent implements OnInit, OnDestroy {
+    config = inject<DataSyncConfig | SyncType>(MAT_DIALOG_DATA);
+    dialogRef = inject<MatDialogRef<DataSyncModalComponent>>(MatDialogRef);
+    private _gigLoggerService = inject(GigWorkflowService);
+    private _sheetService = inject(SpreadsheetService);
+    private _unsavedDataService = inject(UnsavedDataService);
+    private _timerService = inject(TimerService);
+    private _logger = inject(LoggerService);
+
     @ViewChild('terminal', { static: false }) terminalElement!: ElementRef;
     
     // Configuration inputs
@@ -95,15 +104,9 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         return 'created and loaded';
     }
     
-    constructor(
-        @Inject(MAT_DIALOG_DATA) public config: DataSyncConfig | SyncType,
-        public dialogRef: MatDialogRef<DataSyncModalComponent>,
-        private _gigLoggerService: GigWorkflowService,
-        private _sheetService: SpreadsheetService,
-        private _unsavedDataService: UnsavedDataService,
-        private _timerService: TimerService,
-        private _logger: LoggerService
-    ) { 
+    constructor() {
+        const config = this.config;
+ 
         // Support both old string format and new config object format
         if (typeof config === 'string') {
             this.type = config;
@@ -143,11 +146,11 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         await this.completeSync();
     }
 
-    async warmup(startFrom: number = 0) {
+    async warmup(startFrom = 0) {
         this.startTimer(startFrom);
         this.appendToTerminal("Checking service status...");
         
-        let response = await this._sheetService.warmUpLambda();
+        const response = await this._sheetService.warmUpLambda();
         if (!response) {
             this.processFailure("OFFLINE");
             return;
@@ -158,7 +161,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
     }
 
     async saveData() {
-        let sheetData = {} as ISheetSavePayload;
+        const sheetData = {} as ISheetSavePayload;
         sheetData.properties = {id: this.defaultSheet.id, name: ""};
         
         // Collect unsaved items once — reused for shift calculation, payload, and synced-ID tracking.
@@ -168,7 +171,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         if (unsavedShifts.length > 0) {
             try {
                 await this._gigLoggerService.calculateShiftTotals(unsavedShifts);
-            } catch (e) {
+            } catch {
                 this.appendToTerminal('Pre-save shift calculation failed; proceeding with save', 'warning');
             }
         }
@@ -188,13 +191,13 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         const syncedExpenseIds = new Set(unsavedExpenses.filter(expense => expense.id !== undefined).map(expense => expense.id!));
 
         this.appendToTerminal("Saving changes...");
-        let messages = await this._gigLoggerService.saveSheetData(sheetData);
+        const messages = await this._gigLoggerService.saveSheetData(sheetData);
         
         // Process the response using the helper
         const result = ApiMessageHelper.processSheetSaveResponse(messages);
         
         // Display only SAVE_DATA messages
-        result.filteredMessages.forEach((msg: any) => {
+        result.filteredMessages.forEach((msg: ApiMessage) => {
             const messageLevel = msg.level === 'ERROR' ? 'error' : 
                                msg.level === 'WARNING' ? 'warning' : 'info';
             this.appendToTerminal(msg.message, messageLevel);
@@ -312,7 +315,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
     private async getData() {
         this.appendToTerminal("Getting sheet data...");
-        let data = await this._sheetService.getSpreadsheetData(this.defaultSheet);
+        const data = await this._sheetService.getSpreadsheetData(this.defaultSheet);
 
         if (!data) {
             this.processFailure("ERROR");
@@ -321,7 +324,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         this.appendToLastMessage(`DONE (${this.currentTime() - this.time}s)`);
 
         data.messages.forEach(message => {
-            let messageLevel = message.level.toLowerCase() as MessageType;
+            const messageLevel = message.level.toLowerCase() as MessageType;
             if (messageLevel !== 'info') {
                 this.syncState.update(s => ({ ...s, hasNonInfoMessage: true }));
             }
@@ -330,13 +333,13 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
 
         await this.loadData(data);
 
-        let secondarySpreadsheets = (await this._sheetService.getSpreadsheets())
+        const secondarySpreadsheets = (await this._sheetService.getSpreadsheets())
             .filter(x => x.default !== "true");
         
         for (const secondarySpreadsheet of secondarySpreadsheets) {
             this.time = this.currentTime();
             this.appendToTerminal("Appending sheet data...");
-            let data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
+            const data = await this._sheetService.getSpreadsheetData(secondarySpreadsheet);
             
             if (!data) {
                 this.processFailure("ERROR");
@@ -367,7 +370,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
 
         // Subscribe to logger messages during load
-        const logSubscription = this._logger.onLog.subscribe((msg: any) => {
+        const logSubscription = this._logger.onLog.subscribe((msg: { level: string; message: string }) => {
             this.appendToTerminal(msg.message);
         });
 
@@ -469,7 +472,7 @@ export class DataSyncModalComponent implements OnInit, OnDestroy {
         }
     }
 
-    private startTimer(startFrom: number = 0) {
+    private startTimer(startFrom = 0) {
         if (this.timerSubscription) {
             this.timerSubscription.unsubscribe();
             this.timerSubscription = null;

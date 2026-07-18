@@ -3,6 +3,22 @@ import { DiagnosticService } from './diagnostic.service';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
+interface DiagnosticServicePrivates {
+  checkBrowserEnvironment(): void;
+  checkLocalStorage(): void;
+  checkServiceWorker(): void;
+  checkNetworkConnectivity(): void;
+}
+
+interface ILoggedErrorDetails {
+  component: string;
+  error: string;
+  stack?: string;
+  userAgent: string;
+  url: string;
+  timestamp: string;
+}
+
 describe('DiagnosticService', () => {
   let service: DiagnosticService;
   let loggerSpy: jasmine.SpyObj<LoggerService>;
@@ -34,10 +50,10 @@ describe('DiagnosticService', () => {
 
   describe('runStartupDiagnostics', () => {
     it('should run all diagnostic checks successfully', () => {
-      spyOn<any>(service, 'checkBrowserEnvironment');
-      spyOn<any>(service, 'checkLocalStorage');
-      spyOn<any>(service, 'checkServiceWorker');
-      spyOn<any>(service, 'checkNetworkConnectivity');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkBrowserEnvironment');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkLocalStorage');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkServiceWorker');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkNetworkConnectivity');
 
       service.runStartupDiagnostics();
 
@@ -51,7 +67,7 @@ describe('DiagnosticService', () => {
 
     it('should log error when diagnostics fail', () => {
       const testError = new Error('Test diagnostic failure');
-      spyOn<any>(service, 'checkBrowserEnvironment').and.throwError(testError);
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkBrowserEnvironment').and.throwError(testError);
 
       service.runStartupDiagnostics();
 
@@ -59,10 +75,10 @@ describe('DiagnosticService', () => {
     });
 
     it('should continue with other checks even if one fails', () => {
-      spyOn<any>(service, 'checkBrowserEnvironment').and.throwError('Browser check failed');
-      spyOn<any>(service, 'checkLocalStorage');
-      spyOn<any>(service, 'checkServiceWorker');
-      spyOn<any>(service, 'checkNetworkConnectivity');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkBrowserEnvironment').and.throwError('Browser check failed');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkLocalStorage');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkServiceWorker');
+      spyOn(service as unknown as DiagnosticServicePrivates, 'checkNetworkConnectivity');
 
       service.runStartupDiagnostics();
 
@@ -233,10 +249,11 @@ describe('DiagnosticService', () => {
 
       expect(loggerSpy.error).toHaveBeenCalled();
       const callArgs = loggerSpy.error.calls.first().args;
+      const details = callArgs[1] as ILoggedErrorDetails;
       expect(callArgs[0]).toBe('Loading issue in TestComponent');
-      expect(callArgs[1].component).toBe('TestComponent');
-      expect(callArgs[1].error).toBe('Component failed to load');
-      expect(callArgs[1].stack).toBe('Error stack trace here');
+      expect(details.component).toBe('TestComponent');
+      expect(details.error).toBe('Component failed to load');
+      expect(details.stack).toBe('Error stack trace here');
     });
 
     it('should include userAgent in error report', () => {
@@ -244,8 +261,8 @@ describe('DiagnosticService', () => {
 
       service.reportLoadingIssue('TestComponent', testError);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].userAgent).toBe(navigator.userAgent);
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.userAgent).toBe(navigator.userAgent);
     });
 
     it('should include current URL in error report', () => {
@@ -253,8 +270,8 @@ describe('DiagnosticService', () => {
 
       service.reportLoadingIssue('TestComponent', testError);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].url).toBe(window.location.href);
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.url).toBe(window.location.href);
     });
 
     it('should include timestamp in error report', () => {
@@ -263,9 +280,9 @@ describe('DiagnosticService', () => {
 
       service.reportLoadingIssue('TestComponent', testError);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].timestamp).toBeDefined();
-      expect(new Date(callArgs[1].timestamp).getTime()).toBeGreaterThanOrEqual(
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.timestamp).toBeDefined();
+      expect(new Date(details.timestamp).getTime()).toBeGreaterThanOrEqual(
         new Date(beforeTime).getTime()
       );
     });
@@ -275,22 +292,22 @@ describe('DiagnosticService', () => {
 
       service.reportLoadingIssue('TestComponent', testError);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].error).toBe('Unknown error');
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.error).toBe('Unknown error');
     });
 
     it('should handle null error', () => {
       service.reportLoadingIssue('TestComponent', null);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].error).toBe('Unknown error');
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.error).toBe('Unknown error');
     });
 
     it('should handle undefined error', () => {
       service.reportLoadingIssue('TestComponent', undefined);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].error).toBe('Unknown error');
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.error).toBe('Unknown error');
     });
 
     it('should include error stack when available', () => {
@@ -299,8 +316,8 @@ describe('DiagnosticService', () => {
 
       service.reportLoadingIssue('TestComponent', testError);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].stack).toBe('Custom stack trace');
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.stack).toBe('Custom stack trace');
     });
 
     it('should handle error without stack', () => {
@@ -308,8 +325,8 @@ describe('DiagnosticService', () => {
 
       service.reportLoadingIssue('TestComponent', testError);
 
-      const callArgs = loggerSpy.error.calls.first().args;
-      expect(callArgs[1].stack).toBeUndefined();
+      const details = loggerSpy.error.calls.first().args[1] as ILoggedErrorDetails;
+      expect(details.stack).toBeUndefined();
     });
   });
 

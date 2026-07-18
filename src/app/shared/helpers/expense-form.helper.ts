@@ -1,7 +1,7 @@
 import { DateHelper } from '@helpers/date.helper';
 import { NumberHelper } from '@helpers/number.helper';
-import type { IExpense } from '@interfaces/expense.interface';
-import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
+import type { IExpenseFormValue } from '@interfaces/ui/expense-form-value.interface';
 
 /**
  * Normalizes an expense date from form/domain sources into YYYY-MM-DD.

@@ -6,8 +6,10 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IName } from '@interfaces/entities/name.interface';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('DiagnosticsComponent', () => {
@@ -154,8 +156,8 @@ describe('DiagnosticsComponent', () => {
   describe('findDuplicatePlaces', () => {
     it('finds places with case differences', async () => {
       const places = [
-        { id: 1, place: 'McDonald\'s' } as any,
-        { id: 2, place: 'mcDonald\'s' } as any
+        { id: 1, place: 'McDonald\'s' } as unknown as IPlace,
+        { id: 2, place: 'mcDonald\'s' } as unknown as IPlace
       ];
       placeServiceSpy.list.and.returnValue(Promise.resolve(places));
       
@@ -167,8 +169,8 @@ describe('DiagnosticsComponent', () => {
 
     it('skips places with insufficient length', async () => {
       const places = [
-        { id: 1, place: 'A' } as any,
-        { id: 2, place: 'a' } as any
+        { id: 1, place: 'A' } as unknown as IPlace,
+        { id: 2, place: 'a' } as unknown as IPlace
       ];
       placeServiceSpy.list.and.returnValue(Promise.resolve(places));
       
@@ -182,8 +184,8 @@ describe('DiagnosticsComponent', () => {
   describe('findDuplicateNames', () => {
     it('finds names with case differences', async () => {
       const names = [
-        { id: 1, name: 'John Smith' } as any,
-        { id: 2, name: 'john smith' } as any
+        { id: 1, name: 'John Smith' } as unknown as IName,
+        { id: 2, name: 'john smith' } as unknown as IName
       ];
       nameServiceSpy.list.and.returnValue(Promise.resolve(names));
       

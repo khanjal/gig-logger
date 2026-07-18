@@ -1,7 +1,6 @@
-import type { IShift } from "@interfaces/shift.interface";
-import type { IStatItem } from "@interfaces/stat-item.interface";
-import type { ITrip } from "@interfaces/trip.interface";
-import type { IDaily } from "@interfaces/daily.interface";
+import type { IStatItem } from "@interfaces/stats/stat-item.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IDaily } from "@interfaces/sheets/daily.interface";
 import { DateHelper } from "./date.helper";
 
 export class StatHelper {
@@ -20,13 +19,10 @@ export class StatHelper {
     }
 
     static getTripsTotal(trips: ITrip[] = []): IStatItem {
-        let item = {} as IStatItem;
+        const item = {} as IStatItem;
         
         item.trips = trips.length;
 
-        trips.forEach(trip => {
-            
-        })
         item.distance = trips.filter(x => x.distance).map(x => x.distance).reduce((acc, value) => acc + value, 0);
         item.pay = trips.filter(x => x.pay).map(x => x.pay).reduce((acc, value) => acc + value, 0);
         item.tip = trips.filter(x => x.tip).map(x => x.tip).reduce((acc, value) => acc + value, 0);

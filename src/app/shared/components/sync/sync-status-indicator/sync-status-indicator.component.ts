@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -6,20 +6,23 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
-import { Router } from '@angular/router';
+import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
 import { SyncStatusService } from '@services/sync-status.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 
-import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync-status.interface';
+import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync/sync-status.interface';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
 import { BaseFieldButtonComponent, BaseIconButtonComponent } from '@components/base';
 import { ThemeService } from '@services/theme.service';
-import type { ThemePreference } from '@interfaces/theme.interface';
+import type { ThemePreference } from '@interfaces/ui/theme.interface';
+
+/** Savable data types surfaced in the pending-changes breakdown. */
+type PendingSection = 'trips' | 'shifts' | 'expenses';
 
 @Component({
   selector: 'app-sync-status-indicator',
@@ -38,6 +41,15 @@ import type { ThemePreference } from '@interfaces/theme.interface';
 })
 
 export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
+  private syncStatusService = inject(SyncStatusService);
+  private uiPreferences = inject(UiPreferencesService);
+  private unsavedDataService = inject(UnsavedDataService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private themeService = inject(ThemeService);
+  protected authService = inject(AuthGoogleService);
+
   @Input() mode: 'button' | 'panel' = 'button';
   private destroy$ = new Subject<void>();
   private intervalId?: number;
@@ -48,7 +60,29 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   showDetailedView = signal(false);
   hasUnsavedChanges = signal(false);
   unsavedCounts = signal<{ trips: number; shifts: number; expenses: number; total: number }>({ trips: 0, shifts: 0, expenses: 0, total: 0 });
+
+  // Definitions for the pending-changes breakdown. Add a new savable type here
+  // (plus its count in UnsavedDataService) and it flows into the widget + deep
+  // link automatically — no template changes needed.
+  private readonly sectionDefs: { key: PendingSection; singular: string; plural: string }[] = [
+    { key: 'trips', singular: 'trip', plural: 'trips' },
+    { key: 'shifts', singular: 'shift', plural: 'shifts' },
+    { key: 'expenses', singular: 'expense', plural: 'expenses' }
+  ];
+
+  /** Non-empty pending sections, ready to render as deep-link chips. */
+  pendingSections = computed(() => {
+    const counts = this.unsavedCounts();
+    return this.sectionDefs
+      .map(def => {
+        const count = counts[def.key];
+        return { key: def.key, count, label: count === 1 ? def.singular : def.plural };
+      })
+      .filter(section => section.count > 0);
+  });
+
   menuOpen = signal(false);
+  isPendingRoute = signal(false);
   autoSaveEnabled = signal(false);
   isSignedIn = signal<boolean>(false);
   themePreference = signal<ThemePreference>('system');
@@ -57,18 +91,15 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetX: 0, offsetY: -6 }
   ];
 
-  constructor(
-    private syncStatusService: SyncStatusService,
-    private uiPreferences: UiPreferencesService,
-    private unsavedDataService: UnsavedDataService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private router: Router,
-    private themeService: ThemeService,
-    protected authService: AuthGoogleService
-  ) {}
-
   ngOnInit(): void {
+    // Keep the trigger highlighted (active-page style) while the pending
+    // changes page it links to is open, mirroring routerLinkActive on nav links.
+    const updatePendingRoute = () => this.isPendingRoute.set(this.router.url.split('?')[0] === '/pending-changes');
+    updatePendingRoute();
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd), takeUntil(this.destroy$))
+      .subscribe(updatePendingRoute);
+
     // Subscribe to sync state changes
     this.syncStatusService.syncState$
       .pipe(takeUntil(this.destroy$))
@@ -101,7 +132,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
     // Track auth state (immediate sync-capable check + profile updates)
     try {
       this.isSignedIn.set(this.authService.isAuthenticatedSync());
-    } catch (err) {
+    } catch {
       this.isSignedIn.set(false);
     }
 
@@ -157,17 +188,18 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
   }
 
   private async checkUnsavedChanges(): Promise<void> {
-    this.hasUnsavedChanges.set(await this.unsavedDataService.hasUnsavedData());
     try {
-      this.unsavedCounts.set(await this.unsavedDataService.getUnsavedCounts());
-    } catch (err) {
+      const counts = await this.unsavedDataService.getUnsavedCounts();
+      this.unsavedCounts.set(counts);
+      this.hasUnsavedChanges.set(counts.total > 0);
+    } catch {
       // ignore errors getting counts
     }
   }
 
-  openPendingChanges(section?: 'trips' | 'shifts'): void {
+  openPendingChanges(section?: PendingSection): void {
     this.closeMenu();
-    const extras: any = {};
+    const extras: NavigationExtras = {};
     if (section) extras.queryParams = { section };
     this.router.navigate(['/pending-changes'], extras);
   }
@@ -186,7 +218,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       data: 'save'
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
+    dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
         await this.checkUnsavedChanges();
       }
@@ -212,7 +244,7 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
       data: 'load'
     });
 
-    dialogRef.afterClosed().subscribe(async (result: any) => {
+    dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
         await this.checkUnsavedChanges();
       }
@@ -326,6 +358,11 @@ export class SyncStatusIndicatorComponent implements OnInit, OnDestroy {
 
     if (!this.autoSaveEnabled()) {
       return '-';
+    }
+
+    // Auto-save is armed but the timer only runs while there are pending changes.
+    if (!this.hasUnsavedChanges()) {
+      return 'Idle';
     }
 
     const next = this.syncState()?.nextSyncIn;

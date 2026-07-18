@@ -1,4 +1,4 @@
-import { FormControl, AbstractControl } from '@angular/forms';
+import { FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { subscribeControlStatus, firstErrorMessage, controlHasError } from './base-input.helpers';
 
@@ -8,11 +8,11 @@ describe('base-input.helpers', () => {
     const state = new Subject<void>();
     spyOn(state, 'next');
 
-    const sub = subscribeControlStatus(control, state as any);
+    const sub = subscribeControlStatus(control, state);
     control.setValue('x');
     control.updateValueAndValidity();
 
-    expect((state as any).next).toHaveBeenCalled();
+    expect(state.next).toHaveBeenCalled();
     if (sub) sub.unsubscribe();
   });
 
@@ -28,7 +28,7 @@ describe('base-input.helpers', () => {
     expect(firstErrorMessage(control)).toBe('Too long');
 
     // unknown error returns the key
-    control.setErrors({ someCustomError: true } as any);
+    control.setErrors({ someCustomError: true } as ValidationErrors);
     expect(firstErrorMessage(control)).toBe('someCustomError');
 
     // fallback for required input when control missing

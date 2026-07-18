@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { firstValueFrom } from "rxjs";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
@@ -7,14 +7,21 @@ import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
 import { LoggerService } from './logger.service';
 import { getCurrentUserId } from '@utils/user-id.util';
-import type { ISheet } from "@interfaces/sheet.interface";
-import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
+import type { ISheet } from "@interfaces/sheets/sheet.interface";
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import type { ISheetProperties } from "@interfaces/sheets/sheet-properties.interface";
+import type { IMessage } from "@interfaces/sheets/message.interface";
+import type { ISheetApiResponse } from "@interfaces/sheets/sheet-api-response.interface";
+import type { IAuthTokenResponse } from "@interfaces/auth/auth-token-response.interface";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ApiService {
+    private _http = inject(HttpClient);
+    private _secureCookieStorage = inject(SecureCookieStorageService);
+    private logger = inject(LoggerService);
+
     private apiUrl = environment.gigLoggerApi;
 
     // API Endpoints Constants
@@ -34,19 +41,14 @@ export class ApiService {
         SHEETS_HEALTH: '/sheets/health',
         SHEETS_DEMO_DATA: '/sheets/demo',
         SHEETS_CHECK: '/sheets/check',
-    } as const;
-
-    constructor(
-        private _http: HttpClient,
-        private _secureCookieStorage: SecureCookieStorageService,
-        private logger: LoggerService
-    ) {}    // Centralized error handler
-    private handleError(operation: string, error: any): void {
+    } as const;    // Centralized error handler
+    private handleError(operation: string, error: unknown): void {
+        const err = error as { message?: string; status?: number; statusText?: string; url?: string };
         this.logger.error(`${operation} failed`, {
-            message: error.message || 'Unknown error',
-            status: error.status || 'No status',
-            statusText: error.statusText || 'No status text',
-            url: error.url || 'No URL',
+            message: err?.message || 'Unknown error',
+            status: err?.status || 'No status',
+            statusText: err?.statusText || 'No status text',
+            url: err?.url || 'No URL',
             timestamp: new Date().toISOString(),
             operation
         });
@@ -90,23 +92,23 @@ export class ApiService {
      * @param operation Operation name for logging
      * @returns Sheet data or null
      */
-    private async handleSheetResponse(response: any, operation: string): Promise<any> {
+    private async handleSheetResponse(response: ISheetApiResponse, operation: string): Promise<unknown> {
         try {
             if (response.isStoredInS3 && response.s3Link) {
                 // Mark the raw response so callers that inspect it know the data is in S3
-                try { (response as any)._source = 's3'; } catch {}
+                try { response._source = 's3'; } catch { /* response may be frozen/non-extensible */ }
                 this.logger.debug(`Large ${operation} data stored in S3, fetching from: ${response.s3Link}`);
                 const s3Response = await firstValueFrom(
-                    this._http.get<any>(response.s3Link)
+                    this._http.get<ISheetApiResponse>(response.s3Link)
                 );
                 // Tag the returned payload so callers know it originated from S3
-                try { (s3Response as any)._source = 's3'; } catch {}
+                try { s3Response._source = 's3'; } catch { /* response may be frozen/non-extensible */ }
                 return s3Response;
             } else if (response.sheetEntity) {
                 // Mark the raw response as originating from lambda
-                try { (response as any)._source = 'lambda'; } catch {}
+                try { response._source = 'lambda'; } catch { /* response may be frozen/non-extensible */ }
                 this.logger.debug(`${operation} data loaded directly`);
-                try { (response.sheetEntity as any)._source = 'lambda'; } catch {}
+                try { response.sheetEntity._source = 'lambda'; } catch { /* response may be frozen/non-extensible */ }
                 return response.sheetEntity;
             } else {
                 this.logger.warn(`Invalid response format for ${operation}: no sheetEntity or s3Link provided`);
@@ -138,9 +140,9 @@ export class ApiService {
                 throw new Error('No PKCE verifier found in storage');
             }
 
-            const response = await firstValueFrom(this._http.post<any>(
-                `${this.apiUrl}${this.API_ENDPOINTS.AUTH}`, 
-                JSON.stringify(tokenData), 
+            const response = await firstValueFrom(this._http.post<IAuthTokenResponse>(
+                `${this.apiUrl}${this.API_ENDPOINTS.AUTH}`,
+                JSON.stringify(tokenData),
                 this.setOptions()
             ));
 
@@ -155,7 +157,7 @@ export class ApiService {
     public async clearRefreshToken() { 
         try {
             const response = await firstValueFrom(
-                this._http.post<any>(`${this.apiUrl}${this.API_ENDPOINTS.AUTH_CLEAR}`, null)
+                this._http.post<unknown>(`${this.apiUrl}${this.API_ENDPOINTS.AUTH_CLEAR}`, null)
             );
             this.logger.debug('Refresh token cleared successfully');
             return response;
@@ -167,8 +169,8 @@ export class ApiService {
 
     public async refreshAuthToken() { 
         try {
-            const response = await firstValueFrom(this._http.post<any>(
-                `${this.apiUrl}${this.API_ENDPOINTS.AUTH_REFRESH}`, 
+            const response = await firstValueFrom(this._http.post<IAuthTokenResponse>(
+                `${this.apiUrl}${this.API_ENDPOINTS.AUTH_REFRESH}`,
                 null,
                 this.setOptions()
             ));
@@ -187,9 +189,9 @@ export class ApiService {
     public async createFile(properties: ISheetProperties): Promise<ISheetProperties | null> {
         try {
             const response = await firstValueFrom(
-                this._http.post<any>(
-                    `${this.apiUrl}${this.API_ENDPOINTS.FILES_CREATE}`, 
-                    JSON.stringify(properties), 
+                this._http.post<ISheetProperties>(
+                    `${this.apiUrl}${this.API_ENDPOINTS.FILES_CREATE}`,
+                    JSON.stringify(properties),
                     this.setOptions()
                 )
             );
@@ -224,12 +226,12 @@ export class ApiService {
     public async getSheetData(sheetId: string): Promise<ISheet | null> {
         try {
             const response = await firstValueFrom(
-                this._http.get<any>(
+                this._http.get<ISheetApiResponse>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_ALL}`,
                     this.setOptions(sheetId)
                 )
             );
-            return await this.handleSheetResponse(response, 'sheet');
+            return (await this.handleSheetResponse(response, 'sheet')) as ISheet | null;
         } catch (error) {
             this.handleError('getSheetData', error);
             return null;
@@ -238,7 +240,7 @@ export class ApiService {
     public async getSheetSingle(sheetId: string, sheetName: string) {
         try {
             const response = await firstValueFrom(
-                this._http.get<any>(
+                this._http.get<ISheetApiResponse>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}/${sheetName}`,
                     this.setOptions(sheetId)
                 )
@@ -256,7 +258,7 @@ export class ApiService {
             const names = ['names', 'places', 'trips'];
             const query = names.map(n => `names=${encodeURIComponent(n)}`).join('&');
             const response = await firstValueFrom(
-                this._http.get<any>(
+                this._http.get<ISheetApiResponse>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}?${query}`,
                     this.setOptions(sheetId)
                 )
@@ -268,10 +270,10 @@ export class ApiService {
         }
     }
 
-    public async saveSheetData(sheetData: ISheetSavePayload): Promise<any> {
+    public async saveSheetData(sheetData: ISheetSavePayload): Promise<IMessage[]> {
         try {
             const response = await firstValueFrom(
-                this._http.put<any>(
+                this._http.put<ISheetApiResponse>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}`,
                     JSON.stringify(sheetData),
                     this.setOptions(sheetData.properties.id)
@@ -282,8 +284,8 @@ export class ApiService {
             return messages;
         } catch (error) {
             this.handleError('postSheetData', error);
-            const errorMessage = (error as any)?.message || 'Unknown error occurred';
-            return [{ message: errorMessage, level: 'ERROR', type: 'NETWORK' }];
+            const errorMessage = (error as { message?: string })?.message || 'Unknown error occurred';
+            return [{ message: errorMessage, level: 'ERROR', type: 'NETWORK', time: Date.now() }];
         }
     }
 
@@ -294,7 +296,7 @@ export class ApiService {
     public async createSheet(sheetId: string) {
         try {
             const response = await firstValueFrom(
-                this._http.post<any>(
+                this._http.post<unknown>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS}`,
                     null,
                     this.setOptions(sheetId)
@@ -308,7 +310,7 @@ export class ApiService {
         }
     }
 
-    public async warmupLambda(sheetId: string): Promise<any> {
+    public async warmupLambda(sheetId: string): Promise<unknown> {
         try {
             const response = await firstValueFrom(
                 this._http.get(
@@ -344,10 +346,10 @@ export class ApiService {
      * Inserts demo data into a spreadsheet
      * @param sheetId The ID of the spreadsheet to populate with demo data
      */
-    public async insertDemoData(sheetId: string): Promise<any> {
+    public async insertDemoData(sheetId: string): Promise<unknown> {
         try {
             const response = await firstValueFrom(
-                this._http.post<any>(
+                this._http.post<unknown>(
                     `${this.apiUrl}${this.API_ENDPOINTS.SHEETS_DEMO_DATA}`,
                     null,
                     this.setOptions(sheetId)

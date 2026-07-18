@@ -1,12 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { SheetCreateComponent } from './sheet-create/sheet-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ISheet } from '@interfaces/sheet.interface';
+import { ISheet } from '@interfaces/sheets/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
@@ -18,22 +17,19 @@ import { createAsyncOperationState } from '@helpers/async-operation-state.helper
   selector: 'app-sheet-link',
   standalone: true,
     imports: [
-    CommonModule,
     BaseRectButtonComponent
-    ],
+],
   templateUrl: './sheet-link.component.html',
   styleUrl: './sheet-link.component.scss'
 })
 export class SheetLinkComponent {
-  @Output("parentReload") parentReload: EventEmitter<any> = new EventEmitter();
-  readonly sheetLinkState = createAsyncOperationState();
+  private _spreadsheetService = inject(SpreadsheetService);
+  private _snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private _logger = inject(LoggerService);
 
-  constructor(
-    private _spreadsheetService: SpreadsheetService,
-    private _snackBar: MatSnackBar,
-    private dialog: MatDialog,
-    private _logger: LoggerService
-  ) { }
+  @Output() parentReload = new EventEmitter<{ mode?: 'load-only' | 'reload' }>();
+  readonly sheetLinkState = createAsyncOperationState();
 
   async openCreateSheetDialog() {
     this.sheetLinkState.setLoading();

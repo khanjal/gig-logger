@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
@@ -6,7 +6,8 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
   providedIn: 'root'
 })
 export class DiagnosticService {
-  constructor(private logger: LoggerService) {}
+  private logger = inject(LoggerService);
+
 
   public runStartupDiagnostics(): void {
     this.logger.info('Running startup diagnostics...');
@@ -83,11 +84,12 @@ export class DiagnosticService {
     }
   }
 
-  public reportLoadingIssue(component: string, error: any): void {
+  public reportLoadingIssue(component: string, error: unknown): void {
+    const err = error as { message?: string; stack?: string } | null | undefined;
     this.logger.error(`Loading issue in ${component}`, {
       component,
-      error: error?.message || 'Unknown error',
-      stack: error?.stack,
+      error: err?.message || 'Unknown error',
+      stack: err?.stack,
       userAgent: navigator.userAgent,
       url: window.location.href,
       timestamp: new Date().toISOString()

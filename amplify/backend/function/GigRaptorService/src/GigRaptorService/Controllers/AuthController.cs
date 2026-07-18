@@ -68,9 +68,9 @@ public class AuthController : ControllerBase
             if (string.IsNullOrEmpty(tokenResponse.RefreshToken))
             {
                 _logger.LogWarning("Failed to obtain refresh token from Google for code: {Code}", code);
-                
+
                 await _metricsService.TrackAuthenticationAsync(false);
-                
+
                 return BadRequest(new { message = "Failed to obtain refresh token from Google." });
             }
 
@@ -103,7 +103,7 @@ public class AuthController : ControllerBase
             RefreshTokenCookieName,
             GetRefreshTokenCookieOptions()
         );
-        
+
         await Task.CompletedTask;
         return Ok();
     }

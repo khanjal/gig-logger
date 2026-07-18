@@ -108,7 +108,7 @@ export class AddressHelper {
      * getShortAddress("123 North Main Street, Springfield, IL", "", 2) // "123 N Main St, Springfield"
      * getShortAddress("123 North Street, Springfield, IL", "", 2) // "123 North St, Springfield"
      */
-    static getShortAddress(address: string, place: string = "", length: number = 2): string {
+    static getShortAddress(address: string, place = "", length = 2): string {
         if (!address) return "";
         // Remove the place from the address first
         address = this.removePlaceFromAddress(address, place);
@@ -116,7 +116,7 @@ export class AddressHelper {
             return address;
         }
         address = this.abbrvAddress(address);
-        let addressArray = address.split(COMMA_SPLIT_REGEX).filter(part => part && part.trim().length > 0);
+        const addressArray = address.split(COMMA_SPLIT_REGEX).filter(part => part && part.trim().length > 0);
         if (addressArray.length === 0) return "";
         if (addressArray.length === 1) return addressArray[0];
         // Truncate first part if length > 2
@@ -137,9 +137,9 @@ export class AddressHelper {
     static abbrvAddress(address: string): string {
         if (!address) return "";
         // Split by comma, focus on first part (street address)
-        let parts = address.split(COMMA_SPLIT_REGEX);
-        let street = parts[0];
-        let streetWords = street.split(/\s+/).filter(word => word.length > 0);
+        const parts = address.split(COMMA_SPLIT_REGEX);
+        const street = parts[0];
+        const streetWords = street.split(/\s+/).filter(word => word.length > 0);
         
         if (streetWords.length > 2) {
             // Abbreviate direction if present as the second word and followed by another word (not just street type)
@@ -167,7 +167,7 @@ export class AddressHelper {
      * @param map The abbreviation map to use.
      */
     private static abbreviateWord(wordRaw: string, map: Record<string, string>): string {
-        const word = wordRaw.replace(/[,\.]/g, "").toLowerCase();
+        const word = wordRaw.replace(/[,.]/g, "").toLowerCase();
         const abbr = map[word];
         if (abbr) {
             return abbr + (wordRaw.endsWith(",") ? "," : "");

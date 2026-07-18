@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { getCurrentUserId } from '@utils/user-id.util';
@@ -27,6 +27,10 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
 })
 
 export class AuthStatusComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthGoogleService);
+  private secureCookieStorage = inject(SecureCookieStorageService);
+  private spreadsheetService = inject(SpreadsheetService);
+
   private destroy$ = new Subject<void>();
   
   // Authentication status
@@ -40,12 +44,6 @@ export class AuthStatusComponent implements OnInit, OnDestroy {
   // Token info
   accessTokenPreview = signal('');
   lastUpdated = signal(new Date());
-
-  constructor(
-    private authService: AuthGoogleService,
-    private secureCookieStorage: SecureCookieStorageService,
-    private spreadsheetService: SpreadsheetService
-  ) {}
 
   async ngOnInit() {
     // Initial status check

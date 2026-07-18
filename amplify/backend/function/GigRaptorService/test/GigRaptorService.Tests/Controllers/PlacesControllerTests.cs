@@ -63,8 +63,8 @@ public class PlacesControllerTests
     public async Task GetAutocomplete_MissingUserId_ReturnsBadRequest()
     {
         // Arrange
-        var request = new PlacesAutocompleteRequest 
-        { 
+        var request = new PlacesAutocompleteRequest
+        {
             Query = "123 Main St",
             UserId = ""
         };

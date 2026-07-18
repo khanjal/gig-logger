@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, signal, inject } from '@angular/core';
 import { CommonService } from '@services/common.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AuthGoogleService } from '@services/auth-google.service';
@@ -6,13 +6,12 @@ import { LoggerService } from '@services/logger.service';
 import { ThemeService } from '@services/theme.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import type { ThemePreference } from '@interfaces/theme.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ThemePreference } from '@interfaces/ui/theme.interface';
 import { RouterLink, RouterOutlet, RouterLinkActive, NavigationEnd, Router } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-import { NgIf } from '@angular/common';
 import { interval, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indicator/sync-status-indicator.component';
@@ -23,18 +22,26 @@ import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indic
     styleUrls: ['./header.component.scss'],
     standalone: true,
     imports: [
-      MatToolbar, 
-      RouterLink, 
-      RouterLinkActive,
-      MatIcon, 
-      MatTooltip,
-      RouterOutlet,
-      NgIf,
-      SyncStatusIndicatorComponent
-    ]
+    MatToolbar,
+    RouterLink,
+    RouterLinkActive,
+    MatIcon,
+    MatTooltip,
+    RouterOutlet,
+    SyncStatusIndicatorComponent
+]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  @Output() error = new EventEmitter<Error>();
+  private _commonService = inject(CommonService);
+  private _spreadsheetService = inject(SpreadsheetService);
+  private authService = inject(AuthGoogleService);
+  private router = inject(Router);
+  private shiftService = inject(ShiftService);
+  private tripService = inject(TripService);
+  private logger = inject(LoggerService);
+  private themeService = inject(ThemeService);
+
+  @Output() headerError = new EventEmitter<Error>();
   
   defaultSheet = signal<ISpreadsheet | undefined>(undefined);
   isAuthenticated = signal(false);
@@ -64,20 +71,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   resolvedTheme = signal<'light' | 'dark'>('light');
   toolbarGradient = 'linear-gradient(135deg, var(--primary-800), var(--primary-900))'; // uses theme tokens for gradient
 
-  constructor(
-    private _commonService: CommonService,
-    private _spreadsheetService: SpreadsheetService,
-    private authService: AuthGoogleService,
-    private router: Router,
-    private shiftService: ShiftService,
-    private tripService: TripService,
-    private logger: LoggerService,
-    private themeService: ThemeService
-  ) { 
+  constructor() { 
     // Subscribe to header updates with automatic cleanup on destroy
     this._commonService.onHeaderLinkUpdate
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
+      .subscribe(() => {
         this.load();
       });
     
@@ -135,7 +133,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       await this.updateUnsavedCounts();
     } catch (error) {
       this.logger.error('Error during header initialization:', error);
-      this.error.emit(error instanceof Error ? error : new Error('Header initialization failed'));
+      this.headerError.emit(error instanceof Error ? error : new Error('Header initialization failed'));
     } finally {
       this.setLoadingState(false);
     }
@@ -148,7 +146,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     try {
       const sheets = (await this._spreadsheetService.getSpreadsheets()) || [];
       this.localOnlyMode.set(!this.isAuthenticated() && sheets.length > 0);
-    } catch (e) {
+    } catch {
       this.localOnlyMode.set(false);
     }
 
@@ -156,7 +154,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     try {
       const defaultSheets = (await this._spreadsheetService.querySpreadsheets('default', 'true')) || [];
       this.defaultSheet.set(defaultSheets[0]);
-    } catch (e) {
+    } catch {
       // ignore - defaultSheet remains whatever it was
     }
 
@@ -179,7 +177,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       ]);
     } catch (error) {
       this.logger.error('Error loading header data:', error);
-      this.error.emit(error instanceof Error ? error : new Error('Header data loading failed'));
+      this.headerError.emit(error instanceof Error ? error : new Error('Header data loading failed'));
       // Don't throw - allow app to continue with degraded functionality
     } finally {
       this.setLoadingState(false);

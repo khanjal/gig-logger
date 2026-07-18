@@ -29,7 +29,7 @@ public class SheetManager : ISheetManager
     private readonly string _sheetId;
 
     // Use Lazy<T> to only create the rate limiter when it's needed
-    private static readonly Lazy<DynamoDbRateLimiter> _lazyRateLimiter = new Lazy<DynamoDbRateLimiter>(() => 
+    private static readonly Lazy<DynamoDbRateLimiter> _lazyRateLimiter = new Lazy<DynamoDbRateLimiter>(() =>
         new DynamoDbRateLimiter(
             new Amazon.DynamoDBv2.AmazonDynamoDBClient(),
             "RaptorSheetsRateLimit",
@@ -93,17 +93,17 @@ public class SheetManager : ISheetManager
         {
             // Upload to S3 and return the link
             string s3Link = await _s3Service.UploadSheetEntityToS3Async(jsonContent, _sheetId, requestType);
-            
+
             // Ensure metadata includes sheetId
             metadata ??= new Dictionary<string, string>();
             if (!metadata.ContainsKey("sheetId"))
             {
                 metadata["sheetId"] = _sheetId;
             }
-            
+
             return SheetResponse.FromS3Link(s3Link, metadata);
         }
-        
+
         return SheetResponse.FromSheetEntity(sheetEntity);
     }
 
@@ -116,10 +116,10 @@ public class SheetManager : ISheetManager
     public async Task<SheetResponse> GetSheet(string sheet)
     {
         var sheetEntity = await _googleSheetManager.GetSheet(sheet);
-        
+
         return await ProcessResponseSize(
-            sheetEntity, 
-            $"single-{sheet}", 
+            sheetEntity,
+            $"single-{sheet}",
             new Dictionary<string, string> { { "sheetName", sheet } }
         );
     }
@@ -137,12 +137,12 @@ public class SheetManager : ISheetManager
                 sheetList.Add(sheet);
             }
         }
-        
+
         var sheetEntity = await _googleSheetManager.GetSheets(sheetList);
-        
+
         return await ProcessResponseSize(
-            sheetEntity, 
-            "multiple", 
+            sheetEntity,
+            "multiple",
             new Dictionary<string, string> { { "sheetCount", sheets.Length.ToString() } }
         );
     }
@@ -151,10 +151,10 @@ public class SheetManager : ISheetManager
     {
         var sheetData = await _googleSheetManager.GetAllSheets();
         var sheetEntity = sheetData ?? new SheetEntity();
-        
+
         return await ProcessResponseSize(
-            sheetEntity, 
-            "all", 
+            sheetEntity,
+            "all",
             new Dictionary<string, string> { { "type", "all" } }
         );
     }
@@ -163,7 +163,7 @@ public class SheetManager : ISheetManager
     {
         var returnEntity = new SheetEntity { Messages = new List<MessageEntity>() };
         returnEntity.Messages.AddRange((await _googleSheetManager.ChangeSheetData([SheetEnum.TRIPS.GetDescription(), SheetEnum.SHIFTS.GetDescription(), SheetEnum.EXPENSES.GetDescription()], sheetEntity)).Messages);
-        
+
         // Save operations typically have small responses, so we don't need to check size
         return SheetResponse.FromSheetEntity(returnEntity);
     }

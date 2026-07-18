@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { NumberHelper } from '@helpers/number.helper';
 import { AddressHelper } from '@helpers/address.helper';
-import { VOICE_PATTERNS, PatternDefinition } from '@components/voice-input/voice-patterns.config';
-import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+import { VOICE_PATTERNS } from '@components/voice-input/voice-patterns.config';
+import { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
 
 /**
  * Pattern match result with metadata
@@ -25,8 +25,8 @@ interface PatternMatch {
   providedIn: 'root'
 })
 export class VoicePatternProcessorService {
+  private dropdownDataService = inject(DropdownDataService);
 
-  constructor(private dropdownDataService: DropdownDataService) {}
 
   /**
    * Parse a voice transcript and extract structured data

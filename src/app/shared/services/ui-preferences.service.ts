@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { PollingService } from '@services/polling.service';
 import { LoggerService } from '@services/logger.service';
@@ -6,11 +6,14 @@ import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable({ providedIn: 'root' })
 export class UiPreferencesService {
+  private _pollingService = inject(PollingService);
+  private logger = inject(LoggerService);
+
   private pollingKey = SESSION_CONSTANTS.POLLING_ENABLED;
   private _pollingEnabled$ = new BehaviorSubject<boolean>(this.loadPolling());
   public pollingEnabled$ = this._pollingEnabled$.asObservable();
 
-  constructor(private _pollingService: PollingService, private logger: LoggerService) {
+  constructor() {
     // Keep polling service in sync when preference changes
     this._pollingEnabled$.subscribe(async enabled => {
       try {

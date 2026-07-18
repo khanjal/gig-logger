@@ -1,22 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShiftTripsTableComponent } from './shift-trips-table.component';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 describe('ShiftTripsTableComponent trackByTrip', () => {
   it('returns id when present', () => {
-    const t = { id: 'xyz', rowId: 1 } as any;
-    const res = (ShiftTripsTableComponent.prototype as any).trackByTrip.call(null, 0, t);
-    expect(res).toBe('xyz');
+    const t = { id: 'xyz', rowId: 1 } as unknown as ITrip;
+    const res = ShiftTripsTableComponent.prototype.trackByTrip.call(null, 0, t);
+    expect(res as unknown).toBe('xyz');
   });
 
   it('returns rowId when id absent', () => {
-    const t = { rowId: 99 } as any;
-    const res = (ShiftTripsTableComponent.prototype as any).trackByTrip.call(null, 1, t);
+    const t = { rowId: 99 } as unknown as ITrip;
+    const res = ShiftTripsTableComponent.prototype.trackByTrip.call(null, 1, t);
     expect(res).toBe(99);
   });
 
   it('falls back to index', () => {
-    const t = {} as any;
-    const res = (ShiftTripsTableComponent.prototype as any).trackByTrip.call(null, 3, t);
+    const t = {} as unknown as ITrip;
+    const res = ShiftTripsTableComponent.prototype.trackByTrip.call(null, 3, t);
     expect(res).toBe(3);
   });
 });

@@ -1,5 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ElementRef, OnInit, ViewChild, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint } from '@angular/material/form-field';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -10,14 +9,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { MockLocationService } from '@services/mock-location.service';
-import type { IPresetLocation } from '@interfaces/mock-location.interface';
+import type { IPresetLocation } from '@interfaces/external/mock-location.interface';
 import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
 
 @Component({
   selector: 'app-location-override',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     BaseCardComponent,
     BaseFabButtonComponent,
@@ -31,11 +29,14 @@ import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRect
     MatHint,
     MatOption,
     MatOptgroup
-  ],
+],
   templateUrl: './location-override.component.html',
   styleUrl: './location-override.component.scss'
 })
 export class LocationOverrideComponent implements OnInit {
+  mockLocationService = inject(MockLocationService);
+  private snackBar = inject(MatSnackBar);
+
   @ViewChild('mockLocationCard') mockLocationCard?: ElementRef<HTMLElement>;
   enabled = signal(false);
   latitude = signal(40.7128);
@@ -45,11 +46,6 @@ export class LocationOverrideComponent implements OnInit {
   selectedPreset = signal<IPresetLocation | null>(null);
   currentRealLocation = signal<{ lat: number; lng: number } | null>(null);
   gettingLocation = signal(false);
-
-  constructor(
-    public mockLocationService: MockLocationService,
-    private snackBar: MatSnackBar
-  ) {}
 
   ngOnInit(): void {
     this.loadSettings();
@@ -160,7 +156,7 @@ export class LocationOverrideComponent implements OnInit {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       });
-    } catch (error) {
+    } catch {
       this.currentRealLocation.set(null);
     } finally {
       this.gettingLocation.set(false);

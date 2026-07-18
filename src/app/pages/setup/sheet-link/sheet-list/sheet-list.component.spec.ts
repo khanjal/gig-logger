@@ -3,6 +3,7 @@ import { SheetListComponent } from './sheet-list.component';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 
 describe('SheetListComponent', () => {
   let component: SheetListComponent;
@@ -27,8 +28,8 @@ describe('SheetListComponent', () => {
 
     fixture = TestBed.createComponent(SheetListComponent);
     component = fixture.componentInstance;
-    // inject MatDialogRef via any - SheetListComponent constructor expects MatDialogRef
-    (component as any).dialogRef = dialogRefSpy as any;
+    // inject MatDialogRef manually since SheetListComponent reads it via inject()
+    (component as unknown as { dialogRef: { close: jasmine.Spy } }).dialogRef = dialogRefSpy;
     fixture.detectChanges();
   });
 
@@ -40,7 +41,7 @@ describe('SheetListComponent', () => {
     gigSpy.listFiles.and.returnValue(Promise.resolve([
       { id: '2', name: 'BBB' },
       { id: '1', name: 'aaa' }
-    ] as any));
+    ] as unknown as ISheetProperties[]));
 
     await component.loadSheets();
     expect(component.sheets().length).toBe(2);
@@ -48,7 +49,7 @@ describe('SheetListComponent', () => {
   });
 
   it('selectSheet and confirmSelection close dialog with selection', () => {
-    const sheet = { id: 's1', name: 'one' } as any;
+    const sheet = { id: 's1', name: 'one' } as unknown as ISheetProperties;
     component.selectSheet(sheet);
     expect(component.selectedSheet()).toEqual(sheet);
     component.confirmSelection();
@@ -61,7 +62,7 @@ describe('SheetListComponent', () => {
   });
 
   it('trackBySheetId returns id', () => {
-    const sheet = { id: 'track-123' } as any;
+    const sheet = { id: 'track-123' } as unknown as ISheetProperties;
     expect(component.trackBySheetId(0, sheet)).toBe('track-123');
   });
 

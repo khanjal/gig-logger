@@ -1,4 +1,5 @@
 import { GenericCrudService } from '@services/generic-crud.service';
+import type { Table } from 'dexie';
 
 interface TestEntity {
   id?: number;
@@ -51,9 +52,12 @@ class FakeTable<T extends { id?: number }> {
   }
 
   orderBy(field: string) {
-    const sorted = [...this.items].sort((a: any, b: any) => {
-      if (a[field] === b[field]) return 0;
-      return a[field] < b[field] ? -1 : 1;
+    const get = (item: T) => (item as Record<string, unknown>)[field];
+    const sorted = [...this.items].sort((a, b) => {
+      const av = get(a);
+      const bv = get(b);
+      if (av === bv) return 0;
+      return (av as number | string) < (bv as number | string) ? -1 : 1;
     });
     return {
       reverse: () => ({
@@ -70,24 +74,25 @@ class FakeTable<T extends { id?: number }> {
   }
 
   where(field: string) {
+    const get = (item: T) => (item as Record<string, unknown>)[field];
     return {
-      equals: (value: any) => {
-        const matches = this.items.filter((i: any) => i[field] === value);
+      equals: (value: unknown) => {
+        const matches = this.items.filter(i => get(i) === value);
         return {
           toArray: () => Promise.resolve([...matches]),
           first: () => Promise.resolve(matches[0]),
         };
       },
-      anyOfIgnoreCase: (value: any) => {
-        const matches = this.items.filter((i: any) => String(i[field]).toLowerCase() === String(value).toLowerCase());
+      anyOfIgnoreCase: (value: unknown) => {
+        const matches = this.items.filter(i => String(get(i)).toLowerCase() === String(value).toLowerCase());
         return {
           first: () => Promise.resolve(matches[0]),
           toArray: () => Promise.resolve(matches),
         };
       },
-      startsWithAnyOfIgnoreCase: (value: any) => {
-        const matches = this.items.filter((i: any) =>
-          String(i[field]).toLowerCase().startsWith(String(value).toLowerCase())
+      startsWithAnyOfIgnoreCase: (value: unknown) => {
+        const matches = this.items.filter(i =>
+          String(get(i)).toLowerCase().startsWith(String(value).toLowerCase())
         );
         return {
           toArray: () => Promise.resolve(matches),
@@ -107,7 +112,7 @@ describe('GenericCrudService', () => {
       { id: 2, rowId: 2, name: 'Beta', value: 20 },
       { id: 3, rowId: 3, name: 'Gamma', value: 30 },
     ]);
-    service = new GenericCrudService<TestEntity>(table as any);
+    service = new GenericCrudService<TestEntity>(table as unknown as Table<TestEntity, number>);
   });
 
   it('adds and lists items', async () => {
@@ -158,7 +163,7 @@ describe('GenericCrudService', () => {
       { id: 3, rowId: 3, name: 'pick up' },
       { id: 4, rowId: 4, name: 'Deals Pickup' },
     ]);
-    service = new GenericCrudService<TestEntity>(table as any);
+    service = new GenericCrudService<TestEntity>(table as unknown as Table<TestEntity, number>);
     const duplicates = await service.findDuplicates('name', { mode: 'normalized' });
     expect(duplicates.length).toBe(1);
     expect(duplicates[0].items.length).toBe(3);

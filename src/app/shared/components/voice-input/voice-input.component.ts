@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
@@ -6,10 +6,16 @@ import { VoiceSuggestionService } from '@services/voice-suggestion.service';
 import { VoicePatternProcessorService } from '@services/voice-pattern-processor.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
-import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+import type { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
+import type {
+  ISpeechRecognition,
+  ISpeechRecognitionErrorEvent,
+  ISpeechRecognitionEvent,
+  IWindowWithSpeechRecognition
+} from '@interfaces/external/speech-recognition.interface';
 
 @Component({
-  selector: 'voice-input',
+  selector: 'app-voice-input',
   templateUrl: './voice-input.component.html',
   styleUrls: ['./voice-input.component.scss'],
   standalone: true,
@@ -17,6 +23,12 @@ import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface
 })
 
 export class VoiceInputComponent implements OnInit, OnDestroy {
+  private _dropdownDataService = inject(DropdownDataService);
+  private logger = inject(LoggerService);
+  private _permissionService = inject(PermissionService);
+  private _voiceSuggestionService = inject(VoiceSuggestionService);
+  private _voicePatternProcessor = inject(VoicePatternProcessorService);
+
   // Dropdown data (from database + canonical JSON fallback)
   serviceList: string[] = [];
   addressList: string[] = [];
@@ -26,21 +38,13 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   // Component state
   transcript = signal('');
   parsedResult = signal<IVoiceParseResult | null>(null);
-  recognition: any = null;
+  recognition: ISpeechRecognition | null = null;
   recognizing = signal(false);
-  private transcriptTimeout: any = null;
+  private transcriptTimeout: ReturnType<typeof setTimeout> | null = null;
   suggestionPhrase = signal('');
 
   // Auto-hide delay (in milliseconds)
   private readonly TRANSCRIPT_AUTO_HIDE_DELAY = 3000;
-
-  constructor(
-    private _dropdownDataService: DropdownDataService,
-    private logger: LoggerService,
-    private _permissionService: PermissionService,
-    private _voiceSuggestionService: VoiceSuggestionService,
-    private _voicePatternProcessor: VoicePatternProcessorService
-  ) {}
 
   async ngOnInit(): Promise<void> {
     // Load dropdown data (service handles canonical fallback)
@@ -112,35 +116,38 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   }
 
   private initializeSpeechRecognition(): void {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    this.recognition = new SpeechRecognition();
+    const win = window as unknown as IWindowWithSpeechRecognition;
+    const SpeechRecognitionCtor = win.SpeechRecognition || win.webkitSpeechRecognition;
+    if (!SpeechRecognitionCtor) return;
+
+    this.recognition = new SpeechRecognitionCtor();
     this.recognition.lang = 'en-US';
     this.recognition.interimResults = false;
     this.recognition.maxAlternatives = 1;
-    
-    this.recognition.onresult = (event: any) => this.handleRecognitionResult(event);
-    this.recognition.onerror = (event: any) => this.handleRecognitionError(event);
+
+    this.recognition.onresult = (event: ISpeechRecognitionEvent) => this.handleRecognitionResult(event);
+    this.recognition.onerror = (event: ISpeechRecognitionErrorEvent) => this.handleRecognitionError(event);
     this.recognition.onend = () => {
       this.recognizing.set(false);
     };
   }
 
-  private handleRecognitionResult(event: any): void {
+  private handleRecognitionResult(event: ISpeechRecognitionEvent): void {
     const result = event.results[0][0].transcript;
     this.transcript.set(result);
     const parsed = this.parseTranscript(result);
     this.parsedResult.set(parsed);
     this.voiceResult.emit(parsed);
     this.recognizing.set(false);
-    
+
     // Auto-hide transcript after delay
     this.scheduleTranscriptHide();
   }
 
-  private handleRecognitionError(event: any): void {
+  private handleRecognitionError(event: ISpeechRecognitionErrorEvent): void {
     this.logger.error('VoiceInput - Speech recognition error:', event.error);
     
-    const errorMessages: { [key: string]: string } = {
+    const errorMessages: Record<string, string> = {
       'no-speech': 'No speech detected. Please try again.',
       'audio-capture': 'No microphone detected. Please check your device settings.',
       'not-allowed': 'Microphone access denied. Please enable microphone permissions.',
@@ -153,6 +160,8 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   }
 
   private startListening(): void {
+    if (!this.recognition) return;
+
     this.transcript.set('');
     this.parsedResult.set(null);
     this.suggestionPhrase.set(this._voiceSuggestionService.getRandomSuggestion(
@@ -160,7 +169,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
       this.typeList,
       this.placeList
     ));
-    
+
     try {
       this.recognition.start();
       this.recognizing.set(true);
@@ -196,7 +205,7 @@ export class VoiceInputComponent implements OnInit, OnDestroy {
   /**
    * Gets the parsed result as an array of key-value pairs for template iteration
    */
-  get parsedResultEntries(): Array<{ key: string; value: string }> {
+  get parsedResultEntries(): { key: string; value: string }[] {
     if (!this.parsedResult()) return [];
     // Convert camelCase keys to Proper Case with spaces
     const toProperCase = (str: string) =>

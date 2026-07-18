@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import type { PermissionState } from '@interfaces/permission.interface';
+import type { PermissionState } from '@interfaces/auth/permission.interface';
 
 export type { PermissionState };
 
@@ -28,8 +28,12 @@ export class PermissionService {
   }
 
   private async initMicrophonePermission() {
-    if (!('permissions' in navigator)) {
-      if ((navigator as any).mediaDevices && typeof (navigator as any).mediaDevices.getUserMedia === 'function') {
+    // Older/non-standard environments may lack `permissions` or `mediaDevices` at
+    // runtime even though the DOM lib types declare them as always present.
+    const nav = navigator as Partial<Pick<Navigator, 'permissions' | 'mediaDevices'>>;
+
+    if (!nav.permissions) {
+      if (nav.mediaDevices && typeof nav.mediaDevices.getUserMedia === 'function') {
         this.microphoneState$.next('prompt');
       } else {
         this.microphoneState$.next('unsupported');
@@ -38,7 +42,7 @@ export class PermissionService {
     }
 
     try {
-      const status = await (navigator as any).permissions.query({ name: 'microphone' } as any);
+      const status = await nav.permissions.query({ name: 'microphone' });
       this.microphoneState$.next(status.state as PermissionState);
       // Watch for changes
       if (typeof status.onchange === 'function') {
@@ -46,8 +50,8 @@ export class PermissionService {
           this.microphoneState$.next(status.state as PermissionState);
         };
       }
-    } catch (e) {
-      if ((navigator as any).mediaDevices && typeof (navigator as any).mediaDevices.getUserMedia === 'function') {
+    } catch {
+      if (nav.mediaDevices && typeof nav.mediaDevices.getUserMedia === 'function') {
         this.microphoneState$.next('prompt');
       } else {
         this.microphoneState$.next('unsupported');
@@ -66,14 +70,14 @@ export class PermissionService {
     }
 
     try {
-      const status = await (navigator as any).permissions.query({ name: 'geolocation' } as any);
+      const status = await navigator.permissions.query({ name: 'geolocation' });
       this.locationState$.next(status.state as PermissionState);
       if (typeof status.onchange === 'function') {
         status.onchange = () => {
           this.locationState$.next(status.state as PermissionState);
         };
       }
-    } catch (e) {
+    } catch {
       if ('geolocation' in navigator) {
         this.locationState$.next('prompt');
       } else {
@@ -105,7 +109,7 @@ export class PermissionService {
       stream.getTracks().forEach(t => t.stop());
       this.microphoneState$.next('granted');
       return 'granted';
-    } catch (e) {
+    } catch {
       this.microphoneState$.next('denied');
       return 'denied';
     }
@@ -126,7 +130,7 @@ export class PermissionService {
       });
       this.locationState$.next('granted');
       return 'granted';
-    } catch (e) {
+    } catch {
       this.locationState$.next('denied');
       return 'denied';
     }

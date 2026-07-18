@@ -7,6 +7,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { SwUpdate } from '@angular/service-worker';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ActivatedRoute } from '@angular/router';
+import { Provider } from '@angular/core';
 import { of, Subject, BehaviorSubject } from 'rxjs';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -15,6 +16,8 @@ import { TripService } from '@services/sheets/trip.service';
 import { LoggerService } from '@services/logger.service';
 import { ThemeService } from '@services/theme.service';
 import { CommonService } from '@services/common.service';
+import type { UserProfile } from '@interfaces/auth/user-profile.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 const createDialogRefStub = () => ({ close: () => {} });
 
@@ -36,7 +39,7 @@ export const createDialogSpy = () => {
   return {
     open: jasmine.createSpy('open').and.callFake((_comp?: unknown, _config?: unknown) => {
       afterOpenedSubject.next();
-      return { afterClosed: () => of(undefined) } as any;
+      return { afterClosed: () => of(undefined) };
     }),
     openDialogs: [],
     afterOpened: afterOpenedSubject,
@@ -55,44 +58,54 @@ export const createAuthGoogleServiceMock = () => jasmine.createSpyObj('AuthGoogl
 ]);
 
 export const createAuthGoogleServiceMockExtended = () => {
-  const mock: any = jasmine.createSpyObj('AuthGoogleService', [
+  const mock = jasmine.createSpyObj('AuthGoogleService', [
     'isAuthenticated',
     'canSync',
     'login',
     'logout',
     'getToken'
-  ], { profile$: new Subject<any>() });
+  ], { profile$: new Subject<UserProfile | null>() });
   mock.canSync.and.returnValue(Promise.resolve(false));
   mock.isAuthenticated.and.returnValue(false);
   return mock;
 };
 
 export const createSpreadsheetServiceMock = () => {
-  const spreadsheets$ = new BehaviorSubject<any[]>([]);
+  const spreadsheets$ = new BehaviorSubject<ISpreadsheet[]>([]);
   return {
     spreadsheets$,
     querySpreadsheets: jasmine.createSpy('querySpreadsheets').and.returnValue(Promise.resolve([])),
     getSpreadsheets: jasmine.createSpy('getSpreadsheets').and.returnValue(Promise.resolve([]))
-  } as any;
+  };
 };
 
-export const createShiftServiceMock = () => jasmine.createSpyObj('ShiftService', [
-  'getAll',
-  'getById',
-  'add',
-  'update',
-  'delete',
-  'getShiftsBetweenDates'
-]);
+export const createShiftServiceMock = () => {
+  const mock = jasmine.createSpyObj('ShiftService', [
+    'getAll',
+    'getById',
+    'add',
+    'update',
+    'delete',
+    'getShiftsBetweenDates',
+    'getUnsavedShifts'
+  ]);
+  mock.getUnsavedShifts.and.returnValue(Promise.resolve([]));
+  return mock;
+};
 
-export const createTripServiceMock = () => jasmine.createSpyObj('TripService', [
-  'getAll',
-  'getById',
-  'add',
-  'update',
-  'delete',
-  'getBetweenDates'
-]);
+export const createTripServiceMock = () => {
+  const mock = jasmine.createSpyObj('TripService', [
+    'getAll',
+    'getById',
+    'add',
+    'update',
+    'delete',
+    'getBetweenDates',
+    'getUnsaved'
+  ]);
+  mock.getUnsaved.and.returnValue(Promise.resolve([]));
+  return mock;
+};
 
 export const commonTestingImports = [
   HttpClientTestingModule,
@@ -102,7 +115,7 @@ export const commonTestingImports = [
   MatDatepickerModule
 ];
 
-export const commonTestingProviders: any[] = [
+export const commonTestingProviders: Provider[] = [
   provideNativeDateAdapter(),
   { provide: MAT_DIALOG_DATA, useValue: {} },
   { provide: MatDialogRef, useValue: createDialogRefStub() },
@@ -120,11 +133,11 @@ export const commonTestingProviders: any[] = [
 
 // Provide lightweight global test doubles for common services used by HeaderComponent
 commonTestingProviders.push(
-  { provide: (AuthGoogleService as any), useValue: createAuthGoogleServiceMockExtended() },
-  { provide: (SpreadsheetService as any), useValue: createSpreadsheetServiceMock() },
-  { provide: (ShiftService as any), useValue: createShiftServiceMock() },
-  { provide: (TripService as any), useValue: createTripServiceMock() },
-  { provide: (LoggerService as any), useValue: jasmine.createSpyObj('LoggerService', ['error', 'debug']) },
-  { provide: (ThemeService as any), useValue: { preferenceChanges: of('system'), activeTheme$: of('light'), setTheme: jasmine.createSpy('setTheme') } },
-  { provide: (CommonService as any), useValue: { onHeaderLinkUpdate: of(null) } }
+  { provide: AuthGoogleService, useValue: createAuthGoogleServiceMockExtended() },
+  { provide: SpreadsheetService, useValue: createSpreadsheetServiceMock() },
+  { provide: ShiftService, useValue: createShiftServiceMock() },
+  { provide: TripService, useValue: createTripServiceMock() },
+  { provide: LoggerService, useValue: jasmine.createSpyObj('LoggerService', ['error', 'debug']) },
+  { provide: ThemeService, useValue: { preferenceChanges: of('system'), activeTheme$: of('light'), setTheme: jasmine.createSpy('setTheme') } },
+  { provide: CommonService, useValue: { onHeaderLinkUpdate: of(null) } }
 );

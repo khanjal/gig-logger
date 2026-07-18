@@ -18,13 +18,13 @@ public class PlaceResult
 {
     [JsonPropertyName("id")]
     public string? Id { get; set; }
-    
+
     [JsonPropertyName("displayName")]
     public LocalizedText? DisplayName { get; set; }
-    
+
     [JsonPropertyName("formattedAddress")]
     public string? FormattedAddress { get; set; }
-    
+
     [JsonPropertyName("types")]
     public List<string>? Types { get; set; }
 }
@@ -36,16 +36,16 @@ public class PlaceDetailsResult
 {
     [JsonPropertyName("id")]
     public string? Id { get; set; }
-    
+
     [JsonPropertyName("displayName")]
     public LocalizedText? DisplayName { get; set; }
-    
+
     [JsonPropertyName("formattedAddress")]
     public string? FormattedAddress { get; set; }
-    
+
     [JsonPropertyName("addressComponents")]
     public List<AddressComponent>? AddressComponents { get; set; }
-    
+
     [JsonPropertyName("location")]
     public LatLngLiteral? Location { get; set; }
 }
@@ -57,7 +57,7 @@ public class LocalizedText
 {
     [JsonPropertyName("text")]
     public string? Text { get; set; }
-    
+
     [JsonPropertyName("languageCode")]
     public string? LanguageCode { get; set; }
 }
@@ -69,10 +69,10 @@ public class AddressComponent
 {
     [JsonPropertyName("longText")]
     public string? LongText { get; set; }
-    
+
     [JsonPropertyName("shortText")]
     public string? ShortText { get; set; }
-    
+
     [JsonPropertyName("types")]
     public List<string>? Types { get; set; }
 }
@@ -84,7 +84,7 @@ public class LatLngLiteral
 {
     [JsonPropertyName("latitude")]
     public double Latitude { get; set; }
-    
+
     [JsonPropertyName("longitude")]
     public double Longitude { get; set; }
 }

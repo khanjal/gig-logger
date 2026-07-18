@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SheetAddFormComponent } from './sheet-add-form.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SpreadsheetService } from '@services/spreadsheet.service';
+import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 
 describe('SheetSetupFormComponent', () => {
   let component: SheetAddFormComponent;
@@ -30,7 +31,7 @@ describe('SheetSetupFormComponent', () => {
   });
 
   it('loads default spreadsheet on init', async () => {
-    spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'default-1' }] as any));
+    spreadsheetSpy.querySpreadsheets.and.returnValue(Promise.resolve([{ id: 'default-1', name: 'Default', default: 'true', size: 0 }] as ISpreadsheet[]));
     // trigger load explicitly since ngOnInit already ran during detectChanges
     await component.load();
     expect(component.defaultSpreadsheet?.id).toBe('default-1');
@@ -38,7 +39,7 @@ describe('SheetSetupFormComponent', () => {
 
   it('setupSheet calls update with default=true when no default exists', async () => {
     spreadsheetSpy.update.and.returnValue(Promise.resolve());
-    component.defaultSpreadsheet = undefined as any;
+    component.defaultSpreadsheet = undefined;
     await component.setupSheet('SHEET_ID');
     expect(spreadsheetSpy.update).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'SHEET_ID', default: 'true' }));
   });
