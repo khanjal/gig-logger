@@ -260,9 +260,9 @@
             <mat-icon class="text-xs flex-shrink-0">open_in_new</mat-icon>
           </a>
         </div>
-}
-        @if (trip.endAddress) {
-<div class="p-2 bg-surface-3 rounded border border-soft">
+      }
+      @if (trip.endAddress) {
+        <div class="p-2 bg-surface-3 rounded border border-soft">
           <div class="text-xs text-secondary mb-1">To</div>
           <a [href]="'https://www.google.com/maps/search/?api=1&query=' + trip.endAddress" 
              target="_blank" 
@@ -272,42 +272,42 @@
             <mat-icon class="text-xs flex-shrink-0">open_in_new</mat-icon>
           </a>
         </div>
-}
+      }
       </div>
     </div>
-}
-    <!-- Additional Info: Only show if more than just region -->
-    @if (trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region) {
-<div class="mb-4">
+  }
+  <!-- Additional Info: Only show if more than just region -->
+  @if (trip.orderNumber || trip.endUnit || trip.startOdometer || trip.endOdometer || trip.type || trip.region) {
+    <div class="mb-4">
       <h3 class="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
         <mat-icon class="text-info text-base">info</mat-icon>
         Trip Info
       </h3>
       <div class="grid grid-cols-2 gap-2">
         @if (trip.orderNumber) {
-<div class="flex justify-between items-center gap-2 p-2 bg-surface-3 rounded border border-soft min-w-0">
+        <div class="flex justify-between items-center gap-2 p-2 bg-surface-3 rounded border border-soft min-w-0">
           <span class="text-xs text-secondary flex-shrink-0">Order #</span>
           <span class="text-sm font-medium text-primary truncate" [title]="trip.orderNumber">{{trip.orderNumber}}</span>
         </div>
-}
+        }
         @if (trip.endUnit) {
-<div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+        <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
           <span class="text-xs text-secondary">Unit</span>
           <span class="text-sm font-medium text-primary">{{trip.endUnit}}</span>
         </div>
-}
+        }
         @if (trip.startOdometer) {
-<div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+        <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
           <span class="text-xs text-secondary">Start ODO</span>
           <span class="text-sm font-medium text-primary">{{trip.startOdometer | number:'1.0'}}</span>
         </div>
-}
+        }
         @if (trip.endOdometer) {
-<div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
+        <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">
           <span class="text-xs text-secondary">End ODO</span>
           <span class="text-sm font-medium text-primary">{{trip.endOdometer | number:'1.0'}}</span>
         </div>
-}
+        }
         <!-- Trip Type (now same width as order # and unit) -->
         @if (trip.type && trip.type !== '') {
               <div class="flex justify-between p-2 bg-surface-3 rounded border border-soft">

@@ -2,7 +2,6 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoggerService } from '@services/logger.service';
 import { PermissionService } from '@services/permission.service';
-
 import { BaseCardComponent, BaseRectButtonComponent } from '@components/base';
 import { MatIcon } from '@angular/material/icon';
 

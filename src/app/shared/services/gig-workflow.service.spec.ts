@@ -139,7 +139,7 @@ describe('GigWorkflowService', () => {
         shifts: [],
         expenses: []
       } as any;
-      mockApiService.saveSheetData.and.returnValue(Promise.resolve({ success: true }));
+      mockApiService.saveSheetData.and.returnValue(Promise.resolve([]));
 
       await service.saveSheetData(sheetData);
 

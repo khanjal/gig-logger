@@ -3,7 +3,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/shift.interface';
 import type { ITrip } from '@interfaces/trip.interface';
 import type { IPlace } from '@interfaces/place.interface';
-import type { IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import type { IDiagnosticItem, IDiagnosticRecord, IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 
 export class DiagnosticHelper {
   /**
@@ -44,10 +44,10 @@ export class DiagnosticHelper {
    * Find trips with a place but no start address
    */
   static findTripsWithPlaceNoAddress(
-    trips: ITrip[], 
-    places: IPlace[], 
+    trips: ITrip[],
+    places: IPlace[],
     selectedAddress: Record<number, string>
-  ): any[] {
+  ): (ITrip & { availableAddresses: string[] })[] {
     // Validate selectedAddress parameter
     if (!selectedAddress || typeof selectedAddress !== 'object') {
       throw new Error('selectedAddress parameter must be a valid object');
@@ -86,12 +86,14 @@ export class DiagnosticHelper {
     const groups: T[][] = [];
     const items: T[] = [];
 
-    const getId = (x: any): string | number =>
-      (x?.id ?? x?.rowId ?? x?.place ?? x?.name ?? x?.address ?? x?.service ?? x?.region ?? JSON.stringify(x));
+    const getId = (x: T): string | number => {
+      const r = x as unknown as IDiagnosticRecord;
+      return r?.id ?? r?.rowId ?? r?.place ?? r?.name ?? r?.address ?? r?.service ?? r?.region ?? JSON.stringify(x);
+    };
 
     const groupKey = (g: T[]) =>
       g.map(i => getId(i))
-        .sort((a: any, b: any) => ('' + a).localeCompare('' + b))
+        .sort((a, b) => ('' + a).localeCompare('' + b))
         .join('|');
 
     const seenGroupKeys = new Set<string>();
@@ -122,7 +124,7 @@ export class DiagnosticHelper {
    */
   static async recomputeGroupCounts(
     itemType: DiagnosticEntityType,
-    group: any[],
+    group: IDiagnosticRecord[],
     tripService: TripService,
     shiftService: ShiftService
   ): Promise<void> {
@@ -145,7 +147,7 @@ export class DiagnosticHelper {
         }
 
         case 'address':
-          item.trips = trips.filter((t: ITrip) => 
+          item.trips = trips.filter((t: ITrip) =>
             t.startAddress === item.address || t.endAddress === item.address
           ).length;
           break;
@@ -170,9 +172,9 @@ export class DiagnosticHelper {
       const allZero = itemType === 'place' || itemType === 'name' || itemType === 'address' || itemType === 'type'
         ? item.trips === 0
         : item.trips === 0 && item.shifts === 0;
-      
+
       if (allZero) {
-        (item as any).fixed = true;
+        item.fixed = true;
       }
     }
   }
@@ -237,12 +239,12 @@ export class DiagnosticHelper {
   /**
    * Mark orphaned-trip diagnostic items as fixed for the provided shift keys
    */
-  static markOrphanedTripsFixed(diagnostic: any | undefined, keys: string[]) {
+  static markOrphanedTripsFixed(diagnostic: IDiagnosticItem | undefined, keys: string[]) {
     if (!diagnostic || !diagnostic.items || !Array.isArray(keys) || keys.length === 0) return;
 
     for (const key of keys) {
-      const matched = diagnostic.items.filter((t: ITrip) => t.key === key);
-      matched.forEach((t: ITrip) => (t as any).fixed = true);
+      const matched = diagnostic.items.filter((t: IDiagnosticRecord) => t.key === key);
+      matched.forEach((t) => (t.fixed = true));
       diagnostic.count = Math.max(0, diagnostic.count - matched.length);
     }
   }

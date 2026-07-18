@@ -12,7 +12,6 @@ import { RouterLink, RouterOutlet, RouterLinkActive, NavigationEnd, Router } fro
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-
 import { interval, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { SyncStatusIndicatorComponent } from '@components/sync/sync-status-indicator/sync-status-indicator.component';

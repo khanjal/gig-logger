@@ -1,5 +1,4 @@
 import { Component, signal, inject } from '@angular/core';
-
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ShiftService } from '@services/sheets/shift.service';
@@ -15,14 +14,34 @@ import type { IAddress } from '@interfaces/address.interface';
 import type { IPlace } from '@interfaces/place.interface';
 import type { IName } from '@interfaces/name.interface';
 
+interface DiagnosticRecord {
+  rowId?: number;
+  date?: string;
+  key?: string;
+  place?: string;
+  name?: string;
+  address?: string;
+  trips?: number;
+  totalTrips?: number;
+  start?: string;
+  finish?: string;
+  exclude?: boolean;
+  startLocation?: string;
+  endLocation?: string;
+  pickup?: string;
+  dropoff?: string;
+  names?: string[];
+  addresses?: unknown[];
+}
+
 interface DiagnosticItem {
   name: string;
   count: number;
   severity: 'info' | 'warning' | 'error';
   description: string;
   itemType?: 'shift' | 'trip' | 'address' | 'place' | 'name'; // Type of items in the array
-  items?: any[]; // Array of problematic shifts/trips/addresses/places/names
-  groups?: any[][]; // Grouped duplicates for better display
+  items?: DiagnosticRecord[]; // Array of problematic shifts/trips/addresses/places/names
+  groups?: DiagnosticRecord[][]; // Grouped duplicates for better display
 }
 
 @Component({

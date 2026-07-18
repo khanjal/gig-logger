@@ -31,7 +31,7 @@ import { GigWorkflowService } from '@services/gig-workflow.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import type { IShift } from '@interfaces/shift.interface';
 import type { ITrip } from '@interfaces/trip.interface';
-import type { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import type { IDiagnosticItem, IDiagnosticRecord, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 import { DiagnosticGroupComponent } from './diagnostic-group/diagnostic-group.component';
 import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.component';
 
@@ -60,20 +60,20 @@ export class DiagnosticsComponent implements OnInit {
   dataDiagnostics = signal<IDiagnosticItem[]>([]);
   isLoading = signal(false);
   isBulkFixing = signal(false);
-  selectedValue: any[] = [];
+  selectedValue: (IDiagnosticRecord | undefined)[] = [];
   selectedAddress: Record<number, string> = {};
-  selectedShiftToDelete: Record<number, number> = {};
+  selectedShiftToDelete: Record<number, number | undefined> = {};
 
   trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
     return item.name ?? index;
   }
 
-  trackByGroup(_index: number, group: any[]): string | number {
+  trackByGroup(_index: number, group: IDiagnosticRecord[]): string | number {
     const first = group?.[0];
     return first?.rowId ?? first?.id ?? first?.key ?? first?.name ?? group.length;
   }
 
-  trackByProblemItem(index: number, item: any): any {
+  trackByProblemItem(index: number, item: IDiagnosticRecord): string | number {
     // Prefer rowId, id, key, or fallback to index
     return item?.rowId ?? item?.id ?? item?.key ?? index;
   }
@@ -330,20 +330,20 @@ export class DiagnosticsComponent implements OnInit {
     return this.dataDiagnostics().reduce((sum, item) => sum + item.count, 0);
   }
 
-  async mergeDuplicates(group: any[], selectedItem: any, itemType: DiagnosticEntityType) {
+  async mergeDuplicates(group: IDiagnosticRecord[], selectedItem: IDiagnosticRecord, itemType: DiagnosticEntityType) {
     const trips = await this._tripService.list();
     const shifts = await this._shiftService.list();
-    
+
     // Collect all updates in batches
     const tripsToUpdate: ITrip[] = [];
     const shiftsToUpdate: IShift[] = [];
-    
+
     for (const item of group) {
       if (item === selectedItem) continue;
-      
+
       let affectedTrips: ITrip[] = [];
       let affectedShifts: IShift[] = [];
-      
+
       if (itemType === 'place') {
         affectedTrips = trips.filter(t => t.place === item.place);
       } else if (itemType === 'name') {
@@ -359,36 +359,36 @@ export class DiagnosticsComponent implements OnInit {
       } else if (itemType === 'type') {
         affectedTrips = trips.filter(t => t.type === item.type);
       }
-      
+
       for (const trip of affectedTrips) {
         if (itemType === 'place') {
-          trip.place = selectedItem.place;
+          trip.place = selectedItem.place ?? '';
         } else if (itemType === 'name') {
-          trip.name = selectedItem.name;
+          trip.name = selectedItem.name ?? '';
         } else if (itemType === 'address') {
-          if (trip.startAddress === item.address) trip.startAddress = selectedItem.address;
-          if (trip.endAddress === item.address) trip.endAddress = selectedItem.address;
+          if (trip.startAddress === item.address) trip.startAddress = selectedItem.address ?? '';
+          if (trip.endAddress === item.address) trip.endAddress = selectedItem.address ?? '';
         } else if (itemType === 'service') {
-          trip.service = selectedItem.service;
+          trip.service = selectedItem.service ?? '';
         } else if (itemType === 'region') {
-          trip.region = selectedItem.region;
+          trip.region = selectedItem.region ?? '';
         } else if (itemType === 'type') {
-          trip.type = selectedItem.type;
+          trip.type = selectedItem.type ?? '';
         }
         updateAction(trip, ActionEnum.Update);
         tripsToUpdate.push(trip);
       }
-      
+
       for (const shift of affectedShifts) {
         if (itemType === 'service') {
-          shift.service = selectedItem.service;
+          shift.service = selectedItem.service ?? '';
         } else if (itemType === 'region') {
-          shift.region = selectedItem.region;
+          shift.region = selectedItem.region ?? '';
         }
         updateAction(shift, ActionEnum.Update);
         shiftsToUpdate.push(shift);
       }
-      
+
       item.trips = 0;
       if (itemType === 'service' || itemType === 'region') {
         item.shifts = 0;
@@ -410,22 +410,24 @@ export class DiagnosticsComponent implements OnInit {
     this.touchDiagnostics();
   }
 
-  async fixShiftDuration(shift: IShift) {
+  async fixShiftDuration(record: IDiagnosticRecord) {
+    const shift = record as unknown as IShift;
     if (!shift.start || !shift.finish) return;
     const duration = DateHelper.getDurationSeconds(shift.start, shift.finish);
     shift.time = DateHelper.getDurationString(duration);
     updateAction(shift, ActionEnum.Update);
     await this._shiftService.update([shift]);
-    (shift as any).fixed = true;
+    record.fixed = true;
     this.decrementDiagnosticCount('Shifts Missing Time Duration');
     this.disableAutoSave();
     this.touchDiagnostics();
   }
 
-  async fixTripDuration(trip: ITrip) {
+  async fixTripDuration(record: IDiagnosticRecord) {
+    const trip = record as unknown as ITrip;
     await this._gigCalculator.updateTripDuration(trip);
-    
-    (trip as any).fixed = true;
+
+    record.fixed = true;
     this.decrementDiagnosticCount('Trips Missing Duration');
     this.disableAutoSave();
     this.touchDiagnostics();
@@ -472,18 +474,19 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  async applyAddressToTrip(trip: any, address: string) {
-    trip.startAddress = address;
-    trip.addressApplied = true;
+  async applyAddressToTrip(record: IDiagnosticRecord, address: string) {
+    record.startAddress = address;
+    record.addressApplied = true;
+    const trip = record as unknown as ITrip;
     updateAction(trip, ActionEnum.Update);
     await this._tripService.update([trip]);
     this.disableAutoSave();
     this.touchDiagnostics();
   }
 
-  async createShiftFromTrip(trip: ITrip) {
+  async createShiftFromTrip(record: IDiagnosticRecord) {
     // Delegate to the batch flow so single-create reuses same logic
-    await this.createShiftsFromTrips([trip]);
+    await this.createShiftsFromTrips([record]);
   }
 
   /**
@@ -493,8 +496,9 @@ export class DiagnosticsComponent implements OnInit {
    * - Persists all new shifts, then calls `calculateShiftTotals` once with the array
    * - Marks matching orphaned trips as fixed in diagnostics
    */
-  async createShiftsFromTrips(trips: ITrip[]) {
-    if (!trips || trips.length === 0) return;
+  async createShiftsFromTrips(records: IDiagnosticRecord[]) {
+    if (!records || records.length === 0) return;
+    const trips = records as unknown as ITrip[];
 
     this.isBulkFixing.set(true);
     try {
@@ -525,7 +529,7 @@ export class DiagnosticsComponent implements OnInit {
 
         const shift = ShiftHelper.createShiftFromTrip(trip);
         shift.rowId = nextRowId++;
-        delete (shift as any).id;
+        delete shift.id;
         await this._shiftService.add(shift);
         newShifts.push(shift);
       }
@@ -553,25 +557,26 @@ export class DiagnosticsComponent implements OnInit {
     }
   }
 
-  hasMarkedForDelete(group: IShift[]): boolean {
-    return group.some(s => (s as any).markedForDelete);
+  hasMarkedForDelete(group: IDiagnosticRecord[]): boolean {
+    return group.some(s => s.markedForDelete);
   }
 
 
 
-  async markShiftForDelete(group: IShift[], rowId: number, groupIndex: number) {
-    const shift = group.find(s => s.rowId === rowId);
-    if (!shift) return;
-    
+  async markShiftForDelete(group: IDiagnosticRecord[], rowId: number, groupIndex: number) {
+    const record = group.find(s => s.rowId === rowId);
+    if (!record) return;
+    const shift = record as unknown as IShift;
+
     if (shift.action === ActionEnum.Add) {
       await this._shiftService.delete(shift.id!);
     } else {
       updateAction(shift, ActionEnum.Delete);
       await this._shiftService.update([shift]);
     }
-    
-    (shift as any).markedForDelete = true;
-    this.selectedShiftToDelete[groupIndex] = undefined as any;
+
+    record.markedForDelete = true;
+    this.selectedShiftToDelete[groupIndex] = undefined;
     this.disableAutoSave();
     this.touchDiagnostics();
   }
@@ -586,7 +591,7 @@ export class DiagnosticsComponent implements OnInit {
   private disableAutoSave(): void {
     try {
       // setPolling may be async; handle rejection explicitly
-      this._uiPreferences.setPolling(false).catch((err: any) => {
+      this._uiPreferences.setPolling(false).catch((err: unknown) => {
         this._logger.warn('Failed to persist/stop polling when disabling autosave', err);
       });
     } catch (e) {

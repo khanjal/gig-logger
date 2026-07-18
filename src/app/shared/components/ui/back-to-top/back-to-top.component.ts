@@ -1,5 +1,4 @@
 import { Component, HostListener, Input } from '@angular/core';
-
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({
