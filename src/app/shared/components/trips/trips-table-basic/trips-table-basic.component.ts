@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { DateHelper } from '@helpers/date.helper';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 
 @Component({

@@ -1,9 +1,9 @@
 import { DateHelper } from "@helpers/date.helper";
-import type { IShift } from "@interfaces/shift.interface";
+import type { IShift } from "@interfaces/entities/shift.interface";
 import { sort } from "./sort.helper";
 import { ActionEnum } from "@enums/action.enum";
 import { updateAction } from "@utils/action.utils";
-import type { ITrip } from "@interfaces/trip.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
 
 export class ShiftHelper {
     static compareShifts(o1: IShift, o2: IShift): boolean {

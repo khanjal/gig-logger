@@ -3,7 +3,7 @@ import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { ThemeService } from '@services/theme.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';

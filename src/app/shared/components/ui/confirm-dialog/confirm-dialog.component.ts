@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 
 @Component({

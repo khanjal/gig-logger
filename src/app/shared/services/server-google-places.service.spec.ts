@@ -4,7 +4,7 @@ import { LoggerService } from './logger.service';
 import { MockLocationService } from './mock-location.service';
 import { ServerGooglePlacesService } from './server-google-places.service';
 
-import type { IAutocompleteResult, IPlaceDetails } from '@interfaces/google-places.interface';
+import type { IAutocompleteResult, IPlaceDetails } from '@interfaces/external/google-places.interface';
 
 describe('ServerGooglePlacesService', () => {
   let service: ServerGooglePlacesService;

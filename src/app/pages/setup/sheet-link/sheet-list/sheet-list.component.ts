@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ISheetProperties } from '@interfaces/sheet-properties.interface';
+import { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { LoggerService } from '@services/logger.service';
 import { TruncatePipe } from "@pipes/truncate.pipe";

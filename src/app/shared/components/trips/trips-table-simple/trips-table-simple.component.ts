@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';

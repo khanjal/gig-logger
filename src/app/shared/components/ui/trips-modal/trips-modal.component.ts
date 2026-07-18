@@ -3,8 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseFabButtonComponent } from '@components/base';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { ITripsModalData } from '@interfaces/trips-modal-data.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { ITripsModalData } from '@interfaces/ui/trips-modal-data.interface';
 
 export type { ITripsModalData };
 

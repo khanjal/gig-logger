@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { from } from "rxjs";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IMonthly } from "@interfaces/monthly.interface";
+import { IMonthly } from "@interfaces/sheets/monthly.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 

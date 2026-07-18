@@ -5,8 +5,8 @@ import { LoggerService } from '@services/logger.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { AppUpdateService } from '@services/app-update.service';
-import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
-import type { IBeforeInstallPromptEvent } from '@interfaces/before-install-prompt-event.interface';
+import type { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
+import type { IBeforeInstallPromptEvent } from '@interfaces/external/before-install-prompt-event.interface';
 import { fromEvent } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base';
 

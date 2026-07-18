@@ -2,7 +2,7 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UpdatesService } from '@services/updates.service';
 
-import type { IUpdateDetail, IUpdateEntry, UpdateCategory } from '@interfaces/update.interface';
+import type { IUpdateDetail, IUpdateEntry, UpdateCategory } from '@interfaces/sync/update.interface';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';

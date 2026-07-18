@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { from } from "rxjs";
 import { spreadsheetDB } from "@data/spreadsheet.db";
-import { IDaily } from "@interfaces/daily.interface";
+import { IDaily } from "@interfaces/sheets/daily.interface";
 import { GenericCrudService } from "@services/generic-crud.service";
 import { liveQuery } from "dexie";
 

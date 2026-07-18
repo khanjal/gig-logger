@@ -44,9 +44,9 @@ import { firstValueFrom, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 // Type-only imports
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 
 @Component({

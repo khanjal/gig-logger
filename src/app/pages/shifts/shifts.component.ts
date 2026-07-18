@@ -9,8 +9,8 @@ import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-di
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ActionEnum } from '@enums/action.enum';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -20,7 +20,7 @@ import { ShiftFormComponent } from '@components/shifts/shift-form/shift-form.com
 import { Router, ActivatedRoute } from '@angular/router';
 import { BaseFabButtonComponent } from '@components/base/base-fab-button/base-fab-button.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { firstValueFrom } from 'rxjs';
 import { DestroyRef, inject } from '@angular/core';

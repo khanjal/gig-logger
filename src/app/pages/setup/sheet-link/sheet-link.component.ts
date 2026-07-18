@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { SpreadsheetService } from '@services/spreadsheet.service';
-import { ISheet } from '@interfaces/sheet.interface';
+import { ISheet } from '@interfaces/sheets/sheet.interface';
 import { SheetListComponent } from './sheet-list/sheet-list.component';
 import { LoggerService } from '@services/logger.service';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';

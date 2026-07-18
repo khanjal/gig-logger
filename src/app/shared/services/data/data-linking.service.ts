@@ -1,9 +1,9 @@
 import { Injectable, inject } from "@angular/core";
-import type { ITrip } from "@interfaces/trip.interface";
-import type { IDelivery } from "@interfaces/delivery.interface";
-import type { INote } from "@interfaces/note.interface";
-import type { IAddress } from "@interfaces/address.interface";
-import type { IType } from "@interfaces/type.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IDelivery } from "@interfaces/entities/delivery.interface";
+import type { INote } from "@interfaces/entities/note.interface";
+import type { IAddress } from "@interfaces/entities/address.interface";
+import type { IType } from "@interfaces/entities/type.interface";
 import { AddressService } from "@services/sheets/address.service";
 import { NameService } from "@services/sheets/name.service";
 import { PlaceService } from "@services/sheets/place.service";

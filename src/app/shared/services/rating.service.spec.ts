@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { RatingService } from './rating.service';
-import { IRating } from '@interfaces/rating.interface';
+import { IRating } from '@interfaces/entities/rating.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('RatingService', () => {

@@ -7,7 +7,7 @@ import { MatIcon } from '@angular/material/icon';
 import { NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
-import type { ITripGroup } from '@interfaces/trip-group.interface';
+import type { ITripGroup } from '@interfaces/stats/trip-group.interface';
 
 @Component({
     selector: 'app-trips-table-group',

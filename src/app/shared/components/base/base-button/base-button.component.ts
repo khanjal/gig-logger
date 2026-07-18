@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ElementRef, Renderer2, AfterViewInit, OnChanges, OnDestroy, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
-import { ButtonVariant, ButtonSize, FabStyle } from '@interfaces/button.interface';
+import { ButtonVariant, ButtonSize, FabStyle } from '@interfaces/ui/button.interface';
 
 export type { ButtonVariant, ButtonSize, FabStyle };
 

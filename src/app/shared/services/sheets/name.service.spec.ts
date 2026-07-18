@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { NameService } from './name.service';
-import { IName } from '@interfaces/name.interface';
+import { IName } from '@interfaces/entities/name.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('NameService', () => {

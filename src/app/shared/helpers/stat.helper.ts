@@ -1,6 +1,6 @@
-import type { IStatItem } from "@interfaces/stat-item.interface";
-import type { ITrip } from "@interfaces/trip.interface";
-import type { IDaily } from "@interfaces/daily.interface";
+import type { IStatItem } from "@interfaces/stats/stat-item.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IDaily } from "@interfaces/sheets/daily.interface";
 import { DateHelper } from "./date.helper";
 
 export class StatHelper {

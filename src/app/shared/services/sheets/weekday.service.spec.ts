@@ -1,6 +1,6 @@
 import { WeekdayService } from './weekday.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IWeekday } from '@interfaces/weekday.interface';
+import { IWeekday } from '@interfaces/sheets/weekday.interface';
 
 const makeWeekday = (overrides: Partial<IWeekday> = {}): IWeekday => ({
   id: overrides.id ?? 1,

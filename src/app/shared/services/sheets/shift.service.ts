@@ -1,7 +1,7 @@
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';

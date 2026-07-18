@@ -1,7 +1,7 @@
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITripSheetRow } from '@interfaces/trip-sheet-row.interface';
-import type { IShiftSheetRow } from '@interfaces/shift-sheet-row.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITripSheetRow } from '@interfaces/sheets/trip-sheet-row.interface';
+import type { IShiftSheetRow } from '@interfaces/sheets/shift-sheet-row.interface';
 
 /**
  * Helper to prepare data for Google Sheets serialization.

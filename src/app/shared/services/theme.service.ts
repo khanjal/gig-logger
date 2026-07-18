@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
-import type { ThemePreference, ResolvedTheme } from '@interfaces/theme.interface';
+import type { ThemePreference, ResolvedTheme } from '@interfaces/ui/theme.interface';
 // Compute meta theme colors at runtime from CSS variables so we avoid
 // inline hex literals in source. Falls back to legacy values if not present.
 const getComputedCssVar = (name: string, fallback: string) => {

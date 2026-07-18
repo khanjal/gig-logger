@@ -9,7 +9,7 @@ import { NoSecondsPipe as NoSecondsPipe } from '@pipes/no-seconds.pipe';
 import { TruncatePipe as TruncatePipe } from '@pipes/truncate.pipe';
 import { LoggerService } from '@services/logger.service';
 import { DateHelper } from '@helpers/date.helper';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 @Component({
   selector: 'app-shift-trips-table',

@@ -3,7 +3,7 @@ import { OrderByPipe } from '@pipes/order-by-date-asc.pipe';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import type { IExpense } from '@interfaces/expense.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 import { CurrencyPipe, DatePipe, CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,12 +26,12 @@ import { openSnackbar } from '@utils/snackbar.util';
 import { AuthGoogleService } from '@services/auth-google.service';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
 import { updateAction } from '@utils/action.utils';
 import { DATE_FORMATS } from '@constants/date.constants';
 import { firstValueFrom } from 'rxjs';
 import { mapExpenseFormValueToDraft, mapExpenseToFormValue, normalizeExpenseDate } from '@helpers/expense-form.helper';
-import type { IExpenseFormValue } from '@interfaces/expense-form-value.interface';
+import type { IExpenseFormValue } from '@interfaces/ui/expense-form-value.interface';
 
 @Component({
   selector: 'app-expenses',

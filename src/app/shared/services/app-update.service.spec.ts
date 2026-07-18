@@ -3,7 +3,7 @@ import { AppUpdateService } from './app-update.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { LoggerService } from '@services/logger.service';
 import { Subject } from 'rxjs';
-import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
+import { IAppUpdateStatus } from '@interfaces/sync/app-update-status.interface';
 
 describe('AppUpdateService', () => {
   let service: AppUpdateService;

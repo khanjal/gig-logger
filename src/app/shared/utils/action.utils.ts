@@ -1,5 +1,5 @@
 import { ActionEnum } from "@enums/action.enum";
-import type { IActionRecord } from "@interfaces/action-record.interface";
+import type { IActionRecord } from "@interfaces/sheets/action-record.interface";
 
 export function clearAction<T extends IActionRecord>(item: T): void {
     item.action = '';

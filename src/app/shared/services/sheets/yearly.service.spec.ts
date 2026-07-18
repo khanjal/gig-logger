@@ -1,6 +1,6 @@
 import { YearlyService } from './yearly.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IYearly } from '@interfaces/yearly.interface';
+import { IYearly } from '@interfaces/sheets/yearly.interface';
 
 const makeYearly = (overrides: Partial<IYearly> = {}): IYearly => ({
   rowId: overrides.rowId ?? 1,

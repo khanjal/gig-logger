@@ -1,9 +1,9 @@
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IPlace } from '@interfaces/place.interface';
-import type { IDiagnosticItem, IDiagnosticRecord, IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IDiagnosticItem, IDiagnosticRecord, IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/stats/diagnostic.interface';
 
 export class DiagnosticHelper {
   /**

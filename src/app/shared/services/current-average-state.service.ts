@@ -3,10 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { DateHelper } from '@helpers/date.helper';
 
-import type { IMonthly } from '@interfaces/monthly.interface';
-import type { IShift } from '@interfaces/shift.interface';
-import type { IWeekday } from '@interfaces/weekday.interface';
-import type { IWeekly } from '@interfaces/weekly.interface';
+import type { IMonthly } from '@interfaces/sheets/monthly.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IWeekday } from '@interfaces/sheets/weekday.interface';
+import type { IWeekly } from '@interfaces/sheets/weekly.interface';
 
 import { MonthlyService } from '@services/sheets/monthly.service';
 import { ShiftService } from '@services/sheets/shift.service';

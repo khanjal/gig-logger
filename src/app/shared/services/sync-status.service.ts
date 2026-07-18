@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync-status.interface';
+import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync/sync-status.interface';
 
 @Injectable({
   providedIn: 'root'

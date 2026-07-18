@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from './logger.service';
-import type { IMockLocation, IPresetLocation } from '@interfaces/mock-location.interface';
+import type { IMockLocation, IPresetLocation } from '@interfaces/external/mock-location.interface';
 import { SESSION_CONSTANTS } from '@constants/session.constants';
 
 @Injectable({

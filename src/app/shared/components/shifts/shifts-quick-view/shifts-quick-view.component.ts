@@ -3,9 +3,9 @@ import { NgClass, DecimalPipe, CurrencyPipe, DatePipe, CommonModule } from '@ang
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import type { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
 import { ShiftService } from '@services/sheets/shift.service';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { ActionEnum } from '@enums/action.enum';
 import { ShiftTripsTableComponent } from '../shift-trips-table/shift-trips-table.component';

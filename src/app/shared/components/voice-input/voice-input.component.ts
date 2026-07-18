@@ -6,13 +6,13 @@ import { VoiceSuggestionService } from '@services/voice-suggestion.service';
 import { VoicePatternProcessorService } from '@services/voice-pattern-processor.service';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
-import type { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+import type { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
 import type {
   ISpeechRecognition,
   ISpeechRecognitionErrorEvent,
   ISpeechRecognitionEvent,
   IWindowWithSpeechRecognition
-} from '@interfaces/speech-recognition.interface';
+} from '@interfaces/external/speech-recognition.interface';
 
 @Component({
   selector: 'app-voice-input',

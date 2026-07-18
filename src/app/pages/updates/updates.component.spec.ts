@@ -6,7 +6,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { UpdatesComponent } from './updates.component';
 import { UpdatesService } from '@services/updates.service';
-import type { IUpdateDetail } from '@interfaces/update.interface';
+import type { IUpdateDetail } from '@interfaces/sync/update.interface';
 
 describe('UpdatesComponent trackBy helpers', () => {
   it('trackByEntryDate returns date when present', () => {

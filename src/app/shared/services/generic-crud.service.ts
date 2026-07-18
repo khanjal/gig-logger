@@ -1,4 +1,4 @@
-import type { ICrudService } from "@interfaces/crud-service.interface";
+import type { ICrudService } from "@interfaces/crud/crud-service.interface";
 import type { Table } from "dexie";
 
 export class GenericCrudService<T> implements ICrudService<T> {

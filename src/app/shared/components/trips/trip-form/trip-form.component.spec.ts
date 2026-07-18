@@ -13,7 +13,7 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { TimerService } from '@services/timer.service';
 import { TripService } from '@services/sheets/trip.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { IShift } from '@interfaces/shift.interface';
+import { IShift } from '@interfaces/entities/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 
 describe('TripFormComponent', () => {

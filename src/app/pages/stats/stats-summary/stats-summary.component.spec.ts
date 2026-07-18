@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { StatsSummaryComponent } from './stats-summary.component';
 import { BehaviorSubject } from 'rxjs';
 import { DailyService } from '@services/sheets/daily.service';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IDaily } from '@interfaces/daily.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IDaily } from '@interfaces/sheets/daily.interface';
 import { commonTestingImports, commonTestingProviders, createDialogSpy } from '@test-harness';
 
 describe('StatsSummaryComponent', () => {

@@ -11,7 +11,7 @@ import type {
   IUserApiUsage, 
   IPlacesAutocompleteRequest, 
   IPlaceDetailsRequest 
-} from '@interfaces/google-places.interface';
+} from '@interfaces/external/google-places.interface';
 
 @Injectable({
   providedIn: 'root'

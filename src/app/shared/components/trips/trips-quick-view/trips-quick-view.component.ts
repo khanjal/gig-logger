@@ -14,8 +14,8 @@ import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-
 import { BaseButtonDirective } from '@directives/base-button.directive';
 
 import { ActionEnum } from '@enums/action.enum';
-import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IConfirmDialog } from '@interfaces/ui/confirm-dialog.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { DateHelper } from '@helpers/date.helper';
 import { DATE_FORMATS } from '@constants/date.constants';

@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 import { MockLocationService } from '@services/mock-location.service';
-import type { IPresetLocation } from '@interfaces/mock-location.interface';
+import type { IPresetLocation } from '@interfaces/external/mock-location.interface';
 import { BaseCardComponent, BaseInputComponent, BaseFabButtonComponent, BaseRectButtonComponent } from '@components/base';
 
 @Component({

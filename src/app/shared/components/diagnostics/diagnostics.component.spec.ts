@@ -6,8 +6,8 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import type { IShift } from '@interfaces/shift.interface';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('DiagnosticsComponent', () => {

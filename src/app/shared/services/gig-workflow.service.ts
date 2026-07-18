@@ -3,12 +3,12 @@ import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
 import { DataLinkingService } from "./data/data-linking.service";
 import { GigCalculatorService } from "./calculations/gig-calculator.service";
-import type { ISheet } from "@interfaces/sheet.interface";
-import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
-import type { ISheetSavePayload } from "@interfaces/sheet-save-payload.interface";
-import type { IShift } from "@interfaces/shift.interface";
-import type { ITrip } from "@interfaces/trip.interface";
-import type { IMessage } from "@interfaces/message.interface";
+import type { ISheet } from "@interfaces/sheets/sheet.interface";
+import type { ISheetProperties } from "@interfaces/sheets/sheet-properties.interface";
+import type { ISheetSavePayload } from "@interfaces/sheets/sheet-save-payload.interface";
+import type { IShift } from "@interfaces/entities/shift.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IMessage } from "@interfaces/sheets/message.interface";
 
 @Injectable({
     providedIn: 'root'

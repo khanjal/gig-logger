@@ -7,13 +7,13 @@ import { AddressService } from '@services/sheets/address.service';
 import { RegionService } from '@services/sheets/region.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import { IService } from '@interfaces/service.interface';
-import { IType } from '@interfaces/type.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IAddress } from '@interfaces/address.interface';
-import { IRegion } from '@interfaces/region.interface';
-import { IName } from '@interfaces/name.interface';
-import type { DropdownType } from '@interfaces/dropdown-data.interface';
+import { IService } from '@interfaces/entities/service.interface';
+import { IType } from '@interfaces/entities/type.interface';
+import { IPlace } from '@interfaces/entities/place.interface';
+import { IAddress } from '@interfaces/entities/address.interface';
+import { IRegion } from '@interfaces/entities/region.interface';
+import { IName } from '@interfaces/entities/name.interface';
+import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
 
 describe('DropdownDataService', () => {
   let service: DropdownDataService;

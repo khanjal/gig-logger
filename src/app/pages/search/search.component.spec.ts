@@ -5,7 +5,7 @@ import { SearchService } from '@services/search.service';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
 import { ViewportScroller } from '@angular/common';
-import type { ISearchResult, ISearchResultGroup } from '@interfaces/search-result.interface';
+import type { ISearchResult, ISearchResultGroup } from '@interfaces/search/search-result.interface';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;

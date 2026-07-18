@@ -14,12 +14,12 @@ import { AuthGoogleService } from '@services/auth-google.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 
-import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync-status.interface';
+import type { ISyncMessage, ISyncState, SyncOperation } from '@interfaces/sync/sync-status.interface';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
 import { QuickControlsComponent } from '@components/controls/quick-controls/quick-controls.component';
 import { BaseFieldButtonComponent, BaseIconButtonComponent } from '@components/base';
 import { ThemeService } from '@services/theme.service';
-import type { ThemePreference } from '@interfaces/theme.interface';
+import type { ThemePreference } from '@interfaces/ui/theme.interface';
 
 @Component({
   selector: 'app-sync-status-indicator',

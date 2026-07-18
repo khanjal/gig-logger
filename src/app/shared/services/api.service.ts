@@ -7,12 +7,12 @@ import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
 import { LoggerService } from './logger.service';
 import { getCurrentUserId } from '@utils/user-id.util';
-import type { ISheet } from "@interfaces/sheet.interface";
-import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
-import type { IMessage } from "@interfaces/message.interface";
-import type { ISheetApiResponse } from "@interfaces/sheet-api-response.interface";
-import type { IAuthTokenResponse } from "@interfaces/auth-token-response.interface";
+import type { ISheet } from "@interfaces/sheets/sheet.interface";
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import type { ISheetProperties } from "@interfaces/sheets/sheet-properties.interface";
+import type { IMessage } from "@interfaces/sheets/message.interface";
+import type { ISheetApiResponse } from "@interfaces/sheets/sheet-api-response.interface";
+import type { IAuthTokenResponse } from "@interfaces/auth/auth-token-response.interface";
 
 @Injectable({
     providedIn: 'root'

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import type { IExpense } from '@interfaces/expense.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 @Pipe({
   name: 'groupByMonth',

@@ -3,7 +3,7 @@ import { DropdownDataService } from '@services/dropdown-data.service';
 import { NumberHelper } from '@helpers/number.helper';
 import { AddressHelper } from '@helpers/address.helper';
 import { VOICE_PATTERNS } from '@components/voice-input/voice-patterns.config';
-import { IVoiceParseResult } from '@interfaces/voice-parse-result.interface';
+import { IVoiceParseResult } from '@interfaces/external/voice-parse-result.interface';
 
 /**
  * Pattern match result with metadata

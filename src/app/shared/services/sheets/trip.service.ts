@@ -7,7 +7,7 @@ import { ActionEnum } from '@enums/action.enum';
 import { Injectable } from '@angular/core';
 import { SyncableCrudService } from '@services/syncable-crud.service';
 import { updateAction } from '@utils/action.utils';
-import type { ITrip } from '@interfaces/trip.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
 
 @Injectable({
     providedIn: 'root'

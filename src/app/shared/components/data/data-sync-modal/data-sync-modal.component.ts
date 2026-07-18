@@ -22,10 +22,10 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { LoggerService } from '@services/logger.service';
 import { NgClass } from '@angular/common';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import type { ISheet } from '@interfaces/sheet.interface';
-import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import type { ISheetProperties } from '@interfaces/sheet-properties.interface';
+import type { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import type { ISheet } from '@interfaces/sheets/sheet.interface';
+import type { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import type { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
 
 // Define types for better type safety
 type SyncType = 'save' | 'load' | 'create-demo' | 'create-sheet';

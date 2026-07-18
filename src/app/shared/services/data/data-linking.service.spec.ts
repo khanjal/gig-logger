@@ -9,8 +9,8 @@ import { TripService } from '../sheets/trip.service';
 import { TypeService } from '../sheets/type.service';
 import { DeliveryService } from '../delivery.service';
 import { LoggerService } from '../logger.service';
-import { ITrip } from '@interfaces/trip.interface';
-import { IDelivery } from '@interfaces/delivery.interface';
+import { ITrip } from '@interfaces/entities/trip.interface';
+import { IDelivery } from '@interfaces/entities/delivery.interface';
 
 const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({
   id: overrides.id ?? 1,

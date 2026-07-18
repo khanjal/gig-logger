@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActionEnum } from '@enums/action.enum';
 import { BehaviorSubject, of } from 'rxjs';
-import type { IExpense } from '@interfaces/expense.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 describe('ExpensesComponent', () => {
   let component: ExpensesComponent;

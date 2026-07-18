@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { RegionService } from './region.service';
-import { IRegion } from '@interfaces/region.interface';
+import { IRegion } from '@interfaces/entities/region.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('RegionService', () => {

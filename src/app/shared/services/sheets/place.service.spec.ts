@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { PlaceService } from './place.service';
-import { IPlace } from '@interfaces/place.interface';
+import { IPlace } from '@interfaces/entities/place.interface';
 import { spreadsheetDB } from '@data/spreadsheet.db';
 
 describe('PlaceService', () => {

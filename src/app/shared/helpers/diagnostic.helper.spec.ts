@@ -1,8 +1,8 @@
 import { DiagnosticHelper } from './diagnostic.helper';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IShift } from '@interfaces/shift.interface';
-import type { IPlace } from '@interfaces/place.interface';
-import type { IDuplicateGroup } from '@interfaces/diagnostic.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IDuplicateGroup } from '@interfaces/stats/diagnostic.interface';
 
 describe('DiagnosticHelper', () => {
   const makeTrip = (overrides: Partial<ITrip> = {}): ITrip => ({

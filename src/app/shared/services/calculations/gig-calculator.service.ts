@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
-import type { IShift } from "@interfaces/shift.interface";
-import type { ITrip } from "@interfaces/trip.interface";
-import type { IWeekday } from "@interfaces/weekday.interface";
+import type { IShift } from "@interfaces/entities/shift.interface";
+import type { ITrip } from "@interfaces/entities/trip.interface";
+import type { IWeekday } from "@interfaces/sheets/weekday.interface";
 import { ActionEnum } from "@enums/action.enum";
 import { DateHelper } from "@helpers/date.helper";
 import { updateAction } from "@utils/action.utils";

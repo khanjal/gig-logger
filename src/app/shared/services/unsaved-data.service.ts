@@ -4,9 +4,9 @@ import { switchMap, shareReplay } from 'rxjs/operators';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
-import type { ITrip } from '@interfaces/trip.interface';
-import type { IShift } from '@interfaces/shift.interface';
-import type { IExpense } from '@interfaces/expense.interface';
+import type { ITrip } from '@interfaces/entities/trip.interface';
+import type { IShift } from '@interfaces/entities/shift.interface';
+import type { IExpense } from '@interfaces/entities/expense.interface';
 
 export interface IUnsavedItems {
   unsavedTrips: ITrip[];

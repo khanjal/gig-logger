@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { ISheet } from "@interfaces/sheet.interface";
+import { ISheet } from "@interfaces/sheets/sheet.interface";
 import { AddressService } from "../sheets/address.service";
 import { DailyService } from "../sheets/daily.service";
 import { MonthlyService } from "../sheets/monthly.service";

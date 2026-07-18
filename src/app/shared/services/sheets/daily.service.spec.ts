@@ -1,6 +1,6 @@
 import { DailyService } from './daily.service';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import { IDaily } from '@interfaces/daily.interface';
+import { IDaily } from '@interfaces/sheets/daily.interface';
 
 const makeDaily = (overrides: Partial<IDaily> = {}): IDaily => ({
   rowId: overrides.rowId ?? 1,

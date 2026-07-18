@@ -4,7 +4,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/diagnostic.interface';
+import { DiagnosticEntityType, IDiagnosticRecord } from '@interfaces/stats/diagnostic.interface';
 import { BaseFabButtonComponent } from '@components/base';
 
 @Component({

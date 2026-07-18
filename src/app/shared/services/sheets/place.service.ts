@@ -1,7 +1,7 @@
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { spreadsheetDB } from '@data/spreadsheet.db';
-import type { IPlace } from '@interfaces/place.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
 import { GenericCrudService } from '@services/generic-crud.service';
 import { Injectable } from '@angular/core';
 

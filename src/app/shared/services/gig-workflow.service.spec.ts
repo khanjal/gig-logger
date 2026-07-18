@@ -4,10 +4,10 @@ import { ApiService } from './api.service';
 import { DataLoaderService } from './data/data-loader.service';
 import { DataLinkingService } from './data/data-linking.service';
 import { GigCalculatorService } from './calculations/gig-calculator.service';
-import { ISheet } from '@interfaces/sheet.interface';
-import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import { ISheetProperties } from '@interfaces/sheet-properties.interface';
-import { IShift } from '@interfaces/shift.interface';
+import { ISheet } from '@interfaces/sheets/sheet.interface';
+import { ISheetSavePayload } from '@interfaces/sheets/sheet-save-payload.interface';
+import { ISheetProperties } from '@interfaces/sheets/sheet-properties.interface';
+import { IShift } from '@interfaces/entities/shift.interface';
 
 describe('GigWorkflowService', () => {
   let service: GigWorkflowService;

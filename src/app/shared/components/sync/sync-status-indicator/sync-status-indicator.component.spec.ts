@@ -6,7 +6,7 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { ThemeService } from '@services/theme.service';
 import { AuthGoogleService } from '@services/auth-google.service';
 
-import type { ThemePreference } from '@interfaces/theme.interface';
+import type { ThemePreference } from '@interfaces/ui/theme.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, of } from 'rxjs';

@@ -40,17 +40,17 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
 // RxJS imports
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import type { DropdownType } from '@interfaces/dropdown-data.interface';
+import type { DropdownType } from '@interfaces/ui/dropdown-data.interface';
 
 // Type-only interface imports (after runtime/service imports)
-import type { IAddress } from '@interfaces/address.interface';
-import type { IAutocompleteResult } from '@interfaces/google-places.interface';
-import type { IName } from '@interfaces/name.interface';
-import type { IPlace } from '@interfaces/place.interface';
-import type { IRegion } from '@interfaces/region.interface';
-import type { ISearchItem } from '@interfaces/search-item.interface';
-import type { IService } from '@interfaces/service.interface';
-import type { IType } from '@interfaces/type.interface';
+import type { IAddress } from '@interfaces/entities/address.interface';
+import type { IAutocompleteResult } from '@interfaces/external/google-places.interface';
+import type { IName } from '@interfaces/entities/name.interface';
+import type { IPlace } from '@interfaces/entities/place.interface';
+import type { IRegion } from '@interfaces/entities/region.interface';
+import type { ISearchItem } from '@interfaces/search/search-item.interface';
+import type { IService } from '@interfaces/entities/service.interface';
+import type { IType } from '@interfaces/entities/type.interface';
 
 // Utility imports
 import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';

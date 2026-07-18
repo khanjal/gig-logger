@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import type { PermissionState } from '@interfaces/permission.interface';
+import type { PermissionState } from '@interfaces/auth/permission.interface';
 
 export type { PermissionState };
 

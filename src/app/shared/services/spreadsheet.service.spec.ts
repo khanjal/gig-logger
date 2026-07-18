@@ -4,8 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GigWorkflowService } from './gig-workflow.service';
 import { LoggerService } from './logger.service';
 import { localDB } from '@data/local.db';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ISheet } from '@interfaces/sheet.interface';
+import { ISpreadsheet } from '@interfaces/sheets/spreadsheet.interface';
+import { ISheet } from '@interfaces/sheets/sheet.interface';
 
 describe('SpreadsheetService', () => {
   let service: SpreadsheetService;
