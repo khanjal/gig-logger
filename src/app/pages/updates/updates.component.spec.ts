@@ -1,13 +1,62 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UpdatesComponent } from './updates.component';
-import { UpdatesService } from '@services/updates.service';
-
-import type { IUpdateDetail } from '@interfaces/update.interface';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { of } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { UpdatesComponent } from './updates.component';
+import { UpdatesService } from '@services/updates.service';
+import type { IUpdateDetail } from '@interfaces/update.interface';
+
+describe('UpdatesComponent trackBy helpers', () => {
+  it('trackByEntryDate returns date when present', () => {
+    const entry = { date: '2026-04-05' } as any;
+    const res = (UpdatesComponent.prototype as any).trackByEntryDate.call(null, 0, entry);
+    expect(res).toBe('2026-04-05');
+  });
+
+  it('trackByEntryDate falls back to index', () => {
+    const entry = {} as any;
+    const res = (UpdatesComponent.prototype as any).trackByEntryDate.call(null, 7, entry);
+    expect(res).toBe(7);
+  });
+
+  it('trackByUpdateTitle returns title when present', () => {
+    const update = { title: 'Fix bug' } as any;
+    const res = (UpdatesComponent.prototype as any).trackByUpdateTitle.call(null, 0, update);
+    expect(res).toBe('Fix bug');
+  });
+
+  it('trackByUpdateTitle falls back to index', () => {
+    const update = {} as any;
+    const res = (UpdatesComponent.prototype as any).trackByUpdateTitle.call(null, 3, update);
+    expect(res).toBe(3);
+  });
+
+  it('trackByChange returns change when present', () => {
+    const change = 'some-change';
+    const res = (UpdatesComponent.prototype as any).trackByChange.call(null, 0, change);
+    expect(res).toBe('some-change');
+  });
+
+  it('trackByChange falls back to index for undefined', () => {
+    const change = undefined;
+    const res = (UpdatesComponent.prototype as any).trackByChange.call(null, 5, change);
+    expect(res).toBe(5);
+  });
+
+  it('trackByPage returns page when present', () => {
+    const page = 'PN';
+    const res = (UpdatesComponent.prototype as any).trackByPage.call(null, 0, page);
+    expect(res).toBe('PN');
+  });
+
+  it('trackByPage falls back to index', () => {
+    const page = undefined;
+    const res = (UpdatesComponent.prototype as any).trackByPage.call(null, 9, page);
+    expect(res).toBe(9);
+  });
+});
 
 describe('UpdatesComponent', () => {
   let component: UpdatesComponent;

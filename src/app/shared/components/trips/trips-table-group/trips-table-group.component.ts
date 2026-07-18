@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, SimpleChanges, Injector, inject, runInInjectionContext, afterNextRender } from '@angular/core';
 import { DateHelper } from '@helpers/date.helper';
 import { sort } from '@helpers/sort.helper';
-import { ITripGroup } from '@interfaces/trip-group.interface';
 import { TripService } from '@services/sheets/trip.service';
 import { WeekdayService } from '@services/sheets/weekday.service';
 import { MatIcon } from '@angular/material/icon';
 import { NgFor, NgClass, CurrencyPipe, DatePipe } from '@angular/common';
 import { TruncatePipe } from '@pipes/truncate.pipe';
 import { NoSecondsPipe } from '@pipes/no-seconds.pipe';
+import type { ITripGroup } from '@interfaces/trip-group.interface';
 
 @Component({
     selector: 'app-trips-table-group',

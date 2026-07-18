@@ -4,7 +4,7 @@ import { TripComponent } from './trips.component';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { GigWorkflowService } from '@services/gig-workflow.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 import { PollingService } from '@services/polling.service';
 import { ViewportScroller } from '@angular/common';
 import { SpreadsheetService } from '@services/spreadsheet.service';
@@ -12,8 +12,27 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ExpensesService } from '@services/sheets/expenses.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { of } from 'rxjs';
 import { DateHelper } from '@helpers/date.helper';
+
+describe('TripComponent trackByTrip', () => {
+  it('returns rowId when present', () => {
+    const trip = { rowId: 123 } as any;
+    const res = (TripComponent.prototype as any).trackByTrip.call(null, 0, trip);
+    expect(res).toBe(123);
+  });
+
+  it('returns key when rowId absent', () => {
+    const trip = { key: 'abc' } as any;
+    const res = (TripComponent.prototype as any).trackByTrip.call(null, 1, trip);
+    expect(res).toBe('abc');
+  });
+
+  it('falls back to index', () => {
+    const trip = {} as any;
+    const res = (TripComponent.prototype as any).trackByTrip.call(null, 7, trip);
+    expect(res).toBe(7);
+  });
+});
 
 describe('TripComponent', () => {
   let component: TripComponent;

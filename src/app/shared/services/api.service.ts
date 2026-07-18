@@ -2,14 +2,14 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { firstValueFrom } from "rxjs";
-import { ISheet } from "@interfaces/sheet.interface";
-import { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
-import { ISheetProperties } from "@interfaces/sheet-properties.interface";
 import { SecureCookieStorageService } from './secure-cookie-storage.service';
 import { authConfig } from './auth.config';
 import { AUTH_CONSTANTS } from "@constants/auth.constants";
 import { LoggerService } from './logger.service';
 import { getCurrentUserId } from '@utils/user-id.util';
+import type { ISheet } from "@interfaces/sheet.interface";
+import type { ISheetSavePayload } from '@interfaces/sheet-save-payload.interface';
+import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
 
 @Injectable({
     providedIn: 'root'

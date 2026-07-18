@@ -9,6 +9,26 @@ import { SpreadsheetService } from '@services/spreadsheet.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 
+describe('ShiftsComponent trackByShift', () => {
+  it('returns rowId when present', () => {
+    const s = { rowId: 10 } as any;
+    const res = (ShiftsComponent.prototype as any).trackByShift.call(null, 0, s);
+    expect(res).toBe(10);
+  });
+
+  it('returns key when rowId absent', () => {
+    const s = { key: 'k' } as any;
+    const res = (ShiftsComponent.prototype as any).trackByShift.call(null, 2, s);
+    expect(res).toBe('k');
+  });
+
+  it('falls back to index', () => {
+    const s = {} as any;
+    const res = (ShiftsComponent.prototype as any).trackByShift.call(null, 5, s);
+    expect(res).toBe(5);
+  });
+});
+
 describe('ShiftsComponent', () => {
   let component: ShiftsComponent;
   let fixture: ComponentFixture<ShiftsComponent>;

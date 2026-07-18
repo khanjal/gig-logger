@@ -13,6 +13,7 @@ export class BaseRectButtonComponent {
   @Input() iconColor?: string;
   @Input() label?: string;
   @Input() variant: 'primary' | 'secondary' | 'outlined' | 'danger' | 'icon' = 'primary';
+  @Input() noBackground = false;
   @Input() disabled = false;
   @Input() loading = false;
   @Input() fullWidth = false;

@@ -29,9 +29,9 @@ import { LoggerService } from '@services/logger.service';
 import { GigCalculatorService } from '@services/calculations/gig-calculator.service';
 import { GigWorkflowService } from '@services/gig-workflow.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IDiagnosticItem, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 import { DiagnosticGroupComponent } from './diagnostic-group/diagnostic-group.component';
 import { DiagnosticItemComponent } from './diagnostic-item/diagnostic-item.component';
 
@@ -65,6 +65,20 @@ export class DiagnosticsComponent implements OnInit {
     private _gigWorkflow: GigWorkflowService,
     private _uiPreferences: UiPreferencesService
   ) { }
+
+  trackByDiagnostic(index: number, item: IDiagnosticItem): string | number {
+    return item.name ?? index;
+  }
+
+  trackByGroup(_index: number, group: any[]): string | number {
+    const first = group?.[0];
+    return first?.rowId ?? first?.id ?? first?.key ?? first?.name ?? group.length;
+  }
+
+  trackByProblemItem(index: number, item: any): any {
+    // Prefer rowId, id, key, or fallback to index
+    return item?.rowId ?? item?.id ?? item?.key ?? index;
+  }
 
   ngOnInit() {
     // Automatically run diagnostics on page load
@@ -216,10 +230,9 @@ export class DiagnosticsComponent implements OnInit {
       groups: duplicateServicesResult.groups
     });
 
-    // Duplicate types via shared utility (case-insensitive equals + contains)
-    const typeEqualsGroups = await this._typeService.findDuplicates('type', { mode: 'equals', caseInsensitive: true, normalize: true });
-    const typeContainsGroups = await this._typeService.findDuplicates('type', { mode: 'contains', caseInsensitive: true, normalize: true, minLength: 2 });
-    const duplicateTypesResult = DiagnosticHelper.mergeDuplicateGroups(typeEqualsGroups, typeContainsGroups);
+    // Duplicate types via shared utility (normalized: collapses hyphens/spaces before comparing)
+    const typeEqualsGroups = await this._typeService.findDuplicates('type', { mode: 'normalized' });
+    const duplicateTypesResult = DiagnosticHelper.mergeDuplicateGroups(typeEqualsGroups, []);
     // Recompute trip counts per type
     for (const group of duplicateTypesResult.groups ?? []) {
       await DiagnosticHelper.recomputeGroupCounts('type', group, this._tripService, this._shiftService);

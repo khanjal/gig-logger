@@ -1,7 +1,7 @@
 import { DateHelper } from '@helpers/date.helper';
 import { NumberHelper } from '@helpers/number.helper';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 import { ActionEnum } from '@enums/action.enum';
 import { updateAction } from '@utils/action.utils';
 import { TripFormValue } from '@form-types/trip-form.types';

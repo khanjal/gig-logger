@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { ISheet } from "@interfaces/sheet.interface";
-import { ISheetProperties } from "@interfaces/sheet-properties.interface";
-import type { ISheetSavePayload } from "@interfaces/sheet-save-payload.interface";
-import { IShift } from "@interfaces/shift.interface";
 import { ApiService } from "./api.service";
 import { DataLoaderService } from "./data/data-loader.service";
 import { DataLinkingService } from "./data/data-linking.service";
 import { GigCalculatorService } from "./calculations/gig-calculator.service";
+import type { ISheet } from "@interfaces/sheet.interface";
+import type { ISheetProperties } from "@interfaces/sheet-properties.interface";
+import type { ISheetSavePayload } from "@interfaces/sheet-save-payload.interface";
+import type { IShift } from "@interfaces/shift.interface";
 
 @Injectable({
     providedIn: 'root'

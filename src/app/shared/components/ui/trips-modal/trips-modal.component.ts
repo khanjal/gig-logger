@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseFabButtonComponent } from '@components/base';
-import { ITrip } from '@interfaces/trip.interface';
-import { ITripsModalData } from '@interfaces/trips-modal-data.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { ITripsModalData } from '@interfaces/trips-modal-data.interface';
 
 export type { ITripsModalData };
 
@@ -33,5 +33,9 @@ export class TripsModalComponent {
   onEditClicked(trip: ITrip): void {
     // Close the dialog when edit is clicked
     this.dialogRef.close();
+  }
+
+  trackByTrip(index: number, trip: ITrip): any {
+    return trip?.rowId ?? trip?.id ?? index;
   }
 }

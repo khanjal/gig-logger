@@ -19,15 +19,7 @@ import { BaseFieldButtonComponent } from '@components/base/base-field-button/bas
 // Application-specific imports - Directives
 import { FocusScrollDirective } from '@directives/focus-scroll/focus-scroll.directive';
 
-// Application-specific imports - Interfaces
-import { IAddress } from '@interfaces/address.interface';
-import type { IAutocompleteResult } from '@interfaces/google-places.interface';
-import { IName } from '@interfaces/name.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IRegion } from '@interfaces/region.interface';
-import { ISearchItem } from '@interfaces/search-item.interface';
-import { IService } from '@interfaces/service.interface';
-import { IType } from '@interfaces/type.interface';
+// Application-specific imports - Interfaces (type-only)
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
@@ -49,6 +41,16 @@ import { ShortAddressPipe } from '@pipes/short-address.pipe';
 import { Observable, switchMap, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import type { DropdownType } from '@interfaces/dropdown-data.interface';
+
+// Type-only interface imports (after runtime/service imports)
+import type { IAddress } from '@interfaces/address.interface';
+import type { IAutocompleteResult } from '@interfaces/google-places.interface';
+import type { IName } from '@interfaces/name.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IRegion } from '@interfaces/region.interface';
+import type { ISearchItem } from '@interfaces/search-item.interface';
+import type { IService } from '@interfaces/service.interface';
+import type { IType } from '@interfaces/type.interface';
 
 // Utility imports
 import { createSearchItem, isRateLimitError, isGoogleResult, isValidSearchType } from './search-input.utils';

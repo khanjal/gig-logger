@@ -1,7 +1,7 @@
-import { IShift } from "@interfaces/shift.interface";
-import { IStatItem } from "@interfaces/stat-item.interface";
-import { ITrip } from "@interfaces/trip.interface";
-import { IDaily } from "@interfaces/daily.interface";
+import type { IShift } from "@interfaces/shift.interface";
+import type { IStatItem } from "@interfaces/stat-item.interface";
+import type { ITrip } from "@interfaces/trip.interface";
+import type { IDaily } from "@interfaces/daily.interface";
 import { DateHelper } from "./date.helper";
 
 export class StatHelper {

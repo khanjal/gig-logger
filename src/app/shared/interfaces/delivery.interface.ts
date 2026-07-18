@@ -1,6 +1,6 @@
-import { IAmount } from "./amount.interface"
-import { INote } from "./note.interface"
-import { ITrip } from "./trip.interface"
+import type { IAmount } from "./amount.interface"
+import type { INote } from "./note.interface"
+import type { ITrip } from "./trip.interface"
 
 export interface IDelivery extends IAmount {
     name: string

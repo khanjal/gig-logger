@@ -1,13 +1,13 @@
-<div class="page-container container search-page bg-surface-2 pb-20">
+<div class="page-container container search-page pb-20" [class.search-collapsed]="isSearchCollapsed()">
   <!-- Search Input with Autocomplete and Filter Button (Overlay) -->
   <div 
-  class="fixed z-20 pt-4 bg-surface shadow-md transition-all duration-300"
-  style="left: 50%; transform: translateX(-50%); width: 768px; max-width: calc(100% - 2rem);"
+  class="fixed z-20 pt-4 bg-surface shadow-md transition-all duration-300 inset-x-0"
   [ngStyle]="{ 'top': '56px' }">
-    <div class="px-4 py-3">
-      <div class="flex gap-2">
-        <div class="flex-1">
-          <mat-form-field appearance="fill" class="w-full rg-field-shell">
+    <div class="max-w-7xl mx-auto px-4 py-3 relative" [class.header-collapsed]="isSearchCollapsed()">
+      <div class="search-header overflow-hidden transition-all duration-300" [class.max-h-0]="isSearchCollapsed()" [class.opacity-0]="isSearchCollapsed()" [class.pointer-events-none]="isSearchCollapsed()">
+        <div class="flex gap-2 items-center">
+          <div class="flex-1">
+          <mat-form-field appearance="fill" class="w-full rg-field-shell" [class.has-value]="searchTerm()">
             <mat-label>Search</mat-label>
             <input 
               matInput 
@@ -27,6 +27,8 @@
               [icon]="'close'"
               [iconColor]="'var(--error-500)'">
             </app-base-field-button>
+
+            <!-- filter button removed from inside input -->
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAutocompleteSelected($event.option.value)" panelClass="search-autocomplete-panel">
               <mat-option *ngFor="let option of (filteredAutocomplete$ | async)" [value]="option">
                 {{ option }}
@@ -34,54 +36,57 @@
             </mat-autocomplete>
           </mat-form-field>
         </div>
-        
-        <!-- Filter Toggle Button -->
-        <div class="flex items-end pb-10">
-          <div class="filter-toggle-btn">
+
+          <!-- Filter Toggle Button (kept to the right of the input) -->
+          <div class="filter-toggle-btn ml-2">
             <app-base-fab-button
-              [matTooltip]="(showFilters() ? 'Hide' : 'Show') + ' Filters (' + enabledCount() + '/' + categories.length + ')'"
-              matTooltipPosition="below"
-              (clicked)="toggleFilters()"
+              fabStyle="mini"
               variant="primary"
+              (clicked)="toggleFilters()"
               [class.bg-primary-soft]="showFilters()"
-              [icon]="'filter_list'">
+              [icon]="'filter_list'"
+              aria-label="Toggle filters">
             </app-base-fab-button>
             <span class="filter-badge">{{ enabledCount() }}</span>
           </div>
-        </div>
+      </div>
+        
+        <!-- Filter button moved into the mat-form-field as a suffix on mobile/desktop -->
       </div>
 
       <!-- Filter Section (Collapsible) -->
       <div class="overflow-hidden transition-all duration-300" 
-         [class.max-h-0]="!showFilters()" 
-         [class.max-h-96]="showFilters()"
-         [class.opacity-0]="!showFilters()"
-         [class.opacity-100]="showFilters()"
-         [class.mt-3]="showFilters()">
+        [class.max-h-0]="!showFilters() || isSearchCollapsed()" 
+        [class.max-h-96]="showFilters() && !isSearchCollapsed()"
+        [class.opacity-0]="!showFilters() || isSearchCollapsed()"
+        [class.opacity-100]="showFilters() && !isSearchCollapsed()"
+        [class.mt-3]="showFilters() && !isSearchCollapsed()">
         <div class="bg-surface-2 dark:bg-[var(--color-surface-2)] rounded-lg p-4 border border-soft dark:border-[var(--color-border)]">
           <div class="flex items-center justify-between mb-3">
-            <h3 class="text-sm font-semibold text-primary">Filter Categories</h3>
+            <h3 class="text-sm font-semibold text-primary">Filter</h3>
             <div class="flex gap-2">
               <app-base-rect-button
-                color="primary"
                 (clicked)="selectAllCategories()"
-                class="text-xs font-semibold px-3 py-1 rounded-md bg-surface text-primary hover:bg-surface-2 all-btn">
-                <mat-icon class="text-sm">check_box</mat-icon>
-                &nbsp;All
+                [noBackground]="true"
+                [icon]="'check_box'"
+                [iconColor]="'var(--color-text-primary)'"
+                class="text-xs font-semibold all-btn px-1">
+                <span class="ml-1">All</span>
               </app-base-rect-button>
               <app-base-rect-button
-                color="primary"
                 (clicked)="deselectAllCategories()"
-                class="text-xs font-semibold px-3 py-1 rounded-md bg-surface-2 dark:bg-surface-3 text-secondary dark:text-secondary hover:bg-surface-2 dark:hover:bg-surface-2 none-btn">
-                <mat-icon class="text-sm">check_box_outline_blank</mat-icon>
-                &nbsp;None
+                [noBackground]="true"
+                [icon]="'check_box_outline_blank'"
+                [iconColor]="'var(--color-text-secondary)'"
+                class="text-xs font-semibold none-btn px-1 text-secondary">
+                <span class="ml-1">None</span>
               </app-base-rect-button>
             </div>
           </div>
           
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             <div 
-              *ngFor="let category of getCategoriesArray()"
+              *ngFor="let category of getCategoriesArray(); trackBy: trackByCategory"
               class="flex items-center p-2 rounded border transition-colors cursor-pointer bg-[var(--color-surface)] dark:bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] dark:hover:bg-[var(--color-surface-tertiary)] border-[var(--color-border-light)] dark:border-[var(--color-border)]"
               [ngClass]="{ 'border-primary': isCategoryEnabled(category) }"
               (click)="toggleCategory(category)">
@@ -126,8 +131,7 @@
       </div>
 
       <!-- Results Summary Bar -->
-      <div class="flex items-center justify-between text-sm border-t border-soft" 
-         *ngIf="hasSearched() && !isSearching()">
+      <div class="flex items-center justify-between text-sm border-t border-soft mt-3 py-2" *ngIf="hasSearched() && !isSearching()">
         <div class="flex items-center gap-4 pl-5">
           <span class="text-secondary">
             <span class="font-bold text-primary">{{ totalResultsCount() }}</span> matches
@@ -139,21 +143,42 @@
             <span class="font-bold text-success">{{ totalEarnings() | currency }}</span> total
           </span>
         </div>
-        <div *ngIf="groupedResults().length > 0">
+        <div class="flex items-center gap-2 pr-2">
+          <div *ngIf="groupedResults().length > 0">
+            <app-base-fab-button
+              fabStyle="mini"
+              variant="secondary"
+              [noBackground]="true"
+              (clicked)="toggleAllGroups()"
+              [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
+              matTooltipPosition="below"
+              [icon]="allGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
+              class="expand-toggle-btn">
+            </app-base-fab-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collapse/Expand toggle (attached inside the fixed header) -->
+      <div class="search-collapse-container attached-inside" *ngIf="!isSearching() && (hasSearched() || searchTerm() || showFilters())">
+        <div class="flex justify-center">
           <app-base-fab-button
             fabStyle="mini"
             variant="secondary"
             [noBackground]="true"
-            (clicked)="toggleAllGroups()"
-            [matTooltip]="areAllGroupsExpanded() ? 'Collapse All' : 'Expand All'"
+            (clicked)="toggleSearchCollapsed()"
+            [matTooltip]="isSearchCollapsed() ? 'Expand search' : 'Collapse search'"
             matTooltipPosition="below"
-            [icon]="allGroupsExpanded() ? 'unfold_less' : 'unfold_more'"
-            class="expand-toggle-btn">
+            [icon]="isSearchCollapsed() ? 'expand_more' : 'expand_less'"
+            class="search-collapse-toggle-btn attached">
           </app-base-fab-button>
         </div>
       </div>
+
     </div>
   </div>
+
+  
 
   <!-- Loading Spinner -->
   <div class="flex justify-center items-center py-20 content-spacing" *ngIf="isSearching()">
@@ -176,7 +201,7 @@
 
   <!-- Search Results - Grouped by Month -->
   <div class="max-w-7xl mx-auto px-4 py-4 content-spacing" *ngIf="!isSearching() && groupedResults().length > 0">
-    <div *ngFor="let group of groupedResults()" class="mb-6">
+    <div *ngFor="let group of groupedResults(); trackBy: trackByGroup" class="mb-6">
       <!-- Month Group Header -->
       <div class="card card-hover" (click)="toggleGroup(group.month)">
         <div class="p-4">
@@ -219,7 +244,7 @@
 
       <!-- Results within this month -->
       <div class="mt-2 space-y-2" *ngIf="isGroupExpanded(group.month)">
-        <div *ngFor="let result of group.results" class="card">
+      <div *ngFor="let result of group.results; trackBy: trackByResult" class="card">
           <!-- Result Header -->
           <div 
             class="p-4 card-hover border-l-4"
@@ -269,7 +294,7 @@
             <div class="p-2">
               <div class="space-y-2">
                 <trips-quick-view 
-                  *ngFor="let trip of result.trips; let i = index" 
+                  *ngFor="let trip of result.trips; let i = index; trackBy: trackByTrip" 
                   [trip]="trip"
                   [stripeEven]="i % 2 === 0"
                   [showActions]="false"

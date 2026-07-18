@@ -16,8 +16,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Update npm to latest
-        run: npm install -g npm@latest
+      - name: Ensure npm v10 (compatible with Node 20)
+        run: npm install -g npm@10
       - name: Cache node modules
         uses: actions/cache@v4
         with:

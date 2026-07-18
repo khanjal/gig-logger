@@ -38,4 +38,20 @@ export class UpdatesComponent implements OnInit {
     };
     return icons[category];
   }
+
+  trackByEntryDate(index: number, entry: IUpdateEntry): any {
+    return entry?.date ?? index;
+  }
+
+  trackByUpdateTitle(index: number, update: any): any {
+    return update?.title ?? index;
+  }
+
+  trackByChange(index: number, change: any): any {
+    return change ?? index;
+  }
+
+  trackByPage(index: number, page: any): any {
+    return page ?? index;
+  }
 }

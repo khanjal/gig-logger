@@ -5,7 +5,7 @@
   </div>
 
   <div class="updates-list">
-    @for (entry of updates(); track entry.date; let last = $last) {
+    @for (entry of updates(); track (trackByEntryDate($index, entry)); let last = $last) {
     <div class="update-entry">
       <div class="update-date">
         <span class="date-label">{{ entry.dateLabel }}</span>
@@ -15,7 +15,7 @@
       </div>
 
       <div class="updates-group">
-        @for (update of entry.updates; track update.title; let lastUpdate = $last) {
+        @for (update of entry.updates; track (trackByUpdateTitle($index, update)); let lastUpdate = $last) {
         <div class="update-item">
           <div class="update-header">
             <div class="update-title-row">
@@ -28,7 +28,7 @@
           
           @if (update.changes && update.changes.length > 0) {
             <ul class="changes-list">
-              @for (change of update.changes; track change) {
+              @for (change of update.changes; track (trackByChange($index, change))) {
                 <li class="change-item">{{ change }}</li>
               }
             </ul>
@@ -38,7 +38,7 @@
             <div class="pages-affected">
               <span class="pages-label">Pages:</span>
               <div class="page-list">
-                @for (page of update.pagesAffected; track page) {
+                @for (page of update.pagesAffected; track (trackByPage($index, page))) {
                   <span class="page-badge">
                     <mat-icon class="page-icon">article</mat-icon>
                     {{ page }}

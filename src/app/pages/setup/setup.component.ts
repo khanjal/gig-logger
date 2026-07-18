@@ -21,8 +21,8 @@ import { PermissionsComponent } from '@components/permissions/permissions.compon
 import { LocationOverrideComponent } from '@components/location-override/location-override.component';
 
 // App Interfaces
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
 
 // App Services
 import { AuthGoogleService } from '@services/auth-google.service';

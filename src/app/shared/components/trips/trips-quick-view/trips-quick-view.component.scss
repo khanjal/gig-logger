@@ -118,6 +118,16 @@
   justify-content: center;
 }
 
+/* Ensure excluded badge text is readable in light mode (surface-3 is light),
+   but keep inverse text in dark mode. */
+:host {
+  .excluded-badge { color: var(--color-text-primary); }
+}
+
+:host-context(html.theme-dark) {
+  .excluded-badge { color: var(--color-text-inverse); }
+}
+
 /* Primary-blue test palette (selected) */
 :host {
   --stripe-even: var(--primary-100); /* blue-100 (lighter) */

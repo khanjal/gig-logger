@@ -12,7 +12,7 @@
   </div>
 
   <div class="flex-1 overflow-y-auto">
-    @for (trip of data.trips; track trip.rowId) {
+    @for (trip of data.trips; track (trackByTrip($index, trip))) {
       <div>
         <trips-quick-view
           [trip]="trip"

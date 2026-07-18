@@ -1,21 +1,24 @@
-import { Component, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, signal, computed } from '@angular/core';
 import { ViewportScroller, NgIf, CommonModule } from '@angular/common';
+
+// Angular Material + Router
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatIcon } from '@angular/material/icon';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+
+// Constants / utils
 import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.constants';
 import { isDemoSheetName } from '@constants/sheet.constants';
 import { UI_MESSAGES } from '@constants/ui-message.constants';
 import { openSnackbar } from '@utils/snackbar.util';
 
+// Helpers / enums
 import { DateHelper } from '@helpers/date.helper';
-
 import { ActionEnum } from '@enums/action.enum';
 
-import { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
-import { ISpreadsheet } from '@interfaces/spreadsheet.interface';
-import { ITrip } from '@interfaces/trip.interface';
-
+// Services
 import { PollingService } from '@services/polling.service';
 import { UiPreferencesService } from '@services/ui-preferences.service';
 import { TripService } from '@services/sheets/trip.service';
@@ -23,22 +26,27 @@ import { ShiftService } from '@services/sheets/shift.service';
 import { UnsavedDataService } from '@services/unsaved-data.service';
 import { SpreadsheetService } from '@services/spreadsheet.service';
 import { LoggerService } from '@services/logger.service';
+import { AuthGoogleService } from '@services/auth-google.service';
 
+// Components / pipes
 import { CurrentAverageComponent } from '@components/analysis/current-average/current-average.component';
 import { ConfirmDialogComponent } from '@components/ui/confirm-dialog/confirm-dialog.component';
 import { TripFormComponent } from '@components/trips/trip-form/trip-form.component';
 import { TripsTableGroupComponent } from '@components/trips/trips-table-group/trips-table-group.component';
 import { DataSyncModalComponent } from '@components/data/data-sync-modal/data-sync-modal.component';
-
-import { firstValueFrom, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { MatIcon } from '@angular/material/icon';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
-import { TruncatePipe } from "@pipes/truncate.pipe";
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
-import { AuthGoogleService } from '@services/auth-google.service';
+import { TruncatePipe } from '@pipes/truncate.pipe';
+
+// RxJS
+import { firstValueFrom, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+// Type-only imports
+import type { IConfirmDialog } from '@interfaces/confirm-dialog.interface';
+import type { ISpreadsheet } from '@interfaces/spreadsheet.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 
 
 @Component({
@@ -77,6 +85,9 @@ export class TripComponent implements OnInit, OnDestroy {
   // Destroy subject for managing subscription cleanup
   private destroy$ = new Subject<void>();
 
+  trackByTrip(index: number, trip: any): any {
+    return trip?.rowId ?? trip?.key ?? index;
+  }
   constructor(
       public dialog: MatDialog,
       private _snackBar: MatSnackBar,
@@ -424,8 +435,11 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   shouldShowUpdateMessage(): boolean {
-    return this.todaysTrips().length === 0;
+    return this.showUpdateMessage();
   }
+
+  // Cached computed used by templates to avoid repeated work
+  public readonly showUpdateMessage = computed(() => this.todaysTrips().length === 0);
 
   private async refreshDefaultSheetState(): Promise<void> {
     this.defaultSheet.set((await this._sheetService.querySpreadsheets("default", "true"))[0]);

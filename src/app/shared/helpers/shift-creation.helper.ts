@@ -1,4 +1,4 @@
-import { IShift } from '@interfaces/shift.interface';
+import type { IShift } from '@interfaces/shift.interface';
 import { DateHelper } from '@helpers/date.helper';
 
 export class ShiftCreationHelper {

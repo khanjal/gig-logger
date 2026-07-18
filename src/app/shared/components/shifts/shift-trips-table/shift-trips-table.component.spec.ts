@@ -1,6 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ShiftTripsTableComponent } from './shift-trips-table.component';
+
+describe('ShiftTripsTableComponent trackByTrip', () => {
+  it('returns id when present', () => {
+    const t = { id: 'xyz', rowId: 1 } as any;
+    const res = (ShiftTripsTableComponent.prototype as any).trackByTrip.call(null, 0, t);
+    expect(res).toBe('xyz');
+  });
+
+  it('returns rowId when id absent', () => {
+    const t = { rowId: 99 } as any;
+    const res = (ShiftTripsTableComponent.prototype as any).trackByTrip.call(null, 1, t);
+    expect(res).toBe(99);
+  });
+
+  it('falls back to index', () => {
+    const t = {} as any;
+    const res = (ShiftTripsTableComponent.prototype as any).trackByTrip.call(null, 3, t);
+    expect(res).toBe(3);
+  });
+});
 
 describe('ShiftTripsTableComponent', () => {
   let component: ShiftTripsTableComponent;

@@ -7,7 +7,7 @@
     <mat-slide-toggle
       color="primary"
       [checked]="autoSaveEnabled"
-      [disabled]="status === 'syncing'"
+      [disabled]="status === 'syncing' || !syncAvailable"
       (change)="onAutoSaveToggle($event)">
       <span class="text-sm text-[var(--color-text-primary)]">{{ autoSaveEnabled ? 'On' : 'Off' }}</span>
     </mat-slide-toggle>

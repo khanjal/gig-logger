@@ -1,6 +1,11 @@
 <app-base-card variant="default" padding="sm" title="Account & Permissions" titleIcon="account_circle" class="auth-card mb-4">
   <div class="px-3 py-2">
-    <p class="text-sm text-secondary mb-2">Sign in to sync your data. You can always remove any access in your Google Account.</p>
+    @if (isAuthenticated) {
+      <p class="text-sm text-secondary mb-2">You're signed in. Data sync is active and the permissions listed below are in use. Manage access in your Google Account.</p>
+    }
+    @else {
+      <p class="text-sm text-secondary mb-2">Sign in to sync your data. You can always remove any access in your Google Account.</p>
+    }
     <ul class="space-y-4 text-sm text-secondary mb-3">
       <li>
         <div><strong>Drive files access (app-specific)</strong></div>

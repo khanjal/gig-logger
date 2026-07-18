@@ -1,20 +1,20 @@
-import { IAddress } from '@interfaces/address.interface';
-import { IDaily } from '@interfaces/daily.interface';
-import { IDelivery } from '@interfaces/delivery.interface';
-import { IMonthly } from '@interfaces/monthly.interface';
-import { IName } from '@interfaces/name.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IRating } from '@interfaces/rating.interface';
-import { IRegion } from '@interfaces/region.interface';
-import { IService } from '@interfaces/service.interface';
-import { ISetup } from '@interfaces/setup.interface';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IType } from '@interfaces/type.interface';
-import { IWeekday } from '@interfaces/weekday.interface';
-import { IWeekly } from '@interfaces/weekly.interface';
-import { IYearly } from '@interfaces/yearly.interface';
-import { IExpense } from '@interfaces/expense.interface';
+import type { IAddress } from '@interfaces/address.interface';
+import type { IDaily } from '@interfaces/daily.interface';
+import type { IDelivery } from '@interfaces/delivery.interface';
+import type { IMonthly } from '@interfaces/monthly.interface';
+import type { IName } from '@interfaces/name.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IRating } from '@interfaces/rating.interface';
+import type { IRegion } from '@interfaces/region.interface';
+import type { IService } from '@interfaces/service.interface';
+import type { ISetup } from '@interfaces/setup.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IType } from '@interfaces/type.interface';
+import type { IWeekday } from '@interfaces/weekday.interface';
+import type { IWeekly } from '@interfaces/weekly.interface';
+import type { IYearly } from '@interfaces/yearly.interface';
+import type { IExpense } from '@interfaces/expense.interface';
 import Dexie, { Table } from 'dexie';
 
 // https://dexie.org/docs/Tutorial/Angular

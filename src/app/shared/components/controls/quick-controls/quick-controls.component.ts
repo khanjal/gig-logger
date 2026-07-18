@@ -16,6 +16,7 @@ export class QuickControlsComponent {
   @Input() hasUnsavedChanges = false;
   @Input() status: 'idle' | 'syncing' | 'success' | 'error' | 'disabled' = 'idle';
   @Input() autoSaveEnabled = false;
+  @Input() syncAvailable = true;
   @Input() themePreference: ThemePreference = 'system';
   @Output() save = new EventEmitter<void>();
   @Output() refresh = new EventEmitter<void>();

@@ -9,11 +9,11 @@ import { AddressService } from '@services/sheets/address.service';
 import { PlaceService } from '@services/sheets/place.service';
 import { NameService } from '@services/sheets/name.service';
 import { LoggerService } from '@services/logger.service';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IAddress } from '@interfaces/address.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IName } from '@interfaces/name.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IAddress } from '@interfaces/address.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IName } from '@interfaces/name.interface';
 import { BaseRectButtonComponent } from '@components/base';
 
 interface DiagnosticItem {

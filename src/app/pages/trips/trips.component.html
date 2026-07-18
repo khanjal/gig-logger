@@ -55,7 +55,7 @@
     </h2>
     
     @if (!isEditMode()) {
-        @for (trip of todaysTrips(); track $index) {
+        @for (trip of todaysTrips(); track (trackByTrip($index, trip))) {
             <div [id]="trip.rowId">
                 <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)">
                 </trips-quick-view>
@@ -81,7 +81,7 @@
             
             @if (showYesterdayTrips()) {
                 <div>
-                    @for (trip of yesterdaysTrips(); track $index) {
+                    @for (trip of yesterdaysTrips(); track (trackByTrip($index, trip))) {
                         <div [id]="trip.rowId">
                             <trips-quick-view [trip]="trip" [index]="$index" (pollingToggle)="$event === true ? startPolling() : stopPolling()" (scrollToTrip)="scrollToTrip($event)"></trips-quick-view>
                         </div>

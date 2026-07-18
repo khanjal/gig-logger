@@ -12,12 +12,12 @@ import { SNACKBAR_MESSAGES, SNACKBAR_DEFAULT_ACTION } from '@constants/snackbar.
 import { openSnackbar } from '@utils/snackbar.util';
 
 // Application-specific imports - Interfaces
-import { IAddress } from '@interfaces/address.interface';
-import { IDelivery } from '@interfaces/delivery.interface';
-import { IName } from '@interfaces/name.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
+import type { IAddress } from '@interfaces/address.interface';
+import type { IDelivery } from '@interfaces/delivery.interface';
+import type { IName } from '@interfaces/name.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 
 // Application-specific imports - Services
 import { AddressService } from '@services/sheets/address.service';
@@ -611,6 +611,13 @@ export class TripFormComponent implements OnInit {
 
   private toShiftSummaryOption(shift: IShift): IShiftSummaryOption {
     const shiftNumberSuffix = shift.number === 0 ? '' : ` #${shift.number}`;
+    const trips = shift.totalTrips || 0;
+    const pay = NumberHelper.formatNumber(shift.totalPay || 0);
+    const tips = NumberHelper.formatNumber(shift.totalTips || 0);
+    const total = NumberHelper.formatNumber(shift.grandTotal || 0);
+
+    // Slim subtitle for compact display
+    const slim = `Trips: ${trips} · Tips: $${tips} · Total: $${total}`;
 
     return {
       shiftKey: shift.key,
@@ -618,7 +625,7 @@ export class TripFormComponent implements OnInit {
       dateLabel: DateHelper.getDateFromISO(shift.date).toDateString().slice(0, 10),
       serviceLabel: shift.service,
       numberLabel: shiftNumberSuffix,
-      subtitle: `Trips: ${shift.totalTrips || 0} | Total: $${NumberHelper.formatNumber(shift.grandTotal || 0)}`
+      subtitle: slim
     };
   }
 

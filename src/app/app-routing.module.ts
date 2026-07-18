@@ -4,7 +4,6 @@ import { HomeComponent } from './pages/home/home.component';
 import { TripComponent } from './pages/trips/trips.component';
 import { SetupComponent } from './pages/setup/setup.component';
 import { canActivateSheet } from '@guards/default-sheet/default-sheet.guard';
-import { CalculatorComponent } from './pages/calculator/calculator.component';
 import { StatsComponent } from './pages/stats/stats.component';
 import { ShiftsComponent } from './pages/shifts/shifts.component';
 import { TermsComponent } from './pages/terms/terms.component';
@@ -19,7 +18,6 @@ import { PendingChangesComponent } from './pages/pending-changes/pending-changes
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'calculator', component: CalculatorComponent },
   { path: 'policy', component: PolicyComponent },
   { path: 'updates', component: UpdatesComponent },
   { path: 'search', component: SearchComponent, canActivate: [canActivateSheet, canActivateAuth] },

@@ -1,8 +1,8 @@
-import { Table } from "dexie";
 import { GenericCrudService } from "./generic-crud.service";
 import { ActionEnum } from "@enums/action.enum";
 import { clearAction } from "@utils/action.utils";
-import { IActionRecord } from "@interfaces/action-record.interface";
+import type { Table } from "dexie";
+import type { IActionRecord } from "@interfaces/action-record.interface";
 
 export class SyncableCrudService<T extends IActionRecord> extends GenericCrudService<T> {
   constructor(table: Table<T, number>) {

@@ -1,9 +1,9 @@
-import { IShift } from '@interfaces/shift.interface';
-import { ITrip } from '@interfaces/trip.interface';
-import { IPlace } from '@interfaces/place.interface';
-import { IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
+import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
+import type { IPlace } from '@interfaces/place.interface';
+import type { IDuplicateGroup, IDuplicateResult, DiagnosticEntityType } from '@interfaces/diagnostic.interface';
 
 export class DiagnosticHelper {
   /**

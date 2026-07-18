@@ -16,7 +16,7 @@ import { CurrencyPipe } from '@angular/common';
 import { SearchService } from '@services/search.service';
 import { DropdownDataService } from '@services/dropdown-data.service';
 import { LoggerService } from '@services/logger.service';
-import { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
+import type { ISearchResult, ISearchResultGroup, SearchCategory } from '@interfaces/search-result.interface';
 import type { DropdownType } from '@interfaces/dropdown-data.interface';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { BackToTopComponent } from '@components/ui/back-to-top/back-to-top.component';
@@ -67,6 +67,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   isSearching = this.searchState.isLoading;
   hasSearched = this.searchState.hasCompleted;
   showFilters = signal(false);
+  /** Collapse state for the entire search form (keeps summary visible) */
+  isSearchCollapsed = signal(false);
   exactMatch = signal(false);
   caseSensitive = signal(false);
 
@@ -205,6 +207,18 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   toggleFilters(): void {
     this.showFilters.update(show => !show);
+  }
+
+  /**
+   * Toggle the collapsed state of the search form. When collapsed the input
+   * and filter sections are hidden but the bottom summary remains visible.
+   */
+  toggleSearchCollapsed(): void {
+    this.isSearchCollapsed.update(v => !v);
+    // When collapsing, also hide the filters to keep UI tidy
+    if (this.isSearchCollapsed()) {
+      this.showFilters.set(false);
+    }
   }
 
   /**
@@ -446,6 +460,25 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   getResultMetric(result: ISearchResult, monthKey: string, metricMap: Map<string, string>): string {
     return metricMap.get(this.getResultKey(result, monthKey)) || '-';
+  }
+
+  /*
+   * TrackBy helpers to improve ngFor rendering performance
+   */
+  trackByCategory(index: number, category: SearchCategory): string {
+    return String(category);
+  }
+
+  trackByGroup(index: number, group: ISearchResultGroup): string {
+    return group?.month || String(index);
+  }
+
+  trackByResult(index: number, result: ISearchResult): string {
+    return `${result.type}|${result.value}`;
+  }
+
+  trackByTrip(index: number, trip: any): number | string {
+    return typeof trip?.id === 'number' ? trip.id : index;
   }
 
   isResultSameAsGroupByKey(result: ISearchResult, group: ISearchResultGroup): boolean {

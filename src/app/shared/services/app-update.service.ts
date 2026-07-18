@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
 import { LoggerService } from '@services/logger.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
+import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 
 @Injectable({
   providedIn: 'root'

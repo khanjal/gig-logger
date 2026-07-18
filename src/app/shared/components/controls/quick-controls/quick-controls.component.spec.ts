@@ -58,6 +58,17 @@ describe('QuickControlsComponent', () => {
     expect(autoSaveSpy).toHaveBeenCalledWith(true);
   });
 
+  it('disables autosave toggle when syncAvailable is false', () => {
+    component.syncAvailable = false;
+    component.status = 'idle';
+    component.autoSaveEnabled = true;
+    fixture.detectChanges();
+
+    const input = fixture.debugElement.query(By.css('input.mat-slide-toggle-input'));
+    expect(input).not.toBeNull();
+    expect(input.nativeElement.disabled).toBeTrue();
+  });
+
   it('cycles theme on single button', () => {
     const themeSpy = spyOn(component.themeChange, 'emit');
     fixture.detectChanges();

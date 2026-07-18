@@ -2,6 +2,26 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TripsModalComponent } from './trips-modal.component';
 
+describe('TripsModalComponent trackByTrip', () => {
+  it('returns rowId when present', () => {
+    const trip = { rowId: 77 } as any;
+    const res = (TripsModalComponent.prototype as any).trackByTrip.call(null, 0, trip);
+    expect(res).toBe(77);
+  });
+
+  it('returns id when rowId absent', () => {
+    const trip = { id: 11 } as any;
+    const res = (TripsModalComponent.prototype as any).trackByTrip.call(null, 2, trip);
+    expect(res).toBe(11);
+  });
+
+  it('falls back to index', () => {
+    const trip = {} as any;
+    const res = (TripsModalComponent.prototype as any).trackByTrip.call(null, 6, trip);
+    expect(res).toBe(6);
+  });
+});
+
 describe('TripsModalComponent', () => {
   let component: TripsModalComponent;
   let fixture: ComponentFixture<TripsModalComponent>;

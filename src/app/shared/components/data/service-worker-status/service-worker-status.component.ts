@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { LoggerService } from '@services/logger.service';
 import { AppUpdateService } from '@services/app-update.service';
-import { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 import { Subscription } from 'rxjs';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
+import type { IAppUpdateStatus } from '@interfaces/app-update-status.interface';
 
 @Component({
   selector: 'app-service-worker-status',
