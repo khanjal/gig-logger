@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { HeaderComponent } from './shared/header/header.component';
-
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { BaseRectButtonComponent } from '@components/base/base-rect-button/base-rect-button.component';
 import { Subscription } from 'rxjs';

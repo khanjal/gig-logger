@@ -1,11 +1,9 @@
 import { Component, Input, inject } from '@angular/core';
-
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl, FormGroupDirective } from '@angular/forms';
 import { MatFormField, MatLabel, MatHint, MatError, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { BaseFieldButtonComponent } from '@components/base/base-field-button/base-field-button.component';
-
 import { firstErrorMessage, controlHasError } from './base-input.helpers';
 
 @Component({

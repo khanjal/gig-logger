@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, HostBinding } from '@angular/core';
-
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({

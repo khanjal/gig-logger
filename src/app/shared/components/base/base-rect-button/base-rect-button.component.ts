@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
 import { BaseButtonComponent } from '@components/base/base-button/base-button.component';
 
 @Component({

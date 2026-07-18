@@ -94,14 +94,14 @@ export class StatsComponent implements OnInit {
     return { startDate, endDate };
   }
 
-  getTripList(trips: ITrip[], name: string): IStatItem[] {
-    let itemList = trips.map((x:any) => x[name]);
+  getTripList(trips: ITrip[], name: 'place' | 'type'): IStatItem[] {
+    let itemList = trips.map((x) => x[name]);
     itemList = [...new Set(itemList)].sort();
     const items: IStatItem[] = [];
 
     itemList.forEach(itemName => {
       const item = {} as IStatItem;
-      const tripFilter = trips.filter((x:any) => x[name] === itemName);
+      const tripFilter = trips.filter((x) => x[name] === itemName);
 
       item.name = itemName;
       item.trips = tripFilter.length;
@@ -122,14 +122,14 @@ export class StatsComponent implements OnInit {
     return items;
   }
 
-  getShiftList(shifts: IShift[], name: string): IStatItem[] {
-    let itemList = shifts.map((x:any) => x[name]);
+  getShiftList(shifts: IShift[], name: 'service' | 'region'): IStatItem[] {
+    let itemList = shifts.map((x) => x[name]);
     itemList = [...new Set(itemList)].sort();
     const items: IStatItem[] = [];
 
     itemList.forEach(itemName => {
       const item = {} as IStatItem;
-      const shiftFilter = shifts.filter((x:any) => x[name] === itemName);
+      const shiftFilter = shifts.filter((x) => x[name] === itemName);
 
       item.name = itemName;
       item.trips = shiftFilter.map(x => x.totalTrips || 0).reduce((acc, value) => acc + value, 0);

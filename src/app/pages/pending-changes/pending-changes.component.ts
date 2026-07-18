@@ -9,6 +9,7 @@ import { UnsavedDataService } from '@services/unsaved-data.service';
 import { TripService } from '@services/sheets/trip.service';
 import { ShiftService } from '@services/sheets/shift.service';
 import type { IShift } from '@interfaces/shift.interface';
+import type { ITrip } from '@interfaces/trip.interface';
 import { ShiftHelper } from '@helpers/shift.helper';
 import { TripsQuickViewComponent } from '@components/trips/trips-quick-view/trips-quick-view.component';
 import { ShiftsQuickViewComponent } from '@components/shifts/shifts-quick-view/shifts-quick-view.component';
@@ -30,7 +31,7 @@ export class PendingChangesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
 
-  trips = signal<any[]>([]);
+  trips = signal<ITrip[]>([]);
   shifts = signal<IShift[]>([]);
   duplicateShiftKeys = signal<Set<string>>(new Set());
   expandedShifts = signal(false);
@@ -51,11 +52,11 @@ export class PendingChangesComponent implements OnInit {
     });
   }
 
-  trackByShift(index: number, s: any): any {
+  trackByShift(index: number, s: IShift): string | number {
     return s?.rowId ?? s?.key ?? index;
   }
 
-  trackByTrip(index: number, t: any): any {
+  trackByTrip(index: number, t: ITrip): string | number {
     return t?.rowId ?? t?.key ?? index;
   }
 
@@ -93,7 +94,7 @@ export class PendingChangesComponent implements OnInit {
     }
   }
 
-  openTripEditor(t: any): void {
+  openTripEditor(t: ITrip): void {
     this.dialog
       .open(TripFormComponent, {
         width: '720px',
@@ -105,7 +106,7 @@ export class PendingChangesComponent implements OnInit {
       .subscribe(() => void this.load());
   }
 
-  openShiftEditor(s: any): void {
+  openShiftEditor(s: IShift): void {
     this.dialog
       .open(ShiftFormComponent, {
         width: '720px',

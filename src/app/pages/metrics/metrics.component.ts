@@ -3,6 +3,7 @@ import { Component, DestroyRef, OnInit, inject, signal, ViewEncapsulation } from
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { ShiftService } from '@services/sheets/shift.service';
+import type { IShift } from '@interfaces/shift.interface';
 import { ThemeService } from '@services/theme.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomCalendarHeaderComponent } from '@components/ui/custom-calendar-header/custom-calendar-header.component';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels, { Context as DataLabelsContext } from 'chartjs-plugin-datalabels';
 import { DateHelper } from '@helpers/date.helper';
 import { combineLatest, from, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -43,8 +44,8 @@ export class MetricsComponent implements OnInit {
   private themeService = inject(ThemeService);
 
   readonly CustomCalendarHeaderComponent = CustomCalendarHeaderComponent;
-  shifts = signal<any[]>([]);
-  filteredShifts = signal<any[]>([]);
+  shifts = signal<IShift[]>([]);
+  filteredShifts = signal<IShift[]>([]);
   aggregationType = signal<'day' | 'week' | 'month' | 'quarter' | 'year'>('day');
   private readonly destroyRef = inject(DestroyRef);
 
@@ -72,8 +73,8 @@ export class MetricsComponent implements OnInit {
           const chart = ctx.chart;
           const labelCount = chart.data.labels ? chart.data.labels.length : 0;
           if (labelCount > 20 || ctx.dataset.data[ctx.dataIndex] === 0) return false;
-          const config: any = chart.config;
-          const scales: any = chart.options.scales;
+          const config = chart.config as { type?: string };
+          const scales = chart.options.scales as Record<string, { stacked?: boolean }> | undefined;
           if (config && config.type === 'bar' && scales && scales['x'] && scales['x'].stacked) {
             const dataIndex = ctx.dataIndex;
             const datasets = chart.data.datasets;
@@ -147,7 +148,7 @@ export class MetricsComponent implements OnInit {
         textShadowColor: this.cssVar('--color-text-primary'),
         textShadowBlur: 6,
         formatter: (value: number) => value > 0 ? value : '',
-        display: (ctx: any) => ctx.dataset.data[ctx.dataIndex] > 0,
+        display: (ctx: DataLabelsContext) => Number(ctx.dataset.data[ctx.dataIndex]) > 0,
       }
     }
   };
@@ -190,7 +191,7 @@ export class MetricsComponent implements OnInit {
     // Update pie datalabel colors to theme-aware values
     if (this.pieOptions.plugins?.datalabels) {
       this.pieOptions.plugins.datalabels.color = this.cssVar('--color-text-inverse');
-      (this.pieOptions.plugins.datalabels as any).textShadowColor = this.cssVar('--color-text-primary');
+      this.pieOptions.plugins.datalabels.textShadowColor = this.cssVar('--color-text-primary');
     }
     
     // Trigger chart refresh by reassigning options
@@ -200,7 +201,7 @@ export class MetricsComponent implements OnInit {
   }
 
   // Helper to get YMD string from a shift
-  private getShiftYMD(s: any): string {
+  private getShiftYMD(s: IShift): string {
     return (typeof s.date === 'string' && s.date.length === 10)
       ? s.date
       : DateHelper.toISO(new Date(s.date));
@@ -214,7 +215,7 @@ export class MetricsComponent implements OnInit {
   }
 
   private getAggregationTypeForFilteredData(
-    filtered: any[],
+    filtered: IShift[],
     startYMD: string,
     endYMD: string
   ): 'day' | 'week' | 'month' | 'quarter' | 'year' {
@@ -234,7 +235,7 @@ export class MetricsComponent implements OnInit {
     return 'day';
   }
 
-  private applyChartData(filtered: any[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
+  private applyChartData(filtered: IShift[], aggType: 'day' | 'week' | 'month' | 'quarter' | 'year'): void {
     this.updateCharts(filtered, aggType);
     this.updateDailyEarnings(filtered, aggType);
     this.updateServicePie(filtered);
